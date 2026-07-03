@@ -1,12 +1,12 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { finalize, timeout } from 'rxjs';
 
 import { AppointmentDto } from '../../../../../shared/models/appointment.models';
 import {
   AppointmentApiService,
   AppointmentStatusText
 } from '../../../../../core/services/appointment-api.service';
-import { finalize, timeout } from 'rxjs';
 
 @Component({
   selector: 'app-appointment-list',
@@ -15,7 +15,7 @@ import { finalize, timeout } from 'rxjs';
   templateUrl: './patient-appointment-list.html',
   styleUrl: './patient-appointment-list.css'
 })
-export class PatientAppointmentList {
+export class PatientAppointmentList implements OnInit {
   appointments: AppointmentDto[] = [];
 
   searchTerm = '';
@@ -47,6 +47,9 @@ export class PatientAppointmentList {
   @Output() refreshDashboard = new EventEmitter<void>();
 
   constructor(private readonly appointmentApiService: AppointmentApiService) {
+  }
+
+  ngOnInit(): void {
     this.loadAppointments();
   }
 
@@ -67,34 +70,47 @@ export class PatientAppointmentList {
   }
 
   loadAppointments(): void {
-  this.isLoading = true;
-  this.errorMessage = '';
+    this.isLoading = true;
+    this.errorMessage = '';
 
-  this.appointmentApiService.getMyAppointments({
-    pageNumber: this.pageNumber,
-    pageSize: this.pageSize,
-    searchTerm: this.searchTerm,
-    status: this.selectedStatus,
-    scheduledDate: this.selectedDate
-  }).pipe(
-    timeout(15000),
-    finalize(() => {
-      this.isLoading = false;
-    })
-  ).subscribe({
-    next: (response) => {
-      this.appointments = response.items;
-      this.pageNumber = response.pageNumber;
-      this.pageSize = response.pageSize;
-      this.totalRecords = response.totalRecords;
-      this.totalPages = response.totalPages;
-    },
-    error: (error: unknown) => {
-      console.log('Patient appointments API error:', error);
-      this.errorMessage = this.getErrorMessage(error);
-    }
-  });
-}
+    this.appointmentApiService.getMyAppointments({
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize,
+      searchTerm: this.searchTerm.trim(),
+      status: this.selectedStatus,
+      scheduledDate: this.selectedDate
+    }).pipe(
+      timeout(15000),
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe({
+      next: (response) => {
+        this.appointments = response.items ?? [];
+        this.pageNumber = response.pageNumber;
+        this.pageSize = response.pageSize;
+        this.totalRecords = response.totalRecords;
+        this.totalPages = response.totalPages;
+      },
+      error: (error: unknown) => {
+        console.log('Patient appointments API error:', error);
+
+        this.appointments = [];
+        this.totalRecords = 0;
+        this.totalPages = 0;
+        this.errorMessage = this.getErrorMessage(error);
+      }
+    });
+  }
+
+  refreshAppointmentsAfterBooking(): void {
+    this.searchTerm = '';
+    this.selectedStatus = '';
+    this.selectedDate = '';
+    this.pageNumber = 1;
+
+    this.loadAppointments();
+  }
 
   applyFilters(): void {
     this.pageNumber = 1;
@@ -165,7 +181,9 @@ export class PatientAppointmentList {
     this.appointmentApiService.cancelAppointment({
       appointmentId: this.selectedAppointment.appointmentId,
       reason
-    }).subscribe({
+    }).pipe(
+      timeout(15000)
+    ).subscribe({
       next: () => {
         this.closeCancelModal();
         this.loadAppointments();
@@ -182,7 +200,13 @@ export class PatientAppointmentList {
   }
 
   formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('en-IN', {
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return 'Not Available';
+    }
+
+    return parsedDate.toLocaleDateString('en-IN', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
@@ -199,14 +223,40 @@ export class PatientAppointmentList {
         error?: {
           message?: string;
           Message?: string;
+          title?: string;
+          errors?: Record<string, string[]>;
         };
+        name?: string;
+        message?: string;
       };
 
-      return (
-        apiError.error?.message ??
-        apiError.error?.Message ??
-        'Something went wrong while loading appointments.'
-      );
+      if (apiError.name === 'TimeoutError') {
+        return 'The server is taking too long to respond. Please try again.';
+      }
+
+      if (apiError.error?.message) {
+        return apiError.error.message;
+      }
+
+      if (apiError.error?.Message) {
+        return apiError.error.Message;
+      }
+
+      if (apiError.error?.title) {
+        return apiError.error.title;
+      }
+
+      if (apiError.error?.errors) {
+        const firstError = Object.values(apiError.error.errors)[0]?.[0];
+
+        if (firstError) {
+          return firstError;
+        }
+      }
+
+      if (apiError.message) {
+        return apiError.message;
+      }
     }
 
     return 'Something went wrong while loading appointments.';

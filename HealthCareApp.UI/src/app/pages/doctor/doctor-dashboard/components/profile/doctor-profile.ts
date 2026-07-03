@@ -180,7 +180,7 @@ export class DoctorProfile implements OnInit {
 
         this.resetPasswordForm();
 
-        this.emitToast('Password changed successfully ✅', 'success');
+        this.emitToast('Password changed successfully ', 'success');
       },
       error: (error: unknown) => {
         console.log('Doctor password change API error:', error);

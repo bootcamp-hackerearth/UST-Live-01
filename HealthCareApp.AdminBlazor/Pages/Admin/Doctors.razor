@@ -1,5 +1,6 @@
 ﻿@page "/admin/doctors"
 @layout AdminLayout
+@implements IAsyncDisposable
 
 @using HealthCareApp.Shared.Dtos.Doctors
 @using HealthCareApp.Shared.Dtos.Pagination
@@ -479,20 +480,25 @@ else
 
         currentPage = 1;
 
-        searchCancellationTokenSource?.Cancel();
-
-        searchCancellationTokenSource?.Dispose();
+        if (searchCancellationTokenSource is not null)
+        {
+            await searchCancellationTokenSource.CancelAsync();
+            searchCancellationTokenSource.Dispose();
+        }
 
         searchCancellationTokenSource = new CancellationTokenSource();
 
+        var currentSearchToken = searchCancellationTokenSource.Token;
+
         try
         {
-            await Task.Delay(400, searchCancellationTokenSource.Token);
+            await Task.Delay(400, currentSearchToken);
 
             await LoadDoctorsAsync(showFullPageLoader: false);
         }
         catch (TaskCanceledException)
         {
+            // Search debounce was cancelled because the user typed again.
         }
     }
 
@@ -687,5 +693,14 @@ else
         }
 
         return $"{parts[0][0]}{parts[1][0]}".ToUpper(CultureInfo.InvariantCulture);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (searchCancellationTokenSource is not null)
+        {
+            await searchCancellationTokenSource.CancelAsync();
+            searchCancellationTokenSource.Dispose();
+        }
     }
 }

@@ -21,6 +21,13 @@ import {
 
 import { AppointmentApiService } from '../../../../../core/services/appointment-api.service';
 
+type PatientToastType = 'success' | 'info' | 'warning' | 'error';
+
+interface PatientToastEvent {
+  message: string;
+  type: PatientToastType;
+}
+
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
@@ -59,13 +66,15 @@ export class PatientBookAppointment implements OnInit {
 
   @Output() bookingSuccess = new EventEmitter<void>();
 
+  @Output() patientToast = new EventEmitter<PatientToastEvent>();
+
   constructor(
     private readonly patientApiService: PatientApiService,
     private readonly doctorApiService: DoctorApiService,
     private readonly appointmentApiService: AppointmentApiService,
     private readonly cdr: ChangeDetectorRef
   ) {
-    this.todayDate = new Date().toISOString().split('T')[0];
+    this.todayDate = this.formatDateForInput(new Date());
     this.maxBookingDate = this.getDateAfterDays(30);
   }
 
@@ -96,6 +105,15 @@ export class PatientBookAppointment implements OnInit {
     );
   }
 
+  get isBookingButtonDisabled(): boolean {
+    return (
+      this.isSubmitting ||
+      this.isLoadingPatient ||
+      this.isLoadingDoctors ||
+      this.isLoadingSlots
+    );
+  }
+
   loadCurrentPatient(): void {
     this.isLoadingPatient = true;
     this.message = '';
@@ -118,6 +136,11 @@ export class PatientBookAppointment implements OnInit {
         this.form.patientId = 0;
         this.isLoadingPatient = false;
         this.message = 'Unable to load patient profile for booking. Please reload and try again.';
+
+        this.patientToast.emit({
+          message: this.message,
+          type: 'error'
+        });
 
         this.cdr.detectChanges();
       }
@@ -143,9 +166,11 @@ export class PatientBookAppointment implements OnInit {
           )
         );
 
-specialisations.sort((firstSpecialisation: string, secondSpecialisation: string) =>
-  firstSpecialisation.localeCompare(secondSpecialisation)
-);
+        specialisations.sort(
+          (firstSpecialisation: string, secondSpecialisation: string) =>
+            firstSpecialisation.localeCompare(secondSpecialisation)
+        );
+
         this.specialisations = specialisations;
 
         if (this.doctors.length === 0) {
@@ -163,6 +188,11 @@ specialisations.sort((firstSpecialisation: string, secondSpecialisation: string)
         this.filteredDoctors = [];
         this.isLoadingDoctors = false;
         this.message = this.getErrorMessage(error);
+
+        this.patientToast.emit({
+          message: this.message,
+          type: 'error'
+        });
 
         this.cdr.detectChanges();
       }
@@ -233,9 +263,17 @@ specialisations.sort((firstSpecialisation: string, secondSpecialisation: string)
     this.cdr.detectChanges();
   }
 
-  loadDoctorAvailability(doctorId: number, date: string): void {
+  loadDoctorAvailability(
+    doctorId: number,
+    date: string,
+    shouldClearMessage = true
+  ): void {
     this.isLoadingSlots = true;
-    this.message = '';
+
+    if (shouldClearMessage) {
+      this.message = '';
+    }
+
     this.cdr.detectChanges();
 
     this.doctorApiService.getDoctorAvailability(doctorId, date).pipe(
@@ -244,7 +282,7 @@ specialisations.sort((firstSpecialisation: string, secondSpecialisation: string)
       next: (slots: SlotAvailabilityDto[]) => {
         this.timeSlots = slots ?? [];
 
-        if (this.timeSlots.length === 0) {
+        if (this.timeSlots.length === 0 && shouldClearMessage) {
           this.message = 'No time slots are available for the selected doctor.';
         }
 
@@ -256,7 +294,15 @@ specialisations.sort((firstSpecialisation: string, secondSpecialisation: string)
 
         this.timeSlots = [];
         this.isLoadingSlots = false;
-        this.message = this.getErrorMessage(error);
+
+        if (shouldClearMessage) {
+          this.message = this.getErrorMessage(error);
+
+          this.patientToast.emit({
+            message: this.message,
+            type: 'error'
+          });
+        }
 
         this.cdr.detectChanges();
       }
@@ -297,11 +343,18 @@ specialisations.sort((firstSpecialisation: string, secondSpecialisation: string)
       return false;
     }
 
-    if (this.form.scheduledDate < this.todayDate) {
+    const selectedDate = this.parseInputDate(this.form.scheduledDate);
+    const today = this.parseInputDate(this.todayDate);
+
+    if (!selectedDate || !today) {
+      return false;
+    }
+
+    if (selectedDate.getTime() < today.getTime()) {
       return true;
     }
 
-    if (this.form.scheduledDate > this.todayDate) {
+    if (selectedDate.getTime() > today.getTime()) {
       return false;
     }
 
@@ -315,7 +368,18 @@ specialisations.sort((firstSpecialisation: string, secondSpecialisation: string)
   }
 
   isFutureBeyondBookingWindow(): boolean {
-    return !!this.form.scheduledDate && this.form.scheduledDate > this.maxBookingDate;
+    if (!this.form.scheduledDate) {
+      return false;
+    }
+
+    const selectedDate = this.parseInputDate(this.form.scheduledDate);
+    const maxDate = this.parseInputDate(this.maxBookingDate);
+
+    if (!selectedDate || !maxDate) {
+      return false;
+    }
+
+    return selectedDate.getTime() > maxDate.getTime();
   }
 
   isTimeSlotDisabled(slot: SlotAvailabilityDto): boolean {
@@ -378,6 +442,12 @@ specialisations.sort((firstSpecialisation: string, secondSpecialisation: string)
     this.message = '';
 
     if (!this.isBookingFormValid()) {
+      this.patientToast.emit({
+        message: this.message,
+        type: 'warning'
+      });
+
+      this.cdr.detectChanges();
       return;
     }
 
@@ -396,22 +466,47 @@ specialisations.sort((firstSpecialisation: string, secondSpecialisation: string)
 
   confirmBooking(): void {
     this.message = '';
+
+    if (!this.isBookingFormValid()) {
+      this.isBookingConfirmOpen = false;
+
+      this.patientToast.emit({
+        message: this.message,
+        type: 'warning'
+      });
+
+      this.cdr.detectChanges();
+      return;
+    }
+
     this.isSubmitting = true;
     this.cdr.detectChanges();
 
-    this.appointmentApiService.bookAppointment({
+    const request: BookAppointmentDto = {
       patientId: this.currentPatientId,
       doctorId: this.form.doctorId,
       scheduledDate: this.form.scheduledDate,
       timeSlot: this.form.timeSlot
-    }).pipe(
+    };
+
+    console.log('Book appointment request:', request);
+
+    this.appointmentApiService.bookAppointment(request).pipe(
       timeout(15000)
     ).subscribe({
       next: () => {
         this.isSubmitting = false;
         this.isBookingConfirmOpen = false;
 
+        this.message = 'Appointment booked successfully. Waiting for doctor confirmation.';
+
+        this.patientToast.emit({
+          message: this.message,
+          type: 'success'
+        });
+
         this.resetForm();
+
         this.bookingSuccess.emit();
 
         this.cdr.detectChanges();
@@ -423,8 +518,17 @@ specialisations.sort((firstSpecialisation: string, secondSpecialisation: string)
         this.isBookingConfirmOpen = false;
         this.message = this.getErrorMessage(error);
 
+        this.patientToast.emit({
+          message: this.message,
+          type: 'error'
+        });
+
         if (this.form.doctorId && this.form.scheduledDate) {
-          this.loadDoctorAvailability(this.form.doctorId, this.form.scheduledDate);
+          this.loadDoctorAvailability(
+            this.form.doctorId,
+            this.form.scheduledDate,
+            false
+          );
         }
 
         this.cdr.detectChanges();
@@ -463,12 +567,21 @@ specialisations.sort((firstSpecialisation: string, secondSpecialisation: string)
       return false;
     }
 
-    if (this.form.scheduledDate < this.todayDate) {
+    const selectedDate = this.parseInputDate(this.form.scheduledDate);
+    const today = this.parseInputDate(this.todayDate);
+    const maxDate = this.parseInputDate(this.maxBookingDate);
+
+    if (!selectedDate || !today || !maxDate) {
+      this.message = 'Please select a valid appointment date.';
+      return false;
+    }
+
+    if (selectedDate.getTime() < today.getTime()) {
       this.message = 'Past dates are not allowed. Please select today or a future date.';
       return false;
     }
 
-    if (this.form.scheduledDate > this.maxBookingDate) {
+    if (selectedDate.getTime() > maxDate.getTime()) {
       this.message = 'Appointments can only be booked within the next 30 days.';
       return false;
     }
@@ -575,14 +688,56 @@ specialisations.sort((firstSpecialisation: string, secondSpecialisation: string)
       hours = 0;
     }
 
-    const slotDateTime = new Date(this.form.scheduledDate);
+    const slotDateTime = this.parseInputDate(this.form.scheduledDate);
+
+    if (!slotDateTime) {
+      return null;
+    }
 
     slotDateTime.setHours(hours, minutes, 0, 0);
 
     return slotDateTime;
   }
 
+  private parseInputDate(dateValue: string): Date | null {
+    const parts = dateValue.split('-');
+
+    if (parts.length !== 3) {
+      return null;
+    }
+
+    const year = Number(parts[0]);
+    const month = Number(parts[1]);
+    const day = Number(parts[2]);
+
+    if (!year || !month || !day) {
+      return null;
+    }
+
+    return new Date(year, month - 1, day);
+  }
+
+  private formatDateForInput(date: Date): string {
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getDate()}`.padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
+  private getDateAfterDays(days: number): string {
+    const date = new Date();
+
+    date.setDate(date.getDate() + days);
+
+    return this.formatDateForInput(date);
+  }
+
   private getErrorMessage(error: unknown): string {
+    if (typeof error === 'string' && error.trim()) {
+      return error;
+    }
+
     if (
       typeof error === 'object' &&
       error !== null &&
@@ -593,39 +748,48 @@ specialisations.sort((firstSpecialisation: string, secondSpecialisation: string)
           message?: string;
           Message?: string;
           errors?: Record<string, string[]>;
-        };
+          title?: string;
+        } | string;
         name?: string;
+        status?: number;
+        message?: string;
       };
 
       if (apiError.name === 'TimeoutError') {
         return 'The server is taking too long to respond. Please try again.';
       }
 
-      if (apiError.error?.message) {
-        return apiError.error.message;
+      if (typeof apiError.error === 'string' && apiError.error.trim()) {
+        return apiError.error;
       }
 
-      if (apiError.error?.Message) {
-        return apiError.error.Message;
-      }
-
-      if (apiError.error?.errors) {
-        const firstError = Object.values(apiError.error.errors)[0]?.[0];
-
-        if (firstError) {
-          return firstError;
+      if (typeof apiError.error === 'object' && apiError.error !== null) {
+        if (apiError.error.message) {
+          return apiError.error.message;
         }
+
+        if (apiError.error.Message) {
+          return apiError.error.Message;
+        }
+
+        if (apiError.error.title) {
+          return apiError.error.title;
+        }
+
+        if (apiError.error.errors) {
+          const firstError = Object.values(apiError.error.errors)[0]?.[0];
+
+          if (firstError) {
+            return firstError;
+          }
+        }
+      }
+
+      if (apiError.message) {
+        return apiError.message;
       }
     }
 
     return 'Something went wrong while booking the appointment.';
-  }
-
-  private getDateAfterDays(days: number): string {
-    const date = new Date();
-
-    date.setDate(date.getDate() + days);
-
-    return date.toISOString().split('T')[0];
   }
 }

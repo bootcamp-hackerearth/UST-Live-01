@@ -182,8 +182,8 @@ export class AuthService {
     }
 
     const base64Payload = tokenParts[1]
-      .replaceAll(/-/g, '+')
-      .replaceAll(/_/g, '/');
+      .replaceAll('-', '+')
+      .replaceAll('_', '/');
 
     const decodedPayload = atob(base64Payload);
 

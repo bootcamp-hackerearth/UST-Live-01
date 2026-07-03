@@ -1,6 +1,8 @@
 ﻿@using HealthCareApp.AdminBlazor.Services.Interfaces
+
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
+@inject IConfiguration Configuration
 
 <header class="hc-topbar">
     <div>
@@ -50,11 +52,12 @@
 }
 
 @code {
-    private const string AngularHomeUrl = "http://localhost:4200";
-
     private string adminEmail = "Admin";
 
     private bool showLogoutConfirmation;
+
+    private string AngularHomeUrl =>
+        Configuration["AppUrls:AngularHomeUrl"] ?? "/";
 
     protected override async Task OnInitializedAsync()
     {

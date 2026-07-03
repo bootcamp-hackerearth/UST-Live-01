@@ -1288,3 +1288,438 @@
     width: 100%;
   }
 }
+
+.dd-sidebar {
+  z-index: 1200;
+}
+
+.dd-sidebar-overlay {
+  z-index: 1100;
+}
+
+.dd-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+.dd-confirm-modal {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3100;
+}
+
+/* ================================
+   Doctor Logout / Confirm Modal Fix
+   Prevents dialog from jumping from bottom to center
+================================ */
+
+.dd-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: rgba(15, 23, 42, 0.52);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+/* Reset native dialog behaviour */
+.dd-confirm-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+
+  width: min(520px, calc(100vw - 32px));
+  max-width: 520px;
+
+  margin: 0;
+  padding: 34px 32px;
+  border: 0;
+  border-radius: 28px;
+
+  transform: translate(-50%, -50%) scale(1);
+  z-index: 5010;
+
+  background: linear-gradient(145deg, #ffffff, #fff7f7);
+  box-shadow:
+    0 30px 90px rgba(15, 23, 42, 0.32),
+    0 0 0 1px rgba(239, 68, 68, 0.12);
+
+  text-align: center;
+  color: #0f172a;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  animation: ddModalFadeIn 0.18s ease-out;
+}
+
+/* Important for native dialog backdrop */
+.dd-confirm-modal::backdrop {
+  background: transparent;
+}
+
+/* Danger logout version */
+.dd-confirm-modal.danger {
+  background: linear-gradient(145deg, #ffffff, #fff5f5);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+}
+
+/* Icon */
+.dd-confirm-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.dd-confirm-icon.success {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff;
+  box-shadow: 0 18px 34px rgba(34, 197, 94, 0.28);
+}
+
+.dd-confirm-icon.danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  box-shadow: 0 18px 34px rgba(239, 68, 68, 0.3);
+}
+
+/* Text */
+.dd-confirm-kicker {
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #2563eb;
+}
+
+.dd-confirm-kicker.danger-text {
+  color: #dc2626;
+}
+
+.dd-confirm-modal h3 {
+  margin: 0;
+  font-size: clamp(24px, 4vw, 30px);
+  line-height: 1.15;
+  font-weight: 950;
+  color: #0f172a;
+}
+
+.dd-confirm-modal p {
+  max-width: 360px;
+  margin: 14px auto 0;
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.65;
+}
+
+/* Buttons */
+.dd-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+.dd-confirm-cancel,
+.dd-confirm-primary,
+.dd-confirm-danger {
+  min-width: 138px;
+  border: 0;
+  border-radius: 16px;
+  padding: 13px 18px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.dd-confirm-cancel {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.dd-confirm-cancel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+}
+
+.dd-confirm-primary {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.28);
+}
+
+.dd-confirm-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 42px rgba(37, 99, 235, 0.36);
+}
+
+.dd-confirm-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  box-shadow: 0 16px 34px rgba(239, 68, 68, 0.28);
+}
+
+.dd-confirm-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 42px rgba(239, 68, 68, 0.36);
+}
+
+.dd-confirm-cancel:disabled,
+.dd-confirm-primary:disabled,
+.dd-confirm-danger:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+}
+
+/* Smooth direct center animation */
+@keyframes ddModalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Ensure modal is above sidebar overlay */
+.dd-sidebar {
+  z-index: 1200;
+}
+
+.dd-sidebar-overlay {
+  z-index: 1100;
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .dd-confirm-modal {
+    width: calc(100vw - 28px);
+    padding: 28px 22px;
+    border-radius: 24px;
+  }
+
+  .dd-confirm-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .dd-confirm-cancel,
+  .dd-confirm-primary,
+  .dd-confirm-danger {
+    width: 100%;
+  }
+}
+/* Extra compact doctor sidebar logout button */
+.dd-logout-menu-btn {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  gap: 9px;
+  font-size: 12px;
+}
+
+.dd-logout-menu-btn span {
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.dd-logout-menu-btn strong {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* Ultra compact doctor sidebar logout button */
+.dd-logout-menu-btn {
+  width: 86%;
+  min-height: 36px;
+  padding: 7px 10px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 12px;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.dd-logout-menu-btn span {
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.dd-logout-menu-btn strong {
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.dd-confirm-modal {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+
+  width: 520px !important;
+  max-width: calc(100vw - 32px) !important;
+
+  margin: 0 !important;
+  padding: 28px 30px 30px !important;
+  border: 0 !important;
+  border-radius: 26px !important;
+
+  transform: translate(-50%, -50%) scale(1) !important;
+  z-index: 5010 !important;
+
+  background: linear-gradient(145deg, #ffffff, #fff7f7) !important;
+  box-shadow:
+    0 28px 80px rgba(15, 23, 42, 0.32),
+    0 0 0 1px rgba(239, 68, 68, 0.14) !important;
+
+  text-align: center !important;
+  color: #0f172a !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+
+  animation: ddModalFadeIn 0.18s ease-out !important;
+}
+
+.dd-confirm-icon {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 20px !important;
+  margin-bottom: 18px !important;
+  font-size: 28px !important;
+}
+
+.dd-confirm-kicker {
+  margin-bottom: 12px !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.13em !important;
+  text-transform: uppercase !important;
+}
+
+.dd-confirm-modal h3 {
+  margin: 0 !important;
+  font-size: 29px !important;
+  line-height: 1.15 !important;
+  font-weight: 950 !important;
+}
+
+.dd-confirm-modal p {
+  max-width: 350px !important;
+  margin: 12px auto 0 !important;
+  font-size: 14px !important;
+  line-height: 1.65 !important;
+  font-weight: 700 !important;
+}
+
+.dd-confirm-actions {
+  margin-top: 26px !important;
+  display: flex !important;
+  justify-content: center !important;
+  gap: 14px !important;
+}
+
+.dd-confirm-cancel,
+.dd-confirm-primary,
+.dd-confirm-danger {
+  min-width: 125px !important;
+  padding: 12px 16px !important;
+  border-radius: 16px !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+.dd-confirm-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 5000 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: rgba(15, 23, 42, 0.48) !important;
+  backdrop-filter: blur(9px) !important;
+  -webkit-backdrop-filter: blur(9px) !important;
+}
+
+.dd-confirm-modal::backdrop {
+  background: transparent !important;
+}
+
+@keyframes ddModalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@media (max-width: 560px) {
+  .dd-confirm-modal {
+    width: calc(100vw - 28px) !important;
+    padding: 24px 22px 26px !important;
+  }
+
+  .dd-confirm-modal h3 {
+    font-size: 24px !important;
+  }
+
+  .dd-confirm-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .dd-confirm-cancel,
+  .dd-confirm-primary,
+  .dd-confirm-danger {
+    width: 100% !important;
+  }
+}

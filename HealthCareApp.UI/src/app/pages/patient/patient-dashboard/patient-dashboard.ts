@@ -166,7 +166,7 @@ export class PatientDashboard implements OnInit, OnDestroy {
   handleBookingSuccess(): void {
     this.loadDashboardData();
     this.activeSection = 'dashboard';
-    this.showToast('Appointment booked successfully ✅', 'success');
+    this.showToast('Appointment booked successfully ', 'success');
   }
 
   handleAppointmentCancel(): void {
@@ -176,11 +176,11 @@ export class PatientDashboard implements OnInit, OnDestroy {
 
   handleProfileUpdated(): void {
     this.loadDashboardData();
-    this.showToast('Profile updated successfully ✅', 'success');
+    this.showToast('Profile updated successfully ', 'success');
   }
 
   handlePasswordChanged(): void {
-    this.showToast('Password changed successfully ✅', 'success');
+    this.showToast('Password changed successfully ', 'success');
   }
 
   showToast(message: string, type: ToastType): void {

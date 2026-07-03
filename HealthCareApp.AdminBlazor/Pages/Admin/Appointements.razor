@@ -1,6 +1,6 @@
 ﻿@page "/admin/appointments"
 @layout AdminLayout
-@implements IDisposable
+@implements IAsyncDisposable
 
 @using HealthCareApp.Shared.Dtos.Appointments
 @using HealthCareApp.Shared.Dtos.Pagination
@@ -1060,9 +1060,11 @@ else
 
         currentPage = 1;
 
-        searchCancellationTokenSource?.Cancel();
-
-        searchCancellationTokenSource?.Dispose();
+        if (searchCancellationTokenSource is not null)
+        {
+            await searchCancellationTokenSource.CancelAsync();
+            searchCancellationTokenSource.Dispose();
+        }
 
         searchCancellationTokenSource = new CancellationTokenSource();
 
@@ -1083,6 +1085,7 @@ else
         }
         catch (TaskCanceledException)
         {
+            // Search debounce cancellation is expected when the user types again before the delay completes.
         }
     }
 
@@ -1283,10 +1286,12 @@ else
         };
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        searchCancellationTokenSource?.Cancel();
-
-        searchCancellationTokenSource?.Dispose();
+        if (searchCancellationTokenSource is not null)
+        {
+            await searchCancellationTokenSource.CancelAsync();
+            searchCancellationTokenSource.Dispose();
+        }
     }
 }

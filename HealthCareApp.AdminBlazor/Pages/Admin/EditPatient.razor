@@ -2,8 +2,10 @@
 @layout AdminLayout
 
 @using HealthCareApp.Shared.Dtos.Patients
-@using HealthCareApp.Shared.Enums;
+@using HealthCareApp.Shared.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
+@using System.Globalization
+
 @inject IAuthService AuthService
 @inject IPatientAdminService PatientService
 @inject NavigationManager Navigation
@@ -164,7 +166,11 @@ else
             return;
         }
 
-        if (!DateTime.TryParse(existingPatient.DateOfBirth, out var dateOfBirth))
+        if (!DateTime.TryParse(
+                existingPatient.DateOfBirth,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var dateOfBirth))
         {
             dateOfBirth = DateTime.Today.AddYears(-18);
         }
@@ -181,7 +187,6 @@ else
 
         isLoading = false;
     }
-
     private async Task UpdatePatient()
     {
         errorMessage = null;
@@ -192,7 +197,16 @@ else
             return;
         }
 
-        if (patient.DateOfBirth.Date < new DateTime(1900, 1, 1))
+        var minimumDateOfBirth = new DateTime(
+            1900,
+            1,
+            1,
+            0,
+            0,
+            0,
+            DateTimeKind.Unspecified);
+
+        if (patient.DateOfBirth.Date < minimumDateOfBirth.Date)
         {
             errorMessage = "Date of birth cannot be before 01 Jan 1900.";
             return;
@@ -208,7 +222,6 @@ else
 
         Navigation.NavigateTo("/admin/patients");
     }
-
     private void BackToPatients()
     {
         Navigation.NavigateTo("/admin/patients");

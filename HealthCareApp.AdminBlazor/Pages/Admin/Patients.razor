@@ -5,10 +5,12 @@
 @using HealthCareApp.Shared.Dtos.Patients
 @using HealthCareApp.Shared.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
+@using System.Globalization
 
 @inject IAuthService AuthService
 @inject IPatientAdminService PatientService
 @inject NavigationManager Navigation
+@implements IAsyncDisposable
 
 <PageTitle>Patients | HealthAxis Admin</PageTitle>
 
@@ -50,32 +52,33 @@ else
 
             <div class="ha-stat-card-icon">◉</div>
         </div>
-<div class="hc-doctor-stat-card green ha-management-stat-card ha-compact-stat-card">
-    <div class="ha-stat-card-content">
-        <span>Gender On Page</span>
 
-        <div class="ha-compact-stat-row">
-            <div class="ha-compact-stat-pill">
-                <small>Male</small>
-                <strong>@MalePatientsOnPage</strong>
+        <div class="hc-doctor-stat-card green ha-management-stat-card ha-compact-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Gender On Page</span>
+
+                <div class="ha-compact-stat-row">
+                    <div class="ha-compact-stat-pill">
+                        <small>Male</small>
+                        <strong>@MalePatientsOnPage</strong>
+                    </div>
+
+                    <div class="ha-compact-stat-pill">
+                        <small>Female</small>
+                        <strong>@FemalePatientsOnPage</strong>
+                    </div>
+
+                    <div class="ha-compact-stat-pill">
+                        <small>Others</small>
+                        <strong>@OtherPatientsOnPage</strong>
+                    </div>
+                </div>
+
+                <small>Patient gender split on this page</small>
             </div>
 
-            <div class="ha-compact-stat-pill">
-                <small>Female</small>
-                <strong>@FemalePatientsOnPage</strong>
-            </div>
-
-            <div class="ha-compact-stat-pill">
-                <small>Others</small>
-                <strong>@OtherPatientsOnPage</strong>
-            </div>
+            <div class="ha-stat-card-icon">♙</div>
         </div>
-
-        <small>Patient gender split on this page</small>
-    </div>
-
-    <div class="ha-stat-card-icon">♙</div>
-</div>
 
         <div class="hc-doctor-stat-card red ha-management-stat-card ha-compact-stat-card">
             <div class="ha-stat-card-content">
@@ -346,6 +349,7 @@ else
             return calculatedEnd;
         }
     }
+
     private int MalePatientsOnPage
     {
         get
@@ -393,10 +397,11 @@ else
     private static bool IsGender(PatientDto patient, string gender)
     {
         return string.Equals(
-            Convert.ToString(patient.Gender),
+            Convert.ToString(patient.Gender, CultureInfo.InvariantCulture),
             gender,
             StringComparison.OrdinalIgnoreCase);
     }
+
     protected override async Task OnInitializedAsync()
     {
         var isAuthenticated = await AuthService.IsAuthenticatedAsync();
@@ -489,13 +494,11 @@ else
 
         currentPage = 1;
 
-        searchCancellationTokenSource?.Cancel();
-
-        searchCancellationTokenSource = new CancellationTokenSource();
+        var currentSearchToken = await ResetSearchCancellationTokenSourceAsync();
 
         try
         {
-            await Task.Delay(400, searchCancellationTokenSource.Token);
+            await Task.Delay(400, currentSearchToken);
 
             await LoadPatientsAsync(showFullPageLoader: false);
         }
@@ -503,6 +506,22 @@ else
         {
             // Ignore cancelled search request.
         }
+    }
+
+    private async Task<CancellationToken> ResetSearchCancellationTokenSourceAsync()
+    {
+        var previousCancellationTokenSource = searchCancellationTokenSource;
+
+        searchCancellationTokenSource = new CancellationTokenSource();
+
+        if (previousCancellationTokenSource is not null)
+        {
+            await previousCancellationTokenSource.CancelAsync();
+
+            previousCancellationTokenSource.Dispose();
+        }
+
+        return searchCancellationTokenSource.Token;
     }
 
     private async Task OnGenderChanged(ChangeEventArgs args)
@@ -525,7 +544,11 @@ else
 
     private async Task OnPageSizeChanged(ChangeEventArgs args)
     {
-        if (int.TryParse(args.Value?.ToString(), out var selectedPageSize))
+        if (int.TryParse(
+                args.Value?.ToString(),
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
+                out var selectedPageSize))
         {
             pageSize = selectedPageSize;
 
@@ -579,9 +602,13 @@ else
 
     private static DateTime ParseDate(string date)
     {
-        return DateTime.TryParse(date, out var parsedDate)
-            ? parsedDate
-            : DateTime.MinValue;
+        return DateTime.TryParse(
+            date,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out var parsedDate)
+                ? parsedDate
+                : DateTime.MinValue;
     }
 
     private static string FormatDate(DateTime date)
@@ -591,7 +618,7 @@ else
             return "Not Available";
         }
 
-        return date.ToString("dd MMM yyyy");
+        return date.ToString("dd MMM yyyy", CultureInfo.InvariantCulture);
     }
 
     private static string GetInitials(string fullName)
@@ -607,12 +634,22 @@ else
         {
             if (parts[0].Length >= 2)
             {
-                return parts[0][..2].ToUpper();
+                return parts[0][..2].ToUpper(CultureInfo.InvariantCulture);
             }
 
-            return parts[0].ToUpper();
+            return parts[0].ToUpper(CultureInfo.InvariantCulture);
         }
 
-        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper(CultureInfo.InvariantCulture);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (searchCancellationTokenSource is not null)
+        {
+            await searchCancellationTokenSource.CancelAsync();
+
+            searchCancellationTokenSource.Dispose();
+        }
     }
 }

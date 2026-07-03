@@ -6,6 +6,7 @@
 @using HealthCareApp.Shared.Dtos.Doctors
 @using HealthCareApp.Shared.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
+@using System.Globalization
 
 @inject IAuthService AuthService
 @inject IDoctorAdminService DoctorService
@@ -183,11 +184,11 @@ else
 
     private string? existingEmail;
 
-    private string TodayDateInputValue
+    private static string TodayDateInputValue
     {
         get
         {
-            return DateTime.Today.ToString("yyyy-MM-dd");
+            return DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         }
     }
 
@@ -197,10 +198,9 @@ else
 
         if (!isAuthenticated)
         {
-
             Navigation.NavigateTo(
-                        "/login?sessionExpired=true",
-                        replace: true);
+                "/login?sessionExpired=true",
+                replace: true);
 
             return;
         }

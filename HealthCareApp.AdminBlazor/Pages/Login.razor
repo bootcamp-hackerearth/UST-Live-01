@@ -2,6 +2,7 @@
 @page "/login"
 
 @inject NavigationManager Navigation
+@inject IConfiguration Configuration
 
 <PageTitle>Redirecting | HealthAxis</PageTitle>
 
@@ -13,6 +14,9 @@
 </div>
 
 @code {
+    private string AngularHomeUrl =>
+        Configuration["AppUrls:AngularHomeUrl"] ?? "/";
+
     protected override void OnAfterRender(bool firstRender)
     {
         if (!firstRender)
@@ -20,6 +24,6 @@
             return;
         }
 
-        Navigation.NavigateTo("http://localhost:4200", true);
+        Navigation.NavigateTo(AngularHomeUrl, forceLoad: true);
     }
 }

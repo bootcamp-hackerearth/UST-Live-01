@@ -2,6 +2,7 @@
 
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject IConfiguration Configuration
 
 <div style="min-height:100vh; display:grid; place-items:center; font-family:Arial;">
     <div style="text-align:center;">
@@ -12,6 +13,9 @@
 
 @code {
     private const string TokenStorageKey = "token";
+
+    private string AngularHomeUrl =>
+        Configuration["AppUrls:AngularHomeUrl"] ?? "/";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -26,13 +30,13 @@
 
         if (string.IsNullOrWhiteSpace(token))
         {
-            Navigation.NavigateTo("http://localhost:4200", true);
+            Navigation.NavigateTo(AngularHomeUrl, forceLoad: true);
             return;
         }
 
         await JS.InvokeVoidAsync("localStorage.setItem", TokenStorageKey, token);
 
-        Navigation.NavigateTo("/admin/dashboard", true);
+        Navigation.NavigateTo("/admin/dashboard", forceLoad: true);
     }
 
     private static string GetQueryValue(string queryString, string key)

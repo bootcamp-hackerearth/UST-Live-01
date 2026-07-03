@@ -287,7 +287,7 @@ export class DoctorDashboard implements OnInit, OnDestroy {
         this.resetPasswordForm();
         this.loadDashboardData();
 
-        this.showToast('Password changed successfully. Dashboard unlocked ✅', 'success');
+        this.showToast('Password changed successfully. Dashboard unlocked ', 'success');
       },
       error: (error: unknown) => {
         console.log('Doctor temporary password change API error:', error);
@@ -308,8 +308,13 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   }
 
   openLogoutModal(): void {
-    this.isLogoutModalOpen = true;
     this.closeSidebar();
+
+    this.isTempPasswordConfirmOpen = false;
+
+    setTimeout(() => {
+      this.isLogoutModalOpen = true;
+    }, 0);
   }
 
   closeLogoutModal(): void {
@@ -317,9 +322,12 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   }
 
   confirmLogout(): void {
+    this.isLogoutModalOpen = false;
+
+    this.closeSidebar();
+
     this.authService.logout();
 
-    this.isLogoutModalOpen = false;
     this.router.navigate(['/']);
   }
 

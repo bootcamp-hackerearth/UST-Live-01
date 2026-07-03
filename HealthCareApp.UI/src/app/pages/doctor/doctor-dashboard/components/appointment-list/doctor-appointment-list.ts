@@ -236,7 +236,7 @@ export class DoctorAppointmentList implements OnInit {
         this.closeConfirmModal();
         this.loadAppointments();
         this.refreshDashboard.emit();
-        this.emitToast('Appointment confirmed successfully ✅', 'success');
+        this.emitToast('Appointment confirmed successfully ', 'success');
       },
       error: (error: unknown) => {
         console.log('Doctor confirm appointment API error:', error);
@@ -341,7 +341,7 @@ export class DoctorAppointmentList implements OnInit {
         this.refreshDashboard.emit();
 
         this.emitToast(
-          'Health record saved and appointment completed ✅',
+          'Health record saved and appointment completed ',
           'success'
         );
       },

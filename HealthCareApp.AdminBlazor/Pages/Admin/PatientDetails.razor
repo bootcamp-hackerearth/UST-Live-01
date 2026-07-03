@@ -3,6 +3,8 @@
 
 @using HealthCareApp.Shared.Dtos.Patients
 @using HealthCareApp.AdminBlazor.Services.Interfaces
+@using System.Globalization
+
 @inject IAuthService AuthService
 @inject IPatientAdminService PatientService
 @inject NavigationManager Navigation
@@ -131,8 +133,6 @@ else if (patient is not null)
         </div>
 
         <div class="hc-details-actions">
-           
-
             <button class="hc-secondary-btn" @onclick="BackToPatients">
                 Back
             </button>
@@ -160,10 +160,10 @@ else if (patient is not null)
 
         if (!isAuthenticated)
         {
-
             Navigation.NavigateTo(
-                        "/login?sessionExpired=true",
-                        replace: true);
+                "/login?sessionExpired=true",
+                replace: true);
+
             return;
         }
 
@@ -173,6 +173,7 @@ else if (patient is not null)
     private async Task LoadPatient()
     {
         isLoading = true;
+
         errorMessage = null;
 
         patient = await PatientService.GetPatientByIdAsync(patientId);
@@ -180,24 +181,32 @@ else if (patient is not null)
         if (patient is null)
         {
             errorMessage = "Patient profile was not found.";
+
             isLoading = false;
+
             return;
         }
 
-        if (!DateTime.TryParse(patient.DateOfBirth, out dateOfBirth))
+        if (!DateTime.TryParse(
+                patient.DateOfBirth,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out dateOfBirth))
         {
             dateOfBirth = DateTime.MinValue;
         }
 
-        if (!DateTime.TryParse(patient.CreatedDate, out createdDate))
+        if (!DateTime.TryParse(
+                patient.CreatedDate,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out createdDate))
         {
             createdDate = DateTime.MinValue;
         }
 
         isLoading = false;
     }
-
-    
 
     private void BackToPatients()
     {
@@ -208,7 +217,7 @@ else if (patient is not null)
     {
         return date == DateTime.MinValue
             ? "Not Available"
-            : date.ToString("dd MMM yyyy");
+            : date.ToString("dd MMM yyyy", CultureInfo.InvariantCulture);
     }
 
     private static string GetInitials(string fullName)
@@ -223,10 +232,10 @@ else if (patient is not null)
         if (parts.Length == 1)
         {
             return parts[0].Length >= 2
-                ? parts[0][..2].ToUpper()
-                : parts[0].ToUpper();
+                ? parts[0][..2].ToUpper(CultureInfo.InvariantCulture)
+                : parts[0].ToUpper(CultureInfo.InvariantCulture);
         }
 
-        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper(CultureInfo.InvariantCulture);
     }
 }

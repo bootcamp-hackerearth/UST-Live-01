@@ -248,7 +248,7 @@
       <button
         type="submit"
         class="ba-primary-btn"
-        [disabled]="isSubmitting">
+        [disabled]="isBookingButtonDisabled">
         {{ isSubmitting ? 'Booking...' : 'Book Appointment' }}
       </button>
     </div>
@@ -310,6 +310,7 @@
           <button
             type="button"
             class="ba-confirm-edit"
+            [disabled]="isSubmitting"
             (click)="closeBookingConfirm()">
             Edit Details
           </button>
