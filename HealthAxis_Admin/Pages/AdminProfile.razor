@@ -1,0 +1,170 @@
+﻿@page "/admin-profile"
+@using HealthAxis.Shared.DTO.AdminDtos
+@inject AdminProfileService ProfileService
+@inject AuthService AuthService
+
+<h1>Admin Profile</h1>
+
+<p class="page-subtitle">
+    View and update admin details, and change account password.
+</p>
+
+<section class="profile-grid">
+
+    <div class="profile-page-card">
+        <div class="panel-heading">
+            <div>
+                <h3>Profile Details</h3>
+                <p>Update email and phone number.</p>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(profileMessage))
+        {
+            <div class="@profileMessageClass">
+                @profileMessage
+            </div>
+        }
+
+        <EditForm Model="@profileForm" OnValidSubmit="UpdateProfile">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label>Email</label>
+
+                <InputText class="form-control"
+                           @bind-Value="profileForm.Email" />
+
+                <ValidationMessage For="@(() => profileForm.Email)" />
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+
+                <InputText class="form-control"
+                           @bind-Value="profileForm.PhoneNumber" />
+
+                <ValidationMessage For="@(() => profileForm.PhoneNumber)" />
+            </div>
+
+            <div class="button-row">
+                <button type="submit" class="primary-btn">
+                    Update Profile
+                </button>
+            </div>
+        </EditForm>
+    </div>
+
+    <div class="profile-page-card">
+        <div class="panel-heading">
+            <div>
+                <h3>Change Password</h3>
+                <p>Update admin login password securely.</p>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(passwordMessage))
+        {
+            <div class="@passwordMessageClass">
+                @passwordMessage
+            </div>
+        }
+
+        <EditForm Model="@passwordForm" OnValidSubmit="ChangePassword">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label>Current Password</label>
+
+                <InputText type="password"
+                           class="form-control"
+                           @bind-Value="passwordForm.CurrentPassword" />
+
+                <ValidationMessage For="@(() => passwordForm.CurrentPassword)" />
+            </div>
+
+            <div class="form-group">
+                <label>New Password</label>
+
+                <InputText type="password"
+                           class="form-control"
+                           @bind-Value="passwordForm.NewPassword" />
+
+                <ValidationMessage For="@(() => passwordForm.NewPassword)" />
+            </div>
+
+            <div class="form-group">
+                <label>Confirm Password</label>
+
+                <InputText type="password"
+                           class="form-control"
+                           @bind-Value="passwordForm.ConfirmPassword" />
+
+                <ValidationMessage For="@(() => passwordForm.ConfirmPassword)" />
+            </div>
+
+            <div class="button-row">
+                <button type="submit" class="primary-btn">
+                    Change Password
+                </button>
+            </div>
+        </EditForm>
+    </div>
+
+</section>
+
+@code {
+    private UpdateAdminProfileDto profileForm = new();
+
+    private AdminChangePasswordDto passwordForm = new();
+
+    private string profileMessage = string.Empty;
+
+    private string profileMessageClass = "success-box";
+
+    private string passwordMessage = string.Empty;
+
+    private string passwordMessageClass = "success-box";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var profile = await ProfileService.GetProfileAsync();
+
+            profileForm = new UpdateAdminProfileDto
+            {
+                Email = profile.Email,
+                PhoneNumber = profile.PhoneNumber
+            };
+        }
+        catch (Exception ex)
+        {
+            profileMessage = $"Profile loading failed: {ex.Message}";
+            profileMessageClass = "error-box";
+        }
+    }
+
+    private async Task UpdateProfile()
+    {
+        var result = await ProfileService.UpdateProfileAsync(profileForm);
+
+        profileMessage = result.Message;
+        profileMessageClass = result.Success ? "success-box" : "error-box";
+    }
+
+    private async Task ChangePassword()
+    {
+        var result = await ProfileService.ChangePasswordAsync(passwordForm);
+
+        passwordMessage = result.Message;
+        passwordMessageClass = result.Success ? "success-box" : "error-box";
+
+        if (result.Success)
+        {
+            passwordForm = new AdminChangePasswordDto();
+        }
+    }
+}

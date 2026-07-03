@@ -27,13 +27,20 @@ type AppointmentFilter = typeof FILTERS[number];
 })
 export class UpcomingAppointments {
   private readonly appointmentService = inject(AppointmentService);
+  private readonly pageSize = 8;
 
   readonly appointments = signal<Appointment[]>([]);
   readonly loading = signal(false);
-  readonly confirmingAppointmentId = signal<number | null>(null);
+
+  readonly processingAppointmentId = signal<number | null>(null);
+  readonly selectedAppointment = signal<Appointment | null>(null);
+  readonly cancelTarget = signal<Appointment | null>(null);
+  readonly cancellationReason = signal('');
 
   readonly selectedFilter = signal<AppointmentFilter>('All');
   readonly searchText = signal('');
+  readonly currentPage = signal(1);
+
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
 
@@ -54,6 +61,21 @@ export class UpcomingAppointments {
 
     return this.upcomingAppointments().filter((appointment) =>
       this.matchesFilter(appointment, filter, searchValue)
+    );
+  });
+
+  readonly totalPages = computed(() => {
+    const pages = Math.ceil(this.filteredAppointments().length / this.pageSize);
+
+    return pages > 0 ? pages : 1;
+  });
+
+  readonly pagedAppointments = computed(() => {
+    const startIndex = (this.currentPage() - 1) * this.pageSize;
+
+    return this.filteredAppointments().slice(
+      startIndex,
+      startIndex + this.pageSize
     );
   });
 
@@ -83,6 +105,7 @@ export class UpcomingAppointments {
     this.appointmentService.getMyDoctorAppointments().subscribe({
       next: (appointments) => {
         this.appointments.set(appointments);
+        this.currentPage.set(1);
         this.loading.set(false);
       },
       error: (error: unknown) => {
@@ -97,10 +120,43 @@ export class UpcomingAppointments {
   onSearchInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.searchText.set(input.value);
+    this.currentPage.set(1);
+  }
+
+  onCancellationReasonInput(event: Event): void {
+    const textarea = event.target as HTMLTextAreaElement;
+    this.cancellationReason.set(textarea.value);
   }
 
   selectFilter(filter: AppointmentFilter): void {
     this.selectedFilter.set(filter);
+    this.currentPage.set(1);
+  }
+
+  clearFilters(): void {
+    this.searchText.set('');
+    this.selectedFilter.set('All');
+    this.currentPage.set(1);
+  }
+
+  goToPreviousPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update((page) => page - 1);
+    }
+  }
+
+  goToNextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update((page) => page + 1);
+    }
+  }
+
+  openAppointmentDetails(appointment: Appointment): void {
+    this.selectedAppointment.set(appointment);
+  }
+
+  closeAppointmentDetails(): void {
+    this.selectedAppointment.set(null);
   }
 
   confirmAppointment(appointment: Appointment): void {
@@ -109,32 +165,69 @@ export class UpcomingAppointments {
       return;
     }
 
-    this.confirmingAppointmentId.set(appointment.appointmentId);
+    this.updateAppointmentStatus(
+      appointment,
+      AppointmentStatusCode.Confirmed,
+      'Appointment confirmed successfully.',
+      'Could not confirm appointment.'
+    );
+  }
+
+  openCancelDialog(appointment: Appointment): void {
+    if (!this.canCancel(appointment)) {
+      this.errorMessage.set('Only pending or confirmed appointments can be cancelled.');
+      return;
+    }
+
     this.errorMessage.set('');
     this.successMessage.set('');
+    this.cancelTarget.set(appointment);
+    this.cancellationReason.set('');
+  }
 
-    this.appointmentService.updateAppointmentStatus(
-      appointment.appointmentId,
-      {
-        status: AppointmentStatusCode.Confirmed
-      }
-    ).subscribe({
-      next: () => {
-        this.confirmingAppointmentId.set(null);
-        this.successMessage.set('Appointment confirmed successfully.');
-        this.loadAppointments();
-      },
-      error: (error: unknown) => {
-        this.confirmingAppointmentId.set(null);
-        this.errorMessage.set(
-          getFriendlyErrorMessage(error, 'Could not confirm appointment.')
-        );
-      }
-    });
+  closeCancelDialog(): void {
+    if (this.processingAppointmentId()) {
+      return;
+    }
+
+    this.cancelTarget.set(null);
+    this.cancellationReason.set('');
+  }
+
+  confirmCancelAppointment(): void {
+    const appointment = this.cancelTarget();
+
+    if (!appointment) {
+      this.errorMessage.set('Please select an appointment to cancel.');
+      return;
+    }
+
+    if (!this.canCancel(appointment)) {
+      this.errorMessage.set('Only pending or confirmed appointments can be cancelled.');
+      return;
+    }
+
+    this.updateAppointmentStatus(
+      appointment,
+      AppointmentStatusCode.Cancelled,
+      'Appointment cancelled successfully.',
+      'Could not cancel appointment.',
+      this.getOptionalCancellationReason()
+    );
   }
 
   canConfirm(appointment: Appointment): boolean {
     return this.getStatusText(appointment.status) === 'pending';
+  }
+
+  canCancel(appointment: Appointment): boolean {
+    const status = this.getStatusText(appointment.status);
+
+    return status === 'pending' || status === 'confirmed';
+  }
+
+  isProcessing(appointment: Appointment): boolean {
+    return this.processingAppointmentId() === appointment.appointmentId;
   }
 
   getStatusLabel(status: string | number): string {
@@ -161,6 +254,50 @@ export class UpcomingAppointments {
 
   getStatusClass(status: string | number): string {
     return `${this.getStatusText(status)}-badge`;
+  }
+
+  getPatientName(appointment: Appointment): string {
+    return appointment.patientName?.trim() || 'Patient';
+  }
+
+  getSafeText(value: string | null | undefined, fallback: string): string {
+    const cleanValue = (value ?? '').trim();
+
+    return cleanValue || fallback;
+  }
+
+  private updateAppointmentStatus(
+    appointment: Appointment,
+    status: AppointmentStatusCode,
+    successMessage: string,
+    failureMessage: string,
+    cancellationReason?: string | null
+  ): void {
+    this.processingAppointmentId.set(appointment.appointmentId);
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    this.appointmentService.updateAppointmentStatus(
+      appointment.appointmentId,
+      {
+        status,
+        cancellationReason
+      }
+    ).subscribe({
+      next: () => {
+        this.processingAppointmentId.set(null);
+        this.cancelTarget.set(null);
+        this.cancellationReason.set('');
+        this.successMessage.set(successMessage);
+        this.loadAppointments();
+      },
+      error: (error: unknown) => {
+        this.processingAppointmentId.set(null);
+        this.errorMessage.set(
+          getFriendlyErrorMessage(error, failureMessage)
+        );
+      }
+    });
   }
 
   private matchesFilter(
@@ -208,6 +345,12 @@ export class UpcomingAppointments {
     return appointmentDate.getFullYear() === today.getFullYear() &&
       appointmentDate.getMonth() === today.getMonth() &&
       appointmentDate.getDate() === today.getDate();
+  }
+
+  private getOptionalCancellationReason(): string | null {
+    const reason = this.cancellationReason().trim();
+
+    return reason || null;
   }
 
   private getStatusText(status: string | number): string {

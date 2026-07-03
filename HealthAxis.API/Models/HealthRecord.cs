@@ -9,7 +9,7 @@ namespace HealthAxis.API.Models
     public class HealthRecord
     {
         [Key]
-        public int RecordId { get; set; }
+        public int HealthRecordId { get; set; }
 
         [Required(ErrorMessage = ValidationMessages.AppointmentRequired)]
         public int AppointmentId { get; set; }

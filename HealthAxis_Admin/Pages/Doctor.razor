@@ -1,0 +1,593 @@
+﻿@page "/doctors"
+@using Microsoft.AspNetCore.Authorization
+@using HealthAxis.Shared.DTO.CommonDtos
+@using HealthAxis.Shared.DTO.DoctorDtos
+@using HealthAxis.Shared.Enums
+@attribute [Authorize(Roles = "Admin")]
+@inject DoctorAdminService DoctorService
+@inject NavigationManager NavigationManager
+
+<h1>Doctor Management</h1>
+
+<p class="page-subtitle">
+    View doctors, search, filter by specialisation, update details, and change doctor status.
+</p>
+
+<section class="doctor-list-card">
+
+    <div class="doctor-list-header">
+        <div>
+            <h3>Doctors List</h3>
+            <p>All registered doctors from database.</p>
+        </div>
+
+        <button type="button"
+                class="primary-btn register-doctor-main-btn"
+                @onclick="GoToRegisterDoctor">
+            + Register Doctor
+        </button>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(message))
+    {
+        <div class="@messageClass">
+            @message
+        </div>
+    }
+
+    <div class="doctor-toolbar doctor-toolbar-three">
+
+        <div class="doctor-search-box">
+            <input type="text"
+                   placeholder="Search by name, email, or specialisation..."
+                   @bind="searchText"
+                   @bind:event="oninput" />
+        </div>
+
+        <div class="doctor-filter-box">
+            <select class="form-control" @bind="selectedSpecialisation">
+                <option value="@AllSpecialisationsOption">All Specialisations</option>
+
+                @foreach (var specialisation in Enum.GetValues<Specialisation>())
+                {
+                    <option value="@specialisation.ToString()">
+                        @specialisation
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="doctor-filter-box">
+            <select class="form-control" @bind="selectedStatus">
+                <option value="@AllStatusOption">All Status</option>
+                <option value="@ActiveStatusOption">Active</option>
+                <option value="@InactiveStatusOption">Inactive</option>
+            </select>
+        </div>
+
+    </div>
+
+    @if (isLoading)
+    {
+        <p>Loading doctors from database...</p>
+    }
+    else if (!doctors.Any())
+    {
+        <p>No doctors found in database.</p>
+    }
+    else
+    {
+        <div class="table-wrapper">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Email</th>
+                        <th>Specialisation</th>
+                        <th>Experience</th>
+                        <th>Fee</th>
+                        <th>Status</th>
+                        <th class="action-column">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var doctor in FilteredDoctors)
+                    {
+                        <tr>
+                            <td>
+                                <div class="doctor-profile-cell">
+                                    <div class="doctor-avatar">
+                                        @GetDoctorInitial(doctor.FullName)
+                                    </div>
+
+                                    <div>
+                                        <h4>@doctor.FullName</h4>
+                                        <span>ID: @doctor.DoctorId</span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>@doctor.Email</td>
+
+                            <td>
+                                <span class="specialisation-pill">
+                                    @doctor.Specialisation
+                                </span>
+                            </td>
+
+                            <td>@doctor.YearsOfExperience years</td>
+
+                            <td class="fee-text">₹@doctor.ConsultationFee</td>
+
+                            <td>
+                                @if (doctor.IsActive)
+                                {
+                                    <span class="status-badge active-status">
+                                        Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge inactive-status">
+                                        Inactive
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                <div class="doctor-action-group">
+
+                                    <button type="button"
+                                            class="doctor-action-button doctor-edit-button"
+                                            title="Edit doctor details"
+                                            @onclick="() => OpenEditDialog(doctor)">
+                                        <span class="doctor-action-icon">✎</span>
+                                        <span>Edit Details</span>
+                                    </button>
+
+                                    <button type="button"
+                                            class="doctor-action-button doctor-status-button"
+                                            title="Change doctor active status"
+                                            @onclick="() => OpenStatusDialog(doctor)">
+                                        <span class="doctor-action-icon">↻</span>
+                                        <span>Change Status</span>
+                                    </button>
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (!FilteredDoctors.Any())
+        {
+            <p class="not-found">
+                No doctors matched your search/filter on this page.
+            </p>
+        }
+
+        @if (doctorPage.TotalPages > MinimumPaginationPages)
+        {
+            <div class="pagination-bar">
+
+                <button type="button"
+                        class="secondary-btn"
+                        disabled="@(!doctorPage.HasPreviousPage)"
+                        @onclick="GoToPreviousPage">
+                    Previous
+                </button>
+
+                <span>
+                    Page @doctorPage.PageNumber of @doctorPage.TotalPages
+                    • Total @doctorPage.TotalRecords doctors
+                </span>
+
+                <button type="button"
+                        class="secondary-btn"
+                        disabled="@(!doctorPage.HasNextPage)"
+                        @onclick="GoToNextPage">
+                    Next
+                </button>
+
+            </div>
+        }
+    }
+
+</section>
+
+@if (showEditDialog)
+{
+    <div class="modal-backdrop-custom">
+        <div class="doctor-dialog">
+
+            <div class="dialog-header">
+                <div>
+                    <h3>Edit Doctor</h3>
+                    <p>Update doctor details and save changes.</p>
+                </div>
+
+                <button type="button" class="dialog-close-btn" @onclick="CloseDialogs">
+                    ×
+                </button>
+            </div>
+
+            <EditForm Model="@editForm" OnValidSubmit="SaveEditedDoctor">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label>Doctor Name</label>
+
+                        <InputText class="form-control"
+                                   @bind-Value="editForm.FullName" />
+
+                        <ValidationMessage For="@(() => editForm.FullName)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+
+                        <InputText class="form-control"
+                                   @bind-Value="editForm.Email" />
+
+                        <ValidationMessage For="@(() => editForm.Email)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Specialisation</label>
+
+                        <InputSelect class="form-control"
+                                     @bind-Value="editForm.Specialisation">
+                            @foreach (var specialisation in Enum.GetValues<Specialisation>())
+                            {
+                                <option value="@specialisation">
+                                    @specialisation
+                                </option>
+                            }
+                        </InputSelect>
+
+                        <ValidationMessage For="@(() => editForm.Specialisation)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Years of Experience</label>
+
+                        <InputNumber class="form-control"
+                                     @bind-Value="editForm.YearsOfExperience" />
+
+                        <ValidationMessage For="@(() => editForm.YearsOfExperience)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Consultation Fee</label>
+
+                        <InputNumber class="form-control"
+                                     @bind-Value="editForm.ConsultationFee" />
+
+                        <ValidationMessage For="@(() => editForm.ConsultationFee)" />
+                    </div>
+
+                    <div class="form-group register-toggle-group">
+                        <label>Status</label>
+
+                        <label class="hx-toggle-control">
+                            <input type="checkbox"
+                                   class="hx-toggle-input"
+                                   @bind="editForm.IsActive" />
+
+                            <span class="hx-toggle-slider"></span>
+
+                            <span class="hx-toggle-text">
+                                Active Doctor
+                            </span>
+                        </label>
+                    </div>
+
+                </div>
+
+                <div class="dialog-actions">
+                    <button type="submit" class="primary-btn">
+                        Save Changes
+                    </button>
+
+                    <button type="button" class="secondary-btn" @onclick="CloseDialogs">
+                        Cancel
+                    </button>
+                </div>
+
+            </EditForm>
+
+        </div>
+    </div>
+}
+
+@if (showStatusDialog && selectedDoctor is not null)
+{
+    <div class="modal-backdrop-custom">
+        <div class="doctor-dialog small-dialog">
+
+            <div class="dialog-header">
+                <div>
+                    <h3>Change Doctor Status</h3>
+                    <p>Confirm status update.</p>
+                </div>
+
+                <button type="button" class="dialog-close-btn" @onclick="CloseDialogs">
+                    ×
+                </button>
+            </div>
+
+            <p class="dialog-message">
+                Do you want to change status for
+                <b>@selectedDoctor.FullName</b>?
+            </p>
+
+            <div class="dialog-actions">
+                <button type="button" class="primary-btn" @onclick="ConfirmStatusChange">
+                    Yes, Change Status
+                </button>
+
+                <button type="button" class="secondary-btn" @onclick="CloseDialogs">
+                    Cancel
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    private const int FirstPageNumber = 1;
+    private const int MinimumPaginationPages = 1;
+    private const int MessageAutoHideMilliseconds = 3000;
+
+    private const string AllSpecialisationsOption = "All";
+    private const string AllStatusOption = "All";
+    private const string ActiveStatusOption = "Active";
+    private const string InactiveStatusOption = "Inactive";
+
+    private List<DoctorDto> doctors = new();
+
+    private PagedResponseDto<DoctorDto> doctorPage = new();
+
+    private CreateDoctorDto editForm = new();
+
+    private DoctorDto? selectedDoctor;
+
+    private string message = string.Empty;
+    private string messageClass = "success-box";
+    private string searchText = string.Empty;
+    private string selectedSpecialisation = AllSpecialisationsOption;
+    private string selectedStatus = AllStatusOption;
+
+    private bool isLoading;
+    private bool showEditDialog;
+    private bool showStatusDialog;
+
+    private int currentPage = FirstPageNumber;
+    private int editingDoctorId;
+    private int messageVersion;
+
+    private List<DoctorDto> FilteredDoctors
+    {
+        get
+        {
+            var filteredDoctors = doctors.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                filteredDoctors = filteredDoctors.Where(doctor =>
+                    ContainsIgnoreCase(doctor.FullName, searchText) ||
+                    ContainsIgnoreCase(doctor.Email, searchText) ||
+                    ContainsIgnoreCase(doctor.Specialisation.ToString(), searchText));
+            }
+
+            if (!string.Equals(
+                    selectedSpecialisation,
+                    AllSpecialisationsOption,
+                    StringComparison.OrdinalIgnoreCase) &&
+                Enum.TryParse<Specialisation>(selectedSpecialisation, out var specialisation))
+            {
+                filteredDoctors = filteredDoctors.Where(doctor =>
+                    doctor.Specialisation == specialisation);
+            }
+
+            if (string.Equals(
+                    selectedStatus,
+                    ActiveStatusOption,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                filteredDoctors = filteredDoctors.Where(doctor => doctor.IsActive);
+            }
+
+            if (string.Equals(
+                    selectedStatus,
+                    InactiveStatusOption,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                filteredDoctors = filteredDoctors.Where(doctor => !doctor.IsActive);
+            }
+
+            return filteredDoctors.ToList();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDoctors();
+    }
+
+    private async Task LoadDoctors(int pageNumber = FirstPageNumber)
+    {
+        isLoading = true;
+        message = string.Empty;
+
+        try
+        {
+            doctorPage = await DoctorService.GetDoctorsPageAsync(pageNumber);
+            doctors = doctorPage.Items ?? new List<DoctorDto>();
+            currentPage = doctorPage.PageNumber;
+        }
+        catch (Exception ex)
+        {
+            doctors = new List<DoctorDto>();
+            message = $"Doctors loading failed: {ex.Message}";
+            messageClass = "error-box";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void GoToRegisterDoctor()
+    {
+        NavigationManager.NavigateTo("/doctors/register");
+    }
+
+    private void OpenEditDialog(DoctorDto doctor)
+    {
+        selectedDoctor = doctor;
+        editingDoctorId = doctor.DoctorId;
+
+        editForm = new CreateDoctorDto
+        {
+            FullName = doctor.FullName,
+            Email = doctor.Email,
+            Specialisation = doctor.Specialisation,
+            YearsOfExperience = doctor.YearsOfExperience,
+            ConsultationFee = doctor.ConsultationFee,
+            IsActive = doctor.IsActive
+        };
+
+        showEditDialog = true;
+        message = string.Empty;
+    }
+
+    private async Task SaveEditedDoctor()
+    {
+        var result = await DoctorService.UpdateDoctorAsync(
+            editingDoctorId,
+            editForm);
+
+        ShowMessage(result.Message, result.Success);
+
+        if (result.Success)
+        {
+            CloseDialogs();
+            await LoadDoctors(currentPage);
+        }
+    }
+
+    private void OpenStatusDialog(DoctorDto doctor)
+    {
+        selectedDoctor = doctor;
+        showStatusDialog = true;
+        message = string.Empty;
+    }
+
+    private async Task ConfirmStatusChange()
+    {
+        if (selectedDoctor is null)
+        {
+            return;
+        }
+
+        var result = await DoctorService.ToggleDoctorStatusAsync(selectedDoctor);
+
+        ShowMessage(result.Message, result.Success);
+
+        if (result.Success)
+        {
+            CloseDialogs();
+            await LoadDoctors(currentPage);
+        }
+    }
+
+    private async Task GoToPreviousPage()
+    {
+        if (doctorPage.HasPreviousPage)
+        {
+            ClearSearchAndFilter();
+            await LoadDoctors(currentPage - 1);
+        }
+    }
+
+    private async Task GoToNextPage()
+    {
+        if (doctorPage.HasNextPage)
+        {
+            ClearSearchAndFilter();
+            await LoadDoctors(currentPage + 1);
+        }
+    }
+
+    private void CloseDialogs()
+    {
+        showEditDialog = false;
+        showStatusDialog = false;
+        selectedDoctor = null;
+        editingDoctorId = 0;
+        editForm = new CreateDoctorDto();
+    }
+
+    private void ClearSearchAndFilter()
+    {
+        searchText = string.Empty;
+        selectedSpecialisation = AllSpecialisationsOption;
+        selectedStatus = AllStatusOption;
+    }
+
+    private void ShowMessage(string text, bool isSuccess)
+    {
+        message = text;
+        messageClass = isSuccess ? "success-box" : "error-box";
+
+        messageVersion++;
+        _ = ClearMessageAfterDelayAsync(messageVersion);
+    }
+
+    private async Task ClearMessageAfterDelayAsync(int version)
+    {
+        await Task.Delay(MessageAutoHideMilliseconds);
+
+        if (version == messageVersion)
+        {
+            message = string.Empty;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private static bool ContainsIgnoreCase(
+        string? value,
+        string searchValue)
+    {
+        return !string.IsNullOrWhiteSpace(value) &&
+            value.Contains(searchValue, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetDoctorInitial(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "D";
+        }
+
+        var cleanName = name
+            .Replace("Dr.", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace("Dr", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Trim();
+
+        if (string.IsNullOrWhiteSpace(cleanName))
+        {
+            return "D";
+        }
+
+        return cleanName[..1].ToUpperInvariant();
+    }
+}

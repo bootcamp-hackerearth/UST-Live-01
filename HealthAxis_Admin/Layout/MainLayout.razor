@@ -1,0 +1,144 @@
+﻿@inherits LayoutComponentBase
+@implements IDisposable
+@inject AuthService AuthService
+@inject TokenService TokenService
+@inject NavigationManager NavigationManager
+
+<div class="axis-admin-shell" @onclick="CloseProfileMenu">
+
+    <Sidebar />
+
+    <main class="axis-main-area">
+
+        <header class="axis-topbar">
+            <div>
+                <span class="axis-top-label">HEALTHAXIS CONTROL DESK</span>
+                <h2>Admin Workspace</h2>
+                <p>Manage hospital operations from one connected console.</p>
+            </div>
+
+            <div class="axis-top-actions">
+
+                <div class="axis-date-time-chip">
+                    <span>@currentDate</span>
+                    <strong>@currentTime</strong>
+                </div>
+                <div class="axis-profile-menu" @onclick:stopPropagation="true">
+                
+                    <button type="button"
+                            class="axis-profile-btn"
+                            @onclick="ToggleProfileMenu">
+                        @AdminInitial
+                    </button>
+
+                    @if (showProfileMenu)
+                    {
+                        <div class="axis-profile-dropdown">
+
+                            <div class="axis-profile-head">
+                                <div class="axis-profile-avatar">
+                                    @AdminInitial
+                                </div>
+
+                                <div>
+                                    <h4>@AdminDisplayName</h4>
+                                    <p>System Administrator</p>
+                                </div>
+                            </div>
+
+                            <button type="button"
+                                    class="axis-dropdown-link"
+                                    @onclick="GoToProfile">
+                                View Profile
+                            </button>
+
+                            <button type="button"
+                                    class="axis-dropdown-logout"
+                                    @onclick="Logout">
+                                Logout
+                            </button>
+
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </header>
+
+        <section class="axis-page-content">
+            @Body
+        </section>
+
+    </main>
+
+</div>
+
+@code {
+    private bool showProfileMenu;
+
+    private string currentDate = DateTime.Now.ToString("dd MMM yyyy");
+
+    private string currentTime = DateTime.Now.ToString("hh:mm:ss tt");
+
+    private System.Threading.Timer? clockTimer;
+
+    private string AdminDisplayName =>
+        string.IsNullOrWhiteSpace(AuthService.AdminName)
+            ? "admin"
+            : AuthService.AdminName;
+
+    private string AdminInitial =>
+        string.IsNullOrWhiteSpace(AdminDisplayName)
+            ? "A"
+            : AdminDisplayName[..1].ToUpperInvariant();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.InitializeAsync();
+
+        clockTimer = new System.Threading.Timer(
+            async _ => await UpdateClockAsync(),
+            null,
+            TimeSpan.Zero,
+            TimeSpan.FromSeconds(1));
+    }
+
+    private async Task UpdateClockAsync()
+    {
+        currentDate = DateTime.Now.ToString("dd MMM yyyy");
+        currentTime = DateTime.Now.ToString("hh:mm:ss tt");
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void ToggleProfileMenu()
+    {
+        showProfileMenu = !showProfileMenu;
+    }
+
+    private void CloseProfileMenu()
+    {
+        showProfileMenu = false;
+    }
+
+    private void GoToProfile()
+    {
+        showProfileMenu = false;
+        NavigationManager.NavigateTo("/admin-profile");
+    }
+
+    private async Task Logout()
+    {
+        await TokenService.ClearTokensAsync();
+
+        NavigationManager.NavigateTo(
+            "http://localhost:4200/login?adminLogout=true",
+            forceLoad: true,
+            replace: true);
+    }
+
+    public void Dispose()
+    {
+        clockTimer?.Dispose();
+    }
+}

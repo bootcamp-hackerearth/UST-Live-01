@@ -1,0 +1,367 @@
+﻿@page "/doctors/register"
+@attribute [Authorize(Roles = "Admin")]
+@using HealthAxis.Shared.DTO.DoctorDtos
+@using HealthAxis.Shared.Enums
+@inject DoctorAdminService DoctorService
+@inject NavigationManager NavigationManager
+
+<div class="doctor-register-page">
+
+    <div class="register-page-header">
+        <div>
+            <h1>Register Doctor</h1>
+            <p>Create a new doctor profile and save it into the hospital database.</p>
+        </div>
+
+        <button type="button" class="secondary-btn" @onclick="BackToDoctors">
+            Back to Doctors
+        </button>
+    </div>
+
+    <div class="register-content-grid">
+
+        <section class="register-form-card">
+
+            <div class="register-card-header">
+                <div>
+                    <h3>Doctor Registration</h3>
+                    <p>Enter doctor information carefully before submitting.</p>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(message))
+            {
+                <div class="@messageClass">
+                    @message
+                </div>
+            }
+
+            <EditForm Model="@doctorForm" OnValidSubmit="RegisterDoctorAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="register-form-grid">
+
+                    <div class="form-group">
+                        <label>Doctor Name</label>
+
+                        <InputText class="form-control"
+                                   @bind-Value="doctorForm.FullName"
+                                   placeholder="Enter doctor name" />
+
+                        <ValidationMessage For="@(() => doctorForm.FullName)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+
+                        <InputText class="form-control"
+                                   @bind-Value="doctorForm.Email"
+                                   placeholder="Enter doctor email" />
+
+                        <ValidationMessage For="@(() => doctorForm.Email)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Specialisation</label>
+
+                        <select class="form-control"
+                                @bind="selectedSpecialisation">
+                            <option value="">Select specialisation</option>
+
+                            @foreach (var specialisation in Enum.GetValues<Specialisation>())
+                            {
+                                <option value="@specialisation.ToString()">
+                                    @specialisation
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Years of Experience</label>
+
+                        <InputNumber class="form-control"
+                                     @bind-Value="doctorForm.YearsOfExperience" />
+
+                        <ValidationMessage For="@(() => doctorForm.YearsOfExperience)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Consultation Fee</label>
+
+                        <InputNumber class="form-control"
+                                     @bind-Value="doctorForm.ConsultationFee" />
+
+                        <ValidationMessage For="@(() => doctorForm.ConsultationFee)" />
+                    </div>
+
+                    <div class="form-group register-toggle-group">
+                        <label>Status</label>
+
+                        <label class="hx-toggle-control">
+                            <input type="checkbox"
+                                   class="hx-toggle-input"
+                                   @bind="doctorForm.IsActive" />
+
+                            <span class="hx-toggle-slider"></span>
+
+                            <span class="hx-toggle-text">
+                                Active Doctor
+                            </span>
+                        </label>
+                    </div>
+
+                </div>
+
+                <div class="register-actions">
+                    <button type="submit"
+                            class="primary-btn register-doctor-main-btn"
+                            disabled="@isRegistering">
+                        @(isRegistering ? "Registering..." : "Register Doctor")
+                    </button>
+
+                    <button type="button"
+                            class="secondary-btn"
+                            disabled="@isRegistering"
+                            @onclick="ClearForm">
+                        Clear
+                    </button>
+                </div>
+
+            </EditForm>
+
+        </section>
+
+    </div>
+
+</div>
+
+@if (showCreatedDoctorDialog && createdDoctor is not null)
+{
+    <div class="modal-backdrop-custom">
+        <div class="doctor-dialog created-doctor-dialog">
+
+            <div class="dialog-header">
+                <div>
+                    <h3>Doctor Registered Successfully</h3>
+                    <p>Temporary password is generated by the API. Share it securely with the doctor.</p>
+                </div>
+
+                <button type="button"
+                        class="dialog-close-btn"
+                        @onclick="CloseCreatedDoctorDialog">
+                    ×
+                </button>
+            </div>
+
+            <div class="created-doctor-card">
+
+                <div class="created-doctor-header">
+                    <div class="doctor-avatar">
+                        @GetInitial(createdDoctor.FullName)
+                    </div>
+
+                    <div>
+                        <h4>@createdDoctor.FullName</h4>
+                        <p>@createdDoctor.Email</p>
+                    </div>
+                </div>
+
+                <div class="created-doctor-grid">
+
+                    <div>
+                        <span>Doctor ID</span>
+                        <strong>@createdDoctor.DoctorId</strong>
+                    </div>
+
+                    <div>
+                        <span>Doctor Name</span>
+                        <strong>@createdDoctor.FullName</strong>
+                    </div>
+
+                    <div>
+                        <span>Email</span>
+                        <strong>@createdDoctor.Email</strong>
+                    </div>
+
+                    <div>
+                        <span>Specialisation</span>
+                        <strong>@createdDoctor.Specialisation</strong>
+                    </div>
+
+                    <div>
+                        <span>Experience</span>
+                        <strong>@createdDoctor.YearsOfExperience years</strong>
+                    </div>
+
+                    <div>
+                        <span>Consultation Fee</span>
+                        <strong>₹@createdDoctor.ConsultationFee</strong>
+                    </div>
+
+                    <div>
+                        <span>Status</span>
+                        <strong>@(createdDoctor.IsActive ? "Active" : "Inactive")</strong>
+                    </div>
+
+                    <div class="created-temp-password">
+                        <span>Temporary Password</span>
+                        <strong>@DisplayTemporaryPassword(createdDoctor.TemporaryPassword)</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="dialog-actions">
+                <button type="button"
+                        class="primary-btn"
+                        @onclick="GoToDoctors">
+                    Go to Doctors List
+                </button>
+
+                <button type="button"
+                        class="secondary-btn"
+                        @onclick="RegisterAnotherDoctor">
+                    Register Another Doctor
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    private const int MessageAutoHideMilliseconds = 3000;
+
+    private CreateDoctorDto doctorForm = new()
+    {
+        IsActive = true
+    };
+
+    private DoctorCreatedDto? createdDoctor;
+
+    private string selectedSpecialisation = string.Empty;
+
+    private string message = string.Empty;
+
+    private string messageClass = "success-box";
+
+    private bool showCreatedDoctorDialog;
+
+    private bool isRegistering;
+
+    private int messageVersion;
+
+    private async Task RegisterDoctorAsync()
+    {
+        if (!Enum.TryParse<Specialisation>(selectedSpecialisation, out var specialisation))
+        {
+            ShowMessage("Please select doctor specialisation.", false);
+            return;
+        }
+
+        isRegistering = true;
+
+        try
+        {
+            doctorForm.Specialisation = specialisation;
+
+            var result = await DoctorService.RegisterDoctorAsync(doctorForm);
+
+            if (!result.Success)
+            {
+                ShowMessage(result.Message, false);
+                return;
+            }
+
+            if (result.Doctor is null)
+            {
+                ShowMessage("Doctor registered, but API did not return doctor details.", false);
+                return;
+            }
+
+            createdDoctor = result.Doctor;
+            showCreatedDoctorDialog = true;
+            message = string.Empty;
+
+            ClearForm();
+        }
+        finally
+        {
+            isRegistering = false;
+        }
+    }
+
+    private void ClearForm()
+    {
+        doctorForm = new CreateDoctorDto
+        {
+            IsActive = true
+        };
+
+        selectedSpecialisation = string.Empty;
+    }
+
+    private void BackToDoctors()
+    {
+        NavigationManager.NavigateTo("/doctors");
+    }
+
+    private void GoToDoctors()
+    {
+        showCreatedDoctorDialog = false;
+        createdDoctor = null;
+        NavigationManager.NavigateTo("/doctors");
+    }
+
+    private void RegisterAnotherDoctor()
+    {
+        showCreatedDoctorDialog = false;
+        createdDoctor = null;
+        ClearForm();
+    }
+
+    private void CloseCreatedDoctorDialog()
+    {
+        showCreatedDoctorDialog = false;
+    }
+
+    private void ShowMessage(string text, bool isSuccess)
+    {
+        message = text;
+        messageClass = isSuccess ? "success-box" : "error-box";
+
+        messageVersion++;
+        _ = ClearMessageAfterDelayAsync(messageVersion);
+    }
+
+    private async Task ClearMessageAfterDelayAsync(int version)
+    {
+        await Task.Delay(MessageAutoHideMilliseconds);
+
+        if (version == messageVersion)
+        {
+            message = string.Empty;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private static string GetInitial(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "D";
+        }
+
+        return name.Trim()[..1].ToUpperInvariant();
+    }
+
+    private static string DisplayTemporaryPassword(string temporaryPassword)
+    {
+        return string.IsNullOrWhiteSpace(temporaryPassword)
+            ? "Not returned by API"
+            : temporaryPassword;
+    }
+}

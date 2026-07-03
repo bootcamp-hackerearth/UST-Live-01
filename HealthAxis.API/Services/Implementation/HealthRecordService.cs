@@ -189,7 +189,7 @@ namespace HealthAxis.API.Services.Implementation
 
             return new HealthRecordDto
             {
-                RecordId = record.RecordId,
+                RecordId = record.HealthRecordId,
                 AppointmentId = record.AppointmentId,
                 PatientId = record.PatientId,
                 PatientName = patient?.FullName ?? string.Empty,

@@ -37,11 +37,13 @@ export class DoctorHealthRecords {
 
   readonly appointments = signal<Appointment[]>([]);
   readonly healthRecords = signal<HealthRecord[]>([]);
+
   readonly selectedRecord = signal<HealthRecord | null>(null);
   readonly editingRecord = signal<HealthRecord | null>(null);
 
   readonly loading = signal(false);
   readonly saving = signal(false);
+
   readonly errorMessage = signal('');
   readonly successDialogMessage = signal('');
   readonly searchText = signal('');
@@ -63,7 +65,12 @@ export class DoctorHealthRecords {
         Validators.maxLength(500)
       ]
     ],
-    notes: ['', [Validators.maxLength(1000)]]
+    notes: [
+      '',
+      [
+        Validators.maxLength(1000)
+      ]
+    ]
   });
 
   readonly completedAppointments = computed(() =>
@@ -83,9 +90,10 @@ export class DoctorHealthRecords {
   readonly latestRecord = computed<HealthRecord | null>(() => {
     const record = this.filteredRecords()
       .slice()
-      .sort((first, second) =>
-        new Date(second.visitDate).getTime() -
-        new Date(first.visitDate).getTime()
+      .sort(
+        (first, second) =>
+          new Date(second.visitDate).getTime() -
+          new Date(first.visitDate).getTime()
       )[0];
 
     return record ?? null;
@@ -97,9 +105,10 @@ export class DoctorHealthRecords {
     return this.healthRecords()
       .filter((record) => this.isDoctorTreatedRecord(record))
       .filter((record) => this.matchesSearch(record, searchValue))
-      .sort((first, second) =>
-        new Date(second.visitDate).getTime() -
-        new Date(first.visitDate).getTime()
+      .sort(
+        (first, second) =>
+          new Date(second.visitDate).getTime() -
+          new Date(first.visitDate).getTime()
       );
   });
 
@@ -143,7 +152,8 @@ export class DoctorHealthRecords {
   }
 
   openRecord(record: HealthRecord): void {
-    this.selectedRecord.set(record);
+    this.errorMessage.set('');
+    this.selectedRecord.set(this.enrichRecord(this.normalizeRecord(record)));
   }
 
   closeRecord(): void {
@@ -151,14 +161,16 @@ export class DoctorHealthRecords {
   }
 
   openEditDialog(record: HealthRecord): void {
+    const safeRecord = this.enrichRecord(this.normalizeRecord(record));
+
     this.errorMessage.set('');
     this.successDialogMessage.set('');
-    this.editingRecord.set(record);
+    this.editingRecord.set(safeRecord);
 
     this.editForm.reset({
-      diagnosis: record.diagnosis,
-      prescription: record.prescription,
-      notes: record.notes ?? ''
+      diagnosis: safeRecord.diagnosis ?? '',
+      prescription: safeRecord.prescription ?? '',
+      notes: safeRecord.notes ?? ''
     });
   }
 
@@ -168,6 +180,7 @@ export class DoctorHealthRecords {
     }
 
     this.editingRecord.set(null);
+
     this.editForm.reset({
       diagnosis: '',
       prescription: '',
@@ -186,10 +199,19 @@ export class DoctorHealthRecords {
     }
 
     const record = this.editingRecord();
-    const recordId = this.getNumericRecordId(record);
 
-    if (!record || recordId <= 0) {
+    if (!record) {
       this.errorMessage.set('Invalid health record selected.');
+      return;
+    }
+
+    const safeRecord = this.enrichRecord(this.normalizeRecord(record));
+    const recordId = this.getNumericRecordId(safeRecord);
+
+    if (recordId <= 0) {
+      this.errorMessage.set(
+        'Unable to identify this health record. Please refresh and try again.'
+      );
       return;
     }
 
@@ -204,10 +226,38 @@ export class DoctorHealthRecords {
     this.saving.set(true);
 
     this.healthRecordService.updateHealthRecord(recordId, request).subscribe({
-      next: () => {
+      next: (updatedRecord) => {
+        const safeUpdatedRecord = this.enrichRecord(
+          this.normalizeRecord({
+            ...safeRecord,
+            ...updatedRecord,
+            diagnosis: request.diagnosis,
+            prescription: request.prescription,
+            notes: request.notes,
+            updatedDate: new Date().toISOString()
+          } as HealthRecord)
+        );
+
+        this.healthRecords.update((records) =>
+          records.map((item) =>
+            this.getAppointmentId(item) === this.getAppointmentId(safeRecord)
+              ? safeUpdatedRecord
+              : item
+          )
+        );
+
+        this.selectedRecord.update((currentRecord) => {
+          if (!currentRecord) {
+            return currentRecord;
+          }
+
+          return this.getAppointmentId(currentRecord) === this.getAppointmentId(safeRecord)
+            ? safeUpdatedRecord
+            : currentRecord;
+        });
+
         this.saving.set(false);
         this.editingRecord.set(null);
-        this.loadDoctorHealthRecords();
 
         this.successDialogMessage.set(
           'Health record updated successfully. Patient can now see the latest changes.'
@@ -231,7 +281,15 @@ export class DoctorHealthRecords {
   }
 
   getRecordId(record: HealthRecord): number | string {
-    return record.healthRecordId ?? record.recordId ?? '-';
+    const recordId = this.getNumericPrimaryRecordId(record);
+
+    if (recordId > 0) {
+      return recordId;
+    }
+
+    const appointmentId = this.getAppointmentId(record);
+
+    return appointmentId > 0 ? appointmentId : '-';
   }
 
   private getNumericRecordId(record: HealthRecord | null): number {
@@ -239,7 +297,41 @@ export class DoctorHealthRecords {
       return 0;
     }
 
-    return record.healthRecordId ?? record.recordId ?? 0;
+    const primaryId = this.getNumericPrimaryRecordId(record);
+
+    if (primaryId > 0) {
+      return primaryId;
+    }
+
+    return this.getAppointmentId(record);
+  }
+
+  private getNumericPrimaryRecordId(record: HealthRecord): number {
+    const value = record as unknown as Record<string, unknown>;
+
+    return this.firstValidNumber(
+      value['healthRecordId'],
+      value['HealthRecordId'],
+      value['healthRecordID'],
+      value['HealthRecordID'],
+      value['recordId'],
+      value['RecordId'],
+      value['recordID'],
+      value['RecordID'],
+      value['id'],
+      value['Id']
+    );
+  }
+
+  private getAppointmentId(record: HealthRecord): number {
+    const value = record as unknown as Record<string, unknown>;
+
+    return this.firstValidNumber(
+      record.appointmentId,
+      value['AppointmentId'],
+      value['appointmentID'],
+      value['AppointmentID']
+    );
   }
 
   private loadHealthRecordsForTreatedPatients(): void {
@@ -261,7 +353,21 @@ export class DoctorHealthRecords {
 
     forkJoin(requests).subscribe({
       next: (recordsByPatient) => {
-        this.healthRecords.set(recordsByPatient.flat());
+        const completedAppointmentIds = new Set(
+          this.completedAppointments().map(
+            (appointment) => appointment.appointmentId
+          )
+        );
+
+        const records = recordsByPatient
+          .flat()
+          .map((record) => this.normalizeRecord(record))
+          .filter((record) =>
+            completedAppointmentIds.has(this.getAppointmentId(record))
+          )
+          .map((record) => this.enrichRecord(record));
+
+        this.healthRecords.set(records);
         this.loading.set(false);
       },
       error: (error: unknown) => {
@@ -273,12 +379,89 @@ export class DoctorHealthRecords {
     });
   }
 
-  private isDoctorTreatedRecord(record: HealthRecord): boolean {
-    const completedAppointmentIds = new Set(
-      this.completedAppointments().map((appointment) => appointment.appointmentId)
+  private normalizeRecord(record: HealthRecord): HealthRecord {
+    const value = record as unknown as Record<string, unknown>;
+
+    const healthRecordId = this.firstValidNumber(
+      record.healthRecordId,
+      value['HealthRecordId'],
+      value['healthRecordID'],
+      value['HealthRecordID'],
+      record.recordId,
+      value['RecordId'],
+      value['recordID'],
+      value['RecordID'],
+      value['id'],
+      value['Id']
     );
 
-    return completedAppointmentIds.has(record.appointmentId);
+    const appointmentId = this.firstValidNumber(
+      record.appointmentId,
+      value['AppointmentId'],
+      value['appointmentID'],
+      value['AppointmentID']
+    );
+
+    const patientId = this.firstValidNumber(
+      record.patientId,
+      value['PatientId'],
+      value['patientID'],
+      value['PatientID']
+    );
+
+    const doctorId = this.firstValidNumber(
+      record.doctorId,
+      value['DoctorId'],
+      value['doctorID'],
+      value['DoctorID']
+    );
+
+    return {
+      ...record,
+      healthRecordId: healthRecordId > 0 ? healthRecordId : record.healthRecordId,
+      recordId: record.recordId,
+      appointmentId,
+      patientId,
+      patientName: record.patientName ?? String(value['PatientName'] ?? ''),
+      doctorId,
+      doctorName: record.doctorName ?? String(value['DoctorName'] ?? ''),
+      specialisation: record.specialisation ?? String(value['Specialisation'] ?? ''),
+      visitDate: record.visitDate ?? String(value['VisitDate'] ?? ''),
+      diagnosis: record.diagnosis ?? String(value['Diagnosis'] ?? ''),
+      prescription: record.prescription ?? String(value['Prescription'] ?? ''),
+      notes: record.notes ?? String(value['Notes'] ?? ''),
+      updatedDate: record.updatedDate ?? String(value['UpdatedDate'] ?? '')
+    };
+  }
+
+  private enrichRecord(record: HealthRecord): HealthRecord {
+    const appointment = this.completedAppointments().find(
+      (item) => item.appointmentId === this.getAppointmentId(record)
+    );
+
+    if (!appointment) {
+      return record;
+    }
+
+    return {
+      ...record,
+      appointmentId: this.getAppointmentId(record) || appointment.appointmentId,
+      patientId: record.patientId || appointment.patientId,
+      patientName: record.patientName || appointment.patientName,
+      doctorId: record.doctorId || appointment.doctorId,
+      doctorName: record.doctorName || appointment.doctorName,
+      specialisation: record.specialisation || appointment.specialisation
+    };
+  }
+
+  private isDoctorTreatedRecord(record: HealthRecord): boolean {
+    const completedAppointmentIds = new Set(
+      this.completedAppointments().map(
+        (appointment) => appointment.appointmentId
+      )
+    );
+
+    return completedAppointmentIds.has(this.getAppointmentId(record));
   }
 
   private matchesSearch(record: HealthRecord, searchValue: string): boolean {
@@ -294,12 +477,24 @@ export class DoctorHealthRecords {
       record.diagnosis,
       record.prescription,
       record.notes,
-      record.appointmentId.toString()
+      this.getAppointmentId(record).toString()
     ]
       .join(' ')
       .toLowerCase();
 
     return searchableText.includes(searchValue);
+  }
+
+  private firstValidNumber(...values: unknown[]): number {
+    for (const value of values) {
+      const numberValue = Number(value);
+
+      if (Number.isFinite(numberValue) && numberValue > 0) {
+        return numberValue;
+      }
+    }
+
+    return 0;
   }
 
   private getStatusText(status: string | number): string {

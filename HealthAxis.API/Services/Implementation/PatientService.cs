@@ -112,8 +112,8 @@ namespace HealthAxis.API.Services.Implementation
 
                 return new HealthRecordDto
                 {
-                    HealthRecordId = record.RecordId,
-                    RecordId = record.RecordId,
+                    HealthRecordId = record.HealthRecordId,
+                    RecordId = record.HealthRecordId,
                     AppointmentId = record.AppointmentId,
 
                     PatientId = record.PatientId,

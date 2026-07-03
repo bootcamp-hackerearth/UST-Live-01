@@ -9,7 +9,7 @@
       <h1>Upcoming Appointments</h1>
 
       <span>
-        View assigned patient appointments and confirm pending visits.
+        View assigned patient appointments, confirm pending visits, and cancel appointments when required.
       </span>
     </div>
 
@@ -79,12 +79,22 @@
         </button>
       }
     </div>
+
+    <button type="button" class="clear-button" (click)="clearFilters()">
+      Clear
+    </button>
   </section>
 
   <section class="list-card">
-    <div class="section-title">
-      <p>Assigned Visits</p>
-      <h2>Patient Appointments</h2>
+    <div class="list-heading-row">
+      <div class="section-title">
+        <p>Assigned Visits</p>
+        <h2>Patient Appointments</h2>
+      </div>
+
+      <span class="result-count">
+        Showing {{ filteredAppointments().length }} appointments
+      </span>
     </div>
 
     @if (loading()) {
@@ -116,19 +126,19 @@
               <th>Date</th>
               <th>Time Slot</th>
               <th>Status</th>
-              <th>Doctor Action</th>
+              <th class="action-column">Doctor Action</th>
             </tr>
           </thead>
 
           <tbody>
-            @for (appointment of filteredAppointments(); track appointment.appointmentId) {
+            @for (appointment of pagedAppointments(); track appointment.appointmentId) {
               <tr>
                 <td>
                   <div class="patient-cell">
                     <span>👤</span>
 
                     <div>
-                      <strong>{{ appointment.patientName || 'Patient' }}</strong>
+                      <strong>{{ getPatientName(appointment) }}</strong>
                       <small>Appointment #{{ appointment.appointmentId }}</small>
                     </div>
                   </div>
@@ -136,43 +146,228 @@
 
                 <td>{{ appointment.scheduledDate | date: 'mediumDate' }}</td>
 
-                <td>{{ appointment.timeSlot }}</td>
+                <td>{{ getSafeText(appointment.timeSlot, 'Not assigned') }}</td>
 
                 <td>
                   <span
-                    class="status-badge"
-                    [class]="getStatusClass(appointment.status)"
+                    [class]="'status-badge ' + getStatusClass(appointment.status)"
                   >
                     {{ getStatusLabel(appointment.status) }}
                   </span>
                 </td>
 
-                <td>
-                  @if (canConfirm(appointment)) {
+                <td class="action-column">
+                  <div class="action-buttons">
                     <button
                       type="button"
-                      class="confirm-button"
-                      [disabled]="confirmingAppointmentId() === appointment.appointmentId"
-                      (click)="confirmAppointment(appointment)"
+                      class="view-button"
+                      (click)="openAppointmentDetails(appointment)"
                     >
-                      @if (confirmingAppointmentId() === appointment.appointmentId) {
-                        Confirming...
-                      } @else {
-                        Confirm
-                      }
+                      View
                     </button>
-                  } @else {
-                    <span class="no-action">
-                      Confirmed
-                    </span>
-                  }
+
+                    @if (canConfirm(appointment)) {
+                      <button
+                        type="button"
+                        class="confirm-button"
+                        [disabled]="isProcessing(appointment)"
+                        (click)="confirmAppointment(appointment)"
+                      >
+                        {{ isProcessing(appointment) ? 'Confirming...' : 'Confirm' }}
+                      </button>
+                    }
+
+                    @if (canCancel(appointment)) {
+                      <button
+                        type="button"
+                        class="cancel-action-button"
+                        [disabled]="isProcessing(appointment)"
+                        (click)="openCancelDialog(appointment)"
+                      >
+                        Cancel
+                      </button>
+                    }
+
+                    @if (!canConfirm(appointment) && !canCancel(appointment)) {
+                      <span class="no-action">No action</span>
+                    }
+                  </div>
                 </td>
               </tr>
             }
           </tbody>
         </table>
       </div>
+
+      <div class="pagination-row">
+        <button
+          type="button"
+          class="page-button"
+          [disabled]="currentPage() === 1"
+          (click)="goToPreviousPage()"
+        >
+          Previous
+        </button>
+
+        <span>Page {{ currentPage() }} of {{ totalPages() }}</span>
+
+        <button
+          type="button"
+          class="page-button"
+          [disabled]="currentPage() === totalPages()"
+          (click)="goToNextPage()"
+        >
+          Next
+        </button>
+      </div>
     }
   </section>
 
-  
+  @if (selectedAppointment(); as appointment) {
+    <div class="modal-backdrop" (click)="closeAppointmentDetails()">
+      <section class="details-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <p>Appointment Details</p>
+            <h2>Appointment #{{ appointment.appointmentId }}</h2>
+          </div>
+
+          <button
+            type="button"
+            class="close-button"
+            (click)="closeAppointmentDetails()"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="details-grid">
+          <div>
+            <span>Patient</span>
+            <strong>{{ getPatientName(appointment) }}</strong>
+          </div>
+
+          <div>
+            <span>Date</span>
+            <strong>{{ appointment.scheduledDate | date: 'fullDate' }}</strong>
+          </div>
+
+          <div>
+            <span>Time Slot</span>
+            <strong>{{ getSafeText(appointment.timeSlot, 'Not assigned') }}</strong>
+          </div>
+
+          <div>
+            <span>Status</span>
+            <strong>{{ getStatusLabel(appointment.status) }}</strong>
+          </div>
+
+          <div>
+            <span>Appointment ID</span>
+            <strong>#{{ appointment.appointmentId }}</strong>
+          </div>
+
+          <div>
+            <span>Cancellation Reason</span>
+            <strong>{{ appointment.cancellationReason || '-' }}</strong>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          @if (canConfirm(appointment)) {
+            <button
+              type="button"
+              class="confirm-modal-button"
+              [disabled]="isProcessing(appointment)"
+              (click)="confirmAppointment(appointment)"
+            >
+              Confirm Appointment
+            </button>
+          }
+
+          @if (canCancel(appointment)) {
+            <button
+              type="button"
+              class="danger-modal-button"
+              [disabled]="isProcessing(appointment)"
+              (click)="openCancelDialog(appointment)"
+            >
+              Cancel Appointment
+            </button>
+          }
+        </div>
+      </section>
+    </div>
+  }
+
+  @if (cancelTarget(); as appointment) {
+    <div class="modal-backdrop">
+      <section class="cancel-modal">
+        <div class="modal-header">
+          <div>
+            <p>Cancel Appointment</p>
+            <h2>Confirm Cancellation</h2>
+          </div>
+
+          <button
+            type="button"
+            class="close-button"
+            (click)="closeCancelDialog()"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="details-grid">
+          <div>
+            <span>Patient</span>
+            <strong>{{ getPatientName(appointment) }}</strong>
+          </div>
+
+          <div>
+            <span>Date</span>
+            <strong>{{ appointment.scheduledDate | date: 'mediumDate' }}</strong>
+          </div>
+
+          <div>
+            <span>Time Slot</span>
+            <strong>{{ getSafeText(appointment.timeSlot, 'Not assigned') }}</strong>
+          </div>
+        </div>
+
+        <label for="cancelReason">
+          Cancellation Reason <span>(Optional)</span>
+        </label>
+
+        <textarea
+          id="cancelReason"
+          rows="4"
+          maxlength="200"
+          placeholder="Reason is optional."
+          [value]="cancellationReason()"
+          (input)="onCancellationReasonInput($event)"
+        ></textarea>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="danger-modal-button"
+            [disabled]="isProcessing(appointment)"
+            (click)="confirmCancelAppointment()"
+          >
+            {{ isProcessing(appointment) ? 'Cancelling...' : 'Cancel Appointment' }}
+          </button>
+
+          <button
+            type="button"
+            class="keep-button"
+            [disabled]="isProcessing(appointment)"
+            (click)="closeCancelDialog()"
+          >
+            Keep Appointment
+          </button>
+        </div>
+      </section>
+    </div>
+  }
+</section>

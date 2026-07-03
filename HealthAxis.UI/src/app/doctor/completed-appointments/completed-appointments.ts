@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 import { Appointment } from '../../core/models/appointment.model';
 import {
@@ -160,7 +161,6 @@ export class CompletedAppointments {
 
   refreshPage(): void {
     this.loadAppointments();
-    this.loadHealthRecords();
   }
 
   loadAppointments(): void {
@@ -173,7 +173,7 @@ export class CompletedAppointments {
         this.appointments.set(appointments);
         this.confirmedPage.set(1);
         this.completedPage.set(1);
-        this.loading.set(false);
+        this.loadHealthRecordsForCompletedPatients();
       },
       error: (error: unknown) => {
         this.loading.set(false);
@@ -184,28 +184,41 @@ export class CompletedAppointments {
     });
   }
 
-  loadHealthRecords(): void {
-    const service = this.healthRecordService as any;
+  private loadHealthRecordsForCompletedPatients(): void {
+    const patientIds = [
+      ...new Set(
+        this.completedAppointments().map((appointment) => appointment.patientId)
+      )
+    ];
 
-    const listMethod =
-      service.getMyDoctorHealthRecords ||
-      service.getDoctorHealthRecords ||
-      service.getAllHealthRecords ||
-      service.getMyHealthRecords ||
-      service.getHealthRecords ||
-      service.getAll;
-
-    if (!listMethod) {
+    if (patientIds.length === 0) {
       this.healthRecords.set([]);
+      this.loading.set(false);
       return;
     }
 
-    listMethod.call(this.healthRecordService).subscribe({
-      next: (records: HealthRecord[]) => {
-        this.healthRecords.set(records ?? []);
+    const requests = patientIds.map((patientId) =>
+      this.healthRecordService.getHealthRecordsByPatientId(patientId)
+    );
+
+    forkJoin(requests).subscribe({
+      next: (recordsByPatient) => {
+        const completedAppointmentIds = new Set(
+          this.completedAppointments().map((appointment) => appointment.appointmentId)
+        );
+
+        const records = recordsByPatient
+          .flat()
+          .filter((record) => completedAppointmentIds.has(Number(record.appointmentId)))
+          .map((record) => this.enrichRecord(record));
+
+        this.healthRecords.set(records);
+        this.loading.set(false);
       },
       error: () => {
         this.healthRecords.set([]);
+        this.loading.set(false);
+        this.errorMessage.set('Could not load health records for completed appointments.');
       }
     });
   }
@@ -320,17 +333,17 @@ export class CompletedAppointments {
     this.saving.set(true);
 
     this.healthRecordService.createHealthRecord(request).subscribe({
-      next: (createdRecord: HealthRecord | unknown) => {
-        const fallbackRecord = this.buildLocalHealthRecord(
-          appointment,
-          request,
-          createdRecord as HealthRecord | null
+      next: (createdRecord) => {
+        const safeRecord = this.enrichRecord(
+          createdRecord && createdRecord.appointmentId
+            ? createdRecord
+            : this.buildLocalHealthRecord(appointment, request)
         );
 
         this.healthRecords.update((records) => [
-          fallbackRecord,
+          safeRecord,
           ...records.filter(
-            (record) => record.appointmentId !== appointment.appointmentId
+            (record) => Number(record.appointmentId) !== appointment.appointmentId
           )
         ]);
 
@@ -340,7 +353,7 @@ export class CompletedAppointments {
           'Health record added successfully. Appointment marked as completed.'
         );
 
-        this.refreshPage();
+        this.loadAppointments();
       },
       error: (error: unknown) => {
         this.saving.set(false);
@@ -355,89 +368,36 @@ export class CompletedAppointments {
     this.errorMessage.set('');
     this.successMessage.set('');
 
-    const existingRecord = this.getHealthRecordForAppointment(appointment);
+    const record = this.getHealthRecordForAppointment(appointment);
 
-    if (existingRecord) {
-      this.selectedHealthRecord.set(existingRecord);
+    if (!record) {
+      this.errorMessage.set(
+        'Health record is not available for this appointment yet.'
+      );
       return;
     }
 
-    this.fetchHealthRecordByAppointment(appointment, 'view');
+    this.selectedHealthRecord.set(record);
+  }
+
+  closeCompletedHealthRecord(): void {
+    this.selectedHealthRecord.set(null);
   }
 
   printHealthRecordForAppointment(appointment: Appointment): void {
     this.errorMessage.set('');
     this.successMessage.set('');
 
-    const existingRecord = this.getHealthRecordForAppointment(appointment);
+    const record = this.getHealthRecordForAppointment(appointment);
 
-    if (existingRecord) {
-      this.printHealthRecordPdf(existingRecord);
-      return;
-    }
-
-    this.fetchHealthRecordByAppointment(appointment, 'pdf');
-  }
-
-  private fetchHealthRecordByAppointment(
-    appointment: Appointment,
-    action: 'view' | 'pdf'
-  ): void {
-    const service = this.healthRecordService as any;
-
-    const byAppointmentMethod =
-      service.getHealthRecordByAppointmentId ||
-      service.getByAppointmentId ||
-      service.getRecordByAppointmentId ||
-      service.getHealthRecordForAppointment;
-
-    if (!byAppointmentMethod) {
+    if (!record) {
       this.errorMessage.set(
-        'Health record data is not loaded. Please open Doctor Health Records page once or check HealthRecordService list API.'
+        'Health record is not available for this appointment yet.'
       );
       return;
     }
 
-    this.loadingRecord.set(true);
-
-    byAppointmentMethod.call(
-      this.healthRecordService,
-      appointment.appointmentId
-    ).subscribe({
-      next: (record: HealthRecord) => {
-        this.loadingRecord.set(false);
-
-        if (!record) {
-          this.errorMessage.set(
-            'Health record is not available yet for this completed appointment.'
-          );
-          return;
-        }
-
-        this.healthRecords.update((records) => [
-          record,
-          ...records.filter(
-            (item) => item.appointmentId !== appointment.appointmentId
-          )
-        ]);
-
-        if (action === 'view') {
-          this.selectedHealthRecord.set(record);
-        } else {
-          this.printHealthRecordPdf(record);
-        }
-      },
-      error: () => {
-        this.loadingRecord.set(false);
-        this.errorMessage.set(
-          'Health record is not available yet for this completed appointment.'
-        );
-      }
-    });
-  }
-
-  closeCompletedHealthRecord(): void {
-    this.selectedHealthRecord.set(null);
+    this.printHealthRecordPdf(record);
   }
 
   printHealthRecordPdf(record: HealthRecord): void {
@@ -668,12 +628,23 @@ export class CompletedAppointments {
     appointment: Appointment
   ): HealthRecord | undefined {
     return this.healthRecords().find(
-      (record) => record.appointmentId === appointment.appointmentId
+      (record) => Number(record.appointmentId) === appointment.appointmentId
     );
   }
 
-  getRecordId(record: HealthRecord): number {
-    return record.healthRecordId ?? record.recordId ?? record.appointmentId;
+  getRecordId(record: HealthRecord): number | string {
+    const value = record as HealthRecord & {
+      id?: number;
+      healthRecordID?: number;
+      recordID?: number;
+    };
+
+    return value.healthRecordId ??
+      value.recordId ??
+      value.id ??
+      value.healthRecordID ??
+      value.recordID ??
+      '-';
   }
 
   getStatusLabel(status: string | number): string {
@@ -704,15 +675,29 @@ export class CompletedAppointments {
     return cleanValue || fallback;
   }
 
-  private buildLocalHealthRecord(
-    appointment: Appointment,
-    request: CreateHealthRecordRequest,
-    createdRecord: HealthRecord | null
-  ): HealthRecord {
-    if (createdRecord && createdRecord.appointmentId) {
-      return createdRecord;
+  private enrichRecord(record: HealthRecord): HealthRecord {
+    const appointment = this.appointments().find(
+      (item) => item.appointmentId === Number(record.appointmentId)
+    );
+
+    if (!appointment) {
+      return record;
     }
 
+    return {
+      ...record,
+      patientId: record.patientId || appointment.patientId,
+      patientName: record.patientName || appointment.patientName,
+      doctorId: record.doctorId || appointment.doctorId,
+      doctorName: record.doctorName || appointment.doctorName,
+      specialisation: record.specialisation || appointment.specialisation
+    };
+  }
+
+  private buildLocalHealthRecord(
+    appointment: Appointment,
+    request: CreateHealthRecordRequest
+  ): HealthRecord {
     return {
       healthRecordId: appointment.appointmentId,
       recordId: appointment.appointmentId,
@@ -726,7 +711,7 @@ export class CompletedAppointments {
       diagnosis: request.diagnosis,
       prescription: request.prescription,
       notes: request.notes
-    } as HealthRecord;
+    };
   }
 
   private getTotalPages(totalItems: number): number {

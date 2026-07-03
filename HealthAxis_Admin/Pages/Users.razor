@@ -1,0 +1,464 @@
+﻿@page "/users"
+@attribute [Authorize(Roles = "Admin")]
+@using HealthAxis.Shared.DTO.AdminDtos
+@inject AuthService AuthService
+@inject UserAdminService UserService
+@inject NavigationManager NavigationManager
+
+<h1>User Management</h1>
+
+<p class="page-subtitle">
+    View system users by role, search records, and check account status.
+</p>
+
+<section class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-icon user-admin-icon">A</div>
+        <div>
+            <p>Admins</p>
+            <h2>@allUsers.Count(user => user.Role == AdminRole)</h2>
+            <span>System managers</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon user-doctor-icon">D</div>
+        <div>
+            <p>Doctors</p>
+            <h2>@allUsers.Count(user => user.Role == DoctorRole)</h2>
+            <span>Medical staff</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon user-patient-icon">P</div>
+        <div>
+            <p>Patients</p>
+            <h2>@allUsers.Count(user => user.Role == PatientRole)</h2>
+            <span>Registered patients</span>
+        </div>
+    </div>
+
+</section>
+
+<section class="doctor-list-card">
+
+    <div class="doctor-list-header">
+        <div>
+            <h3>Users List</h3>
+            <p>All system users from database.</p>
+        </div>
+    </div>
+
+    <div class="user-toolbar">
+
+        <div class="doctor-search-box">
+            <input type="text"
+                   placeholder="Search all users..."
+                   value="@searchText"
+                   @oninput="OnSearchInput" />
+        </div>
+
+        <div class="doctor-filter-box">
+            <select class="form-control"
+                    value="@selectedRole"
+                    @onchange="OnRoleChanged">
+                <option value="@AllRolesOption">All Roles</option>
+                <option value="@AdminRole">Admin</option>
+                <option value="@DoctorRole">Doctor</option>
+                <option value="@PatientRole">Patient</option>
+            </select>
+        </div>
+
+    </div>
+
+    @if (isLoading)
+    {
+        <p>Loading users from database...</p>
+    }
+    else if (!FilteredUsers.Any())
+    {
+        <p>No users found.</p>
+    }
+    else
+    {
+        <div class="table-wrapper">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th class="action-column">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var user in PagedUsers)
+                    {
+                        <tr>
+                            <td>
+                                <div class="doctor-profile-cell">
+                                    <div class="@GetUserAvatarClass(user.Role)">
+                                        @GetInitial(user.FullName)
+                                    </div>
+
+                                    <div>
+                                        <h4>@user.FullName</h4>
+                                        <span>ID: @ShortUserId(user.UserId)</span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>@user.Email</td>
+
+                            <td>@DisplayValue(user.PhoneNumber)</td>
+
+                            <td>
+                                <span class="@GetRoleBadgeClass(user.Role)">
+                                    @user.Role
+                                </span>
+                            </td>
+
+                            <td>
+                                @if (user.IsActive)
+                                {
+                                    <span class="status-badge active-status">
+                                        Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge inactive-status">
+                                        Inactive
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                <button type="button"
+                                        class="view-user-btn"
+                                        @onclick="() => OpenViewDialog(user)">
+                                    View Details
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (TotalPages > MinimumPaginationPages)
+        {
+            <div class="pagination-bar">
+
+                <button type="button"
+                        class="secondary-btn"
+                        disabled="@(currentPage == FirstPageNumber)"
+                        @onclick="GoToPreviousPage">
+                    Previous
+                </button>
+
+                <span>
+                    Page @currentPage of @TotalPages
+                    • Total @FilteredUsers.Count users
+                </span>
+
+                <button type="button"
+                        class="secondary-btn"
+                        disabled="@(currentPage == TotalPages)"
+                        @onclick="GoToNextPage">
+                    Next
+                </button>
+
+            </div>
+        }
+    }
+
+</section>
+
+@if (showViewDialog && selectedUser is not null)
+{
+    <div class="modal-backdrop-custom">
+        <div class="doctor-dialog user-detail-dialog">
+
+            <div class="dialog-header">
+                <div>
+                    <h3>User Details</h3>
+                    <p>Complete information of selected system user.</p>
+                </div>
+
+                <button type="button"
+                        class="dialog-close-btn"
+                        @onclick="CloseViewDialog">
+                    ×
+                </button>
+            </div>
+
+            <div class="user-detail-card">
+
+                <div class="user-detail-head">
+                    <div class="@GetUserAvatarClass(selectedUser.Role)">
+                        @GetInitial(selectedUser.FullName)
+                    </div>
+
+                    <div>
+                        <h4>@selectedUser.FullName</h4>
+                        <p>@selectedUser.Email</p>
+                    </div>
+                </div>
+
+                <div class="user-detail-grid">
+
+                    <div>
+                        <span>Full Name</span>
+                        <strong>@selectedUser.FullName</strong>
+                    </div>
+
+                    <div>
+                        <span>Email</span>
+                        <strong>@selectedUser.Email</strong>
+                    </div>
+
+                    <div>
+                        <span>Phone Number</span>
+                        <strong>@DisplayValue(selectedUser.PhoneNumber)</strong>
+                    </div>
+
+                    <div>
+                        <span>Role</span>
+                        <strong>@selectedUser.Role</strong>
+                    </div>
+
+                    <div>
+                        <span>Status</span>
+                        <strong>@(selectedUser.IsActive ? "Active" : "Inactive")</strong>
+                    </div>
+
+                    <div>
+                        <span>Created Date</span>
+                        <strong>@FormatDate(selectedUser.CreatedDate)</strong>
+                    </div>
+
+                   
+
+                </div>
+
+            </div>
+
+            <div class="dialog-actions">
+                <button type="button"
+                        class="secondary-btn"
+                        @onclick="CloseViewDialog">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    private const int FirstPageNumber = 1;
+    private const int MinimumPaginationPages = 1;
+    private const int PageSize = 6;
+
+    private const string AllRolesOption = "All";
+    private const string AdminRole = "Admin";
+    private const string DoctorRole = "Doctor";
+    private const string PatientRole = "Patient";
+
+    private List<AdminUserDto> allUsers = new();
+
+    private AdminUserDto? selectedUser;
+
+    private string searchText = string.Empty;
+    private string selectedRole = AllRolesOption;
+
+    private bool isLoading;
+    private bool showViewDialog;
+
+    private int currentPage = FirstPageNumber;
+
+    private List<AdminUserDto> FilteredUsers
+    {
+        get
+        {
+            var filteredUsers = allUsers.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                filteredUsers = filteredUsers.Where(user =>
+                    ContainsIgnoreCase(user.FullName, searchText) ||
+                    ContainsIgnoreCase(user.Email, searchText) ||
+                    ContainsIgnoreCase(user.Role, searchText) ||
+                    ContainsIgnoreCase(user.PhoneNumber, searchText));
+            }
+
+            if (!string.Equals(
+                    selectedRole,
+                    AllRolesOption,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                filteredUsers = filteredUsers.Where(user =>
+                    string.Equals(user.Role, selectedRole, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return filteredUsers.ToList();
+        }
+    }
+
+    private List<AdminUserDto> PagedUsers =>
+        FilteredUsers
+            .Skip((currentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+
+    private int TotalPages
+    {
+        get
+        {
+            if (!FilteredUsers.Any())
+            {
+                return FirstPageNumber;
+            }
+
+            return (int)Math.Ceiling((double)FilteredUsers.Count / PageSize);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // if (!AuthService.IsLoggedIn)
+        // {
+        //     NavigationManager.NavigateTo("/");
+        //     return;
+        // }
+
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        isLoading = true;
+
+        try
+        {
+            allUsers = await UserService.GetAllUsersAsync();
+            currentPage = FirstPageNumber;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void OnSearchInput(ChangeEventArgs args)
+    {
+        searchText = args.Value?.ToString() ?? string.Empty;
+        currentPage = FirstPageNumber;
+    }
+
+    private void OnRoleChanged(ChangeEventArgs args)
+    {
+        selectedRole = args.Value?.ToString() ?? AllRolesOption;
+        currentPage = FirstPageNumber;
+    }
+
+    private void GoToPreviousPage()
+    {
+        if (currentPage > FirstPageNumber)
+        {
+            currentPage--;
+        }
+    }
+
+    private void GoToNextPage()
+    {
+        if (currentPage < TotalPages)
+        {
+            currentPage++;
+        }
+    }
+
+    private void OpenViewDialog(AdminUserDto user)
+    {
+        selectedUser = user;
+        showViewDialog = true;
+    }
+
+    private void CloseViewDialog()
+    {
+        selectedUser = null;
+        showViewDialog = false;
+    }
+
+    private static bool ContainsIgnoreCase(
+        string? value,
+        string searchValue)
+    {
+        return !string.IsNullOrWhiteSpace(value) &&
+            value.Contains(searchValue, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetInitial(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "U";
+        }
+
+        return name.Trim()[..1].ToUpperInvariant();
+    }
+
+    private static string ShortUserId(string userId)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return "-";
+        }
+
+        return userId.Length <= 8
+            ? userId
+            : userId[..8];
+    }
+
+    private static string DisplayValue(string value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? "Not available"
+            : value;
+    }
+
+    private static string FormatDate(DateTime? createdDate)
+    {
+        return createdDate.HasValue
+            ? createdDate.Value.ToString("dd MMM yyyy")
+            : "Not available";
+    }
+
+    private static string GetUserAvatarClass(string role)
+    {
+        return role switch
+        {
+            AdminRole => "doctor-avatar user-avatar-admin",
+            DoctorRole => "doctor-avatar user-avatar-doctor",
+            PatientRole => "doctor-avatar user-avatar-patient",
+            _ => "doctor-avatar user-avatar-default"
+        };
+    }
+
+    private static string GetRoleBadgeClass(string role)
+    {
+        return role switch
+        {
+            AdminRole => "role-badge role-admin-badge",
+            DoctorRole => "role-badge role-doctor-badge",
+            PatientRole => "role-badge role-patient-badge",
+            _ => "role-badge role-default-badge"
+        };
+    }
+}

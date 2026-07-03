@@ -1,0 +1,426 @@
+﻿@page "/appointment-reports"
+@attribute [Authorize(Roles = "Admin")]
+@using HealthAxis.Shared.DTO.AdminDtos
+@inject AppointmentReportAdminService ReportService
+
+<h1>Appointment Reports</h1>
+
+<p class="page-subtitle">
+    View patient appointments, assigned doctors, appointment date, time and current status.
+</p>
+
+<section class="doctor-list-card">
+
+    <div class="doctor-list-header">
+        <div>
+            <h3>Appointment Details</h3>
+            <p>All appointments with patient and doctor information.</p>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(message))
+    {
+        <div class="@messageClass">
+            @message
+        </div>
+    }
+
+    <div class="user-toolbar">
+        <div class="doctor-search-box">
+            <input type="text"
+                   placeholder="Search patient, doctor, status..."
+                   @bind="searchText"
+                   @bind:event="oninput" />
+        </div>
+
+        <div class="doctor-filter-box">
+            <select class="form-control" @bind="selectedStatus">
+                <option value="@AllStatusOption">All Status</option>
+                <option value="@PendingStatus">Pending</option>
+                <option value="@ConfirmedStatus">Confirmed</option>
+                <option value="@CompletedStatus">Completed</option>
+                <option value="@CancelledStatus">Cancelled</option>
+            </select>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <p>Loading appointment reports...</p>
+    }
+    else if (!FilteredReports.Any())
+    {
+        <p>No appointment reports found.</p>
+    }
+    else
+    {
+        <div class="table-wrapper">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Specialisation</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th class="action-column">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var report in PagedReports)
+                    {
+                        <tr>
+                            <td>
+                                <div class="doctor-profile-cell">
+                                    <div class="doctor-avatar user-avatar-patient">
+                                        @GetInitial(report.PatientName)
+                                    </div>
+
+                                    <div>
+                                        <h4>@report.PatientName</h4>
+                                        <span>Patient ID: @report.PatientId</span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>@report.DoctorName</td>
+
+                            <td>
+                                <span class="specialisation-pill">
+                                    @report.Specialisation
+                                </span>
+                            </td>
+
+                            <td>@report.ScheduledDate.ToString("dd MMM yyyy")</td>
+
+                            <td>@report.TimeSlot</td>
+
+                            <td>
+                                <span class="@GetStatusBadgeClass(report.Status)">
+                                    @report.Status
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="report-actions">
+
+                                    <button type="button"
+                                            class="view-user-btn"
+                                            @onclick="() => OpenReportDialog(report)">
+                                        View Report
+                                    </button>
+
+                                    @if (IsPending(report.Status))
+                                    {
+                                        <button type="button"
+                                                class="confirm-appointment-btn"
+                                                @onclick="() => ConfirmAppointment(report.AppointmentId)">
+                                            Confirm
+                                        </button>
+                                    }
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (TotalPages > MinimumPaginationPages)
+        {
+            <div class="pagination-bar">
+                <button type="button"
+                        class="secondary-btn"
+                        disabled="@(currentPage == FirstPageNumber)"
+                        @onclick="GoToPreviousPage">
+                    Previous
+                </button>
+
+                <span>
+                    Page @currentPage of @TotalPages
+                    • Total @FilteredReports.Count reports
+                </span>
+
+                <button type="button"
+                        class="secondary-btn"
+                        disabled="@(currentPage == TotalPages)"
+                        @onclick="GoToNextPage">
+                    Next
+                </button>
+            </div>
+        }
+    }
+
+</section>
+
+@if (showReportDialog && selectedReport is not null)
+{
+    <div class="modal-backdrop-custom">
+        <div class="doctor-dialog user-detail-dialog">
+
+            <div class="dialog-header">
+                <div>
+                    <h3>Appointment Report</h3>
+                    <p>Detailed appointment date and time report.</p>
+                </div>
+
+                <button type="button"
+                        class="dialog-close-btn"
+                        @onclick="CloseReportDialog">
+                    ×
+                </button>
+            </div>
+
+            <div class="user-detail-card">
+                <div class="user-detail-grid">
+
+                    <div>
+                        <span>Appointment ID</span>
+                        <strong>@selectedReport.AppointmentId</strong>
+                    </div>
+
+                    <div>
+                        <span>Status</span>
+                        <strong>@selectedReport.Status</strong>
+                    </div>
+
+                    <div>
+                        <span>Patient Name</span>
+                        <strong>@selectedReport.PatientName</strong>
+                    </div>
+
+                    <div>
+                        <span>Patient ID</span>
+                        <strong>@selectedReport.PatientId</strong>
+                    </div>
+
+                    <div>
+                        <span>Doctor Name</span>
+                        <strong>@selectedReport.DoctorName</strong>
+                    </div>
+
+                    <div>
+                        <span>Doctor ID</span>
+                        <strong>@selectedReport.DoctorId</strong>
+                    </div>
+
+                    <div>
+                        <span>Specialisation</span>
+                        <strong>@selectedReport.Specialisation</strong>
+                    </div>
+
+                    <div>
+                        <span>Date</span>
+                        <strong>@selectedReport.ScheduledDate.ToString("dd MMM yyyy")</strong>
+                    </div>
+
+                    <div>
+                        <span>Time</span>
+                        <strong>@selectedReport.TimeSlot</strong>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="dialog-actions">
+                <button type="button"
+                        class="secondary-btn"
+                        @onclick="CloseReportDialog">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    private const int FirstPageNumber = 1;
+    private const int MinimumPaginationPages = 1;
+    private const int PageSize = 6;
+    private const int MessageAutoHideMilliseconds = 3000;
+
+    private const string AllStatusOption = "All";
+    private const string PendingStatus = "Pending";
+    private const string ConfirmedStatus = "Confirmed";
+    private const string CompletedStatus = "Completed";
+    private const string CancelledStatus = "Cancelled";
+
+    private List<AdminAppointmentDetailDto> reports = new();
+
+    private AdminAppointmentDetailDto? selectedReport;
+
+    private string searchText = string.Empty;
+    private string selectedStatus = AllStatusOption;
+    private string message = string.Empty;
+    private string messageClass = "success-box";
+
+    private bool isLoading;
+    private bool showReportDialog;
+
+    private int currentPage = FirstPageNumber;
+    private int messageVersion;
+
+    private List<AdminAppointmentDetailDto> FilteredReports
+    {
+        get
+        {
+            var filteredReports = reports.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                filteredReports = filteredReports.Where(report =>
+                    ContainsIgnoreCase(report.PatientName, searchText) ||
+                    ContainsIgnoreCase(report.DoctorName, searchText) ||
+                    ContainsIgnoreCase(report.Status, searchText) ||
+                    ContainsIgnoreCase(report.Specialisation, searchText));
+            }
+
+            if (!string.Equals(
+                    selectedStatus,
+                    AllStatusOption,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                filteredReports = filteredReports.Where(report =>
+                    string.Equals(
+                        report.Status,
+                        selectedStatus,
+                        StringComparison.OrdinalIgnoreCase));
+            }
+
+            return filteredReports.ToList();
+        }
+    }
+
+    private List<AdminAppointmentDetailDto> PagedReports =>
+        FilteredReports
+            .Skip((currentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+
+    private int TotalPages =>
+        FilteredReports.Count == 0
+            ? FirstPageNumber
+            : (int)Math.Ceiling((double)FilteredReports.Count / PageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReports();
+    }
+
+    private async Task LoadReports()
+    {
+        isLoading = true;
+
+        try
+        {
+            reports = await ReportService.GetAppointmentDetailsAsync();
+            currentPage = FirstPageNumber;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task ConfirmAppointment(int appointmentId)
+    {
+        var result = await ReportService.ConfirmAppointmentAsync(appointmentId);
+
+        ShowMessage(result.Message, result.Success);
+
+        if (result.Success)
+        {
+            await LoadReports();
+        }
+    }
+
+    private void OpenReportDialog(AdminAppointmentDetailDto report)
+    {
+        selectedReport = report;
+        showReportDialog = true;
+    }
+
+    private void CloseReportDialog()
+    {
+        selectedReport = null;
+        showReportDialog = false;
+    }
+
+    private void GoToPreviousPage()
+    {
+        if (currentPage > FirstPageNumber)
+        {
+            currentPage--;
+        }
+    }
+
+    private void GoToNextPage()
+    {
+        if (currentPage < TotalPages)
+        {
+            currentPage++;
+        }
+    }
+
+    private void ShowMessage(string text, bool isSuccess)
+    {
+        message = text;
+        messageClass = isSuccess ? "success-box" : "error-box";
+
+        messageVersion++;
+        _ = ClearMessageAfterDelayAsync(messageVersion);
+    }
+
+    private async Task ClearMessageAfterDelayAsync(int version)
+    {
+        await Task.Delay(MessageAutoHideMilliseconds);
+
+        if (version == messageVersion)
+        {
+            message = string.Empty;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private static bool ContainsIgnoreCase(
+        string? value,
+        string searchValue)
+    {
+        return !string.IsNullOrWhiteSpace(value) &&
+            value.Contains(searchValue, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetInitial(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "A";
+        }
+
+        return name.Trim()[..1].ToUpperInvariant();
+    }
+
+    private static bool IsPending(string status)
+    {
+        return string.Equals(
+            status,
+            PendingStatus,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            PendingStatus => "status-badge pending-badge",
+            ConfirmedStatus => "status-badge confirmed-badge",
+            CompletedStatus => "status-badge active-status",
+            CancelledStatus => "status-badge inactive-status",
+            _ => "status-badge"
+        };
+    }
+}

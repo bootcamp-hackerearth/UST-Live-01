@@ -1,0 +1,466 @@
+﻿@page "/patients"
+@attribute [Authorize(Roles = "Admin")]
+@using HealthAxis.Shared.DTO.AdminDtos
+@inject PatientAdminService PatientService
+
+<h1>Patient Management</h1>
+
+<p class="page-subtitle">
+    View patient records, edit patient details, and check patient appointments.
+</p>
+
+<section class="doctor-list-card">
+
+    <div class="doctor-list-header">
+        <div>
+            <h3>Patients List</h3>
+            <p>All registered patients from database.</p>
+        </div>
+
+        <div class="doctor-search-box">
+            <input type="text"
+                   placeholder="Search patient name, phone, email"
+                   value="@searchText"
+                   @oninput="OnSearchInput" />
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(message))
+    {
+        <div class="@messageClass">
+            @message
+        </div>
+    }
+
+    @if (isLoading)
+    {
+        <p>Loading patients from database...</p>
+    }
+    else if (!FilteredPatients.Any())
+    {
+        <p>No patients found.</p>
+    }
+    else
+    {
+        <div class="table-wrapper">
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Date of Birth</th>
+                        <th>Gender</th>
+                        <th>Phone</th>
+                        <th>Appointments</th>
+                        <th class="action-column">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var patient in PagedPatients)
+                    {
+                        <tr>
+                            <td>
+                                <div class="doctor-profile-cell">
+                                    <div class="doctor-avatar user-avatar-patient">
+                                        @GetInitial(patient.FullName)
+                                    </div>
+
+                                    <div>
+                                        <h4>@patient.FullName</h4>
+                                        <span>ID: @patient.PatientId</span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>@patient.DateOfBirth.ToString("dd MMM yyyy")</td>
+
+                            <td>@patient.Gender</td>
+
+                            <td>@patient.PhoneNumber</td>
+
+                            
+
+                            <td>
+                                <button type="button"
+                                        class="view-user-btn"
+                                        @onclick="() => OpenAppointmentsDialog(patient)">
+                                    View Appointments
+                                </button>
+                            </td>
+
+                            <td>
+                                <button type="button"
+                                        class="view-user-btn"
+                                        @onclick="() => OpenEditDialog(patient)">
+                                    Edit
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (TotalPages > MinimumPaginationPages)
+        {
+            <div class="pagination-bar">
+
+                <button type="button"
+                        class="secondary-btn"
+                        disabled="@(currentPage == FirstPageNumber)"
+                        @onclick="GoToPreviousPage">
+                    Previous
+                </button>
+
+                <span>
+                    Page @currentPage of @TotalPages
+                    • Total @FilteredPatients.Count patients
+                </span>
+
+                <button type="button"
+                        class="secondary-btn"
+                        disabled="@(currentPage == TotalPages)"
+                        @onclick="GoToNextPage">
+                    Next
+                </button>
+
+            </div>
+        }
+    }
+
+</section>
+
+@if (showEditDialog)
+{
+    <div class="modal-backdrop-custom">
+        <div class="doctor-dialog">
+
+            <div class="dialog-header">
+                <div>
+                    <h3>Edit Patient</h3>
+                    <p>Update patient information.</p>
+                </div>
+
+                <button type="button" class="dialog-close-btn" @onclick="CloseDialogs">
+                    ×
+                </button>
+            </div>
+
+            <EditForm Model="@editForm" OnValidSubmit="SavePatient">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <InputText class="form-control" @bind-Value="editForm.FullName" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <InputDate class="form-control" @bind-Value="editForm.DateOfBirth" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <InputSelect class="form-control" @bind-Value="editForm.Gender">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <InputText class="form-control" @bind-Value="editForm.PhoneNumber" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <InputText class="form-control" @bind-Value="editForm.Email" />
+                    </div>
+
+                  
+
+                </div>
+
+                <div class="dialog-actions">
+                    <button type="submit" class="primary-btn">
+                        Save Changes
+                    </button>
+
+                    <button type="button" class="secondary-btn" @onclick="CloseDialogs">
+                        Cancel
+                    </button>
+                </div>
+            </EditForm>
+
+        </div>
+    </div>
+}
+
+@if (showAppointmentsDialog && selectedPatient is not null)
+{
+    <div class="modal-backdrop-custom">
+        <div class="doctor-dialog user-detail-dialog">
+
+            <div class="dialog-header">
+                <div>
+                    <h3>@selectedPatient.FullName - Appointments</h3>
+                    <p>Appointments booked by this patient.</p>
+                </div>
+
+                <button type="button" class="dialog-close-btn" @onclick="CloseDialogs">
+                    ×
+                </button>
+            </div>
+
+            @if (!patientAppointments.Any())
+            {
+                <p>No appointments found for this patient.</p>
+            }
+            else
+            {
+                <div class="table-wrapper">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Specialisation</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var appointment in patientAppointments)
+                            {
+                                <tr>
+                                    <td>@appointment.DoctorName</td>
+                                    <td>@appointment.Specialisation</td>
+                                    <td>@appointment.ScheduledDate.ToString("dd MMM yyyy")</td>
+                                    <td>@appointment.TimeSlot</td>
+                                    <td>
+                                        <span class="@GetStatusBadgeClass(appointment.Status)">
+                                            @appointment.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            <div class="dialog-actions">
+                <button type="button" class="secondary-btn" @onclick="CloseDialogs">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    private const int FirstPageNumber = 1;
+    private const int MinimumPaginationPages = 1;
+    private const int PageSize = 8;
+    private const int MessageAutoHideMilliseconds = 3000;
+
+    private List<AdminPatientDto> patients = new();
+    private List<AdminPatientAppointmentDto> patientAppointments = new();
+
+    private AdminPatientDto? selectedPatient;
+    private UpdateAdminPatientDto editForm = new();
+
+    private string searchText = string.Empty;
+    private string message = string.Empty;
+    private string messageClass = "success-box";
+
+    private bool isLoading;
+    private bool showEditDialog;
+    private bool showAppointmentsDialog;
+
+    private int currentPage = FirstPageNumber;
+    private int editingPatientId;
+    private int messageVersion;
+
+    private List<AdminPatientDto> FilteredPatients
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                return patients;
+            }
+
+            return patients
+                .Where(patient =>
+                    ContainsIgnoreCase(patient.FullName, searchText) ||
+                    ContainsIgnoreCase(patient.PhoneNumber, searchText) ||
+                    ContainsIgnoreCase(patient.Email, searchText) ||
+                    ContainsIgnoreCase(patient.Gender, searchText))
+                .ToList();
+        }
+    }
+
+    private List<AdminPatientDto> PagedPatients =>
+        FilteredPatients
+            .Skip((currentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+
+    private int TotalPages =>
+        FilteredPatients.Count == 0
+            ? FirstPageNumber
+            : (int)Math.Ceiling((double)FilteredPatients.Count / PageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPatients();
+    }
+
+    private async Task LoadPatients()
+    {
+        isLoading = true;
+
+        try
+        {
+            patients = await PatientService.GetPatientsAsync();
+            currentPage = FirstPageNumber;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void OnSearchInput(ChangeEventArgs args)
+    {
+        searchText = args.Value?.ToString() ?? string.Empty;
+        currentPage = FirstPageNumber;
+    }
+
+    private void OpenEditDialog(AdminPatientDto patient)
+    {
+        selectedPatient = patient;
+        editingPatientId = patient.PatientId;
+
+        editForm = new UpdateAdminPatientDto
+        {
+            FullName = patient.FullName,
+            DateOfBirth = patient.DateOfBirth,
+            Gender = patient.Gender,
+            PhoneNumber = patient.PhoneNumber,
+            Email = patient.Email,
+           
+        };
+
+        showEditDialog = true;
+    }
+
+    private async Task SavePatient()
+    {
+        var result = await PatientService.UpdatePatientAsync(
+            editingPatientId,
+            editForm);
+
+        ShowMessage(result.Message, result.Success);
+
+        if (result.Success)
+        {
+            CloseDialogs();
+            await LoadPatients();
+        }
+    }
+
+    private async Task OpenAppointmentsDialog(AdminPatientDto patient)
+    {
+        selectedPatient = patient;
+        patientAppointments = await PatientService.GetPatientAppointmentsAsync(patient.PatientId);
+        showAppointmentsDialog = true;
+    }
+
+    private void CloseDialogs()
+    {
+        selectedPatient = null;
+        showEditDialog = false;
+        showAppointmentsDialog = false;
+        editingPatientId = 0;
+        patientAppointments = new List<AdminPatientAppointmentDto>();
+    }
+
+    private void GoToPreviousPage()
+    {
+        if (currentPage > FirstPageNumber)
+        {
+            currentPage--;
+        }
+    }
+
+    private void GoToNextPage()
+    {
+        if (currentPage < TotalPages)
+        {
+            currentPage++;
+        }
+    }
+
+    private void ShowMessage(string text, bool isSuccess)
+    {
+        message = text;
+        messageClass = isSuccess ? "success-box" : "error-box";
+
+        messageVersion++;
+        _ = ClearMessageAfterDelayAsync(messageVersion);
+    }
+
+    private async Task ClearMessageAfterDelayAsync(int version)
+    {
+        await Task.Delay(MessageAutoHideMilliseconds);
+
+        if (version == messageVersion)
+        {
+            message = string.Empty;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private static bool ContainsIgnoreCase(string? value, string searchValue)
+    {
+        return !string.IsNullOrWhiteSpace(value) &&
+            value.Contains(searchValue, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string DisplayValue(string value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? "Not available"
+            : value;
+    }
+
+    private static string GetInitial(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "P";
+        }
+
+        return name.Trim()[..1].ToUpperInvariant();
+    }
+
+    private static string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "status-badge pending-badge",
+            "Confirmed" => "status-badge confirmed-badge",
+            "Completed" => "status-badge active-status",
+            "Cancelled" => "status-badge inactive-status",
+            _ => "status-badge"
+        };
+    }
+}

@@ -1,0 +1,141 @@
+﻿@page "/external-login"
+@layout EmptyLayout
+@inject NavigationManager NavigationManager
+@inject TokenService TokenService
+
+<section class="external-login-page">
+    <div class="external-login-card">
+        <div class="loader"></div>
+
+        <h2>Opening Admin Dashboard</h2>
+
+        <p>
+            Please wait while we securely connect your admin session.
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="error-box">
+                @errorMessage
+            </div>
+        }
+    </div>
+</section>
+
+<style>
+    .external-login-page {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 32%), radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.2), transparent 34%), #020617;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    .external-login-card {
+        width: min(440px, 100%);
+        border-radius: 30px;
+        padding: 34px;
+        text-align: center;
+        color: white;
+        background: rgba(15, 23, 42, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    .loader {
+        width: 68px;
+        height: 68px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        border: 6px solid rgba(255, 255, 255, 0.18);
+        border-top-color: #22d3ee;
+        animation: spin 0.8s linear infinite;
+    }
+
+    .external-login-card h2 {
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .external-login-card p {
+        margin: 12px 0 0;
+        color: #cbd5e1;
+        line-height: 1.6;
+        font-weight: 700;
+    }
+
+    .error-box {
+        margin-top: 18px;
+        border-radius: 16px;
+        padding: 13px 15px;
+        color: #fecaca;
+        background: rgba(239, 68, 68, 0.16);
+        font-weight: 800;
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+@code {
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var parameters = ReadFragmentParameters();
+
+        if (!parameters.TryGetValue("accessToken", out var accessToken) ||
+            !parameters.TryGetValue("refreshToken", out var refreshToken) ||
+            !parameters.TryGetValue("expiresIn", out var expiresIn) ||
+            !parameters.TryGetValue("expiresAt", out var expiresAt))
+        {
+            errorMessage = "Admin login details were not received.";
+            return;
+        }
+
+        parameters.TryGetValue("role", out var role);
+        parameters.TryGetValue("email", out var email);
+
+        if (string.IsNullOrWhiteSpace(accessToken) ||
+            string.IsNullOrWhiteSpace(refreshToken))
+        {
+            errorMessage = "Invalid admin login details.";
+            return;
+        }
+
+        await TokenService.SaveAdminSessionAsync(
+            accessToken,
+            refreshToken,
+            string.IsNullOrWhiteSpace(role) ? "Admin" : role,
+            email ?? string.Empty,
+            expiresAt,
+            expiresIn);
+
+        NavigationManager.NavigateTo("/dashboard", replace: true);
+    }
+
+    private Dictionary<string, string> ReadFragmentParameters()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var fragment = uri.Fragment;
+
+        if (string.IsNullOrWhiteSpace(fragment))
+        {
+            return new Dictionary<string, string>();
+        }
+
+        var cleanFragment = fragment.TrimStart('#');
+
+        return cleanFragment
+            .Split('&', StringSplitOptions.RemoveEmptyEntries)
+            .Select(part => part.Split('=', 2))
+            .Where(parts => parts.Length == 2)
+            .ToDictionary(
+                parts => Uri.UnescapeDataString(parts[0]),
+                parts => Uri.UnescapeDataString(parts[1]));
+    }
+}

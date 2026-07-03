@@ -1,0 +1,180 @@
+﻿@page "/reports"
+@attribute [Authorize(Roles = "Admin")]
+@inject AuthService AuthService
+@inject ReportService ReportService
+@inject NavigationManager NavigationManager
+
+<h1>Appointment Reports</h1>
+
+<p class="page-subtitle">
+    View hospital appointment status and daily flow.
+</p>
+
+<section class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-icon orange">P</div>
+        <div>
+            <p>Pending</p>
+            <h2>@reports.Count(r => r.Status == "Pending")</h2>
+            <span>Waiting for confirmation</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon blue">C</div>
+        <div>
+            <p>Confirmed</p>
+            <h2>@reports.Count(r => r.Status == "Confirmed")</h2>
+            <span>Scheduled visits</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon green">D</div>
+        <div>
+            <p>Completed</p>
+            <h2>@reports.Count(r => r.Status == "Completed")</h2>
+            <span>Finished appointments</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon purple">X</div>
+        <div>
+            <p>Cancelled</p>
+            <h2>@reports.Count(r => r.Status == "Cancelled")</h2>
+            <span>Cancelled bookings</span>
+        </div>
+    </div>
+
+</section>
+
+<section class="doctor-list-card">
+
+    <div class="doctor-list-header">
+        <div>
+            <h3>Appointment Report Table</h3>
+            <p>Static reports. API connection will be added later.</p>
+        </div>
+
+        <div class="doctor-search-box">
+            <input type="text"
+                   placeholder="Search report..."
+                   @bind="searchText"
+                   @bind:event="oninput" />
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Specialisation</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var report in FilteredReports)
+                {
+                    <tr>
+                        <td>
+                            <div class="doctor-profile-cell">
+                                <div class="doctor-avatar">
+                                    @GetInitial(report.PatientName)
+                                </div>
+
+                                <div>
+                                    <h4>@report.PatientName</h4>
+                                    <span>Appointment ID: @report.AppointmentId</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>@report.DoctorName</td>
+
+                        <td>
+                            <span class="specialisation-pill">
+                                @report.Specialisation
+                            </span>
+                        </td>
+
+                        <td>@report.AppointmentDate.ToString("dd MMM yyyy")</td>
+
+                        <td class="fee-text">@report.TimeSlot</td>
+
+                        <td>
+                            <span class="status-badge @GetStatusClass(report.Status)">
+                                @report.Status
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</section>
+
+@code {
+    private List<AppointmentReportDto> reports = new();
+
+    private string searchText = string.Empty;
+
+    private List<AppointmentReportDto> FilteredReports
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                return reports;
+            }
+
+            return reports
+                .Where(r =>
+                    r.PatientName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                    r.DoctorName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                    r.Specialisation.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                    r.Status.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     if (!AuthService.IsLoggedIn)
+    //     {
+    //         NavigationManager.NavigateTo("/");
+    //         return;
+    //     }
+
+    //     reports = await ReportService.GetAppointmentReportsAsync();
+    // }
+
+    private string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "pending-status",
+            "Confirmed" => "confirmed-status",
+            "Completed" => "active-status",
+            "Cancelled" => "inactive-status",
+            _ => "pending-status"
+        };
+    }
+
+    private string GetInitial(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "P";
+        }
+
+        return name.Trim().Substring(0, 1).ToUpper();
+    }
+}

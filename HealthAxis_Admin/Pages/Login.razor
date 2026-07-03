@@ -1,0 +1,81 @@
+﻿@page "/"
+@page "/login"
+@layout EmptyLayout
+@inject NavigationManager NavigationManager
+
+<section class="redirect-page">
+    <div class="redirect-card">
+        <div class="spinner"></div>
+
+        <h2>Redirecting to HealthAxis Login</h2>
+
+        <p>
+            Please wait. You will be taken to the common login page.
+        </p>
+    </div>
+</section>
+
+<style>
+    .redirect-page {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 32%), radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.2), transparent 34%), #020617;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    .redirect-card {
+        width: min(430px, 100%);
+        border-radius: 30px;
+        padding: 34px;
+        text-align: center;
+        color: white;
+        background: rgba(15, 23, 42, 0.86);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    .spinner {
+        width: 68px;
+        height: 68px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        border: 6px solid rgba(255, 255, 255, 0.18);
+        border-top-color: #22d3ee;
+        animation: spin 0.8s linear infinite;
+    }
+
+    .redirect-card h2 {
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .redirect-card p {
+        margin: 12px 0 0;
+        color: #cbd5e1;
+        line-height: 1.6;
+        font-weight: 700;
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        NavigationManager.NavigateTo(
+            "http://localhost:4200/login?adminLogout=true",
+            forceLoad: true,
+            replace: true);
+    }
+}
