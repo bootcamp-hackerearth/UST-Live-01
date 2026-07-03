@@ -2667,7 +2667,39 @@ kC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appoint
 ;& '
 }( )
 }		 
-} ×
+} „
+kC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appointment\CancelAppointmentDto.cs
+	namespace 	
+S3_HealthAxis
+ 
+. 
+Shared 
+. 
+DTOs #
+.# $
+Appointment$ /
+{ 
+public 
+
+class  
+CancelAppointmentDto %
+{ 
+public 
+string 
+CancellationReason (
+{) *
+get+ .
+;. /
+set0 3
+;3 4
+}5 6
+=7 8
+string9 ?
+.? @
+Empty@ E
+;E F
+} 
+} ×
 eC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appointment\AppointmentDto.cs
 	namespace 	
 S3_HealthAxis
@@ -2766,6 +2798,70 @@ eC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appoint
 set1 4
 ;4 5
 }6 7
+} 
+} ‚	
+bC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Admin\UserManagementDto.cs
+	namespace 	
+S3_HealthAxis
+ 
+. 
+Shared 
+. 
+DTOs #
+.# $
+Admin$ )
+{ 
+public 
+
+class 
+UserManagementDto "
+{ 
+public 
+int 
+UserId 
+{ 
+get 
+;  
+set! $
+;$ %
+}& '
+public 
+string 
+Email 
+{ 
+get !
+;! "
+set# &
+;& '
+}( )
+=* +
+string, 2
+.2 3
+Empty3 8
+;8 9
+public		 
+string		 
+Role		 
+{		 
+get		  
+;		  !
+set		" %
+;		% &
+}		' (
+=		) *
+string		+ 1
+.		1 2
+Empty		2 7
+;		7 8
+public 
+bool 
+IsActive 
+{ 
+get "
+;" #
+set$ '
+;' (
+}) *
 } 
 } Ê
 lC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appointment\AppointmentDetailsDto.cs
@@ -2896,71 +2992,7 @@ DoctorName		  
 ;4 5
 }6 7
 } 
-} ‚	
-bC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Admin\UserManagementDto.cs
-	namespace 	
-S3_HealthAxis
- 
-. 
-Shared 
-. 
-DTOs #
-.# $
-Admin$ )
-{ 
-public 
-
-class 
-UserManagementDto "
-{ 
-public 
-int 
-UserId 
-{ 
-get 
-;  
-set! $
-;$ %
-}& '
-public 
-string 
-Email 
-{ 
-get !
-;! "
-set# &
-;& '
-}( )
-=* +
-string, 2
-.2 3
-Empty3 8
-;8 9
-public		 
-string		 
-Role		 
-{		 
-get		  
-;		  !
-set		" %
-;		% &
-}		' (
-=		) *
-string		+ 1
-.		1 2
-Empty		2 7
-;		7 8
-public 
-bool 
-IsActive 
-{ 
-get "
-;" #
-set$ '
-;' (
-}) *
-} 
-} æ
+} æ
 cC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Admin\AdminStatisticsDto.cs
 	namespace 	
 S3_HealthAxis
@@ -3095,36 +3127,4 @@ bC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Admin\A
 ;3 4
 }5 6
 } 
-} „
-kC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appointment\CancelAppointmentDto.cs
-	namespace 	
-S3_HealthAxis
- 
-. 
-Shared 
-. 
-DTOs #
-.# $
-Appointment$ /
-{ 
-public 
-
-class  
-CancelAppointmentDto %
-{ 
-public 
-string 
-CancellationReason (
-{) *
-get+ .
-;. /
-set0 3
-;3 4
-}5 6
-=7 8
-string9 ?
-.? @
-Empty@ E
-;E F
-} 
-} 
+} 

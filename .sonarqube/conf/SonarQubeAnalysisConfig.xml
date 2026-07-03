@@ -149,11 +149,14 @@
     <Property Name="sonar.java.jvmframeworkconfig.activate">true</Property>
     <Property Name="sonar.updatecenter.url">https://downloads.sonarsource.com/sonarqube/update/update-center.properties</Property>
     <Property Name="sonar.core.id">147B411E-AZ5PHq6ekpK8xEY3MImo</Property>
-    <Property Name="sonar.core.startTime">01-07-2026 16:23:38</Property>
+    <Property Name="sonar.core.startTime">03-07-2026 09:52:22</Property>
   </ServerSettings>
   <LocalSettings>
     <Property Name="sonar.host.url">http://localhost:9000</Property>
-    <Property Name="sonar.cs.cobertura.reportsPaths">**/TestResults/**/coverage.cobertura.xml</Property>
+    <Property Name="sonar.cs.vscoveragexml.reportsPaths">coverage.xml</Property>
+    <Property Name="sonar.inclusions">**/S3_HealthAxisApi/Services/Implementation/**/*.cs</Property>
+    <Property Name="sonar.coverage.exclusions">**/S3_HealthAxis.Tests/**,**/S3_HealthAxis.Angular/**,**/S3_HealthAxis.Blazor/**,**/S3_HealthAxis.Shared/**,**/S3_HealthAxisApi/Controllers/**,**/S3_HealthAxisApi/Repositories/**,**/S3_HealthAxisApi/Models/**,**/S3_HealthAxisApi/DTOs/**,**/S3_HealthAxisApi/Data/**,**/S3_HealthAxisApi/Program.cs</Property>
+    <Property Name="sonar.exclusions">**/node_modules/**,**/bin/**,**/obj/**,**/Migrations/**,**/TestResults/**,**/coverage-report/**,**/*.css,**/*.razor,**/*.g.cs,**/*.designer.cs,**/*.slnLaunch.user,**/launchSettings.json,coverage.xml</Property>
   </LocalSettings>
   <ScannerOptsSettings />
   <AnalyzersSettings>

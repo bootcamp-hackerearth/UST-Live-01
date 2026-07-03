@@ -192,6 +192,91 @@
         {
           "ruleId": "S1192",
           "level": "warning",
+          "message": "Define a constant instead of using this literal 'Patient' 6 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Controllers/AppointmentController.cs",
+                "region": {
+                  "startLine": 42,
+                  "startColumn": 31,
+                  "endLine": 42,
+                  "endColumn": 40
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Controllers/AppointmentController.cs",
+                "region": {
+                  "startLine": 61,
+                  "startColumn": 31,
+                  "endLine": 61,
+                  "endColumn": 40
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Controllers/AppointmentController.cs",
+                "region": {
+                  "startLine": 127,
+                  "startColumn": 35,
+                  "endLine": 127,
+                  "endColumn": 44
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Controllers/AppointmentController.cs",
+                "region": {
+                  "startLine": 176,
+                  "startColumn": 35,
+                  "endLine": 176,
+                  "endColumn": 44
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Controllers/AppointmentController.cs",
+                "region": {
+                  "startLine": 262,
+                  "startColumn": 31,
+                  "endLine": 262,
+                  "endColumn": 40
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Controllers/AppointmentController.cs",
+                "region": {
+                  "startLine": 295,
+                  "startColumn": 35,
+                  "endLine": 295,
+                  "endColumn": 44
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
           "message": "Define a constant instead of using this literal 'SqlServer:Identity' 4 times.",
           "locations": [
             {
@@ -715,91 +800,6 @@
         {
           "ruleId": "S1192",
           "level": "warning",
-          "message": "Define a constant instead of using this literal 'Patient' 6 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Controllers/AppointmentController.cs",
-                "region": {
-                  "startLine": 42,
-                  "startColumn": 31,
-                  "endLine": 42,
-                  "endColumn": 40
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Controllers/AppointmentController.cs",
-                "region": {
-                  "startLine": 61,
-                  "startColumn": 31,
-                  "endLine": 61,
-                  "endColumn": 40
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Controllers/AppointmentController.cs",
-                "region": {
-                  "startLine": 127,
-                  "startColumn": 35,
-                  "endLine": 127,
-                  "endColumn": 44
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Controllers/AppointmentController.cs",
-                "region": {
-                  "startLine": 176,
-                  "startColumn": 35,
-                  "endLine": 176,
-                  "endColumn": 44
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Controllers/AppointmentController.cs",
-                "region": {
-                  "startLine": 262,
-                  "startColumn": 31,
-                  "endLine": 262,
-                  "endColumn": 40
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Controllers/AppointmentController.cs",
-                "region": {
-                  "startLine": 295,
-                  "startColumn": 35,
-                  "endLine": 295,
-                  "endColumn": 44
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null,
-              "4": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
           "message": "Define a constant instead of using this literal 'AspNetRoles' 5 times.",
           "locations": [
             {
@@ -867,6 +867,164 @@
               "1": null,
               "2": null,
               "3": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'Email' 5 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 23,
+                  "endLine": 14,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
+                "region": {
+                  "startLine": 25,
+                  "startColumn": 25,
+                  "endLine": 25,
+                  "endColumn": 32
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
+                "region": {
+                  "startLine": 32,
+                  "startColumn": 25,
+                  "endLine": 32,
+                  "endColumn": 32
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
+                "region": {
+                  "startLine": 38,
+                  "startColumn": 25,
+                  "endLine": 38,
+                  "endColumn": 32
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
+                "region": {
+                  "startLine": 50,
+                  "startColumn": 23,
+                  "endLine": 50,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'Doctors' 6 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 24,
+                  "endLine": 15,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
+                "region": {
+                  "startLine": 22,
+                  "startColumn": 24,
+                  "endLine": 22,
+                  "endColumn": 33
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 24,
+                  "endLine": 29,
+                  "endColumn": 33
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
+                "region": {
+                  "startLine": 37,
+                  "startColumn": 24,
+                  "endLine": 37,
+                  "endColumn": 33
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
+                "region": {
+                  "startLine": 47,
+                  "startColumn": 24,
+                  "endLine": 47,
+                  "endColumn": 33
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
+                "region": {
+                  "startLine": 51,
+                  "startColumn": 24,
+                  "endLine": 51,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null
             }
           }
         },
@@ -1367,164 +1525,6 @@
           }
         },
         {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'Email' 5 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
-                "region": {
-                  "startLine": 14,
-                  "startColumn": 23,
-                  "endLine": 14,
-                  "endColumn": 30
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
-                "region": {
-                  "startLine": 25,
-                  "startColumn": 25,
-                  "endLine": 25,
-                  "endColumn": 32
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
-                "region": {
-                  "startLine": 32,
-                  "startColumn": 25,
-                  "endLine": 32,
-                  "endColumn": 32
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
-                "region": {
-                  "startLine": 38,
-                  "startColumn": 25,
-                  "endLine": 38,
-                  "endColumn": 32
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
-                "region": {
-                  "startLine": 50,
-                  "startColumn": 23,
-                  "endLine": 50,
-                  "endColumn": 30
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'Doctors' 6 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
-                "region": {
-                  "startLine": 15,
-                  "startColumn": 24,
-                  "endLine": 15,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
-                "region": {
-                  "startLine": 22,
-                  "startColumn": 24,
-                  "endLine": 22,
-                  "endColumn": 33
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
-                "region": {
-                  "startLine": 29,
-                  "startColumn": 24,
-                  "endLine": 29,
-                  "endColumn": 33
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
-                "region": {
-                  "startLine": 37,
-                  "startColumn": 24,
-                  "endLine": 37,
-                  "endColumn": 33
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
-                "region": {
-                  "startLine": 47,
-                  "startColumn": 24,
-                  "endLine": 47,
-                  "endColumn": 33
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260619044738_AddUniqueDoctorEmail.cs",
-                "region": {
-                  "startLine": 51,
-                  "startColumn": 24,
-                  "endLine": 51,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null,
-              "4": null
-            }
-          }
-        },
-        {
           "ruleId": "S4136",
           "level": "warning",
           "message": "All 'ExistsSamePatientSameDoctorSameDateAsync' method overloads should be adjacent.",
@@ -1789,6 +1789,48 @@
           }
         },
         {
+          "ruleId": "S1186",
+          "level": "warning",
+          "message": "Add a nested comment explaining why this method is empty, throw a 'NotSupportedException' or complete the implementation.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260622111123_emailadded.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 33,
+                  "endLine": 17,
+                  "endColumn": 37
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1186",
+          "level": "warning",
+          "message": "Add a nested comment explaining why this method is empty, throw a 'NotSupportedException' or complete the implementation.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260622111729_DoctorUpdates.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 33,
+                  "endLine": 17,
+                  "endColumn": 37
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
           "ruleId": "CA1861",
           "level": "note",
           "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
@@ -1897,128 +1939,6 @@
                   "startColumn": 1,
                   "endLine": 181,
                   "endColumn": 10
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CA1850",
-          "level": "note",
-          "message": "Prefer static 'System.Security.Cryptography.SHA256.HashData' method over 'ComputeHash'",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Services/Implementation/DoctorService.cs",
-                "region": {
-                  "startLine": 279,
-                  "startColumn": 17,
-                  "endLine": 279,
-                  "endColumn": 42
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Services/Implementation/DoctorService.cs",
-                "region": {
-                  "startLine": 272,
-                  "startColumn": 23,
-                  "endLine": 273,
-                  "endColumn": 61
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "ComputeTypePropertyKey": "ComputeHash",
-              "DeleteHashCreationPropertyKey": "DeleteHashCreationPropertyKey",
-              "HashCreationIndexPropertyKey": "0",
-              "TargetHashTypeDiagnosticPropertyKey": "SHA256"
-            }
-          }
-        },
-        {
-          "ruleId": "CA1850",
-          "level": "note",
-          "message": "Prefer static 'System.Security.Cryptography.SHA256.HashData' method over 'ComputeHash'",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Services/Implementation/AuthService.cs",
-                "region": {
-                  "startLine": 386,
-                  "startColumn": 24,
-                  "endLine": 386,
-                  "endColumn": 49
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Services/Implementation/AuthService.cs",
-                "region": {
-                  "startLine": 383,
-                  "startColumn": 23,
-                  "endLine": 383,
-                  "endColumn": 47
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "ComputeTypePropertyKey": "ComputeHash",
-              "DeleteHashCreationPropertyKey": "DeleteHashCreationPropertyKey",
-              "HashCreationIndexPropertyKey": "0",
-              "TargetHashTypeDiagnosticPropertyKey": "SHA256"
-            }
-          }
-        },
-        {
-          "ruleId": "S1186",
-          "level": "warning",
-          "message": "Add a nested comment explaining why this method is empty, throw a 'NotSupportedException' or complete the implementation.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260622111729_DoctorUpdates.cs",
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 33,
-                  "endLine": 17,
-                  "endColumn": 37
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S1186",
-          "level": "warning",
-          "message": "Add a nested comment explaining why this method is empty, throw a 'NotSupportedException' or complete the implementation.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Migrations/20260622111123_emailadded.cs",
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 33,
-                  "endLine": 17,
-                  "endColumn": 37
                 }
               }
             }
@@ -2169,6 +2089,86 @@
               "7": "May belong to responsibility #2.",
               "8": "May belong to responsibility #2.",
               "9": "May belong to responsibility #2."
+            }
+          }
+        },
+        {
+          "ruleId": "CA1850",
+          "level": "note",
+          "message": "Prefer static 'System.Security.Cryptography.SHA256.HashData' method over 'ComputeHash'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Services/Implementation/DoctorService.cs",
+                "region": {
+                  "startLine": 279,
+                  "startColumn": 17,
+                  "endLine": 279,
+                  "endColumn": 42
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Services/Implementation/DoctorService.cs",
+                "region": {
+                  "startLine": 272,
+                  "startColumn": 23,
+                  "endLine": 273,
+                  "endColumn": 61
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ComputeTypePropertyKey": "ComputeHash",
+              "DeleteHashCreationPropertyKey": "DeleteHashCreationPropertyKey",
+              "HashCreationIndexPropertyKey": "0",
+              "TargetHashTypeDiagnosticPropertyKey": "SHA256"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1850",
+          "level": "note",
+          "message": "Prefer static 'System.Security.Cryptography.SHA256.HashData' method over 'ComputeHash'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Services/Implementation/AuthService.cs",
+                "region": {
+                  "startLine": 386,
+                  "startColumn": 24,
+                  "endLine": 386,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxisApi/Services/Implementation/AuthService.cs",
+                "region": {
+                  "startLine": 383,
+                  "startColumn": 23,
+                  "endLine": 383,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ComputeTypePropertyKey": "ComputeHash",
+              "DeleteHashCreationPropertyKey": "DeleteHashCreationPropertyKey",
+              "HashCreationIndexPropertyKey": "0",
+              "TargetHashTypeDiagnosticPropertyKey": "SHA256"
             }
           }
         }

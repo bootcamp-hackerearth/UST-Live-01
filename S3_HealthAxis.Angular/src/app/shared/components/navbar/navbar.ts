@@ -13,6 +13,19 @@ import { DoctorService } from '../../../core/services/doctor.service';
 import { PatientPortalService } from '../../../core/services/patient-portal.service';
 import { TokenService } from '../../../core/services/token.service';
 
+const CREDENTIAL_MESSAGES = {
+  currentRequired: 'Current credential is required.',
+  newRequired: 'New credential is required.',
+  confirmRequired: 'Please confirm the new credential.',
+  sameAsCurrent: 'New credential cannot be the same as current credential.',
+  mismatch: 'New credential and confirmation do not match.',
+  weak: 'Credential must be at least 8 characters and include uppercase, lowercase, number, and special character.',
+  changed: 'Credential changed successfully.',
+  updateFailed: 'Could not update credential. Please try again.',
+  sessionExpired: 'Session expired or unauthorized. Please login again.',
+  apiUnavailable: 'Could not connect to the API. Please make sure the API is running.'
+};
+
 @Component({
   selector: 'app-navbar',
   imports: [
@@ -32,8 +45,8 @@ export class Navbar implements OnInit, OnDestroy {
 
   changingPassword = false;
 
-  passwordSuccessMessage = '';
-  passwordErrorMessage = '';
+  passwordSuccessMessage = String();
+  passwordErrorMessage = String();
 
   showCurrentPassword = false;
   showNewPassword = false;
@@ -42,9 +55,9 @@ export class Navbar implements OnInit, OnDestroy {
   fullName = '';
 
   changePasswordForm = {
-    currentPassword: '',
-    newPassword: '',
-    confirmNewPassword: ''
+    currentPassword: String(),
+    newPassword: String(),
+    confirmNewPassword: String()
   };
 
   private routerSubscription?: Subscription;
@@ -335,33 +348,32 @@ export class Navbar implements OnInit, OnDestroy {
     this.resetPasswordMessages();
 
     if (!this.changePasswordForm.currentPassword) {
-      this.passwordErrorMessage = 'Current password is required.';
+      this.passwordErrorMessage = CREDENTIAL_MESSAGES.currentRequired;
       return;
     }
 
     if (!this.changePasswordForm.newPassword) {
-      this.passwordErrorMessage = 'New password is required.';
+      this.passwordErrorMessage = CREDENTIAL_MESSAGES.newRequired;
       return;
     }
 
     if (!this.changePasswordForm.confirmNewPassword) {
-      this.passwordErrorMessage = 'Confirm password is required.';
+      this.passwordErrorMessage = CREDENTIAL_MESSAGES.confirmRequired;
       return;
     }
 
     if (this.isNewPasswordSameAsCurrent) {
-      this.passwordErrorMessage = 'New password cannot be the same as current password.';
+      this.passwordErrorMessage = CREDENTIAL_MESSAGES.sameAsCurrent;
       return;
     }
 
     if (!this.passwordsMatch) {
-      this.passwordErrorMessage = 'New password and confirm password do not match.';
+      this.passwordErrorMessage = CREDENTIAL_MESSAGES.mismatch;
       return;
     }
 
     if (!this.isNewPasswordStrong) {
-      this.passwordErrorMessage =
-        'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.';
+      this.passwordErrorMessage = CREDENTIAL_MESSAGES.weak;
       return;
     }
 
@@ -375,7 +387,7 @@ export class Navbar implements OnInit, OnDestroy {
       next: (response) => {
         this.changingPassword = false;
         this.passwordSuccessMessage =
-          response?.message ?? 'Password changed successfully.';
+          response?.message ?? CREDENTIAL_MESSAGES.changed;
 
         setTimeout(() => {
           this.showChangePasswordModal = false;
@@ -391,19 +403,16 @@ export class Navbar implements OnInit, OnDestroy {
         }
 
         if (error.status === 401 || error.status === 403) {
-          this.passwordErrorMessage =
-            'Session expired or unauthorized. Please login again.';
+          this.passwordErrorMessage = CREDENTIAL_MESSAGES.sessionExpired;
           return;
         }
 
         if (error.status === 0) {
-          this.passwordErrorMessage =
-            'Could not connect to the API. Please make sure the API is running.';
+          this.passwordErrorMessage = CREDENTIAL_MESSAGES.apiUnavailable;
           return;
         }
 
-        this.passwordErrorMessage =
-          'Could not change password. Please try again.';
+        this.passwordErrorMessage = CREDENTIAL_MESSAGES.updateFailed;
       }
     });
   }
@@ -427,15 +436,15 @@ export class Navbar implements OnInit, OnDestroy {
   }
 
   private resetPasswordMessages(): void {
-    this.passwordSuccessMessage = '';
-    this.passwordErrorMessage = '';
+    this.passwordSuccessMessage = String();
+    this.passwordErrorMessage = String();
   }
 
   private resetPasswordForm(): void {
     this.changePasswordForm = {
-      currentPassword: '',
-      newPassword: '',
-      confirmNewPassword: ''
+      currentPassword: String(),
+      newPassword: String(),
+      confirmNewPassword: String()
     };
 
     this.showCurrentPassword = false;

@@ -15,7 +15,6 @@ import { RegisterPatientRequest } from '../../shared/models/auth.models';
   styleUrl: './register.css'
 })
 export class Register {
-
   currentStep = 1;
   loading = false;
   errorMessage = '';
@@ -62,12 +61,20 @@ export class Register {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
-  /**
-   * Allows only alphabets and spaces.
-   */
   isValidFullName(fullName: string): boolean {
-    const fullNamePattern = /^[A-Za-z ]+$/;
-    return fullNamePattern.test(fullName.trim());
+    const trimmedName = fullName.trim();
+
+    if (!trimmedName) {
+      return false;
+    }
+
+    return [...trimmedName].every((character) => {
+      return (
+        character === ' ' ||
+        (character >= 'A' && character <= 'Z') ||
+        (character >= 'a' && character <= 'z')
+      );
+    });
   }
 
   get isNameValid(): boolean {
@@ -78,21 +85,35 @@ export class Register {
   }
 
   get isEmailValid(): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email);
+    return this.isSafeEmail(this.form.email);
   }
 
   get isPhoneValid(): boolean {
-    return /^[0-9]{10}$/.test(this.form.phoneNumber);
+    return this.isTenDigitPhoneNumber(this.form.phoneNumber);
   }
 
   get passwordStrengthScore(): number {
     let score = 0;
 
-    if (this.form.password.length >= 8) score++;
-    if (/[A-Z]/.test(this.form.password)) score++;
-    if (/[a-z]/.test(this.form.password)) score++;
-    if (/[0-9]/.test(this.form.password)) score++;
-    if (/[^A-Za-z0-9]/.test(this.form.password)) score++;
+    if (this.form.password.length >= 8) {
+      score++;
+    }
+
+    if (/[A-Z]/.test(this.form.password)) {
+      score++;
+    }
+
+    if (/[a-z]/.test(this.form.password)) {
+      score++;
+    }
+
+    if (/[0-9]/.test(this.form.password)) {
+      score++;
+    }
+
+    if (/[^A-Za-z0-9]/.test(this.form.password)) {
+      score++;
+    }
 
     return score;
   }
@@ -102,7 +123,9 @@ export class Register {
   }
 
   get passwordStrengthLabel(): string {
-    if (!this.form.password) return '';
+    if (!this.form.password) {
+      return '';
+    }
 
     if (this.passwordStrengthScore <= 2) {
       return 'Weak';
@@ -116,7 +139,9 @@ export class Register {
   }
 
   get passwordStrengthClass(): string {
-    if (!this.form.password) return '';
+    if (!this.form.password) {
+      return '';
+    }
 
     if (this.passwordStrengthScore <= 2) {
       return 'weak';
@@ -247,6 +272,100 @@ export class Register {
           'Registration failed. Please try again.';
       }
     });
+  }
+
+  private isSafeEmail(email: string): boolean {
+    const normalizedEmail = email.trim();
+
+    if (
+      normalizedEmail.length < 5 ||
+      normalizedEmail.length > 254 ||
+      normalizedEmail.includes(' ')
+    ) {
+      return false;
+    }
+
+    const atIndex = normalizedEmail.indexOf('@');
+    const lastAtIndex = normalizedEmail.lastIndexOf('@');
+
+    if (
+      atIndex <= 0 ||
+      atIndex !== lastAtIndex ||
+      atIndex === normalizedEmail.length - 1
+    ) {
+      return false;
+    }
+
+    const localPart = normalizedEmail.slice(0, atIndex);
+    const domainPart = normalizedEmail.slice(atIndex + 1);
+
+    if (
+      !localPart ||
+      !domainPart ||
+      localPart.length > 64 ||
+      domainPart.length > 253
+    ) {
+      return false;
+    }
+
+    const dotIndex = domainPart.lastIndexOf('.');
+
+    if (
+      dotIndex <= 0 ||
+      dotIndex === domainPart.length - 1
+    ) {
+      return false;
+    }
+
+    return this.hasOnlyAllowedEmailCharacters(localPart, domainPart);
+  }
+
+  private hasOnlyAllowedEmailCharacters(
+    localPart: string,
+    domainPart: string
+  ): boolean {
+    return (
+      [...localPart].every((character) =>
+        this.isAllowedEmailLocalCharacter(character)
+      ) &&
+      [...domainPart].every((character) =>
+        this.isAllowedEmailDomainCharacter(character)
+      )
+    );
+  }
+
+  private isAllowedEmailLocalCharacter(character: string): boolean {
+    return (
+      this.isAlphaNumeric(character) ||
+      ['.', '_', '%', '+', '-'].includes(character)
+    );
+  }
+
+  private isAllowedEmailDomainCharacter(character: string): boolean {
+    return (
+      this.isAlphaNumeric(character) ||
+      character === '.' ||
+      character === '-'
+    );
+  }
+
+  private isAlphaNumeric(character: string): boolean {
+    return (
+      (character >= 'A' && character <= 'Z') ||
+      (character >= 'a' && character <= 'z') ||
+      (character >= '0' && character <= '9')
+    );
+  }
+
+  private isTenDigitPhoneNumber(phoneNumber: string): boolean {
+    const normalizedPhoneNumber = phoneNumber.trim();
+
+    return (
+      normalizedPhoneNumber.length === 10 &&
+      [...normalizedPhoneNumber].every((character) =>
+        character >= '0' && character <= '9'
+      )
+    );
   }
 }
 

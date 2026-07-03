@@ -11,7 +11,7 @@ export class TokenService {
   private readonly emailKey = 'healthaxis_email';
   private readonly roleKey = 'healthaxis_role';
   private readonly referenceIdKey = 'healthaxis_reference_id';
-  private readonly mustChangePasswordKey = 'healthaxis_must_change_password';
+  private readonly credentialResetRequiredKey = 'healthaxis_credential_reset_required';
 
   saveAuthData(response: AuthResponse): void {
     localStorage.setItem(this.accessTokenKey, response.accessToken);
@@ -20,7 +20,7 @@ export class TokenService {
     localStorage.setItem(this.roleKey, response.role);
     localStorage.setItem(this.referenceIdKey, String(response.referenceId));
     localStorage.setItem(
-      this.mustChangePasswordKey,
+      this.credentialResetRequiredKey,
       String(response.mustChangePassword)
     );
   }
@@ -54,11 +54,11 @@ export class TokenService {
   }
 
   setMustChangePassword(value: boolean): void {
-    localStorage.setItem(this.mustChangePasswordKey, String(value));
+    localStorage.setItem(this.credentialResetRequiredKey, String(value));
   }
 
   getMustChangePassword(): boolean {
-    return localStorage.getItem(this.mustChangePasswordKey) === 'true';
+    return localStorage.getItem(this.credentialResetRequiredKey) === 'true';
   }
 
   isLoggedIn(): boolean {
@@ -71,7 +71,7 @@ export class TokenService {
     localStorage.removeItem(this.emailKey);
     localStorage.removeItem(this.roleKey);
     localStorage.removeItem(this.referenceIdKey);
-    localStorage.removeItem(this.mustChangePasswordKey);
+    localStorage.removeItem(this.credentialResetRequiredKey);
   }
 }
 

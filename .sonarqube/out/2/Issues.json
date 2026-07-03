@@ -264,6 +264,48 @@
           }
         },
         {
+          "ruleId": "S1144",
+          "level": "warning",
+          "message": "Remove the unused private method 'OpenAddModal'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxis.Blazor/Pages/Patient.razor",
+                "region": {
+                  "startLine": 508,
+                  "startColumn": 18,
+                  "endLine": 508,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1144",
+          "level": "warning",
+          "message": "Remove the unused private method 'OpenAddModal'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxis.Blazor/Pages/Appointment.razor",
+                "region": {
+                  "startLine": 766,
+                  "startColumn": 18,
+                  "endLine": 766,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
           "ruleId": "S2292",
           "level": "warning",
           "message": "Make this an auto-implemented property and remove its backing field.",
@@ -357,6 +399,27 @@
           "locations": [
             {
               "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxis.Blazor/Services/Implementation/AppointmentService.cs",
+                "region": {
+                  "startLine": 39,
+                  "startColumn": 19,
+                  "endLine": 39,
+                  "endColumn": 76
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S112",
+          "level": "warning",
+          "message": "'System.Exception' should not be thrown by user code.",
+          "locations": [
+            {
+              "resultFile": {
                 "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxis.Blazor/Services/Implementation/PatientService.cs",
                 "region": {
                   "startLine": 38,
@@ -383,27 +446,6 @@
                   "startLine": 48,
                   "startColumn": 19,
                   "endLine": 48,
-                  "endColumn": 76
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S112",
-          "level": "warning",
-          "message": "'System.Exception' should not be thrown by user code.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxis.Blazor/Services/Implementation/AppointmentService.cs",
-                "region": {
-                  "startLine": 39,
-                  "startColumn": 19,
-                  "endLine": 39,
                   "endColumn": 76
                 }
               }
@@ -485,31 +527,10 @@
               "resultFile": {
                 "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxis.Blazor/Services/Implementation/AppointmentService.cs",
                 "region": {
-                  "startLine": 74,
+                  "startLine": 67,
                   "startColumn": 19,
-                  "endLine": 74,
+                  "endLine": 67,
                   "endColumn": 76
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S1075",
-          "level": "warning",
-          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxis.Blazor/Layout/MainLayout.razor",
-                "region": {
-                  "startLine": 177,
-                  "startColumn": 31,
-                  "endLine": 177,
-                  "endColumn": 60
                 }
               }
             }
@@ -527,9 +548,9 @@
               "resultFile": {
                 "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxis.Blazor/Services/Implementation/AppointmentService.cs",
                 "region": {
-                  "startLine": 67,
+                  "startLine": 74,
                   "startColumn": 19,
-                  "endLine": 67,
+                  "endLine": 74,
                   "endColumn": 76
                 }
               }
@@ -552,6 +573,27 @@
                   "startColumn": 28,
                   "endLine": 99,
                   "endColumn": 56
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1075",
+          "level": "warning",
+          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxisWeb/S3_HealthAxis.Blazor/Layout/MainLayout.razor",
+                "region": {
+                  "startLine": 177,
+                  "startColumn": 31,
+                  "endLine": 177,
+                  "endColumn": 60
                 }
               }
             }
@@ -626,6 +668,23 @@
             "tags": [
               "C#",
               "MainSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S1144": {
+          "id": "S1144",
+          "shortDescription": "Unused private types or members should be removed",
+          "fullDescription": "This rule raises an issue when a private/internal type or member is never referenced in the code.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-1144",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
               "SonarWay"
             ]
           }
