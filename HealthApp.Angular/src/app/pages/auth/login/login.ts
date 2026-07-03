@@ -61,7 +61,7 @@ export class Login {
               return;
             }
 
-            window.location.href = blazorUrl;
+            globalThis.location.href = blazorUrl;
             return;
           }
 

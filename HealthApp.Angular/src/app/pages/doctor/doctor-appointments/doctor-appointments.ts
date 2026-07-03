@@ -11,7 +11,7 @@ import { HealthRecordService } from '../../../core/services/health-record.servic
 import {
   AppointmentStatus,
   CancelAppointmentDto,
-  DoctorAppointmentViewDto
+  DoctorAppointmentViewDto,
 } from '../../../dtos/appointment.dto';
 
 import { HealthRecordCreateDto } from '../../../dtos/health-record.dto';
@@ -21,7 +21,7 @@ import { HealthRecordCreateDto } from '../../../dtos/health-record.dto';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './doctor-appointments.html',
-  styleUrl: './doctor-appointments.css'
+  styleUrl: './doctor-appointments.css',
 })
 export class DoctorAppointments implements OnInit {
   searchText = '';
@@ -49,23 +49,17 @@ export class DoctorAppointments implements OnInit {
     visitDate: '',
     diagnosis: '',
     prescription: '',
-    notes: ''
+    notes: '',
   };
 
-  statusOptions = [
-    'All',
-    'Pending',
-    'Confirmed',
-    'Cancelled',
-    'Completed'
-  ];
+  statusOptions = ['All', 'Pending', 'Confirmed', 'Cancelled', 'Completed'];
 
   constructor(
     private readonly notificationService: NotificationService,
     private readonly appointmentService: AppointmentService,
     private readonly healthRecordService: HealthRecordService,
     private readonly router: Router,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -82,23 +76,23 @@ export class DoctorAppointments implements OnInit {
         finalize(() => {
           this.isLoading = false;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe({
-        next: appointments => {
+        next: (appointments) => {
           this.appointments = appointments ?? [];
           this.cdr.markForCheck();
         },
         error: () => {
           // Error toast is handled globally by errorInterceptor.
-        }
+        },
       });
   }
 
   get filteredAppointments(): DoctorAppointmentViewDto[] {
     const search = this.searchText.trim().toLowerCase();
 
-    return this.appointments.filter(appointment => {
+    return this.appointments.filter((appointment) => {
       const matchesSearch =
         !search ||
         appointment.appointmentId.toString().includes(search) ||
@@ -106,12 +100,10 @@ export class DoctorAppointments implements OnInit {
         appointment.doctorName.toLowerCase().includes(search);
 
       const matchesStatus =
-        this.selectedStatus === 'All' ||
-        appointment.status === this.selectedStatus;
+        this.selectedStatus === 'All' || appointment.status === this.selectedStatus;
 
       const matchesDate =
-        !this.selectedDate ||
-        appointment.scheduledDate.substring(0, 10) === this.selectedDate;
+        !this.selectedDate || appointment.scheduledDate.substring(0, 10) === this.selectedDate;
 
       return matchesSearch && matchesStatus && matchesDate;
     });
@@ -122,15 +114,15 @@ export class DoctorAppointments implements OnInit {
   }
 
   get pendingCount(): number {
-    return this.appointments.filter(x => x.status === 'Pending').length;
+    return this.appointments.filter((x) => x.status === 'Pending').length;
   }
 
   get confirmedCount(): number {
-    return this.appointments.filter(x => x.status === 'Confirmed').length;
+    return this.appointments.filter((x) => x.status === 'Confirmed').length;
   }
 
   get completedCount(): number {
-    return this.appointments.filter(x => x.status === 'Completed').length;
+    return this.appointments.filter((x) => x.status === 'Completed').length;
   }
 
   clearFilters(): void {
@@ -154,22 +146,21 @@ export class DoctorAppointments implements OnInit {
         finalize(() => {
           this.isConfirming = false;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe({
-        next: response => {
+        next: (response) => {
           appointment.status = 'Confirmed';
 
           this.notificationService.success(
-            response.message ||
-              `Appointment #APT-${appointment.appointmentId} confirmed.`
+            response.message || `Appointment #APT-${appointment.appointmentId} confirmed.`,
           );
 
           this.cdr.markForCheck();
         },
         error: () => {
           // Error toast is handled globally by errorInterceptor.
-        }
+        },
       });
   }
 
@@ -215,7 +206,7 @@ export class DoctorAppointments implements OnInit {
     const appointment = this.selectedAppointmentForCancel;
 
     const dto: CancelAppointmentDto = {
-      cancellationReason: reason
+      cancellationReason: reason,
     };
 
     this.isCancelling = true;
@@ -227,16 +218,15 @@ export class DoctorAppointments implements OnInit {
         finalize(() => {
           this.isCancelling = false;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe({
-        next: response => {
+        next: (response) => {
           appointment.status = 'Cancelled';
           appointment.cancellationReason = reason;
 
           this.notificationService.success(
-            response.message ||
-              `Appointment #APT-${appointment.appointmentId} cancelled.`
+            response.message || `Appointment #APT-${appointment.appointmentId} cancelled.`,
           );
 
           this.selectedAppointmentForCancel = null;
@@ -245,7 +235,7 @@ export class DoctorAppointments implements OnInit {
         },
         error: () => {
           // Error toast is handled globally by errorInterceptor.
-        }
+        },
       });
   }
 
@@ -264,7 +254,7 @@ export class DoctorAppointments implements OnInit {
       visitDate: appointment.scheduledDate.substring(0, 10),
       diagnosis: '',
       prescription: '',
-      notes: ''
+      notes: '',
     };
 
     this.cdr.markForCheck();
@@ -284,7 +274,7 @@ export class DoctorAppointments implements OnInit {
       visitDate: '',
       diagnosis: '',
       prescription: '',
-      notes: ''
+      notes: '',
     };
 
     this.cdr.markForCheck();
@@ -339,7 +329,7 @@ export class DoctorAppointments implements OnInit {
       visitDate: this.healthRecordForm.visitDate,
       diagnosis,
       prescription,
-      notes
+      notes,
     };
 
     this.isCompleting = true;
@@ -351,15 +341,15 @@ export class DoctorAppointments implements OnInit {
         finalize(() => {
           this.isCompleting = false;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe({
-        next: response => {
+        next: (response) => {
           appointment.status = 'Completed';
 
           this.notificationService.success(
             response.message ||
-              `Health record created and appointment #APT-${appointment.appointmentId} completed.`
+              `Health record created and appointment #APT-${appointment.appointmentId} completed.`,
           );
 
           this.closeHealthRecordModal(true);
@@ -367,13 +357,15 @@ export class DoctorAppointments implements OnInit {
         },
         error: () => {
           // Error toast is handled globally by errorInterceptor.
-        }
+        },
       });
   }
 
   openViewHealthRecordModal(appointment: DoctorAppointmentViewDto): void {
     if (appointment.status !== 'Completed') {
-      this.notificationService.warning('Health record is available only for completed appointments.');
+      this.notificationService.warning(
+        'Health record is available only for completed appointments.',
+      );
       return;
     }
 
@@ -392,17 +384,17 @@ export class DoctorAppointments implements OnInit {
         finalize(() => {
           this.isLoadingHealthRecord = false;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe({
-        next: record => {
+        next: (record) => {
           appointment.healthRecord = record;
           this.selectedAppointmentForViewRecord = appointment;
           this.cdr.markForCheck();
         },
         error: () => {
           // Error toast is handled globally by errorInterceptor.
-        }
+        },
       });
   }
 

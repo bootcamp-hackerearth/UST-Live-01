@@ -46,11 +46,6 @@
     {
         var angularBaseUrl = Configuration["AngularApp:BaseUrl"];
 
-        if (string.IsNullOrWhiteSpace(angularBaseUrl))
-        {
-            angularBaseUrl = "http://localhost:4200";
-        }
-
         return $"{angularBaseUrl}/login";
     }
 }

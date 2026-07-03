@@ -102,7 +102,7 @@
             return null;
         }
 
-        if (query.StartsWith("?"))
+        if (query.StartsWith('?'))
         {
             query = query[1..];
         }
@@ -136,11 +136,6 @@
     private void RedirectToAngularLogin()
     {
         var angularBaseUrl = Configuration["AngularApp:BaseUrl"];
-
-        if (string.IsNullOrWhiteSpace(angularBaseUrl))
-        {
-            angularBaseUrl = "https://localhost:4200";
-        }
 
         NavigationManager.NavigateTo(
             $"{angularBaseUrl}/login",

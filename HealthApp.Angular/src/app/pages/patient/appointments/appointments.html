@@ -94,7 +94,7 @@
     <div class="row g-3 align-items-end">
 
       <div class="col-lg-4">
-        <label class="form-label fw-bold">
+        <label for="appointmentSearch" class="form-label fw-bold">
           Search
         </label>
 
@@ -102,6 +102,7 @@
           <i class="bi bi-search"></i>
 
           <input
+            id="appointmentSearch"
             type="text"
             class="form-control"
             placeholder="Search doctor, patient, or appointment ID"
@@ -112,11 +113,12 @@
       </div>
 
       <div class="col-lg-3">
-        <label class="form-label fw-bold">
+        <label for="appointmentStatusFilter" class="form-label fw-bold">
           Status
         </label>
 
         <select
+          id="appointmentStatusFilter"
           class="form-select"
           [(ngModel)]="selectedStatus"
           [disabled]="isLoading"
@@ -128,11 +130,12 @@
       </div>
 
       <div class="col-lg-3">
-        <label class="form-label fw-bold">
+        <label for="appointmentDateFilter" class="form-label fw-bold">
           Date
         </label>
 
         <input
+          id="appointmentDateFilter"
           type="date"
           class="form-control"
           [(ngModel)]="selectedDate"
@@ -417,11 +420,12 @@
       </p>
 
       <div class="text-start mt-4">
-        <label class="form-label fw-bold">
+        <label for="cancellationReason" class="form-label fw-bold">
           Cancellation Reason
         </label>
 
         <textarea
+          id="cancellationReason"
           rows="4"
           maxlength="250"
           class="form-control"

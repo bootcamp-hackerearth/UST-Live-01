@@ -139,7 +139,7 @@ export class AuthService {
   private decodeJwtPayload(token: string): Record<string, unknown> {
     const parts = token.split('.');
     if (parts.length !== 3) return {};
-    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const base64 = parts[1].replaceAll('-', '+').replaceAll('_', '/');
     return JSON.parse(atob(base64));
   }
 }

@@ -21,7 +21,7 @@
 }
 
 .appointments-header-card::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 220px;
   height: 220px;
@@ -149,7 +149,7 @@
 }
 
 .appointment-summary-card::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 120px;
   height: 120px;

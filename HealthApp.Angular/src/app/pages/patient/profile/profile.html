@@ -253,11 +253,12 @@
           <div class="row g-3">
 
             <div class="col-md-6">
-              <label class="form-label fw-bold">
+              <label for="patientFullName" class="form-label fw-bold">
                 Full Name
               </label>
 
               <input
+                id="patientFullName"
                 type="text"
                 class="form-control"
                 [(ngModel)]="editableProfile.fullName"
@@ -266,11 +267,12 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label fw-bold">
+              <label for="patientDateOfBirth" class="form-label fw-bold">
                 Date of Birth
               </label>
 
               <input
+                id="patientDateOfBirth"
                 type="date"
                 class="form-control"
                 [(ngModel)]="editableProfile.dateOfBirth"
@@ -279,11 +281,12 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label fw-bold">
+              <label for="patientGender" class="form-label fw-bold">
                 Gender
               </label>
 
               <select
+                id="patientGender"
                 class="form-select"
                 [(ngModel)]="editableProfile.gender"
                 [disabled]="isSavingProfile()"
@@ -299,11 +302,12 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label fw-bold">
+              <label for="patientEmail" class="form-label fw-bold">
                 Email
               </label>
 
               <input
+                id="patientEmail"
                 type="email"
                 class="form-control"
                 [(ngModel)]="editableProfile.email"
@@ -312,11 +316,12 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label fw-bold">
+              <label for="patientPhoneNumber" class="form-label fw-bold">
                 Phone Number
               </label>
 
               <input
+                id="patientPhoneNumber"
                 type="text"
                 class="form-control"
                 maxlength="10"
@@ -326,11 +331,12 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label fw-bold">
+              <label for="patientInsuranceId" class="form-label fw-bold">
                 Insurance ID
               </label>
 
               <input
+                id="patientInsuranceId"
                 type="text"
                 class="form-control"
                 placeholder="Optional"
@@ -401,11 +407,12 @@
           <div class="row g-3">
 
             <div class="col-md-4">
-              <label class="form-label fw-bold">
+              <label for="currentPassword" class="form-label fw-bold">
                 Current Password
               </label>
 
               <input
+                id="currentPassword"
                 type="password"
                 class="form-control"
                 [(ngModel)]="passwordForm.currentPassword"
@@ -414,11 +421,12 @@
             </div>
 
             <div class="col-md-4">
-              <label class="form-label fw-bold">
+              <label for="newPassword" class="form-label fw-bold">
                 New Password
               </label>
 
               <input
+                id="newPassword"
                 type="password"
                 class="form-control"
                 [(ngModel)]="passwordForm.newPassword"
@@ -427,11 +435,12 @@
             </div>
 
             <div class="col-md-4">
-              <label class="form-label fw-bold">
+              <label for="confirmNewPassword" class="form-label fw-bold">
                 Confirm Password
               </label>
 
               <input
+                id="confirmNewPassword"
                 type="password"
                 class="form-control"
                 [(ngModel)]="passwordForm.confirmNewPassword"

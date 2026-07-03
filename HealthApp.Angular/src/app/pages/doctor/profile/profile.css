@@ -14,7 +14,8 @@
 .profile-summary-card,
 .profile-details-card,
 .availability-card,
-.change-password-card {
+.change-password-card,
+.availability-status-card {
   background: #ffffff;
   border-radius: 24px;
   box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
@@ -41,8 +42,9 @@
 .profile-summary-card,
 .profile-details-card,
 .availability-card,
-.change-password-card {
-  padding: 1.35rem;
+.change-password-card,
+.availability-status-card {
+  padding: 1.5rem;
 }
 
 /* =========================
@@ -114,43 +116,129 @@
 }
 
 /* =========================
-   Summary
+   Main Profile Layout
+========================= */
+
+.doctor-profile-grid {
+  display: grid;
+  grid-template-columns: 0.85fr 1.75fr;
+  gap: 2rem;
+  align-items: stretch;
+}
+
+.doctor-profile-equal-card,
+.doctor-profile-right-stack {
+  height: 100%;
+}
+
+.doctor-profile-right-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.doctor-profile-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.availability-status-card,
+.change-password-card {
+  height: 100%;
+}
+
+/* =========================
+   Summary Card
 ========================= */
 
 .profile-summary-card {
   text-align: center;
+  padding: 2rem;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.profile-avatar {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 1rem;
-  border-radius: 32px;
-  background: linear-gradient(135deg, #0891b2, #0d9488);
+.profile-avatar,
+.profile-avatar-icon {
+  width: 112px;
+  height: 112px;
+  margin: 0 auto 1.5rem;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #0f9ca6, #0d9488);
   color: #ffffff;
-  display: grid;
-  place-items: center;
-  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.65rem;
   font-weight: 900;
-  box-shadow: 0 16px 32px rgba(13, 148, 136, 0.24);
+  box-shadow: 0 18px 35px rgba(13, 148, 136, 0.25);
 }
 
 .profile-name {
-  color: #0f172a;
+  color: #020617;
   font-weight: 800;
-  margin-bottom: 0.75rem;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.profile-badge-row,
+.profile-role-badge-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .profile-role-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.45rem;
-  padding: 0.48rem 0.85rem;
+  width: fit-content;
+  max-width: max-content;
   border-radius: 999px;
-  background: #dbeafe;
-  color: #1e40af;
+  padding: 0.45rem 0.85rem;
+  color: #047857;
+  background: #dcfce7;
+  font-weight: 700;
   font-size: 0.85rem;
-  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.profile-role-badge i {
+  font-size: 0.95rem;
+}
+
+.profile-role-badge span {
+  display: inline-block;
+}
+
+.profile-summary-note {
+  margin-top: auto;
+  width: 100%;
+  border-radius: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 1rem;
+  color: #64748b;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  line-height: 1.45;
+}
+
+.profile-summary-note i {
+  color: #0d9488;
+  margin-top: 0.15rem;
 }
 
 .profile-mini-list {
@@ -224,45 +312,47 @@
 
 .profile-info-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
 }
 
 .profile-info-box {
-  min-height: 92px;
+  min-height: 110px;
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1.15rem;
+  padding: 1.35rem;
   border-radius: 20px;
   background: #f8fafc;
-  border: 1px solid #eef2f7;
+  border: 1px solid #e2e8f0;
 }
 
 .profile-info-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
   background: #ccfbf1;
   color: #0f766e;
-  display: grid;
-  place-items: center;
-  font-size: 1.25rem;
-  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex: 0 0 auto;
 }
 
 .profile-info-label {
   color: #64748b;
   font-size: 0.85rem;
   font-weight: 700;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.3rem;
 }
 
 .profile-info-value {
-  color: #0f172a;
+  color: #020617;
   font-size: 1rem;
   font-weight: 800;
   overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* =========================
@@ -321,6 +411,94 @@
   font-weight: 800;
 }
 
+.availability-toggle-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1rem;
+  border-radius: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.availability-toggle-title {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.availability-toggle-subtitle {
+  margin-top: 0.25rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.availability-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.availability-switch .form-check-input {
+  width: 3.25rem;
+  height: 1.65rem;
+  cursor: pointer;
+}
+
+.availability-switch .form-check-input:checked {
+  background-color: #0d9488;
+  border-color: #0d9488;
+}
+
+.availability-switch .form-check-label {
+  font-weight: 700;
+  color: #334155;
+}
+
+.availability-status-message {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: #475569;
+  font-weight: 600;
+}
+
+.availability-status-message .bi-check-circle-fill {
+  color: #16a34a;
+}
+
+.availability-status-message .bi-pause-circle-fill {
+  color: #64748b;
+}
+
+.status-badge,
+.doctor-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-badge.available,
+.doctor-status-pill.available {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.status-badge.unavailable,
+.doctor-status-pill.unavailable {
+  color: #475569;
+  background: #e2e8f0;
+}
+
 /* =========================
    Empty State
 ========================= */
@@ -356,74 +534,9 @@
   font-weight: 600;
 }
 
-.availability-status-card {
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 1.5rem;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
-}
-
-.availability-status-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.availability-status-message {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  color: #475569;
-  font-weight: 600;
-}
-
-.availability-status-message .bi-check-circle-fill {
-  color: #16a34a;
-}
-
-.availability-status-message .bi-pause-circle-fill {
-  color: #64748b;
-}
-
-.status-badge {
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.status-badge.available {
-  color: #166534;
-  background: #dcfce7;
-}
-
-.status-badge.unavailable {
-  color: #475569;
-  background: #e2e8f0;
-}
-
-.doctor-status-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.doctor-status-pill.available {
-  color: #166534;
-  background: #dcfce7;
-}
-
-.doctor-status-pill.unavailable {
-  color: #475569;
-  background: #e2e8f0;
-}
+/* =========================
+   Confirmation Modal
+========================= */
 
 .custom-modal-backdrop {
   position: fixed;
@@ -472,609 +585,11 @@
 .custom-confirm-card p {
   color: #475569;
   margin-bottom: 0.5rem;
-}
-
-@media (max-width: 576px) {
-  .availability-status-content {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .availability-status-content .btn {
-    width: 100%;
-  }
 }
 
 /* =========================
    Responsive
 ========================= */
-
-@media (max-width: 991px) {
-  .profile-info-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .section-header {
-    flex-direction: column;
-  }
-}
-
-@media (max-width: 767px) {
-  .page-title {
-    font-size: 1.55rem;
-  }
-
-  .profile-header-card,
-  .profile-summary-card,
-  .profile-details-card,
-  .availability-card,
-  .change-password-card {
-    padding: 1.25rem;
-  }
-
-  .profile-action-btn,
-  .section-header .btn,
-  .profile-form .btn,
-  .password-form .btn {
-    width: 100%;
-  }
-}
-
-.availability-status-card {
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 1.5rem;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
-}
-
-.availability-toggle-box {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.25rem;
-  padding: 1rem;
-  border-radius: 20px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-}
-
-.availability-toggle-title {
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.availability-toggle-subtitle {
-  margin-top: 0.25rem;
-  color: #64748b;
-  font-size: 0.9rem;
-}
-
-.availability-switch {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0;
-  cursor: pointer;
-}
-
-.availability-switch .form-check-input {
-  width: 3.25rem;
-  height: 1.65rem;
-}
-
-.availability-switch .form-check-input:checked {
-  background-color: #0d9488;
-  border-color: #0d9488;
-}
-
-.availability-switch .form-check-label {
-  font-weight: 700;
-  color: #334155;
-}
-
-.status-badge {
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.status-badge.available {
-  color: #166534;
-  background: #dcfce7;
-}
-
-.status-badge.unavailable {
-  color: #475569;
-  background: #e2e8f0;
-}
-
-.custom-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.45);
-  z-index: 1050;
-}
-
-.custom-confirm-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1060;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.25rem;
-}
-
-.custom-confirm-card {
-  width: min(100%, 440px);
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 1.5rem;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
-}
-
-.custom-confirm-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 18px;
-  background: rgba(13, 148, 136, 0.12);
-  color: #0d9488;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.45rem;
-  margin-bottom: 1rem;
-}
-
-.custom-confirm-card h5 {
-  font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 0.75rem;
-}
-
-.custom-confirm-card p {
-  color: #475569;
-  margin-bottom: 0.5rem;
-}
-
-@media (max-width: 576px) {
-  .availability-toggle-box {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}
-.availability-status-card {
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 1.5rem;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
-}
-
-.availability-toggle-box {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.25rem;
-  padding: 1rem;
-  border-radius: 20px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-}
-
-.availability-toggle-title {
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.availability-toggle-subtitle {
-  margin-top: 0.25rem;
-  color: #64748b;
-  font-size: 0.9rem;
-}
-
-.availability-switch {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0;
-}
-
-.availability-switch .form-check-input {
-  width: 3.25rem;
-  height: 1.65rem;
-  cursor: pointer;
-}
-
-.availability-switch .form-check-input:checked {
-  background-color: #0d9488;
-  border-color: #0d9488;
-}
-
-.availability-switch .form-check-label {
-  font-weight: 700;
-  color: #334155;
-}
-
-.status-badge {
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.status-badge.available {
-  color: #166534;
-  background: #dcfce7;
-}
-
-.status-badge.unavailable {
-  color: #475569;
-  background: #e2e8f0;
-}
-
-.doctor-status-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.doctor-status-pill.available {
-  color: #166534;
-  background: #dcfce7;
-}
-
-.doctor-status-pill.unavailable {
-  color: #475569;
-  background: #e2e8f0;
-}
-
-.custom-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.45);
-  z-index: 1050;
-}
-
-.custom-confirm-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1060;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.25rem;
-}
-
-.custom-confirm-card {
-  width: min(100%, 440px);
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 1.5rem;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
-}
-
-.custom-confirm-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 18px;
-  background: rgba(13, 148, 136, 0.12);
-  color: #0d9488;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.45rem;
-  margin-bottom: 1rem;
-}
-
-.custom-confirm-card h5 {
-  font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 0.75rem;
-}
-
-.custom-confirm-card p {
-  color: #475569;
-  margin-bottom: 0.5rem;
-}
-
-@media (max-width: 576px) {
-  .availability-toggle-box {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}
-.doctor-profile-grid {
-  display: grid;
-  grid-template-columns: 0.85fr 1.75fr;
-  gap: 2rem;
-  align-items: stretch;
-}
-
-.doctor-profile-equal-card,
-.doctor-profile-right-stack {
-  height: 100%;
-}
-
-.profile-summary-card {
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 2rem;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.profile-avatar-icon {
-  width: 112px;
-  height: 112px;
-  border-radius: 30px;
-  background: linear-gradient(135deg, #0f9ca6, #0d9488);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.65rem;
-  box-shadow: 0 18px 35px rgba(13, 148, 136, 0.25);
-  margin-bottom: 1.5rem;
-}
-
-.profile-name {
-  font-weight: 800;
-  color: #020617;
-  text-align: center;
-  margin-bottom: 1.25rem;
-}
-
-.profile-badge-row {
-  display: flex;
-  justify-content: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.5rem;
-}
-
-.profile-role-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  color: #1d4ed8;
-  background: #dbeafe;
-  font-weight: 700;
-  font-size: 0.85rem;
-}
-
-.doctor-status-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.doctor-status-pill.available {
-  color: #166534;
-  background: #dcfce7;
-}
-
-.doctor-status-pill.unavailable {
-  color: #475569;
-  background: #e2e8f0;
-}
-
-.profile-summary-note {
-  margin-top: auto;
-  width: 100%;
-  border-radius: 20px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 1rem;
-  color: #64748b;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  line-height: 1.45;
-}
-
-.profile-summary-note i {
-  color: #0d9488;
-  margin-top: 0.15rem;
-}
-
-.doctor-profile-right-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.profile-details-card,
-.availability-status-card,
-.change-password-card {
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 1.5rem;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
-}
-
-.profile-info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.25rem;
-}
-
-.profile-info-box {
-  border-radius: 20px;
-  padding: 1.35rem;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  min-height: 110px;
-}
-
-.profile-info-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
-  background: #ccfbf1;
-  color: #0f766e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.35rem;
-  flex: 0 0 auto;
-}
-
-.profile-info-label {
-  color: #64748b;
-  font-weight: 700;
-  font-size: 0.85rem;
-  margin-bottom: 0.3rem;
-}
-
-.profile-info-value {
-  color: #020617;
-  font-weight: 800;
-  word-break: break-word;
-}
-
-.doctor-profile-bottom-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  align-items: stretch;
-}
-
-.availability-status-card,
-.change-password-card {
-  height: 100%;
-}
-
-.availability-toggle-box {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.25rem;
-  padding: 1rem;
-  border-radius: 20px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-}
-
-.availability-toggle-title {
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.availability-toggle-subtitle {
-  margin-top: 0.25rem;
-  color: #64748b;
-  font-size: 0.9rem;
-}
-
-.availability-switch {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0;
-  flex: 0 0 auto;
-}
-
-.availability-switch .form-check-input {
-  width: 3.25rem;
-  height: 1.65rem;
-  cursor: pointer;
-}
-
-.availability-switch .form-check-input:checked {
-  background-color: #0d9488;
-  border-color: #0d9488;
-}
-
-.availability-switch .form-check-label {
-  font-weight: 700;
-  color: #334155;
-}
-
-.status-badge {
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.status-badge.available {
-  color: #166534;
-  background: #dcfce7;
-}
-
-.status-badge.unavailable {
-  color: #475569;
-  background: #e2e8f0;
-}
-
-.custom-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.45);
-  z-index: 1050;
-}
-
-.custom-confirm-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1060;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.25rem;
-}
-
-.custom-confirm-card {
-  width: min(100%, 440px);
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 1.5rem;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
-}
-
-.custom-confirm-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 18px;
-  background: rgba(13, 148, 136, 0.12);
-  color: #0d9488;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.45rem;
-  margin-bottom: 1rem;
-}
-
-.custom-confirm-card h5 {
-  font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 0.75rem;
-}
-
-.custom-confirm-card p {
-  color: #475569;
-  margin-bottom: 0.5rem;
-}
 
 @media (max-width: 1200px) {
   .doctor-profile-grid {
@@ -1090,47 +605,40 @@
   .doctor-profile-bottom-grid {
     grid-template-columns: 1fr;
   }
+
+  .profile-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header {
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 768px) {
-  .profile-info-grid {
-    grid-template-columns: 1fr;
+  .page-title {
+    font-size: 1.55rem;
+  }
+
+  .profile-header-card,
+  .profile-summary-card,
+  .profile-details-card,
+  .availability-card,
+  .change-password-card,
+  .availability-status-card {
+    padding: 1.25rem;
   }
 
   .availability-toggle-box {
     align-items: flex-start;
     flex-direction: column;
   }
-}
 
-.profile-role-badge-wrapper {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin-top: 0.75rem;
-}
-
-.profile-role-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  width: fit-content;
-  max-width: max-content;
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  color: #047857;
-  background: #dcfce7;
-  font-weight: 700;
-  font-size: 0.85rem;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.profile-role-badge i {
-  font-size: 0.95rem;
-}
-
-.profile-role-badge span {
-  display: inline-block;
+  .profile-action-btn,
+  .section-header .btn,
+  .profile-form .btn,
+  .password-form .btn,
+  .availability-status-content .btn {
+    width: 100%;
+  }
 }

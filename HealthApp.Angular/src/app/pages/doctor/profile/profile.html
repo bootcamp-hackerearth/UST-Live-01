@@ -239,6 +239,7 @@
                 [checked]="doctorProfile.isActive"
                 [disabled]="isUpdatingStatus()"
                 (click)="onStatusToggleClick($event)"
+                (keydown.enter)="onStatusToggleClick($event)"
               />
 
               <label class="form-check-label" for="doctorAvailabilitySwitch">
@@ -280,11 +281,12 @@
             <div class="row g-3">
 
               <div class="col-12">
-                <label class="form-label fw-bold">
+                <label for="currentPassword" class="form-label fw-bold">
                   Current Password
                 </label>
 
                 <input
+                  id="currentPassword"
                   type="password"
                   class="form-control"
                   [(ngModel)]="passwordForm.currentPassword"
@@ -293,11 +295,12 @@
               </div>
 
               <div class="col-md-6">
-                <label class="form-label fw-bold">
+                <label for="newPassword" class="form-label fw-bold">
                   New Password
                 </label>
 
                 <input
+                  id="newPassword"
                   type="password"
                   class="form-control"
                   [(ngModel)]="passwordForm.newPassword"
@@ -306,11 +309,12 @@
               </div>
 
               <div class="col-md-6">
-                <label class="form-label fw-bold">
+                <label for="confirmNewPassword" class="form-label fw-bold">
                   Confirm Password
                 </label>
 
                 <input
+                  id="confirmNewPassword"
                   type="password"
                   class="form-control"
                   [(ngModel)]="passwordForm.confirmNewPassword"
@@ -357,11 +361,15 @@
   </div>
 
   <!-- Availability Confirmation Backdrop -->
-  <div
-    class="custom-modal-backdrop"
-    *ngIf="showStatusConfirmModal()"
-    (click)="closeStatusConfirmModal()"
-  ></div>
+  
+<button
+  type="button"
+  class="custom-modal-backdrop"
+  *ngIf="showStatusConfirmModal()"
+  aria-label="Close availability confirmation modal"
+  (click)="closeStatusConfirmModal()"
+></button>
+
 
   <!-- Availability Confirmation Modal -->
   <div class="custom-confirm-modal" *ngIf="showStatusConfirmModal()">

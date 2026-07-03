@@ -1,20 +1,17 @@
 <div class="doctor-appointments-page">
-
   <section class="appointments-header-card mb-4">
     <div class="row align-items-center g-4">
-
       <div class="col-lg-8">
         <div class="header-badge mb-3">
           <i class="bi bi-calendar-check"></i>
           Doctor Appointments
         </div>
 
-        <h1 class="page-title mb-2">
-          Manage your appointments
-        </h1>
+        <h1 class="page-title mb-2">Manage your appointments</h1>
 
         <p class="page-subtitle mb-0">
-          Review patient appointments, confirm bookings, cancel with reason, and complete visits with health records.
+          Review patient appointments, confirm bookings, cancel with reason, and complete visits
+          with health records.
         </p>
       </div>
 
@@ -28,12 +25,10 @@
           </div>
         </div>
       </div>
-
     </div>
   </section>
 
   <section class="row g-4 mb-4">
-
     <div class="col-xl-3 col-md-6">
       <div class="appointment-summary-card summary-total">
         <div class="summary-icon">
@@ -85,21 +80,18 @@
         </div>
       </div>
     </div>
-
   </section>
 
   <section class="filter-card mb-4">
     <div class="row g-3 align-items-end">
-
       <div class="col-lg-5">
-        <label class="form-label fw-bold">
-          Search
-        </label>
+        <label for="appointmentSearch" class="form-label fw-bold">Search</label>
 
         <div class="input-icon-wrapper">
           <i class="bi bi-search"></i>
 
           <input
+            id="appointmentSearch"
             type="text"
             class="form-control"
             placeholder="Search patient, doctor, or appointment ID"
@@ -110,18 +102,15 @@
       </div>
 
       <div class="col-lg-3">
-        <label class="form-label fw-bold">
-          Status
-        </label>
+        <label for="statusFilter" class="form-label fw-bold">Status</label>
 
         <select
+          id="statusFilter"
           class="form-select"
           [(ngModel)]="selectedStatus"
           [disabled]="isLoading"
         >
-          <option value="All">
-            All Statuses
-          </option>
+          <option value="All">All Statuses</option>
 
           <option *ngFor="let status of statusOptions" [value]="status">
             {{ status }}
@@ -130,11 +119,10 @@
       </div>
 
       <div class="col-lg-2">
-        <label class="form-label fw-bold">
-          Date
-        </label>
+        <label for="dateFilter" class="form-label fw-bold">Date</label>
 
         <input
+          id="dateFilter"
           type="date"
           class="form-control"
           [(ngModel)]="selectedDate"
@@ -153,7 +141,6 @@
           Clear
         </button>
       </div>
-
     </div>
   </section>
 
@@ -164,18 +151,15 @@
 
     <h5>Loading appointments...</h5>
 
-    <p>
-      Please wait while we fetch your appointments.
-    </p>
+    <p>Please wait while we fetch your appointments.</p>
   </section>
 
   <section class="table-card" *ngIf="!isLoading && filteredAppointments.length > 0">
-
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
+    <div
+      class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4"
+    >
       <div>
-        <h5 class="fw-bold mb-1">
-          Appointment List
-        </h5>
+        <h5 class="fw-bold mb-1">Appointment List</h5>
 
         <p class="text-muted small fw-semibold mb-0">
           Showing {{ filteredAppointments.length }} appointment(s)
@@ -185,7 +169,6 @@
 
     <div class="table-responsive">
       <table class="table align-middle custom-table doctor-appointments-table">
-
         <thead class="table-light">
           <tr>
             <th>Appointment</th>
@@ -199,15 +182,10 @@
 
         <tbody>
           <tr *ngFor="let appointment of filteredAppointments">
-
             <td>
-              <div class="fw-bold text-dark">
-                #APT-{{ appointment.appointmentId }}
-              </div>
+              <div class="fw-bold text-dark">#APT-{{ appointment.appointmentId }}</div>
 
-              <small class="text-muted fw-semibold">
-                Appointment ID
-              </small>
+              <small class="text-muted fw-semibold">Appointment ID</small>
             </td>
 
             <td>
@@ -221,9 +199,7 @@
                     {{ appointment.patientName }}
                   </div>
 
-                  <small class="text-muted fw-semibold">
-                    Patient
-                  </small>
+                  <small class="text-muted fw-semibold">Patient</small>
                 </div>
               </div>
             </td>
@@ -233,9 +209,7 @@
                 {{ appointment.scheduledDate | date: 'mediumDate' }}
               </div>
 
-              <small class="text-muted fw-semibold">
-                Scheduled Date
-              </small>
+              <small class="text-muted fw-semibold">Scheduled Date</small>
             </td>
 
             <td>
@@ -246,10 +220,7 @@
             </td>
 
             <td>
-              <span
-                class="appointment-status-badge"
-                [ngClass]="getStatusClass(appointment.status)"
-              >
+              <span class="appointment-status-badge" [ngClass]="getStatusClass(appointment.status)">
                 <i [class]="getStatusIcon(appointment.status)"></i>
                 {{ appointment.status }}
               </span>
@@ -257,7 +228,6 @@
 
             <td class="text-center">
               <div class="table-action-group">
-
                 <button
                   type="button"
                   class="btn btn-outline-primary btn-sm table-action-btn"
@@ -312,22 +282,13 @@
                   <i class="bi bi-folder2-open"></i>
                 </button>
 
-                <span
-                  class="no-action-pill"
-                  *ngIf="hasNoActions(appointment)"
-                >
-                  No action
-                </span>
-
+                <span class="no-action-pill" *ngIf="hasNoActions(appointment)">No action</span>
               </div>
             </td>
-
           </tr>
         </tbody>
-
       </table>
     </div>
-
   </section>
 
   <section class="empty-state-card" *ngIf="!isLoading && filteredAppointments.length === 0">
@@ -337,35 +298,22 @@
 
     <h5>No appointments found</h5>
 
-    <p>
-      No appointments match the selected filters.
-    </p>
+    <p>No appointments match the selected filters.</p>
 
-    <button
-      type="button"
-      class="btn btn-health"
-      (click)="clearFilters()"
-    >
-      Clear Filters
-    </button>
+    <button type="button" class="btn btn-health" (click)="clearFilters()">Clear Filters</button>
   </section>
 
   <div class="health-record-modal-backdrop" *ngIf="selectedAppointmentForRecord">
     <div class="health-record-modal">
-
       <div class="health-record-modal-header">
         <div class="modal-icon">
           <i class="bi bi-journal-plus"></i>
         </div>
 
         <div>
-          <h4 class="mb-1">
-            Create Health Record
-          </h4>
+          <h4 class="mb-1">Create Health Record</h4>
 
-          <p class="mb-0">
-            Complete appointment and add consultation details.
-          </p>
+          <p class="mb-0">Complete appointment and add consultation details.</p>
         </div>
 
         <button
@@ -374,8 +322,7 @@
           aria-label="Close"
           (click)="closeHealthRecordModal()"
           [disabled]="isCompleting"
-        >
-        </button>
+        ></button>
       </div>
 
       <div class="selected-appointment-box mt-4">
@@ -401,13 +348,11 @@
       </div>
 
       <div class="row g-3 mt-2">
-
         <div class="col-md-6">
-          <label class="form-label fw-bold">
-            Visit Date
-          </label>
+          <label for="healthRecordVisitDate" class="form-label fw-bold">Visit Date</label>
 
           <input
+            id="healthRecordVisitDate"
             type="date"
             class="form-control"
             [(ngModel)]="healthRecordForm.visitDate"
@@ -416,11 +361,10 @@
         </div>
 
         <div class="col-12">
-          <label class="form-label fw-bold">
-            Diagnosis
-          </label>
+          <label for="healthRecordDiagnosis" class="form-label fw-bold">Diagnosis</label>
 
           <textarea
+            id="healthRecordDiagnosis"
             rows="3"
             class="form-control"
             placeholder="Enter diagnosis"
@@ -430,11 +374,10 @@
         </div>
 
         <div class="col-12">
-          <label class="form-label fw-bold">
-            Prescription
-          </label>
+          <label for="healthRecordPrescription" class="form-label fw-bold">Prescription</label>
 
           <textarea
+            id="healthRecordPrescription"
             rows="3"
             class="form-control"
             placeholder="Enter prescription"
@@ -444,11 +387,10 @@
         </div>
 
         <div class="col-12">
-          <label class="form-label fw-bold">
-            Doctor Notes
-          </label>
+          <label for="healthRecordNotes" class="form-label fw-bold">Doctor Notes</label>
 
           <textarea
+            id="healthRecordNotes"
             rows="3"
             class="form-control"
             maxlength="500"
@@ -457,11 +399,8 @@
             [disabled]="isCompleting"
           ></textarea>
 
-          <div class="notes-counter">
-            {{ healthRecordForm.notes?.length || 0 }}/500
-          </div>
+          <div class="notes-counter">{{ healthRecordForm.notes?.length || 0 }}/500</div>
         </div>
-
       </div>
 
       <div class="health-record-modal-actions">
@@ -485,30 +424,24 @@
             Saving...
           } @else {
             <i class="bi bi-check-circle me-2"></i>
-            Save & Complete
+            Save &amp; Complete
           }
         </button>
       </div>
-
     </div>
   </div>
 
   <div class="health-record-modal-backdrop" *ngIf="selectedAppointmentForViewRecord">
     <div class="health-record-modal">
-
       <div class="health-record-modal-header">
         <div class="modal-icon">
           <i class="bi bi-journal-medical"></i>
         </div>
 
         <div>
-          <h4 class="mb-1">
-            Health Record
-          </h4>
+          <h4 class="mb-1">Health Record</h4>
 
-          <p class="mb-0">
-            View diagnosis, prescription, and doctor notes.
-          </p>
+          <p class="mb-0">View diagnosis, prescription, and doctor notes.</p>
         </div>
 
         <button
@@ -516,12 +449,10 @@
           class="btn-close ms-auto"
           aria-label="Close"
           (click)="closeViewHealthRecordModal()"
-        >
-        </button>
+        ></button>
       </div>
 
       <ng-container *ngIf="selectedAppointmentForViewRecord.healthRecord as record">
-
         <div class="selected-appointment-box mt-4">
           <div class="selected-appointment-item">
             <span>Record</span>
@@ -545,7 +476,6 @@
         </div>
 
         <div class="health-record-view-grid mt-4">
-
           <div class="health-record-view-box">
             <div class="view-box-icon diagnosis-icon">
               <i class="bi bi-activity"></i>
@@ -580,34 +510,24 @@
               </div>
             </div>
           </div>
-
         </div>
-
       </ng-container>
 
       <div class="health-record-modal-actions">
-        <button
-          type="button"
-          class="btn btn-health px-4"
-          (click)="closeViewHealthRecordModal()"
-        >
+        <button type="button" class="btn btn-health px-4" (click)="closeViewHealthRecordModal()">
           Close
         </button>
       </div>
-
     </div>
   </div>
 
   <div class="health-record-modal-backdrop" *ngIf="selectedAppointmentForCancel">
     <div class="cancel-modal">
-
       <div class="cancel-modal-icon">
         <i class="bi bi-exclamation-triangle"></i>
       </div>
 
-      <h4 class="cancel-modal-title">
-        Cancel Appointment?
-      </h4>
+      <h4 class="cancel-modal-title">Cancel Appointment?</h4>
 
       <p class="cancel-modal-text">
         Are you sure you want to cancel appointment
@@ -617,11 +537,10 @@
       </p>
 
       <div class="text-start mt-4">
-        <label class="form-label fw-bold">
-          Cancellation Reason
-        </label>
+        <label for="cancellationReason" class="form-label fw-bold">Cancellation Reason</label>
 
         <textarea
+          id="cancellationReason"
           rows="4"
           maxlength="250"
           class="form-control"
@@ -630,9 +549,7 @@
           [disabled]="isCancelling"
         ></textarea>
 
-        <div class="notes-counter">
-          {{ cancellationReason.length || 0 }}/250
-        </div>
+        <div class="notes-counter">{{ cancellationReason.length || 0 }}/250</div>
       </div>
 
       <div class="cancel-modal-actions">
@@ -660,8 +577,6 @@
           }
         </button>
       </div>
-
     </div>
   </div>
-
 </div>

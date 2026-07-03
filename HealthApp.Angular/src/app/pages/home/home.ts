@@ -11,7 +11,7 @@ import { Router, RouterLink } from '@angular/router';
 export class Home {
   adminPortalUrl = 'https://localhost:7200';
 
-  constructor(private router: Router) {}
+  constructor(private readonly router: Router) {}
 
   goToPatientLogin(): void {
     this.router.navigate(['/login']);
@@ -22,6 +22,6 @@ export class Home {
   }
 
   openAdminPortal(): void {
-    window.location.href = this.adminPortalUrl;
+    globalThis.location.href = this.adminPortalUrl;
   }
 }

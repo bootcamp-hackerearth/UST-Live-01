@@ -38,7 +38,7 @@
     <div class="row g-3 align-items-end">
 
       <div class="col-xl-3 col-lg-6">
-        <label class="form-label fw-bold">
+        <label for="doctorSearch" class="form-label fw-bold">
           Search Doctor
         </label>
 
@@ -46,6 +46,7 @@
           <i class="bi bi-search"></i>
 
           <input
+            id="doctorSearch"
             type="text"
             class="form-control"
             placeholder="Doctor name"
@@ -57,11 +58,12 @@
       </div>
 
       <div class="col-xl-3 col-lg-6">
-        <label class="form-label fw-bold">
+        <label for="doctorSpecialisationFilter" class="form-label fw-bold">
           Specialisation
         </label>
 
         <select
+          id="doctorSpecialisationFilter"
           class="form-select"
           [(ngModel)]="selectedSpecialisation"
           (change)="searchDoctors()"
@@ -77,11 +79,12 @@
       </div>
 
       <div class="col-xl-2 col-lg-6">
-        <label class="form-label fw-bold">
+        <label for="doctorSortBy" class="form-label fw-bold">
           Sort By
         </label>
 
         <select
+          id="doctorSortBy"
           class="form-select"
           [(ngModel)]="sortBy"
           [disabled]="isLoadingDoctors"
@@ -96,11 +99,12 @@
       </div>
 
       <div class="col-xl-2 col-lg-6">
-        <label class="form-label fw-bold">
+        <label for="appointmentDate" class="form-label fw-bold">
           Appointment Date
         </label>
 
         <input
+          id="appointmentDate"
           type="date"
           class="form-control"
           [(ngModel)]="selectedDate"
@@ -155,7 +159,7 @@
   >
 
     <div
-      class="col-xl-4 col-lg-6"
+      class="col-xl-6 col-lg-6"
       *ngFor="let doctor of sortedDoctors"
     >
 

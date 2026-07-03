@@ -61,7 +61,7 @@
       <div class="row g-3 align-items-end">
 
         <div class="col-lg-7">
-          <label class="form-label fw-bold">
+          <label for="healthRecordSearch" class="form-label fw-bold">
             Search Records
           </label>
 
@@ -69,6 +69,7 @@
             <i class="bi bi-search"></i>
 
             <input
+              id="healthRecordSearch"
               type="text"
               class="form-control"
               placeholder="Search record ID, diagnosis, prescription, patient, or doctor"
@@ -79,11 +80,12 @@
         </div>
 
         <div class="col-lg-3">
-          <label class="form-label fw-bold">
+          <label for="healthRecordVisitDateFilter" class="form-label fw-bold">
             Visit Date
           </label>
 
           <input
+            id="healthRecordVisitDateFilter"
             type="date"
             class="form-control"
             [(ngModel)]="selectedDate"

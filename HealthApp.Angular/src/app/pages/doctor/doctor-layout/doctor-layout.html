@@ -1,9 +1,16 @@
 <div class="doctor-wrapper">
   
-  <div class="doctor-sidebar-backdrop" 
-       *ngIf="isSidebarOpen()" 
-       (click)="closeSidebar()">
-  </div>
+  
+
+<button
+  type="button"
+  class="doctor-sidebar-backdrop"
+  *ngIf="isSidebarOpen()"
+  aria-label="Close sidebar"
+  (click)="closeSidebar()"
+>
+</button>
+
 
   <aside class="doctor-sidebar" [class.sidebar-open]="isSidebarOpen()">
     <div class="doctor-sidebar-brand">

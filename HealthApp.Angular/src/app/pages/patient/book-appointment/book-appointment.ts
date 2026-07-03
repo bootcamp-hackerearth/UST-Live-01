@@ -43,7 +43,7 @@ export class BookAppointment implements OnInit {
   selectedSlots: Record<number, string> = {};
   slotPageIndexes: Record<number, number> = {};
 
-  readonly slotPageSize = 6;
+  readonly slotPageSize = 4;
 
   minDate = this.getTodayDate();
 
@@ -269,7 +269,7 @@ export class BookAppointment implements OnInit {
   }
 
   areSlotsLoaded(doctorId: number): boolean {
-    return Object.prototype.hasOwnProperty.call(this.doctorSlots, doctorId);
+    return Object.hasOwn(this.doctorSlots, doctorId);
   }
 
   getSlotCount(doctorId: number): number {

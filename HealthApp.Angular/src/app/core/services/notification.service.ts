@@ -60,7 +60,7 @@ export class NotificationService {
 
     this._toasts.update(toasts => [...toasts, toast]);
 
-    window.setTimeout(() => {
+    globalThis.setTimeout(() => {
       this.remove(toast.id);
     }, duration);
   }
