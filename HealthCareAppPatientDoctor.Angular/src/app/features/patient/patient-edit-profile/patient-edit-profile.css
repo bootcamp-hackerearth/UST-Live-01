@@ -1,196 +1,435 @@
-body {
+/* ===========================
+   Page
+=========================== */
 
-    background: #f5f7fb;
+.edit-profile-page{
 
-}
+    min-height:100vh;
 
-.container {
+    background:#08111f;
 
-    max-width: 900px;
+    position:relative;
 
-}
+    overflow:hidden;
 
-.card {
+    display:flex;
 
-    border: none;
+    justify-content:center;
 
-    border-radius: 20px;
+    align-items:center;
 
-    overflow: hidden;
-
-    box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
-
-}
-
-.card-header {
-
-    background: linear-gradient(
-        90deg,
-        #2563eb,
-        #1d4ed8
-    );
-
-    color: white;
-
-    padding: 20px;
-
-    text-align: center;
+    padding:60px 20px;
 
 }
 
-.card-header h3 {
+/* ===========================
+   Background Glow
+=========================== */
 
-    margin: 0;
+.bg-glow{
 
-    font-size: 28px;
+    position:absolute;
 
-    font-weight: 700;
+    border-radius:50%;
 
-}
+    filter:blur(100px);
 
-.card-body {
-
-    padding: 35px;
-
-}
-
-.form-label {
-
-    font-weight: 600;
-
-    color: #374151;
-
-    margin-bottom: 8px;
+    opacity:.35;
 
 }
 
-.form-control,
-.form-select {
+.glow-one{
 
-    border-radius: 12px;
+    width:340px;
 
-    padding: 12px 15px;
+    height:340px;
 
-    border: 1px solid #d1d5db;
+    background:#14b8a6;
 
-    transition: .3s;
+    top:-100px;
 
-}
-
-.form-control:focus,
-.form-select:focus {
-
-    border-color: #2563eb;
-
-    box-shadow: 0 0 0 .15rem rgba(37,99,235,.15);
+    left:-120px;
 
 }
 
-.form-control:disabled {
+.glow-two{
 
-    background: #f3f4f6;
+    width:360px;
 
-    color: #6b7280;
+    height:360px;
 
-    cursor: not-allowed;
+    background:#6366f1;
 
-}
+    bottom:-120px;
 
-.text-danger {
-
-    font-size: 14px;
-
-    margin-top: 4px;
+    right:-120px;
 
 }
 
-.btn {
+/* ===========================
+   Card
+=========================== */
 
-    padding: 10px 22px;
+.profile-container{
 
-    border-radius: 12px;
+    position:relative;
 
-    font-weight: 600;
+    z-index:2;
 
-    transition: .3s;
+    width:100%;
 
-}
+    max-width:980px;
 
-.btn-success {
+    background:#172233;
 
-    background: #16a34a;
+    border-radius:32px;
 
-    border: none;
+    padding:50px;
 
-}
+    border:1px solid rgba(255,255,255,.06);
 
-.btn-success:hover {
-
-    background: #15803d;
-
-}
-
-.btn-secondary {
-
-    background: #6b7280;
-
-    border: none;
+    box-shadow:0 30px 80px rgba(0,0,0,.45);
 
 }
 
-.btn-secondary:hover {
+/* ===========================
+   Header
+=========================== */
 
-    background: #4b5563;
+.profile-header{
 
-}
+    display:flex;
 
-.button-group {
+    align-items:center;
 
-    display: flex;
+    gap:25px;
 
-    justify-content: center;
-
-    gap: 15px;
-
-    margin-top: 30px;
-
-    flex-wrap: wrap;
+    margin-bottom:45px;
 
 }
 
-.spinner-border {
+.avatar{
 
-    width: 3rem;
+    width:90px;
 
-    height: 3rem;
+    height:90px;
+
+    border-radius:28px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:linear-gradient(135deg,#14b8a6,#3b82f6,#8b5cf6);
+
+    color:white;
+
+    font-size:34px;
+
+    font-weight:800;
+
+    box-shadow:0 20px 40px rgba(20,184,166,.25);
 
 }
 
-.loading-container {
+.profile-header h1{
 
-    text-align: center;
+    color:white;
 
-    padding: 60px;
+    margin:0;
+
+    font-size:40px;
+
+    font-weight:800;
 
 }
 
-@media (max-width:768px) {
+.profile-header p{
 
-    .card-body {
+    margin-top:8px;
 
-        padding: 20px;
+    color:#94a3b8;
+
+    font-size:17px;
+
+}
+
+/* ===========================
+   Form
+=========================== */
+
+.form-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:28px 32px;
+
+}
+
+.full-width{
+
+    grid-column:1 / -1;
+
+}
+
+label{
+
+    display:block;
+
+    margin-bottom:10px;
+
+    color:white;
+
+    font-weight:600;
+
+    font-size:15px;
+
+}
+
+/* ===========================
+   Inputs
+=========================== */
+
+.auth-input{
+
+    height:58px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:#0f172a;
+
+    color:white;
+
+    font-size:16px;
+
+    padding:0 18px;
+
+}
+
+.auth-input:focus{
+
+    background:#0f172a;
+
+    color:white;
+
+    box-shadow:0 0 0 3px rgba(20,184,166,.18);
+
+}
+
+.auth-input::placeholder{
+
+    color:#94a3b8;
+
+}
+
+.form-select{
+
+    color:white;
+
+}
+
+.form-select option{
+
+    color:black;
+
+}
+
+/* Date picker */
+
+input[type="date"]{
+
+    color-scheme:dark;
+
+}
+
+/* Disabled email */
+
+input[readonly]{
+
+    background:#111c2e;
+
+    color:#94a3b8;
+
+    cursor:not-allowed;
+
+}
+
+/* ===========================
+   Validation
+=========================== */
+
+.text-danger{
+
+    display:block;
+
+    margin-top:8px;
+
+    font-size:13px;
+
+    color:#f87171 !important;
+
+}
+
+/* ===========================
+   Buttons
+=========================== */
+
+.button-row{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:18px;
+
+    margin-top:45px;
+
+}
+
+.save-btn{
+
+    min-width:180px;
+
+    height:56px;
+
+    border:none;
+
+    border-radius:16px;
+
+    font-weight:700;
+
+    font-size:17px;
+
+    color:white;
+
+    background:linear-gradient(135deg,#14b8a6,#3b82f6);
+
+    transition:.3s;
+
+}
+
+.save-btn:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 18px 40px rgba(20,184,166,.25);
+
+}
+
+.cancel-btn{
+
+    min-width:150px;
+
+    height:56px;
+
+    border:none;
+
+    border-radius:16px;
+
+    font-weight:700;
+
+    background:#283548;
+
+    color:#cbd5e1;
+
+    transition:.3s;
+
+}
+
+.cancel-btn:hover{
+
+    background:#34445d;
+
+}
+
+/* ===========================
+   Loading
+=========================== */
+
+.loading-section{
+
+    text-align:center;
+
+    padding:80px 0;
+
+    color:#94a3b8;
+
+}
+
+.spinner-border{
+
+    width:3.5rem;
+
+    height:3.5rem;
+
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media(max-width:992px){
+
+    .profile-container{
+
+        padding:40px;
 
     }
 
-    .button-group {
+}
 
-        flex-direction: column;
+@media(max-width:768px){
+
+    .profile-container{
+
+        padding:28px;
+
+        border-radius:24px;
 
     }
 
-    .button-group .btn {
+    .profile-header{
 
-        width: 100%;
+        flex-direction:column;
+
+        text-align:center;
+
+    }
+
+    .profile-header h1{
+
+        font-size:32px;
+
+    }
+
+    .form-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .full-width{
+
+        grid-column:auto;
+
+    }
+
+    .button-row{
+
+        flex-direction:column;
+
+    }
+
+    .save-btn,
+    .cancel-btn{
+
+        width:100%;
 
     }
 

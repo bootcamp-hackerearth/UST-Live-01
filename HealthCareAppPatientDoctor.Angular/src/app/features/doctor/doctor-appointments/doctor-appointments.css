@@ -1,41 +1,1081 @@
-.appointment-card{
+/* ===========================================================
+   DOCTOR APPOINTMENTS
+=========================================================== */
 
-    background:white;
+:host{
+    display:block;
+    min-height:100vh;
+    background:
+        radial-gradient(circle at top left,#1e3a8a22,transparent 40%),
+        radial-gradient(circle at bottom right,#2563eb22,transparent 35%),
+        #0f172a;
+}
 
-    border-radius:18px;
+/* ===========================================================
+   PAGE
+=========================================================== */
 
-    padding:25px;
+.appointments-page{
 
-    transition:.3s;
+    position:relative;
+    min-height:100vh;
+    overflow:hidden;
+    padding:32px;
 
 }
 
-.appointment-card:hover{
+/* ===========================================================
+   BACKGROUND GLOW
+=========================================================== */
 
-    transform:translateY(-5px);
+.page-glow{
+
+    position:absolute;
+    border-radius:50%;
+    filter:blur(130px);
+    opacity:.18;
+    z-index:0;
 
 }
 
-.appointment-card h4{
+.glow-left{
 
-    color:#0d6efd;
+    width:420px;
+    height:420px;
 
-    font-weight:700;
+    top:-120px;
+    left:-120px;
+
+    background:#2563eb;
 
 }
 
-.appointment-card p{
+.glow-right{
 
-    margin-bottom:10px;
+    width:360px;
+    height:360px;
+
+    right:-120px;
+    bottom:-100px;
+
+    background:#0ea5e9;
+
+}
+
+/* ===========================================================
+   CONTAINER
+=========================================================== */
+
+.appointments-container{
+
+    position:relative;
+    z-index:2;
+
+    max-width:1500px;
+
+    margin:auto;
+
+}
+
+/* ===========================================================
+   HEADER
+=========================================================== */
+
+.page-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:24px;
+
+    margin-bottom:35px;
+
+}
+
+/* ===========================================================
+   ICON
+=========================================================== */
+
+.page-icon{
+
+    width:82px;
+    height:82px;
+
+    border-radius:22px;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    font-size:36px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color:white;
+
+    box-shadow:
+        0 15px 35px rgba(37,99,235,.35);
+
+}
+
+/* ===========================================================
+   TITLE
+=========================================================== */
+
+.page-header h1{
+
+    margin:0;
+
+    color:white;
+
+    font-size:40px;
+
+    font-weight:800;
+
+}
+
+.page-header p{
+
+    margin-top:8px;
+
+    color:#94a3b8;
 
     font-size:16px;
 
 }
 
-.badge{
+/* ===========================================================
+   APPOINTMENT GRID
+=========================================================== */
+
+.appointment-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(370px,1fr));
+
+    gap:24px;
+
+}
+
+/* ===========================================================
+   APPOINTMENT CARD
+=========================================================== */
+
+.appointment-card{
+
+    background:rgba(15,23,42,.82);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:24px;
+
+    padding:24px;
+
+    transition:.3s;
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.28);
+
+}
+
+.appointment-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:#3b82f6;
+
+    box-shadow:
+        0 24px 45px rgba(37,99,235,.18);
+
+}
+
+/* ===========================================================
+   CARD HEADER
+=========================================================== */
+
+.appointment-top{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+/* ===========================================================
+   PATIENT AVATAR
+=========================================================== */
+
+.patient-avatar{
+
+    width:68px;
+
+    height:68px;
+
+    border-radius:20px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    flex-shrink:0;
+
+    font-size:28px;
+
+    font-weight:700;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    box-shadow:
+        0 12px 24px rgba(37,99,235,.28);
+
+}
+
+/* ===========================================================
+   PATIENT NAME
+=========================================================== */
+
+.appointment-top h3{
+
+    margin:0;
+
+    color:white;
+
+    font-size:22px;
+
+    font-weight:700;
+
+}
+
+.appointment-top span{
+
+    display:block;
+
+    margin-top:6px;
+
+    color:#94a3b8;
 
     font-size:14px;
 
-    padding:8px 14px;
+}
+
+/* ===========================================================
+   DIVIDER
+=========================================================== */
+
+.appointment-divider{
+
+    height:1px;
+
+    background:rgba(255,255,255,.08);
+
+    margin:22px 0;
+
+}
+
+/* ===========================================================
+   APPOINTMENT INFO
+=========================================================== */
+
+.appointment-info{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+
+}
+
+.info-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.info-row span{
+
+    color:#94a3b8;
+
+    font-size:14px;
+
+}
+
+.info-row strong{
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:700;
+
+}
+
+/* ===========================================================
+   STEP 3
+   STATUS PILL
+=========================================================== */
+
+.status-pill{
+
+    display:inline-flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    min-width:110px;
+
+    padding:8px 16px;
+
+    border-radius:999px;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    letter-spacing:.3px;
+
+    border:1px solid transparent;
+
+}
+
+/* Pending */
+
+.bg-warning{
+
+    background:rgba(245,158,11,.18)!important;
+
+    color:#fbbf24!important;
+
+    border-color:rgba(245,158,11,.35)!important;
+
+}
+
+/* Confirmed */
+
+.bg-primary{
+
+    background:rgba(37,99,235,.18)!important;
+
+    color:#60a5fa!important;
+
+    border-color:rgba(37,99,235,.35)!important;
+
+}
+
+/* Completed */
+
+.bg-success{
+
+    background:rgba(34,197,94,.18)!important;
+
+    color:#4ade80!important;
+
+    border-color:rgba(34,197,94,.35)!important;
+
+}
+
+/* Cancelled */
+
+.bg-danger{
+
+    background:rgba(239,68,68,.18)!important;
+
+    color:#f87171!important;
+
+    border-color:rgba(239,68,68,.35)!important;
+
+}
+
+/* Unknown */
+
+.bg-secondary{
+
+    background:rgba(100,116,139,.18)!important;
+
+    color:#cbd5e1!important;
+
+    border-color:rgba(100,116,139,.35)!important;
+
+}
+
+/* ===========================================================
+   ACTION BUTTONS
+=========================================================== */
+
+.appointment-actions{
+
+    display:flex;
+
+    gap:14px;
+
+    flex-wrap:wrap;
+
+}
+
+/* ===========================================================
+   PRIMARY BUTTON
+=========================================================== */
+
+.primary-btn{
+
+    flex:1;
+
+    min-width:160px;
+
+    height:48px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color:white;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    box-shadow:
+        0 12px 24px rgba(37,99,235,.25);
+
+}
+
+.primary-btn:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 18px 36px rgba(37,99,235,.35);
+
+}
+
+/* ===========================================================
+   SECONDARY BUTTON
+=========================================================== */
+
+.secondary-btn{
+
+    flex:1;
+
+    min-width:160px;
+
+    height:48px;
+
+    border-radius:14px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    background:#111827;
+
+    color:#cbd5e1;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.secondary-btn:hover{
+
+    background:#1e293b;
+
+    border-color:#3b82f6;
+
+    color:white;
+
+}
+
+/* ===========================================================
+   STEP 4
+   RIGHT SIDEBAR
+=========================================================== */
+
+.appointments-sidebar{
+
+    position:sticky;
+
+    top:30px;
+
+}
+
+/* ===========================================================
+   SUMMARY CARD
+=========================================================== */
+
+.summary-card{
+
+    background:rgba(15,23,42,.82);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:24px;
+
+    padding:30px;
+
+    box-shadow:
+        0 18px 40px rgba(0,0,0,.30);
+
+}
+
+/* ===========================================================
+   SUMMARY ICON
+=========================================================== */
+
+.summary-icon{
+
+    width:74px;
+
+    height:74px;
+
+    margin:auto;
+
+    margin-bottom:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    border-radius:22px;
+
+    font-size:34px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color:white;
+
+    box-shadow:
+        0 15px 30px rgba(37,99,235,.30);
+
+}
+
+/* ===========================================================
+   SUMMARY TITLE
+=========================================================== */
+
+.summary-card h2{
+
+    margin:0;
+
+    text-align:center;
+
+    color:white;
+
+    font-size:24px;
+
+    font-weight:700;
+
+}
+
+/* ===========================================================
+   DIVIDER
+=========================================================== */
+
+.summary-divider{
+
+    height:1px;
+
+    margin:24px 0;
+
+    background:rgba(255,255,255,.08);
+
+}
+
+/* ===========================================================
+   SUMMARY ROW
+=========================================================== */
+
+.summary-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:14px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.05);
+
+}
+
+.summary-row:last-of-type{
+
+    border-bottom:none;
+
+}
+
+.summary-row span{
+
+    color:#94a3b8;
+
+    font-size:14px;
+
+}
+
+.summary-row strong{
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:700;
+
+}
+
+/* ===========================================================
+   SUMMARY NOTE
+=========================================================== */
+
+.summary-note{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:14px;
+
+    padding:18px;
+
+    border-radius:18px;
+
+    background:rgba(37,99,235,.08);
+
+    border:1px solid rgba(59,130,246,.18);
+
+    color:#cbd5e1;
+
+    font-size:14px;
+
+    line-height:1.7;
+
+}
+
+/* ===========================================================
+   SIDEBAR ANIMATION
+=========================================================== */
+
+.appointments-sidebar{
+
+    animation:slideLeft .45s ease;
+
+}
+
+@keyframes slideLeft{
+
+    from{
+
+        opacity:0;
+
+        transform:translateX(25px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateX(0);
+
+    }
+
+}
+
+/* ===========================================================
+   STEP 5
+   BACK BUTTON
+=========================================================== */
+
+.back-section{
+
+    margin-top:32px;
+
+    display:flex;
+
+    justify-content:flex-start;
+
+}
+
+.back-btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:14px 24px;
+
+    border-radius:14px;
+
+    text-decoration:none;
+
+    background:#111827;
+
+    color:#cbd5e1;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    font-weight:600;
+
+    transition:.25s;
+
+}
+
+.back-btn:hover{
+
+    background:#1e293b;
+
+    color:white;
+
+    border-color:#3b82f6;
+
+    transform:translateY(-2px);
+
+}
+
+/* ===========================================================
+   LOADING CARD
+=========================================================== */
+
+.loading-card{
+
+    padding:70px 40px;
+
+    text-align:center;
+
+    border-radius:24px;
+
+    background:rgba(15,23,42,.82);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    backdrop-filter:blur(18px);
+
+    box-shadow:
+
+        0 18px 40px rgba(0,0,0,.30);
+
+}
+
+.loading-card p{
+
+    margin-top:20px;
+
+    color:#94a3b8;
+
+    font-size:15px;
+
+}
+
+.spinner-border{
+
+    width:3rem;
+
+    height:3rem;
+
+}
+
+/* ===========================================================
+   EMPTY CARD
+=========================================================== */
+
+.empty-card{
+
+    padding:70px 40px;
+
+    text-align:center;
+
+    border-radius:24px;
+
+    background:rgba(15,23,42,.82);
+
+    border:1px dashed rgba(255,255,255,.12);
+
+    backdrop-filter:blur(18px);
+
+}
+
+.empty-icon{
+
+    width:90px;
+
+    height:90px;
+
+    margin:auto;
+
+    margin-bottom:22px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    border-radius:50%;
+
+    font-size:42px;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color:white;
+
+    box-shadow:
+
+        0 15px 30px rgba(37,99,235,.30);
+
+}
+
+.empty-card h3{
+
+    color:white;
+
+    margin-bottom:12px;
+
+    font-size:26px;
+
+}
+
+.empty-card p{
+
+    color:#94a3b8;
+
+    font-size:15px;
+
+}
+
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
+
+@media(max-width:1200px){
+
+    .appointments-container{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .appointments-sidebar{
+
+        position:relative;
+
+        top:auto;
+
+    }
+
+}
+
+@media(max-width:992px){
+
+    .appointments-page{
+
+        padding:20px;
+
+    }
+
+    .appointment-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .appointments-header{
+
+        flex-direction:column;
+
+        text-align:center;
+
+    }
+
+    .appointments-header h1{
+
+        font-size:32px;
+
+    }
+
+    .appointment-top{
+
+        flex-direction:column;
+
+        text-align:center;
+
+    }
+
+    .appointment-actions{
+
+        flex-direction:column;
+
+    }
+
+    .primary-btn,
+
+    .secondary-btn{
+
+        width:100%;
+
+    }
+
+}
+
+@media(max-width:576px){
+
+    .appointments-page{
+
+        padding:14px;
+
+    }
+
+    .appointments-main{
+
+        gap:20px;
+
+    }
+
+    .summary-row{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:6px;
+
+    }
+
+}
+
+/* ===========================================================
+   SCROLLBAR
+=========================================================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#0f172a;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#334155;
+
+    border-radius:999px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#475569;
+
+}
+
+/* ===========================================================
+   PAGE ANIMATION
+=========================================================== */
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(24px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+.appointments-main>*{
+
+    animation:fadeUp .45s ease both;
+
+}
+
+.appointments-main>*:nth-child(2){
+
+    animation-delay:.08s;
+
+}
+
+.appointments-main>*:nth-child(3){
+
+    animation-delay:.16s;
+
+}
+
+.appointments-main>*:nth-child(4){
+
+    animation-delay:.24s;
 
 }

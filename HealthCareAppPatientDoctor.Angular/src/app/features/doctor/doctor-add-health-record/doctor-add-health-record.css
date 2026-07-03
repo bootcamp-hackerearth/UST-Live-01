@@ -1,17 +1,547 @@
+/* ==========================================================
+   PAGE
+========================================================== */
+
+:host{
+    display:block;
+    min-height:100vh;
+    background:
+        radial-gradient(circle at top left,#1e3a8a22,transparent 40%),
+        radial-gradient(circle at bottom right,#2563eb22,transparent 35%),
+        #0f172a;
+}
+
+.container{
+    max-width:1300px;
+}
+
+/* ==========================================================
+   CARD
+========================================================== */
+
 .card{
 
-    border-radius:16px;
+    background:rgba(15,23,42,.85);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:24px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 20px 45px rgba(0,0,0,.35);
 
 }
 
-textarea{
-
-    resize:none;
-
-}
+/* ==========================================================
+   HEADER
+========================================================== */
 
 .card-header{
 
-    border-radius:16px 16px 0 0;
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        ) !important;
+
+    border:none;
+
+    padding:28px 34px;
+
+}
+
+.card-header h3{
+
+    margin:0;
+
+    color:white;
+
+    font-size:28px;
+
+    font-weight:700;
+
+    letter-spacing:.3px;
+
+}
+
+/* ==========================================================
+   BODY
+========================================================== */
+
+.card-body{
+
+    padding:34px;
+
+    color:#e2e8f0;
+
+}
+
+/* ==========================================================
+   PATIENT INFO
+========================================================== */
+
+.card-body p{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:14px 0;
+
+    margin:0;
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+
+    font-size:15px;
+
+}
+
+.card-body strong{
+
+    color:white;
+
+}
+
+.card-body hr{
+
+    border-color:rgba(255,255,255,.08);
+
+    margin:28px 0;
+
+}
+
+
+/* ==========================================================
+   FORM
+========================================================== */
+
+form{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+/* ==========================================================
+   FORM GROUP
+========================================================== */
+
+.mb-3,
+.mb-4{
+
+    margin-bottom:24px !important;
+
+}
+
+/* ==========================================================
+   LABELS
+========================================================== */
+
+.form-label{
+
+    display:block;
+
+    margin-bottom:10px;
+
+    color:#e2e8f0;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    letter-spacing:.2px;
+
+}
+
+/* ==========================================================
+   TEXTAREA
+========================================================== */
+
+.form-control{
+
+    width:100%;
+
+    min-height:130px;
+
+    padding:16px 18px;
+
+    border-radius:16px;
+
+    background:#111827;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    color:#f8fafc;
+
+    font-size:15px;
+
+    line-height:1.7;
+
+    resize:vertical;
+
+    transition:
+        border-color .25s,
+        box-shadow .25s,
+        background .25s;
+
+}
+
+/* Diagnosis & Prescription */
+
+#diagnosis,
+#prescription{
+
+    min-height:140px;
+
+}
+
+/* Notes */
+
+#notes{
+
+    min-height:170px;
+
+}
+
+/* ==========================================================
+   PLACEHOLDER
+========================================================== */
+
+.form-control::placeholder{
+
+    color:#64748b;
+
+}
+
+/* ==========================================================
+   FOCUS
+========================================================== */
+
+.form-control:focus{
+
+    background:#111827;
+
+    color:#fff;
+
+    border-color:#3b82f6;
+
+    box-shadow:
+        0 0 0 4px rgba(59,130,246,.18);
+
+    outline:none;
+
+}
+
+/* ==========================================================
+   DISABLED
+========================================================== */
+
+.form-control:disabled{
+
+    opacity:.65;
+
+    cursor:not-allowed;
+
+}
+
+/* ==========================================================
+   INVALID INPUT
+========================================================== */
+
+.form-control.ng-invalid.ng-touched{
+
+    border-color:#ef4444;
+
+    box-shadow:
+        0 0 0 4px rgba(239,68,68,.12);
+
+}
+
+
+/* ==========================================================
+   BUTTON SECTION
+========================================================== */
+
+button{
+
+    transition:
+        transform .25s,
+        box-shadow .25s,
+        background .25s;
+
+    font-weight:700;
+
+    border:none;
+
+    border-radius:16px;
+
+    padding:14px 28px;
+
+    font-size:15px;
+
+}
+
+/* ==========================================================
+   SAVE BUTTON
+========================================================== */
+
+.btn-success{
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color:white;
+
+    box-shadow:
+        0 12px 30px rgba(37,99,235,.35);
+
+}
+
+.btn-success:hover:not(:disabled){
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 18px 40px rgba(37,99,235,.45);
+
+}
+
+.btn-success:disabled{
+
+    opacity:.6;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+    box-shadow:none;
+
+}
+
+/* ==========================================================
+   CANCEL BUTTON
+========================================================== */
+
+.btn-secondary{
+
+    background:#1f2937;
+
+    color:#e2e8f0;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    box-shadow:none;
+
+}
+
+.btn-secondary:hover{
+
+    background:#374151;
+
+    color:white;
+
+    transform:translateY(-2px);
+
+}
+
+/* ==========================================================
+   BUTTON SPACING
+========================================================== */
+
+.btn + .btn{
+
+    margin-left:14px !important;
+
+}
+
+/* ==========================================================
+   LOADING CARD
+========================================================== */
+
+.loading-card{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:18px;
+
+    padding:70px 20px;
+
+    border-radius:24px;
+
+    background:rgba(15,23,42,.82);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.06);
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.28);
+
+}
+
+.loading-card p{
+
+    margin:0;
+
+    color:#94a3b8;
+
+    font-size:15px;
+
+}
+
+/* ==========================================================
+   SPINNER
+========================================================== */
+
+.spinner-border{
+
+    width:3.2rem;
+
+    height:3.2rem;
+
+    border-width:.35rem;
+
+}
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width:1200px){
+
+    .record-container{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .record-sidebar{
+
+        position:relative;
+
+        top:auto;
+
+    }
+
+}
+
+@media (max-width:768px){
+
+    .record-page{
+
+        padding:20px;
+
+    }
+
+    .record-header{
+
+        flex-direction:column;
+
+        text-align:center;
+
+        gap:20px;
+
+    }
+
+    .record-icon{
+
+        width:70px;
+
+        height:70px;
+
+        font-size:32px;
+
+    }
+
+    .record-header h1{
+
+        font-size:32px;
+
+    }
+
+    .record-card{
+
+        padding:24px;
+
+    }
+
+    .patient-card{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:18px;
+
+    }
+
+    .btn-success,
+    .btn-secondary{
+
+        width:100%;
+
+    }
+
+    .btn + .btn{
+
+        margin-left:0 !important;
+
+        margin-top:14px;
+
+    }
+
+}
+
+@media (max-width:576px){
+
+    .record-page{
+
+        padding:16px;
+
+    }
+
+    .record-card{
+
+        padding:20px;
+
+        border-radius:20px;
+
+    }
+
+    .summary-card{
+
+        padding:22px;
+
+    }
+
+    .record-header h1{
+
+        font-size:28px;
+
+    }
+
+    .record-header p{
+
+        font-size:14px;
+
+    }
 
 }

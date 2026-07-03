@@ -1,102 +1,37 @@
-<div class="container py-5">
+<div class="history-page">
 
-    <div class="text-center mb-5">
+    <!-- Background -->
 
-        <h2 class="fw-bold text-primary">
+    <div class="history-glow glow-left"></div>
+    <div class="history-glow glow-right"></div>
 
-            📋 Patient Medical History
+    <div class="history-container">
 
-        </h2>
+        <!-- LEFT -->
 
-        <p class="text-muted">
+        <div class="history-main">
 
-            Previous health records of this patient.
+            <!-- Header -->
 
-        </p>
+            <div class="history-header">
 
-    </div>
+                <div class="header-icon">
 
-    @if(isLoading){
+                    📋
 
-    <div class="text-center">
+                </div>
 
-        <div class="spinner-border text-primary">
+                <div>
 
-        </div>
+                    <h1>
 
-    </div>
+                        Patient Medical History
 
-    }
-
-    @if(!isLoading && records.length===0){
-
-    <div class="alert alert-info text-center">
-
-        No previous health records found.
-
-    </div>
-
-    }
-
-    <div class="row g-4">
-
-        @for(record of records; track record.healthRecordId){
-
-        <div class="col-lg-6">
-
-            <div class="card shadow h-100">
-
-                <div class="card-body">
-
-                    <h5 class="text-primary">
-
-                        {{record.doctorName}}
-
-                    </h5>
-
-                    <hr>
+                    </h1>
 
                     <p>
 
-                        <strong>Visit Date :</strong>
-
-                        {{record.visitDate | date:'dd-MM-yyyy'}}
-
-                    </p>
-
-                    <p>
-
-                        <strong>Diagnosis</strong>
-
-                    </p>
-
-                    <p>
-
-                        {{record.diagnosis}}
-
-                    </p>
-
-                    <p>
-
-                        <strong>Prescription</strong>
-
-                    </p>
-
-                    <p>
-
-                        {{record.prescription}}
-
-                    </p>
-
-                    <p>
-
-                        <strong>Notes</strong>
-
-                    </p>
-
-                    <p>
-
-                        {{record.notes}}
+                        Review previous consultations, diagnoses and prescriptions.
 
                     </p>
 
@@ -104,21 +39,207 @@
 
             </div>
 
+            <!-- Loading -->
+
+            @if(isLoading){
+
+            <div class="loading-card">
+
+                <div class="spinner-border text-info"></div>
+
+                <p>
+
+                    Loading medical history...
+
+                </p>
+
+            </div>
+
+            }
+
+            @else{
+
+            @if(records.length===0){
+
+            <div class="empty-card">
+
+                <div class="empty-icon">
+
+                    📄
+
+                </div>
+
+                <h3>
+
+                    No Medical History
+
+                </h3>
+
+                <p>
+
+                    No previous health records were found for this patient.
+
+                </p>
+
+            </div>
+
+            }
+
+            @else{
+
+            <div class="history-grid">
+
+                @for(record of records;track record.healthRecordId){
+
+                <div class="history-card">
+
+                    <div class="history-top">
+
+                        <div class="doctor-avatar">
+
+                            👨‍⚕️
+
+                        </div>
+
+                        <div>
+
+                            <h3>
+
+                                {{record.doctorName}}
+
+                            </h3>
+
+                            <span>
+
+                                {{record.visitDate | date:'dd-MM-yyyy'}}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="history-divider"></div>
+
+                    <div class="history-section">
+
+                        <label>
+
+                            Diagnosis
+
+                        </label>
+
+                        <p>
+
+                            {{record.diagnosis}}
+
+                        </p>
+
+                    </div>
+
+                    <div class="history-section">
+
+                        <label>
+
+                            Prescription
+
+                        </label>
+
+                        <p>
+
+                            {{record.prescription}}
+
+                        </p>
+
+                    </div>
+
+                    <div class="history-section">
+
+                        <label>
+
+                            Notes
+
+                        </label>
+
+                        <p>
+
+                            {{record.notes}}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                }
+
+            </div>
+
+            }
+
+            }
+
+            <div class="back-section">
+
+                <button
+                    class="back-btn"
+                    (click)="back()">
+
+                    ← Back to Appointments
+
+                </button>
+
+            </div>
+
         </div>
 
-        }
+        <!-- RIGHT SIDEBAR -->
 
-    </div>
+        <div class="history-sidebar">
 
-    <div class="text-center mt-5">
+            <div class="summary-card">
 
-        <button
-            class="btn btn-outline-secondary"
-            (click)="back()">
+                <div class="summary-icon">
 
-            ← Back to Appointments
+                    🩺
 
-        </button>
+                </div>
+
+                <h2>
+
+                    Overview
+
+                </h2>
+
+                <div class="summary-divider"></div>
+
+                <div class="summary-row">
+
+                    <span>
+
+                        Total Visits
+
+                    </span>
+
+                    <strong>
+
+                        {{records.length}}
+
+                    </strong>
+
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <div class="summary-note">
+
+                    💡 Reviewing previous diagnoses and prescriptions helps maintain continuity of patient care.
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 

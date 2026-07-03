@@ -1,175 +1,231 @@
-<div class="container py-5">
+<div class="edit-profile-page">
 
-    <div class="row justify-content-center">
+    <!-- Background Glow -->
 
-        <div class="col-lg-8">
+    <div class="bg-glow glow-one"></div>
+    <div class="bg-glow glow-two"></div>
 
-            <div class="profile-card shadow">
+    <div class="profile-container">
 
-                <div class="card-header">
+        <!-- Header -->
 
-                    <h2>
+        <div class="profile-header">
 
-                        ✏️ Edit My Profile
+            <div class="avatar">
 
-                    </h2>
+                {{ patientInitials }}
 
-                </div>
+            </div>
 
-                <div class="card-body">
+            <div>
 
-                    @if(isLoading){
+                <h1>Edit Profile</h1>
 
-                    <div class="text-center py-5">
+                <p>
+                    Keep your personal information up to date.
+                </p>
 
-                        <div class="spinner-border text-primary">
+            </div>
 
-                        </div>
+        </div>
 
-                    </div>
+        <!-- Loading -->
+
+        @if(isLoading){
+
+        <div class="loading-section">
+
+            <div class="spinner-border text-info"></div>
+
+            <p class="mt-4">
+                Loading profile...
+            </p>
+
+        </div>
+
+        }
+
+        @else{
+
+        <form
+            [formGroup]="profileForm"
+            (ngSubmit)="save()">
+
+            <div class="form-grid">
+
+                <!-- Name -->
+
+                <div>
+
+                    <label for="fullName">Full Name</label>
+
+                    <input
+
+                        id="fullName"
+                        class="form-control auth-input"
+
+                        formControlName="fullName"
+
+                        placeholder="Enter full name">
+
+                    @if(profileForm.controls.fullName.touched &&
+                    profileForm.controls.fullName.errors?.['required']){
+
+                    <small class="text-danger">
+
+                        Full Name is required.
+
+                    </small>
 
                     }
 
-                    @else{
+                    @if(profileForm.controls.fullName.touched &&
+                    profileForm.controls.fullName.errors?.['minlength']){
 
-                    <form
-                        [formGroup]="profileForm"
-                        (ngSubmit)="save()">
+                    <small class="text-danger">
 
-                        <div class="mb-3">
+                        Minimum 3 characters required.
 
-                            <label class="form-label">
+                    </small>
 
-                                Full Name
+                    }
 
-                            </label>
+                    @if(profileForm.controls.fullName.touched &&
+                    profileForm.controls.fullName.errors?.['pattern']){
 
-                            <input
-                                type="text"
-                                class="form-control"
-                                formControlName="fullName">
+                    <small class="text-danger">
 
-                        </div>
+                        Only letters, spaces and '.' are allowed.
 
-                        <div class="mb-3">
+                    </small>
 
-                            <label class="form-label">
+                    }
 
-                                Date Of Birth
+                </div>
 
-                            </label>
+                <!-- DOB -->
 
-                            <input
-                                type="date"
-                                class="form-control"
-                                formControlName="dateOfBirth">
+                <div>
 
-                        </div>
+                    <label for="dateOfBirth">Date Of Birth</label>
 
-                        <div class="mb-3">
+                    <input
+                        id="dateOfBirth"
+                        type="date"
 
-                            <label class="form-label">
+                        class="form-control auth-input"
 
-                                Gender
+                        [max]="today"
 
-                            </label>
+                        formControlName="dateOfBirth">
 
-                            <select
-                                class="form-select"
-                                formControlName="gender">
+                    @if(profileForm.controls.dateOfBirth.touched &&
+                    profileForm.controls.dateOfBirth.errors?.['futureDate']){
 
-                                <option [value]="0">
+                    <small class="text-danger">
 
-                                    Male
+                        Future date is not allowed.
 
-                                </option>
+                    </small>
 
-                                <option [value]="1">
+                    }
 
-                                    Female
+                </div>
 
-                                </option>
+                <!-- Gender -->
 
-                                <option [value]="2">
+                <div>
 
-                                    Other
+                    <label for="gender">Gender</label>
 
-                                </option>
+                    <select
+                        id = "gender"
+                        class="form-select auth-input"
 
-                            </select>
+                        formControlName="gender">
 
-                        </div>
+                        <option [value]="0">Male</option>
 
-                        <div class="mb-3">
+                        <option [value]="1">Female</option>
 
-                            <label class="form-label">
+                        <option [value]="2">Other</option>
 
-                                Phone Number
+                    </select>
 
-                            </label>
+                </div>
 
-                            <input
-                                type="text"
-                                class="form-control"
-                                maxlength="10"
-                                formControlName="phoneNumber">
+                <!-- Phone -->
 
-                        </div>
+                <div>
 
-                        <div class="mb-3">
+                    <label for="phoneNumber">Phone Number</label>
 
-                            <label class="form-label">
+                    <input
+                        id="phoneNumber"
+                        class="form-control auth-input"
 
-                                Email Address
+                        maxlength="10"
 
-                            </label>
+                        formControlName="phoneNumber"
 
-                            <input
-                                type="email"
-                                class="form-control"
-                                formControlName="email"
-                                readonly>
+                        (keypress)="allowOnlyNumbers($event)"
 
-                        </div>
+                        (paste)="preventInvalidPaste($event)"
 
-                        <div class="mb-4">
+                        placeholder="10-digit number">
 
-                            <label class="form-label">
+                    @if(profileForm.controls.phoneNumber.touched &&
+                    profileForm.controls.phoneNumber.errors?.['pattern']){
 
-                                Insurance ID
+                    <small class="text-danger">
 
-                            </label>
+                        Enter a valid 10-digit mobile number.
 
-                            <input
-                                type="text"
-                                class="form-control"
-                                formControlName="insuranceId">
+                    </small>
 
-                        </div>
+                    }
 
-                        <div class="text-center">
+                </div>
 
-                            <button
-                                class="btn btn-primary me-3"
-                                type="submit"
-                                [disabled]="isLoading">
+                <!-- Email -->
 
-                                Save Changes
+                <div class="full-width">
 
-                            </button>
+                    <label for="email">Email Address</label>
 
-                            <button
-                                class="btn btn-outline-secondary"
-                                type="button"
-                                (click)="cancel()">
+                    <input
+                        id="email"
 
-                                Cancel
+                        class="form-control auth-input"
 
-                            </button>
+                        formControlName="email"
 
-                        </div>
+                        readonly>
 
-                    </form>
+                </div>
+
+                <!-- Insurance -->
+
+                <div class="full-width">
+
+                    <label for="insuranceId">Insurance ID</label>
+
+                    <input
+                        id="insuranceId"
+                        class="form-control auth-input"
+
+                        formControlName="insuranceId"
+
+                        placeholder="Insurance ID">
+
+                    @if(profileForm.controls.insuranceId.touched &&
+                    profileForm.controls.insuranceId.errors?.['pattern']){
+
+                    <small class="text-danger">
+
+                        Only letters and numbers allowed.
+
+                    </small>
 
                     }
 
@@ -177,7 +233,35 @@
 
             </div>
 
-        </div>
+            <div class="button-row">
+
+                <button
+
+                    class="save-btn"
+
+                    [disabled]="isLoading">
+
+                    Save Changes
+
+                </button>
+
+                <button
+
+                    type="button"
+
+                    class="cancel-btn"
+
+                    (click)="cancel()">
+
+                    Cancel
+
+                </button>
+
+            </div>
+
+        </form>
+
+        }
 
     </div>
 

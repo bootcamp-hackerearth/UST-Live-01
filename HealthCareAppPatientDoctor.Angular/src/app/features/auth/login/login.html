@@ -131,13 +131,14 @@
 
         <div class="mb-4">
 
-          <label class="auth-label">
+          <label class="auth-label" for="email">
 
             Email Address
 
           </label>
 
           <input
+            id="email"
             class="form-control auth-input"
             type="email"
             formControlName="email"
@@ -147,7 +148,7 @@
 
         <div class="mb-4">
 
-          <label class="auth-label">
+          <label class="auth-label" for="password">
 
             Password
 
@@ -156,6 +157,7 @@
           <div class="password-wrapper">
 
             <input
+              id = "password"
               class="form-control auth-input pe-5"
               [type]="showPassword ? 'text' : 'password'"
               formControlName="password"

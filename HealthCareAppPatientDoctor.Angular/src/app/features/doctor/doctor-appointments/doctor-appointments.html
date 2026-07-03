@@ -1,131 +1,304 @@
-<div class="container py-5">
+<div class="appointments-page">
 
-    <div class="text-center mb-5">
+    <!-- Background -->
+    <div class="page-glow glow-left"></div>
+    <div class="page-glow glow-right"></div>
 
-        <h2 class="fw-bold text-primary">
-            📅 My Appointments
-        </h2>
+    <div class="appointments-container">
 
-        <p class="text-muted">
-            View today's and upcoming appointments.
-        </p>
+        <!-- ===================================== -->
+        <!-- LEFT SIDE -->
+        <!-- ===================================== -->
 
-    </div>
+        <div class="appointments-main">
 
-    @if(isLoading){
+            <!-- Header -->
 
-    <div class="text-center">
+            <div class="page-header">
 
-        <div class="spinner-border text-primary"></div>
-
-    </div>
-
-    }
-    @else {
-
-    @if(appointments.length === 0){
-
-    <div class="alert alert-info text-center">
-
-        No appointments found.
-
-    </div>
-
-    }
-    @else {
-
-    <div class="row g-4">
-
-        @for(appointment of appointments; track appointment.appointmentId){
-
-        <div class="col-lg-6">
-
-            <div class="appointment-card shadow">
-
-                <h4>
-
-                    👤 {{appointment.patientName}}
-
-                </h4>
-
-                <hr>
-
-                <p>
-
-                    <strong>Date :</strong>
-
-                    {{appointment.scheduledDate | date:'dd-MM-yyyy'}}
-
-                </p>
-
-                <p>
-
-                    <strong>Time :</strong>
-
-                    {{appointment.timeSlot}}
-
-                </p>
-
-                <p>
-
-                    <strong>Status :</strong>
-
-                    <span class="badge" [ngClass]="getBadge(appointment.status)">
-
-                        {{getStatus(appointment.status)}}
-
-                    </span>
-
-                </p>
-
-                @if(appointment.status === 0){
-
-
-                <button class="btn btn-success" (click)="confirmAppointment(appointment.appointmentId)">
-
-                    Confirm Appointment
-
-                </button>
-
-
-                }
-
-                @if(appointment.status === 1){
-                <div class="d-flex gap-2">
-
-                    <button class="btn btn-info" (click)="viewHistory(appointment.appointmentId)">
-
-                        View Past Reports
-
-                    </button>
-                    
-                    <button class="btn btn-primary" (click)="goToHealthRecord(appointment)">
-
-                        Complete Appointment
-
-                    </button>
+                <div class="page-icon">
+                    📅
                 </div>
+
+                <div>
+
+                    <h1>My Appointments</h1>
+
+                    <p>
+                        Manage today's and upcoming patient appointments.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- Loading -->
+
+            @if(isLoading){
+
+            <div class="loading-card">
+
+                <div class="spinner-border text-info"></div>
+
+                <p>
+                    Loading appointments...
+                </p>
+
+            </div>
+
+            }
+
+            @else{
+
+            <!-- Empty -->
+
+            @if(appointments.length===0){
+
+            <div class="empty-card">
+
+                <div class="empty-icon">
+                    📅
+                </div>
+
+                <h3>
+                    No Appointments
+                </h3>
+
+                <p>
+                    You don't have any appointments yet.
+                </p>
+
+            </div>
+
+            }
+
+            @else{
+
+            <!-- Appointment Grid -->
+
+            <div class="appointment-grid">
+
+                @for(appointment of appointments; track appointment.appointmentId){
+
+                <div class="appointment-card">
+
+                    <!-- Patient -->
+
+                    <div class="appointment-top">
+
+                        <div class="patient-avatar">
+
+                            {{appointment.patientName?.charAt(0)}}
+
+                        </div>
+
+                        <div>
+
+                            <h3>
+
+                                {{appointment.patientName}}
+
+                            </h3>
+
+                            <span>
+
+                                Patient Consultation
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="appointment-divider"></div>
+
+                    <!-- Appointment Details -->
+
+                    <div class="appointment-info">
+
+                        <div class="info-row">
+
+                            <span>📅 Date</span>
+
+                            <strong>
+
+                                {{appointment.scheduledDate | date:'dd-MM-yyyy'}}
+
+                            </strong>
+
+                        </div>
+
+                        <div class="info-row">
+
+                            <span>🕒 Time</span>
+
+                            <strong>
+
+                                {{appointment.timeSlot}}
+
+                            </strong>
+
+                        </div>
+
+                        <div class="info-row">
+
+                            <span>Status</span>
+
+                            <span
+                                class="status-pill"
+                                [ngClass]="getBadge(appointment.status)">
+
+                                {{getStatus(appointment.status)}}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="appointment-divider"></div>
+
+                    <!-- Buttons -->
+
+                    <div class="appointment-actions">
+
+                        @if(appointment.status===0){
+
+                        <button
+                            class="primary-btn"
+                            (click)="confirmAppointment(appointment.appointmentId)">
+
+                            ✔ Confirm
+
+                        </button>
+
+                        }
+
+                        @if(appointment.status===1){
+
+                        <button
+                            class="secondary-btn"
+                            (click)="viewHistory(appointment.appointmentId)">
+
+                            📄 History
+
+                        </button>
+
+                        <button
+                            class="primary-btn"
+                            (click)="goToHealthRecord(appointment)">
+
+                            ✓ Complete
+
+                        </button>
+
+                        }
+
+                    </div>
+
+                </div>
+
                 }
+
+            </div>
+
+            }
+
+            }
+
+            <!-- Back -->
+
+            <div class="back-section">
+
+                <a
+                    routerLink="/doctor"
+                    class="back-btn">
+
+                    ← Back to Dashboard
+
+                </a>
 
             </div>
 
         </div>
 
-        }
+        <!-- ===================================== -->
+        <!-- RIGHT SIDEBAR -->
+        <!-- ===================================== -->
 
-    </div>
+        <div class="appointments-sidebar">
 
-    }
+            <div class="summary-card">
 
-    }
+                <div class="summary-icon">
+                    🩺
+                </div>
 
-    <div class="text-center mt-5">
+                <h2>
+                    Overview
+                </h2>
 
-        <a routerLink="/doctor" class="btn btn-outline-secondary">
+                <div class="summary-divider"></div>
 
-            ← Back
+                <div class="summary-row">
 
-        </a>
+                    <span>Total</span>
+
+                    <strong>
+
+                        {{appointments.length}}
+
+                    </strong>
+
+                </div>
+
+                <div class="summary-row">
+
+                    <span>Pending</span>
+
+                    <strong>
+
+                        {{appointments.filter(a=>a.status===0).length}}
+
+                    </strong>
+
+                </div>
+
+                <div class="summary-row">
+
+                    <span>Confirmed</span>
+
+                    <strong>
+
+                        {{appointments.filter(a=>a.status===1).length}}
+
+                    </strong>
+
+                </div>
+
+                <div class="summary-row">
+
+                    <span>Completed</span>
+
+                    <strong>
+
+                        {{appointments.filter(a=>a.status===3).length}}
+
+                    </strong>
+
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <div class="summary-note">
+
+                    💡 Confirm pending appointments and complete consultations after treatment.
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 

@@ -1,14 +1,10 @@
 @if(isLoading){
 
-<div class="text-center mt-5">
+<div class="profile-loading">
 
-    <div class="spinner-border text-primary"></div>
+    <div class="spinner-border text-info"></div>
 
-    <p class="mt-3">
-
-        Loading profile...
-
-    </p>
+    <p>Loading your profile...</p>
 
 </div>
 
@@ -16,148 +12,210 @@
 
 @if(!isLoading && patient){
 
-<div class="container py-5">
+<div class="profile-page">
 
-    <div class="card shadow">
+    <div class="profile-glow glow1"></div>
+    <div class="profile-glow glow2"></div>
 
-        <div class="card-header bg-primary text-white">
+    <!-- Header -->
 
-            <h3>
+    <div class="profile-header">
 
-                👤 My Profile
+        <div>
 
-            </h3>
+            <span class="page-badge">
+                PATIENT PROFILE
+            </span>
+
+            <h1>
+                My Profile
+            </h1>
+
+            <p>
+                Manage your personal healthcare information.
+            </p>
 
         </div>
 
-        <div class="card-body">
+        <button
+            class="back-btn"
+            routerLink="/patient">
 
-            <div class="row mb-3">
+            <i class="bi bi-arrow-left"></i>
 
-                <div class="col-md-4 fw-bold">
+            Dashboard
 
-                    Full Name
+        </button>
+
+    </div>
+
+    <!-- Top Card -->
+
+    <div class="profile-card">
+
+        <div class="avatar">
+
+            {{getInitials()}}
+
+        </div>
+
+        <h2>
+
+            {{patient.fullName}}
+
+        </h2>
+
+        <span class="role">
+
+            Patient
+
+        </span>
+
+        <small>
+
+            Member since {{patient.createdDate | date:'yyyy'}}
+
+        </small>
+
+    </div>
+
+    <!-- Information -->
+
+    <div class="info-grid">
+
+        <div class="info-card">
+
+            <h3>
+
+                Personal Information
+
+            </h3>
+
+            <div class="info-item">
+
+                <span>Full Name</span>
+
+                <strong>{{patient.fullName}}</strong>
+
+            </div>
+
+            <div class="info-item">
+
+                <span>Email</span>
+
+                <strong>{{patient.email}}</strong>
+
+            </div>
+
+            <div class="info-item">
+
+                <span>Phone</span>
+
+                <strong>{{patient.phoneNumber}}</strong>
+
+            </div>
+
+            <div class="info-item">
+
+                <span>Date of Birth</span>
+
+                <strong>{{patient.dateOfBirth | date:'dd MMM yyyy'}}</strong>
+
+            </div>
+
+            <div class="info-item">
+
+                <span>Gender</span>
+
+                <strong>{{getGenderName(patient.gender)}}</strong>
+
+            </div>
+
+            <div class="info-item">
+
+                <span>Insurance ID</span>
+
+                <strong>{{patient.insuranceId}}</strong>
+
+            </div>
+
+            <button
+                class="primary-btn"
+                (click)="editProfile()">
+
+                Edit Profile
+
+            </button>
+
+        </div>
+
+        <div>
+
+            <div class="info-card mb-4">
+
+                <h3>
+
+                    Account
+
+                </h3>
+
+                <div class="info-item">
+
+                    <span>Role</span>
+
+                    <strong>Patient</strong>
 
                 </div>
 
-                <div class="col-md-8">
+                <div class="info-item">
 
-                    {{patient.fullName}}
+                    <span>Status</span>
+
+                    <strong class="active">
+
+                        Active
+
+                    </strong>
+
+                </div>
+
+                <div class="info-item">
+
+                    <span>Registered</span>
+
+                    <strong>
+
+                        {{patient.createdDate | date:'dd MMM yyyy'}}
+
+                    </strong>
 
                 </div>
 
             </div>
 
-            <div class="row mb-3">
+            <div class="info-card">
 
-                <div class="col-md-4 fw-bold">
+                <h3>
 
-                    Email
+                    Profile Completeness
 
-                </div>
+                </h3>
 
-                <div class="col-md-8">
+                <div class="progress custom-progress">
 
-                    {{patient.email}}
+                    <div
+                        class="progress-bar"
+                        style="width:95%">
 
-                </div>
-
-            </div>
-
-            <div class="row mb-3">
-
-                <div class="col-md-4 fw-bold">
-
-                    Phone Number
+                    </div>
 
                 </div>
 
-                <div class="col-md-8">
+                <p class="mt-3">
 
-                    {{patient.phoneNumber}}
+                    Your profile is almost complete.
 
-                </div>
-
-            </div>
-
-            <div class="row mb-3">
-
-                <div class="col-md-4 fw-bold">
-
-                    Date of Birth
-
-                </div>
-
-                <div class="col-md-8">
-
-                    {{patient.dateOfBirth | date:'dd-MM-yyyy'}}
-
-                </div>
-
-            </div>
-
-            <div class="row mb-3">
-
-                <div class="col-md-4 fw-bold">
-
-                    Gender
-
-                </div>
-
-                <div class="col-md-8">
-
-                    {{getGenderName(patient.gender)}}
-
-                </div>
-
-            </div>
-
-            <div class="row mb-3">
-
-                <div class="col-md-4 fw-bold">
-
-                    Insurance ID
-
-                </div>
-
-                <div class="col-md-8">
-
-                    {{patient.insuranceId}}
-
-                </div>
-
-            </div>
-
-            <div class="row mb-4">
-
-                <div class="col-md-4 fw-bold">
-
-                    Registered On
-
-                </div>
-
-                <div class="col-md-8">
-
-                    {{patient.createdDate | date:'dd-MM-yyyy'}}
-
-                </div>
-
-            </div>
-
-            <div class="d-flex gap-2">
-
-
-                <button class="btn btn-primary" (click)="editProfile()">
-
-                    Edit Profile
-
-                </button>
-
-                <a routerLink="/patient" class="btn btn-secondary">
-
-                    Back
-
-                </a>
+                </p>
 
             </div>
 

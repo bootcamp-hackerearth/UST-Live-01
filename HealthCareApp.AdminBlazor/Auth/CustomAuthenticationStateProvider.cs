@@ -83,7 +83,7 @@ namespace HealthCareApp.AdminBlazor.Auth
             return new ClaimsPrincipal(identity);
         }
 
-        private static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
+        private static List<Claim> ParseClaimsFromJwt(string jwt)
         {
             var claims = new List<Claim>();
 

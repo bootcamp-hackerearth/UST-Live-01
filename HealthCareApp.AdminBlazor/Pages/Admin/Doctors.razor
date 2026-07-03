@@ -10,6 +10,8 @@
 @inject IDoctorAdminService DoctorService
 @inject NavigationManager Navigation
 
+@implements IDisposable
+
 <PageTitle>Doctors | HealthAxis Admin</PageTitle>
 
 @if (isLoading)
@@ -415,13 +417,19 @@ else
 
         currentPage = 1;
 
-        searchCancellationTokenSource?.Cancel();
+        if (searchCancellationTokenSource is not null)
+        {
+            await searchCancellationTokenSource.CancelAsync();
+            searchCancellationTokenSource.Dispose();
+        }
 
         searchCancellationTokenSource = new CancellationTokenSource();
 
         try
         {
-            await Task.Delay(400, searchCancellationTokenSource.Token);
+            await Task.Delay(
+                400,
+                searchCancellationTokenSource.Token);
 
             await LoadDoctorsAsync(showFullPageLoader: false);
         }
@@ -429,6 +437,11 @@ else
         {
             // Ignore cancelled search request.
         }
+    }
+
+    public void Dispose()
+    {
+        searchCancellationTokenSource?.Dispose();
     }
 
     private async Task OnSpecialisationChanged(ChangeEventArgs args)

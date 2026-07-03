@@ -30,13 +30,13 @@
 
                         <div class="mb-4">
 
-                            <label class="form-label">
+                            <label class="form-label" for="appointmentDate">
 
                                 Appointment Date
 
                             </label>
 
-                            <input type="date" class="form-control" formControlName="appointmentDate" [min]="today">
+                            <input id ="appointmentDate "type="date" class="form-control" formControlName="appointmentDate" [min]="today">
 
                             @if(
                             appointmentForm.controls.appointmentDate.touched &&
@@ -57,13 +57,13 @@
 
                         <div class="mb-4">
 
-                            <label class="form-label">
+                            <label class="form-label" for="specialisation">
 
                                 Specialisation
 
                             </label>
 
-                            <select class="form-select" formControlName="specialisation"
+                            <select id ="specialisation" class="form-select" formControlName="specialisation"
                                 (change)="onSpecialisationChange()">
 
                                 <option value="">
@@ -103,13 +103,13 @@
 
                         <div class="mb-4">
 
-                            <label class="form-label">
+                            <label class="form-label" for="doctor">
 
                                 Doctor
 
                             </label>
 
-                            <select class="form-select" formControlName="doctorId" (change)="loadAvailableSlots()">
+                            <select id = "doctor" class="form-select" formControlName="doctorId" (change)="loadAvailableSlots()">
 
                                 <option value="">
 
@@ -148,13 +148,13 @@
 
                         <div class="mb-4">
 
-                            <label class="form-label">
+                            <label class="form-label" for="timeSlot">
 
                                 Available Time Slot
 
                             </label>
 
-                            <select class="form-select" formControlName="timeSlot">
+                            <select id="timeSlot" class="form-select" formControlName="timeSlot">
 
                                 <option value="">
 

@@ -98,4 +98,21 @@ export class PatientProfileComponent implements OnInit {
 
 }
 
+getInitials(): string {
+
+  if (!this.patient?.fullName) {
+
+    return "P";
+
+  }
+
+  return this.patient.fullName
+    .split(" ")
+    .map(x => x[0])
+    .join("")
+    .substring(0,2)
+    .toUpperCase();
+
+}
+
 }

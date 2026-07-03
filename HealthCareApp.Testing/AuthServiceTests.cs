@@ -22,6 +22,7 @@ namespace HealthCareApp.Testing.Services
         private readonly IConfiguration configuration;
 
         private readonly AuthService authService;
+        private readonly Mock<IDoctorRepository> doctorRepositoryMock;
 
         public AuthServiceTests()
         {
@@ -30,11 +31,15 @@ namespace HealthCareApp.Testing.Services
             patientRepositoryMock = new Mock<IPatientRepository>();
 
             configuration = CreateConfiguration();
+            doctorRepositoryMock = new Mock<IDoctorRepository>();
+
 
             authService = new AuthService(
                 userManagerMock.Object,
                 patientRepositoryMock.Object,
-                configuration);
+                doctorRepositoryMock.Object,
+                configuration
+                );
         }
 
         [Fact]

@@ -74,4 +74,45 @@ export class DoctorDashboard implements OnInit {
 
   }
 
+  getSpecialisationName(value: number): string {
+
+    switch (value) {
+
+      case 0:
+        return 'Endocrinologist';
+
+      case 1:
+        return 'Oncologist';
+
+      case 2:
+        return 'Gynecologist';
+
+      case 3:
+        return 'Orthopedic Surgeon';
+
+      case 4:
+        return 'Psychiatrist';
+
+      case 5:
+        return 'Pediatrician';
+
+      case 6:
+        return 'Neurologist';
+
+      case 7:
+        return 'Dermatologist';
+
+      case 8:
+        return 'Cardiologist';
+
+      case 9:
+        return 'General Practitioner';
+
+      default:
+        return 'Specialist';
+
+    }
+
+  }
+
 }

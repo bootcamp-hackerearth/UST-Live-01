@@ -1,99 +1,245 @@
-<div class="container py-5">
+<div class="doctor-dashboard">
 
-    <div class="text-center mb-5">
+    <!-- Background Glow -->
+    <div class="dashboard-glow glow-left"></div>
+    <div class="dashboard-glow glow-right"></div>
 
-        <h2 class="fw-bold text-primary">
+    <div class="dashboard-container">
 
-            👨‍⚕️ Doctor Dashboard
+        <!-- LEFT CONTENT -->
+        <div class="dashboard-main">
 
-        </h2>
+            <!-- ============================ -->
+            <!-- Header -->
+            <!-- ============================ -->
 
-        @if(!isLoading && doctor){
+            <div class="dashboard-header">
 
-        <p class="text-muted">
+                <div class="dashboard-avatar">
 
-            Welcome,
+                    👨‍⚕️
 
-            <strong>{{doctor.fullName}}</strong>
+                </div>
 
-        </p>
+                <div class="dashboard-heading">
 
-        }
+                    <h1>
 
-    </div>
+                        Welcome Back
 
-    <div class="row g-4">
+                    </h1>
 
-        <div class="col-md-6">
+                    @if(!isLoading && doctor){
 
-            <div class="dashboard-card shadow">
+                    <h2>
 
-                <div class="card-body">
+                        Dr. {{doctor.fullName}}
 
-                    <h4>
+                    </h2>
 
-                        📅 My Appointments
-
-                    </h4>
+                    }
 
                     <p>
 
-                        View today's and upcoming appointments.
+                        Manage appointments, view your profile and keep track
+                        of your daily activities.
 
                     </p>
 
-                    <a routerLink="/doctor/appointments" class="btn btn-primary">
+                </div>
 
-                        View Appointments
+            </div>
+            <!-- ========================= -->
+            <!-- Quick Actions -->
+            <!-- ========================= -->
 
-                    </a>
+            <div class="quick-actions">
+
+                <!-- Appointments -->
+
+                <div class="action-card" routerLink="/doctor/appointments">
+
+                    <div class="action-icon">
+
+                        📅
+
+                    </div>
+
+                    <div class="action-content">
+
+                        <h3>
+
+                            My Appointments
+
+                        </h3>
+
+                        <p>
+
+                            View today's and upcoming appointments.
+
+                        </p>
+
+                    </div>
+
+                    <div class="action-arrow">
+
+                        →
+
+                    </div>
+
+                </div>
+
+                <!-- Profile -->
+
+                <div class="action-card" routerLink="/doctor/profile">
+
+                    <div class="action-icon">
+
+                        👤
+
+                    </div>
+
+                    <div class="action-content">
+
+                        <h3>
+
+                            My Profile
+
+                        </h3>
+
+                        <p>
+
+                            View and update your professional information.
+
+                        </p>
+
+                    </div>
+
+                    <div class="action-arrow">
+
+                        →
+
+                    </div>
 
                 </div>
 
             </div>
 
+            <div class="dashboard-footer">
+
+    <button
+        class="logout-btn"
+        (click)="logout()">
+
+        🚪 Logout
+
+    </button>
+
+</div>
+
+</div>
+
+<!-- RIGHT SIDEBAR -->
+
+<div class="dashboard-sidebar">
+
+    <div class="summary-card">
+
+        <div class="summary-icon">
+
+            🩺
+
         </div>
 
-        <div class="col-md-6">
+        <h3>
 
-            <div class="dashboard-card shadow">
+            Today's Overview
 
-                <div class="card-body">
+        </h3>
 
-                    <h4>
+        <div class="summary-divider"></div>
 
-                        👤 My Profile
+        <div class="summary-row">
 
-                    </h4>
+            <span>
 
-                    <p>
+                Status
 
-                        View your doctor profile.
+            </span>
 
-                    </p>
+           @if(doctor?.isActive){
 
-                    <a routerLink="/doctor/profile" class="btn btn-success">
+                    <strong>
 
-                        View Profile
+                        Active
 
-                    </a>
+                    </strong>
 
-                </div>
+                    }
+
+                    @else{
+
+                    <strong>
+
+                        Inactive
+
+                    </strong>
+
+                    }
+
+
+        </div>
+
+        <div class="summary-row">
+
+            <span>
+
+                Department
+
+            </span>
+
+            <strong>
+
+                @if(doctor){
+
+                     {{ doctor ? getSpecialisationName(doctor.specialisation) : '--' }}
+
+                }
+
+                @else{
+
+                    --
+
+                }
+
+            </strong>
+
+        </div>
+
+        
+        <div class="summary-divider"></div>
+
+        <div class="summary-note">
+
+            <div>
+
+                💡
 
             </div>
 
+            <p>
+
+                Keep your profile updated and review appointments regularly to
+                provide the best patient experience.
+
+            </p>
+
         </div>
 
     </div>
 
-    <div class="text-center mt-5">
+</div>
 
-        <button class="btn btn-outline-danger" (click)="logout()">
-
-            Logout
-
-        </button>
-
-    </div>
+</div>
 
 </div>

@@ -1,25 +1,1201 @@
-.card {
+/* ===========================================================
+   PAGE
+=========================================================== */
 
-    border-radius: 18px;
+.history-page{
 
-    border: none;
-
-}
-
-.card-body {
-
-    padding: 25px;
-
-}
-
-h5 {
-
-    font-weight: 700;
+    min-height:100vh;
+    position:relative;
+    overflow:hidden;
+    padding:32px;
 
 }
 
-p {
+/* ===========================================================
+   BACKGROUND
+=========================================================== */
 
-    margin-bottom: 10px;
+.history-glow{
+
+    position:absolute;
+    border-radius:50%;
+    filter:blur(140px);
+    opacity:.18;
+    z-index:0;
+
+}
+
+.glow-left{
+
+    width:420px;
+    height:420px;
+    background:#2563eb;
+
+    top:-150px;
+    left:-120px;
+
+}
+
+.glow-right{
+
+    width:380px;
+    height:380px;
+    background:#0ea5e9;
+
+    right:-120px;
+    bottom:-120px;
+
+}
+
+/* ===========================================================
+   MAIN LAYOUT
+=========================================================== */
+
+.history-container{
+
+    position:relative;
+    z-index:2;
+
+    max-width:1600px;
+    margin:auto;
+
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 360px;
+
+    gap:30px;
+    align-items:start;
+
+}
+
+/* ===========================================================
+   LEFT PANEL
+=========================================================== */
+
+.history-main{
+
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+
+}
+
+/* ===========================================================
+   RIGHT PANEL
+=========================================================== */
+
+.history-sidebar{
+
+    position:sticky;
+    top:30px;
+
+}
+
+/* ===========================================================
+   HEADER
+=========================================================== */
+
+.history-header{
+
+    display:flex;
+    align-items:center;
+    gap:22px;
+
+    padding:28px;
+
+    border-radius:24px;
+
+    background:
+        rgba(15,23,42,.82);
+
+    backdrop-filter:blur(18px);
+
+    border:
+        1px solid rgba(255,255,255,.06);
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.30);
+
+}
+
+.header-icon{
+
+    width:76px;
+    height:76px;
+
+    border-radius:22px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:34px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color:white;
+
+    box-shadow:
+        0 15px 35px rgba(37,99,235,.35);
+
+}
+
+.history-header h1{
+
+    margin:0;
+
+    color:white;
+
+    font-size:34px;
+
+    font-weight:800;
+
+}
+
+.history-header p{
+
+    margin-top:8px;
+
+    color:#94a3b8;
+
+    font-size:15px;
+
+}
+
+/* ===========================================================
+   LOADING CARD
+=========================================================== */
+
+.loading-card{
+
+    background:
+        rgba(15,23,42,.82);
+
+    backdrop-filter:blur(18px);
+
+    border:
+        1px solid rgba(255,255,255,.06);
+
+    border-radius:24px;
+
+    padding:60px;
+
+    text-align:center;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.30);
+
+}
+
+.loading-card p{
+
+    margin-top:18px;
+
+    color:#94a3b8;
+
+}
+
+/* ===========================================================
+   EMPTY STATE
+=========================================================== */
+
+.empty-card{
+
+    background:
+        rgba(15,23,42,.82);
+
+    backdrop-filter:blur(18px);
+
+    border:
+        1px solid rgba(255,255,255,.06);
+
+    border-radius:24px;
+
+    padding:60px 40px;
+
+    text-align:center;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.30);
+
+}
+
+.empty-icon{
+
+    width:90px;
+    height:90px;
+
+    margin:auto auto 20px;
+
+    border-radius:50%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:38px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color:white;
+
+}
+
+.empty-card h3{
+
+    color:white;
+    margin-bottom:10px;
+
+}
+
+.empty-card p{
+
+    color:#94a3b8;
+
+}
+
+/* ===========================================================
+   HISTORY GRID
+=========================================================== */
+
+.history-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(420px,1fr));
+
+    gap:24px;
+
+}
+
+/* ===========================================================
+   HISTORY CARD
+=========================================================== */
+
+.history-card{
+
+    background:
+        rgba(15,23,42,.82);
+
+    backdrop-filter:blur(18px);
+
+    border:
+        1px solid rgba(255,255,255,.06);
+
+    border-radius:24px;
+
+    padding:28px;
+
+    transition:.30s;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.30);
+
+}
+
+.history-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:#3b82f6;
+
+    box-shadow:
+        0 22px 45px rgba(37,99,235,.20);
+
+}
+
+/* ===========================================================
+   CARD HEADER
+=========================================================== */
+
+.record-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    margin-bottom:22px;
+
+}
+
+.record-avatar{
+
+    width:62px;
+
+    height:62px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:28px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color:white;
+
+    flex-shrink:0;
+
+}
+
+.record-title{
+
+    flex:1;
+
+}
+
+.record-title h3{
+
+    margin:0;
+
+    color:white;
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+.record-title span{
+
+    display:block;
+
+    margin-top:6px;
+
+    color:#94a3b8;
+
+    font-size:14px;
+
+}
+
+/* ===========================================================
+   DIVIDER
+=========================================================== */
+
+.record-divider{
+
+    height:1px;
+
+    background:
+        rgba(255,255,255,.08);
+
+    margin:22px 0;
+
+}
+
+/* ===========================================================
+   VISIT DATE
+=========================================================== */
+
+.record-date{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+.record-date span{
+
+    color:#94a3b8;
+
+    font-size:14px;
+
+}
+
+.record-date strong{
+
+    color:white;
+
+    font-size:15px;
+
+}
+
+/* ===========================================================
+   CONTENT BLOCKS
+=========================================================== */
+
+.record-section{
+
+    margin-bottom:20px;
+
+}
+
+.record-section:last-child{
+
+    margin-bottom:0;
+
+}
+
+.record-section h4{
+
+    margin-bottom:10px;
+
+    color:#60a5fa;
+
+    font-size:15px;
+
+    font-weight:700;
+
+}
+
+.record-section p{
+
+    margin:0;
+
+    color:#cbd5e1;
+
+    line-height:1.8;
+
+    font-size:14px;
+
+}
+
+/* ===========================================================
+   HISTORY GRID
+=========================================================== */
+
+.history-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(420px,1fr));
+
+    gap:24px;
+
+}
+
+/* ===========================================================
+   HISTORY CARD
+=========================================================== */
+
+.history-card{
+
+    background:
+        rgba(15,23,42,.82);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.06);
+
+    border-radius:24px;
+
+    padding:28px;
+
+    box-shadow:
+        0 18px 40px rgba(0,0,0,.30);
+
+    transition:
+        .30s ease;
+
+}
+
+.history-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:#3b82f6;
+
+    box-shadow:
+        0 24px 45px rgba(37,99,235,.22);
+
+}
+
+/* ===========================================================
+   CARD HEADER
+=========================================================== */
+
+.record-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+.record-avatar{
+
+    width:64px;
+
+    height:64px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:30px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color:white;
+
+    flex-shrink:0;
+
+}
+
+.record-title{
+
+    flex:1;
+
+}
+
+.record-title h3{
+
+    margin:0;
+
+    color:white;
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+.record-title span{
+
+    display:block;
+
+    margin-top:6px;
+
+    color:#94a3b8;
+
+    font-size:14px;
+
+}
+
+/* ===========================================================
+   DIVIDER
+=========================================================== */
+
+.record-divider{
+
+    height:1px;
+
+    margin:22px 0;
+
+    background:
+        rgba(255,255,255,.08);
+
+}
+
+/* ===========================================================
+   VISIT DATE
+=========================================================== */
+
+.record-date{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:22px;
+
+}
+
+.record-date span{
+
+    color:#94a3b8;
+
+    font-size:14px;
+
+}
+
+.record-date strong{
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:700;
+
+}
+
+/* ===========================================================
+   RECORD SECTIONS
+=========================================================== */
+
+.record-section{
+
+    margin-bottom:22px;
+
+}
+
+.record-section:last-child{
+
+    margin-bottom:0;
+
+}
+
+.record-section h4{
+
+    margin-bottom:10px;
+
+    color:#60a5fa;
+
+    font-size:15px;
+
+    font-weight:700;
+
+}
+
+.record-section p{
+
+    margin:0;
+
+    color:#cbd5e1;
+
+    font-size:14px;
+
+    line-height:1.8;
+
+}
+
+/* ===========================================================
+   HISTORY CARD
+=========================================================== */
+
+.history-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(430px,1fr));
+
+    gap:24px;
+
+}
+
+.history-card{
+
+    background:
+        rgba(15,23,42,.82);
+
+    backdrop-filter:blur(16px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:22px;
+
+    padding:26px;
+
+    transition:.3s;
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.25);
+
+}
+
+.history-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:#3b82f6;
+
+    box-shadow:
+        0 20px 40px rgba(37,99,235,.18);
+
+}
+
+/* ===========================================================
+   CARD HEADER
+=========================================================== */
+
+.history-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    margin-bottom:18px;
+
+}
+
+.doctor-avatar{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:24px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color:white;
+
+    flex-shrink:0;
+
+}
+
+.history-header h3{
+
+    margin:0;
+
+    color:white;
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+.visit-date{
+
+    display:block;
+
+    margin-top:6px;
+
+    color:#94a3b8;
+
+    font-size:14px;
+
+}
+
+/* ===========================================================
+   DIVIDER
+=========================================================== */
+
+.history-divider{
+
+    height:1px;
+
+    background:rgba(255,255,255,.08);
+
+    margin:18px 0;
+
+}
+
+/* ===========================================================
+   HISTORY SECTIONS
+=========================================================== */
+
+.history-section{
+
+    margin-bottom:20px;
+
+}
+
+.history-section:last-child{
+
+    margin-bottom:0;
+
+}
+
+.history-section h4{
+
+    color:#60a5fa;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    margin-bottom:8px;
+
+}
+
+.history-section p{
+
+    margin:0;
+
+    color:#e2e8f0;
+
+    line-height:1.7;
+
+    font-size:15px;
+
+}
+
+
+/* ===========================================================
+   SUMMARY SIDEBAR
+=========================================================== */
+
+.summary-card{
+
+    background:
+        rgba(15,23,42,.82);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.06);
+
+    border-radius:24px;
+
+    padding:30px;
+
+    box-shadow:
+        0 18px 40px rgba(0,0,0,.30);
+
+}
+
+.summary-icon{
+
+    width:70px;
+
+    height:70px;
+
+    margin:auto;
+
+    margin-bottom:18px;
+
+    border-radius:22px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:32px;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    box-shadow:
+        0 12px 30px rgba(37,99,235,.35);
+
+}
+
+.summary-card h2{
+
+    color:white;
+
+    text-align:center;
+
+    margin-bottom:24px;
+
+    font-size:24px;
+
+    font-weight:700;
+
+}
+
+.summary-divider{
+
+    height:1px;
+
+    margin:22px 0;
+
+    background:
+        rgba(255,255,255,.08);
+
+}
+
+.summary-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:14px 0;
+
+}
+
+.summary-row span{
+
+    color:#94a3b8;
+
+    font-size:14px;
+
+}
+
+.summary-row strong{
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:700;
+
+}
+
+.summary-note{
+
+    margin-top:20px;
+
+    padding:18px;
+
+    border-radius:16px;
+
+    background:
+        rgba(37,99,235,.08);
+
+    border:
+        1px solid rgba(59,130,246,.15);
+
+    color:#cbd5e1;
+
+    line-height:1.7;
+
+    font-size:14px;
+
+}
+
+/* ===========================================================
+   BACK BUTTON
+=========================================================== */
+
+.back-section{
+
+    margin-top:32px;
+
+}
+
+.back-btn{
+
+    padding:14px 28px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #1e293b,
+            #334155
+        );
+
+    color:white;
+
+    font-weight:600;
+
+    transition:.30s;
+
+    box-shadow:
+        0 12px 25px rgba(0,0,0,.25);
+
+}
+
+.back-btn:hover{
+
+    transform:translateY(-3px);
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+}
+
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
+
+@media(max-width:1200px){
+
+    .history-container{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .history-sidebar{
+
+        position:relative;
+
+        top:auto;
+
+    }
+
+}
+
+@media(max-width:992px){
+
+    .history-page{
+
+        padding:20px;
+
+    }
+
+    .history-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .history-header{
+
+        flex-direction:column;
+
+        text-align:center;
+
+    }
+
+    .history-header h1{
+
+        font-size:30px;
+
+    }
+
+}
+
+@media(max-width:576px){
+
+    .history-page{
+
+        padding:14px;
+
+    }
+
+    .summary-row{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:6px;
+
+    }
+
+}
+
+/* ===========================================================
+   SCROLLBAR
+=========================================================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#0f172a;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#334155;
+
+    border-radius:999px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#475569;
+
+}
+
+/* ===========================================================
+   PAGE ANIMATIONS
+=========================================================== */
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+.history-main>*{
+
+    animation:fadeUp .45s ease both;
+
+}
+
+.history-main>*:nth-child(2){
+
+    animation-delay:.08s;
+
+}
+
+.history-main>*:nth-child(3){
+
+    animation-delay:.16s;
+
+}
+
+.history-main>*:nth-child(4){
+
+    animation-delay:.24s;
+
+}
+
+.history-sidebar{
+
+    animation:fadeUp .5s ease;
 
 }
