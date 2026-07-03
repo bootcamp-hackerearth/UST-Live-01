@@ -152,6 +152,94 @@ namespace HealthAxis.API.Tests.Services
         }
 
         [Fact]
+        public async Task GetPatientsAsync_WhenSearchTermMatchesName_ReturnsFilteredPatients()
+        {
+            // Arrange
+            PaginationQueryDto pagination = new()
+            {
+                PageNumber = 1,
+                PageSize = 10,
+                SearchTerm = "john"
+            };
+
+            List<Patient> patients = new()
+            {
+                new Patient { PatientId = 1, FullName = "John Doe" },
+                new Patient { PatientId = 2, FullName = "Jane Smith" }
+            };
+
+            List<PatientReadDto> expectedDtos = new()
+            {
+                new PatientReadDto { PatientId = 1, FullName = "John Doe" }
+            };
+
+            _patientRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patients);
+
+            _mapperMock
+                .Setup(mapper => mapper.Map<List<PatientReadDto>>(
+                    It.Is<List<Patient>>(list =>
+                        list.Count == 1 &&
+                        list[0].PatientId == 1)))
+                .Returns(expectedDtos);
+
+            // Act
+            PagedResultDto<PatientReadDto> result =
+                await _adminService.GetPatientsAsync(pagination);
+
+            // Assert
+            Assert.Single(result.Items);
+            Assert.Equal(1, result.TotalCount);
+            Assert.Equal("John Doe", result.Items[0].FullName);
+        }
+
+        [Fact]
+        public async Task GetPatientsAsync_WhenSearchTermMatchesPatientId_ReturnsFilteredPatients()
+        {
+            // Arrange
+            PaginationQueryDto pagination = new()
+            {
+                PageNumber = 1,
+                PageSize = 10,
+                SearchTerm = "2"
+            };
+
+            List<Patient> patients = new()
+            {
+                new Patient { PatientId = 1, FullName = "Patient One" },
+                new Patient { PatientId = 2, FullName = "Patient Two" }
+            };
+
+            List<PatientReadDto> expectedDtos = new()
+            {
+                new PatientReadDto { PatientId = 2, FullName = "Patient Two" }
+            };
+
+            _patientRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patients);
+
+            _mapperMock
+                .Setup(mapper => mapper.Map<List<PatientReadDto>>(
+                    It.Is<List<Patient>>(list =>
+                        list.Count == 1 &&
+                        list[0].PatientId == 2)))
+                .Returns(expectedDtos);
+
+            // Act
+            PagedResultDto<PatientReadDto> result =
+                await _adminService.GetPatientsAsync(pagination);
+
+            // Assert
+            Assert.Single(result.Items);
+            Assert.Equal(1, result.TotalCount);
+            Assert.Equal(2, result.Items[0].PatientId);
+        }
+
+        [Fact]
         public async Task UpdatePatientAsync_WhenPatientExists_ReturnsUpdatedPatient()
         {
             // Arrange
@@ -341,6 +429,230 @@ namespace HealthAxis.API.Tests.Services
         }
 
         [Fact]
+        public async Task GetDoctorsAsync_WhenSearchTermMatchesName_ReturnsFilteredDoctors()
+        {
+            // Arrange
+            PaginationQueryDto pagination = new()
+            {
+                PageNumber = 1,
+                PageSize = 10,
+                SearchTerm = "heart"
+            };
+
+            List<Doctor> doctors = new()
+            {
+                new Doctor
+                {
+                    DoctorId = 1,
+                    FullName = "Dr. Heart",
+                    Specialisation = Specialisation.Cardiology
+                },
+                new Doctor
+                {
+                    DoctorId = 2,
+                    FullName = "Dr. General",
+                    Specialisation = Specialisation.GeneralMedicine
+                }
+            };
+
+            List<DoctorReadDto> expectedDtos = new()
+            {
+                new DoctorReadDto
+                {
+                    DoctorId = 1,
+                    FullName = "Dr. Heart",
+                    Specialisation = Specialisation.Cardiology
+                }
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctors);
+
+            _mapperMock
+                .Setup(mapper => mapper.Map<List<DoctorReadDto>>(
+                    It.Is<List<Doctor>>(list =>
+                        list.Count == 1 &&
+                        list[0].DoctorId == 1)))
+                .Returns(expectedDtos);
+
+            // Act
+            PagedResultDto<DoctorReadDto> result =
+                await _adminService.GetDoctorsAsync(pagination);
+
+            // Assert
+            Assert.Single(result.Items);
+            Assert.Equal(1, result.TotalCount);
+            Assert.Equal("Dr. Heart", result.Items[0].FullName);
+        }
+
+        [Fact]
+        public async Task GetDoctorsAsync_WhenSearchTermMatchesDoctorId_ReturnsFilteredDoctors()
+        {
+            // Arrange
+            PaginationQueryDto pagination = new()
+            {
+                PageNumber = 1,
+                PageSize = 10,
+                SearchTerm = "2"
+            };
+
+            List<Doctor> doctors = new()
+            {
+                new Doctor { DoctorId = 1, FullName = "Doctor One" },
+                new Doctor { DoctorId = 2, FullName = "Doctor Two" }
+            };
+
+            List<DoctorReadDto> expectedDtos = new()
+            {
+                new DoctorReadDto { DoctorId = 2, FullName = "Doctor Two" }
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctors);
+
+            _mapperMock
+                .Setup(mapper => mapper.Map<List<DoctorReadDto>>(
+                    It.Is<List<Doctor>>(list =>
+                        list.Count == 1 &&
+                        list[0].DoctorId == 2)))
+                .Returns(expectedDtos);
+
+            // Act
+            PagedResultDto<DoctorReadDto> result =
+                await _adminService.GetDoctorsAsync(pagination);
+
+            // Assert
+            Assert.Single(result.Items);
+            Assert.Equal(1, result.TotalCount);
+            Assert.Equal(2, result.Items[0].DoctorId);
+        }
+
+        [Fact]
+        public async Task GetDoctorsAsync_WhenSpecialisationFilterApplied_ReturnsFilteredDoctors()
+        {
+            // Arrange
+            PaginationQueryDto pagination = new()
+            {
+                PageNumber = 1,
+                PageSize = 10,
+                Specialisation = (int)Specialisation.Cardiology
+            };
+
+            List<Doctor> doctors = new()
+            {
+                new Doctor
+                {
+                    DoctorId = 1,
+                    FullName = "Dr. Heart",
+                    Specialisation = Specialisation.Cardiology
+                },
+                new Doctor
+                {
+                    DoctorId = 2,
+                    FullName = "Dr. General",
+                    Specialisation = Specialisation.GeneralMedicine
+                }
+            };
+
+            List<DoctorReadDto> expectedDtos = new()
+            {
+                new DoctorReadDto
+                {
+                    DoctorId = 1,
+                    FullName = "Dr. Heart",
+                    Specialisation = Specialisation.Cardiology
+                }
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctors);
+
+            _mapperMock
+                .Setup(mapper => mapper.Map<List<DoctorReadDto>>(
+                    It.Is<List<Doctor>>(list =>
+                        list.Count == 1 &&
+                        list[0].Specialisation == Specialisation.Cardiology)))
+                .Returns(expectedDtos);
+
+            // Act
+            PagedResultDto<DoctorReadDto> result =
+                await _adminService.GetDoctorsAsync(pagination);
+
+            // Assert
+            Assert.Single(result.Items);
+            Assert.Equal(1, result.TotalCount);
+            Assert.Equal(Specialisation.Cardiology, result.Items[0].Specialisation);
+        }
+
+        [Fact]
+        public async Task GetDoctorsAsync_WhenInvalidSpecialisationProvided_DoesNotApplySpecialisationFilter()
+        {
+            // Arrange
+            PaginationQueryDto pagination = new()
+            {
+                PageNumber = 1,
+                PageSize = 10,
+                Specialisation = 999
+            };
+
+            List<Doctor> doctors = new()
+            {
+                new Doctor
+                {
+                    DoctorId = 1,
+                    FullName = "Dr. Heart",
+                    Specialisation = Specialisation.Cardiology
+                },
+                new Doctor
+                {
+                    DoctorId = 2,
+                    FullName = "Dr. General",
+                    Specialisation = Specialisation.GeneralMedicine
+                }
+            };
+
+            List<DoctorReadDto> expectedDtos = new()
+            {
+                new DoctorReadDto
+                {
+                    DoctorId = 1,
+                    FullName = "Dr. Heart",
+                    Specialisation = Specialisation.Cardiology
+                },
+                new DoctorReadDto
+                {
+                    DoctorId = 2,
+                    FullName = "Dr. General",
+                    Specialisation = Specialisation.GeneralMedicine
+                }
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctors);
+
+            _mapperMock
+                .Setup(mapper => mapper.Map<List<DoctorReadDto>>(
+                    It.Is<List<Doctor>>(list => list.Count == 2)))
+                .Returns(expectedDtos);
+
+            // Act
+            PagedResultDto<DoctorReadDto> result =
+                await _adminService.GetDoctorsAsync(pagination);
+
+            // Assert
+            Assert.Equal(2, result.Items.Count);
+            Assert.Equal(2, result.TotalCount);
+        }
+
+        [Fact]
         public async Task CreateDoctorAsync_WhenPasswordDoesNotMatch_ThrowsBadRequestException()
         {
             // Arrange
@@ -515,6 +827,158 @@ namespace HealthAxis.API.Tests.Services
         }
 
         [Fact]
+        public async Task CreateDoctorAsync_WhenRoleClaimFails_DeletesIdentityUserAndDoctorThenThrowsBadRequestException()
+        {
+            // Arrange
+            AdminDoctorCreateDto dto = CreateAdminDoctorCreateDto();
+
+            Doctor createdDoctor = new()
+            {
+                DoctorId = 20,
+                FullName = dto.FullName,
+                Specialisation = dto.Specialisation,
+                YearsOfExperience = dto.YearsOfExperience,
+                ConsultationFee = dto.ConsultationFee,
+                IsActive = dto.IsActive
+            };
+
+            IdentityError identityError = new()
+            {
+                Description = "Role claim failed."
+            };
+
+            _userManagerMock
+                .Setup(manager => manager.FindByEmailAsync(dto.Email))
+                .ReturnsAsync((IdentityUser?)null);
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.CreateAsync(
+                    It.IsAny<Doctor>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(createdDoctor);
+
+            _userManagerMock
+                .Setup(manager => manager.CreateAsync(
+                    It.IsAny<IdentityUser>(),
+                    dto.Password))
+                .ReturnsAsync(IdentityResult.Success);
+
+            _userManagerMock
+                .Setup(manager => manager.AddClaimAsync(
+                    It.IsAny<IdentityUser>(),
+                    It.Is<Claim>(claim =>
+                        claim.Type == ClaimTypes.Role &&
+                        claim.Value == "Doctor")))
+                .ReturnsAsync(IdentityResult.Failed(identityError));
+
+            _userManagerMock
+                .Setup(manager => manager.DeleteAsync(
+                    It.IsAny<IdentityUser>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.DeleteAsync(
+                    createdDoctor.DoctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(createdDoctor);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<BadRequestException>(() =>
+                _adminService.CreateDoctorAsync(dto));
+
+            _userManagerMock.Verify(
+                manager => manager.DeleteAsync(
+                    It.IsAny<IdentityUser>()),
+                Times.Once);
+
+            _doctorRepositoryMock.Verify(
+                repository => repository.DeleteAsync(
+                    createdDoctor.DoctorId,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task CreateDoctorAsync_WhenReferenceClaimFails_DeletesIdentityUserAndDoctorThenThrowsBadRequestException()
+        {
+            // Arrange
+            AdminDoctorCreateDto dto = CreateAdminDoctorCreateDto();
+
+            Doctor createdDoctor = new()
+            {
+                DoctorId = 21,
+                FullName = dto.FullName,
+                Specialisation = dto.Specialisation,
+                YearsOfExperience = dto.YearsOfExperience,
+                ConsultationFee = dto.ConsultationFee,
+                IsActive = dto.IsActive
+            };
+
+            IdentityError identityError = new()
+            {
+                Description = "Reference claim failed."
+            };
+
+            _userManagerMock
+                .Setup(manager => manager.FindByEmailAsync(dto.Email))
+                .ReturnsAsync((IdentityUser?)null);
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.CreateAsync(
+                    It.IsAny<Doctor>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(createdDoctor);
+
+            _userManagerMock
+                .Setup(manager => manager.CreateAsync(
+                    It.IsAny<IdentityUser>(),
+                    dto.Password))
+                .ReturnsAsync(IdentityResult.Success);
+
+            _userManagerMock
+                .Setup(manager => manager.AddClaimAsync(
+                    It.IsAny<IdentityUser>(),
+                    It.Is<Claim>(claim =>
+                        claim.Type == ClaimTypes.Role &&
+                        claim.Value == "Doctor")))
+                .ReturnsAsync(IdentityResult.Success);
+
+            _userManagerMock
+                .Setup(manager => manager.AddClaimAsync(
+                    It.IsAny<IdentityUser>(),
+                    It.Is<Claim>(claim =>
+                        claim.Type == "ReferenceId" &&
+                        claim.Value == createdDoctor.DoctorId.ToString())))
+                .ReturnsAsync(IdentityResult.Failed(identityError));
+
+            _userManagerMock
+                .Setup(manager => manager.DeleteAsync(
+                    It.IsAny<IdentityUser>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.DeleteAsync(
+                    createdDoctor.DoctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(createdDoctor);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<BadRequestException>(() =>
+                _adminService.CreateDoctorAsync(dto));
+
+            _userManagerMock.Verify(
+                manager => manager.DeleteAsync(
+                    It.IsAny<IdentityUser>()),
+                Times.Once);
+
+            _doctorRepositoryMock.Verify(
+                repository => repository.DeleteAsync(
+                    createdDoctor.DoctorId,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        [Fact]
         public async Task UpdateDoctorAsync_WhenDoctorExists_ReturnsUpdatedDoctor()
         {
             // Arrange
@@ -574,6 +1038,11 @@ namespace HealthAxis.API.Tests.Services
             // Assert
             Assert.Equal(expectedDto.DoctorId, result.DoctorId);
             Assert.Equal(expectedDto.FullName, result.FullName);
+
+            _doctorRepositoryMock.Verify(
+                repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
@@ -633,7 +1102,7 @@ namespace HealthAxis.API.Tests.Services
 
             HealthRecordReadDto expectedDto = new()
             {
-                RecordId = recordId,
+                HealthRecordId = recordId,
                 AppointmentId = 1,
                 PatientId = 1,
                 DoctorId = 1,
@@ -666,8 +1135,13 @@ namespace HealthAxis.API.Tests.Services
                 await _adminService.UpdateHealthRecordAsync(recordId, updateDto);
 
             // Assert
-            Assert.Equal(expectedDto.RecordId, result.RecordId);
+            Assert.Equal(expectedDto.HealthRecordId, result.HealthRecordId);
             Assert.Equal(expectedDto.Diagnosis, result.Diagnosis);
+
+            _healthRecordRepositoryMock.Verify(
+                repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
@@ -696,6 +1170,394 @@ namespace HealthAxis.API.Tests.Services
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() =>
                 _adminService.UpdateHealthRecordAsync(recordId, updateDto));
+        }
+
+        [Fact]
+        public async Task GetAppointmentDetailsByDateAsync_WhenAppointmentsExist_ReturnsDetailsForGivenDateOrderedByTimeSlot()
+        {
+            // Arrange
+            DateTime selectedDate = new(2026, 6, 14);
+
+            List<Appointment> appointments = new()
+            {
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    PatientId = 1,
+                    DoctorId = 1,
+                    ScheduledDate = selectedDate,
+                    TimeSlot = "10:00 AM",
+                    Status = AppointmentStatus.Scheduled,
+                    CancellationReason = string.Empty
+                },
+                new Appointment
+                {
+                    AppointmentId = 2,
+                    PatientId = 2,
+                    DoctorId = 2,
+                    ScheduledDate = selectedDate,
+                    TimeSlot = "09:00 AM",
+                    Status = AppointmentStatus.Confirmed,
+                    CancellationReason = string.Empty
+                },
+                new Appointment
+                {
+                    AppointmentId = 3,
+                    PatientId = 1,
+                    DoctorId = 1,
+                    ScheduledDate = selectedDate.AddDays(1),
+                    TimeSlot = "08:00 AM",
+                    Status = AppointmentStatus.Scheduled,
+                    CancellationReason = string.Empty
+                }
+            };
+
+            List<Patient> patients = new()
+            {
+                new Patient { PatientId = 1, FullName = "Patient One" },
+                new Patient { PatientId = 2, FullName = "Patient Two" }
+            };
+
+            List<Doctor> doctors = new()
+            {
+                new Doctor { DoctorId = 1, FullName = "Dr. One" },
+                new Doctor { DoctorId = 2, FullName = "Dr. Two" }
+            };
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointments);
+
+            _patientRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patients);
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctors);
+
+            // Act
+            List<AppointmentDetailDto> result =
+                await _adminService.GetAppointmentDetailsByDateAsync(selectedDate);
+
+            // Assert
+            Assert.Equal(2, result.Count);
+
+            Assert.Equal(2, result[0].AppointmentId);
+            Assert.Equal("09:00 AM", result[0].TimeSlot);
+            Assert.Equal("Patient Two", result[0].PatientName);
+            Assert.Equal("Dr. Two", result[0].DoctorName);
+
+            Assert.Equal(1, result[1].AppointmentId);
+            Assert.Equal("10:00 AM", result[1].TimeSlot);
+            Assert.Equal("Patient One", result[1].PatientName);
+            Assert.Equal("Dr. One", result[1].DoctorName);
+        }
+
+        [Fact]
+        public async Task GetAppointmentDetailsByDateAsync_WhenPatientOrDoctorMissing_ReturnsUnknownNames()
+        {
+            // Arrange
+            DateTime selectedDate = new(2026, 6, 14);
+
+            List<Appointment> appointments = new()
+            {
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    PatientId = 99,
+                    DoctorId = 88,
+                    ScheduledDate = selectedDate,
+                    TimeSlot = "10:00 AM",
+                    Status = AppointmentStatus.Scheduled,
+                    CancellationReason = string.Empty
+                }
+            };
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointments);
+
+            _patientRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Patient>());
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Doctor>());
+
+            // Act
+            List<AppointmentDetailDto> result =
+                await _adminService.GetAppointmentDetailsByDateAsync(selectedDate);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal("Unknown Patient", result[0].PatientName);
+            Assert.Equal("Unknown Doctor", result[0].DoctorName);
+        }
+
+        [Fact]
+        public async Task ConfirmAppointmentAsync_WhenScheduledAppointmentExists_ConfirmsAppointmentAndReturnsDetail()
+        {
+            // Arrange
+            const int appointmentId = 1;
+            DateTime scheduledDate = new(2026, 6, 14);
+
+            Appointment appointment = new()
+            {
+                AppointmentId = appointmentId,
+                PatientId = 1,
+                DoctorId = 1,
+                ScheduledDate = scheduledDate,
+                TimeSlot = "10:00 AM",
+                Status = AppointmentStatus.Scheduled,
+                CancellationReason = "Old reason"
+            };
+
+            List<Appointment> appointments = new()
+            {
+                appointment
+            };
+
+            List<Patient> patients = new()
+            {
+                new Patient { PatientId = 1, FullName = "Patient One" }
+            };
+
+            List<Doctor> doctors = new()
+            {
+                new Doctor { DoctorId = 1, FullName = "Dr. One" }
+            };
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    appointmentId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointment);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointments);
+
+            _patientRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patients);
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctors);
+
+            // Act
+            AppointmentDetailDto result =
+                await _adminService.ConfirmAppointmentAsync(appointmentId);
+
+            // Assert
+            Assert.Equal(appointmentId, result.AppointmentId);
+            Assert.Equal(AppointmentStatus.Confirmed, result.Status);
+            Assert.Equal(string.Empty, appointment.CancellationReason);
+            Assert.Equal("Patient One", result.PatientName);
+            Assert.Equal("Dr. One", result.DoctorName);
+
+            _appointmentRepositoryMock.Verify(
+                repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task ConfirmAppointmentAsync_WhenAppointmentDoesNotExist_ThrowsNotFoundException()
+        {
+            // Arrange
+            const int appointmentId = 404;
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    appointmentId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Appointment?)null);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<NotFoundException>(() =>
+                _adminService.ConfirmAppointmentAsync(appointmentId));
+        }
+
+        [Fact]
+        public async Task ConfirmAppointmentAsync_WhenAppointmentIsNotScheduled_ThrowsBadRequestException()
+        {
+            // Arrange
+            const int appointmentId = 1;
+
+            Appointment appointment = new()
+            {
+                AppointmentId = appointmentId,
+                ScheduledDate = new DateTime(2026, 6, 14),
+                Status = AppointmentStatus.Confirmed
+            };
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    appointmentId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointment);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<BadRequestException>(() =>
+                _adminService.ConfirmAppointmentAsync(appointmentId));
+
+            _appointmentRepositoryMock.Verify(
+                repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task CancelAppointmentAsync_WhenScheduledAppointmentExists_CancelsAppointmentAndReturnsDetail()
+        {
+            // Arrange
+            const int appointmentId = 1;
+            DateTime scheduledDate = new(2026, 6, 14);
+
+            CancelAppointmentDto cancelDto = new()
+            {
+                CancellationReason = "Doctor unavailable"
+            };
+
+            Appointment appointment = new()
+            {
+                AppointmentId = appointmentId,
+                PatientId = 1,
+                DoctorId = 1,
+                ScheduledDate = scheduledDate,
+                TimeSlot = "11:00 AM",
+                Status = AppointmentStatus.Scheduled,
+                CancellationReason = string.Empty
+            };
+
+            List<Appointment> appointments = new()
+            {
+                appointment
+            };
+
+            List<Patient> patients = new()
+            {
+                new Patient { PatientId = 1, FullName = "Patient One" }
+            };
+
+            List<Doctor> doctors = new()
+            {
+                new Doctor { DoctorId = 1, FullName = "Dr. One" }
+            };
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    appointmentId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointment);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointments);
+
+            _patientRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patients);
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctors);
+
+            // Act
+            AppointmentDetailDto result =
+                await _adminService.CancelAppointmentAsync(appointmentId, cancelDto);
+
+            // Assert
+            Assert.Equal(appointmentId, result.AppointmentId);
+            Assert.Equal(AppointmentStatus.Cancelled, result.Status);
+            Assert.Equal(cancelDto.CancellationReason, result.CancellationReason);
+            Assert.Equal(cancelDto.CancellationReason, appointment.CancellationReason);
+
+            _appointmentRepositoryMock.Verify(
+                repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task CancelAppointmentAsync_WhenAppointmentDoesNotExist_ThrowsNotFoundException()
+        {
+            // Arrange
+            const int appointmentId = 404;
+
+            CancelAppointmentDto cancelDto = new()
+            {
+                CancellationReason = "Reason"
+            };
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    appointmentId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Appointment?)null);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<NotFoundException>(() =>
+                _adminService.CancelAppointmentAsync(appointmentId, cancelDto));
+        }
+
+        [Fact]
+        public async Task CancelAppointmentAsync_WhenAppointmentIsNotScheduled_ThrowsBadRequestException()
+        {
+            // Arrange
+            const int appointmentId = 1;
+
+            CancelAppointmentDto cancelDto = new()
+            {
+                CancellationReason = "Reason"
+            };
+
+            Appointment appointment = new()
+            {
+                AppointmentId = appointmentId,
+                ScheduledDate = new DateTime(2026, 6, 14),
+                Status = AppointmentStatus.Completed
+            };
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    appointmentId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointment);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<BadRequestException>(() =>
+                _adminService.CancelAppointmentAsync(appointmentId, cancelDto));
+
+            _appointmentRepositoryMock.Verify(
+                repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
         }
 
         [Fact]

@@ -29,10 +29,10 @@ export class Login {
     'https://localhost:7051/auth-callback';
 
   constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private tokenService: TokenService,
-    private router: Router
+    private readonly fb: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly tokenService: TokenService,
+    private  readonly router: Router
   ) {
     this.loginForm = this.fb.group({
       email: [

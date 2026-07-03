@@ -254,7 +254,7 @@ export class BookAppointment implements OnInit {
   }
 
   getSpecialisationName(value: number | string): string {
-    if (typeof value === 'string' && isNaN(Number(value))) {
+    if (typeof value === 'string' && Number.isNaN(Number(value))) {
       return value;
     }
 

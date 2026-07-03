@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
-
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { Appointment } from '../../../core/models/appointment.model';
 import { PagedResult } from '../../../core/models/paged-result.model';

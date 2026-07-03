@@ -97,9 +97,13 @@
                   </div>
                 </div>
 
-                <label>Cancellation Reason</label>
+                <label [attr.for]="'cancellationReason-' + appointment.appointmentId">
+                  Cancellation Reason
+                </label>
 
                 <textarea
+                  [id]="'cancellationReason-' + appointment.appointmentId"
+                  [name]="'cancellationReason-' + appointment.appointmentId"
                   rows="3"
                   placeholder="Optional: Add a reason for cancellation"
                   [(ngModel)]="cancellationReason"

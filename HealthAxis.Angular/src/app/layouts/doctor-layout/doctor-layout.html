@@ -52,6 +52,8 @@
         <button
           class="user-menu-button"
           type="button"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="isUserMenuOpen"
           (click)="toggleUserMenu($event)"
         >
           <div class="user-avatar">
@@ -67,16 +69,33 @@
         </button>
 
         @if (isUserMenuOpen) {
-          <div class="user-dropdown" (click)="$event.stopPropagation()">
-            <a routerLink="/doctor/my-information" (click)="closeUserMenu()">
+          <div
+            class="user-dropdown"
+            role="menu"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          >
+            <a
+              role="menuitem"
+              routerLink="/doctor/my-information"
+              (click)="closeUserMenu()"
+            >
               My Information
             </a>
 
-            <a routerLink="/doctor/change-password" (click)="closeUserMenu()">
+            <a
+              role="menuitem"
+              routerLink="/doctor/change-password"
+              (click)="closeUserMenu()"
+            >
               Change Password
             </a>
 
-            <button type="button" (click)="logout()">
+            <button
+              role="menuitem"
+              type="button"
+              (click)="logout()"
+            >
               Logout
             </button>
           </div>

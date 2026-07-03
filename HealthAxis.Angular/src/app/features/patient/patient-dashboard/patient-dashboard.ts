@@ -36,7 +36,7 @@ export class PatientDashboard implements OnInit {
   healthRecordCount = 0;
 
   constructor(
-    private patientService: PatientService
+    private readonly patientService: PatientService
   ) { }
 
   ngOnInit(): void {

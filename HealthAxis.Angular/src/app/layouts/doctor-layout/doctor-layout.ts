@@ -10,7 +10,11 @@ import { TokenService } from '../../core/models/token.service';
 
 @Component({
   selector: 'app-doctor-layout',
-  imports: [RouterOutlet,RouterLink,RouterLinkActive],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive
+  ],
   templateUrl: './doctor-layout.html',
   styleUrls: ['./doctor-layout.css']
 })
@@ -20,8 +24,8 @@ export class DoctorLayout implements OnInit {
   isUserMenuOpen = false;
 
   constructor(
-    private tokenService: TokenService,
-    private router: Router
+    private readonly tokenService: TokenService,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {

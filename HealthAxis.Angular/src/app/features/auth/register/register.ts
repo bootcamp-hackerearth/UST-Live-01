@@ -29,9 +29,9 @@ export class Register {
   registerForm: FormGroup;
 
   constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
+    private readonly fb: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {
     this.registerForm = this.fb.group(
       {
@@ -53,7 +53,7 @@ export class Register {
         ],
 
         gender: [
-          '',
+          null,
           Validators.required
         ],
 
