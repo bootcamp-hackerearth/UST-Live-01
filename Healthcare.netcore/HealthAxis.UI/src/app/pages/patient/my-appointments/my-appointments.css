@@ -191,15 +191,8 @@
   cursor: pointer;
 }
 
-.record-btn {
-  background: #2563eb;
-  color: white;
-}
 
-.reason-btn {
-  background: #fee2e2;
-  color: #b91c1c;
-}
+
 .actions {
   display: flex;
   align-items: center;

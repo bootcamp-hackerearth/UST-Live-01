@@ -12,10 +12,10 @@ import { DoctorProfileService } from '../../services/doctor-profile';
 })
 export class DoctorLayout implements OnInit {
 
-  private doctorProfileService = inject(DoctorProfileService);
-  private router = inject(Router);
-  private zone = inject(NgZone);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly doctorProfileService = inject(DoctorProfileService);
+  private readonly router = inject(Router);
+  private readonly zone = inject(NgZone);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   doctorName = 'Doctor';
   doctorEmail = 'doctor@healthaxis.com';

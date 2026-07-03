@@ -100,8 +100,8 @@ h1 {
 .login-logo {
     width: 64px;
     height: 64px;
-    background: linear-gradient(135deg, #0284c7, #1d4ed8);
-    color: white;
+    background: linear-gradient(135deg, #075985, #1e3a8a);
+    color: #ffffff;
     border-radius: 20px;
     display: flex;
     align-items: center;
@@ -152,8 +152,8 @@ h1 {
     height: 50px;
     border: none;
     border-radius: 14px;
-    background: linear-gradient(135deg, #0284c7, #1d4ed8);
-    color: white;
+    background: linear-gradient(135deg, #075985, #1e3a8a);
+    color: #ffffff;
     font-size: 16px;
     font-weight: 800;
     cursor: pointer;
@@ -272,8 +272,8 @@ h1 {
 }
 
     .logout-btn:hover {
-        background: rgba(239, 68, 68, 0.25);
-        color: white;
+        background: #b91c1c;
+        color: #ffffff;
     }
 
 .sidebar-footer {
@@ -604,8 +604,8 @@ h1 {
     border: none;
     padding: 13px 20px;
     border-radius: 15px;
-    background: linear-gradient(135deg, #0284c7, #2563eb);
-    color: white;
+    background: linear-gradient(135deg, #075985, #1e3a8a);
+    color: #ffffff;
     font-size: 15px;
     font-weight: 800;
     cursor: pointer;

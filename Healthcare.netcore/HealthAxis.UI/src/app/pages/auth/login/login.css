@@ -102,9 +102,8 @@
   border-radius: 10px;
   border: none;
 
-  background: linear-gradient(135deg, #2c7be5, #00c6ff);
-
-  color: white;
+ background: linear-gradient(135deg, #075985, #1e3a8a);
+  color: #ffffff;
   font-size: 15px;
   font-weight: bold;
 
@@ -156,19 +155,8 @@
   transition: 0.3s;
 }
 
-.error-text {
-  display: block;
-  color: #d93025;
-  font-size: 13px;
-  text-align: left;
-  margin-top: -10px;
-  margin-bottom: 12px;
-}
 
-.input-error {
-  border-color: #d93025 !important;
-  box-shadow: 0 0 0 3px rgba(217, 48, 37, 0.15) !important;
-}
+
 
 
 

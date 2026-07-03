@@ -102,9 +102,8 @@
   border-radius: 10px;
   border: none;
 
-  background: linear-gradient(135deg, #2c7be5, #00c6ff);
-
-  color: white;
+ background: linear-gradient(135deg, #075985, #1e3a8a);
+color: #ffffff;
   font-size: 15px;
   font-weight: bold;
 
@@ -131,31 +130,12 @@
   font-weight: bold;
   text-decoration: none;
 }
-.login-box select {
-  width: 100%;
--bottom: 16px;  padding: 14px;
-
-  border-radius: 10px;
-  border: 1.5px solid #cfd8e3;
-
-  font-size: 14px;
-
-  box-sizing: border-box;
-}
 
 /* Optional error look improvement */
 input:invalid {
   border-color: red;
 }
-.login-box select {
-  width: 100%;
-  padding: 14px;
-  margin-bottom: 16px;
-  border-radius: 10px;
-  border: 1.5px solid #cfd8e3;
-  font-size: 14px;
-  box-sizing: border-box;
-}
+
 .login-box select {
   width: 100%;
   padding: 14px;

@@ -35,7 +35,7 @@ body {
 /* BUTTONS */
 .btn-primary {
   background: linear-gradient(135deg, #2c7be5, #00aaff);
-  color: white;
+  color: #ffffff;
   padding: 10px 20px;
   border-radius: 6px;
   text-decoration: none;
@@ -72,7 +72,7 @@ body {
   display: flex;
   align-items: center;
   padding: 0 80px;
-  color: white;
+  color:#ffffff;
 }
 .hero-content {
   max-width: 600px;

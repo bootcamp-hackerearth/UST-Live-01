@@ -58,77 +58,117 @@ export class AddRecord implements OnInit {
       )
     }).subscribe({
       next: (result: any) => {
-        console.log('Doctor health records base data ✅:', result);
-
-        this.doctorId = Number(result.doctor.doctorId);
-        localStorage.setItem('doctorId', String(this.doctorId));
-
-        const allAppointments = result.appointments || [];
-        const patients = result.patients.items || result.patients.data || [];
-
-        const doctorAppointments = allAppointments.filter(
-          (appointment: any) => Number(appointment.doctorId) === Number(this.doctorId)
-        );
-
-        const patientIds: number[] = Array.from(
-          new Set<number>(
-            doctorAppointments.map((appointment: any) => Number(appointment.patientId))
-          )
-        );
-
-        if (patientIds.length === 0) {
-          this.createdRecords = [];
-          this.cdr.detectChanges();
-          return;
-        }
-
-        forkJoin(
-          patientIds.map((patientId: number) =>
-            this.http.get<any[]>(
-              `${this.healthRecordsUrl}/patient/${patientId}`,
-              { headers }
-            )
-          )
-        ).subscribe({
-          next: (recordGroups: any[]) => {
-            const allRecords = recordGroups.flat();
-
-            this.createdRecords = allRecords
-              .filter((record: any) => Number(record.doctorId) === Number(this.doctorId))
-              .map((record: any) => {
-                const patient = patients.find(
-                  (p: any) => Number(p.patientId) === Number(record.patientId)
-                );
-
-                return {
-                  id: record.recordId,
-                  recordId: record.recordId,
-                  appointmentId: record.appointmentId,
-                  patientId: record.patientId,
-                  doctorId: record.doctorId,
-                  date: this.toDisplayDate(record.visitDate),
-                  rawDate: this.toInputDate(record.visitDate),
-                  patient: patient ? patient.fullName : `Patient #${record.patientId}`,
-                  diagnosis: record.diagnosis || 'No diagnosis added',
-                  prescription: record.prescription || 'No prescription added',
-                  notes: record.notes || 'No notes added'
-                };
-              });
-
-            console.log('Created records mapped ✅:', this.createdRecords);
-            this.cdr.detectChanges();
-          },
-          error: (err: any) => {
-            console.error('Health records load failed ❌:', err);
-            alert('Failed to load health records.');
-          }
-        });
+        this.handleBaseHealthRecordData(result, headers);
       },
       error: (err: any) => {
         console.error('Doctor health records base load failed ❌:', err);
         alert('Failed to load doctor health records.');
       }
     });
+  }
+
+  private handleBaseHealthRecordData(result: any, headers: HttpHeaders): void {
+    console.log('Doctor health records base data ✅:', result);
+
+    this.doctorId = Number(result.doctor.doctorId);
+    localStorage.setItem('doctorId', String(this.doctorId));
+
+    const allAppointments = result.appointments || [];
+    const patients = this.extractPatients(result.patients);
+    const doctorAppointments = this.getDoctorAppointments(allAppointments);
+    const patientIds = this.getPatientIds(doctorAppointments);
+
+    if (patientIds.length === 0) {
+      this.createdRecords = [];
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.loadPatientHealthRecords(patientIds, patients, headers);
+  }
+
+  private extractPatients(patientResponse: any): any[] {
+    return patientResponse?.items || patientResponse?.data || [];
+  }
+
+  private getDoctorAppointments(allAppointments: any[]): any[] {
+    return allAppointments.filter((appointment: any) =>
+      Number(appointment.doctorId) === Number(this.doctorId)
+    );
+  }
+
+  private getPatientIds(doctorAppointments: any[]): number[] {
+    return Array.from(
+      new Set<number>(
+        doctorAppointments.map((appointment: any) => Number(appointment.patientId))
+      )
+    );
+  }
+
+  private loadPatientHealthRecords(
+    patientIds: number[],
+    patients: any[],
+    headers: HttpHeaders
+  ): void {
+    forkJoin(
+      patientIds.map((patientId: number) =>
+        this.http.get<any[]>(
+          `${this.healthRecordsUrl}/patient/${patientId}`,
+          { headers }
+        )
+      )
+    ).subscribe({
+      next: (recordGroups: any[]) => {
+        this.handleHealthRecordGroups(recordGroups, patients);
+      },
+      error: (err: any) => {
+        console.error('Health records load failed ❌:', err);
+        alert('Failed to load health records.');
+      }
+    });
+  }
+
+  private handleHealthRecordGroups(recordGroups: any[], patients: any[]): void {
+    const allRecords = recordGroups.flat();
+    const patientMap = this.createPatientMap(patients);
+
+    this.createdRecords = allRecords
+      .filter((record: any) => this.isCurrentDoctorRecord(record))
+      .map((record: any) => this.mapCreatedRecord(record, patientMap));
+
+    console.log('Created records mapped ✅:', this.createdRecords);
+    this.cdr.detectChanges();
+  }
+
+  private createPatientMap(patients: any[]): Map<number, any> {
+    return new Map(
+      patients.map((patient: any) => [
+        Number(patient.patientId),
+        patient
+      ])
+    );
+  }
+
+  private isCurrentDoctorRecord(record: any): boolean {
+    return Number(record.doctorId) === Number(this.doctorId);
+  }
+
+  private mapCreatedRecord(record: any, patientMap: Map<number, any>): any {
+    const patient = patientMap.get(Number(record.patientId));
+
+    return {
+      id: record.recordId,
+      recordId: record.recordId,
+      appointmentId: record.appointmentId,
+      patientId: record.patientId,
+      doctorId: record.doctorId,
+      date: this.toDisplayDate(record.visitDate),
+      rawDate: this.toInputDate(record.visitDate),
+      patient: patient ? patient.fullName : `Patient #${record.patientId}`,
+      diagnosis: record.diagnosis || 'No diagnosis added',
+      prescription: record.prescription || 'No prescription added',
+      notes: record.notes || 'No notes added'
+    };
   }
 
   clearFilters() {

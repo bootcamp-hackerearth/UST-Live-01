@@ -215,30 +215,8 @@
   text-align: center;
 }
 /* RECORD DETAILS MODAL */
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3000;
-}
 
-.modal-card {
-  width: 560px;
-  background: white;
-  border-radius: 24px;
-  padding: 24px;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
-}
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-}
 
 .modal-header h3 {
   margin: 0;
@@ -254,15 +232,7 @@
   font-weight: 700;
 }
 
-.close-btn {
-  border: none;
-  background: #eef2f7;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  font-size: 22px;
-  cursor: pointer;
-}
+
 
 .record-detail-box {
   display: flex;
@@ -277,22 +247,6 @@
   padding: 16px;
 }
 
-.detail-row label {
-  display: block;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 900;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-
-.detail-row p {
-  margin: 0;
-  color: #0f172a;
-  font-size: 15px;
-  font-weight: 800;
-  line-height: 1.5;
-}
 
 .modal-actions {
   display: flex;
@@ -344,18 +298,9 @@
   cursor: pointer;
 }
 
-.record-detail-box {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
 
-.detail-row {
-  background: #f8fbff;
-  border: 1px solid #eef2f7;
-  border-radius: 16px;
-  padding: 16px;
-}
+
+
 
 .detail-row label {
   display: block;
@@ -374,18 +319,3 @@
   line-height: 1.5;
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 22px;
-}
-
-.close-detail-btn {
-  border: none;
-  border-radius: 14px;
-  padding: 12px 20px;
-  background: #2563eb;
-  color: white;
-  font-weight: 900;
-  cursor: pointer;
-}

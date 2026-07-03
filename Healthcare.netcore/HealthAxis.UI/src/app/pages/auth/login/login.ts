@@ -17,12 +17,12 @@ export class Login {
 
   formSubmitted = false;
 
-  private apiBaseUrl = 'https://localhost:7130';
-  private blazorAdminUrl = 'https://localhost:7273';
+  private readonly apiBaseUrl = 'https://localhost:7130';
+  private readonly blazorAdminUrl = 'https://localhost:7273';
 
   constructor(
-    private http: HttpClient,
-    private router: Router
+    private readonly http: HttpClient,
+    private readonly router: Router
   ) {}
 
   get emailError(): string {
@@ -86,18 +86,16 @@ export class Login {
             localStorage.setItem('refreshToken', response.refreshToken || '');
             this.router.navigate(['/patient/dashboard']);
             return;
-          }if (role.toLowerCase() === 'patient') {
-  localStorage.setItem('token', response.accessToken);
-  localStorage.setItem('refreshToken', response.refreshToken || '');
-
-  console.log("TOKEN STORED ✅:", response.accessToken); // ✅ ADD THIS
-
-  setTimeout(() => {
-    this.router.navigate(['/patient/dashboard']);  // ✅ DELAY NAVIGATION
-  }, 100);
-
-  return;
-}
+          }
+          if (role.toLowerCase() === 'patient') {
+            localStorage.setItem('token', response.accessToken);
+            localStorage.setItem('refreshToken', response.refreshToken || '');
+            console.log("TOKEN STORED :", response.accessToken); 
+            setTimeout(() => {
+              this.router.navigate(['/patient/dashboard']); 
+             }, 100);
+             return;
+            }
 
 
           if (role.toLowerCase() === 'doctor') {

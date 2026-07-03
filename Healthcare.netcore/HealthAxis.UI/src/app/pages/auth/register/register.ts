@@ -13,8 +13,8 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class Register {
 
-  private http = inject(HttpClient);
-  private router = inject(Router);
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
 
   fullName = '';
   dateOfBirth = '';
@@ -29,7 +29,7 @@ export class Register {
 
   todayDate = new Date().toISOString().split('T')[0];
 
-  private registerUrl = 'https://localhost:7130/api/auth/register';
+  private readonly registerUrl = 'https://localhost:7130/api/auth/register';
 
   get fullNameError(): string {
     if (!this.submitted) return '';

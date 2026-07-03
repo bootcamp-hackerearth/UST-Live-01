@@ -148,7 +148,7 @@
 
     private bool IsLoading = true;
 
-    private List<string> LoadWarnings = new();
+    private readonly List<string> LoadWarnings = new();
 
     private int TotalDoctorsCount =>
         DoctorList.Count;

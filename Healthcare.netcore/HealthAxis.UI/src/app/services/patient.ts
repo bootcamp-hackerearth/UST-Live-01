@@ -6,10 +6,10 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class PatientService {
 
-  private patientBaseUrl = 'https://localhost:7130/api/patients';
-  private authBaseUrl = 'https://localhost:7130/api/auth';
+  private readonly patientBaseUrl = 'https://localhost:7130/api/patients';
+  private readonly  authBaseUrl = 'https://localhost:7130/api/auth';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly  http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
     const token = typeof window !== 'undefined'

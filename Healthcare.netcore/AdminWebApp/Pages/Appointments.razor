@@ -269,7 +269,7 @@
     private string SuccessMessage = string.Empty;
 
     private int ReportPageNumber = 1;
-    private int ReportPageSize = 6;
+    private readonly int ReportPageSize = 6;
 
     private DateTime? SelectedReportDate;
     private string SelectedDetailStatus = string.Empty;
@@ -286,8 +286,9 @@
     private int CompletedCount =>
         AppointmentList.Count(a => a.Status == AppointmentStatus.Completed);
 
-    private List<AppointmentReportRow> ReportRows =>
-        AppointmentList
+    private List<AppointmentReportRow> GetReportRows()
+    {
+        return AppointmentList
             .GroupBy(a => a.ScheduledDate.Date)
             .OrderByDescending(g => g.Key)
             .Select(g => new AppointmentReportRow
@@ -300,12 +301,13 @@
                 Total = g.Count()
             })
             .ToList();
+    }
 
     private int TotalReportPages =>
-        Math.Max(1, (int)Math.Ceiling(ReportRows.Count / (double)ReportPageSize));
+        Math.Max(1, (int)Math.Ceiling(GetReportRows().Count / (double)ReportPageSize));
 
     private IEnumerable<AppointmentReportRow> PagedReportRows =>
-        ReportRows
+        GetReportRows()
             .Skip((ReportPageNumber - 1) * ReportPageSize)
             .Take(ReportPageSize);
 

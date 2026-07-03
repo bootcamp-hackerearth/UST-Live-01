@@ -22,26 +22,26 @@ namespace HealthAxis.API.Data
 
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder.Entity<Patient>()
+            builder.Entity<Patient>()
                 .Property(p => p.UserId)
                 .IsRequired(false);
 
-            modelBuilder.Entity<Doctor>()
+            builder.Entity<Doctor>()
                 .Property(d => d.UserId)
                 .IsRequired(false);
 
-            foreach (var relationship in modelBuilder.Model
+            foreach (var relationship in builder.Model
                 .GetEntityTypes()
                 .SelectMany(e => e.GetForeignKeys()))
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
             }
 
-            SeedData(modelBuilder);
+            SeedData(builder);
         }
 
         private static void SeedData(ModelBuilder modelBuilder)

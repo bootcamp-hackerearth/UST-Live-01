@@ -12,14 +12,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class PatientLayout implements OnInit {
 
-  private http = inject(HttpClient);
-  private router = inject(Router);
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
 
   patientName = 'Patient';
   patientEmail = 'patient@healthaxis.com';
   patientInitial = 'P';
 
-  private patientUrl = 'https://localhost:7130/api/patients/me';
+  private readonly patientUrl = 'https://localhost:7130/api/patients/me';
 
   ngOnInit() {
     if (typeof window !== 'undefined') {

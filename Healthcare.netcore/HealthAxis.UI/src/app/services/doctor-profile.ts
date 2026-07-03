@@ -6,9 +6,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class DoctorProfileService {
 
-  private baseUrl = 'https://localhost:7130/api/doctors';
+  private readonly baseUrl = 'https://localhost:7130/api/doctors';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
     const token = typeof window !== 'undefined'
