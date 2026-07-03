@@ -18,6 +18,11 @@ public class PatientService(
     IHttpContextAccessor httpContextAccessor,
     IMapper mapper) : IPatientService
 {
+    private const string PatientEntityName = "Patient";
+
+    private static readonly DateTime MinimumDateOfBirth =
+        new(1900, 1, 1, 0, 0, 0, DateTimeKind.Unspecified);
+
     public async Task<List<PatientDto>> GetAllPatientsAsync()
     {
         return mapper.Map<List<PatientDto>>(
@@ -31,7 +36,7 @@ public class PatientService(
         await EnsurePatientAccessAsync(patientId);
 
         var patient = await patientRepository.GetByIdAsync(patientId)
-            ?? throw new EntityNotFoundException("Patient", patientId);
+            ?? throw new EntityNotFoundException(PatientEntityName, patientId);
 
         return mapper.Map<PatientDto>(patient);
     }
@@ -72,7 +77,7 @@ public class PatientService(
         await EnsurePatientAccessAsync(patientId);
 
         var existing = await patientRepository.GetByIdAsync(patientId)
-            ?? throw new EntityNotFoundException("Patient", patientId);
+            ?? throw new EntityNotFoundException(PatientEntityName, patientId);
 
         Validate(
             dto.FullName,
@@ -87,7 +92,7 @@ public class PatientService(
         patient.CreatedDate = existing.CreatedDate;
 
         var updated = await patientRepository.UpdateAsync(patientId, patient)
-            ?? throw new EntityNotFoundException("Patient", patientId);
+            ?? throw new EntityNotFoundException(PatientEntityName, patientId);
 
         return mapper.Map<PatientDto>(updated);
     }
@@ -98,7 +103,7 @@ public class PatientService(
 
         if (await patientRepository.GetByIdAsync(patientId) is null)
         {
-            throw new EntityNotFoundException("Patient", patientId);
+            throw new EntityNotFoundException(PatientEntityName, patientId);
         }
 
         if (IsAdmin())
@@ -155,7 +160,7 @@ public class PatientService(
 
         if (patient is null)
         {
-            throw new EntityNotFoundException("Patient", userId);
+            throw new EntityNotFoundException(PatientEntityName, userId);
         }
 
         return patient;
@@ -219,7 +224,7 @@ public class PatientService(
                 "Patient name is required.");
         }
 
-        if (dob.Date < new DateTime(1900, 1, 1) ||
+        if (dob.Date < MinimumDateOfBirth ||
             dob.Date > DateTime.Today)
         {
             throw new BusinessRuleException(

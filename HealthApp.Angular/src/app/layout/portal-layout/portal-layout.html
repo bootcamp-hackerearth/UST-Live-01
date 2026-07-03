@@ -57,7 +57,12 @@
   </aside>
 
   @if (showSidebarClickAway) {
-    <div class="sidebar-click-away" (click)="collapseSidebarFromOutside()"></div>
+    <button
+      type="button"
+      class="sidebar-click-away"
+      aria-label="Close sidebar"
+      (click)="collapseSidebarFromOutside()"
+    ></button>
   }
 
   <section class="portal-main-area">
@@ -205,18 +210,21 @@
 
       <div class="profile-form-grid single">
         <div class="profile-field">
-          <label>Current Password</label>
+          <label>Current Password
           <input class="profile-control" type="password" [(ngModel)]="passwordForm.currentPassword" />
+          </label>
         </div>
 
         <div class="profile-field">
-          <label>New Password</label>
+          <label>New Password
           <input class="profile-control" type="password" [(ngModel)]="passwordForm.newPassword" />
+          </label>
         </div>
 
         <div class="profile-field">
-          <label>Confirm New Password</label>
+          <label>Confirm New Password
           <input class="profile-control" type="password" [(ngModel)]="passwordForm.confirmPassword" />
+          </label>
         </div>
       </div>
 
@@ -248,37 +256,43 @@
 
       <div class="profile-form-grid">
         <div class="profile-field">
-          <label>Full Name</label>
+          <label>Full Name
           <input class="profile-control" type="text" [(ngModel)]="editProfile.fullName" />
+          </label>
         </div>
 
         <div class="profile-field">
-          <label>Email</label>
+          <label>Email
           <input class="profile-control" type="email" [(ngModel)]="editProfile.email" />
+          </label>
         </div>
 
         <div class="profile-field">
-          <label>Phone Number</label>
+          <label>Phone Number
           <input class="profile-control" type="text" [(ngModel)]="editProfile.phoneNumber" />
+          </label>
         </div>
 
         <div class="profile-field">
-          <label>Gender</label>
+          <label>Gender
           <select class="profile-control" [(ngModel)]="editProfile.gender">
             @for (gender of genders; track gender) {
               <option [value]="gender">{{ gender }}</option>
             }
           </select>
+          </label>
         </div>
 
         <div class="profile-field">
-          <label>Date of Birth</label>
+          <label>Date of Birth
           <input class="profile-control" type="date" [(ngModel)]="editProfile.dateOfBirth" />
+          </label>
         </div>
 
         <div class="profile-field">
-          <label>Insurance ID</label>
+          <label>Insurance ID
           <input class="profile-control" type="text" [(ngModel)]="editProfile.insuranceId" />
+          </label>
         </div>
       </div>
 

@@ -296,7 +296,7 @@
       </p>
 
       <div class="doctor-field">
-        <label>Cancellation Reason</label>
+        <label>Cancellation Reason
         <textarea
           rows="4"
           class="doctor-textarea"
@@ -304,6 +304,7 @@
           [ngModel]="cancellationReason()"
           (ngModelChange)="cancellationReason.set($event)"
         ></textarea>
+        </label>
       </div>
 
       <div class="doctor-modal-actions">
@@ -401,7 +402,7 @@
       </div>
 
       <div class="doctor-field">
-        <label>Diagnosis</label>
+        <label>Diagnosis
         <textarea
           rows="4"
           class="doctor-textarea"
@@ -409,10 +410,11 @@
           [ngModel]="diagnosis()"
           (ngModelChange)="diagnosis.set($event)"
         ></textarea>
+        </label>
       </div>
 
       <div class="doctor-field">
-        <label>Prescription</label>
+        <label>Prescription
         <textarea
           rows="4"
           class="doctor-textarea"
@@ -420,10 +422,11 @@
           [ngModel]="prescription()"
           (ngModelChange)="prescription.set($event)"
         ></textarea>
+        </label>
       </div>
 
       <div class="doctor-field">
-        <label>Notes</label>
+        <label>Notes
         <textarea
           rows="4"
           class="doctor-textarea"
@@ -431,6 +434,7 @@
           [ngModel]="notes()"
           (ngModelChange)="notes.set($event)"
         ></textarea>
+        </label>
       </div>
 
       <div class="doctor-modal-actions">

@@ -337,3 +337,23 @@
     justify-content: flex-start;
   }
 }
+.register-control.invalid {
+  background: #ffffff;
+  box-shadow:
+    inset 0 0 0 1.5px #ef4444,
+    0 0 0 4px rgba(239, 68, 68, 0.12);
+}
+
+.field-error {
+  display: block;
+  margin-top: 9px;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.4;
+}
+
+.register-submit-button:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}

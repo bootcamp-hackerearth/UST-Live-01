@@ -9,11 +9,13 @@ namespace HealthApp.API.Repository.Impl;
 public class PatientRepository(HealthAppDbContext context)
     : Repository<Patient>(context), IPatientRepository
 {
+    private const string LikeEscapeCharacter = "\\";
+
     public Task<Patient?> GetByUserIdAsync(
         string userId,
         CancellationToken ct = default)
         => context.Patients
-            .FirstOrDefaultAsync(p => p.UserId == userId, ct);
+            .FirstOrDefaultAsync(patient => patient.UserId == userId, ct);
 
     public async Task<bool> IsDuplicatePatientAsync(
         string patientName,
@@ -23,12 +25,18 @@ public class PatientRepository(HealthAppDbContext context)
         int? excludePatientId = null,
         CancellationToken ct = default)
     {
-        return await context.Patients.AnyAsync(p =>
-            (!excludePatientId.HasValue || p.PatientId != excludePatientId.Value) &&
-            p.PatientName.ToLower() == patientName &&
-            (p.Email ?? "").ToLower() == email &&
-            p.PhoneNumber == phoneNumber &&
-            p.DateOfBirth.Date == dateOfBirth.Date, ct);
+        var normalizedPatientName = patientName.Trim();
+        var normalizedEmail = email.Trim();
+        var normalizedPhoneNumber = phoneNumber.Trim();
+
+        return await context.Patients.AnyAsync(patient =>
+            (!excludePatientId.HasValue || patient.PatientId != excludePatientId.Value) &&
+            patient.PatientName == normalizedPatientName &&
+            patient.Email != null &&
+            patient.Email == normalizedEmail &&
+            patient.PhoneNumber == normalizedPhoneNumber &&
+            patient.DateOfBirth.Date == dateOfBirth.Date,
+            ct);
     }
 
     public async Task<List<Patient>> GetFilteredAsync(
@@ -40,7 +48,7 @@ public class PatientRepository(HealthAppDbContext context)
         var query = BuildFilteredQuery(search, gender, hasInsurance);
 
         return await query
-            .OrderBy(p => p.PatientName)
+            .OrderBy(patient => patient.PatientName)
             .ToListAsync(ct);
     }
 
@@ -67,7 +75,7 @@ public class PatientRepository(HealthAppDbContext context)
         var totalCount = await query.CountAsync(ct);
 
         var items = await query
-            .OrderBy(p => p.PatientId)
+            .OrderBy(patient => patient.PatientId)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(ct);
@@ -84,37 +92,48 @@ public class PatientRepository(HealthAppDbContext context)
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var keyword = search.Trim().ToLower();
-
-            query = query.Where(p =>
-                p.PatientName.ToLower().Contains(keyword) ||
-                (p.Email != null && p.Email.ToLower().Contains(keyword)) ||
-                p.PhoneNumber.Contains(keyword) ||
-                (p.InsuranceId != null && p.InsuranceId.ToLower().Contains(keyword)));
-
-            if (int.TryParse(keyword, out var patientId))
-            {
-                query = query.Where(p =>
-                    p.PatientId == patientId ||
-                    p.PatientName.ToLower().Contains(keyword) ||
-                    (p.Email != null && p.Email.ToLower().Contains(keyword)) ||
-                    p.PhoneNumber.Contains(keyword) ||
-                    (p.InsuranceId != null && p.InsuranceId.ToLower().Contains(keyword)));
-            }
+            query = ApplySearchFilter(query, search);
         }
 
         if (gender.HasValue)
         {
-            query = query.Where(p => p.Gender == gender.Value.ToString());
+            query = query.Where(patient => patient.Gender == gender.Value.ToString());
         }
 
         if (hasInsurance.HasValue)
         {
             query = hasInsurance.Value
-                ? query.Where(p => p.InsuranceId != null && p.InsuranceId != "")
-                : query.Where(p => p.InsuranceId == null || p.InsuranceId == "");
+                ? query.Where(patient => !string.IsNullOrEmpty(patient.InsuranceId))
+                : query.Where(patient => string.IsNullOrEmpty(patient.InsuranceId));
         }
 
         return query;
+    }
+
+    private static IQueryable<Patient> ApplySearchFilter(
+        IQueryable<Patient> query,
+        string search)
+    {
+        var keyword = search.Trim();
+        var searchPattern = $"%{EscapeLikePattern(keyword)}%";
+        var isPatientIdSearch = int.TryParse(keyword, out var patientId);
+
+        return query.Where(patient =>
+            (isPatientIdSearch && patient.PatientId == patientId) ||
+            EF.Functions.Like(patient.PatientName, searchPattern, LikeEscapeCharacter) ||
+            (patient.Email != null &&
+                EF.Functions.Like(patient.Email, searchPattern, LikeEscapeCharacter)) ||
+            EF.Functions.Like(patient.PhoneNumber, searchPattern, LikeEscapeCharacter) ||
+            (patient.InsuranceId != null &&
+                EF.Functions.Like(patient.InsuranceId, searchPattern, LikeEscapeCharacter)));
+    }
+
+    private static string EscapeLikePattern(string value)
+    {
+        return value
+            .Replace(LikeEscapeCharacter, "\\\\")
+            .Replace("%", "\\%")
+            .Replace("_", "\\_")
+            .Replace("[", "\\[");
     }
 }

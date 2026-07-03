@@ -21,51 +21,78 @@
       </div>
     }
 
-    <form class="register-form" (ngSubmit)="registerPatient()">
+    <form class="register-form" (ngSubmit)="registerPatient()" novalidate>
       <div class="register-grid">
         <div class="register-field">
           <label for="fullName">Full Name <span>*</span></label>
+
           <input
             id="fullName"
             name="fullName"
             type="text"
             class="register-control"
+            [class.invalid]="fullNameError()"
             placeholder="Enter full name"
-            [(ngModel)]="fullName"
+            autocomplete="name"
+            [ngModel]="fullName()"
+            (ngModelChange)="updateFullName($event)"
           />
+
+          @if (fullNameError()) {
+            <span class="field-error">{{ fullNameError() }}</span>
+          }
         </div>
 
         <div class="register-field">
           <label for="email">Email <span>*</span></label>
+
           <input
             id="email"
             name="email"
             type="email"
             class="register-control"
+            [class.invalid]="emailError()"
             placeholder="Enter email"
-            [(ngModel)]="email"
+            autocomplete="email"
+            [ngModel]="email()"
+            (ngModelChange)="updateEmail($event)"
           />
+
+          @if (emailError()) {
+            <span class="field-error">{{ emailError() }}</span>
+          }
         </div>
 
         <div class="register-field">
           <label for="phoneNumber">Phone Number <span>*</span></label>
+
           <input
             id="phoneNumber"
             name="phoneNumber"
             type="text"
             class="register-control"
+            [class.invalid]="phoneNumberError()"
             placeholder="Enter phone number"
-            [(ngModel)]="phoneNumber"
+            autocomplete="tel"
+            [ngModel]="phoneNumber()"
+            (ngModelChange)="updatePhoneNumber($event)"
           />
+
+          @if (phoneNumberError()) {
+            <span class="field-error">{{ phoneNumberError() }}</span>
+          }
         </div>
 
         <div class="register-field">
           <label for="gender">Gender <span>*</span></label>
+
           <select
             id="gender"
             name="gender"
             class="register-control"
-            [(ngModel)]="gender"
+            [class.invalid]="genderError()"
+            [ngModel]="gender()"
+            (ngModelChange)="updateGender($event)"
           >
             <option value="">Select gender</option>
 
@@ -73,57 +100,91 @@
               <option [value]="genderOption">{{ genderOption }}</option>
             }
           </select>
+
+          @if (genderError()) {
+            <span class="field-error">{{ genderError() }}</span>
+          }
         </div>
 
         <div class="register-field">
           <label for="dateOfBirth">Date of Birth <span>*</span></label>
+
           <input
             id="dateOfBirth"
             name="dateOfBirth"
             type="date"
             class="register-control"
-            [(ngModel)]="dateOfBirth"
+            [class.invalid]="dateOfBirthError()"
+            [max]="maxDateOfBirth"
+            [ngModel]="dateOfBirth()"
+            (ngModelChange)="updateDateOfBirth($event)"
           />
+
+          @if (dateOfBirthError()) {
+            <span class="field-error">{{ dateOfBirthError() }}</span>
+          }
         </div>
 
         <div class="register-field">
           <label for="insuranceId">Insurance ID</label>
+
           <input
             id="insuranceId"
             name="insuranceId"
             type="text"
             class="register-control"
             placeholder="Optional"
-            [(ngModel)]="insuranceId"
+            [ngModel]="insuranceId()"
+            (ngModelChange)="updateInsuranceId($event)"
           />
         </div>
 
         <div class="register-field">
           <label for="password">Password <span>*</span></label>
+
           <input
             id="password"
             name="password"
             type="password"
             class="register-control"
+            [class.invalid]="passwordError()"
             placeholder="Create password"
-            [(ngModel)]="password"
+            autocomplete="new-password"
+            [ngModel]="password()"
+            (ngModelChange)="updatePassword($event)"
           />
+
+          @if (passwordError()) {
+            <span class="field-error">{{ passwordError() }}</span>
+          }
         </div>
 
         <div class="register-field">
           <label for="confirmPassword">Confirm Password <span>*</span></label>
+
           <input
             id="confirmPassword"
             name="confirmPassword"
             type="password"
             class="register-control"
+            [class.invalid]="confirmPasswordError()"
             placeholder="Confirm password"
-            [(ngModel)]="confirmPassword"
+            autocomplete="new-password"
+            [ngModel]="confirmPassword()"
+            (ngModelChange)="updateConfirmPassword($event)"
           />
+
+          @if (confirmPasswordError()) {
+            <span class="field-error">{{ confirmPasswordError() }}</span>
+          }
         </div>
       </div>
 
-      <button class="register-submit-button" type="submit" [disabled]="isSubmitting()">
+      <button
+        class="register-submit-button"
+        type="submit"
+        [disabled]="isSubmitting()"
+      >
         {{ isSubmitting() ? 'Creating account...' : 'Register Patient' }}
       </button>
     </form>

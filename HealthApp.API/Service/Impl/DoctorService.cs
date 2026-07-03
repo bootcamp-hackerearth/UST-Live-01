@@ -8,6 +8,7 @@ using HealthApp.Shared.DTOs;
 using HealthApp.Shared.Enums;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using System.Globalization;
 
 namespace HealthApp.API.Service.Impl;
 
@@ -17,6 +18,7 @@ public class DoctorService(
     IHttpContextAccessor httpContextAccessor,
     IMapper mapper) : IDoctorService
 {
+    private const string DoctorEntityName = "Doctor";
     public async Task<List<DoctorDto>> GetAllDoctorsAsync()
     {
         if (IsDoctor())
@@ -45,11 +47,11 @@ public class DoctorService(
         }
 
         var doctor = await doctorRepository.GetByIdAsync(doctorId)
-            ?? throw new EntityNotFoundException("Doctor", doctorId);
+            ?? throw new EntityNotFoundException(DoctorEntityName, doctorId);
 
         if (!doctor.IsActive)
         {
-            throw new EntityNotFoundException("Doctor", doctorId);
+            throw new EntityNotFoundException(DoctorEntityName, doctorId);
         }
 
         return mapper.Map<DoctorDto>(doctor);
@@ -77,7 +79,7 @@ public class DoctorService(
                 "Doctors are not allowed to search doctors by specialisation.");
         }
 
-        if (!Enum.IsDefined(typeof(SpecialisationType), specialisation))
+        if (!Enum.IsDefined(specialisation))
         {
             throw new BusinessRuleException("Invalid specialisation.");
         }
@@ -105,7 +107,7 @@ public class DoctorService(
         }
 
         var doctor = await doctorRepository.GetByIdAsync(doctorId)
-            ?? throw new EntityNotFoundException("Doctor", doctorId);
+            ?? throw new EntityNotFoundException(DoctorEntityName, doctorId);
 
         if (!doctor.IsActive)
         {
@@ -153,7 +155,7 @@ public class DoctorService(
 
         if (doctor is null)
         {
-            throw new EntityNotFoundException("Doctor", userId);
+            throw new EntityNotFoundException(DoctorEntityName, userId);
         }
 
         return doctor;
@@ -193,7 +195,11 @@ public class DoctorService(
     {
         var startText = timeSlot.Split('-')[0].Trim();
 
-        if (!DateTime.TryParse(startText, out var parsedStartTime))
+        if (!DateTime.TryParse(
+        startText,
+        CultureInfo.InvariantCulture,
+        DateTimeStyles.None,
+        out var parsedStartTime))
         {
             throw new BusinessRuleException("Invalid time slot format.");
         }

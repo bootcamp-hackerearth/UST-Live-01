@@ -1,4 +1,3 @@
-
 using HealthApp.API.Identity;
 using HealthApp.Shared.Constants;
 using Microsoft.AspNetCore.Identity;
@@ -18,17 +17,18 @@ public static class RoleSeeder
 
         foreach (var role in roles)
         {
-            if (!await roleManager.RoleExistsAsync(role))
+            if (await roleManager.RoleExistsAsync(role))
             {
-                var result = await roleManager.CreateAsync(new IdentityRole(role));
+                continue;
+            }
 
-                if (!result.Succeeded)
-                {
-                    throw new Exception(
-                        $"Failed to create role '{role}': " +
-                        string.Join(", ", result.Errors.Select(e => e.Description))
-                    );
-                }
+            var result = await roleManager.CreateAsync(new IdentityRole(role));
+
+            if (!result.Succeeded)
+            {
+                ThrowIdentityOperationFailure(
+                    $"Failed to create role '{role}'",
+                    result.Errors);
             }
         }
     }
@@ -42,19 +42,7 @@ public static class RoleSeeder
 
         if (existingAdmin is not null)
         {
-            if (!await userManager.IsInRoleAsync(existingAdmin, Roles.Admin))
-            {
-                var roleResult = await userManager.AddToRoleAsync(existingAdmin, Roles.Admin);
-
-                if (!roleResult.Succeeded)
-                {
-                    throw new Exception(
-                        "Failed to assign Admin role to existing admin user: " +
-                        string.Join(", ", roleResult.Errors.Select(e => e.Description))
-                    );
-                }
-            }
-
+            await EnsureAdminRoleAsync(userManager, existingAdmin);
             return;
         }
 
@@ -64,6 +52,7 @@ public static class RoleSeeder
             Email = adminEmail,
             FullName = "System Admin",
             EmailConfirmed = true,
+            MustChangePassword = false,
             CreatedDate = DateTime.UtcNow
         };
 
@@ -71,20 +60,48 @@ public static class RoleSeeder
 
         if (!createResult.Succeeded)
         {
-            throw new Exception(
-                "Failed to create admin user: " +
-                string.Join(", ", createResult.Errors.Select(e => e.Description))
-            );
+            ThrowIdentityOperationFailure(
+                "Failed to create admin user",
+                createResult.Errors);
         }
 
         var addRoleResult = await userManager.AddToRoleAsync(adminUser, Roles.Admin);
 
         if (!addRoleResult.Succeeded)
         {
-            throw new Exception(
-                "Failed to assign Admin role: " +
-                string.Join(", ", addRoleResult.Errors.Select(e => e.Description))
-            );
+            ThrowIdentityOperationFailure(
+                "Failed to assign Admin role",
+                addRoleResult.Errors);
         }
+    }
+
+    private static async Task EnsureAdminRoleAsync(
+        UserManager<ApplicationUser> userManager,
+        ApplicationUser adminUser)
+    {
+        if (await userManager.IsInRoleAsync(adminUser, Roles.Admin))
+        {
+            return;
+        }
+
+        var roleResult = await userManager.AddToRoleAsync(adminUser, Roles.Admin);
+
+        if (!roleResult.Succeeded)
+        {
+            ThrowIdentityOperationFailure(
+                "Failed to assign Admin role to existing admin user",
+                roleResult.Errors);
+        }
+    }
+
+    private static void ThrowIdentityOperationFailure(
+        string message,
+        IEnumerable<IdentityError> errors)
+    {
+        var errorMessage = string.Join(
+            ", ",
+            errors.Select(error => error.Description));
+
+        throw new InvalidOperationException($"{message}: {errorMessage}");
     }
 }

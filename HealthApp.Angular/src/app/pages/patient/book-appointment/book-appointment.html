@@ -28,17 +28,18 @@
 
     <div class="book-form-grid">
       <div class="book-field">
-        <label>Patient Name</label>
+        <label>Patient Name
         <input
           class="book-control readonly"
           type="text"
           [value]="patient?.fullName"
           readonly
         />
+        </label>
       </div>
 
       <div class="book-field">
-        <label>Specialisation <span>*</span></label>
+        <label>Specialisation <span>*</span>
         <select
           class="book-control"
           name="specialisation"
@@ -51,10 +52,11 @@
             <option [value]="specialisation">{{ specialisation }}</option>
           }
         </select>
+        </label>
       </div>
 
       <div class="book-field">
-        <label>Doctor <span>*</span></label>
+        <label>Doctor <span>*</span>
         <select
           class="book-control"
           name="doctor"
@@ -70,30 +72,33 @@
             <option [ngValue]="doctor.doctorId">{{ doctor.fullName }}</option>
           }
         </select>
+        </label>
       </div>
 
       <div class="book-field">
-        <label>Experience</label>
+        <label>Experience
         <input
           class="book-control readonly"
           type="text"
           [value]="selectedDoctor ? selectedDoctor.yearsOfExperience + ' years' : 'Select doctor'"
           readonly
         />
+        </label>
       </div>
 
       <div class="book-field">
-        <label>Consultation Fee</label>
+        <label>Consultation Fee
         <input
           class="book-control readonly"
           type="text"
           [value]="selectedDoctor ? '₹' + selectedDoctor.consultationFee : 'Select doctor'"
           readonly
         />
+        </label>
       </div>
 
       <div class="book-field">
-        <label>Appointment Date <span>*</span></label>
+        <label>Appointment Date <span>*</span>
         <input
           class="book-control"
           type="date"
@@ -103,6 +108,7 @@
           (ngModelChange)="onDateChanged()"
           [disabled]="!selectedDoctorId"
         />
+        </label>
       </div>
     </div>
 

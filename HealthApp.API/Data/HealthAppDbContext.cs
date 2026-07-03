@@ -7,7 +7,12 @@ namespace HealthApp.API.Data;
 
 public class HealthAppDbContext : IdentityDbContext<ApplicationUser>
 {
-    public HealthAppDbContext(DbContextOptions<HealthAppDbContext> options) : base(options) { }
+    private const string SqlDefaultCurrentDate = "GETDATE()";
+
+    public HealthAppDbContext(DbContextOptions<HealthAppDbContext> options)
+        : base(options)
+    {
+    }
 
     public DbSet<Patient> Patients => Set<Patient>();
     public DbSet<Doctor> Doctors => Set<Doctor>();
@@ -15,33 +20,54 @@ public class HealthAppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<HealthRecord> HealthRecords => Set<HealthRecord>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(modelBuilder);
+        base.OnModelCreating(builder);
 
-        modelBuilder.Entity<Appointment>()
-            .HasOne(a => a.Patient).WithMany(p => p.Appointments).HasForeignKey(a => a.PatientId)
+        builder.Entity<Appointment>()
+            .HasOne(appointment => appointment.Patient)
+            .WithMany(patient => patient.Appointments)
+            .HasForeignKey(appointment => appointment.PatientId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<Appointment>()
-            .HasOne(a => a.Doctor).WithMany(d => d.Appointments).HasForeignKey(a => a.DoctorId)
+        builder.Entity<Appointment>()
+            .HasOne(appointment => appointment.Doctor)
+            .WithMany(doctor => doctor.Appointments)
+            .HasForeignKey(appointment => appointment.DoctorId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<HealthRecord>()
-            .HasOne(h => h.Patient).WithMany(p => p.HealthRecords).HasForeignKey(h => h.PatientId)
+        builder.Entity<HealthRecord>()
+            .HasOne(healthRecord => healthRecord.Patient)
+            .WithMany(patient => patient.HealthRecords)
+            .HasForeignKey(healthRecord => healthRecord.PatientId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<HealthRecord>()
-            .HasOne(h => h.Doctor).WithMany(d => d.HealthRecords).HasForeignKey(h => h.DoctorId)
+        builder.Entity<HealthRecord>()
+            .HasOne(healthRecord => healthRecord.Doctor)
+            .WithMany(doctor => doctor.HealthRecords)
+            .HasForeignKey(healthRecord => healthRecord.DoctorId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<HealthRecord>()
-            .HasOne(h => h.Appointment).WithOne(a => a.HealthRecord).HasForeignKey<HealthRecord>(h => h.AppointmentId)
+        builder.Entity<HealthRecord>()
+            .HasOne(healthRecord => healthRecord.Appointment)
+            .WithOne(appointment => appointment.HealthRecord)
+            .HasForeignKey<HealthRecord>(healthRecord => healthRecord.AppointmentId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<Patient>().Property(p => p.CreatedDate).HasDefaultValueSql("GETDATE()");
-        modelBuilder.Entity<Doctor>().Property(d => d.CreatedDate).HasDefaultValueSql("GETDATE()");
-        modelBuilder.Entity<Appointment>().Property(a => a.CreatedDate).HasDefaultValueSql("GETDATE()");
-        modelBuilder.Entity<HealthRecord>().Property(h => h.CreatedDate).HasDefaultValueSql("GETDATE()");
+        builder.Entity<Patient>()
+            .Property(patient => patient.CreatedDate)
+            .HasDefaultValueSql(SqlDefaultCurrentDate);
+
+        builder.Entity<Doctor>()
+            .Property(doctor => doctor.CreatedDate)
+            .HasDefaultValueSql(SqlDefaultCurrentDate);
+
+        builder.Entity<Appointment>()
+            .Property(appointment => appointment.CreatedDate)
+            .HasDefaultValueSql(SqlDefaultCurrentDate);
+
+        builder.Entity<HealthRecord>()
+            .Property(healthRecord => healthRecord.CreatedDate)
+            .HasDefaultValueSql(SqlDefaultCurrentDate);
     }
 }

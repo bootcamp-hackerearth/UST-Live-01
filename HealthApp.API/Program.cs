@@ -196,8 +196,9 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "An error occurred while applying migrations or seeding identity data.");
-        throw;
+        throw new InvalidOperationException(
+            "An error occurred while applying database migrations or seeding identity data during application startup.",
+            ex);
     }
 }
 

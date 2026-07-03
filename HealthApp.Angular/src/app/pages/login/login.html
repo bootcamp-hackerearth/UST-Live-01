@@ -9,46 +9,62 @@
     <div class="login-heading">
       <span>Secure Access</span>
       <h1>Welcome back</h1>
-      <p>
-        Login to continue to your HealthApp workspace.
-      </p>
+      <p>Login to continue to your HealthApp workspace.</p>
     </div>
 
-    @if (errorMessage) {
-      <div class="login-alert">
-        {{ errorMessage }}
+    @if (errorMessage()) {
+      <div class="login-message error">
+        <strong>{{ errorMessage() }}</strong>
       </div>
     }
 
-    <form class="login-form" (ngSubmit)="login()">
+    <form class="login-form" (ngSubmit)="login()" novalidate>
       <div class="login-field">
         <label for="email">Email</label>
+
         <input
           id="email"
           name="email"
           type="email"
           class="login-control"
+          [class.invalid]="emailError()"
           placeholder="Enter email"
-          [(ngModel)]="email"
           autocomplete="email"
+          [ngModel]="email()"
+          (ngModelChange)="updateEmail($event)"
         />
+
+        @if (emailError()) {
+          <span class="field-error">{{ emailError() }}</span>
+        }
       </div>
 
       <div class="login-field">
         <label for="password">Password</label>
+
         <input
           id="password"
           name="password"
           type="password"
           class="login-control"
+          [class.invalid]="passwordError()"
           placeholder="Enter password"
-          [(ngModel)]="password"
           autocomplete="current-password"
+          [ngModel]="password()"
+          (ngModelChange)="updatePassword($event)"
         />
+
+        @if (passwordError()) {
+          <span class="field-error">{{ passwordError() }}</span>
+        }
       </div>
 
-      <button class="login-submit-button" type="submit" [disabled]="isLoading">
-        {{ isLoading ? 'Signing in...' : 'Login' }}
+      <button
+        class="login-submit-button"
+        type="submit"
+        [disabled]="isLoading()"
+      >
+        {{ isLoading() ? 'Signing in...' : 'Login' }}
       </button>
     </form>
 
@@ -58,7 +74,7 @@
     </div>
   </section>
 
-  @if (isLoading) {
+  @if (isLoading()) {
     <div class="login-loading-backdrop">
       <div class="login-loading-box">
         <div class="loading-logo">H</div>

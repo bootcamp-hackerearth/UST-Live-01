@@ -37,23 +37,32 @@ public class HealthRecordService(
 
         if (IsDoctor())
         {
-            return mapper.Map<List<HealthRecordDto>>(
-                await healthRecordRepository.GetAllAsync());
+            var accessiblePatientIds = await GetAccessiblePatientIdsForLoggedInDoctorAsync();
+
+            var records = new List<HealthRecord>();
+
+            foreach (var patientId in accessiblePatientIds)
+            {
+                var patientRecords = await healthRecordRepository.GetByPatientIdAsync(patientId);
+                records.AddRange(patientRecords);
+            }
+
+            return mapper.Map<List<HealthRecordDto>>(records);
         }
 
         throw new ForbiddenAccessException(
             "You are not allowed to access health records.");
     }
 
-    public async Task<HealthRecordDto> GetHealthRecordByIdAsync(int id)
+    public async Task<HealthRecordDto> GetHealthRecordByIdAsync(int healthRecordId)
     {
-        if (id <= 0)
+        if (healthRecordId <= 0)
         {
             throw new HealthRecordRuleException("Invalid health record.");
         }
 
-        var healthRecord = await healthRecordRepository.GetByIdAsync(id)
-            ?? throw new EntityNotFoundException("HealthRecord", id);
+        var healthRecord = await healthRecordRepository.GetByIdAsync(healthRecordId)
+            ?? throw new EntityNotFoundException("HealthRecord", healthRecordId);
 
         await EnsureHealthRecordViewAccessAsync(healthRecord);
 
@@ -113,11 +122,10 @@ public class HealthRecordService(
                 "Appointment does not belong to selected patient.");
         }
 
-        if (appointment.Status == AppointmentStatus.Cancelled.ToString() ||
-            appointment.Status == AppointmentStatus.Pending.ToString())
+        if (appointment.Status != AppointmentStatus.Confirmed.ToString())
         {
             throw new HealthRecordRuleException(
-                "Health record can be added only after consultation.");
+                "Health record can be added only for confirmed appointments.");
         }
 
         if (await healthRecordRepository.ExistsByAppointmentIdAsync(dto.AppointmentId))
@@ -167,6 +175,14 @@ public class HealthRecordService(
 
         if (IsDoctor())
         {
+            var hasAccess = await DoctorHasPatientAccessAsync(requestedPatientId);
+
+            if (!hasAccess)
+            {
+                throw new ForbiddenAccessException(
+                    "You are not allowed to access health records for this patient.");
+            }
+
             return;
         }
 
@@ -182,11 +198,13 @@ public class HealthRecordService(
                 "Admins are not allowed to access private health records.");
         }
 
+        var patientId = GetHealthRecordPatientId(healthRecord);
+
         if (IsPatient())
         {
             var loggedInPatient = await GetLoggedInPatientAsync();
 
-            if (healthRecord.PatientId != loggedInPatient.PatientId)
+            if (loggedInPatient.PatientId != patientId)
             {
                 throw new ForbiddenAccessException(
                     "You are not allowed to access another patient's health record.");
@@ -197,11 +215,56 @@ public class HealthRecordService(
 
         if (IsDoctor())
         {
+            var hasAccess = await DoctorHasPatientAccessAsync(patientId);
+
+            if (!hasAccess)
+            {
+                throw new ForbiddenAccessException(
+                    "You are not allowed to access this patient's health record.");
+            }
+
             return;
         }
 
         throw new ForbiddenAccessException(
             "You are not allowed to access this health record.");
+    }
+
+    private async Task<bool> DoctorHasPatientAccessAsync(int patientId)
+    {
+        var loggedInDoctor = await GetLoggedInDoctorAsync();
+
+        var doctorAppointments = await appointmentRepository
+            .GetByDoctorIdAsync(loggedInDoctor.DoctorId);
+
+        return doctorAppointments.Any(appointment =>
+            appointment.PatientId == patientId &&
+            appointment.Status != AppointmentStatus.Cancelled.ToString());
+    }
+
+    private async Task<HashSet<int>> GetAccessiblePatientIdsForLoggedInDoctorAsync()
+    {
+        var loggedInDoctor = await GetLoggedInDoctorAsync();
+
+        var doctorAppointments = await appointmentRepository
+            .GetByDoctorIdAsync(loggedInDoctor.DoctorId);
+
+        return doctorAppointments
+            .Where(appointment =>
+                appointment.Status != AppointmentStatus.Cancelled.ToString())
+            .Select(appointment => appointment.PatientId)
+            .ToHashSet();
+    }
+
+    private static int GetHealthRecordPatientId(HealthRecord healthRecord)
+    {
+        if (!healthRecord.PatientId.HasValue)
+        {
+            throw new HealthRecordRuleException(
+                "Health record patient details are missing.");
+        }
+
+        return healthRecord.PatientId.Value;
     }
 
     private async Task<Patient> GetLoggedInPatientAsync()

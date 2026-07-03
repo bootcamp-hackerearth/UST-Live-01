@@ -7,6 +7,7 @@ using HealthApp.Shared.Constants;
 using HealthApp.Shared.DTOs;
 using HealthApp.Shared.Enums;
 using System.Security.Claims;
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 
 namespace HealthApp.API.Service.Impl;
@@ -18,6 +19,12 @@ public class AppointmentService(
     IHttpContextAccessor httpContextAccessor,
     IMapper mapper) : IAppointmentService
 {
+    private const string AppointmentAccessDeniedMessage =
+    "You are not allowed to access appointments.";
+
+    private const string InvalidStatusTransitionMessage = 
+    "Invalid appointment status transition.";
+
     public async Task<List<AppointmentDto>> GetAppointmentsAsync(
     int? patientId = null,
     int? doctorId = null)
@@ -80,7 +87,7 @@ public class AppointmentService(
                 await appointmentRepository.GetAllWithDetailsAsync());
         }
 
-        throw new ForbiddenAccessException("You are not allowed to access appointments.");
+        throw new ForbiddenAccessException(AppointmentAccessDeniedMessage);
     }
     public async Task<List<AppointmentDto>> GetAllAppointmentsAsync()
     {
@@ -106,7 +113,7 @@ public class AppointmentService(
                 await appointmentRepository.GetAllWithDetailsAsync());
         }
 
-        throw new ForbiddenAccessException("You are not allowed to access appointments.");
+        throw new ForbiddenAccessException(AppointmentAccessDeniedMessage);
     }
     public async Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId)
     {
@@ -158,7 +165,7 @@ public class AppointmentService(
                 await appointmentRepository.GetByPatientIdAsync(patientId));
         }
 
-        throw new ForbiddenAccessException("You are not allowed to access appointments.");
+        throw new ForbiddenAccessException(AppointmentAccessDeniedMessage);
     }
 
     public async Task<List<AppointmentDto>> GetAppointmentsByDoctorIdAsync(int doctorId)
@@ -220,7 +227,7 @@ public class AppointmentService(
                 await appointmentRepository.GetByStatusAsync(status));
         }
 
-        throw new ForbiddenAccessException("You are not allowed to access appointments.");
+        throw new ForbiddenAccessException(AppointmentAccessDeniedMessage);
     }
     public async Task<AppointmentDto> BookAppointmentAsync(BookAppointmentDto dto)
     {
@@ -378,63 +385,23 @@ public class AppointmentService(
                 "Admins are not allowed to update appointment status.");
         }
 
-        if (currentStatus == AppointmentStatus.Completed ||
-            currentStatus == AppointmentStatus.Cancelled)
-        {
-            throw new AppointmentRuleException(
-                "Completed or cancelled appointments cannot be updated.");
-        }
-
-        if (dto.Status == AppointmentStatus.Cancelled &&
-            string.IsNullOrWhiteSpace(dto.CancellationReason))
-        {
-            throw new AppointmentRuleException("Cancellation reason is required.");
-        }
+        EnsureAppointmentCanBeUpdated(currentStatus);
+        EnsureCancellationReasonIfRequired(dto);
 
         if (IsPatient())
         {
-            if (dto.Status != AppointmentStatus.Cancelled)
-            {
-                throw new ForbiddenAccessException(
-                    "Patients are allowed only to cancel their own appointments.");
-            }
-
-            if (currentStatus != AppointmentStatus.Pending &&
-                currentStatus != AppointmentStatus.Confirmed)
-            {
-                throw new AppointmentRuleException(
-                    "Only pending or confirmed appointments can be cancelled.");
-            }
-
+            ValidatePatientStatusChange(currentStatus, dto.Status);
             return;
         }
 
         if (IsDoctor())
         {
-            if (dto.Status == AppointmentStatus.Confirmed &&
-                currentStatus == AppointmentStatus.Pending)
-            {
-                return;
-            }
-
-            if (dto.Status == AppointmentStatus.Completed &&
-                currentStatus == AppointmentStatus.Confirmed)
-            {
-                return;
-            }
-
-            if (dto.Status == AppointmentStatus.Cancelled &&
-                (currentStatus == AppointmentStatus.Pending ||
-                 currentStatus == AppointmentStatus.Confirmed))
-            {
-                return;
-            }
-
-            throw new AppointmentRuleException(
-                "Invalid appointment status transition.");
+            ValidateDoctorStatusChange(currentStatus, dto.Status);
+            return;
         }
 
-        throw new ForbiddenAccessException("You are not allowed to update appointment status.");
+        throw new ForbiddenAccessException(
+            "You are not allowed to update appointment status.");
     }
     public async Task<AppointmentDto> CancelAppointmentAsync(
     int appointmentId,
@@ -550,11 +517,81 @@ public class AppointmentService(
     {
         var startText = timeSlot.Split('-')[0].Trim();
 
-        if (!DateTime.TryParse(startText, out var parsedStartTime))
+        if (!DateTime.TryParse(
+                startText,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var parsedStartTime))
         {
             throw new AppointmentRuleException("Invalid time slot format.");
         }
 
         return parsedStartTime.TimeOfDay;
     }
+    private static void EnsureAppointmentCanBeUpdated(
+    AppointmentStatus currentStatus)
+    {
+        if (currentStatus == AppointmentStatus.Completed ||
+            currentStatus == AppointmentStatus.Cancelled)
+        {
+            throw new AppointmentRuleException(
+                "Completed or cancelled appointments cannot be updated.");
+        }
+    }
+
+    private static void EnsureCancellationReasonIfRequired(
+        UpdateAppointmentStatusDto dto)
+    {
+        if (dto.Status == AppointmentStatus.Cancelled &&
+            string.IsNullOrWhiteSpace(dto.CancellationReason))
+        {
+            throw new AppointmentRuleException(
+                "Cancellation reason is required.");
+        }
+    }
+
+    private static void ValidatePatientStatusChange(
+        AppointmentStatus currentStatus,
+        AppointmentStatus requestedStatus)
+    {
+        if (requestedStatus != AppointmentStatus.Cancelled)
+        {
+            throw new ForbiddenAccessException(
+                "Patients are allowed only to cancel their own appointments.");
+        }
+
+        if (currentStatus != AppointmentStatus.Pending &&
+            currentStatus != AppointmentStatus.Confirmed)
+        {
+            throw new AppointmentRuleException(
+                "Only pending or confirmed appointments can be cancelled.");
+        }
+    }
+
+    private static void ValidateDoctorStatusChange(
+        AppointmentStatus currentStatus,
+        AppointmentStatus requestedStatus)
+    {
+        if (requestedStatus == AppointmentStatus.Confirmed &&
+            currentStatus == AppointmentStatus.Pending)
+        {
+            return;
+        }
+
+        if (requestedStatus == AppointmentStatus.Completed &&
+            currentStatus == AppointmentStatus.Confirmed)
+        {
+            return;
+        }
+
+        if (requestedStatus == AppointmentStatus.Cancelled &&
+            (currentStatus == AppointmentStatus.Pending ||
+             currentStatus == AppointmentStatus.Confirmed))
+        {
+            return;
+        }
+
+        throw new AppointmentRuleException(InvalidStatusTransitionMessage);
+    }
+
 }

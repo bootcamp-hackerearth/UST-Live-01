@@ -1,467 +1,1394 @@
 ﻿using AutoMapper;
-using Moq;
-using Xunit;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-using HealthApp.API.Models;
-using HealthApp.Shared.DTOs;
-using HealthApp.Shared.Enums;
 using HealthApp.API.Exceptions;
+using HealthApp.API.Models;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Impl;
 using HealthApp.Shared.Constants;
+using HealthApp.Shared.DTOs;
+using HealthApp.Shared.Enums;
+using Microsoft.AspNetCore.Http;
+using Moq;
+using System.Security.Claims;
+using Xunit;
 
 namespace HealthApp.API.Tests;
 
 public class AppointmentServiceTests
 {
-    private readonly Mock<IAppointmentRepository> _appointmentRepoMock;
-    private readonly Mock<IPatientRepository> _patientRepoMock;
-    private readonly Mock<IDoctorRepository> _doctorRepoMock;
-    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IAppointmentRepository> appointmentRepositoryMock = new();
+    private readonly Mock<IPatientRepository> patientRepositoryMock = new();
+    private readonly Mock<IDoctorRepository> doctorRepositoryMock = new();
+    private readonly Mock<IHttpContextAccessor> httpContextAccessorMock = new();
+    private readonly Mock<IMapper> mapperMock = new();
 
-    private readonly AppointmentService _service;
+    private readonly AppointmentService appointmentService;
 
     public AppointmentServiceTests()
     {
-        _appointmentRepoMock = new Mock<IAppointmentRepository>();
-        _patientRepoMock = new Mock<IPatientRepository>();
-        _doctorRepoMock = new Mock<IDoctorRepository>();
-        _mapperMock = new Mock<IMapper>();
-
-        _service = new AppointmentService(
-            _appointmentRepoMock.Object,
-            _patientRepoMock.Object,
-            _doctorRepoMock.Object,
-            _mapperMock.Object);
+        appointmentService = new AppointmentService(
+            appointmentRepositoryMock.Object,
+            patientRepositoryMock.Object,
+            doctorRepositoryMock.Object,
+            httpContextAccessorMock.Object,
+            mapperMock.Object);
     }
 
-    #region GetAllAppointmentsAsync
-
     [Fact]
-    public async Task GetAllAppointmentsAsync_ShouldReturnMappedList()
+    public async Task GetAppointmentsAsync_ShouldReturnLoggedInPatientAppointments_WhenUserIsPatient()
     {
-        var appointments = new List<Appointment> { new(), new() };
-        var dtos = new List<AppointmentDto> { new(), new() };
+        // Arrange
+        SetCurrentUser("patient-user-id", Roles.Patient);
 
-        _appointmentRepoMock.Setup(r => r.GetAllAsync())
+        var patient = new Patient
+        {
+            PatientId = 1,
+            UserId = "patient-user-id",
+            PatientName = "Kevin Baby"
+        };
+
+        var appointments = new List<Appointment>
+        {
+            new()
+            {
+                AppointmentId = 1,
+                PatientId = 1,
+                DoctorId = 2,
+                ScheduledDate = DateTime.Today.AddDays(1),
+                TimeSlots = "09:00 AM - 09:30 AM",
+                Status = AppointmentStatus.Pending.ToString()
+            }
+        };
+
+        var appointmentDtos = new List<AppointmentDto>
+        {
+            new()
+            {
+                AppointmentId = 1,
+                PatientId = 1,
+                DoctorId = 2,
+                ScheduledDate = DateTime.Today.AddDays(1),
+                TimeSlot = "09:00 AM - 09:30 AM",
+                Status = AppointmentStatus.Pending
+            }
+        };
+
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByPatientIdAsync(1))
             .ReturnsAsync(appointments);
 
-        _mapperMock.Setup(m => m.Map<List<AppointmentDto>>(appointments))
-            .Returns(dtos);
+        mapperMock
+            .Setup(mapper => mapper.Map<List<AppointmentDto>>(appointments))
+            .Returns(appointmentDtos);
 
-        var result = await _service.GetAllAppointmentsAsync();
+        // Act
+        var result = await appointmentService.GetAppointmentsAsync();
 
+        // Assert
+        Assert.Single(result);
+        Assert.Equal(1, result[0].PatientId);
+
+        appointmentRepositoryMock.Verify(
+            repository => repository.GetByPatientIdAsync(1),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetAppointmentsAsync_ShouldThrowForbiddenAccessException_WhenPatientRequestsAnotherPatientAppointments()
+    {
+        // Arrange
+        SetCurrentUser("patient-user-id", Roles.Patient);
+
+        var patient = new Patient
+        {
+            PatientId = 1,
+            UserId = "patient-user-id"
+        };
+
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() =>
+            appointmentService.GetAppointmentsAsync(patientId: 2));
+    }
+
+    [Fact]
+    public async Task GetAppointmentsAsync_ShouldReturnLoggedInDoctorAppointments_WhenUserIsDoctor()
+    {
+        // Arrange
+        SetCurrentUser("doctor-user-id", Roles.Doctor);
+
+        var doctor = new Doctor
+        {
+            DoctorId = 5,
+            UserId = "doctor-user-id",
+            DoctorName = "Dr Sneha Paul",
+            IsActive = true
+        };
+
+        var appointments = new List<Appointment>
+        {
+            new()
+            {
+                AppointmentId = 10,
+                PatientId = 1,
+                DoctorId = 5,
+                ScheduledDate = DateTime.Today.AddDays(1),
+                TimeSlots = "10:00 AM - 10:30 AM",
+                Status = AppointmentStatus.Confirmed.ToString()
+            }
+        };
+
+        var appointmentDtos = new List<AppointmentDto>
+        {
+            new()
+            {
+                AppointmentId = 10,
+                PatientId = 1,
+                DoctorId = 5,
+                ScheduledDate = DateTime.Today.AddDays(1),
+                TimeSlot = "10:00 AM - 10:30 AM",
+                Status = AppointmentStatus.Confirmed
+            }
+        };
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("doctor-user-id"))
+            .ReturnsAsync(doctor);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByDoctorIdAsync(5))
+            .ReturnsAsync(appointments);
+
+        mapperMock
+            .Setup(mapper => mapper.Map<List<AppointmentDto>>(appointments))
+            .Returns(appointmentDtos);
+
+        // Act
+        var result = await appointmentService.GetAppointmentsAsync();
+
+        // Assert
+        Assert.Single(result);
+        Assert.Equal(5, result[0].DoctorId);
+    }
+
+    [Fact]
+    public async Task GetAppointmentsAsync_ShouldThrowForbiddenAccessException_WhenDoctorRequestsAnotherDoctorAppointments()
+    {
+        // Arrange
+        SetCurrentUser("doctor-user-id", Roles.Doctor);
+
+        var doctor = new Doctor
+        {
+            DoctorId = 5,
+            UserId = "doctor-user-id"
+        };
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("doctor-user-id"))
+            .ReturnsAsync(doctor);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() =>
+            appointmentService.GetAppointmentsAsync(doctorId: 99));
+    }
+
+    [Fact]
+    public async Task GetAllAppointmentsAsync_ShouldReturnAllAppointments_WhenUserIsAdmin()
+    {
+        // Arrange
+        SetCurrentUser("admin-user-id", Roles.Admin);
+
+        var appointments = new List<Appointment>
+        {
+            new()
+            {
+                AppointmentId = 1,
+                PatientId = 1,
+                DoctorId = 1,
+                ScheduledDate = DateTime.Today,
+                TimeSlots = "09:00 AM - 09:30 AM",
+                Status = AppointmentStatus.Pending.ToString()
+            },
+            new()
+            {
+                AppointmentId = 2,
+                PatientId = 2,
+                DoctorId = 2,
+                ScheduledDate = DateTime.Today,
+                TimeSlots = "10:00 AM - 10:30 AM",
+                Status = AppointmentStatus.Completed.ToString()
+            }
+        };
+
+        var appointmentDtos = new List<AppointmentDto>
+        {
+            new()
+            {
+                AppointmentId = 1,
+                PatientId = 1,
+                DoctorId = 1,
+                Status = AppointmentStatus.Pending
+            },
+            new()
+            {
+                AppointmentId = 2,
+                PatientId = 2,
+                DoctorId = 2,
+                Status = AppointmentStatus.Completed
+            }
+        };
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetAllWithDetailsAsync())
+            .ReturnsAsync(appointments);
+
+        mapperMock
+            .Setup(mapper => mapper.Map<List<AppointmentDto>>(appointments))
+            .Returns(appointmentDtos);
+
+        // Act
+        var result = await appointmentService.GetAllAppointmentsAsync();
+
+        // Assert
         Assert.Equal(2, result.Count);
     }
 
-    #endregion
-
-    #region GetAppointmentByIdAsync
-
     [Fact]
-    public async Task GetAppointmentByIdAsync_ShouldThrow_WhenInvalidId()
+    public async Task GetAppointmentByIdAsync_ShouldThrowAppointmentRuleException_WhenIdInvalid()
     {
+        // Act & Assert
         await Assert.ThrowsAsync<AppointmentRuleException>(() =>
-            _service.GetAppointmentByIdAsync(0));
+            appointmentService.GetAppointmentByIdAsync(0));
     }
 
     [Fact]
-    public async Task GetAppointmentByIdAsync_ShouldThrow_WhenNotFound()
+    public async Task GetAppointmentByIdAsync_ShouldThrowEntityNotFoundException_WhenAppointmentNotFound()
     {
-        _appointmentRepoMock.Setup(r => r.GetByIdWithDetailsAsync(1))
+        // Arrange
+        SetCurrentUser("admin-user-id", Roles.Admin);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByIdWithDetailsAsync(1))
             .ReturnsAsync((Appointment?)null);
 
+        // Act & Assert
         await Assert.ThrowsAsync<EntityNotFoundException>(() =>
-            _service.GetAppointmentByIdAsync(1));
+            appointmentService.GetAppointmentByIdAsync(1));
     }
 
     [Fact]
-    public async Task GetAppointmentByIdAsync_ShouldReturnDto_WhenValid()
+    public async Task GetAppointmentByIdAsync_ShouldThrowForbiddenAccessException_WhenDoctorAccessesAnotherDoctorAppointment()
     {
-        var appointment = new Appointment { AppointmentId = 1 };
-        var dto = new AppointmentDto { AppointmentId = 1 };
+        // Arrange
+        SetCurrentUser("doctor-user-id", Roles.Doctor);
 
-        _appointmentRepoMock.Setup(r => r.GetByIdWithDetailsAsync(1))
-            .ReturnsAsync(appointment);
+        var doctor = new Doctor
+        {
+            DoctorId = 5,
+            UserId = "doctor-user-id"
+        };
 
-        _mapperMock.Setup(m => m.Map<AppointmentDto>(appointment))
-            .Returns(dto);
+        var appointment = new Appointment
+        {
+            AppointmentId = 1,
+            PatientId = 1,
+            DoctorId = 99,
+            ScheduledDate = DateTime.Today,
+            TimeSlots = "09:00 AM - 09:30 AM",
+            Status = AppointmentStatus.Pending.ToString()
+        };
 
-        var result = await _service.GetAppointmentByIdAsync(1);
-
-        Assert.Equal(1, result.AppointmentId);
-    }
-
-    #endregion
-
-    #region GetAppointmentsByPatientIdAsync
-
-    [Fact]
-    public async Task GetAppointmentsByPatientIdAsync_ShouldThrow_WhenPatientInvalid()
-    {
-        await Assert.ThrowsAsync<AppointmentRuleException>(() =>
-            _service.GetAppointmentsByPatientIdAsync(0));
-    }
-
-    [Fact]
-    public async Task GetAppointmentsByPatientIdAsync_ShouldThrow_WhenPatientNotFound()
-    {
-        _patientRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync((Patient?)null);
-
-        await Assert.ThrowsAsync<EntityNotFoundException>(() =>
-            _service.GetAppointmentsByPatientIdAsync(1));
-    }
-
-    [Fact]
-    public async Task GetAppointmentsByPatientIdAsync_ShouldReturnList()
-    {
-        var patient = new Patient { PatientId = 1 };
-        var appointments = new List<Appointment> { new() };
-
-        _patientRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(patient);
-
-        _appointmentRepoMock.Setup(r => r.GetByPatientIdAsync(1))
-            .ReturnsAsync(appointments);
-
-        _mapperMock.Setup(m => m.Map<List<AppointmentDto>>(appointments))
-            .Returns(new List<AppointmentDto> { new() });
-
-        var result = await _service.GetAppointmentsByPatientIdAsync(1);
-
-        Assert.Single(result);
-    }
-
-    #endregion
-
-    #region GetAppointmentsByDoctorIdAsync
-
-    [Fact]
-    public async Task GetAppointmentsByDoctorIdAsync_ShouldThrow_WhenDoctorInvalid()
-    {
-        await Assert.ThrowsAsync<AppointmentRuleException>(() =>
-            _service.GetAppointmentsByDoctorIdAsync(0));
-    }
-
-    [Fact]
-    public async Task GetAppointmentsByDoctorIdAsync_ShouldThrow_WhenDoctorNotFound()
-    {
-        _doctorRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync((Doctor?)null);
-
-        await Assert.ThrowsAsync<EntityNotFoundException>(() =>
-            _service.GetAppointmentsByDoctorIdAsync(1));
-    }
-
-    [Fact]
-    public async Task GetAppointmentsByDoctorIdAsync_ShouldReturnList()
-    {
-        var doctor = new Doctor { DoctorId = 1, IsActive = true };
-        var appointments = new List<Appointment> { new() };
-
-        _doctorRepoMock.Setup(r => r.GetByIdAsync(1))
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("doctor-user-id"))
             .ReturnsAsync(doctor);
 
-        _appointmentRepoMock.Setup(r => r.GetByDoctorIdAsync(1))
-            .ReturnsAsync(appointments);
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByIdWithDetailsAsync(1))
+            .ReturnsAsync(appointment);
 
-        _mapperMock.Setup(m => m.Map<List<AppointmentDto>>(appointments))
-            .Returns(new List<AppointmentDto> { new() });
-
-        var result = await _service.GetAppointmentsByDoctorIdAsync(1);
-
-        Assert.Single(result);
+        // Act & Assert
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() =>
+            appointmentService.GetAppointmentByIdAsync(1));
     }
 
-    #endregion
-
-    #region GetAppointmentsByStatusAsync
-
     [Fact]
-    public async Task GetAppointmentsByStatusAsync_ShouldReturnList()
+    public async Task BookAppointmentAsync_ShouldThrowAppointmentRuleException_WhenDtoIsNull()
     {
-        var appointments = new List<Appointment> { new() };
-
-        _appointmentRepoMock.Setup(r =>
-                r.GetByStatusAsync(AppointmentStatus.Pending))
-            .ReturnsAsync(appointments);
-
-        _mapperMock.Setup(m => m.Map<List<AppointmentDto>>(appointments))
-            .Returns(new List<AppointmentDto> { new() });
-
-        var result = await _service.GetAppointmentsByStatusAsync(AppointmentStatus.Pending);
-
-        Assert.Single(result);
-    }
-
-    #endregion
-
-    #region BookAppointmentAsync
-
-    [Fact]
-    public async Task BookAppointmentAsync_ShouldThrow_WhenDtoNull()
-    {
+        // Act & Assert
         await Assert.ThrowsAsync<AppointmentRuleException>(() =>
-            _service.BookAppointmentAsync(null!));
+            appointmentService.BookAppointmentAsync(null!));
     }
 
     [Fact]
-    public async Task BookAppointmentAsync_ShouldThrow_WhenDoctorInactive()
+    public async Task BookAppointmentAsync_ShouldThrowAppointmentRuleException_WhenDoctorIsInactive()
     {
-        var dto = new BookAppointmentDto
+        // Arrange
+        SetCurrentUser("patient-user-id", Roles.Patient);
+
+        var patient = new Patient
         {
             PatientId = 1,
-            DoctorId = 1,
-            ScheduledDate = DateTime.Today,
-            TimeSlot = TimeSlots.Slots[0]
+            UserId = "patient-user-id"
         };
 
-        _patientRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Patient());
+        var doctor = new Doctor
+        {
+            DoctorId = 2,
+            IsActive = false
+        };
 
-        _doctorRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Doctor { DoctorId = 1, IsActive = false });
+        var dto = new BookAppointmentDto
+        {
+            DoctorId = 2,
+            ScheduledDate = DateTime.Today.AddDays(1),
+            TimeSlot = "09:00 AM - 09:30 AM"
+        };
 
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(2))
+            .ReturnsAsync(doctor);
+
+        // Act & Assert
         await Assert.ThrowsAsync<AppointmentRuleException>(() =>
-            _service.BookAppointmentAsync(dto));
+            appointmentService.BookAppointmentAsync(dto));
     }
 
     [Fact]
-    public async Task BookAppointmentAsync_ShouldThrow_WhenPastDate()
+    public async Task BookAppointmentAsync_ShouldThrowAppointmentRuleException_WhenDateIsInPast()
     {
-        var dto = new BookAppointmentDto
+        // Arrange
+        SetCurrentUser("patient-user-id", Roles.Patient);
+
+        var patient = new Patient
         {
             PatientId = 1,
-            DoctorId = 1,
+            UserId = "patient-user-id"
+        };
+
+        var doctor = new Doctor
+        {
+            DoctorId = 2,
+            IsActive = true
+        };
+
+        var dto = new BookAppointmentDto
+        {
+            DoctorId = 2,
             ScheduledDate = DateTime.Today.AddDays(-1),
-            TimeSlot = TimeSlots.Slots[0]
+            TimeSlot = "09:00 AM - 09:30 AM"
         };
 
-        _patientRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Patient());
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
 
-        _doctorRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Doctor { DoctorId = 1, IsActive = true });
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(2))
+            .ReturnsAsync(doctor);
 
+        // Act & Assert
         await Assert.ThrowsAsync<AppointmentRuleException>(() =>
-            _service.BookAppointmentAsync(dto));
+            appointmentService.BookAppointmentAsync(dto));
     }
 
     [Fact]
-    public async Task BookAppointmentAsync_ShouldThrow_WhenInvalidSlot()
+    public async Task BookAppointmentAsync_ShouldThrowAppointmentRuleException_WhenSlotIsInvalid()
     {
-        var dto = new BookAppointmentDto
+        // Arrange
+        SetCurrentUser("patient-user-id", Roles.Patient);
+
+        var patient = new Patient
         {
             PatientId = 1,
-            DoctorId = 1,
-            ScheduledDate = DateTime.Today,
-            TimeSlot = "INVALID"
+            UserId = "patient-user-id"
         };
 
-        _patientRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Patient());
+        var doctor = new Doctor
+        {
+            DoctorId = 2,
+            IsActive = true
+        };
 
-        _doctorRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Doctor { DoctorId = 1, IsActive = true });
+        var dto = new BookAppointmentDto
+        {
+            DoctorId = 2,
+            ScheduledDate = DateTime.Today.AddDays(1),
+            TimeSlot = "Invalid Slot"
+        };
 
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(2))
+            .ReturnsAsync(doctor);
+
+        // Act & Assert
         await Assert.ThrowsAsync<AppointmentRuleException>(() =>
-            _service.BookAppointmentAsync(dto));
+            appointmentService.BookAppointmentAsync(dto));
     }
 
     [Fact]
-    public async Task BookAppointmentAsync_ShouldThrow_WhenSlotAlreadyBooked()
+    public async Task BookAppointmentAsync_ShouldThrowConflictException_WhenSlotAlreadyBooked()
     {
-        var dto = new BookAppointmentDto
+        // Arrange
+        SetCurrentUser("patient-user-id", Roles.Patient);
+
+        var patient = new Patient
         {
             PatientId = 1,
-            DoctorId = 1,
-            ScheduledDate = DateTime.Today,
-            TimeSlot = TimeSlots.Slots[0]
+            UserId = "patient-user-id"
         };
 
-        _patientRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Patient());
+        var doctor = new Doctor
+        {
+            DoctorId = 2,
+            IsActive = true
+        };
 
-        _doctorRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Doctor { DoctorId = 1, IsActive = true });
+        var dto = new BookAppointmentDto
+        {
+            DoctorId = 2,
+            ScheduledDate = DateTime.Today.AddDays(1),
+            TimeSlot = "09:00 AM - 09:30 AM"
+        };
 
-        _appointmentRepoMock.Setup(r =>
-                r.IsSlotBookedAsync(1, dto.ScheduledDate.Date, dto.TimeSlot))
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(2))
+            .ReturnsAsync(doctor);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.IsSlotBookedAsync(
+                2,
+                dto.ScheduledDate.Date,
+                dto.TimeSlot))
             .ReturnsAsync(true);
 
+        // Act & Assert
         await Assert.ThrowsAsync<ConflictException>(() =>
-            _service.BookAppointmentAsync(dto));
+            appointmentService.BookAppointmentAsync(dto));
     }
 
     [Fact]
-    public async Task BookAppointmentAsync_ShouldThrow_WhenPatientHasConflict()
+    public async Task BookAppointmentAsync_ShouldCreateAppointment_WhenRequestIsValid()
     {
-        var dto = new BookAppointmentDto
+        // Arrange
+        SetCurrentUser("patient-user-id", Roles.Patient);
+
+        var patient = new Patient
         {
             PatientId = 1,
-            DoctorId = 1,
-            ScheduledDate = DateTime.Today,
-            TimeSlot = TimeSlots.Slots[0]
+            UserId = "patient-user-id"
         };
 
-        _patientRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Patient());
+        var doctor = new Doctor
+        {
+            DoctorId = 2,
+            IsActive = true
+        };
 
-        _doctorRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Doctor { DoctorId = 1, IsActive = true });
-            
-        _appointmentRepoMock.Setup(r =>
-                r.IsSlotBookedAsync(1, dto.ScheduledDate.Date, dto.TimeSlot))
-            .ReturnsAsync(false);
-
-        _appointmentRepoMock.Setup(r =>
-                r.PatientHasActiveAppointmentOnDateAndSlotAsync(
-                    dto.PatientId,
-                    dto.ScheduledDate.Date,
-                    dto.TimeSlot))
-            .ReturnsAsync(true);
-
-        await Assert.ThrowsAsync<ConflictException>(() =>
-            _service.BookAppointmentAsync(dto));
-    }
-
-    [Fact]
-    public async Task BookAppointmentAsync_ShouldCreateAppointment_WhenValid()
-    {
         var dto = new BookAppointmentDto
         {
-            PatientId = 1,
-            DoctorId = 1,
-            ScheduledDate = DateTime.Today,
-            TimeSlot = TimeSlots.Slots[0]
+            DoctorId = 2,
+            ScheduledDate = DateTime.Today.AddDays(1),
+            TimeSlot = "09:00 AM - 09:30 AM"
         };
 
-        var appointment = new Appointment();
-        var saved = new Appointment { AppointmentId = 1 };
-        var dtoResult = new AppointmentDto { AppointmentId = 1 };
+        var mappedAppointment = new Appointment();
 
-        _patientRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Patient());
+        var savedAppointment = new Appointment
+        {
+            AppointmentId = 10,
+            PatientId = 1,
+            DoctorId = 2,
+            ScheduledDate = dto.ScheduledDate.Date,
+            TimeSlots = dto.TimeSlot,
+            Status = AppointmentStatus.Pending.ToString()
+        };
 
-        _doctorRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(new Doctor { DoctorId = 1, IsActive = true });
+        var appointmentDto = new AppointmentDto
+        {
+            AppointmentId = 10,
+            PatientId = 1,
+            DoctorId = 2,
+            ScheduledDate = dto.ScheduledDate.Date,
+            TimeSlot = dto.TimeSlot,
+            Status = AppointmentStatus.Pending
+        };
 
-        _appointmentRepoMock.Setup(r =>
-                r.IsSlotBookedAsync(1, dto.ScheduledDate.Date, dto.TimeSlot))
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(2))
+            .ReturnsAsync(doctor);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.IsSlotBookedAsync(
+                2,
+                dto.ScheduledDate.Date,
+                dto.TimeSlot))
             .ReturnsAsync(false);
 
-        _appointmentRepoMock.Setup(r =>
-                r.PatientHasActiveAppointmentOnDateAndSlotAsync(
-                    dto.PatientId,
-                    dto.ScheduledDate.Date,
-                    dto.TimeSlot))
+        appointmentRepositoryMock
+            .Setup(repository => repository.PatientHasActiveAppointmentOnDateAndSlotAsync(
+                1,
+                dto.ScheduledDate.Date,
+                dto.TimeSlot))
             .ReturnsAsync(false);
 
-        _mapperMock.Setup(m => m.Map<Appointment>(dto))
-            .Returns(appointment);
+        appointmentRepositoryMock
+            .Setup(repository => repository.PatientHasActiveAppointmentWithDoctorOnDateAsync(
+                1,
+                2,
+                dto.ScheduledDate.Date))
+            .ReturnsAsync(false);
 
-        _appointmentRepoMock.Setup(r => r.AddAsync(It.IsAny<Appointment>()))
-            .ReturnsAsync(saved);
+        mapperMock
+            .Setup(mapper => mapper.Map<Appointment>(dto))
+            .Returns(mappedAppointment);
 
-        _mapperMock.Setup(m => m.Map<AppointmentDto>(saved))
-            .Returns(dtoResult);
+        appointmentRepositoryMock
+            .Setup(repository => repository.AddAsync(It.IsAny<Appointment>()))
+            .ReturnsAsync(savedAppointment);
 
-        var result = await _service.BookAppointmentAsync(dto);
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByIdWithDetailsAsync(10))
+            .ReturnsAsync(savedAppointment);
 
-        Assert.Equal(1, result.AppointmentId);
+        mapperMock
+            .Setup(mapper => mapper.Map<AppointmentDto>(savedAppointment))
+            .Returns(appointmentDto);
+
+        // Act
+        var result = await appointmentService.BookAppointmentAsync(dto);
+
+        // Assert
+        Assert.Equal(10, result.AppointmentId);
+        Assert.Equal(AppointmentStatus.Pending, result.Status);
+
+        appointmentRepositoryMock.Verify(repository =>
+            repository.AddAsync(It.Is<Appointment>(appointment =>
+                appointment.PatientId == 1 &&
+                appointment.DoctorId == 2 &&
+                appointment.ScheduledDate == dto.ScheduledDate.Date &&
+                appointment.TimeSlots == dto.TimeSlot &&
+                appointment.Status == AppointmentStatus.Pending.ToString())),
+            Times.Once);
     }
 
-    #endregion
-
-    #region ChangeAppointmentStatusAsync
-
     [Fact]
-    public async Task ChangeAppointmentStatusAsync_ShouldThrow_WhenInvalidId()
+    public async Task ChangeAppointmentStatusAsync_ShouldThrowAppointmentRuleException_WhenDtoIsNull()
     {
+        // Arrange
+        SetCurrentUser("doctor-user-id", Roles.Doctor);
+
+        // Act & Assert
         await Assert.ThrowsAsync<AppointmentRuleException>(() =>
-            _service.ChangeAppointmentStatusAsync(0, new UpdateAppointmentStatusDto()));
+            appointmentService.ChangeAppointmentStatusAsync(1, null!));
     }
 
     [Fact]
-    public async Task ChangeAppointmentStatusAsync_ShouldThrow_WhenNotFound()
+    public async Task ChangeAppointmentStatusAsync_ShouldThrowForbiddenAccessException_WhenPatientTriesToConfirm()
     {
-        _appointmentRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync((Appointment?)null);
+        // Arrange
+        SetCurrentUser("patient-user-id", Roles.Patient);
 
-        await Assert.ThrowsAsync<EntityNotFoundException>(() =>
-            _service.ChangeAppointmentStatusAsync(1, new UpdateAppointmentStatusDto()));
-    }
+        var patient = new Patient
+        {
+            PatientId = 1,
+            UserId = "patient-user-id"
+        };
 
-    [Fact]
-    public async Task ChangeAppointmentStatusAsync_ShouldThrow_WhenCancelWithoutReason()
-    {
-        var appointment = new Appointment { AppointmentId = 1 };
+        var appointment = new Appointment
+        {
+            AppointmentId = 1,
+            PatientId = 1,
+            DoctorId = 2,
+            Status = AppointmentStatus.Pending.ToString()
+        };
 
-        _appointmentRepoMock.Setup(r => r.GetByIdAsync(1))
+        var dto = new UpdateAppointmentStatusDto
+        {
+            Status = AppointmentStatus.Confirmed
+        };
+
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByIdWithDetailsAsync(1))
             .ReturnsAsync(appointment);
 
-        await Assert.ThrowsAsync<AppointmentRuleException>(() =>
-            _service.ChangeAppointmentStatusAsync(1,
-                new UpdateAppointmentStatusDto
-                {
-                    Status = AppointmentStatus.Cancelled
-                }));
+        // Act & Assert
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() =>
+            appointmentService.ChangeAppointmentStatusAsync(1, dto));
     }
 
     [Fact]
-    public async Task ChangeAppointmentStatusAsync_ShouldUpdateStatus()
+    public async Task ChangeAppointmentStatusAsync_ShouldConfirmAppointment_WhenDoctorOwnsPendingAppointment()
     {
-        var appointment = new Appointment { AppointmentId = 1 };
+        // Arrange
+        SetCurrentUser("doctor-user-id", Roles.Doctor);
 
-        var updated = new Appointment { AppointmentId = 1 };
-        var dto = new AppointmentDto { AppointmentId = 1 };
+        var doctor = new Doctor
+        {
+            DoctorId = 2,
+            UserId = "doctor-user-id"
+        };
 
-        _appointmentRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(appointment);
+        var appointment = new Appointment
+        {
+            AppointmentId = 1,
+            PatientId = 1,
+            DoctorId = 2,
+            Status = AppointmentStatus.Pending.ToString()
+        };
 
-        _appointmentRepoMock.Setup(r => r.UpdateAsync(1, appointment))
-            .ReturnsAsync(updated);
+        var updatedAppointment = new Appointment
+        {
+            AppointmentId = 1,
+            PatientId = 1,
+            DoctorId = 2,
+            Status = AppointmentStatus.Confirmed.ToString()
+        };
 
-        _mapperMock.Setup(m => m.Map<AppointmentDto>(updated))
-            .Returns(dto);
+        var appointmentDto = new AppointmentDto
+        {
+            AppointmentId = 1,
+            PatientId = 1,
+            DoctorId = 2,
+            Status = AppointmentStatus.Confirmed
+        };
 
-        var result = await _service.ChangeAppointmentStatusAsync(1,
-            new UpdateAppointmentStatusDto
+        var dto = new UpdateAppointmentStatusDto
+        {
+            Status = AppointmentStatus.Confirmed
+        };
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("doctor-user-id"))
+            .ReturnsAsync(doctor);
+
+        appointmentRepositoryMock
+            .SetupSequence(repository => repository.GetByIdWithDetailsAsync(1))
+            .ReturnsAsync(appointment)
+            .ReturnsAsync(updatedAppointment);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.UpdateAsync(1, It.IsAny<Appointment>()))
+            .ReturnsAsync(updatedAppointment);
+
+        mapperMock
+            .Setup(mapper => mapper.Map<AppointmentDto>(updatedAppointment))
+            .Returns(appointmentDto);
+
+        // Act
+        var result = await appointmentService.ChangeAppointmentStatusAsync(1, dto);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(AppointmentStatus.Confirmed, result.Status);
+
+        appointmentRepositoryMock.Verify(repository =>
+            repository.UpdateAsync(1, It.Is<Appointment>(updated =>
+                updated.Status == AppointmentStatus.Confirmed.ToString())),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task CancelAppointmentAsync_ShouldThrowAppointmentRuleException_WhenReasonMissing()
+    {
+        // Act & Assert
+        await Assert.ThrowsAsync<AppointmentRuleException>(() =>
+            appointmentService.CancelAppointmentAsync(1, ""));
+    }
+
+    [Fact]
+    public async Task CancelAppointmentAsync_ShouldCancelAppointment_WhenPatientOwnsAppointment()
+    {
+        // Arrange
+        SetCurrentUser("patient-user-id", Roles.Patient);
+
+        var patient = new Patient
+        {
+            PatientId = 1,
+            UserId = "patient-user-id"
+        };
+
+        var appointment = new Appointment
+        {
+            AppointmentId = 1,
+            PatientId = 1,
+            DoctorId = 2,
+            Status = AppointmentStatus.Pending.ToString()
+        };
+
+        var updatedAppointment = new Appointment
+        {
+            AppointmentId = 1,
+            PatientId = 1,
+            DoctorId = 2,
+            Status = AppointmentStatus.Cancelled.ToString(),
+            CancellationReason = "Patient unavailable"
+        };
+
+        var appointmentDto = new AppointmentDto
+        {
+            AppointmentId = 1,
+            PatientId = 1,
+            DoctorId = 2,
+            Status = AppointmentStatus.Cancelled,
+            CancellationReason = "Patient unavailable"
+        };
+
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
+
+        appointmentRepositoryMock
+            .SetupSequence(repository => repository.GetByIdWithDetailsAsync(1))
+            .ReturnsAsync(appointment)
+            .ReturnsAsync(updatedAppointment);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.UpdateAsync(1, It.IsAny<Appointment>()))
+            .ReturnsAsync(updatedAppointment);
+
+        mapperMock
+            .Setup(mapper => mapper.Map<AppointmentDto>(updatedAppointment))
+            .Returns(appointmentDto);
+
+        // Act
+        var result = await appointmentService.CancelAppointmentAsync(
+            1,
+            "Patient unavailable");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(AppointmentStatus.Cancelled, result.Status);
+        Assert.Equal("Patient unavailable", result.CancellationReason);
+
+        appointmentRepositoryMock.Verify(repository =>
+            repository.UpdateAsync(1, It.Is<Appointment>(updated =>
+                updated.Status == AppointmentStatus.Cancelled.ToString() &&
+                updated.CancellationReason == "Patient unavailable")),
+            Times.Once);
+    }
+
+    private void SetCurrentUser(string userId, string role)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, userId),
+            new(ClaimTypes.Role, role)
+        };
+
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+
+        var httpContext = new DefaultHttpContext
+        {
+            User = principal
+        };
+
+        httpContextAccessorMock
+            .Setup(accessor => accessor.HttpContext)
+            .Returns(httpContext);
+    }
+    [Fact]
+    public async Task GetAppointmentsAsync_WhenAdminWithoutFilters_ReturnsAllAppointments()
+    {
+        SetCurrentUser("admin-user-id", Roles.Admin);
+
+        var appointments = new List<Appointment>
+    {
+        new()
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            ScheduledDate = DateTime.Today.AddDays(1),
+            TimeSlots = "09:00 AM - 09:30 AM",
+            Status = AppointmentStatus.Pending.ToString()
+        }
+    };
+
+        var appointmentDtos = new List<AppointmentDto>
+    {
+        new()
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            ScheduledDate = DateTime.Today.AddDays(1),
+            TimeSlot = "09:00 AM - 09:30 AM",
+            Status = AppointmentStatus.Pending
+        }
+    };
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetAllWithDetailsAsync())
+            .ReturnsAsync(appointments);
+
+        mapperMock
+            .Setup(mapper => mapper.Map<List<AppointmentDto>>(appointments))
+            .Returns(appointmentDtos);
+
+        var result = await appointmentService.GetAppointmentsAsync();
+
+        Assert.Single(result);
+        Assert.Equal(1, result[0].AppointmentId);
+    }
+
+    [Fact]
+    public async Task GetAppointmentsAsync_WhenAdminFiltersByPatient_ReturnsPatientAppointments()
+    {
+        SetCurrentUser("admin-user-id", Roles.Admin);
+
+        var patient = new Patient
+        {
+            PatientId = 10,
+            PatientName = "Kevin Baby"
+        };
+
+        var appointments = new List<Appointment>
+    {
+        new()
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Pending.ToString()
+        }
+    };
+
+        var appointmentDtos = new List<AppointmentDto>
+    {
+        new()
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Pending
+        }
+    };
+
+        patientRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(10))
+            .ReturnsAsync(patient);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByPatientIdAsync(10))
+            .ReturnsAsync(appointments);
+
+        mapperMock
+            .Setup(mapper => mapper.Map<List<AppointmentDto>>(appointments))
+            .Returns(appointmentDtos);
+
+        var result = await appointmentService.GetAppointmentsAsync(patientId: 10);
+
+        Assert.Single(result);
+        Assert.Equal(10, result[0].PatientId);
+    }
+
+    [Fact]
+    public async Task GetAppointmentsAsync_WhenAdminFiltersByDoctor_ReturnsDoctorAppointments()
+    {
+        SetCurrentUser("admin-user-id", Roles.Admin);
+
+        var doctor = new Doctor
+        {
+            DoctorId = 5,
+            DoctorName = "Dr Sneha Paul",
+            IsActive = true
+        };
+
+        var appointments = new List<Appointment>
+    {
+        new()
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Confirmed.ToString()
+        }
+    };
+
+        var appointmentDtos = new List<AppointmentDto>
+    {
+        new()
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Confirmed
+        }
+    };
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(5))
+            .ReturnsAsync(doctor);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByDoctorIdAsync(5))
+            .ReturnsAsync(appointments);
+
+        mapperMock
+            .Setup(mapper => mapper.Map<List<AppointmentDto>>(appointments))
+            .Returns(appointmentDtos);
+
+        var result = await appointmentService.GetAppointmentsAsync(doctorId: 5);
+
+        Assert.Single(result);
+        Assert.Equal(5, result[0].DoctorId);
+    }
+
+    [Fact]
+    public async Task GetAppointmentsByDoctorIdAsync_WhenPatientRequestsDoctorAppointments_ThrowsForbidden()
+    {
+        SetCurrentUser("patient-user-id", Roles.Patient);
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(5))
+            .ReturnsAsync(new Doctor
             {
-                Status = AppointmentStatus.Confirmed
+                DoctorId = 5,
+                DoctorName = "Dr Sneha Paul",
+                IsActive = true
             });
 
-        Assert.Equal(1, result.AppointmentId);
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() =>
+            appointmentService.GetAppointmentsByDoctorIdAsync(5));
     }
-
-    #endregion
-
-    #region CancelAppointmentAsync
 
     [Fact]
-    public async Task CancelAppointmentAsync_ShouldSetDefaultReason()
+    public async Task GetAppointmentsByStatusAsync_WhenPatientRequestsStatus_ReturnsOwnFilteredAppointments()
     {
-        var appointment = new Appointment { AppointmentId = 1 };
-        var updated = new Appointment { AppointmentId = 1 };
-        var dto = new AppointmentDto { AppointmentId = 1 };
+        SetCurrentUser("patient-user-id", Roles.Patient);
 
-        _appointmentRepoMock.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(appointment);
+        var patient = new Patient
+        {
+            PatientId = 10,
+            UserId = "patient-user-id"
+        };
 
-        _appointmentRepoMock.Setup(r => r.UpdateAsync(1, appointment))
-            .ReturnsAsync(updated);
+        var appointments = new List<Appointment>
+    {
+        new()
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Pending.ToString()
+        },
+        new()
+        {
+            AppointmentId = 2,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Completed.ToString()
+        }
+    };
 
-        _mapperMock.Setup(m => m.Map<AppointmentDto>(updated))
-            .Returns(dto);
+        var appointmentDtos = new List<AppointmentDto>
+    {
+        new()
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Pending
+        }
+    };
 
-        var result = await _service.CancelAppointmentAsync(1, null);
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
 
-        Assert.Equal(1, result.AppointmentId);
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByPatientIdAsync(10))
+            .ReturnsAsync(appointments);
+
+        mapperMock
+            .Setup(mapper => mapper.Map<List<AppointmentDto>>(
+                It.Is<List<Appointment>>(items => items.Count == 1)))
+            .Returns(appointmentDtos);
+
+        var result = await appointmentService.GetAppointmentsByStatusAsync(AppointmentStatus.Pending);
+
+        Assert.Single(result);
+        Assert.Equal(AppointmentStatus.Pending, result[0].Status);
     }
 
-    #endregion
+    [Fact]
+    public async Task GetAppointmentsByStatusAsync_WhenDoctorRequestsStatus_ReturnsOwnFilteredAppointments()
+    {
+        SetCurrentUser("doctor-user-id", Roles.Doctor);
+
+        var doctor = new Doctor
+        {
+            DoctorId = 5,
+            UserId = "doctor-user-id"
+        };
+
+        var appointments = new List<Appointment>
+    {
+        new()
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Confirmed.ToString()
+        },
+        new()
+        {
+            AppointmentId = 2,
+            PatientId = 11,
+            DoctorId = 5,
+            Status = AppointmentStatus.Cancelled.ToString()
+        }
+    };
+
+        var appointmentDtos = new List<AppointmentDto>
+    {
+        new()
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Confirmed
+        }
+    };
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("doctor-user-id"))
+            .ReturnsAsync(doctor);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByDoctorIdAsync(5))
+            .ReturnsAsync(appointments);
+
+        mapperMock
+            .Setup(mapper => mapper.Map<List<AppointmentDto>>(
+                It.Is<List<Appointment>>(items => items.Count == 1)))
+            .Returns(appointmentDtos);
+
+        var result = await appointmentService.GetAppointmentsByStatusAsync(AppointmentStatus.Confirmed);
+
+        Assert.Single(result);
+        Assert.Equal(AppointmentStatus.Confirmed, result[0].Status);
+    }
+
+    [Fact]
+    public async Task GetAppointmentsByStatusAsync_WhenAdminRequestsStatus_ReturnsAllMatchingAppointments()
+    {
+        SetCurrentUser("admin-user-id", Roles.Admin);
+
+        var appointments = new List<Appointment>
+    {
+        new()
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Cancelled.ToString()
+        }
+    };
+
+        var appointmentDtos = new List<AppointmentDto>
+    {
+        new()
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Cancelled
+        }
+    };
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByStatusAsync(AppointmentStatus.Cancelled))
+            .ReturnsAsync(appointments);
+
+        mapperMock
+            .Setup(mapper => mapper.Map<List<AppointmentDto>>(appointments))
+            .Returns(appointmentDtos);
+
+        var result = await appointmentService.GetAppointmentsByStatusAsync(AppointmentStatus.Cancelled);
+
+        Assert.Single(result);
+        Assert.Equal(AppointmentStatus.Cancelled, result[0].Status);
+    }
+
+    [Fact]
+    public async Task BookAppointmentAsync_WhenPatientAlreadyHasSameSlot_ThrowsConflictException()
+    {
+        SetCurrentUser("patient-user-id", Roles.Patient);
+
+        var patient = new Patient
+        {
+            PatientId = 10,
+            UserId = "patient-user-id"
+        };
+
+        var doctor = new Doctor
+        {
+            DoctorId = 5,
+            IsActive = true
+        };
+
+        var dto = new BookAppointmentDto
+        {
+            DoctorId = 5,
+            ScheduledDate = DateTime.Today.AddDays(1),
+            TimeSlot = "09:00 AM - 09:30 AM"
+        };
+
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(5))
+            .ReturnsAsync(doctor);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.IsSlotBookedAsync(5, dto.ScheduledDate.Date, dto.TimeSlot))
+            .ReturnsAsync(false);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.PatientHasActiveAppointmentOnDateAndSlotAsync(10, dto.ScheduledDate.Date, dto.TimeSlot))
+            .ReturnsAsync(true);
+
+        await Assert.ThrowsAsync<ConflictException>(() =>
+            appointmentService.BookAppointmentAsync(dto));
+    }
+
+    [Fact]
+    public async Task BookAppointmentAsync_WhenPatientAlreadyHasActiveAppointmentWithDoctorOnDate_ThrowsConflictException()
+    {
+        SetCurrentUser("patient-user-id", Roles.Patient);
+
+        var patient = new Patient
+        {
+            PatientId = 10,
+            UserId = "patient-user-id"
+        };
+
+        var doctor = new Doctor
+        {
+            DoctorId = 5,
+            IsActive = true
+        };
+
+        var dto = new BookAppointmentDto
+        {
+            DoctorId = 5,
+            ScheduledDate = DateTime.Today.AddDays(1),
+            TimeSlot = "09:00 AM - 09:30 AM"
+        };
+
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(5))
+            .ReturnsAsync(doctor);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.IsSlotBookedAsync(5, dto.ScheduledDate.Date, dto.TimeSlot))
+            .ReturnsAsync(false);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.PatientHasActiveAppointmentOnDateAndSlotAsync(10, dto.ScheduledDate.Date, dto.TimeSlot))
+            .ReturnsAsync(false);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.PatientHasActiveAppointmentWithDoctorOnDateAsync(10, 5, dto.ScheduledDate.Date))
+            .ReturnsAsync(true);
+
+        await Assert.ThrowsAsync<ConflictException>(() =>
+            appointmentService.BookAppointmentAsync(dto));
+    }
+
+    [Fact]
+    public async Task ChangeAppointmentStatusAsync_WhenAdminUpdatesStatus_ThrowsForbidden()
+    {
+        SetCurrentUser("admin-user-id", Roles.Admin);
+
+        var appointment = new Appointment
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Pending.ToString()
+        };
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByIdWithDetailsAsync(1))
+            .ReturnsAsync(appointment);
+
+        var dto = new UpdateAppointmentStatusDto
+        {
+            Status = AppointmentStatus.Confirmed
+        };
+
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() =>
+            appointmentService.ChangeAppointmentStatusAsync(1, dto));
+    }
+
+    [Fact]
+    public async Task ChangeAppointmentStatusAsync_WhenAppointmentAlreadyCompleted_ThrowsAppointmentRuleException()
+    {
+        SetCurrentUser("doctor-user-id", Roles.Doctor);
+
+        var doctor = new Doctor
+        {
+            DoctorId = 5,
+            UserId = "doctor-user-id"
+        };
+
+        var appointment = new Appointment
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Completed.ToString()
+        };
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("doctor-user-id"))
+            .ReturnsAsync(doctor);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByIdWithDetailsAsync(1))
+            .ReturnsAsync(appointment);
+
+        var dto = new UpdateAppointmentStatusDto
+        {
+            Status = AppointmentStatus.Cancelled,
+            CancellationReason = "Not available"
+        };
+
+        await Assert.ThrowsAsync<AppointmentRuleException>(() =>
+            appointmentService.ChangeAppointmentStatusAsync(1, dto));
+    }
+
+    [Fact]
+    public async Task ChangeAppointmentStatusAsync_WhenCancellationReasonMissing_ThrowsAppointmentRuleException()
+    {
+        SetCurrentUser("patient-user-id", Roles.Patient);
+
+        var patient = new Patient
+        {
+            PatientId = 10,
+            UserId = "patient-user-id"
+        };
+
+        var appointment = new Appointment
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Pending.ToString()
+        };
+
+        patientRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("patient-user-id"))
+            .ReturnsAsync(patient);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.GetByIdWithDetailsAsync(1))
+            .ReturnsAsync(appointment);
+
+        var dto = new UpdateAppointmentStatusDto
+        {
+            Status = AppointmentStatus.Cancelled,
+            CancellationReason = ""
+        };
+
+        await Assert.ThrowsAsync<AppointmentRuleException>(() =>
+            appointmentService.ChangeAppointmentStatusAsync(1, dto));
+    }
+
+    [Fact]
+    public async Task ChangeAppointmentStatusAsync_WhenDoctorCompletesConfirmedAppointment_ReturnsCompleted()
+    {
+        SetCurrentUser("doctor-user-id", Roles.Doctor);
+
+        var doctor = new Doctor
+        {
+            DoctorId = 5,
+            UserId = "doctor-user-id"
+        };
+
+        var appointment = new Appointment
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Confirmed.ToString()
+        };
+
+        var updatedAppointment = new Appointment
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Completed.ToString()
+        };
+
+        var appointmentDto = new AppointmentDto
+        {
+            AppointmentId = 1,
+            PatientId = 10,
+            DoctorId = 5,
+            Status = AppointmentStatus.Completed
+        };
+
+        doctorRepositoryMock
+            .Setup(repository => repository.GetByUserIdAsync("doctor-user-id"))
+            .ReturnsAsync(doctor);
+
+        appointmentRepositoryMock
+            .SetupSequence(repository => repository.GetByIdWithDetailsAsync(1))
+            .ReturnsAsync(appointment)
+            .ReturnsAsync(updatedAppointment);
+
+        appointmentRepositoryMock
+            .Setup(repository => repository.UpdateAsync(1, It.IsAny<Appointment>()))
+            .ReturnsAsync(updatedAppointment);
+
+        mapperMock
+            .Setup(mapper => mapper.Map<AppointmentDto>(updatedAppointment))
+            .Returns(appointmentDto);
+
+        var dto = new UpdateAppointmentStatusDto
+        {
+            Status = AppointmentStatus.Completed
+        };
+
+        var result = await appointmentService.ChangeAppointmentStatusAsync(1, dto);
+
+        Assert.Equal(AppointmentStatus.Completed, result.Status);
+    }
 }

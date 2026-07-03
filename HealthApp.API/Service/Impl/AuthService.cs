@@ -21,18 +21,60 @@ public class AuthService(
     IPatientRepository patientRepository,
     IDoctorRepository doctorRepository) : IAuthService
 {
+    private const string InvalidCredentialsMessage = "Invalid email or password.";
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto dto)
     {
-        if (await userManager.FindByEmailAsync(dto.Email) is not null)
+        if (dto is null)
+        {
+            throw new BusinessRuleException("Registration details are required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(dto.FullName))
+        {
+            throw new BusinessRuleException("Full name is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(dto.Email))
+        {
+            throw new BusinessRuleException("Email is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(dto.Password))
+        {
+            throw new BusinessRuleException("Password is required.");
+        }
+
+        if (!dto.DateOfBirth.HasValue)
+        {
+            throw new BusinessRuleException("Date of birth is required.");
+        }
+
+        if (!dto.Gender.HasValue)
+        {
+            throw new BusinessRuleException("Gender is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(dto.PhoneNumber))
+        {
+            throw new BusinessRuleException("Phone number is required.");
+        }
+
+        var fullName = dto.FullName.Trim();
+        var email = dto.Email.Trim();
+        var dateOfBirth = dto.DateOfBirth.Value.Date;
+        var gender = dto.Gender.Value;
+        var phoneNumber = dto.PhoneNumber.Trim();
+
+        if (await userManager.FindByEmailAsync(email) is not null)
         {
             throw new ConflictException("Email already registered.");
         }
 
         var user = new ApplicationUser
         {
-            UserName = dto.Email,
-            Email = dto.Email,
-            FullName = dto.FullName,
+            UserName = email,
+            Email = email,
+            FullName = fullName,
             EmailConfirmed = true,
             MustChangePassword = false
         };
@@ -42,37 +84,34 @@ public class AuthService(
         if (!result.Succeeded)
         {
             throw new BusinessRuleException(
-                string.Join("; ", result.Errors.Select(e => e.Description)));
+                string.Join("; ", result.Errors.Select(error => error.Description)));
         }
 
         await userManager.AddToRoleAsync(user, Roles.Patient);
 
         await patientRepository.AddAsync(new Patient
-            {
-                UserId = user.Id,
-                PatientName = dto.FullName,
-                Email = dto.Email,
-                DateOfBirth = dto.DateOfBirth.Value.Date,
-                Gender = dto.Gender.Value.ToString(),
-                PhoneNumber = dto.PhoneNumber,
-                InsuranceId = dto.InsuranceId,
-                CreatedDate = DateTime.Now
-            });
+        {
+            UserId = user.Id,
+            PatientName = fullName,
+            Email = email,
+            DateOfBirth = dateOfBirth,
+            Gender = gender.ToString(),
+            PhoneNumber = phoneNumber,
+            InsuranceId = dto.InsuranceId,
+            CreatedDate = DateTime.Now
+        });
+
         return await GenerateAuthResponseAsync(user);
-
     }
-
-
-
 
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto dto)
     {
         var user = await userManager.FindByEmailAsync(dto.Email)
-            ?? throw new BusinessRuleException("Invalid email or password.");
+            ?? throw new BusinessRuleException(InvalidCredentialsMessage);
 
         if (!await userManager.CheckPasswordAsync(user, dto.Password))
         {
-            throw new BusinessRuleException("Invalid email or password.");
+            throw new BusinessRuleException(InvalidCredentialsMessage);
         }
 
         var roles = await userManager.GetRolesAsync(user);
@@ -173,7 +212,7 @@ public class AuthService(
         }
 
         var user = await userManager.FindByEmailAsync(dto.Email)
-            ?? throw new BusinessRuleException("Invalid email or password.");
+            ?? throw new BusinessRuleException(InvalidCredentialsMessage);
 
         var isCurrentPasswordValid = await userManager.CheckPasswordAsync(
             user,
@@ -181,7 +220,7 @@ public class AuthService(
 
         if (!isCurrentPasswordValid)
         {
-            throw new BusinessRuleException("Invalid email or password.");
+            throw new BusinessRuleException(InvalidCredentialsMessage);
         }
 
         var changePasswordResult = await userManager.ChangePasswordAsync(

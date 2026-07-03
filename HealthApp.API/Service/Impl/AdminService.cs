@@ -242,7 +242,7 @@ public class AdminService(
             throw new BusinessRuleException("Doctor email is required.");
         }
 
-        if (!Enum.IsDefined(typeof(SpecialisationType), dto.Specialisation))
+        if (!Enum.IsDefined(dto.Specialisation))
         {
             throw new BusinessRuleException("Invalid specialisation.");
         }
@@ -266,7 +266,7 @@ public class AdminService(
         }
 
 
-        if (!Enum.IsDefined(typeof(SpecialisationType), dto.Specialisation))
+        if (!Enum.IsDefined(dto.Specialisation))
         {
             throw new BusinessRuleException("Invalid specialisation.");
         }
@@ -343,8 +343,7 @@ public class AdminService(
     bool? hasInsurance = null,
     PaginationQueryDto? pagination = null)
     {
-        if (gender.HasValue &&
-            !Enum.IsDefined(typeof(GenderType), gender.Value))
+        if (gender.HasValue && !Enum.IsDefined(gender.Value))
         {
             throw new BusinessRuleException("Invalid gender filter.");
         }
