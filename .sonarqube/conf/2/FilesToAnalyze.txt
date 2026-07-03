@@ -1,5 +1,5 @@
 ﻿C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Auth\CustomeAuthenticationStateProvider.cs
-C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\DTOs\Dashboard\AdminDashboardDTO.cs
+C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\DTOs\Dashboard\AdminDashboardDto.cs
 C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Handlers\AuthHeadHandler.cs
 C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Program.cs
 C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\AppointmentApiService.cs

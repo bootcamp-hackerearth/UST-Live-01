@@ -20,14 +20,14 @@ namespace HealthAxisCore_Api.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<HealthRecordResponseDTO>> GetAllAsync()
+        public async Task<IEnumerable<HealthRecordResponseDto>> GetAllAsync()
         {
             var records = await _repository.GetAllAsync();
 
-            return _mapper.Map<IEnumerable<HealthRecordResponseDTO>>(records);
+            return _mapper.Map<IEnumerable<HealthRecordResponseDto>>(records);
         }
 
-        public async Task<HealthRecordResponseDTO?> GetByIdAsync(int id)
+        public async Task<HealthRecordResponseDto?> GetByIdAsync(int id)
         {
             var record = await _repository.GetByIdAsync(id);
 
@@ -36,10 +36,10 @@ namespace HealthAxisCore_Api.Services.Implementations
                 throw new EntityNotFoundException("Health record not found");
             }
 
-            return _mapper.Map<HealthRecordResponseDTO>(record);
+            return _mapper.Map<HealthRecordResponseDto>(record);
         }
 
-        public async Task<HealthRecordResponseDTO> CreateAsync(CreateHealthRecordDTO dto)
+        public async Task<HealthRecordResponseDto> CreateAsync(CreateHealthRecordDto dto)
         {
             var alreadyExists = await _repository.ExistsByAppointmentIdAsync(dto.AppointmentId);
 
@@ -54,7 +54,7 @@ namespace HealthAxisCore_Api.Services.Implementations
 
             await _repository.AddAsync(record);
 
-            return _mapper.Map<HealthRecordResponseDTO>(record);
+            return _mapper.Map<HealthRecordResponseDto>(record);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -71,7 +71,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             return true;
         }
 
-        public async Task<IEnumerable<HealthRecordResponseDTO>> GetByPatientAsync(int patientId)
+        public async Task<IEnumerable<HealthRecordResponseDto>> GetByPatientAsync(int patientId)
         {
             var records = await _repository.GetByPatient(patientId);
 
@@ -80,7 +80,7 @@ namespace HealthAxisCore_Api.Services.Implementations
                 throw new EntityNotFoundException("No health records found for this patient");
             }
 
-            return _mapper.Map<IEnumerable<HealthRecordResponseDTO>>(records);
+            return _mapper.Map<IEnumerable<HealthRecordResponseDto>>(records);
         }
     }
 }

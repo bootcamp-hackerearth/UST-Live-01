@@ -3,7 +3,7 @@ using System;
 
 namespace HealthAxis.Shared.DTOs.Patient
 {
-    public class PatientResponseDTO
+    public class PatientResponseDto
     {
         public int PatientId { get; set; }
 

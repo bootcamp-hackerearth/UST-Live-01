@@ -13,13 +13,13 @@ namespace HealthAxisAdminLayout.Services.Implementations
             _http = http;
         }
 
-        public async Task<List<HealthRecordResponseDTO>> GetHealthRecordsAsync()
+        public async Task<List<HealthRecordResponseDto>> GetHealthRecordsAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<HealthRecordResponseDTO>>(
+            var result = await _http.GetFromJsonAsync<List<HealthRecordResponseDto>>(
                 "api/healthrecord"
             );
 
-            return result ?? new List<HealthRecordResponseDTO>();
+            return result ?? new List<HealthRecordResponseDto>();
         }
 
         public async Task<bool> DeleteHealthRecordAsync(int id)

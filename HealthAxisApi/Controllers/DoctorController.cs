@@ -61,7 +61,7 @@ namespace HealthAxisCore_Api.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<ActionResult<CreateDoctorResultDTO>> Create(CreateDoctorDTO dto)
+        public async Task<ActionResult<CreateDoctorResultDto>> Create(CreateDoctorDto dto)
         {
             var result = await _service.CreateAsync(dto);
 
@@ -74,7 +74,7 @@ namespace HealthAxisCore_Api.Controllers
 
         [HttpPut("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<IActionResult> Update(int id, CreateDoctorDTO dto)
+        public async Task<IActionResult> Update(int id, CreateDoctorDto dto)
         {
             var updated = await _service.UpdateAsync(id, dto);
 

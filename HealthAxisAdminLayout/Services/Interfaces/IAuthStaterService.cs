@@ -15,7 +15,7 @@ namespace HealthAxisAdminLayout.Services.Interfaces
     bool IsLoggedIn { get; }
     bool IsAdmin { get; }
 
-    Task SetLoginAsync(AuthResponseDTO response);
+    Task SetLoginAsync(AuthResponseDto response);
     Task LoadFromStorageAsync();
     Task LogoutAsync();
 }

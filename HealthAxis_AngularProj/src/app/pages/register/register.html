@@ -39,8 +39,9 @@
       <form [formGroup]="registerForm" (ngSubmit)="register()">
 
         <div class="field">
-          <label>Email address</label>
+          <label for="email">Email address</label>
           <input
+            id="email"
             type="email"
             formControlName="email"
             placeholder="name@example.com"
@@ -55,8 +56,9 @@
 
         <div class="form-grid">
           <div class="field">
-            <label>Password</label>
+            <label for="password">Password</label>
             <input
+              id="password"
               type="password"
               formControlName="password"
               placeholder="Create password"
@@ -70,8 +72,9 @@
           </div>
 
           <div class="field">
-            <label>Confirm password</label>
+            <label for="confirmPassword">Confirm password</label>
             <input
+              id="confirmPassword"
               type="password"
               formControlName="confirmPassword"
               placeholder="Confirm password"
@@ -94,9 +97,10 @@
         </div>
 
         <div class="field">
-          <label>Patient name</label>
+          <label for="patientName">Patient name</label>
           <input
             type="text"
+            id="patientName"
             formControlName="patientName"
             placeholder="Enter full name"
             [class.invalid]="patientName?.invalid && (patientName?.touched || submitted)"
@@ -110,9 +114,10 @@
 
         <div class="form-grid">
           <div class="field">
-            <label>Date of birth</label>
+            <label for="dateOfBirth">Date of birth</label>
             <input
               type="date"
+              id="dateOfBirth"
               formControlName="dateOfBirth"
               [class.invalid]="dateOfBirth?.invalid && (dateOfBirth?.touched || submitted)"
             />
@@ -123,8 +128,9 @@
           </div>
 
           <div class="field">
-            <label>Gender</label>
+            <label for="gender">Gender</label>
             <select
+              id="gender"
               formControlName="gender"
               [class.invalid]="gender?.invalid && (gender?.touched || submitted)">
               <option [value]="0">Male</option>
@@ -140,9 +146,10 @@
         </div>
 
         <div class="field">
-          <label>Phone number</label>
+          <label for="phoneNumber">Phone number</label>
           <input
             type="text"
+            id="phoneNumber"
             formControlName="phoneNumber"
             placeholder="Enter 10 digit phone number"
             [class.invalid]="phoneNumber?.invalid && (phoneNumber?.touched || submitted)"

@@ -3,9 +3,9 @@ xC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\obj\Debug\net1
 ‚C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.csutf-8…
 zC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\obj\Debug\net10.0\HealthAxisAdminLayout.GlobalUsings.g.csutf-8y
 nC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\obj\Debug\net10.0\ValidatableTypeAttribute.csutf-8r
-gC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\obj\Debug\net10.0\EmbeddedAttribute.csutf-8x
-oC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IHealthRecordApiService.csutf-8s
-jC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IPatientApiService.csutf-8r
+gC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\obj\Debug\net10.0\EmbeddedAttribute.csutf-8s
+jC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IPatientApiService.csutf-8x
+oC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IHealthRecordApiService.csutf-8r
 iC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IDoctorApiService.csutf-8r
 iC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IDashboardService.csutf-8s
 jC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IAuthStaterService.csutf-8m
@@ -20,5 +20,5 @@ gC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implm
 qC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\AppointmentApiService.csutf-8T
 KC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Program.csutf-8e
 \C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Handlers\AuthHeadHandler.csutf-8m
-dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\DTOs\Dashboard\AdminDashboardDTO.csutf-8t
+dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\DTOs\Dashboard\AdminDashboardDto.csutf-8t
 kC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Auth\CustomeAuthenticationStateProvider.csutf-8

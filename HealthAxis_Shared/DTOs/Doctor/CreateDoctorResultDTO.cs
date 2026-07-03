@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace HealthAxis.Shared.DTOs.Doctor
 {
-    public class CreateDoctorResultDTO
+    public class CreateDoctorResultDto
     {
         public int YearsOfExperience;
 

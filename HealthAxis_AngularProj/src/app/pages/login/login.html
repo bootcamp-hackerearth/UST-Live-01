@@ -39,8 +39,9 @@
       <form [formGroup]="loginForm" (ngSubmit)="login()">
 
         <div class="field">
-          <label>Email address</label>
+          <label for="email">Email address</label>
           <input
+            id="email"
             type="email"
             formControlName="email"
             placeholder="name@example.com"
@@ -54,10 +55,11 @@
         </div>
 
         <div class="field">
-          <label>Password</label>
+          <label for="password">Password</label>
 
           <div class="password-wrap">
             <input
+              id="password"
               [type]="showPassword ? 'text' : 'password'"
               formControlName="password"
               placeholder="Enter your password"

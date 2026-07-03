@@ -20,7 +20,7 @@ namespace HealthAxisCore_Api.Controllers
         // ✅ REGISTER
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO request)
+        public async Task<IActionResult> Register([FromBody] RegisterDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -33,14 +33,14 @@ namespace HealthAxisCore_Api.Controllers
         // ✅ LOGIN (Updated → returns Access + Refresh Token)
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginDTO request)
+        public async Task<IActionResult> Login([FromBody] LoginDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var result = await _authService.LoginAsync(request);
 
-            return Ok(result); // should return AuthResponseDTO
+            return Ok(result); // should return AuthResponseDto
         }
 
         // ✅ REFRESH TOKEN (NEW)
@@ -75,7 +75,7 @@ namespace HealthAxisCore_Api.Controllers
         // ✅ CHANGE PASSWORD
         [HttpPost("change-password")]
         [Authorize]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO request)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -287,34 +287,37 @@
       <form class="record-form profile-form" *ngIf="profileMode === 'edit'" (ngSubmit)="saveProfile()">
 
         <div class="field">
-          <label>Patient Name</label>
+          <label for="patientName">Patient Name</label>
           <input
             type="text"
+            id="patientName"
             name="patientName"
             [(ngModel)]="editProfileData.patientName"
             placeholder="Enter patient name" />
         </div>
 
         <div class="field">
-          <label>Email</label>
+          <label for="email">Email</label>
           <input
             type="email"
+            id="email"
             name="email"
             [(ngModel)]="editProfileData.email"
             readonly />
         </div>
 
         <div class="field">
-          <label>Date of Birth</label>
+          <label for="dateOfBirth">Date of Birth</label>
           <input
             type="date"
+            id="dateOfBirth"
             name="dateOfBirth"
             [(ngModel)]="editProfileData.dateOfBirth" />
         </div>
 
         <div class="field">
-          <label>Gender</label>
-          <select name="gender" [(ngModel)]="editProfileData.gender">
+          <label for="gender">Gender</label>
+          <select id="gender" name="gender" [(ngModel)]="editProfileData.gender">
             <option [ngValue]="0">Male</option>
             <option [ngValue]="1">Female</option>
             <option [ngValue]="2">Transgender</option>
@@ -323,9 +326,10 @@
         </div>
 
         <div class="field">
-          <label>Phone Number</label>
+          <label for="phoneNumber">Phone Number</label>
           <input
             type="text"
+            id="phoneNumber"
             name="phoneNumber"
             [(ngModel)]="editProfileData.phoneNumber"
             placeholder="10 digit phone number" />
@@ -489,8 +493,9 @@
         <div class="booking-grid">
 
           <div class="field">
-            <label>Specialisation</label>
+            <label for="bookingSpecialisation">Specialisation</label>
             <select
+              id="bookingSpecialisation"
               name="bookingSpecialisation"
               [(ngModel)]="bookingSpecialisation"
               (change)="onBookingSpecialisationChange()">
@@ -502,8 +507,9 @@
           </div>
 
           <div class="field">
-            <label>Doctor</label>
+            <label for="bookingDoctor">Doctor</label>
             <select
+              id="bookingDoctor"
               name="bookingDoctor"
               [(ngModel)]="bookingData.doctorId"
               (change)="onBookingDoctorChange()">
@@ -515,8 +521,9 @@
           </div>
 
           <div class="field">
-            <label>Appointment Date</label>
+            <label for="bookingDate">Appointment Date</label>
             <input
+              id="bookingDate"
               type="date"
               name="scheduledDate"
               [min]="todayDate"
@@ -771,8 +778,9 @@
       <form class="record-form password-form" (ngSubmit)="changePassword()">
 
         <div class="field">
-          <label>Old Password</label>
+          <label for="oldPassword">Old Password</label>
           <input
+            id="oldPassword"
             type="password"
             name="oldPassword"
             [(ngModel)]="passwordData.oldPassword"
@@ -780,8 +788,9 @@
         </div>
 
         <div class="field">
-          <label>New Password</label>
+          <label for="newPassword">New Password</label>
           <input
+            id="newPassword"
             type="password"
             name="newPassword"
             [(ngModel)]="passwordData.newPassword"
@@ -789,8 +798,9 @@
         </div>
 
         <div class="field">
-          <label>Confirm New Password</label>
+          <label for="confirmNewPassword">Confirm New Password</label>
           <input
+            id="confirmNewPassword"
             type="password"
             name="confirmNewPassword"
             [(ngModel)]="passwordData.confirmNewPassword"

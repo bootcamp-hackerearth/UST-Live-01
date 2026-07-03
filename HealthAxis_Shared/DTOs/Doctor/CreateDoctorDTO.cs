@@ -3,7 +3,7 @@ using HealthAxis.Shared.Enums;
 
 namespace HealthAxis.Shared.DTOs.Doctor
 {
-    public class CreateDoctorDTO
+    public class CreateDoctorDto
     {
         [Required(ErrorMessage = "Doctor name is required")]
         [MinLength(2, ErrorMessage = "Doctor name must be at least 2 characters")]

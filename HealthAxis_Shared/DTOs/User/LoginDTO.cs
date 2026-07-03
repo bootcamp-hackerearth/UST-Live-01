@@ -2,7 +2,7 @@
 
 namespace HealthAxis.Shared.DTOs.Auth
 {
-    public class LoginDTO
+    public class LoginDto
     {
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Enter a valid email address")]

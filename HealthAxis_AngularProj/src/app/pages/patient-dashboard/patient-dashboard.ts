@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -244,7 +244,7 @@ export class PatientDashboardComponent {
   getDoctorSpecialisationName(doctor: any): string {
     const value = this.getDoctorSpecialisationValue(doctor);
 
-    if (typeof value === 'string' && isNaN(Number(value))) {
+    if (typeof value === 'string' &&Number.isNaN(Number(value))) {
       return value || 'Not specified';
     }
 

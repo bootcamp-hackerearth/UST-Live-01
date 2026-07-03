@@ -16,11 +16,11 @@ namespace HealthAxisAdminLayout.Services.Implementations
             _http = http;
         }
 
-        public async Task<AuthResponseDTO?> LoginAsync(LoginDTO loginDto)
+        public async Task<AuthResponseDto?> LoginAsync(LoginDto LoginDto)
         {
             var response = await _http.PostAsJsonAsync(
                 "api/auth/login",
-                loginDto
+                LoginDto
             );
 
             if (!response.IsSuccessStatusCode)
@@ -29,7 +29,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
                 throw new Exception(error);
             }
 
-            var result = await response.Content.ReadFromJsonAsync<AuthResponseDTO>();
+            var result = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
 
             if (result != null)
             {

@@ -556,7 +556,7 @@ export class DoctorDashboardComponent {
     if (timePart.includes(' ')) {
       const parsed = new Date(`${datePart} ${timePart}`);
 
-      if (!isNaN(parsed.getTime())) {
+      if (!Number.isNaN(parsed.getTime())) {
         const year = parsed.getFullYear();
         const month = String(parsed.getMonth() + 1).padStart(2, '0');
         const day = String(parsed.getDate()).padStart(2, '0');

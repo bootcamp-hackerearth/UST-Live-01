@@ -1,6 +1,6 @@
 ﻿namespace HealthAxis.Shared.DTOs.Common
 {
-    public class PagedResponseDTO<T>
+    public class PagedResponseDto<T>
     {
         public List<T> Items { get; set; } = new();
 

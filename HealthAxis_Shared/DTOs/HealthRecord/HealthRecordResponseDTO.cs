@@ -2,7 +2,7 @@
 
 namespace HealthAxis.Shared.DTOs.HealthRecord
 {
-    public class HealthRecordResponseDTO
+    public class HealthRecordResponseDto
     {
         public int HealthRecordId { get; set; }
 

@@ -25,14 +25,14 @@ namespace HealthAxisCore_Api.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<AppointmentResponseDTO>> GetAllAsync()
+        public async Task<IEnumerable<AppointmentResponseDto>> GetAllAsync()
         {
             var data = await _repository.GetAllAsync();
 
-            return _mapper.Map<IEnumerable<AppointmentResponseDTO>>(data);
+            return _mapper.Map<IEnumerable<AppointmentResponseDto>>(data);
         }
 
-        public async Task<PagedResponseDTO<AppointmentResponseDTO>> GetPagedAsync(
+        public async Task<PagedResponseDto<AppointmentResponseDto>> GetPagedAsync(
             int pageNumber,
             int pageSize,
             string? search,
@@ -94,9 +94,9 @@ namespace HealthAxisCore_Api.Services.Implementations
                 .Take(pageSize)
                 .ToList();
 
-            var appointmentDtos = _mapper.Map<List<AppointmentResponseDTO>>(pagedAppointments);
+            var appointmentDtos = _mapper.Map<List<AppointmentResponseDto>>(pagedAppointments);
 
-            return new PagedResponseDTO<AppointmentResponseDTO>
+            return new PagedResponseDto<AppointmentResponseDto>
             {
                 Items = appointmentDtos,
                 TotalCount = totalCount,
@@ -106,7 +106,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             };
         }
 
-        public async Task<AppointmentResponseDTO?> GetByIdAsync(int id)
+        public async Task<AppointmentResponseDto?> GetByIdAsync(int id)
         {
             var appt = await _repository.GetByIdAsync(id);
 
@@ -115,10 +115,10 @@ namespace HealthAxisCore_Api.Services.Implementations
                 throw new EntityNotFoundException("Appointment not found");
             }
 
-            return _mapper.Map<AppointmentResponseDTO>(appt);
+            return _mapper.Map<AppointmentResponseDto>(appt);
         }
 
-        public async Task<AppointmentResponseDTO> CreateAsync(CreateAppointmentDTO dto)
+        public async Task<AppointmentResponseDto> CreateAsync(CreateAppointmentDto dto)
         {
             if (dto == null)
             {
@@ -189,7 +189,7 @@ namespace HealthAxisCore_Api.Services.Implementations
                     a.ScheduledDate.Date == requestedDate)
                 .ToList();
 
-            if (patientActiveAppointmentsSameDate.Any())
+            if (patientActiveAppointmentsSameDate.Count > 0)
             {
                 var sameDoctorAppointment = patientActiveAppointmentsSameDate
                     .FirstOrDefault(a => a.DoctorId == dto.DoctorId);
@@ -222,7 +222,7 @@ namespace HealthAxisCore_Api.Services.Implementations
 
             await _repository.AddAsync(appointment);
 
-            return _mapper.Map<AppointmentResponseDTO>(appointment);
+            return _mapper.Map<AppointmentResponseDto>(appointment);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -239,7 +239,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             return true;
         }
 
-        public async Task<IEnumerable<AppointmentResponseDTO>> GetByDoctorAsync(int doctorId)
+        public async Task<IEnumerable<AppointmentResponseDto>> GetByDoctorAsync(int doctorId)
         {
             var data = await _repository.GetByDoctor(doctorId);
 
@@ -248,10 +248,10 @@ namespace HealthAxisCore_Api.Services.Implementations
                 throw new EntityNotFoundException("No appointments found for this doctor");
             }
 
-            return _mapper.Map<IEnumerable<AppointmentResponseDTO>>(data);
+            return _mapper.Map<IEnumerable<AppointmentResponseDto>>(data);
         }
 
-        public async Task<IEnumerable<AppointmentResponseDTO>> GetByPatientAsync(int patientId)
+        public async Task<IEnumerable<AppointmentResponseDto>> GetByPatientAsync(int patientId)
         {
             var data = await _repository.GetByPatient(patientId);
 
@@ -260,10 +260,10 @@ namespace HealthAxisCore_Api.Services.Implementations
                 throw new EntityNotFoundException("No appointments found for this patient");
             }
 
-            return _mapper.Map<IEnumerable<AppointmentResponseDTO>>(data);
+            return _mapper.Map<IEnumerable<AppointmentResponseDto>>(data);
         }
 
-        public async Task<IEnumerable<AppointmentResponseDTO>> FilterAsync(
+        public async Task<IEnumerable<AppointmentResponseDto>> FilterAsync(
             AppointmentStatus? status,
             DateTime? startDate,
             DateTime? endDate)
@@ -275,7 +275,7 @@ namespace HealthAxisCore_Api.Services.Implementations
                 throw new EntityNotFoundException("No appointments found for given criteria");
             }
 
-            return _mapper.Map<IEnumerable<AppointmentResponseDTO>>(data);
+            return _mapper.Map<IEnumerable<AppointmentResponseDto>>(data);
         }
 
         public async Task<bool> CancelAsync(int id, string reason)
@@ -387,13 +387,13 @@ namespace HealthAxisCore_Api.Services.Implementations
                 .ToList();
         }
 
-        private bool IsActiveAppointmentStatus(AppointmentStatus status)
+        private static bool IsActiveAppointmentStatus(AppointmentStatus status)
         {
             return status == AppointmentStatus.Pending ||
                    status == AppointmentStatus.Confirmed;
         }
 
-        private DateTime BuildAppointmentDateTime(DateTime scheduledDate, string timeSlot)
+        private static DateTime BuildAppointmentDateTime(DateTime scheduledDate, string timeSlot)
         {
             if (string.IsNullOrWhiteSpace(timeSlot))
             {
@@ -413,7 +413,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             throw new AppointmentRuleException("Invalid time slot format.");
         }
 
-        private string NormalizeTimeSlot(object? timeSlot)
+        private static string NormalizeTimeSlot(object? timeSlot)
         {
             if (timeSlot == null)
             {
@@ -442,7 +442,7 @@ namespace HealthAxisCore_Api.Services.Implementations
                 return string.Empty;
             }
 
-            if (value.Contains("-"))
+            if (value.Contains('-'))
             {
                 value = value.Split('-')[0].Trim();
             }
@@ -460,7 +460,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             return value.Trim();
         }
 
-        private string FormatAppointmentTimeForSearch(object? timeSlot)
+        private static string FormatAppointmentTimeForSearch(object? timeSlot)
         {
             if (timeSlot == null)
             {

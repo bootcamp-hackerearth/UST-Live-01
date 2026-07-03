@@ -6,21 +6,21 @@ namespace HealthAxisCore_Api.Services.Interfaces
 {
     public interface IDoctorService
     {
-        Task<IEnumerable<DoctorResponseDTO>> GetAllAsync();
+        Task<IEnumerable<DoctorResponseDto>> GetAllAsync();
 
-        Task<DoctorResponseDTO?> GetByIdAsync(int id);
+        Task<DoctorResponseDto?> GetByIdAsync(int id);
 
-        Task<CreateDoctorResultDTO> CreateAsync(CreateDoctorDTO dto);
+        Task<CreateDoctorResultDto> CreateAsync(CreateDoctorDto dto);
 
-        Task<bool> UpdateAsync(int id, CreateDoctorDTO dto);
+        Task<bool> UpdateAsync(int id, CreateDoctorDto dto);
 
         Task<bool> DeleteAsync(int id);
 
-        Task<IEnumerable<DoctorResponseDTO>> FilterAsync(string? name, SpecialisationType? specialization, bool? isActive);
+        Task<IEnumerable<DoctorResponseDto>> FilterAsync(string? name, SpecialisationType? specialization, bool? isActive);
 
         Task<bool> SetStatusAsync(int doctorId, bool status);
 
-        Task<PagedResponseDTO<DoctorResponseDTO>> GetPagedAsync(
+        Task<PagedResponseDto<DoctorResponseDto>> GetPagedAsync(
     int pageNumber,
     int pageSize,
     string? search,

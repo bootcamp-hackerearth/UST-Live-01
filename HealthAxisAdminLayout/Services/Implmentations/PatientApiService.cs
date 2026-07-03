@@ -18,23 +18,23 @@ namespace HealthAxisAdminLayout.Services.Implementations
             _http = http;
         }
 
-        public async Task<List<PatientResponseDTO>> GetPatientsAsync()
+        public async Task<List<PatientResponseDto>> GetPatientsAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<PatientResponseDTO>>(
+            var result = await _http.GetFromJsonAsync<List<PatientResponseDto>>(
                 "api/patient"
             );
 
-            return result ?? new List<PatientResponseDTO>();
+            return result ?? new List<PatientResponseDto>();
         }
 
-        public async Task<PatientResponseDTO?> GetPatientByIdAsync(int id)
+        public async Task<PatientResponseDto?> GetPatientByIdAsync(int id)
         {
-            return await _http.GetFromJsonAsync<PatientResponseDTO>(
+            return await _http.GetFromJsonAsync<PatientResponseDto>(
                 $"api/patient/{id}"
             );
         }
 
-        public async Task<List<PatientResponseDTO>> SearchPatientsAsync(string? name, string? email)
+        public async Task<List<PatientResponseDto>> SearchPatientsAsync(string? name, string? email)
         {
             var query = new List<string>();
 
@@ -52,12 +52,12 @@ namespace HealthAxisAdminLayout.Services.Implementations
                 ? "api/patient/search"
                 : $"api/patient/search?{string.Join("&", query)}";
 
-            var result = await _http.GetFromJsonAsync<List<PatientResponseDTO>>(url);
+            var result = await _http.GetFromJsonAsync<List<PatientResponseDto>>(url);
 
-            return result ?? new List<PatientResponseDTO>();
+            return result ?? new List<PatientResponseDto>();
         }
 
-        public async Task<PagedResponseDTO<PatientResponseDTO>> GetPatientsPagedAsync(
+        public async Task<PagedResponseDto<PatientResponseDto>> GetPatientsPagedAsync(
             int pageNumber,
             int pageSize,
             string? search,
@@ -81,12 +81,12 @@ namespace HealthAxisAdminLayout.Services.Implementations
 
             var url = $"api/patient/paged?{string.Join("&", query)}";
 
-            var result = await _http.GetFromJsonAsync<PagedResponseDTO<PatientResponseDTO>>(url);
+            var result = await _http.GetFromJsonAsync<PagedResponseDto<PatientResponseDto>>(url);
 
-            return result ?? new PagedResponseDTO<PatientResponseDTO>();
+            return result ?? new PagedResponseDto<PatientResponseDto>();
         }
 
-        public async Task<bool> CreatePatientAsync(CreatePatientDTO dto)
+        public async Task<bool> CreatePatientAsync(CreatePatientDto dto)
         {
             var response = await _http.PostAsJsonAsync(
                 "api/patient",
@@ -96,7 +96,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UpdatePatientAsync(int id, UpdatePatientDTO dto)
+        public async Task<bool> UpdatePatientAsync(int id, UpdatePatientDto dto)
         {
             var response = await _http.PutAsJsonAsync(
                 $"api/patient/{id}",

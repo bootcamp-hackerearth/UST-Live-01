@@ -1,6 +1,6 @@
 ﻿namespace HealthAxis.Shared.DTOs.Common
 {
-    public class ErrorResponseDTO
+    public class ErrorResponseDto
     {
         public bool Success { get; set; } = false;
 

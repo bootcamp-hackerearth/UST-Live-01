@@ -6,19 +6,19 @@ namespace HealthAxisCore_Api.Services.Interfaces
 {
     public interface IAppointmentService
     {
-        Task<IEnumerable<AppointmentResponseDTO>> GetAllAsync();
+        Task<IEnumerable<AppointmentResponseDto>> GetAllAsync();
 
-        Task<AppointmentResponseDTO?> GetByIdAsync(int id);
+        Task<AppointmentResponseDto?> GetByIdAsync(int id);
 
-        Task<AppointmentResponseDTO> CreateAsync(CreateAppointmentDTO dto);
+        Task<AppointmentResponseDto> CreateAsync(CreateAppointmentDto dto);
 
         Task<bool> DeleteAsync(int id);
 
-        Task<IEnumerable<AppointmentResponseDTO>> GetByDoctorAsync(int doctorId);
+        Task<IEnumerable<AppointmentResponseDto>> GetByDoctorAsync(int doctorId);
 
-        Task<IEnumerable<AppointmentResponseDTO>> GetByPatientAsync(int patientId);
+        Task<IEnumerable<AppointmentResponseDto>> GetByPatientAsync(int patientId);
 
-        Task<IEnumerable<AppointmentResponseDTO>> FilterAsync(
+        Task<IEnumerable<AppointmentResponseDto>> FilterAsync(
             AppointmentStatus? status,
             DateTime? startDate,
             DateTime? endDate
@@ -32,7 +32,7 @@ namespace HealthAxisCore_Api.Services.Interfaces
 
         Task<IEnumerable<string>> GetBookedSlotsAsync(int doctorId, DateTime date);
 
-        Task<PagedResponseDTO<AppointmentResponseDTO>> GetPagedAsync(
+        Task<PagedResponseDto<AppointmentResponseDto>> GetPagedAsync(
             int pageNumber,
             int pageSize,
             string? search,

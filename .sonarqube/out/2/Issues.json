@@ -12,90 +12,6 @@
       },
       "results": [
         {
-          "ruleId": "RZ10012",
-          "level": "warning",
-          "message": "Found markup element with unexpected name 'RedirectToLogin'. If this is intended to be a component, add a @using directive for its namespace.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/App.razor",
-                "region": {
-                  "startLine": 16,
-                  "startColumn": 21,
-                  "endLine": 16,
-                  "endColumn": 40
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'AdminDashboardDTO' to match pascal case naming rules, consider using 'AdminDashboardDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/DTOs/Dashboard/AdminDashboardDTO.cs",
-                "region": {
-                  "startLine": 3,
-                  "startColumn": 22,
-                  "endLine": 3,
-                  "endColumn": 39
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CA1050",
-          "level": "note",
-          "message": "Declare types in namespaces",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Auth/CustomeAuthenticationStateProvider.cs",
-                "region": {
-                  "startLine": 6,
-                  "startColumn": 14,
-                  "endLine": 6,
-                  "endColumn": 47
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S3903",
-          "level": "warning",
-          "message": "Move 'CustomAuthenticationStateProvider' into a named namespace.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Auth/CustomeAuthenticationStateProvider.cs",
-                "region": {
-                  "startLine": 6,
-                  "startColumn": 14,
-                  "endLine": 6,
-                  "endColumn": 47
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
           "ruleId": "S1075",
           "level": "warning",
           "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
@@ -107,27 +23,6 @@
                   "startLine": 84,
                   "startColumn": 44,
                   "endLine": 84,
-                  "endColumn": 73
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S1075",
-          "level": "warning",
-          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Login.razor",
-                "region": {
-                  "startLine": 20,
-                  "startColumn": 44,
-                  "endLine": 20,
                   "endColumn": 73
                 }
               }
@@ -384,11 +279,11 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/RedirectToLogin.razor",
+                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Login.razor",
                 "region": {
-                  "startLine": 6,
+                  "startLine": 20,
                   "startColumn": 44,
-                  "endLine": 6,
+                  "endLine": 20,
                   "endColumn": 73
                 }
               }
@@ -399,39 +294,18 @@
           }
         },
         {
-          "ruleId": "S2933",
+          "ruleId": "S1075",
           "level": "warning",
-          "message": "Make 'validationErrors' 'readonly'.",
+          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
+                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/RedirectToLogin.razor",
                 "region": {
-                  "startLine": 553,
-                  "startColumn": 26,
-                  "endLine": 553,
-                  "endColumn": 42
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S112",
-          "level": "warning",
-          "message": "'System.Exception' should not be thrown by user code.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthService.cs",
-                "region": {
-                  "startLine": 29,
-                  "startColumn": 23,
-                  "endLine": 29,
-                  "endColumn": 43
+                  "startLine": 6,
+                  "startColumn": 44,
+                  "endLine": 6,
+                  "endColumn": 73
                 }
               }
             }
@@ -449,9 +323,9 @@
               "resultFile": {
                 "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Program.cs",
                 "region": {
-                  "startLine": 20,
+                  "startLine": 21,
                   "startColumn": 34,
-                  "endLine": 20,
+                  "endLine": 21,
                   "endColumn": 59
                 }
               }
@@ -483,6 +357,27 @@
           }
         },
         {
+          "ruleId": "S112",
+          "level": "warning",
+          "message": "'System.Exception' should not be thrown by user code.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthService.cs",
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 23,
+                  "endLine": 29,
+                  "endColumn": 43
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
           "ruleId": "S108",
           "level": "warning",
           "message": "Either remove or fill this block of code.",
@@ -504,27 +399,6 @@
           }
         },
         {
-          "ruleId": "S6610",
-          "level": "warning",
-          "message": "\"StartsWith\" overloads that take a \"char\" should be used",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/AuthBridge.razor",
-                "region": {
-                  "startLine": 60,
-                  "startColumn": 19,
-                  "endLine": 60,
-                  "endColumn": 29
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
           "ruleId": "S2486",
           "level": "warning",
           "message": "Handle the exception or explain in a comment why it can be ignored.",
@@ -537,27 +411,6 @@
                   "startColumn": 13,
                   "endLine": 74,
                   "endColumn": 14
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'GetGenderText' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Patients.razor",
-                "region": {
-                  "startLine": 434,
-                  "startColumn": 20,
-                  "endLine": 434,
-                  "endColumn": 33
                 }
               }
             }
@@ -630,469 +483,18 @@
           }
         },
         {
-          "ruleId": "S2325",
+          "ruleId": "S6610",
           "level": "warning",
-          "message": "Make 'GetInitials' a static method.",
+          "message": "\"StartsWith\" overloads that take a \"char\" should be used",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Patients.razor",
+                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/AuthBridge.razor",
                 "region": {
-                  "startLine": 415,
-                  "startColumn": 20,
-                  "endLine": 415,
-                  "endColumn": 31
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'ParseDateInput' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Appointment.razor",
-                "region": {
-                  "startLine": 501,
-                  "startColumn": 23,
-                  "endLine": 501,
-                  "endColumn": 37
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'FormatDateInput' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Appointment.razor",
-                "region": {
-                  "startLine": 494,
-                  "startColumn": 20,
-                  "endLine": 494,
-                  "endColumn": 35
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S6580",
-          "level": "warning",
-          "message": "Use a format provider when parsing date and time.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Appointment.razor",
-                "region": {
-                  "startLine": 508,
-                  "startColumn": 16,
-                  "endLine": 508,
-                  "endColumn": 54
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'CanConfirm' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Appointment.razor",
-                "region": {
-                  "startLine": 630,
-                  "startColumn": 18,
-                  "endLine": 630,
-                  "endColumn": 28
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'CanCancel' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Appointment.razor",
-                "region": {
-                  "startLine": 635,
-                  "startColumn": 18,
-                  "endLine": 635,
-                  "endColumn": 27
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S3776",
-          "level": "warning",
-          "message": "Refactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 727,
-                  "startColumn": 24,
-                  "endLine": 727,
-                  "endColumn": 34
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 729,
-                  "startColumn": 9,
-                  "endLine": 729,
-                  "endColumn": 11
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 744,
-                  "startColumn": 13,
-                  "endLine": 744,
-                  "endColumn": 15
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 748,
-                  "startColumn": 17,
-                  "endLine": 748,
-                  "endColumn": 19
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 758,
-                  "startColumn": 17,
-                  "endLine": 758,
-                  "endColumn": 21
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 763,
-                  "startColumn": 13,
-                  "endLine": 763,
-                  "endColumn": 17
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 767,
-                  "startColumn": 17,
-                  "endLine": 767,
-                  "endColumn": 19
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 775,
-                  "startColumn": 21,
-                  "endLine": 775,
-                  "endColumn": 23
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 779,
-                  "startColumn": 21,
-                  "endLine": 779,
-                  "endColumn": 25
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 790,
-                  "startColumn": 17,
-                  "endLine": 790,
-                  "endColumn": 21
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 796,
-                  "startColumn": 9,
-                  "endLine": 796,
-                  "endColumn": 14
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 800,
-                  "startColumn": 21,
-                  "endLine": 800,
-                  "endColumn": 22
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": "+1",
-              "1": "+1",
-              "10": "+2 (incl 1 for nesting)",
-              "2": "+2 (incl 1 for nesting)",
-              "3": "+1",
-              "4": "+1",
-              "5": "+2 (incl 1 for nesting)",
-              "6": "+3 (incl 2 for nesting)",
-              "7": "+1",
-              "8": "+1",
-              "9": "+1"
-            }
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'GetStatusText' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Appointment.razor",
-                "region": {
-                  "startLine": 675,
-                  "startColumn": 20,
-                  "endLine": 675,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'GetStatusIcon' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Appointment.razor",
-                "region": {
-                  "startLine": 687,
-                  "startColumn": 20,
-                  "endLine": 687,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'FormatTimeSlot' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Appointment.razor",
-                "region": {
-                  "startLine": 646,
-                  "startColumn": 20,
-                  "endLine": 646,
-                  "endColumn": 34
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'GetStatusIconClass' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Appointment.razor",
-                "region": {
-                  "startLine": 699,
-                  "startColumn": 20,
-                  "endLine": 699,
-                  "endColumn": 38
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'IsValidEmail' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 995,
-                  "startColumn": 18,
-                  "endLine": 995,
-                  "endColumn": 30
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'GetInitials' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 1020,
-                  "startColumn": 20,
-                  "endLine": 1020,
-                  "endColumn": 31
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'GetDoctorAppointmentStatusClass' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 1080,
-                  "startColumn": 20,
-                  "endLine": 1080,
-                  "endColumn": 51
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'GetAppointmentStatusText' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 1068,
-                  "startColumn": 20,
-                  "endLine": 1068,
-                  "endColumn": 44
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'FormatDoctorAppointmentTime' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Doctors.razor",
-                "region": {
-                  "startLine": 1039,
-                  "startColumn": 20,
-                  "endLine": 1039,
-                  "endColumn": 47
+                  "startLine": 60,
+                  "startColumn": 19,
+                  "endLine": 60,
+                  "endColumn": 29
                 }
               }
             }
@@ -1103,48 +505,6 @@
         }
       ],
       "rules": {
-        "CA1050": {
-          "id": "CA1050",
-          "shortDescription": "Declare types in namespaces",
-          "fullDescription": "Types are declared in namespaces to prevent name collisions and as a way to organize related types in an object hierarchy.",
-          "defaultLevel": "note",
-          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1050",
-          "properties": {
-            "category": "Design",
-            "isEnabledByDefault": true,
-            "tags": [
-              "PortedFromFxCop",
-              "Telemetry",
-              "EnabledRuleInAggressiveMode"
-            ]
-          }
-        },
-        "RZ10012": {
-          "id": "RZ10012",
-          "shortDescription": "Found markup element with unexpected name 'RedirectToLogin'. If this is intended to be a component, add a @using directive for its namespace.",
-          "defaultLevel": "warning",
-          "properties": {
-            "category": "Razor",
-            "isEnabledByDefault": true
-          }
-        },
-        "S101": {
-          "id": "S101",
-          "shortDescription": "Types should be named in PascalCase",
-          "fullDescription": "Shared naming conventions allow teams to collaborate efficiently.",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-101",
-          "properties": {
-            "category": "Minor Code Smell",
-            "isEnabledByDefault": true,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "TestSourceScope",
-              "SonarWay"
-            ]
-          }
-        },
         "S1075": {
           "id": "S1075",
           "shortDescription": "URIs should not be hardcoded",
@@ -1210,23 +570,6 @@
             ]
           }
         },
-        "S2325": {
-          "id": "S2325",
-          "shortDescription": "Methods and properties that don't access instance data should be static",
-          "fullDescription": "Methods and properties that don’t access instance data should be marked as static for the following reasons:",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-2325",
-          "properties": {
-            "category": "Minor Code Smell",
-            "isEnabledByDefault": true,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "TestSourceScope",
-              "SonarWay"
-            ]
-          }
-        },
         "S2486": {
           "id": "S2486",
           "shortDescription": "Generic exceptions should not be ignored",
@@ -1239,74 +582,6 @@
             "tags": [
               "C#",
               "MainSourceScope",
-              "SonarWay"
-            ]
-          }
-        },
-        "S2933": {
-          "id": "S2933",
-          "shortDescription": "Fields that are only assigned in the constructor should be \"readonly\"",
-          "fullDescription": "readonly fields can only be assigned in a class constructor. If a class has a field that’s not marked readonly but is only set in the constructor, it could cause confusion about the field’s intended use. To avoid confusion, such fields should be marked readonly to make their intended use explicit, and to prevent future maintainers from inadvertently changing their use.",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-2933",
-          "properties": {
-            "category": "Major Code Smell",
-            "isEnabledByDefault": true,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "TestSourceScope",
-              "SonarWay"
-            ]
-          }
-        },
-        "S3776": {
-          "id": "S3776",
-          "shortDescription": "Cognitive Complexity of methods should not be too high",
-          "fullDescription": "This rule raises an issue when the code cognitive complexity of a function is above a certain threshold.",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-3776",
-          "properties": {
-            "category": "Critical Code Smell",
-            "isEnabledByDefault": false,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "TestSourceScope",
-              "SonarWay"
-            ]
-          }
-        },
-        "S3903": {
-          "id": "S3903",
-          "shortDescription": "Types should be defined in named namespaces",
-          "fullDescription": "Types are declared in namespaces in order to prevent name collisions and as a way to organize them into the object hierarchy. Types that are defined outside any named namespace are in a global namespace that cannot be referenced in code.",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-3903",
-          "properties": {
-            "category": "Major Bug",
-            "isEnabledByDefault": true,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "TestSourceScope",
-              "SonarWay"
-            ]
-          }
-        },
-        "S6580": {
-          "id": "S6580",
-          "shortDescription": "Use a format provider when parsing date and time",
-          "fullDescription": "When converting a string representation of a date and time to a DateTime object or any other temporal type with one of the available system parsing methods, you should always provide an IFormatProvider parameter.",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-6580",
-          "properties": {
-            "category": "Major Code Smell",
-            "isEnabledByDefault": true,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "TestSourceScope",
               "SonarWay"
             ]
           }

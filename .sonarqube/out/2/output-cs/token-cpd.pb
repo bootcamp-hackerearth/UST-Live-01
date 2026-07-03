@@ -1,44 +1,4 @@
-á
-oC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IHealthRecordApiService.cs
-	namespace 	!
-HealthAxisAdminLayout
- 
-.  
-Services  (
-.( )
-
-Interfaces) 3
-{ 
-public 
-
-	interface #
-IHealthRecordApiService ,
-{ 
-Task 
-< 
-List 
-< #
-HealthRecordResponseDTO )
->) *
->* +!
-GetHealthRecordsAsync, A
-(A B
-)B C
-;C D
-Task		 
-<		 
-bool		 
->		 #
-DeleteHealthRecordAsync		 *
-(		* +
-int		+ .
-id		/ 1
-)		1 2
-;		2 3
-}
-
- 
-} ˜
+˜
 jC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IPatientApiService.cs
 	namespace 	!
 HealthAxisAdminLayout
@@ -58,7 +18,7 @@ Interfaces) 3
 < 
 List 
 < 
-PatientResponseDTO $
+PatientResponseDto $
 >$ %
 >% &
 GetPatientsAsync' 7
@@ -71,7 +31,7 @@ Interfaces) 3
 <
 
  
-PatientResponseDTO
+PatientResponseDto
 
  
 ?
@@ -102,7 +62,7 @@ Interfaces) 3
 < 
 List 
 < 
-PatientResponseDTO $
+PatientResponseDto $
 >$ %
 >% &
 SearchPatientsAsync' :
@@ -118,9 +78,9 @@ Interfaces) 3
 ;W X
 Task 
 < 
-PagedResponseDTO 
+PagedResponseDto 
 < 
-PatientResponseDTO 0
+PatientResponseDto 0
 >0 1
 >1 2!
 GetPatientsPagedAsync3 H
@@ -148,7 +108,7 @@ pageNumber 
 > 
 CreatePatientAsync %
 (% &
-CreatePatientDTO& 6
+CreatePatientDto& 6
 dto7 :
 ): ;
 ;; <
@@ -161,7 +121,7 @@ pageNumber 
 int& )
 id* ,
 ,, -
-UpdatePatientDTO. >
+UpdatePatientDto. >
 dto? B
 )B C
 ;C D
@@ -176,7 +136,47 @@ pageNumber 
 ), -
 ;- .
 } 
-} ˝
+} á
+oC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IHealthRecordApiService.cs
+	namespace 	!
+HealthAxisAdminLayout
+ 
+.  
+Services  (
+.( )
+
+Interfaces) 3
+{ 
+public 
+
+	interface #
+IHealthRecordApiService ,
+{ 
+Task 
+< 
+List 
+< #
+HealthRecordResponseDto )
+>) *
+>* +!
+GetHealthRecordsAsync, A
+(A B
+)B C
+;C D
+Task		 
+<		 
+bool		 
+>		 #
+DeleteHealthRecordAsync		 *
+(		* +
+int		+ .
+id		/ 1
+)		1 2
+;		2 3
+}
+
+ 
+} ˝
 iC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IDoctorApiService.cs
 	namespace 	!
 HealthAxisAdminLayout
@@ -196,7 +196,7 @@ Interfaces) 3
 <		 
 List		 
 <		 
-DoctorResponseDTO		 #
+DoctorResponseDto		 #
 >		# $
 >		$ %
 GetDoctorsAsync		& 5
@@ -205,7 +205,7 @@ Interfaces) 3
 ;		7 8
 Task 
 < 
-DoctorResponseDTO 
+DoctorResponseDto 
 ? 
 >  
 GetDoctorByIdAsync! 3
@@ -216,9 +216,9 @@ Interfaces) 3
 ;; <
 Task 
 < 
-PagedResponseDTO 
+PagedResponseDto 
 < 
-DoctorResponseDTO /
+DoctorResponseDto /
 >/ 0
 >0 1 
 GetDoctorsPagedAsync2 F
@@ -246,12 +246,12 @@ pageNumber 
 
 Task 
 < !
-CreateDoctorResultDTO "
+CreateDoctorResultDto "
 ?" #
 ># $
 CreateDoctorAsync% 6
 (6 7
-CreateDoctorDTO7 F
+CreateDoctorDto7 F
 dtoG J
 )J K
 ;K L
@@ -264,7 +264,7 @@ pageNumber 
 int% (
 id) +
 ,+ ,
-CreateDoctorDTO- <
+CreateDoctorDto- <
 dto= @
 )@ A
 ;A B
@@ -310,7 +310,7 @@ Interfaces) 3
 { 
 Task 
 < 
-AdminDashboardDTO 
+AdminDashboardDto 
 > 
 GetDashboardAsync  1
 (1 2
@@ -403,7 +403,7 @@ IsLoggedIn	 
 Task 
 SetLoginAsync	 
 ( 
-AuthResponseDTO &
+AuthResponseDto &
 response' /
 )/ 0
 ;0 1
@@ -436,14 +436,14 @@ Interfaces) 3
 { 	
 Task 
 < 
-AuthResponseDTO  
+AuthResponseDto  
 ?  !
 >! "
 
 LoginAsync# -
 (- .
-LoginDTO. 6
-loginDto7 ?
+LoginDto. 6
+LoginDto7 ?
 )? @
 ;@ A
 Task
@@ -525,7 +525,7 @@ Interfaces) 3
 <		 
 List		 
 <		 "
-AppointmentResponseDTO		 (
+AppointmentResponseDto		 (
 >		( )
 >		) * 
 GetAppointmentsAsync		+ ?
@@ -536,7 +536,7 @@ Interfaces) 3
 < 
 List 
 < "
-AppointmentResponseDTO (
+AppointmentResponseDto (
 >( )
 >) *(
 GetAppointmentsByDoctorAsync+ G
@@ -547,9 +547,9 @@ Interfaces) 3
 ;U V
 Task 
 < 
-PagedResponseDTO 
+PagedResponseDto 
 < "
-AppointmentResponseDTO 4
+AppointmentResponseDto 4
 >4 5
 >5 6%
 GetAppointmentsPagedAsync7 P
@@ -583,7 +583,7 @@ pageNumber 
 < 
 List 
 < "
-AppointmentResponseDTO (
+AppointmentResponseDto (
 >( )
 >) *#
 FilterAppointmentsAsync+ B
@@ -690,7 +690,7 @@ HttpClient! +
 < 
 List 
 < 
-PatientResponseDTO 1
+PatientResponseDto 1
 >1 2
 >2 3
 GetPatientsAsync4 D
@@ -707,7 +707,7 @@ HttpClient! +
 <5 6
 List6 :
 <: ;
-PatientResponseDTO; M
+PatientResponseDto; M
 >M N
 >N O
 (O P
@@ -720,7 +720,7 @@ HttpClient! +
 new  
 List! %
 <% &
-PatientResponseDTO& 8
+PatientResponseDto& 8
 >8 9
 (9 :
 ): ;
@@ -730,7 +730,7 @@ HttpClient! +
 async 
 Task 
 < 
-PatientResponseDTO ,
+PatientResponseDto ,
 ?, -
 >- .
 GetPatientByIdAsync/ B
@@ -745,7 +745,7 @@ HttpClient! +
 .   
 GetFromJsonAsync   /
 <  / 0
-PatientResponseDTO  0 B
+PatientResponseDto  0 B
 >  B C
 (  C D
 $"!! 
@@ -763,7 +763,7 @@ HttpClient! +
 <%% 
 List%% 
 <%% 
-PatientResponseDTO%% 1
+PatientResponseDto%% 1
 >%%1 2
 >%%2 3
 SearchPatientsAsync%%4 G
@@ -881,7 +881,7 @@ HttpClient! +
 <775 6
 List776 :
 <77: ;
-PatientResponseDTO77; M
+PatientResponseDto77; M
 >77M N
 >77N O
 (77O P
@@ -894,7 +894,7 @@ HttpClient! +
 new99  
 List99! %
 <99% &
-PatientResponseDTO99& 8
+PatientResponseDto99& 8
 >998 9
 (999 :
 )99: ;
@@ -904,9 +904,9 @@ HttpClient! +
 async<< 
 Task<< 
 <<< 
-PagedResponseDTO<< *
+PagedResponseDto<< *
 <<<* +
-PatientResponseDTO<<+ =
+PatientResponseDto<<+ =
 ><<= >
 ><<> ?!
 GetPatientsPagedAsync<<@ U
@@ -1039,9 +1039,9 @@ pageNumberDD (
 .TT$ %
 GetFromJsonAsyncTT% 5
 <TT5 6
-PagedResponseDTOTT6 F
+PagedResponseDtoTT6 F
 <TTF G
-PatientResponseDTOTTG Y
+PatientResponseDtoTTG Y
 >TTY Z
 >TTZ [
 (TT[ \
@@ -1052,9 +1052,9 @@ pageNumberDD (
 resultVV 
 ??VV 
 newVV  
-PagedResponseDTOVV! 1
+PagedResponseDtoVV! 1
 <VV1 2
-PatientResponseDTOVV2 D
+PatientResponseDtoVV2 D
 >VVD E
 (VVE F
 )VVF G
@@ -1068,7 +1068,7 @@ pageNumberDD (
 >YY 
 CreatePatientAsyncYY  2
 (YY2 3
-CreatePatientDTOYY3 C
+CreatePatientDtoYY3 C
 dtoYYD G
 )YYG H
 {ZZ 	
@@ -1102,7 +1102,7 @@ pageNumberDD (
 intcc3 6
 idcc7 9
 ,cc9 :
-UpdatePatientDTOcc; K
+UpdatePatientDtocc; K
 dtoccL O
 )ccO P
 {dd 	
@@ -1207,7 +1207,7 @@ HttpClient& 0
 < 
 List 
 < #
-HealthRecordResponseDTO 6
+HealthRecordResponseDto 6
 >6 7
 >7 8!
 GetHealthRecordsAsync9 N
@@ -1224,7 +1224,7 @@ HttpClient& 0
 <5 6
 List6 :
 <: ;#
-HealthRecordResponseDTO; R
+HealthRecordResponseDto; R
 >R S
 >S T
 (T U
@@ -1237,7 +1237,7 @@ HttpClient& 0
 new  
 List! %
 <% &#
-HealthRecordResponseDTO& =
+HealthRecordResponseDto& =
 >= >
 (> ?
 )? @
@@ -1322,7 +1322,7 @@ HttpClient  *
 < 
 List 
 < 
-DoctorResponseDTO 0
+DoctorResponseDto 0
 >0 1
 >1 2
 GetDoctorsAsync3 B
@@ -1339,7 +1339,7 @@ HttpClient  *
 <5 6
 List6 :
 <: ;
-DoctorResponseDTO; L
+DoctorResponseDto; L
 >L M
 >M N
 (N O
@@ -1352,7 +1352,7 @@ HttpClient  *
 new  
 List! %
 <% &
-DoctorResponseDTO& 7
+DoctorResponseDto& 7
 >7 8
 (8 9
 )9 :
@@ -1362,9 +1362,9 @@ HttpClient  *
 async 
 Task 
 < 
-PagedResponseDTO *
+PagedResponseDto *
 <* +
-DoctorResponseDTO+ <
+DoctorResponseDto+ <
 >< =
 >= > 
 GetDoctorsPagedAsync? S
@@ -1534,9 +1534,9 @@ pageNumber"" (
 .77$ %
 GetFromJsonAsync77% 5
 <775 6
-PagedResponseDTO776 F
+PagedResponseDto776 F
 <77F G
-DoctorResponseDTO77G X
+DoctorResponseDto77G X
 >77X Y
 >77Y Z
 (77Z [
@@ -1547,9 +1547,9 @@ pageNumber"" (
 result99 
 ??99 
 new99  
-PagedResponseDTO99! 1
+PagedResponseDto99! 1
 <991 2
-DoctorResponseDTO992 C
+DoctorResponseDto992 C
 >99C D
 (99D E
 )99E F
@@ -1559,7 +1559,7 @@ pageNumber"" (
 async<< 
 Task<< 
 <<< 
-DoctorResponseDTO<< +
+DoctorResponseDto<< +
 ?<<+ ,
 ><<, -
 GetDoctorByIdAsync<<. @
@@ -1574,7 +1574,7 @@ pageNumber"" (
 .>> 
 GetFromJsonAsync>> /
 <>>/ 0
-DoctorResponseDTO>>0 A
+DoctorResponseDto>>0 A
 >>>A B
 (>>B C
 $">>C E
@@ -1590,12 +1590,12 @@ pageNumber"" (
 asyncAA 
 TaskAA 
 <AA !
-CreateDoctorResultDTOAA /
+CreateDoctorResultDtoAA /
 ?AA/ 0
 >AA0 1
 CreateDoctorAsyncAA2 C
 (AAC D
-CreateDoctorDTOAAD S
+CreateDoctorDtoAAD S
 dtoAAT W
 )AAW X
 {BB 	
@@ -1634,7 +1634,7 @@ pageNumber"" (
 .JJ/ 0
 ReadFromJsonAsyncJJ0 A
 <JJA B!
-CreateDoctorResultDTOJJB W
+CreateDoctorResultDtoJJB W
 >JJW X
 (JJX Y
 )JJY Z
@@ -1654,7 +1654,7 @@ pageNumber"" (
 intOO2 5
 idOO6 8
 ,OO8 9
-CreateDoctorDTOOO: I
+CreateDoctorDtoOO: I
 dtoOOJ M
 )OOM N
 {PP 	
@@ -1845,7 +1845,7 @@ lC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implm
 async 
 Task 
 < 
-AdminDashboardDTO +
+AdminDashboardDto +
 >+ ,
 GetDashboardAsync- >
 (> ?
@@ -1893,7 +1893,7 @@ lC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implm
 ;L M
 return!! 
 new!! 
-AdminDashboardDTO!! (
+AdminDashboardDto!! (
 {"" 
 TotalDoctors## 
 =## 
@@ -2128,7 +2128,7 @@ IsLoggedIn 
 Task 
 SetLoginAsync '
 (' (
-AuthResponseDTO( 7
+AuthResponseDto( 7
 response8 @
 )@ A
 { 	
@@ -2538,14 +2538,14 @@ _authState 
 async 
 Task 
 < 
-AuthResponseDTO )
+AuthResponseDto )
 ?) *
 >* +
 
 LoginAsync, 6
 (6 7
-LoginDTO7 ?
-loginDto@ H
+LoginDto7 ?
+LoginDto@ H
 )H I
 { 	
 var 
@@ -2558,7 +2558,7 @@ LoginAsync, 6
 (6 7
 $str  
 ,  !
-loginDto 
+LoginDto 
 ) 
 ; 
 if 
@@ -2599,7 +2599,7 @@ LoginAsync, 6
 .  / 0
 ReadFromJsonAsync  0 A
 <  A B
-AuthResponseDTO  B Q
+AuthResponseDto  B Q
 >  Q R
 (  R S
 )  S T
@@ -2798,7 +2798,7 @@ HttpClient% /
 < 
 List 
 < "
-AppointmentResponseDTO 5
+AppointmentResponseDto 5
 >5 6
 >6 7 
 GetAppointmentsAsync8 L
@@ -2815,7 +2815,7 @@ HttpClient% /
 <5 6
 List6 :
 <: ;"
-AppointmentResponseDTO; Q
+AppointmentResponseDto; Q
 >Q R
 >R S
 (S T
@@ -2828,7 +2828,7 @@ HttpClient% /
 new  
 List! %
 <% &"
-AppointmentResponseDTO& <
+AppointmentResponseDto& <
 >< =
 (= >
 )> ?
@@ -2840,7 +2840,7 @@ HttpClient% /
 <!! 
 List!! 
 <!! "
-AppointmentResponseDTO!! 5
+AppointmentResponseDto!! 5
 >!!5 6
 >!!6 7(
 GetAppointmentsByDoctorAsync!!8 T
@@ -2884,7 +2884,7 @@ HttpClient% /
 <))E F
 List))F J
 <))J K"
-AppointmentResponseDTO))K a
+AppointmentResponseDto))K a
 >))a b
 >))b c
 ())c d
@@ -2896,7 +2896,7 @@ HttpClient% /
 new++! $
 List++% )
 <++) *"
-AppointmentResponseDTO++* @
+AppointmentResponseDto++* @
 >++@ A
 (++A B
 )++B C
@@ -2984,9 +2984,9 @@ StatusCode::\ f
 async>> 
 Task>> 
 <>> 
-PagedResponseDTO>> *
+PagedResponseDto>> *
 <>>* +"
-AppointmentResponseDTO>>+ A
+AppointmentResponseDto>>+ A
 >>>A B
 >>>B C%
 GetAppointmentsPagedAsync>>D ]
@@ -3173,9 +3173,9 @@ pageNumberHH (
 .bb$ %
 GetFromJsonAsyncbb% 5
 <bb5 6
-PagedResponseDTObb6 F
+PagedResponseDtobb6 F
 <bbF G"
-AppointmentResponseDTObbG ]
+AppointmentResponseDtobbG ]
 >bb] ^
 >bb^ _
 (bb_ `
@@ -3186,9 +3186,9 @@ pageNumberHH (
 resultdd 
 ??dd 
 newdd  
-PagedResponseDTOdd! 1
+PagedResponseDtodd! 1
 <dd1 2"
-AppointmentResponseDTOdd2 H
+AppointmentResponseDtodd2 H
 >ddH I
 (ddI J
 )ddJ K
@@ -3200,7 +3200,7 @@ pageNumberHH (
 <gg 
 Listgg 
 <gg "
-AppointmentResponseDTOgg 5
+AppointmentResponseDtogg 5
 >gg5 6
 >gg6 7#
 FilterAppointmentsAsyncgg8 O
@@ -3344,7 +3344,7 @@ pageNumberHH (
 ÅÅ6 :
 <
 ÅÅ: ;$
-AppointmentResponseDTO
+AppointmentResponseDto
 ÅÅ; Q
 >
 ÅÅQ R
@@ -3370,7 +3370,7 @@ pageNumberHH (
 ÉÉ! %
 <
 ÉÉ% &$
-AppointmentResponseDTO
+AppointmentResponseDto
 ÉÉ& <
 >
 ÉÉ< =
@@ -3632,231 +3632,251 @@ pageNumberHH (
 §§ 
 }•• ◊ 
 KC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Program.cs
-var		 
-builder		 
-=		 "
-WebAssemblyHostBuilder		 $
-.		$ %
-CreateDefault		% 2
-(		2 3
-args		3 7
-)		7 8
-;		8 9
-builder 
-. 
-RootComponents 
-. 
-Add 
-< 
-App 
-> 
-(  
-$str  &
-)& '
-;' (
+var
+
+ 
+builder
+
+ 
+=
+
+ "
+WebAssemblyHostBuilder
+
+ $
+.
+
+$ %
+CreateDefault
+
+% 2
+(
+
+2 3
+args
+
+3 7
+)
+
+7 8
+;
+
+8 9
 builder 
 . 
 RootComponents 
 . 
 Add 
-< 
+< 
+App 
+> 
+(  
+$str  &
+)& '
+;' (
+builder 
+. 
+RootComponents 
+. 
+Add 
+< 
 
-HeadOutlet %
->% &
-(& '
-$str' 4
-)4 5
-;5 6
-builder 
-. 
-Services 
-. 
-	AddScoped 
-< 
-IAuthStateService ,
-,, -
-AuthStateService. >
->> ?
-(? @
-)@ A
-;A B
-builder 
-. 
-Services 
-. 
-	AddScoped 
-< 
-AuthHeaderHandler ,
->, -
-(- .
-). /
-;/ 0
-builder 
-. 
-Services 
-. 
-AddHttpClient 
-( 
-$str .
-,. /
-client0 6
-=>7 9
-{ 
-client 
+HeadOutlet %
+>% &
+(& '
+$str' 4
+)4 5
+;5 6
+builder 
+. 
+Services 
+. 
+	AddScoped 
+< 
+IAuthStateService ,
+,, -
+AuthStateService. >
+>> ?
+(? @
+)@ A
+;A B
+builder 
+. 
+Services 
+. 
+	AddScoped 
+< 
+AuthHeaderHandler ,
+>, -
+(- .
+). /
+;/ 0
+builder 
+. 
+Services 
+. 
+AddHttpClient 
+( 
+$str .
+,. /
+client0 6
+=>7 9
+{ 
+client 
 
-.
+.
  
-BaseAddress 
-= 
-new 
-Uri  
-(  !
-$str! :
-): ;
-;; <
-} 
-) 
-. !
-AddHttpMessageHandler 
-< 
-AuthHeaderHandler (
->( )
-() *
-)* +
-;+ ,
-builder 
-. 
-Services 
-. 
-	AddScoped 
-( 
-sp 
-=>  
-sp 
-. 
-GetRequiredService 
-< 
-IHttpClientFactory ,
->, -
-(- .
-). /
-. 
-CreateClient 
-( 
-$str #
-)# $
-)$ %
-;% &
-builder 
-. 
-Services 
-. 
-	AddScoped 
-< 
-IAuthService '
-,' (
-AuthService) 4
->4 5
-(5 6
-)6 7
-;7 8
+BaseAddress 
+= 
+new 
+Uri  
+(  !
+$str! :
+): ;
+;; <
+} 
+) 
+. !
+AddHttpMessageHandler 
+< 
+AuthHeaderHandler (
+>( )
+() *
+)* +
+;+ ,
+builder 
+. 
+Services 
+. 
+	AddScoped 
+( 
+sp 
+=>  
+sp 
+. 
+GetRequiredService 
+< 
+IHttpClientFactory ,
+>, -
+(- .
+). /
+. 
+CreateClient 
+( 
+$str #
+)# $
+)$ %
+;% &
 builder 
 . 
 Services 
 . 
 	AddScoped 
-< 
-IDoctorApiService ,
-,, -
-DoctorApiService. >
->> ?
-(? @
-)@ A
-;A B
+< 
+IAuthService '
+,' (
+AuthService) 4
+>4 5
+(5 6
+)6 7
+;7 8
 builder 
 . 
 Services 
 . 
 	AddScoped 
-< 
-IPatientApiService -
-,- .
-PatientApiService/ @
->@ A
-(A B
-)B C
-;C D
+< 
+IDoctorApiService ,
+,, -
+DoctorApiService. >
+>> ?
+(? @
+)@ A
+;A B
 builder 
 . 
 Services 
 . 
 	AddScoped 
-< "
-IAppointmentApiService 1
-,1 2!
-AppointmentApiService3 H
->H I
-(I J
-)J K
-;K L
+< 
+IPatientApiService -
+,- .
+PatientApiService/ @
+>@ A
+(A B
+)B C
+;C D
 builder   
 .   
 Services   
 .   
 	AddScoped   
-<   #
-IHealthRecordApiService   2
-,  2 3"
-HealthRecordApiService  4 J
->  J K
-(  K L
-)  L M
-;  M N
+<   "
+IAppointmentApiService   1
+,  1 2!
+AppointmentApiService  3 H
+>  H I
+(  I J
+)  J K
+;  K L
 builder!! 
 .!! 
 Services!! 
 .!! 
 	AddScoped!! 
-<!! 
-IDashboardService!! ,
-,!!, -
-DashboardService!!. >
->!!> ?
-(!!? @
-)!!@ A
-;!!A B
-builder## 
-.## 
-Services## 
-.##  
-AddAuthorizationCore## %
-(##% &
-)##& '
-;##' (
-builder%% 
-.%% 
-Services%% 
-.%% 
-	AddScoped%% 
-<%% '
-AuthenticationStateProvider%% 6
-,%%6 7-
-!CustomAuthenticationStateProvider%%8 Y
->%%Y Z
-(%%Z [
-)%%[ \
-;%%\ ]
-await'' 
-builder'' 
-.'' 
-Build'' 
-('' 
-)'' 
-.'' 
-RunAsync'' 
-('' 
-)''  
-;''  !ﬁ
+<!! #
+IHealthRecordApiService!! 2
+,!!2 3"
+HealthRecordApiService!!4 J
+>!!J K
+(!!K L
+)!!L M
+;!!M N
+builder"" 
+."" 
+Services"" 
+."" 
+	AddScoped"" 
+<"" 
+IDashboardService"" ,
+,"", -
+DashboardService"". >
+>""> ?
+(""? @
+)""@ A
+;""A B
+builder$$ 
+.$$ 
+Services$$ 
+.$$  
+AddAuthorizationCore$$ %
+($$% &
+)$$& '
+;$$' (
+builder&& 
+.&& 
+Services&& 
+.&& 
+	AddScoped&& 
+<&& '
+AuthenticationStateProvider&& 6
+,&&6 7-
+!CustomAuthenticationStateProvider&&8 Y
+>&&Y Z
+(&&Z [
+)&&[ \
+;&&\ ]
+await(( 
+builder(( 
+.(( 
+Build(( 
+((( 
+)(( 
+.(( 
+RunAsync(( 
+((( 
+)((  
+;((  !ﬁ
 \C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Handlers\AuthHeadHandler.cs
 	namespace 	!
 HealthAxisAdminLayout
@@ -3974,7 +3994,7 @@ _authState "
 } 	
 }   
 }!! Û
-dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\DTOs\Dashboard\AdminDashboardDTO.cs
+dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\DTOs\Dashboard\AdminDashboardDto.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -3985,7 +4005,7 @@ dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\DTOs\Dashboard
 { 
 public 
 class 
-AdminDashboardDTO &
+AdminDashboardDto &
 { 	
 public 
 int 
@@ -4060,168 +4080,162 @@ dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\DTOs\Dashboard
 ;4 5
 }6 7
 } 	
-} ≥
-kC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Auth\CustomeAuthenticationStateProvider.cs
-public 
-class -
-!CustomAuthenticationStateProvider .
-:/ 0'
-AuthenticationStateProvider1 L
-{ 
-private 
-readonly 
-IAuthStateService &
+} õ
+kC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Auth\CustomeAuthenticationStateProvider.cs
+	namespace 	!
+HealthAxisAdminLayout
+ 
+.  
+Auth  $
+;$ %
+public 
+class -
+!CustomAuthenticationStateProvider .
+:/ 0'
+AuthenticationStateProvider1 L
+{ 
+private		 
+readonly		 
+IAuthStateService		 &
 
-_authState' 1
-;1 2
-public
-
- 
+_authState		' 1
+;		1 2
+public 
 -
-!CustomAuthenticationStateProvider
-
- ,
-(
-
-, -
-IAuthStateService
-
-- >
-	authState
-
-? H
-)
-
-H I
-{ 
+!CustomAuthenticationStateProvider ,
+(, -
+IAuthStateService- >
+	authState? H
+)H I
+{ 
 
-_authState 
-= 
-	authState 
-; 
-} 
-public 
+_authState 
+= 
+	authState 
+; 
+} 
+public 
 
-override 
-async 
-Task 
-< 
-AuthenticationState 2
->2 3'
-GetAuthenticationStateAsync4 O
-(O P
-)P Q
-{ 
-try 
-{ 	
-await 
+override 
+async 
+Task 
+< 
+AuthenticationState 2
+>2 3'
+GetAuthenticationStateAsync4 O
+(O P
+)P Q
+{ 
+try 
+{ 	
+await 
 
-_authState 
-.  
-LoadFromStorageAsync 1
-(1 2
-)2 3
-;3 4
-} 	
-catch 
-{ 	
-} 	
-ClaimsIdentity 
-identity 
-;  
-if 
+_authState 
+.  
+LoadFromStorageAsync 1
+(1 2
+)2 3
+;3 4
+} 	
+catch 
+{ 	
+} 	
+ClaimsIdentity 
+identity 
+;  
+if 
 
-( 
-! 
-string 
-. 
-IsNullOrWhiteSpace &
-(& '
+( 
+! 
+string 
+. 
+IsNullOrWhiteSpace &
+(& '
 
-_authState' 1
-.1 2
-Token2 7
-)7 8
-)8 9
-{ 	
-var 
-claims 
-= 
-new 
-List !
-<! "
-Claim" '
->' (
-{ 
-new   
-Claim   
-(   
-
-ClaimTypes   $
-.  $ %
-Name  % )
-,  ) *
-
-_authState  + 5
-.  5 6
-Email  6 ;
-??  < >
-$str  ? A
-)  A B
-,  B C
+_authState' 1
+.1 2
+Token2 7
+)7 8
+)8 9
+{ 	
+var 
+claims 
+= 
+new 
+List !
+<! "
+Claim" '
+>' (
+{   
 new!! 
 Claim!! 
 (!! 
 
 ClaimTypes!! $
 .!!$ %
-Role!!% )
+Name!!% )
 ,!!) *
 
 _authState!!+ 5
-.!!5 6
-Role!!6 :
-??!!; =
-$str!!> @
-)!!@ A
-}"" 
-;"" 
-identity$$ 
-=$$ 
-new$$ 
-ClaimsIdentity$$ )
-($$) *
-claims$$* 0
-,$$0 1
-$str$$2 7
-)$$7 8
-;$$8 9
-}%% 	
-else&& 
-{'' 	
-identity(( 
-=(( 
-new(( 
-ClaimsIdentity(( )
-((() *
-)((* +
-;((+ ,
-})) 	
-var++ 
-user++ 
-=++ 
-new++ 
-ClaimsPrincipal++ &
-(++& '
-identity++' /
-)++/ 0
-;++0 1
-return-- 
-new-- 
-AuthenticationState-- &
-(--& '
-user--' +
-)--+ ,
-;--, -
-}.. 
-}// 
+.!!5 6
+Email!!6 ;
+??!!< >
+$str!!? A
+)!!A B
+,!!B C
+new"" 
+Claim"" 
+("" 
+
+ClaimTypes"" $
+.""$ %
+Role""% )
+,"") *
+
+_authState""+ 5
+.""5 6
+Role""6 :
+??""; =
+$str""> @
+)""@ A
+}## 
+;## 
+identity%% 
+=%% 
+new%% 
+ClaimsIdentity%% )
+(%%) *
+claims%%* 0
+,%%0 1
+$str%%2 7
+)%%7 8
+;%%8 9
+}&& 	
+else'' 
+{(( 	
+identity)) 
+=)) 
+new)) 
+ClaimsIdentity)) )
+())) *
+)))* +
+;))+ ,
+}** 	
+var,, 
+user,, 
+=,, 
+new,, 
+ClaimsPrincipal,, &
+(,,& '
+identity,,' /
+),,/ 0
+;,,0 1
+return.. 
+new.. 
+AuthenticationState.. &
+(..& '
+user..' +
+)..+ ,
+;.., -
+}// 
+}00 

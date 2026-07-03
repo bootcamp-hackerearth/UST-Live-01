@@ -21,16 +21,16 @@ namespace HealthAxisAdminLayout.Services.Implementations
             _http = http;
         }
 
-        public async Task<List<AppointmentResponseDTO>> GetAppointmentsAsync()
+        public async Task<List<AppointmentResponseDto>> GetAppointmentsAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<AppointmentResponseDTO>>(
+            var result = await _http.GetFromJsonAsync<List<AppointmentResponseDto>>(
                 "api/appointment"
             );
 
-            return result ?? new List<AppointmentResponseDTO>();
+            return result ?? new List<AppointmentResponseDto>();
         }
 
-        public async Task<List<AppointmentResponseDTO>> GetAppointmentsByDoctorAsync(int doctorId)
+        public async Task<List<AppointmentResponseDto>> GetAppointmentsByDoctorAsync(int doctorId)
         {
             var response = await _http.GetAsync(
                 $"api/appointment/doctor/{doctorId}"
@@ -38,9 +38,9 @@ namespace HealthAxisAdminLayout.Services.Implementations
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<List<AppointmentResponseDTO>>();
+                var result = await response.Content.ReadFromJsonAsync<List<AppointmentResponseDto>>();
 
-                return result ?? new List<AppointmentResponseDTO>();
+                return result ?? new List<AppointmentResponseDto>();
             }
 
             if (response.StatusCode == HttpStatusCode.NotFound)
@@ -59,7 +59,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
             );
         }
 
-        public async Task<PagedResponseDTO<AppointmentResponseDTO>> GetAppointmentsPagedAsync(
+        public async Task<PagedResponseDto<AppointmentResponseDto>> GetAppointmentsPagedAsync(
             int pageNumber,
             int pageSize,
             string? search,
@@ -95,12 +95,12 @@ namespace HealthAxisAdminLayout.Services.Implementations
 
             var url = $"api/appointment/paged?{string.Join("&", query)}";
 
-            var result = await _http.GetFromJsonAsync<PagedResponseDTO<AppointmentResponseDTO>>(url);
+            var result = await _http.GetFromJsonAsync<PagedResponseDto<AppointmentResponseDto>>(url);
 
-            return result ?? new PagedResponseDTO<AppointmentResponseDTO>();
+            return result ?? new PagedResponseDto<AppointmentResponseDto>();
         }
 
-        public async Task<List<AppointmentResponseDTO>> FilterAppointmentsAsync(
+        public async Task<List<AppointmentResponseDto>> FilterAppointmentsAsync(
             AppointmentStatus? status,
             DateTime? startDate,
             DateTime? endDate)
@@ -126,9 +126,9 @@ namespace HealthAxisAdminLayout.Services.Implementations
                 ? "api/appointment/filter"
                 : $"api/appointment/filter?{string.Join("&", query)}";
 
-            var result = await _http.GetFromJsonAsync<List<AppointmentResponseDTO>>(url);
+            var result = await _http.GetFromJsonAsync<List<AppointmentResponseDto>>(url);
 
-            return result ?? new List<AppointmentResponseDTO>();
+            return result ?? new List<AppointmentResponseDto>();
         }
 
         public async Task<bool> ConfirmAppointmentAsync(int appointmentId)

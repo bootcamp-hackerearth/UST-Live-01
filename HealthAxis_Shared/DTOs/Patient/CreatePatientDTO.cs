@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HealthAxis.Shared.DTOs.Patient
 {
-    public class CreatePatientDTO
+    public class CreatePatientDto
     {
         [Required(ErrorMessage = "Patient name is required")]
         [MinLength(2, ErrorMessage = "Patient name must be at least 2 characters")]

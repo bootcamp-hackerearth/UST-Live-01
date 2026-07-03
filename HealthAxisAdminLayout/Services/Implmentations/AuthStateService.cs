@@ -26,7 +26,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public bool IsAdmin =>
             Role?.Equals("Admin", StringComparison.OrdinalIgnoreCase) == true;
 
-        public async Task SetLoginAsync(AuthResponseDTO response)
+        public async Task SetLoginAsync(AuthResponseDto response)
         {
             Token = response.Token;
             Email = response.Email;

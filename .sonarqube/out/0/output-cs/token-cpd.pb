@@ -115,7 +115,7 @@ HealthAxis
 }
 
  þ
-UC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\RegisterDTO.cs
+UC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\RegisterDto.cs
 	namespace 	
 HealthAxisCore_Api
  
@@ -127,7 +127,7 @@ UC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\Register
 public 
 
 class 
-RegisterDTO 
+RegisterDto 
 { 
 [		 	
 Required			 
@@ -323,7 +323,7 @@ GenderType$$ 
 }
 
  Á
-RC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\LoginDTO.cs
+RC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\LoginDto.cs
 	namespace 	
 
 HealthAxis
@@ -338,7 +338,7 @@ HealthAxis
 public 
 
 class 
-LoginDTO 
+LoginDto 
 { 
 [ 	
 Required	 
@@ -441,98 +441,8 @@ HealthAxis
 Empty6 ;
 ;; <
 } 
-} §
-YC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\AuthResponseDTO.cs
-	namespace 	
-
-HealthAxis
- 
-. 
-Shared 
-. 
-DTOs  
-.  !
-User! %
-{ 
-public 
-
-class 
-AuthResponseDTO  
-{ 
-public 
-string 
-Token 
-{ 
-get !
-;! "
-set# &
-;& '
-}( )
-=* +
-string, 2
-.2 3
-Empty3 8
-;8 9
-public		 
-string		 
-?		 
-RefreshToken		 #
-{		$ %
-get		& )
-;		) *
-set		+ .
-;		. /
-}		0 1
-public 
-string 
-Email 
-{ 
-get !
-;! "
-set# &
-;& '
-}( )
-=* +
-string, 2
-.2 3
-Empty3 8
-;8 9
-public 
-string 
-Role 
-{ 
-get  
-;  !
-set" %
-;% &
-}' (
-=) *
-string+ 1
-.1 2
-Empty2 7
-;7 8
-public 
-int 
-? 
-ReferenceId 
-{  !
-get" %
-;% &
-set' *
-;* +
-}, -
-public 
-bool 
-IsFirstLogin  
-{! "
-get# &
-;& '
-set( +
-;+ ,
-}- .
-} 
-} §
-[C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\ChangePasswordDTO.cs
+} §
+[C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\ChangePasswordDto.cs
 	namespace 	
 
 HealthAxis
@@ -547,7 +457,7 @@ HealthAxis
 public 
 
 class 
-ChangePasswordDTO "
+ChangePasswordDto "
 { 
 [ 	
 Required	 
@@ -634,8 +544,98 @@ HealthAxis
 Empty9 >
 ;> ?
 } 
-} á
-]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\UpdatePatientDTO.cs
+} §
+YC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\AuthResponseDto.cs
+	namespace 	
+
+HealthAxis
+ 
+. 
+Shared 
+. 
+DTOs  
+.  !
+User! %
+{ 
+public 
+
+class 
+AuthResponseDto  
+{ 
+public 
+string 
+Token 
+{ 
+get !
+;! "
+set# &
+;& '
+}( )
+=* +
+string, 2
+.2 3
+Empty3 8
+;8 9
+public		 
+string		 
+?		 
+RefreshToken		 #
+{		$ %
+get		& )
+;		) *
+set		+ .
+;		. /
+}		0 1
+public 
+string 
+Email 
+{ 
+get !
+;! "
+set# &
+;& '
+}( )
+=* +
+string, 2
+.2 3
+Empty3 8
+;8 9
+public 
+string 
+Role 
+{ 
+get  
+;  !
+set" %
+;% &
+}' (
+=) *
+string+ 1
+.1 2
+Empty2 7
+;7 8
+public 
+int 
+? 
+ReferenceId 
+{  !
+get" %
+;% &
+set' *
+;* +
+}, -
+public 
+bool 
+IsFirstLogin  
+{! "
+get# &
+;& '
+set( +
+;+ ,
+}- .
+} 
+} á
+]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\UpdatePatientDto.cs
 	namespace 	
 
 HealthAxis
@@ -650,7 +650,7 @@ HealthAxis
 public 
 
 class 
-UpdatePatientDTO !
+UpdatePatientDto !
 { 
 [		 	
 Required			 
@@ -813,7 +813,7 @@ GenderType 
 }/ 0
 } 
 } ¡
-_C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\PatientResponseDTO.cs
+_C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\PatientResponseDto.cs
 	namespace 	
 
 HealthAxis
@@ -828,7 +828,7 @@ HealthAxis
 public 
 
 class 
-PatientResponseDTO #
+PatientResponseDto #
 { 
 public 
 int 
@@ -930,7 +930,7 @@ GenderType 
 ;> ?
 } 
 } á
-]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\CreatePatientDTO.cs
+]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\CreatePatientDto.cs
 	namespace 	
 
 HealthAxis
@@ -945,7 +945,7 @@ HealthAxis
 public 
 
 class 
-CreatePatientDTO !
+CreatePatientDto !
 { 
 [		 	
 Required			 
@@ -1108,7 +1108,7 @@ GenderType 
 }/ 0
 } 
 } ´
-iC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\HealthRecordResponseDTO.cs
+iC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\HealthRecordResponseDto.cs
 	namespace 	
 
 HealthAxis
@@ -1123,7 +1123,7 @@ HealthAxis
 public 
 
 class #
-HealthRecordResponseDTO (
+HealthRecordResponseDto (
 { 
 public 
 int 
@@ -1211,7 +1211,7 @@ HealthAxis
 }) *
 } 
 } Å
-gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\CreateHealthRecordDTO.cs
+gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\CreateHealthRecordDto.cs
 	namespace 	
 
 HealthAxis
@@ -1226,7 +1226,7 @@ HealthAxis
 public 
 
 class !
-CreateHealthRecordDTO &
+CreateHealthRecordDto &
 { 
 [ 	
 Required	 
@@ -1337,7 +1337,7 @@ HealthAxis
 }) *
 } 
 } Ÿ
-]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\DoctorResponseDTO.cs
+]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\DoctorResponseDto.cs
 	namespace 	
 
 HealthAxis
@@ -1352,7 +1352,7 @@ HealthAxis
 public 
 
 class 
-DoctorResponseDTO "
+DoctorResponseDto "
 { 
 public 
 int 
@@ -1424,8 +1424,197 @@ DoctorName		  
 ;& '
 }( )
 } 
-} Î
-[C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\CreateDoctorDTO.cs
+} ¼
+aC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\CreateDoctorResultDto.cs
+	namespace 	
+
+HealthAxis
+ 
+. 
+Shared 
+. 
+DTOs  
+.  !
+Doctor! '
+{ 
+public 
+
+class !
+CreateDoctorResultDto &
+{ 
+public 
+int 
+YearsOfExperience $
+;$ %
+public
+
+ 
+int
+
+ 
+DoctorId
+
+ 
+{
+
+ 
+get
+
+ !
+;
+
+! "
+set
+
+# &
+;
+
+& '
+}
+
+( )
+public 
+string 
+? 
+
+DoctorName !
+{" #
+get$ '
+;' (
+set) ,
+;, -
+}. /
+public 
+string 
+? 
+Email 
+{ 
+get "
+;" #
+set$ '
+;' (
+}) *
+public 
+string 
+? 
+TemporaryPassword (
+{) *
+get+ .
+;. /
+set0 3
+;3 4
+}5 6
+public 
+string 
+? 
+TempPassword #
+{$ %
+get& )
+;) *
+set+ .
+;. /
+}0 1
+public 
+string 
+? 
+GeneratedPassword (
+{) *
+get+ .
+;. /
+set0 3
+;3 4
+}5 6
+public 
+string 
+? 
+Password 
+{  !
+get" %
+;% &
+set' *
+;* +
+}, -
+[ 	
+
+JsonIgnore	 
+] 
+public 
+string 
+? $
+DisplayTemporaryPassword /
+=>0 2
+! 
+string 
+. 
+IsNullOrWhiteSpace &
+(& '
+TemporaryPassword' 8
+)8 9
+?: ;
+TemporaryPassword< M
+:N O
+! 
+string 
+. 
+IsNullOrWhiteSpace &
+(& '
+TempPassword' 3
+)3 4
+?5 6
+TempPassword7 C
+:D E
+! 
+string 
+. 
+IsNullOrWhiteSpace &
+(& '
+GeneratedPassword' 8
+)8 9
+?: ;
+GeneratedPassword< M
+:N O
+! 
+string 
+. 
+IsNullOrWhiteSpace &
+(& '
+Password' /
+)/ 0
+?1 2
+Password3 ;
+:< =
+null 
+; 
+public   
+SpecialisationType   !
+Specialisation  " 0
+{  1 2
+get  3 6
+;  6 7
+set  8 ;
+;  ; <
+}  = >
+public!! 
+int!! 
+ConsultationFee!! "
+{!!# $
+get!!% (
+;!!( )
+set!!* -
+;!!- .
+}!!/ 0
+public"" 
+bool"" 
+IsActive"" 
+{"" 
+get"" "
+;""" #
+set""$ '
+;""' (
+}"") *
+}## 
+}$$ Î
+[C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\CreateDoctorDto.cs
 	namespace 	
 
 HealthAxis
@@ -1440,7 +1629,7 @@ HealthAxis
 public 
 
 class 
-CreateDoctorDTO  
+CreateDoctorDto  
 { 
 [ 	
 Required	 
@@ -1623,196 +1812,7 @@ DoctorName  
 true- 1
 ;1 2
 } 
-} ¼
-aC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\CreateDoctorResultDTO.cs
-	namespace 	
-
-HealthAxis
- 
-. 
-Shared 
-. 
-DTOs  
-.  !
-Doctor! '
-{ 
-public 
-
-class !
-CreateDoctorResultDTO &
-{ 
-public 
-int 
-YearsOfExperience $
-;$ %
-public
-
- 
-int
-
- 
-DoctorId
-
- 
-{
-
- 
-get
-
- !
-;
-
-! "
-set
-
-# &
-;
-
-& '
-}
-
-( )
-public 
-string 
-? 
-
-DoctorName !
-{" #
-get$ '
-;' (
-set) ,
-;, -
-}. /
-public 
-string 
-? 
-Email 
-{ 
-get "
-;" #
-set$ '
-;' (
-}) *
-public 
-string 
-? 
-TemporaryPassword (
-{) *
-get+ .
-;. /
-set0 3
-;3 4
-}5 6
-public 
-string 
-? 
-TempPassword #
-{$ %
-get& )
-;) *
-set+ .
-;. /
-}0 1
-public 
-string 
-? 
-GeneratedPassword (
-{) *
-get+ .
-;. /
-set0 3
-;3 4
-}5 6
-public 
-string 
-? 
-Password 
-{  !
-get" %
-;% &
-set' *
-;* +
-}, -
-[ 	
-
-JsonIgnore	 
-] 
-public 
-string 
-? $
-DisplayTemporaryPassword /
-=>0 2
-! 
-string 
-. 
-IsNullOrWhiteSpace &
-(& '
-TemporaryPassword' 8
-)8 9
-?: ;
-TemporaryPassword< M
-:N O
-! 
-string 
-. 
-IsNullOrWhiteSpace &
-(& '
-TempPassword' 3
-)3 4
-?5 6
-TempPassword7 C
-:D E
-! 
-string 
-. 
-IsNullOrWhiteSpace &
-(& '
-GeneratedPassword' 8
-)8 9
-?: ;
-GeneratedPassword< M
-:N O
-! 
-string 
-. 
-IsNullOrWhiteSpace &
-(& '
-Password' /
-)/ 0
-?1 2
-Password3 ;
-:< =
-null 
-; 
-public   
-SpecialisationType   !
-Specialisation  " 0
-{  1 2
-get  3 6
-;  6 7
-set  8 ;
-;  ; <
-}  = >
-public!! 
-int!! 
-ConsultationFee!! "
-{!!# $
-get!!% (
-;!!( )
-set!!* -
-;!!- .
-}!!/ 0
-public"" 
-bool"" 
-IsActive"" 
-{"" 
-get"" "
-;""" #
-set""$ '
-;""' (
-}"") *
-}## 
-}$$ Ï
+} Ï
 \C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Common\PagedResponseDto.cs
 	namespace 	
 
@@ -1828,7 +1828,7 @@ HealthAxis
 public 
 
 class 
-PagedResponseDTO !
+PagedResponseDto !
 <! "
 T" #
 ># $
@@ -1925,7 +1925,7 @@ HealthAxis
 public 
 
 class 
-ErrorResponseDTO !
+ErrorResponseDto !
 { 
 public 
 bool 
@@ -1967,7 +1967,7 @@ StatusCode		 
 
  
 } û
-eC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Appointment\CreateAppointmentDTO.cs
+eC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Appointment\CreateAppointmentDto.cs
 	namespace 	
 
 HealthAxis
@@ -1982,7 +1982,7 @@ HealthAxis
 public 
 
 class  
-CreateAppointmentDTO %
+CreateAppointmentDto %
 { 
 [ 	
 Required	 
@@ -2059,7 +2059,7 @@ HealthAxis
 ;; <
 } 
 } Ã
-gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Appointment\AppointmentResponseDTO.cs
+gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Appointment\AppointmentResponseDto.cs
 	namespace 	
 
 HealthAxis
@@ -2074,7 +2074,7 @@ HealthAxis
 public 
 
 class "
-AppointmentResponseDTO '
+AppointmentResponseDto '
 { 
 public 
 int 

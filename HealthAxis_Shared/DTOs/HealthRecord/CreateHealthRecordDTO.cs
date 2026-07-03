@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HealthAxis.Shared.DTOs.HealthRecord
 {
-    public class CreateHealthRecordDTO
+    public class CreateHealthRecordDto
     {
         [Required(ErrorMessage = "Patient ID is required")]
         public int PatientId { get; set; }

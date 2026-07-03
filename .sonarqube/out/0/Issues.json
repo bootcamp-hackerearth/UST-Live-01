@@ -18,7 +18,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/DoctorResponseDTO.cs",
+                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/DoctorResponseDto.cs",
                 "region": {
                   "startLine": 18,
                   "startColumn": 23,
@@ -31,7 +31,7 @@
           "relatedLocations": [
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/DoctorResponseDTO.cs",
+                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/DoctorResponseDto.cs",
                 "region": {
                   "startLine": 18,
                   "startColumn": 23,
@@ -67,354 +67,18 @@
           }
         },
         {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'RegisterDTO' to match pascal case naming rules, consider using 'RegisterDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/User/RegisterDTO.cs",
-                "region": {
-                  "startLine": 6,
-                  "startColumn": 18,
-                  "endLine": 6,
-                  "endColumn": 29
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'AppointmentResponseDTO' to match pascal case naming rules, consider using 'AppointmentResponseDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Appointment/AppointmentResponseDTO.cs",
-                "region": {
-                  "startLine": 6,
-                  "startColumn": 18,
-                  "endLine": 6,
-                  "endColumn": 40
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'CreateAppointmentDTO' to match pascal case naming rules, consider using 'CreateAppointmentDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Appointment/CreateAppointmentDTO.cs",
-                "region": {
-                  "startLine": 6,
-                  "startColumn": 18,
-                  "endLine": 6,
-                  "endColumn": 38
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'ErrorResponseDTO' to match pascal case naming rules, consider using 'ErrorResponseDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Common/ErrorResponse.cs",
-                "region": {
-                  "startLine": 3,
-                  "startColumn": 18,
-                  "endLine": 3,
-                  "endColumn": 34
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'CreateDoctorDTO' to match pascal case naming rules, consider using 'CreateDoctorDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorDTO.cs",
-                "region": {
-                  "startLine": 6,
-                  "startColumn": 18,
-                  "endLine": 6,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'CreateHealthRecordDTO' to match pascal case naming rules, consider using 'CreateHealthRecordDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/HealthRecord/CreateHealthRecordDTO.cs",
-                "region": {
-                  "startLine": 6,
-                  "startColumn": 18,
-                  "endLine": 6,
-                  "endColumn": 39
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'CreatePatientDTO' to match pascal case naming rules, consider using 'CreatePatientDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Patient/CreatePatientDTO.cs",
-                "region": {
-                  "startLine": 7,
-                  "startColumn": 18,
-                  "endLine": 7,
-                  "endColumn": 34
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'HealthRecordResponseDTO' to match pascal case naming rules, consider using 'HealthRecordResponseDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/HealthRecord/HealthRecordResponseDTO.cs",
-                "region": {
-                  "startLine": 5,
-                  "startColumn": 18,
-                  "endLine": 5,
-                  "endColumn": 41
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'AuthResponseDTO' to match pascal case naming rules, consider using 'AuthResponseDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/User/AuthResponseDTO.cs",
-                "region": {
-                  "startLine": 3,
-                  "startColumn": 18,
-                  "endLine": 3,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'PatientResponseDTO' to match pascal case naming rules, consider using 'PatientResponseDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Patient/PatientResponseDTO.cs",
-                "region": {
-                  "startLine": 6,
-                  "startColumn": 18,
-                  "endLine": 6,
-                  "endColumn": 36
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'ChangePasswordDTO' to match pascal case naming rules, consider using 'ChangePasswordDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/User/ChangePasswordDTO.cs",
-                "region": {
-                  "startLine": 5,
-                  "startColumn": 18,
-                  "endLine": 5,
-                  "endColumn": 35
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'LoginDTO' to match pascal case naming rules, consider using 'LoginDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/User/LoginDTO.cs",
-                "region": {
-                  "startLine": 5,
-                  "startColumn": 18,
-                  "endLine": 5,
-                  "endColumn": 26
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'UpdatePatientDTO' to match pascal case naming rules, consider using 'UpdatePatientDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Patient/UpdatePatientDTO.cs",
-                "region": {
-                  "startLine": 7,
-                  "startColumn": 18,
-                  "endLine": 7,
-                  "endColumn": 34
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'CreateDoctorResultDTO' to match pascal case naming rules, consider using 'CreateDoctorResultDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDTO.cs",
-                "region": {
-                  "startLine": 6,
-                  "startColumn": 18,
-                  "endLine": 6,
-                  "endColumn": 39
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
           "ruleId": "S1104",
           "level": "warning",
           "message": "Make this field 'private' and encapsulate it in a 'public' property.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDTO.cs",
+                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDto.cs",
                 "region": {
                   "startLine": 8,
                   "startColumn": 20,
                   "endLine": 8,
                   "endColumn": 37
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'DoctorResponseDTO' to match pascal case naming rules, consider using 'DoctorResponseDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/DoctorResponseDTO.cs",
-                "region": {
-                  "startLine": 5,
-                  "startColumn": 18,
-                  "endLine": 5,
-                  "endColumn": 35
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S101",
-          "level": "warning",
-          "message": "Rename class 'PagedResponseDTO' to match pascal case naming rules, consider using 'PagedResponseDto'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Common/PagedResponseDto.cs",
-                "region": {
-                  "startLine": 3,
-                  "startColumn": 18,
-                  "endLine": 3,
-                  "endColumn": 34
                 }
               }
             }
@@ -430,7 +94,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDTO.cs",
+                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDto.cs",
                 "region": {
                   "startLine": 27,
                   "startColumn": 13,
@@ -451,7 +115,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDTO.cs",
+                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDto.cs",
                 "region": {
                   "startLine": 28,
                   "startColumn": 13,
@@ -472,7 +136,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDTO.cs",
+                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDto.cs",
                 "region": {
                   "startLine": 29,
                   "startColumn": 13,
@@ -499,23 +163,6 @@
             "tags": [
               "Compiler",
               "Telemetry"
-            ]
-          }
-        },
-        "S101": {
-          "id": "S101",
-          "shortDescription": "Types should be named in PascalCase",
-          "fullDescription": "Shared naming conventions allow teams to collaborate efficiently.",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-101",
-          "properties": {
-            "category": "Minor Code Smell",
-            "isEnabledByDefault": true,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "TestSourceScope",
-              "SonarWay"
             ]
           }
         },

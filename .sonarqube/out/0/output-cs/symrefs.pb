@@ -1,5 +1,17 @@
-Õ
-UC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\RegisterDTO.cs
+\
+NC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Enums\UserRole.cs
+
+ f
+XC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Enums\SpecialisationType.cs
+
+ "^
+PC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Enums\GenderType.cs
+
+ e
+WC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Enums\AppointmentStatus.cs
+
+ !Õ
+UC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\RegisterDto.cs
 
  
 
@@ -21,32 +33,8 @@ UC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\Register
 
  $
 
- "x
-RC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\LoginDTO.cs
-
- 
-
-
-
- 
-
- Ø
-YC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\AuthResponseDTO.cs
-
-  
-
- 
-
-		 #
-
- 
-
- 
-
- 
-
-  ≥
-]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\UpdatePatientDTO.cs
+ "≥
+]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\UpdatePatientDto.cs
 
  !
 
@@ -60,8 +48,41 @@ YC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\AuthResp
 
  !
 
- "µ
-_C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\PatientResponseDTO.cs
+ "ç
+[C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\ChangePasswordDto.cs
+
+ "
+
+		 
+
+ !
+
+ !Ø
+YC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\AuthResponseDto.cs
+
+  
+
+ 
+
+		 #
+
+ 
+
+ 
+
+ 
+
+  x
+RC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\LoginDto.cs
+
+ 
+
+
+
+ 
+
+ µ
+_C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\PatientResponseDto.cs
 
  #
 
@@ -78,7 +99,7 @@ _C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\Patie
  
 
  !≥
-]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\CreatePatientDTO.cs
+]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\CreatePatientDto.cs
 
  !
 
@@ -92,20 +113,8 @@ _C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\Patie
 
  !
 
- "\
-NC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Enums\UserRole.cs
-
- f
-XC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Enums\SpecialisationType.cs
-
- "^
-PC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Enums\GenderType.cs
-
- e
-WC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Enums\AppointmentStatus.cs
-
- !◊
-iC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\HealthRecordResponseDTO.cs
+ "◊
+iC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\HealthRecordResponseDto.cs
 
  (
 
@@ -124,7 +133,7 @@ iC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\
  "
 
  …
-gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\CreateHealthRecordDTO.cs
+gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\CreateHealthRecordDto.cs
 
  &
 
@@ -140,17 +149,8 @@ gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\
 
  "
 
- ç
-[C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\ChangePasswordDTO.cs
-
- "
-
-		 
-
- !
-
- !ø
-]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\DoctorResponseDTO.cs
+ ø
+]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\DoctorResponseDto.cs
 
  "
 
@@ -166,17 +166,8 @@ gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\
 
  
 
- ã
-YC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Common\ErrorResponse.cs
-
- !
-
- 
-
- 
-
-		 œ
-aC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\CreateDoctorResultDTO.cs
+ œ
+aC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\CreateDoctorResultDto.cs
 
  &
 
@@ -200,24 +191,8 @@ aC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\Create
 
 !! "
 
-"" Ú
-\C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Common\PagedResponseDto.cs
-
- !
-" # 
-
- 
-
- 
-		 ' 1# -
-
- 
- 0 :
-
- #
-
- ±
-[C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\CreateDoctorDTO.cs
+"" ±
+[C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\CreateDoctorDto.cs
 
   
 
@@ -231,8 +206,17 @@ aC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\Create
 
  "
 
- £
-eC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Appointment\CreateAppointmentDTO.cs
+ ã
+YC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Common\ErrorResponse.cs
+
+ !
+
+ 
+
+ 
+
+		 £
+eC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Appointment\CreateAppointmentDto.cs
 
  %
 
@@ -243,7 +227,7 @@ eC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Appointment\C
  %
 
  …
-gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Appointment\AppointmentResponseDTO.cs
+gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Appointment\AppointmentResponseDto.cs
 
  '
 
@@ -261,7 +245,23 @@ gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Appointment\A
 
 ! '
 
- )T
+ )Ú
+\C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Common\PagedResponseDto.cs
+
+ !
+" # 
+
+ 
+
+ 
+		 ' 1# -
+
+ 
+ 0 :
+
+ #
+
+ T
 FC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Class1.cs
 
  

@@ -9,27 +9,22 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
 builder.Services.AddControllers();
 
-// Register DbContext
 builder.Services.AddDbContext<HealthAppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
 
-// Register Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<HealthAppDbContext>()
     .AddDefaultTokenProviders();
 
-// Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
@@ -55,32 +50,27 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Register AutoMapper
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MappingProfile>();
 });
 
-// Register Generic Repository
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-// Register Entity Repositories
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 
-// Register Services
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 
-// AUTH SERVICE
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// ✅ Swagger (UNCHANGED)
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -111,12 +101,11 @@ builder.Services.AddSwaggerGen(options =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 });
 
-/* ✅ ✅ ✅ UPDATED CORS (ONLY CHANGE) */
 const string CorsPolicy = "CorsPolicy";
 
 builder.Services.AddCors(options =>
@@ -124,8 +113,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy(CorsPolicy, policy =>
     {
         policy.WithOrigins(
-                "http://localhost:4200",    // ✅ Angular
-                "https://localhost:7107"    // ✅ Blazor
+                "http://localhost:4200",
+                "https://localhost:7107"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
@@ -135,7 +124,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// ROLE SEEDER + ADMIN SEEDER
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -145,7 +133,6 @@ using (var scope = app.Services.CreateScope())
     await AdminSeeder.SeedAdminAsync(userManager);
 }
 
-// Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -154,10 +141,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ✅ Global Exception Handler
 app.UseMiddleware<GlobalExceptionHandler>();
 
-/* ✅ UPDATED USAGE */
 app.UseCors(CorsPolicy);
 
 app.UseAuthentication();

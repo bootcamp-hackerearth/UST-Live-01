@@ -4,25 +4,20 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private API = 'https://localhost:7054/api/Auth';
+  private readonly API = 'https://localhost:7054/api/Auth';
 
-  // Blazor Admin Portal URL
-  private ADMIN_PORTAL_URL = 'https://localhost:7107';
+  private readonly ADMIN_PORTAL_URL = 'https://localhost:7107';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
-  // REGISTER
   register(data: any) {
     return this.http.post<any>(`${this.API}/register`, data);
   }
 
-  // LOGIN
   login(data: any) {
     return this.http.post<any>(`${this.API}/login`, data);
   }
 
-  // CHANGE PASSWORD
-  // Backend returns plain text, so responseType should be text
   changePassword(data: any) {
     return this.http.post(
       `${this.API}/change-password`,
@@ -31,7 +26,6 @@ export class AuthService {
     );
   }
 
-  // SAVE LOGIN RESPONSE
   saveTokens(res: any) {
     localStorage.setItem('accessToken', res.token || '');
     localStorage.setItem('refreshToken', res.refreshToken || '');
@@ -42,22 +36,18 @@ export class AuthService {
     localStorage.setItem('isFirstLogin', String(res.isFirstLogin || false));
   }
 
-  // ACCESS TOKEN
   getToken(): string | null {
     return localStorage.getItem('accessToken');
   }
 
-  // REFRESH TOKEN
   getRefreshToken(): string | null {
     return localStorage.getItem('refreshToken');
   }
 
-  // EMAIL
   getEmail(): string {
     return localStorage.getItem('email') || '';
   }
 
-  // ROLE
   getRole(): string {
     const storedRole = localStorage.getItem('role');
 
@@ -78,17 +68,10 @@ export class AuthService {
       || '';
   }
 
-  // REFERENCE ID
-  // Patient login => PatientId
-  // Doctor login  => DoctorId
-  // Admin login   => Admin/User reference if backend sends it
   getReferenceId(): string {
     return localStorage.getItem('referenceId') || '';
   }
 
-  // IDENTITY USER ID FROM JWT
-  // This is NOT PatientId/DoctorId.
-  // This is ASP.NET Identity user id.
   getUserId(): string {
     const token = this.getToken();
 
@@ -104,12 +87,10 @@ export class AuthService {
       || '';
   }
 
-  // FIRST LOGIN FLAG
   isFirstLogin(): boolean {
     return localStorage.getItem('isFirstLogin') === 'true';
   }
 
-  // LOGGED IN CHECK
   isLoggedIn(): boolean {
     const token = this.getToken();
 
@@ -125,11 +106,10 @@ export class AuthService {
     return true;
   }
 
-  // TOKEN EXPIRY CHECK
   isTokenExpired(token: string): boolean {
     const payload = this.decodeToken(token);
 
-    if (!payload || !payload.exp) {
+    if (!payload?.exp) {
       return false;
     }
 
@@ -139,9 +119,6 @@ export class AuthService {
     return currentTime >= expiryTime;
   }
 
-  // ADMIN PORTAL BRIDGE URL
-  // This sends the Angular login token to Blazor Admin Portal.
-  // Blazor will store this token in its own localStorage and redirect to /admin/dashboard.
   getAdminPortalBridgeUrl(): string {
     const params = new URLSearchParams();
 
@@ -154,12 +131,10 @@ export class AuthService {
     return `${this.ADMIN_PORTAL_URL}/auth-bridge?${params.toString()}`;
   }
 
-  // LOGOUT
   logout() {
     localStorage.clear();
   }
 
-  // DECODE JWT
   private decodeToken(token: string): any {
     try {
       const tokenParts = token.split('.');

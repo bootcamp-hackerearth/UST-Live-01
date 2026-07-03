@@ -26,7 +26,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             _userManager = userManager;
         }
 
-        public async Task<PagedResponseDTO<DoctorResponseDTO>> GetPagedAsync(
+        public async Task<PagedResponseDto<DoctorResponseDto>> GetPagedAsync(
             int pageNumber,
             int pageSize,
             string? search,
@@ -95,9 +95,9 @@ namespace HealthAxisCore_Api.Services.Implementations
                 .Take(pageSize)
                 .ToList();
 
-            var doctorDtos = _mapper.Map<List<DoctorResponseDTO>>(pagedDoctors);
+            var doctorDtos = _mapper.Map<List<DoctorResponseDto>>(pagedDoctors);
 
-            return new PagedResponseDTO<DoctorResponseDTO>
+            return new PagedResponseDto<DoctorResponseDto>
             {
                 Items = doctorDtos,
                 TotalCount = totalCount,
@@ -107,14 +107,14 @@ namespace HealthAxisCore_Api.Services.Implementations
             };
         }
 
-        public async Task<IEnumerable<DoctorResponseDTO>> GetAllAsync()
+        public async Task<IEnumerable<DoctorResponseDto>> GetAllAsync()
         {
             var doctors = await _repository.GetAllAsync();
 
-            return _mapper.Map<IEnumerable<DoctorResponseDTO>>(doctors);
+            return _mapper.Map<IEnumerable<DoctorResponseDto>>(doctors);
         }
 
-        public async Task<DoctorResponseDTO?> GetByIdAsync(int id)
+        public async Task<DoctorResponseDto?> GetByIdAsync(int id)
         {
             var doctor = await _repository.GetByIdAsync(id);
 
@@ -123,10 +123,10 @@ namespace HealthAxisCore_Api.Services.Implementations
                 throw new EntityNotFoundException("Doctor not found");
             }
 
-            return _mapper.Map<DoctorResponseDTO>(doctor);
+            return _mapper.Map<DoctorResponseDto>(doctor);
         }
 
-        public async Task<CreateDoctorResultDTO> CreateAsync(CreateDoctorDTO dto)
+        public async Task<CreateDoctorResultDto> CreateAsync(CreateDoctorDto dto)
         {
             var doctor = _mapper.Map<Doctor>(dto);
             doctor.CreatedDate = DateTime.Now;
@@ -158,7 +158,7 @@ namespace HealthAxisCore_Api.Services.Implementations
 
             Console.WriteLine($"Doctor Temporary Password: {tempPassword}");
 
-            return new CreateDoctorResultDTO
+            return new CreateDoctorResultDto
             {
                 DoctorId = doctor.DoctorId,
                 DoctorName = doctor.DoctorName,
@@ -171,7 +171,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             };
         }
 
-        public async Task<bool> UpdateAsync(int id, CreateDoctorDTO dto)
+        public async Task<bool> UpdateAsync(int id, CreateDoctorDto dto)
         {
             var doctor = await _repository.GetByIdAsync(id);
 
@@ -201,14 +201,14 @@ namespace HealthAxisCore_Api.Services.Implementations
             return true;
         }
 
-        public async Task<IEnumerable<DoctorResponseDTO>> FilterAsync(
+        public async Task<IEnumerable<DoctorResponseDto>> FilterAsync(
             string? name,
             SpecialisationType? specialization,
             bool? isActive)
         {
             var doctors = await _repository.GetDoctors(name, specialization, isActive);
 
-            return _mapper.Map<IEnumerable<DoctorResponseDTO>>(doctors);
+            return _mapper.Map<IEnumerable<DoctorResponseDto>>(doctors);
         }
 
         public async Task<bool> SetStatusAsync(int doctorId, bool status)

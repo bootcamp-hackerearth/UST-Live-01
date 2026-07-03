@@ -469,9 +469,10 @@
         <h3>Create Health Record</h3>
 
         <div class="field">
-          <label>Visit Date / Time</label>
+          <label for="visitDate">Visit Date / Time</label>
 
           <input
+            id="visitDate"
             type="datetime-local"
             [(ngModel)]="healthRecordForm.visitDate"
             name="visitDate"
@@ -484,9 +485,10 @@
         </div>
 
         <div class="field">
-          <label>Diagnosis</label>
+          <label for="diagnosis">Diagnosis</label>
 
           <input
+            id="diagnosis"
             type="text"
             [(ngModel)]="healthRecordForm.diagnosis"
             name="diagnosis"
@@ -495,9 +497,10 @@
         </div>
 
         <div class="field">
-          <label>Prescription</label>
+          <label for="prescription">Prescription</label>
 
           <input
+            id="prescription"
             type="text"
             [(ngModel)]="healthRecordForm.prescription"
             name="prescription"
@@ -506,9 +509,10 @@
         </div>
 
         <div class="field">
-          <label>Notes</label>
+          <label for="notes">Notes</label>
 
           <textarea
+            id="notes"
             [(ngModel)]="healthRecordForm.notes"
             name="notes"
             placeholder="Additional notes">

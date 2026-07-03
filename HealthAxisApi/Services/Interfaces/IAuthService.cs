@@ -8,14 +8,14 @@ namespace HealthAxisCore_Api.Services.Interfaces
     public interface IAuthService
     {
         // ✅ Existing
-        Task<AuthResponseDTO> RegisterAsync(RegisterDTO request);
+        Task<AuthResponseDto> RegisterAsync(RegisterDto request);
 
-        Task<AuthResponseDTO> LoginAsync(LoginDTO request);
+        Task<AuthResponseDto> LoginAsync(LoginDto request);
 
-        Task ChangePasswordAsync(ChangePasswordDTO request);
+        Task ChangePasswordAsync(ChangePasswordDto request);
 
         // ✅ NEW (Refresh Token Support)
-        Task<AuthResponseDTO> RefreshTokenAsync(string refreshToken);
+        Task<AuthResponseDto> RefreshTokenAsync(string refreshToken);
 
         Task RevokeRefreshTokenAsync(string refreshToken);
     }

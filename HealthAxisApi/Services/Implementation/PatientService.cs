@@ -22,13 +22,13 @@ namespace HealthAxisCore_Api.Services.Implementations
         }
 
         // ✅ Get All Patients
-        public async Task<IEnumerable<PatientResponseDTO>> GetAllAsync()
+        public async Task<IEnumerable<PatientResponseDto>> GetAllAsync()
         {
             var patients = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<PatientResponseDTO>>(patients);
+            return _mapper.Map<IEnumerable<PatientResponseDto>>(patients);
         }
 
-        public async Task<PagedResponseDTO<PatientResponseDTO>> GetPagedAsync(
+        public async Task<PagedResponseDto<PatientResponseDto>> GetPagedAsync(
     int pageNumber,
     int pageSize,
     string? search,
@@ -85,9 +85,9 @@ namespace HealthAxisCore_Api.Services.Implementations
                 .Take(pageSize)
                 .ToList();
 
-            var patientDtos = _mapper.Map<List<PatientResponseDTO>>(pagedPatients);
+            var patientDtos = _mapper.Map<List<PatientResponseDto>>(pagedPatients);
 
-            return new PagedResponseDTO<PatientResponseDTO>
+            return new PagedResponseDto<PatientResponseDto>
             {
                 Items = patientDtos,
                 TotalCount = totalCount,
@@ -98,18 +98,18 @@ namespace HealthAxisCore_Api.Services.Implementations
         }
 
         // ✅ Get Patient by Id
-        public async Task<PatientResponseDTO?> GetByIdAsync(int id)
+        public async Task<PatientResponseDto?> GetByIdAsync(int id)
         {
             var patient = await _repository.GetByIdAsync(id);
 
             if (patient == null)
                 throw new EntityNotFoundException("Patient not found");
 
-            return _mapper.Map<PatientResponseDTO>(patient);
+            return _mapper.Map<PatientResponseDto>(patient);
         }
 
         // ✅ Create Patient
-        public async Task<PatientResponseDTO> CreateAsync(CreatePatientDTO dto)
+        public async Task<PatientResponseDto> CreateAsync(CreatePatientDto dto)
         {
             // ✅ Duplicate check
             var isDuplicate = await _repository.IsDuplicate(dto.Email, dto.PhoneNumber);
@@ -123,11 +123,11 @@ namespace HealthAxisCore_Api.Services.Implementations
 
             await _repository.AddAsync(patient);
 
-            return _mapper.Map<PatientResponseDTO>(patient);
+            return _mapper.Map<PatientResponseDto>(patient);
         }
 
         // ✅ Update Patient
-        public async Task<bool> UpdateAsync(int id, UpdatePatientDTO dto)
+        public async Task<bool> UpdateAsync(int id, UpdatePatientDto dto)
         {
             var patient = await _repository.GetByIdAsync(id);
 
@@ -155,11 +155,11 @@ namespace HealthAxisCore_Api.Services.Implementations
         }
 
         // ✅ Search Patients
-        public async Task<IEnumerable<PatientResponseDTO>> SearchAsync(string? name, string? email)
+        public async Task<IEnumerable<PatientResponseDto>> SearchAsync(string? name, string? email)
         {
             var patients = await _repository.SearchPatients(name, email);
 
-            return _mapper.Map<IEnumerable<PatientResponseDTO>>(patients);
+            return _mapper.Map<IEnumerable<PatientResponseDto>>(patients);
         }
     }
 }

@@ -1,9 +1,9 @@
-è
+z
+oC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\obj\Debug\net10.0\HealthAxisCore_Api.GlobalUsings.g.csutf-8è
 ÜC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\obj\Debug\net10.0\Microsoft.AspNetCore.App.SourceGenerators\Microsoft.AspNetCore.SourceGenerators.PublicProgramSourceGenerator\PublicTopLevelProgram.Generated.g.csutf-8Œ
 €C:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\obj\Debug\net10.0\HealthAxisCore_Api.MvcApplicationPartsAssemblyInfo.csutf-8x
 mC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\obj\Debug\net10.0\HealthAxisCore_Api.AssemblyInfo.csutf-8…
-zC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.csutf-8z
-oC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\obj\Debug\net10.0\HealthAxisCore_Api.GlobalUsings.g.csutf-8w
+zC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.csutf-8w
 lC:\Users\287802\.nuget\packages\microsoft.net.test.sdk\18.6.0\build\net8.0\Microsoft.NET.Test.Sdk.Program.csutf-8h
 _C:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Services\Interfaces\IPateintService.csutf-8m
 dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Services\Interfaces\IHealthRecordService.csutf-8g
@@ -21,9 +21,9 @@ eC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Repositories\Interface
 dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Repositories\Interface\IDoctorRepository.csutf-8r
 iC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Repositories\Interface\IAppointmentRepository.csutf-8r
 iC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Repositories\Implementation\PatientRepository.csutf-8w
-nC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Repositories\Implementation\HealthRecordRepository.csutf-8r
-iC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Repositories\Implementation\GenericRepository.csutf-8q
-hC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Repositories\Implementation\DoctorRepository.csutf-8v
+nC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Repositories\Implementation\HealthRecordRepository.csutf-8q
+hC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Repositories\Implementation\DoctorRepository.csutf-8r
+iC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Repositories\Implementation\GenericRepository.csutf-8v
 mC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Repositories\Implementation\AppointmentRepository.csutf-8L
 CC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Program.csutf-8X
 OC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\Models\RefreshToken.csutf-8S

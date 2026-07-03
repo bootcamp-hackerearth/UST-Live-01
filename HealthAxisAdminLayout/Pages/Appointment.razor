@@ -6,6 +6,7 @@
 @using HealthAxisAdminLayout.Services.Interfaces
 @using HealthAxis.Shared.DTOs.Appointment
 @using HealthAxis.Shared.Enums
+@using System.Globalization
 
 @layout HealthAxisAdminLayout.Layout.AdminLayout
 
@@ -332,7 +333,7 @@
 </div>
 
 @code {
-    private List<AppointmentResponseDTO> appointments = new();
+    private List<AppointmentResponseDto> appointments = new();
 
     private string message = string.Empty;
 
@@ -491,21 +492,21 @@
         return end > totalCount ? totalCount : end;
     }
 
-    private string FormatDateInput(DateTime? date)
+    private static string FormatDateInput(DateTime? date)
     {
         return date.HasValue
             ? date.Value.ToString("yyyy-MM-dd")
             : string.Empty;
     }
 
-    private DateTime? ParseDateInput(string? value)
+    private static DateTime? ParseDateInput(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             return null;
         }
 
-        return DateTime.TryParse(value, out var date)
+        return DateTime.TryParse(value,CultureInfo.InvariantCulture,DateTimeStyles.None, out var date)
             ? date
             : null;
     }
@@ -627,12 +628,12 @@
         }
     }
 
-    private bool CanConfirm(AppointmentResponseDTO appointment)
+    private static bool CanConfirm(AppointmentResponseDto appointment)
     {
         return appointment.Status == AppointmentStatus.Pending;
     }
 
-    private bool CanCancel(AppointmentResponseDTO appointment)
+    private static bool CanCancel(AppointmentResponseDto appointment)
     {
         return appointment.Status == AppointmentStatus.Pending ||
                appointment.Status == AppointmentStatus.Confirmed;
@@ -643,7 +644,7 @@
         showStatusLegend = !showStatusLegend;
     }
 
-    private string FormatTimeSlot(object? timeSlot)
+    private static string FormatTimeSlot(object? timeSlot)
     {
         if (timeSlot == null)
         {
@@ -672,7 +673,7 @@
             : value;
     }
 
-    private string GetStatusText(AppointmentStatus status)
+    private static string GetStatusText(AppointmentStatus status)
     {
         return status switch
         {
@@ -684,7 +685,7 @@
         };
     }
 
-    private string GetStatusIcon(AppointmentStatus status)
+    private static string GetStatusIcon(AppointmentStatus status)
     {
         return status switch
         {
@@ -696,7 +697,7 @@
         };
     }
 
-    private string GetStatusIconClass(AppointmentStatus status)
+    private static string GetStatusIconClass(AppointmentStatus status)
     {
         return status switch
         {

@@ -13,6 +13,7 @@
   <SonarQubeHostUrl>http://localhost:9000</SonarQubeHostUrl>
   <SonarQubeVersion>26.1.0.118079</SonarQubeVersion>
   <SonarProjectKey>HealthAxis</SonarProjectKey>
+  <SonarProjectName>HealthAxis</SonarProjectName>
   <AdditionalConfig>
     <ConfigSetting Id="BuildUri" />
     <ConfigSetting Id="TfsUri" />
@@ -149,11 +150,13 @@
     <Property Name="sonar.java.jvmframeworkconfig.activate">true</Property>
     <Property Name="sonar.updatecenter.url">https://downloads.sonarsource.com/sonarqube/update/update-center.properties</Property>
     <Property Name="sonar.core.id">147B411E-AZ5PJCtpOCacQCuTca-R</Property>
-    <Property Name="sonar.core.startTime">03-07-2026 09:40:53</Property>
+    <Property Name="sonar.core.startTime">03-07-2026 19:41:01</Property>
   </ServerSettings>
   <LocalSettings>
     <Property Name="sonar.host.url">http://localhost:9000</Property>
-    <Property Name="sonar.exclusions">**/Migrations/**,**/*.css</Property>
+    <Property Name="sonar.cs.vscoveragexml.reportsPaths">coverage.xml</Property>
+    <Property Name="sonar.coverage.exclusions">**/Controllers/**,**/Repositories/**,**/Data/**,**/Mappings/**,**/Models/**,**/DTOs/**,**/Middleware/**,**/Middleware/**,**/Exceptions/**,**/Program.cs,**/HealthAxisCore_Api.Tests/**</Property>
+    <Property Name="sonar.exclusions">**/Migrations/**,**/HealthAxis_AngularProj/**,**/HealthAxisAdminLayout/**,**/HealthAxis.Shared/**,**/bin/**,**/obj/**,**/node_modules/**,**/*.css,**/*.razor,**/TestResults/**,coverage.xml</Property>
   </LocalSettings>
   <ScannerOptsSettings />
   <AnalyzersSettings>

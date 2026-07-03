@@ -6,11 +6,11 @@ namespace HealthAxisAdminLayout.Services.Interfaces
 {
     public interface IAppointmentApiService
     {
-        Task<List<AppointmentResponseDTO>> GetAppointmentsAsync();
+        Task<List<AppointmentResponseDto>> GetAppointmentsAsync();
 
-        Task<List<AppointmentResponseDTO>> GetAppointmentsByDoctorAsync(int doctorId);
+        Task<List<AppointmentResponseDto>> GetAppointmentsByDoctorAsync(int doctorId);
 
-        Task<PagedResponseDTO<AppointmentResponseDTO>> GetAppointmentsPagedAsync(
+        Task<PagedResponseDto<AppointmentResponseDto>> GetAppointmentsPagedAsync(
             int pageNumber,
             int pageSize,
             string? search,
@@ -19,7 +19,7 @@ namespace HealthAxisAdminLayout.Services.Interfaces
             DateTime? endDate
         );
 
-        Task<List<AppointmentResponseDTO>> FilterAppointmentsAsync(
+        Task<List<AppointmentResponseDto>> FilterAppointmentsAsync(
             AppointmentStatus? status,
             DateTime? startDate,
             DateTime? endDate

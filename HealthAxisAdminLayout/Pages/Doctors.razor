@@ -1,5 +1,4 @@
-﻿@using HealthAxisAdminLayout.Layout
-@page "/admin/doctors"
+﻿@page "/admin/doctors"
 @attribute [Authorize(Roles = "Admin")]
 
 @using Microsoft.AspNetCore.Authorization
@@ -7,7 +6,7 @@
 @using HealthAxis.Shared.DTOs.Doctor
 @using HealthAxis.Shared.DTOs.Appointment
 @using HealthAxis.Shared.Enums
-
+@using HealthAxisAdminLayout.Layout
 @using HealthAxisAdminLayout.Services.Interfaces
 
 @layout HealthAxisAdminLayout.Layout.AdminLayout
@@ -125,20 +124,22 @@
             <div class="doctor-form-grid">
 
                 <div class="doctor-field">
-                    <label>Doctor Name</label>
-                    <input placeholder="Enter doctor name"
+                    <label for="doctorName">Doctor Name</label>
+                    <input id="doctorName"
+                           placeholder="Enter doctor name"
                            @bind="doctorForm.DoctorName" />
                 </div>
 
                 <div class="doctor-field">
-                    <label>Email</label>
-                    <input placeholder="Enter email"
+                    <label for="doctorEmail">Email</label>
+                    <input id="doctorEmail"
+                           placeholder="Enter email"
                            @bind="doctorForm.Email" />
                 </div>
 
                 <div class="doctor-field">
-                    <label>Specialisation</label>
-                    <select @bind="doctorForm.Specialisation">
+                    <label for="doctorSpecialisation">Specialisation</label>
+                    <select id="doctorSpecialisation" @bind="doctorForm.Specialisation">
                         @foreach (var spec in Enum.GetValues<SpecialisationType>())
                         {
                             <option value="@spec">@spec</option>
@@ -147,16 +148,18 @@
                 </div>
 
                 <div class="doctor-field">
-                    <label>Experience</label>
-                    <input type="number"
+                    <label for="doctorExperience">Experience</label>
+                    <input id="doctorExperience"
+                           type="number"
                            min="0"
                            placeholder="Years of experience"
                            @bind="doctorForm.YearsOfExperience" />
                 </div>
 
                 <div class="doctor-field">
-                    <label>Consultation Fee</label>
-                    <input type="number"
+                    <label for="doctorConsultationFee">Consultation Fee</label>
+                    <input id="doctorConsultationFee"
+                           type="number"
                            min="0"
                            step="0.01"
                            placeholder="Consultation fee"
@@ -164,8 +167,8 @@
                 </div>
 
                 <div class="doctor-field">
-                    <label>Status</label>
-                    <select @bind="doctorForm.IsActive">
+                    <label for="doctorStatus">Status</label>
+                    <select id="doctorStatus" @bind="doctorForm.IsActive">
                         <option value="true">Active</option>
                         <option value="false">Inactive</option>
                     </select>
@@ -518,17 +521,18 @@
     }
 
 </div>
-<GenericModal
-    @ref="statusModal"
-    OnConfirm="ConfirmToggleStatus" />
-@code {
-    private List<DoctorResponseDTO> doctors = new();
 
-    private CreateDoctorDTO doctorForm = new();
+<GenericModal @ref="statusModal"
+              OnConfirm="ConfirmToggleStatus" />
+
+@code {
+    private List<DoctorResponseDto> doctors = new();
+
+    private CreateDoctorDto doctorForm = new();
 
     private GenericModal? statusModal;
 
-    private DoctorResponseDTO? selectedDoctor;
+    private DoctorResponseDto? selectedDoctor;
 
     private string message = string.Empty;
 
@@ -540,33 +544,33 @@
 
     private string selectedStatus = "All";
 
-    private bool isLoading = false;
+    private bool isLoading;
 
-    private bool showForm = false;
+    private bool showForm;
 
-    private bool isEditMode = false;
+    private bool isEditMode;
 
-    private bool showStatusLegend = false;
+    private bool showStatusLegend;
 
-    private int editingDoctorId = 0;
+    private int editingDoctorId;
 
-    private List<string> validationErrors = new();
+    private readonly List<string> validationErrors = new();
 
-    private bool showAppointmentsModal = false;
+    private bool showAppointmentsModal;
 
-    private bool isAppointmentsLoading = false;
+    private bool isAppointmentsLoading;
 
     private string selectedDoctorName = string.Empty;
 
-    private List<AppointmentResponseDTO> doctorAppointments = new();
+    private List<AppointmentResponseDto> doctorAppointments = new();
 
     private int currentPage = 1;
 
     private int pageSize = 10;
 
-    private int totalCount = 0;
+    private int totalCount;
 
-    private int totalPages = 0;
+    private int totalPages;
 
     private readonly int[] pageSizeOptions = new[] { 5, 10, 20 };
 
@@ -576,7 +580,7 @@
 
     private string createdDoctorName = string.Empty;
 
-    private bool showTempPasswordBox = false;
+    private bool showTempPasswordBox;
 
     private int TotalDoctors => totalCount;
 
@@ -693,7 +697,7 @@
         validationErrors.Clear();
     }
 
-    private void StartEdit(DoctorResponseDTO doctor)
+    private void StartEdit(DoctorResponseDto doctor)
     {
         showForm = true;
         isEditMode = true;
@@ -701,7 +705,7 @@
         validationErrors.Clear();
         message = string.Empty;
 
-        doctorForm = new CreateDoctorDTO
+        doctorForm = new CreateDoctorDto
         {
             DoctorName = doctor.DoctorName,
             Email = doctor.Email,
@@ -743,54 +747,11 @@
         {
             if (isEditMode)
             {
-                var success = await DoctorService.UpdateDoctorAsync(editingDoctorId, doctorForm);
-
-                if (success)
-                {
-                    SetSuccessMessage("Doctor updated successfully.");
-
-                    ResetForm();
-                    showForm = false;
-                    currentPage = 1;
-
-                    await LoadDoctors();
-                }
-                else
-                {
-                    SetErrorMessage("Failed to update doctor.");
-                }
+                await SaveEditedDoctor();
             }
             else
             {
-                var createdDoctor = await DoctorService.CreateDoctorAsync(doctorForm);
-
-                if (createdDoctor != null)
-                {
-                    temporaryPassword = createdDoctor.DisplayTemporaryPassword ?? string.Empty;
-                    createdDoctorEmail = createdDoctor.Email ?? doctorForm.Email;
-                    createdDoctorName = createdDoctor.DoctorName ?? doctorForm.DoctorName;
-
-                    showTempPasswordBox = !string.IsNullOrWhiteSpace(temporaryPassword);
-
-                    if (showTempPasswordBox)
-                    {
-                        SetSuccessMessage("Doctor created successfully. Share the temporary password with the doctor.");
-                    }
-                    else
-                    {
-                        SetSuccessMessage("Doctor created successfully, but temporary password was not returned by backend.");
-                    }
-
-                    ResetForm();
-                    showForm = false;
-                    currentPage = 1;
-
-                    await LoadDoctors();
-                }
-                else
-                {
-                    SetErrorMessage("Failed to create doctor.");
-                }
+                await SaveNewDoctor();
             }
         }
         catch
@@ -805,6 +766,58 @@
         {
             isLoading = false;
         }
+    }
+
+    private async Task SaveEditedDoctor()
+    {
+        var success = await DoctorService.UpdateDoctorAsync(editingDoctorId, doctorForm);
+
+        if (success)
+        {
+            SetSuccessMessage("Doctor updated successfully.");
+
+            ResetForm();
+            showForm = false;
+            currentPage = 1;
+
+            await LoadDoctors();
+        }
+        else
+        {
+            SetErrorMessage("Failed to update doctor.");
+        }
+    }
+
+    private async Task SaveNewDoctor()
+    {
+        var createdDoctor = await DoctorService.CreateDoctorAsync(doctorForm);
+
+        if (createdDoctor == null)
+        {
+            SetErrorMessage("Failed to create doctor.");
+            return;
+        }
+
+        temporaryPassword = createdDoctor.DisplayTemporaryPassword ?? string.Empty;
+        createdDoctorEmail = createdDoctor.Email ?? doctorForm.Email;
+        createdDoctorName = createdDoctor.DoctorName ?? doctorForm.DoctorName;
+
+        showTempPasswordBox = !string.IsNullOrWhiteSpace(temporaryPassword);
+
+        if (showTempPasswordBox)
+        {
+            SetSuccessMessage("Doctor created successfully. Share the temporary password with the doctor.");
+        }
+        else
+        {
+            SetSuccessMessage("Doctor created successfully, but temporary password was not returned by backend.");
+        }
+
+        ResetForm();
+        showForm = false;
+        currentPage = 1;
+
+        await LoadDoctors();
     }
 
     private void CloseTempPasswordBox()
@@ -850,7 +863,7 @@
         SetSuccessMessage("Doctor login details copied.");
     }
 
-    private async Task ToggleStatus(DoctorResponseDTO doctor)
+    private async Task ToggleStatus(DoctorResponseDto doctor)
     {
         if (doctor.IsActive)
         {
@@ -867,6 +880,7 @@
 
         await UpdateDoctorStatus(doctor);
     }
+
     private async Task ConfirmToggleStatus()
     {
         if (selectedDoctor != null)
@@ -876,7 +890,7 @@
         }
     }
 
-    private async Task UpdateDoctorStatus(DoctorResponseDTO doctor)
+    private async Task UpdateDoctorStatus(DoctorResponseDto doctor)
     {
         isLoading = true;
         message = string.Empty;
@@ -911,9 +925,7 @@
         }
     }
 
-        
-
-    private async Task OpenDoctorAppointments(DoctorResponseDTO doctor)
+    private async Task OpenDoctorAppointments(DoctorResponseDto doctor)
     {
         showAppointmentsModal = true;
         isAppointmentsLoading = true;
@@ -945,24 +957,50 @@
     {
         validationErrors.Clear();
 
+        ValidateDoctorName();
+        ValidateDoctorEmail();
+        ValidateDoctorExperience();
+        ValidateDoctorFee();
+
+        if (validationErrors.Count == 0)
+        {
+            return true;
+        }
+
+        SetErrorMessage("Please fix the validation errors.");
+        return false;
+    }
+
+    private void ValidateDoctorName()
+    {
         if (string.IsNullOrWhiteSpace(doctorForm.DoctorName))
         {
             validationErrors.Add("Doctor name is required.");
+            return;
         }
-        else if (doctorForm.DoctorName.Trim().Length < 3)
+
+        if (doctorForm.DoctorName.Trim().Length < 3)
         {
             validationErrors.Add("Doctor name must be at least 3 characters.");
         }
+    }
 
+    private void ValidateDoctorEmail()
+    {
         if (string.IsNullOrWhiteSpace(doctorForm.Email))
         {
             validationErrors.Add("Email is required.");
+            return;
         }
-        else if (!IsValidEmail(doctorForm.Email))
+
+        if (!IsValidEmail(doctorForm.Email))
         {
             validationErrors.Add("Enter a valid email address.");
         }
+    }
 
+    private void ValidateDoctorExperience()
+    {
         if (doctorForm.YearsOfExperience < 0)
         {
             validationErrors.Add("Experience cannot be negative.");
@@ -972,7 +1010,10 @@
         {
             validationErrors.Add("Experience cannot be greater than 60 years.");
         }
+    }
 
+    private void ValidateDoctorFee()
+    {
         if (doctorForm.ConsultationFee <= 0)
         {
             validationErrors.Add("Consultation fee must be greater than 0.");
@@ -982,17 +1023,9 @@
         {
             validationErrors.Add("Consultation fee is too high.");
         }
-
-        if (validationErrors.Count > 0)
-        {
-            SetErrorMessage("Please fix the validation errors.");
-            return false;
-        }
-
-        return true;
     }
 
-    private bool IsValidEmail(string email)
+    private static bool IsValidEmail(string email)
     {
         try
         {
@@ -1007,7 +1040,7 @@
 
     private void ResetForm()
     {
-        doctorForm = new CreateDoctorDTO
+        doctorForm = new CreateDoctorDto
         {
             IsActive = true
         };
@@ -1017,7 +1050,7 @@
         validationErrors.Clear();
     }
 
-    private string GetInitials(string? name)
+    private static string GetInitials(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -1036,7 +1069,7 @@
         return $"{parts[0][0]}{parts[1][0]}".ToUpper();
     }
 
-    private string FormatDoctorAppointmentTime(object? timeSlot)
+    private static string FormatDoctorAppointmentTime(object? timeSlot)
     {
         if (timeSlot == null)
         {
@@ -1065,7 +1098,7 @@
             : value;
     }
 
-    private string GetAppointmentStatusText(AppointmentStatus status)
+    private static string GetAppointmentStatusText(AppointmentStatus status)
     {
         return status switch
         {
@@ -1077,7 +1110,7 @@
         };
     }
 
-    private string GetDoctorAppointmentStatusClass(AppointmentStatus status)
+    private static string GetDoctorAppointmentStatusClass(AppointmentStatus status)
     {
         return status switch
         {
@@ -1100,5 +1133,4 @@
         message = text;
         messageCssClass = "alert alert-danger";
     }
-    
 }

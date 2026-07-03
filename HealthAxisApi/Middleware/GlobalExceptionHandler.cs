@@ -33,7 +33,7 @@ namespace HealthAxisCore_Api.Middleware
             }
         }
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
 
@@ -45,7 +45,7 @@ namespace HealthAxisCore_Api.Middleware
 
             context.Response.StatusCode = statusCode;
 
-            var response = new ErrorResponseDTO
+            var response = new ErrorResponseDto
             {
                 Success = false,
                 Message = exception.Message,

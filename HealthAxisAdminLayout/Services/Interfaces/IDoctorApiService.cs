@@ -6,11 +6,11 @@ namespace HealthAxisAdminLayout.Services.Interfaces
 {
     public interface IDoctorApiService
     {
-        Task<List<DoctorResponseDTO>> GetDoctorsAsync();
+        Task<List<DoctorResponseDto>> GetDoctorsAsync();
 
-        Task<DoctorResponseDTO?> GetDoctorByIdAsync(int id);
+        Task<DoctorResponseDto?> GetDoctorByIdAsync(int id);
 
-        Task<PagedResponseDTO<DoctorResponseDTO>> GetDoctorsPagedAsync(
+        Task<PagedResponseDto<DoctorResponseDto>> GetDoctorsPagedAsync(
             int pageNumber,
             int pageSize,
             string? search,
@@ -18,9 +18,9 @@ namespace HealthAxisAdminLayout.Services.Interfaces
             string? status
         );
 
-        Task<CreateDoctorResultDTO?> CreateDoctorAsync(CreateDoctorDTO dto);
+        Task<CreateDoctorResultDto?> CreateDoctorAsync(CreateDoctorDto dto);
 
-        Task<bool> UpdateDoctorAsync(int id, CreateDoctorDTO dto);
+        Task<bool> UpdateDoctorAsync(int id, CreateDoctorDto dto);
 
         Task<bool> DeleteDoctorAsync(int id);
 

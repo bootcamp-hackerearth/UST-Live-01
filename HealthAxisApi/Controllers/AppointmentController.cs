@@ -63,7 +63,7 @@ namespace HealthAxisCore_Api.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
-        public async Task<IActionResult> Create(CreateAppointmentDTO dto)
+        public async Task<IActionResult> Create(CreateAppointmentDto dto)
         {
             var result = await _service.CreateAsync(dto);
 

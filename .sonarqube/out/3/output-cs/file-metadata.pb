@@ -1,11 +1,11 @@
 ‰
-~C:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\obj\Debug\net10.0\HealthAxisCore_Api.Tests.AssemblyInfo.csutf-8Œ
-€C:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\obj\Debug\net10.0\HealthAxisCore_Api.Tests.GlobalUsings.g.csutf-8‘
-…C:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.csutf-8w
+~C:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\obj\Debug\net10.0\HealthAxisCore_Api.Tests.AssemblyInfo.csutf-8‘
+…C:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.csutf-8Œ
+€C:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\obj\Debug\net10.0\HealthAxisCore_Api.Tests.GlobalUsings.g.csutf-8w
 lC:\Users\287802\.nuget\packages\microsoft.net.test.sdk\18.6.0\build\net8.0\Microsoft.NET.Test.Sdk.Program.csutf-8k
 bC:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\Services\PatientServiceTest.csutf-8p
-gC:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\Services\HealthRecordServiceTest.csutf-8j
-aC:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\Services\DoctorServiceTest.csutf-8h
-_C:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\Services\AuthServiceTest.csutf-8o
+gC:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\Services\HealthRecordServiceTest.csutf-8h
+_C:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\Services\AuthServiceTest.csutf-8j
+aC:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\Services\DoctorServiceTest.csutf-8o
 fC:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\Services\AppointmentServiceTest.csutf-8d
 [C:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\Helpers\MapperHelper.csutf-8

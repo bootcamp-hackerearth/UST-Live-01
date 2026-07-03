@@ -4,6 +4,6 @@ namespace HealthAxisAdminLayout.Services.Interfaces
 {
     public interface IDashboardService
     {
-        Task<AdminDashboardDTO> GetDashboardAsync();
+        Task<AdminDashboardDto> GetDashboardAsync();
     }
 }

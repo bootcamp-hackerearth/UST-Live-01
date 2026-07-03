@@ -5,7 +5,7 @@ namespace HealthAxisAdminLayout.Services.Interfaces
 {
         public interface IAuthService
         {
-            Task<AuthResponseDTO?> LoginAsync(LoginDTO loginDto);
+            Task<AuthResponseDto?> LoginAsync(LoginDto LoginDto);
 
             Task LogoutAsync();
 

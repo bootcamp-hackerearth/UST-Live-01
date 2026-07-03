@@ -38,8 +38,8 @@ namespace HealthAxisCore_Api.Services.Implementations
             _context = context;
         }
 
-        // ✅ REGISTER (UNCHANGED)
-        public async Task<AuthResponseDTO> RegisterAsync(RegisterDTO request)
+        
+        public async Task<AuthResponseDto> RegisterAsync(RegisterDto request)
         {
             if (request.Password != request.ConfirmPassword)
                 throw new BusinessRuleException("Passwords do not match");
@@ -82,7 +82,7 @@ namespace HealthAxisCore_Api.Services.Implementations
 
             var token = await GenerateJwtToken(user);
 
-            return new AuthResponseDTO
+            return new AuthResponseDto
             {
                 Token = token,
                 Email = user.Email!,
@@ -92,8 +92,8 @@ namespace HealthAxisCore_Api.Services.Implementations
             };
         }
 
-        // ✅ LOGIN (UPDATED WITH REFRESH TOKEN)
-        public async Task<AuthResponseDTO> LoginAsync(LoginDTO request)
+        
+        public async Task<AuthResponseDto> LoginAsync(LoginDto request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
@@ -119,10 +119,10 @@ namespace HealthAxisCore_Api.Services.Implementations
             _context.RefreshTokens.Add(refreshToken);
             await _context.SaveChangesAsync();
 
-            return new AuthResponseDTO
+            return new AuthResponseDto
             {
                 Token = accessToken,
-                RefreshToken = refreshToken.Token,   // ✅ NEW
+                RefreshToken = refreshToken.Token,   
                 Email = user.Email!,
                 Role = roles.FirstOrDefault() ?? "User",
                 ReferenceId = user.ReferenceId,
@@ -130,8 +130,8 @@ namespace HealthAxisCore_Api.Services.Implementations
             };
         }
 
-        // ✅ REFRESH TOKEN (NEW)
-        public async Task<AuthResponseDTO> RefreshTokenAsync(string refreshToken)
+        
+        public async Task<AuthResponseDto> RefreshTokenAsync(string refreshToken)
         {
             var token = await _context.RefreshTokens
                 .Include(r => r.User)
@@ -144,7 +144,7 @@ namespace HealthAxisCore_Api.Services.Implementations
 
             var roles = await _userManager.GetRolesAsync(token.User);
 
-            return new AuthResponseDTO
+            return new AuthResponseDto
             {
                 Token = newAccessToken,
                 RefreshToken = refreshToken,
@@ -155,7 +155,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             };
         }
 
-        // ✅ LOGOUT (REVOKE TOKEN)
+        
         public async Task RevokeRefreshTokenAsync(string refreshToken)
         {
             var token = await _context.RefreshTokens
@@ -170,8 +170,8 @@ namespace HealthAxisCore_Api.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-        // ✅ CHANGE PASSWORD (UNCHANGED)
-        public async Task ChangePasswordAsync(ChangePasswordDTO request)
+        
+        public async Task ChangePasswordAsync(ChangePasswordDto request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
@@ -196,7 +196,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             await _userManager.UpdateAsync(user);
         }
 
-        // ✅ JWT TOKEN
+        
         private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             var jwtSettings = _configuration.GetSection("Jwt");
@@ -233,8 +233,8 @@ namespace HealthAxisCore_Api.Services.Implementations
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        // ✅ REFRESH TOKEN GENERATOR
-        private string GenerateRefreshToken()
+        
+        private static string GenerateRefreshToken()
         {
             var randomBytes = new byte[64];
 

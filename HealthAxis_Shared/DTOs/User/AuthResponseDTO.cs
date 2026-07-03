@@ -1,14 +1,14 @@
 ﻿namespace HealthAxis.Shared.DTOs.User
 {
-    public class AuthResponseDTO
+    public class AuthResponseDto
     {
-        // ✅ Access Token
+        
         public string Token { get; set; } = string.Empty;
 
-        // ✅ Refresh Token
+        
         public string? RefreshToken { get; set; }
 
-        // ✅ User Info
+        
         public string Email { get; set; } = string.Empty;
 
         public string Role { get; set; } = string.Empty;

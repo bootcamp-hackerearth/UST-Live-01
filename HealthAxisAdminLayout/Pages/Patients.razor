@@ -273,9 +273,9 @@
 </div>
 
 @code {
-    private List<PatientResponseDTO> patients = new();
+    private List<PatientResponseDto> patients = new();
 
-    private PatientResponseDTO? selectedPatient;
+    private PatientResponseDto? selectedPatient;
 
     private string message = string.Empty;
 
@@ -401,7 +401,7 @@
         return end > totalCount ? totalCount : end;
     }
 
-    private void ViewPatient(PatientResponseDTO patient)
+    private void ViewPatient(PatientResponseDto patient)
     {
         selectedPatient = patient;
         message = string.Empty;
@@ -412,7 +412,7 @@
         selectedPatient = null;
     }
 
-    private string GetInitials(string? name)
+    private static string GetInitials(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -431,7 +431,7 @@
         return $"{parts[0][0]}{parts[1][0]}".ToUpper();
     }
 
-    private string GetGenderText(GenderType gender)
+    private static string GetGenderText(GenderType gender)
     {
         return gender switch
         {

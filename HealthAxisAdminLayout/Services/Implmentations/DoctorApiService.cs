@@ -15,14 +15,14 @@ namespace HealthAxisAdminLayout.Services.Implementations
             _http = http;
         }
 
-        public async Task<List<DoctorResponseDTO>> GetDoctorsAsync()
+        public async Task<List<DoctorResponseDto>> GetDoctorsAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<DoctorResponseDTO>>("api/doctor");
+            var result = await _http.GetFromJsonAsync<List<DoctorResponseDto>>("api/doctor");
 
-            return result ?? new List<DoctorResponseDTO>();
+            return result ?? new List<DoctorResponseDto>();
         }
 
-        public async Task<PagedResponseDTO<DoctorResponseDTO>> GetDoctorsPagedAsync(
+        public async Task<PagedResponseDto<DoctorResponseDto>> GetDoctorsPagedAsync(
             int pageNumber,
             int pageSize,
             string? search,
@@ -52,17 +52,17 @@ namespace HealthAxisAdminLayout.Services.Implementations
 
             var url = $"api/doctor/paged?{string.Join("&", query)}";
 
-            var result = await _http.GetFromJsonAsync<PagedResponseDTO<DoctorResponseDTO>>(url);
+            var result = await _http.GetFromJsonAsync<PagedResponseDto<DoctorResponseDto>>(url);
 
-            return result ?? new PagedResponseDTO<DoctorResponseDTO>();
+            return result ?? new PagedResponseDto<DoctorResponseDto>();
         }
 
-        public async Task<DoctorResponseDTO?> GetDoctorByIdAsync(int id)
+        public async Task<DoctorResponseDto?> GetDoctorByIdAsync(int id)
         {
-            return await _http.GetFromJsonAsync<DoctorResponseDTO>($"api/doctor/{id}");
+            return await _http.GetFromJsonAsync<DoctorResponseDto>($"api/doctor/{id}");
         }
 
-        public async Task<CreateDoctorResultDTO?> CreateDoctorAsync(CreateDoctorDTO dto)
+        public async Task<CreateDoctorResultDto?> CreateDoctorAsync(CreateDoctorDto dto)
         {
             var response = await _http.PostAsJsonAsync("api/doctor", dto);
 
@@ -71,12 +71,12 @@ namespace HealthAxisAdminLayout.Services.Implementations
                 return null;
             }
 
-            var result = await response.Content.ReadFromJsonAsync<CreateDoctorResultDTO>();
+            var result = await response.Content.ReadFromJsonAsync<CreateDoctorResultDto>();
 
             return result;
         }
 
-        public async Task<bool> UpdateDoctorAsync(int id, CreateDoctorDTO dto)
+        public async Task<bool> UpdateDoctorAsync(int id, CreateDoctorDto dto)
         {
             var response = await _http.PutAsJsonAsync($"api/doctor/{id}", dto);
 

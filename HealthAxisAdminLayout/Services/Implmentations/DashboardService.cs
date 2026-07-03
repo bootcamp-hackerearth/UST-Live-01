@@ -23,14 +23,14 @@ namespace HealthAxisAdminLayout.Services.Implementations
             _healthRecordService = healthRecordService;
         }
 
-        public async Task<AdminDashboardDTO> GetDashboardAsync()
+        public async Task<AdminDashboardDto> GetDashboardAsync()
         {
             var doctors = await _doctorService.GetDoctorsAsync();
             var patients = await _patientService.GetPatientsAsync();
             var appointments = await _appointmentService.GetAppointmentsAsync();
             var records = await _healthRecordService.GetHealthRecordsAsync();
 
-            return new AdminDashboardDTO
+            return new AdminDashboardDto
             {
                 TotalDoctors = doctors.Count,
                 ActiveDoctors = doctors.Count(d => d.IsActive),

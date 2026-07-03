@@ -1,6 +1,6 @@
 ﻿namespace HealthAxisAdminLayout.DTOs.Dashboard
 {
-        public class AdminDashboardDTO
+        public class AdminDashboardDto
         {
             public int TotalDoctors { get; set; }
 
