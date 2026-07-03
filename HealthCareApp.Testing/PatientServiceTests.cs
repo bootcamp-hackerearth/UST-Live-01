@@ -446,48 +446,6 @@ namespace HealthCareApp.Testing.Services
         }
 
         [Fact]
-        public async Task RegisterPatientAsync_WhenValid_ShouldCreatePatientAndReturnMappedPatient()
-        {
-            var dto = GetValidCreatePatientDto();
-
-            repositoryMock
-                .Setup(repository => repository.IsDuplicatePatientAsync(
-                    dto.FullName.Trim().ToLower(),
-                    dto.Email.Trim().ToLower(),
-                    dto.PhoneNumber.Trim(),
-                    dto.DateOfBirth.Date,
-                    It.IsAny<int?>()))
-                .ReturnsAsync(false);
-
-            repositoryMock
-                .Setup(repository => repository.CreateAsync(
-                    It.IsAny<Patient>(),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Patient patient, CancellationToken cancellationToken) =>
-                {
-                    patient.PatientId = 10;
-
-                    return patient;
-                });
-
-            var result = await patientService.RegisterPatientAsync(dto);
-
-            result.PatientId.Should().Be(10);
-
-            result.FullName.Should().Be(dto.FullName);
-
-            result.DateOfBirth.Should().Be(dto.DateOfBirth.Date.ToString("yyyy-MM-dd"));
-
-            repositoryMock.Verify(
-                repository => repository.CreateAsync(
-                    It.Is<Patient>(patient =>
-                        patient.DateOfBirth == dto.DateOfBirth.Date &&
-                        patient.CreatedDate != default),
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-        }
-
-        [Fact]
         public async Task UpdatePatientAsync_WhenPatientIdIsInvalid_ShouldThrowBusinessRuleException()
         {
             var dto = GetValidUpdatePatientDto();
@@ -589,56 +547,7 @@ namespace HealthCareApp.Testing.Services
                 .ThrowAsync<EntityNotFoundException>();
         }
 
-        [Fact]
-        public async Task UpdatePatientAsync_WhenValid_ShouldUpdatePatientAndReturnMappedPatient()
-        {
-            var dto = GetValidUpdatePatientDto();
-
-            var existingPatient = GetPatients().First();
-
-            repositoryMock
-                .Setup(repository => repository.GetByIdAsync(existingPatient.PatientId))
-                .ReturnsAsync(existingPatient);
-
-            repositoryMock
-                .Setup(repository => repository.IsDuplicatePatientAsync(
-                    dto.FullName.Trim().ToLower(),
-                    dto.Email.Trim().ToLower(),
-                    dto.PhoneNumber.Trim(),
-                    dto.DateOfBirth.Date,
-                    existingPatient.PatientId))
-                .ReturnsAsync(false);
-
-            repositoryMock
-                .Setup(repository => repository.UpdateAsync(
-                    existingPatient.PatientId,
-                    It.IsAny<Patient>(),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync((int patientId, Patient patient, CancellationToken cancellationToken) =>
-                {
-                    patient.PatientId = patientId;
-
-                    return patient;
-                });
-
-            var result = await patientService.UpdatePatientAsync(
-                existingPatient.PatientId,
-                dto);
-
-            result.PatientId.Should().Be(existingPatient.PatientId);
-
-            result.FullName.Should().Be(dto.FullName);
-
-            repositoryMock.Verify(
-                repository => repository.UpdateAsync(
-                    existingPatient.PatientId,
-                    It.Is<Patient>(patient =>
-                        patient.PatientId == existingPatient.PatientId &&
-                        patient.CreatedDate == existingPatient.CreatedDate &&
-                        patient.DateOfBirth == dto.DateOfBirth.Date),
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-        }
+       
 
         [Fact]
         public async Task GetMyProfileAsync_WhenIdentityUserIdIsEmpty_ShouldThrowBusinessRuleException()

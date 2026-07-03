@@ -190,8 +190,20 @@ export class DoctorProfile implements OnInit {
     });
   }
 
-  getStatusText(isActive: boolean): string {
-    return isActive ? 'Active' : 'Inactive';
+  getDoctorStatusText(): string {
+    if (this.doctor?.isActive) {
+      return this.getActiveStatusText();
+    }
+
+    return this.getInactiveStatusText();
+  }
+
+  private getActiveStatusText(): string {
+    return 'Active';
+  }
+
+  private getInactiveStatusText(): string {
+    return 'Inactive';
   }
 
   private hasPasswordChanges(): boolean {

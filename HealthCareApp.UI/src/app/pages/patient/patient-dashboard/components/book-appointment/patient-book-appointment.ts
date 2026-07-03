@@ -143,8 +143,9 @@ export class PatientBookAppointment implements OnInit {
           )
         );
 
-        specialisations.sort();
-
+specialisations.sort((firstSpecialisation: string, secondSpecialisation: string) =>
+  firstSpecialisation.localeCompare(secondSpecialisation)
+);
         this.specialisations = specialisations;
 
         if (this.doctors.length === 0) {

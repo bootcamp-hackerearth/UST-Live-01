@@ -203,90 +203,108 @@
   </section>
 
   @if (isLoginModalOpen) {
-  <div class="ha-modal-backdrop" (click)="closeModals()">
-    <section class="ha-auth-modal" (click)="$event.stopPropagation()">
-      <button type="button" class="ha-modal-close" (click)="closeModals()">
-        ×
-      </button>
+    <div
+      class="ha-modal-backdrop"
+      (click)="closeModals()"
+      (keydown.escape)="closeModals()">
 
-      <div class="ha-auth-logo">HA</div>
+      <dialog
+        open
+        class="ha-auth-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeModals(); $event.stopPropagation()">
 
-      <h2>Welcome Back</h2>
-
-      <p>
-        Sign in with your registered HealthAxis account.
-      </p>
-
-      <form
-        class="ha-auth-form"
-        #loginFormRef="ngForm"
-        (ngSubmit)="submitLogin(loginFormRef)"
-        novalidate>
-
-        <label>
-          Email
-
-          <input
-            type="email"
-            name="usernameOrEmail"
-            placeholder="Enter email"
-            required
-            email
-            [(ngModel)]="loginForm.usernameOrEmail"
-            #usernameOrEmail="ngModel" />
-        </label>
-
-        @if (usernameOrEmail.invalid && usernameOrEmail.touched) {
-          <div class="ha-field-error">
-            Enter a valid email address.
-          </div>
-        }
-
-        <label>
-          Password
-
-          <input
-            type="password"
-            name="loginPassword"
-            placeholder="Enter password"
-            required
-            [(ngModel)]="loginForm.password"
-            #loginPassword="ngModel" />
-        </label>
-
-        @if (loginPassword.invalid && loginPassword.touched) {
-          <div class="ha-field-error">
-            Password is required.
-          </div>
-        }
-
-        @if (loginMessage) {
-          <div class="ha-form-message">
-            {{ loginMessage }}
-          </div>
-        }
-
-        <button
-          type="submit"
-          class="ha-auth-submit"
-          [disabled]="isSubmittingLogin">
-          {{ isSubmittingLogin ? 'Please wait...' : 'Login' }}
+        <button type="button" class="ha-modal-close" (click)="closeModals()">
+          ×
         </button>
-      </form>
 
-      <div class="ha-auth-switch">
-        New patient?
-        <button type="button" (click)="openSignupModal()">
-          Create patient account
-        </button>
-      </div>
-    </section>
-  </div>
-}
+        <div class="ha-auth-logo">HA</div>
+
+        <h2>Welcome Back</h2>
+
+        <p>
+          Sign in with your registered HealthAxis account.
+        </p>
+
+        <form
+          class="ha-auth-form"
+          #loginFormRef="ngForm"
+          (ngSubmit)="submitLogin(loginFormRef)"
+          novalidate>
+
+          <label>
+            Email
+
+            <input
+              type="email"
+              name="usernameOrEmail"
+              placeholder="Enter email"
+              required
+              email
+              [(ngModel)]="loginForm.usernameOrEmail"
+              #usernameOrEmail="ngModel" />
+          </label>
+
+          @if (usernameOrEmail.invalid && usernameOrEmail.touched) {
+            <div class="ha-field-error">
+              Enter a valid email address.
+            </div>
+          }
+
+          <label>
+            Password
+
+            <input
+              type="password"
+              name="loginPassword"
+              placeholder="Enter password"
+              required
+              [(ngModel)]="loginForm.password"
+              #loginPassword="ngModel" />
+          </label>
+
+          @if (loginPassword.invalid && loginPassword.touched) {
+            <div class="ha-field-error">
+              Password is required.
+            </div>
+          }
+
+          @if (loginMessage) {
+            <div class="ha-form-message">
+              {{ loginMessage }}
+            </div>
+          }
+
+          <button
+            type="submit"
+            class="ha-auth-submit"
+            [disabled]="isSubmittingLogin">
+            {{ isSubmittingLogin ? 'Please wait...' : 'Login' }}
+          </button>
+        </form>
+
+        <div class="ha-auth-switch">
+          New patient?
+          <button type="button" (click)="openSignupModal()">
+            Create patient account
+          </button>
+        </div>
+      </dialog>
+    </div>
+  }
 
   @if (isSignupModalOpen) {
-    <div class="ha-modal-backdrop" (click)="closeModals()">
-      <section class="ha-auth-modal ha-signup-modal" (click)="$event.stopPropagation()">
+    <div
+      class="ha-modal-backdrop"
+      (click)="closeModals()"
+      (keydown.escape)="closeModals()">
+
+      <dialog
+        open
+        class="ha-auth-modal ha-signup-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeModals(); $event.stopPropagation()">
+
         <button type="button" class="ha-modal-close" (click)="closeModals()">
           ×
         </button>
@@ -522,7 +540,7 @@
             Login
           </button>
         </div>
-      </section>
+      </dialog>
     </div>
   }
 </div>

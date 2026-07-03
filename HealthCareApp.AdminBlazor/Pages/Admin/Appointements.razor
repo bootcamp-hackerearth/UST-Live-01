@@ -6,6 +6,7 @@
 @using HealthCareApp.Shared.Dtos.Pagination
 @using HealthCareApp.Shared.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
+@using System.Globalization
 
 @inject IAuthService AuthService
 @inject IAppointmentAdminService AppointmentService
@@ -229,7 +230,10 @@ else
 
         @if (IsShowingPeopleList)
         {
-            @if (!FilteredPeople.Any())
+            var filteredPeopleList = GetFilteredPeopleList();
+            var pagedFilteredPeople = GetPagedFilteredPeople(filteredPeopleList);
+
+            if (!filteredPeopleList.Any())
             {
                 <div class="hc-empty-state ha-empty-state">
                     <div class="hc-empty-icon">◉</div>
@@ -254,7 +258,7 @@ else
                         </thead>
 
                         <tbody>
-                            @foreach (var person in PagedFilteredPeople)
+                            @foreach (var person in pagedFilteredPeople)
                             {
                                 <tr>
                                     <td>
@@ -513,7 +517,8 @@ else
     {
         get
         {
-            return appointments.Count(a => ParseDate(a.ScheduledDate).Date == DateTime.Today);
+            return appointments.Count(appointment =>
+                ParseDate(appointment.ScheduledDate).Date == DateTime.Today);
         }
     }
 
@@ -521,7 +526,8 @@ else
     {
         get
         {
-            return appointments.Count(a => ParseDate(a.ScheduledDate).Date > DateTime.Today);
+            return appointments.Count(appointment =>
+                ParseDate(appointment.ScheduledDate).Date > DateTime.Today);
         }
     }
 
@@ -581,26 +587,31 @@ else
             {
                 people = people.Where(person =>
                     person.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    person.Id.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                    person.Id.ToString(CultureInfo.InvariantCulture).Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
             }
 
             return people.OrderBy(person => person.Name);
         }
     }
 
-    private List<AppointmentFilterPersonDto> FilteredPeopleList
+    private List<AppointmentFilterPersonDto> GetFilteredPeopleList()
     {
-        get
-        {
-            return FilteredPeople.ToList();
-        }
+        return FilteredPeople.ToList();
+    }
+
+    private IEnumerable<AppointmentFilterPersonDto> GetPagedFilteredPeople(
+        List<AppointmentFilterPersonDto> filteredPeopleList)
+    {
+        return filteredPeopleList
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize);
     }
 
     private int PeopleTotalRecords
     {
         get
         {
-            return FilteredPeopleList.Count;
+            return GetFilteredPeopleList().Count;
         }
     }
 
@@ -642,16 +653,6 @@ else
             }
 
             return calculatedEnd;
-        }
-    }
-
-    private IEnumerable<AppointmentFilterPersonDto> PagedFilteredPeople
-    {
-        get
-        {
-            return FilteredPeopleList
-                .Skip((currentPage - 1) * pageSize)
-                .Take(pageSize);
         }
     }
 
@@ -812,7 +813,7 @@ else
     {
         get
         {
-            return selectedDailySummaryDate.ToString("yyyy-MM-dd");
+            return selectedDailySummaryDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         }
     }
 
@@ -871,7 +872,7 @@ else
 
             dailyStatusSummary = new AppointmentDailyStatusSummaryDto
             {
-                Date = selectedDailySummaryDate.ToString("yyyy-MM-dd")
+                Date = selectedDailySummaryDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
             };
         }
         catch (System.Net.Http.HttpRequestException)
@@ -880,7 +881,7 @@ else
 
             dailyStatusSummary = new AppointmentDailyStatusSummaryDto
             {
-                Date = selectedDailySummaryDate.ToString("yyyy-MM-dd")
+                Date = selectedDailySummaryDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
             };
         }
         finally
@@ -1020,14 +1021,18 @@ else
         if (DateTime.TryParseExact(
                 trimmedValue,
                 allowedFormats,
-                System.Globalization.CultureInfo.InvariantCulture,
-                System.Globalization.DateTimeStyles.None,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
                 out var exactDate))
         {
             return exactDate.Date;
         }
 
-        if (DateTime.TryParse(trimmedValue, out var parsedDate))
+        if (DateTime.TryParse(
+                trimmedValue,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var parsedDate))
         {
             return parsedDate.Date;
         }
@@ -1037,7 +1042,11 @@ else
 
     private async Task OnDailySummaryDateChanged(ChangeEventArgs args)
     {
-        if (DateTime.TryParse(args.Value?.ToString(), out var selectedDate))
+        if (DateTime.TryParse(
+                args.Value?.ToString(),
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var selectedDate))
         {
             selectedDailySummaryDate = selectedDate.Date;
 
@@ -1074,7 +1083,6 @@ else
         }
         catch (TaskCanceledException)
         {
-            // Ignore cancelled search request.
         }
     }
 
@@ -1132,7 +1140,7 @@ else
 
     private async Task OnPageSizeChanged(ChangeEventArgs args)
     {
-        if (int.TryParse(args.Value?.ToString(), out var selectedPageSize))
+        if (int.TryParse(args.Value?.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var selectedPageSize))
         {
             pageSize = selectedPageSize;
 
@@ -1213,9 +1221,13 @@ else
 
     private static DateTime ParseDate(string date)
     {
-        return DateTime.TryParse(date, out var parsedDate)
-            ? parsedDate
-            : DateTime.MinValue;
+        return DateTime.TryParse(
+            date,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out var parsedDate)
+                ? parsedDate
+                : DateTime.MinValue;
     }
 
     private static string FormatDate(DateTime date)
@@ -1225,7 +1237,7 @@ else
             return "Not Available";
         }
 
-        return date.ToString("dd MMM yyyy");
+        return date.ToString("dd MMM yyyy", CultureInfo.InvariantCulture);
     }
 
     private static string GetInitials(string? fullName)
@@ -1241,13 +1253,13 @@ else
         {
             if (parts[0].Length >= 2)
             {
-                return parts[0][..2].ToUpper();
+                return parts[0][..2].ToUpper(CultureInfo.InvariantCulture);
             }
 
-            return parts[0].ToUpper();
+            return parts[0].ToUpper(CultureInfo.InvariantCulture);
         }
 
-        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper(CultureInfo.InvariantCulture);
     }
 
     private static string GetStatusBadgeClass(AppointmentStatus status)

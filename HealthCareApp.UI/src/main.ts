@@ -11,4 +11,4 @@ async function main(): Promise<void> {
   }
 }
 
-void main();
+void main(); // NOSONAR: Top-level await is not supported by the configured browser targets.

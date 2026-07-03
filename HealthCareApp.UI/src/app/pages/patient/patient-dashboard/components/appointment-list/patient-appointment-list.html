@@ -260,9 +260,16 @@
   }
 
   @if (isCancelModalOpen && selectedAppointment) {
-    <div class="al-modal-backdrop" (click)="closeCancelModal()">
+    <div
+      class="al-modal-backdrop"
+      (click)="closeCancelModal()"
+      (keydown.escape)="closeCancelModal()">
 
-      <section class="al-cancel-modal" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="al-cancel-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeCancelModal(); $event.stopPropagation()">
 
         <div class="al-modal-accent"></div>
 
@@ -328,7 +335,7 @@
           </button>
         </div>
 
-      </section>
+      </dialog>
 
     </div>
   }

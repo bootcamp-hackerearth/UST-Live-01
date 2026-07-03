@@ -103,7 +103,6 @@
               </button>
             }
 
-          
           </div>
         }
 
@@ -200,7 +199,8 @@
           <h4>Select Time Slot</h4>
 
           <p>
-Booked and past time slots are shown in red and cannot be selected.          </p>
+            Booked and past time slots are shown in red and cannot be selected.
+          </p>
         </div>
 
         @if (isLoadingSlots) {
@@ -217,17 +217,17 @@ Booked and past time slots are shown in red and cannot be selected.          </p
 
         @if (!isLoadingSlots && timeSlots.length > 0) {
           <div class="ba-slot-grid">
-         @for (slot of timeSlots; track slot.timeSlot) {
-  <button
-    type="button"
-    [class]="getSlotClass(slot)"
-    [disabled]="isTimeSlotDisabled(slot)"
-    (click)="selectTimeSlot(slot)">
+            @for (slot of timeSlots; track slot.timeSlot) {
+              <button
+                type="button"
+                [class]="getSlotClass(slot)"
+                [disabled]="isTimeSlotDisabled(slot)"
+                (click)="selectTimeSlot(slot)">
 
-    <strong>{{ slot.timeSlot }}</strong>
-    <span>{{ getSlotStatus(slot) }}</span>
-  </button>
-}
+                <strong>{{ slot.timeSlot }}</strong>
+                <span>{{ getSlotStatus(slot) }}</span>
+              </button>
+            }
           </div>
         }
       </section>
@@ -256,9 +256,16 @@ Booked and past time slots are shown in red and cannot be selected.          </p
   </form>
 
   @if (isBookingConfirmOpen && selectedDoctor) {
-    <div class="ba-confirm-backdrop" (click)="closeBookingConfirm()">
+    <div
+      class="ba-confirm-backdrop"
+      (click)="closeBookingConfirm()"
+      (keydown.escape)="closeBookingConfirm()">
 
-      <section class="ba-confirm-modal" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="ba-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeBookingConfirm(); $event.stopPropagation()">
 
         <div class="ba-confirm-icon">
           ✓
@@ -316,7 +323,7 @@ Booked and past time slots are shown in red and cannot be selected.          </p
           </button>
         </div>
 
-      </section>
+      </dialog>
 
     </div>
   }

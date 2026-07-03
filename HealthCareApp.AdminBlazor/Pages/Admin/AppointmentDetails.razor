@@ -4,6 +4,7 @@
 @using HealthCareApp.Shared.Dtos.Appointments
 @using HealthCareApp.Shared.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
+@using System.Globalization
 
 @inject IAuthService AuthService
 @inject IAppointmentAdminService AppointmentService
@@ -199,7 +200,11 @@ else if (appointment is not null)
                 return;
             }
 
-            if (!DateTime.TryParse(appointment.ScheduledDate, out scheduledDate))
+            if (!DateTime.TryParse(
+           appointment.ScheduledDate,
+           CultureInfo.InvariantCulture,
+           DateTimeStyles.None,
+           out scheduledDate))
             {
                 scheduledDate = DateTime.MinValue;
             }

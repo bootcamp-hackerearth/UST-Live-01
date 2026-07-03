@@ -5,7 +5,6 @@ using System.Text.Json;
 
 namespace HealthCareApp.AdminBlazor.Auth
 {
-
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
         private const string TokenStorageKey = "token";
@@ -38,7 +37,7 @@ namespace HealthCareApp.AdminBlazor.Auth
 
             var claims = ParseClaimsFromJwt(token);
 
-            if (!claims.Any())
+            if (claims.Count == 0)
             {
                 return CreateAnonymousAuthenticationState();
             }
@@ -76,14 +75,14 @@ namespace HealthCareApp.AdminBlazor.Auth
             return new ClaimsPrincipal(new ClaimsIdentity());
         }
 
-        private static ClaimsPrincipal CreateAuthenticatedUser(IEnumerable<Claim> claims)
+        private static ClaimsPrincipal CreateAuthenticatedUser(List<Claim> claims)
         {
             var identity = new ClaimsIdentity(claims, AuthenticationType);
 
             return new ClaimsPrincipal(identity);
         }
 
-        private static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
+        private static List<Claim> ParseClaimsFromJwt(string jwt)
         {
             var claims = new List<Claim>();
 
@@ -133,6 +132,7 @@ namespace HealthCareApp.AdminBlazor.Auth
 
             return Convert.FromBase64String(base64);
         }
+
         private static string AddBase64Padding(string base64)
         {
             int remainder = base64.Length % 4;

@@ -279,9 +279,16 @@
   }
 
   @if (isConfirmModalOpen && selectedAppointment) {
-    <div class="da-modal-backdrop" (click)="closeConfirmModal()">
+    <div
+      class="da-modal-backdrop"
+      (click)="closeConfirmModal()"
+      (keydown.escape)="closeConfirmModal()">
 
-      <section class="da-action-modal" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="da-action-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeConfirmModal(); $event.stopPropagation()">
 
         <div class="da-modal-accent"></div>
 
@@ -340,15 +347,22 @@
           </button>
         </div>
 
-      </section>
+      </dialog>
 
     </div>
   }
 
   @if (isHealthRecordModalOpen && selectedAppointment) {
-    <div class="da-modal-backdrop" (click)="requestCloseHealthRecordModal()">
+    <div
+      class="da-modal-backdrop"
+      (click)="requestCloseHealthRecordModal()"
+      (keydown.escape)="requestCloseHealthRecordModal()">
 
-      <section class="da-action-modal wide" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="da-action-modal wide"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="requestCloseHealthRecordModal(); $event.stopPropagation()">
 
         <div class="da-modal-accent complete"></div>
 
@@ -469,15 +483,22 @@
 
         </form>
 
-      </section>
+      </dialog>
 
     </div>
   }
 
   @if (isHealthRecordSaveConfirmOpen && selectedAppointment) {
-    <div class="da-modal-backdrop" (click)="closeHealthRecordSaveConfirm()">
+    <div
+      class="da-modal-backdrop"
+      (click)="closeHealthRecordSaveConfirm()"
+      (keydown.escape)="closeHealthRecordSaveConfirm()">
 
-      <section class="da-action-modal" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="da-action-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeHealthRecordSaveConfirm(); $event.stopPropagation()">
 
         <div class="da-modal-accent complete"></div>
 
@@ -530,15 +551,22 @@
           </button>
         </div>
 
-      </section>
+      </dialog>
 
     </div>
   }
 
   @if (isDiscardHealthRecordModalOpen) {
-    <div class="da-modal-backdrop" (click)="closeDiscardHealthRecordModal()">
+    <div
+      class="da-modal-backdrop"
+      (click)="closeDiscardHealthRecordModal()"
+      (keydown.escape)="closeDiscardHealthRecordModal()">
 
-      <section class="da-action-modal" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="da-action-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeDiscardHealthRecordModal(); $event.stopPropagation()">
 
         <div class="da-modal-accent danger"></div>
 
@@ -583,7 +611,7 @@
           </button>
         </div>
 
-      </section>
+      </dialog>
 
     </div>
   }

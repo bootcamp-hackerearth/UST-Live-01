@@ -1,7 +1,12 @@
 <div class="pd-page" [class.pd-sidebar-open]="isSidebarOpen">
 
   @if (isSidebarOpen) {
-    <div class="pd-sidebar-overlay" (click)="closeSidebar()"></div>
+    <button
+      type="button"
+      class="pd-sidebar-overlay"
+      aria-label="Close sidebar"
+      (click)="closeSidebar()">
+    </button>
   }
 
   <aside class="pd-sidebar" [class.open]="isSidebarOpen">
@@ -371,9 +376,16 @@
   </main>
 
   @if (isLogoutModalOpen) {
-    <div class="pd-confirm-backdrop" (click)="closeLogoutModal()">
+    <div
+      class="pd-confirm-backdrop"
+      (click)="closeLogoutModal()"
+      (keydown.escape)="closeLogoutModal()">
 
-      <section class="pd-confirm-modal" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="pd-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeLogoutModal(); $event.stopPropagation()">
 
         <div class="pd-confirm-icon">
           ↪
@@ -405,7 +417,7 @@
           </button>
         </div>
 
-      </section>
+      </dialog>
 
     </div>
   }

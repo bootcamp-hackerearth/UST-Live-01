@@ -383,9 +383,16 @@
   }
 
   @if (isProfileSaveConfirmModalOpen) {
-    <div class="pp-confirm-backdrop" (click)="closeProfileSaveConfirmModal()">
+    <div
+      class="pp-confirm-backdrop"
+      (click)="closeProfileSaveConfirmModal()"
+      (keydown.escape)="closeProfileSaveConfirmModal()">
 
-      <section class="pp-confirm-modal" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="pp-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeProfileSaveConfirmModal(); $event.stopPropagation()">
 
         <div class="pp-confirm-icon success">
           ✓
@@ -415,15 +422,22 @@
           </button>
         </div>
 
-      </section>
+      </dialog>
 
     </div>
   }
 
   @if (isDiscardProfileModalOpen) {
-    <div class="pp-confirm-backdrop" (click)="closeDiscardProfileModal()">
+    <div
+      class="pp-confirm-backdrop"
+      (click)="closeDiscardProfileModal()"
+      (keydown.escape)="closeDiscardProfileModal()">
 
-      <section class="pp-confirm-modal" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="pp-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeDiscardProfileModal(); $event.stopPropagation()">
 
         <div class="pp-confirm-icon warning">
           !
@@ -453,15 +467,22 @@
           </button>
         </div>
 
-      </section>
+      </dialog>
 
     </div>
   }
 
   @if (isDiscardPasswordModalOpen) {
-    <div class="pp-confirm-backdrop" (click)="closeDiscardPasswordModal()">
+    <div
+      class="pp-confirm-backdrop"
+      (click)="closeDiscardPasswordModal()"
+      (keydown.escape)="closeDiscardPasswordModal()">
 
-      <section class="pp-confirm-modal" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="pp-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeDiscardPasswordModal(); $event.stopPropagation()">
 
         <div class="pp-confirm-icon warning">
           !
@@ -491,15 +512,22 @@
           </button>
         </div>
 
-      </section>
+      </dialog>
 
     </div>
   }
 
   @if (isPasswordConfirmModalOpen) {
-    <div class="pp-confirm-backdrop" (click)="closePasswordConfirmModal()">
+    <div
+      class="pp-confirm-backdrop"
+      (click)="closePasswordConfirmModal()"
+      (keydown.escape)="closePasswordConfirmModal()">
 
-      <section class="pp-confirm-modal" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="pp-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closePasswordConfirmModal(); $event.stopPropagation()">
 
         <div class="pp-confirm-icon success">
           ✓
@@ -529,7 +557,7 @@
           </button>
         </div>
 
-      </section>
+      </dialog>
 
     </div>
   }

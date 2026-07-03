@@ -124,8 +124,10 @@
 
       @for (record of records; track record.healthRecordId) {
 
-        <article
+        <button
+          type="button"
           class="dr-record-card"
+          aria-label="View health record details"
           (click)="openDetails(record)">
 
           <div class="dr-record-top">
@@ -141,11 +143,9 @@
               <p>{{ formatDate(record.visitDate) }}</p>
             </div>
 
-            <button
-              type="button"
-              class="dr-view-btn">
+            <span class="dr-view-btn">
               View
-            </button>
+            </span>
           </div>
 
           <div class="dr-diagnosis-box">
@@ -174,7 +174,7 @@
             <small>Click to view full medical summary</small>
           </div>
 
-        </article>
+        </button>
 
       }
 
@@ -212,11 +212,14 @@
 
     <div
       class="dr-modal-backdrop"
-      (click)="closeModal()">
+      (click)="closeModal()"
+      (keydown.escape)="closeModal()">
 
-      <section
+      <dialog
+        open
         class="dr-modal"
-        (click)="$event.stopPropagation()">
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeModal(); $event.stopPropagation()">
 
         <div class="dr-modal-accent"></div>
 
@@ -279,7 +282,7 @@
 
         </div>
 
-      </section>
+      </dialog>
 
     </div>
 

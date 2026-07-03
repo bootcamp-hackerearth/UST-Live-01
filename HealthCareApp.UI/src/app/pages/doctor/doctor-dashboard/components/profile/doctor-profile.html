@@ -77,7 +77,7 @@
 
         <article class="dp-info-tile">
           <span>Status</span>
-          <strong>{{ getStatusText(doctor.isActive) }}</strong>
+          <strong>{{ getDoctorStatusText() }}</strong>
         </article>
 
         <article class="dp-info-tile">
@@ -216,9 +216,16 @@
   }
 
   @if (isDiscardPasswordModalOpen) {
-    <div class="dp-confirm-backdrop" (click)="closeDiscardPasswordModal()">
+    <div
+      class="dp-confirm-backdrop"
+      (click)="closeDiscardPasswordModal()"
+      (keydown.escape)="closeDiscardPasswordModal()">
 
-      <section class="dp-confirm-modal" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="dp-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeDiscardPasswordModal(); $event.stopPropagation()">
 
         <div class="dp-confirm-icon warning">
           !
@@ -248,15 +255,22 @@
           </button>
         </div>
 
-      </section>
+      </dialog>
 
     </div>
   }
 
   @if (isPasswordConfirmModalOpen) {
-    <div class="dp-confirm-backdrop" (click)="closePasswordConfirmModal()">
+    <div
+      class="dp-confirm-backdrop"
+      (click)="closePasswordConfirmModal()"
+      (keydown.escape)="closePasswordConfirmModal()">
 
-      <section class="dp-confirm-modal" (click)="$event.stopPropagation()">
+      <dialog
+        open
+        class="dp-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closePasswordConfirmModal(); $event.stopPropagation()">
 
         <div class="dp-confirm-icon success">
           ✓
@@ -286,7 +300,7 @@
           </button>
         </div>
 
-      </section>
+      </dialog>
 
     </div>
   }

@@ -5,6 +5,7 @@
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @using HealthCareApp.Shared.Constants
 @using HealthCareApp.Shared.Enums
+@using System.Globalization
 
 @inject IAuthService AuthService
 @inject IAppointmentAdminService AppointmentService
@@ -180,7 +181,11 @@ else
 
         DateTime scheduledDate;
 
-        if (!DateTime.TryParse(existingAppointment.ScheduledDate, out scheduledDate))
+        if (!DateTime.TryParse(
+                existingAppointment.ScheduledDate,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out scheduledDate))
         {
             scheduledDate = DateTime.Today;
         }
@@ -190,7 +195,7 @@ else
 
         appointment = new UpdateAppointmentDto
         {
-            AppointmentId = existingAppointment.AppointmentId.ToString(),
+            AppointmentId = existingAppointment.AppointmentId.ToString(CultureInfo.InvariantCulture),
             PatientName = existingAppointment.PatientName,
             DoctorName = existingAppointment.DoctorName,
             PatientId = existingAppointment.PatientId,
@@ -232,7 +237,7 @@ else
         Navigation.NavigateTo("/admin/appointments");
     }
 
-    private string GetStatusBadgeClass(AppointmentStatus status)
+    private static string GetStatusBadgeClass(AppointmentStatus status)
     {
         return status switch
         {

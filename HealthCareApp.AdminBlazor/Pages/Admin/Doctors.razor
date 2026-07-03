@@ -5,6 +5,7 @@
 @using HealthCareApp.Shared.Dtos.Pagination
 @using HealthCareApp.Shared.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
+@using System.Globalization
 
 @inject IAuthService AuthService
 @inject IDoctorAdminService DoctorService
@@ -53,13 +54,13 @@ else
         <div class="hc-doctor-stat-card green">
             <span>Active On This Page</span>
 
-            <strong>@doctors.Count(d => d.IsActive)</strong>
+            <strong>@doctors.Count(doctor => doctor.IsActive)</strong>
         </div>
 
         <div class="hc-doctor-stat-card red">
             <span>Inactive On This Page</span>
 
-            <strong>@doctors.Count(d => !d.IsActive)</strong>
+            <strong>@doctors.Count(doctor => !doctor.IsActive)</strong>
         </div>
 
         <div class="hc-doctor-stat-card purple">
@@ -279,9 +280,7 @@ else
                     <button class="@ConfirmStatusButtonClass"
                             disabled="@isUpdatingDoctorStatus"
                             @onclick="ConfirmDoctorStatusChange">
-                        @(isUpdatingDoctorStatus
-                            ? "Updating..."
-                            : selectedDoctorCurrentStatus ? "Yes, Deactivate" : "Yes, Activate")
+                        @DoctorStatusConfirmationButtonText
                     </button>
                 </div>
             </div>
@@ -360,16 +359,33 @@ else
         }
     }
 
+    private string DoctorStatusConfirmationButtonText
+    {
+        get
+        {
+            if (isUpdatingDoctorStatus)
+            {
+                return "Updating...";
+            }
+
+            if (selectedDoctorCurrentStatus)
+            {
+                return "Yes, Deactivate";
+            }
+
+            return "Yes, Activate";
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         var isAuthenticated = await AuthService.IsAuthenticatedAsync();
 
         if (!isAuthenticated)
         {
-
             Navigation.NavigateTo(
-                    "/login?sessionExpired=true",
-                    replace: true);
+                "/login?sessionExpired=true",
+                replace: true);
 
             return;
         }
@@ -465,6 +481,8 @@ else
 
         searchCancellationTokenSource?.Cancel();
 
+        searchCancellationTokenSource?.Dispose();
+
         searchCancellationTokenSource = new CancellationTokenSource();
 
         try
@@ -475,7 +493,6 @@ else
         }
         catch (TaskCanceledException)
         {
-            // Ignore cancelled search request.
         }
     }
 
@@ -499,7 +516,11 @@ else
 
     private async Task OnPageSizeChanged(ChangeEventArgs args)
     {
-        if (int.TryParse(args.Value?.ToString(), out var selectedPageSize))
+        if (int.TryParse(
+                args.Value?.ToString(),
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
+                out var selectedPageSize))
         {
             pageSize = selectedPageSize;
 
@@ -659,12 +680,12 @@ else
         {
             if (parts[0].Length >= 2)
             {
-                return parts[0][..2].ToUpper();
+                return parts[0][..2].ToUpper(CultureInfo.InvariantCulture);
             }
 
-            return parts[0].ToUpper();
+            return parts[0].ToUpper(CultureInfo.InvariantCulture);
         }
 
-        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper(CultureInfo.InvariantCulture);
     }
 }

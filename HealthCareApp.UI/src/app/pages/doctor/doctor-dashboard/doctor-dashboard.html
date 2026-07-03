@@ -1,9 +1,10 @@
 <section class="dd-page">
 
-<aside
-  class="dd-sidebar"
-  [class.open]="isSidebarOpen"
-  aria-label="Doctor dashboard navigation">
+  <aside
+    class="dd-sidebar"
+    [class.open]="isSidebarOpen"
+    aria-label="Doctor dashboard navigation">
+
     <div class="dd-brand">
       <div class="dd-brand-logo">
         HX
@@ -69,7 +70,12 @@
   </aside>
 
   @if (isSidebarOpen) {
-    <div class="dd-sidebar-overlay" (click)="closeSidebar()"></div>
+    <button
+      type="button"
+      class="dd-sidebar-overlay"
+      aria-label="Close doctor dashboard sidebar"
+      (click)="closeSidebar()">
+    </button>
   }
 
   <main class="dd-main">
@@ -248,12 +254,15 @@
               </div>
             </div>
 
-<aside
-  class="dd-chart-card"
-  aria-label="Doctor dashboard overview chart">              <div class="dd-donut-wrap">
+            <aside
+              class="dd-chart-card"
+              aria-label="Doctor dashboard overview chart">
+
+              <div class="dd-donut-wrap">
                 <div class="dd-donut" [style.background]="chartBackground">
                   <div class="dd-donut-center">
-<strong>{{ totalOverviewCount }}</strong>                    <span>Total Items</span>
+                    <strong>{{ totalOverviewCount }}</strong>
+                    <span>Total Items</span>
                   </div>
                 </div>
               </div>
@@ -468,81 +477,95 @@
   </main>
 
   @if (isTempPasswordConfirmOpen) {
-    <div class="dd-confirm-backdrop" (click)="closeTempPasswordConfirm()">
+    <button
+      type="button"
+      class="dd-confirm-backdrop"
+      aria-label="Close temporary password confirmation"
+      (click)="closeTempPasswordConfirm()">
+    </button>
 
-      <section class="dd-confirm-modal" (click)="$event.stopPropagation()">
+    <dialog
+      open
+      class="dd-confirm-modal"
+      (click)="$event.stopPropagation()"
+      (keydown.escape)="closeTempPasswordConfirm(); $event.stopPropagation()">
 
-        <div class="dd-confirm-icon success">
-          ✓
-        </div>
+      <div class="dd-confirm-icon success">
+        ✓
+      </div>
 
-        <span class="dd-confirm-kicker">Confirm Password Change</span>
+      <span class="dd-confirm-kicker">Confirm Password Change</span>
 
-        <h3>Change temporary password?</h3>
+      <h3>Change temporary password?</h3>
 
-        <p>
-          Your doctor dashboard will unlock after changing the temporary password.
-        </p>
+      <p>
+        Your doctor dashboard will unlock after changing the temporary password.
+      </p>
 
-        <div class="dd-confirm-actions">
-          <button
-            type="button"
-            class="dd-confirm-cancel"
-            [disabled]="isChangingTemporaryPassword"
-            (click)="closeTempPasswordConfirm()">
-            Review Again
-          </button>
+      <div class="dd-confirm-actions">
+        <button
+          type="button"
+          class="dd-confirm-cancel"
+          [disabled]="isChangingTemporaryPassword"
+          (click)="closeTempPasswordConfirm()">
+          Review Again
+        </button>
 
-          <button
-            type="button"
-            class="dd-confirm-primary"
-            [disabled]="isChangingTemporaryPassword"
-            (click)="confirmTemporaryPasswordChange()">
-            {{ isChangingTemporaryPassword ? 'Changing...' : 'Yes, Change Password' }}
-          </button>
-        </div>
+        <button
+          type="button"
+          class="dd-confirm-primary"
+          [disabled]="isChangingTemporaryPassword"
+          (click)="confirmTemporaryPasswordChange()">
+          {{ isChangingTemporaryPassword ? 'Changing...' : 'Yes, Change Password' }}
+        </button>
+      </div>
 
-      </section>
-
-    </div>
+    </dialog>
   }
 
   @if (isLogoutModalOpen) {
-    <div class="dd-confirm-backdrop" (click)="closeLogoutModal()">
+    <button
+      type="button"
+      class="dd-confirm-backdrop"
+      aria-label="Close logout confirmation"
+      (click)="closeLogoutModal()">
+    </button>
 
-      <section class="dd-confirm-modal danger" (click)="$event.stopPropagation()">
+    <dialog
+      open
+      class="dd-confirm-modal danger"
+      (click)="$event.stopPropagation()"
+      (keydown.escape)="closeLogoutModal(); $event.stopPropagation()">
 
-        <div class="dd-confirm-icon danger">
-          ↪
-        </div>
+      <div class="dd-confirm-icon danger">
+        ↪
+      </div>
 
-        <span class="dd-confirm-kicker danger-text">Logout Confirmation</span>
+      <span class="dd-confirm-kicker danger-text">Logout Confirmation</span>
 
-        <h3>Do you want to logout?</h3>
+      <h3>Do you want to logout?</h3>
 
-        <p>
-          You will be redirected to the HealthAxis home page.
-        </p>
+      <p>
+        You will be redirected to the HealthAxis home page.
+      </p>
 
-        <div class="dd-confirm-actions">
-          <button
-            type="button"
-            class="dd-confirm-cancel"
-            (click)="closeLogoutModal()">
-            Stay Logged In
-          </button>
+      <div class="dd-confirm-actions">
+        <button
+          type="button"
+          class="dd-confirm-cancel"
+          (click)="closeLogoutModal()">
+          Stay Logged In
+        </button>
 
-          <button
-            type="button"
-            class="dd-confirm-danger"
-            (click)="confirmLogout()">
-            Yes, Logout
-          </button>
-        </div>
+        <button
+          type="button"
+          class="dd-confirm-danger"
+          (click)="confirmLogout()">
+          Yes, Logout
+        </button>
+      </div>
 
-      </section>
-
-    </div>
+    </dialog>
   }
 
   @if (toastMessage) {
