@@ -1,5 +1,4 @@
 ﻿using HealthAxis.API.DTOs.Auth;
-using HealthAxis.API.Enums;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories;
 using HealthAxis.API.Services;
@@ -33,7 +32,7 @@ namespace HealthAxis.API.Tests.Services
         }
 
         [Fact]
-        public async Task RegisterPatientAsync_WhenPasswordsDoNotMatch_ReturnsFailure()
+        public async Task RegisterPatientAsync_WhenPasswordAndConfirmPasswordDoNotMatch_ReturnsFailure()
         {
             // Arrange
             RegisterPatientDto request = CreateRegisterPatientDto();
@@ -70,8 +69,8 @@ namespace HealthAxis.API.Tests.Services
                 .ReturnsAsync(new IdentityUser
                 {
                     Id = "existing-user-id",
-                    Email = request.Email,
-                    UserName = request.Email
+                    UserName = request.Email,
+                    Email = request.Email
                 });
 
             // Act
@@ -91,7 +90,7 @@ namespace HealthAxis.API.Tests.Services
         }
 
         [Fact]
-        public async Task RegisterPatientAsync_WhenValidRequest_ReturnsSuccess()
+        public async Task RegisterPatientAsync_WhenIdentityUserCreationFails_ReturnsFailureWithCreatedPatientId()
         {
             // Arrange
             RegisterPatientDto request = CreateRegisterPatientDto();
@@ -100,89 +99,13 @@ namespace HealthAxis.API.Tests.Services
             {
                 PatientId = 10,
                 FullName = request.FullName,
-                DateOfBirth = request.DateOfBirth,
-                Gender = request.Gender,
-                PhoneNumber = request.PhoneNumber,
-                Email = request.Email,
-                CreatedDate = DateTime.Now
-            };
-
-            _userManagerMock
-                .Setup(manager => manager.FindByEmailAsync(request.Email))
-                .ReturnsAsync((IdentityUser?)null);
-
-            _patientRepositoryMock
-                .Setup(repository => repository.CreateAsync(
-                    It.IsAny<Patient>(),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(createdPatient);
-
-            _userManagerMock
-                .Setup(manager => manager.CreateAsync(
-                    It.IsAny<IdentityUser>(),
-                    request.Password))
-                .Callback<IdentityUser, string>((user, _) =>
-                {
-                    user.Id = "new-user-id";
-                })
-                .ReturnsAsync(IdentityResult.Success);
-
-            _userManagerMock
-                .Setup(manager => manager.AddClaimAsync(
-                    It.IsAny<IdentityUser>(),
-                    It.Is<Claim>(claim =>
-                        claim.Type == ClaimTypes.Role &&
-                        claim.Value == "Patient")))
-                .ReturnsAsync(IdentityResult.Success);
-
-            _userManagerMock
-                .Setup(manager => manager.AddClaimAsync(
-                    It.IsAny<IdentityUser>(),
-                    It.Is<Claim>(claim =>
-                        claim.Type == "ReferenceId" &&
-                        claim.Value == createdPatient.PatientId.ToString())))
-                .ReturnsAsync(IdentityResult.Success);
-
-            // Act
-            var result = await _authService.RegisterPatientAsync(request);
-
-            // Assert
-            Assert.True(result.Success);
-            Assert.Equal("Patient registered successfully.", result.Message);
-            Assert.Equal("new-user-id", result.UserId);
-            Assert.Equal(createdPatient.PatientId, result.PatientId);
-
-            _patientRepositoryMock.Verify(
-                repository => repository.CreateAsync(
-                    It.IsAny<Patient>(),
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-
-            _userManagerMock.Verify(
-                manager => manager.AddClaimAsync(
-                    It.IsAny<IdentityUser>(),
-                    It.IsAny<Claim>()),
-                Times.Exactly(2));
-        }
-
-        [Fact]
-        public async Task RegisterPatientAsync_WhenIdentityCreateFails_ReturnsFailure()
-        {
-            // Arrange
-            RegisterPatientDto request = CreateRegisterPatientDto();
-
-            Patient createdPatient = new()
-            {
-                PatientId = 20,
-                FullName = request.FullName,
-                DateOfBirth = request.DateOfBirth,
-                Gender = request.Gender,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
-                CreatedDate = DateTime.Now
+                DateOfBirth = request.DateOfBirth,
+                Gender = request.Gender
             };
 
-            IdentityError error = new()
+            IdentityError identityError = new()
             {
                 Description = "Password is invalid."
             };
@@ -201,7 +124,7 @@ namespace HealthAxis.API.Tests.Services
                 .Setup(manager => manager.CreateAsync(
                     It.IsAny<IdentityUser>(),
                     request.Password))
-                .ReturnsAsync(IdentityResult.Failed(error));
+                .ReturnsAsync(IdentityResult.Failed(identityError));
 
             // Act
             var result = await _authService.RegisterPatientAsync(request);
@@ -211,26 +134,31 @@ namespace HealthAxis.API.Tests.Services
             Assert.Equal("Password is invalid.", result.Message);
             Assert.Equal(string.Empty, result.UserId);
             Assert.Equal(createdPatient.PatientId, result.PatientId);
+
+            _patientRepositoryMock.Verify(
+                repository => repository.CreateAsync(
+                    It.Is<Patient>(patient =>
+                        patient.FullName == request.FullName &&
+                        patient.Email == request.Email &&
+                        patient.PhoneNumber == request.PhoneNumber),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
-        public async Task RegisterPatientAsync_WhenRoleClaimFails_ReturnsFailure()
+        public async Task RegisterPatientAsync_WhenRoleClaimFails_ReturnsFailureWithCreatedPatientId()
         {
             // Arrange
             RegisterPatientDto request = CreateRegisterPatientDto();
 
             Patient createdPatient = new()
             {
-                PatientId = 30,
+                PatientId = 11,
                 FullName = request.FullName,
-                DateOfBirth = request.DateOfBirth,
-                Gender = request.Gender,
-                Email = request.Email,
-                PhoneNumber = request.PhoneNumber,
-                CreatedDate = DateTime.Now
+                Email = request.Email
             };
 
-            IdentityError error = new()
+            IdentityError identityError = new()
             {
                 Description = "Role claim failed."
             };
@@ -257,7 +185,7 @@ namespace HealthAxis.API.Tests.Services
                     It.Is<Claim>(claim =>
                         claim.Type == ClaimTypes.Role &&
                         claim.Value == "Patient")))
-                .ReturnsAsync(IdentityResult.Failed(error));
+                .ReturnsAsync(IdentityResult.Failed(identityError));
 
             // Act
             var result = await _authService.RegisterPatientAsync(request);
@@ -267,26 +195,29 @@ namespace HealthAxis.API.Tests.Services
             Assert.Equal("Role claim failed.", result.Message);
             Assert.Equal(string.Empty, result.UserId);
             Assert.Equal(createdPatient.PatientId, result.PatientId);
+
+            _userManagerMock.Verify(
+                manager => manager.AddClaimAsync(
+                    It.IsAny<IdentityUser>(),
+                    It.Is<Claim>(claim =>
+                        claim.Type == "ReferenceId")),
+                Times.Never);
         }
 
         [Fact]
-        public async Task RegisterPatientAsync_WhenReferenceIdClaimFails_ReturnsFailure()
+        public async Task RegisterPatientAsync_WhenReferenceClaimFails_ReturnsFailureWithCreatedPatientId()
         {
             // Arrange
             RegisterPatientDto request = CreateRegisterPatientDto();
 
             Patient createdPatient = new()
             {
-                PatientId = 40,
+                PatientId = 12,
                 FullName = request.FullName,
-                DateOfBirth = request.DateOfBirth,
-                Gender = request.Gender,
-                Email = request.Email,
-                PhoneNumber = request.PhoneNumber,
-                CreatedDate = DateTime.Now
+                Email = request.Email
             };
 
-            IdentityError error = new()
+            IdentityError identityError = new()
             {
                 Description = "Reference claim failed."
             };
@@ -321,7 +252,7 @@ namespace HealthAxis.API.Tests.Services
                     It.Is<Claim>(claim =>
                         claim.Type == "ReferenceId" &&
                         claim.Value == createdPatient.PatientId.ToString())))
-                .ReturnsAsync(IdentityResult.Failed(error));
+                .ReturnsAsync(IdentityResult.Failed(identityError));
 
             // Act
             var result = await _authService.RegisterPatientAsync(request);
@@ -334,14 +265,90 @@ namespace HealthAxis.API.Tests.Services
         }
 
         [Fact]
+        public async Task RegisterPatientAsync_WhenValidRequest_ReturnsSuccess()
+        {
+            // Arrange
+            RegisterPatientDto request = CreateRegisterPatientDto();
+
+            Patient createdPatient = new()
+            {
+                PatientId = 100,
+                FullName = request.FullName,
+                DateOfBirth = request.DateOfBirth,
+                Gender = request.Gender,
+                PhoneNumber = request.PhoneNumber,
+                Email = request.Email
+            };
+
+            _userManagerMock
+                .Setup(manager => manager.FindByEmailAsync(request.Email))
+                .ReturnsAsync((IdentityUser?)null);
+
+            _patientRepositoryMock
+                .Setup(repository => repository.CreateAsync(
+                    It.IsAny<Patient>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(createdPatient);
+
+            _userManagerMock
+                .Setup(manager => manager.CreateAsync(
+                    It.IsAny<IdentityUser>(),
+                    request.Password))
+                .ReturnsAsync(IdentityResult.Success);
+
+            _userManagerMock
+                .Setup(manager => manager.AddClaimAsync(
+                    It.IsAny<IdentityUser>(),
+                    It.Is<Claim>(claim =>
+                        claim.Type == ClaimTypes.Role &&
+                        claim.Value == "Patient")))
+                .ReturnsAsync(IdentityResult.Success);
+
+            _userManagerMock
+                .Setup(manager => manager.AddClaimAsync(
+                    It.IsAny<IdentityUser>(),
+                    It.Is<Claim>(claim =>
+                        claim.Type == "ReferenceId" &&
+                        claim.Value == createdPatient.PatientId.ToString())))
+                .ReturnsAsync(IdentityResult.Success);
+
+            // Act
+            var result = await _authService.RegisterPatientAsync(request);
+
+            // Assert
+            Assert.True(result.Success);
+            Assert.Equal("Patient registered successfully.", result.Message);
+            Assert.NotNull(result.UserId);
+            Assert.Equal(createdPatient.PatientId, result.PatientId);
+
+            _patientRepositoryMock.Verify(
+                repository => repository.CreateAsync(
+                    It.Is<Patient>(patient =>
+                        patient.FullName == request.FullName &&
+                        patient.Email == request.Email),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            _userManagerMock.Verify(
+                manager => manager.CreateAsync(
+                    It.Is<IdentityUser>(user =>
+                        user.UserName == request.Email &&
+                        user.Email == request.Email),
+                    request.Password),
+                Times.Once);
+
+            _userManagerMock.Verify(
+                manager => manager.AddClaimAsync(
+                    It.IsAny<IdentityUser>(),
+                    It.IsAny<Claim>()),
+                Times.Exactly(2));
+        }
+
+        [Fact]
         public async Task LoginAsync_WhenUserDoesNotExist_ReturnsFailure()
         {
             // Arrange
-            LoginDto request = new()
-            {
-                Email = "missing@test.com",
-                Password = "Password@123"
-            };
+            LoginDto request = CreateLoginDto();
 
             _userManagerMock
                 .Setup(manager => manager.FindByEmailAsync(request.Email))
@@ -356,23 +363,23 @@ namespace HealthAxis.API.Tests.Services
             Assert.Equal(string.Empty, result.AccessToken);
             Assert.Equal(string.Empty, result.RefreshToken);
             Assert.Equal(0, result.ExpiresIn);
+            Assert.Equal(string.Empty, result.UserId);
+            Assert.Equal(string.Empty, result.Email);
+            Assert.Equal(string.Empty, result.Role);
+            Assert.Equal(0, result.ReferenceId);
         }
 
         [Fact]
         public async Task LoginAsync_WhenPasswordIsInvalid_ReturnsFailure()
         {
             // Arrange
-            LoginDto request = new()
-            {
-                Email = "patient@test.com",
-                Password = "Wrong@123"
-            };
+            LoginDto request = CreateLoginDto();
 
             IdentityUser user = new()
             {
-                Id = "patient-user-id",
-                Email = request.Email,
-                UserName = request.Email
+                Id = "user-1",
+                UserName = request.Email,
+                Email = request.Email
             };
 
             _userManagerMock
@@ -391,29 +398,29 @@ namespace HealthAxis.API.Tests.Services
             Assert.Equal("Invalid email or password.", result.Message);
             Assert.Equal(string.Empty, result.AccessToken);
             Assert.Equal(string.Empty, result.RefreshToken);
+
+            _userManagerMock.Verify(
+                manager => manager.GetClaimsAsync(It.IsAny<IdentityUser>()),
+                Times.Never);
         }
 
         [Fact]
-        public async Task LoginAsync_WhenCredentialsAreValid_ReturnsTokenAndUserDetails()
+        public async Task LoginAsync_WhenValidCredentials_ReturnsTokensAndUserDetails()
         {
             // Arrange
-            LoginDto request = new()
-            {
-                Email = "patient@test.com",
-                Password = "Password@123"
-            };
+            LoginDto request = CreateLoginDto();
 
             IdentityUser user = new()
             {
-                Id = "patient-user-id",
-                Email = request.Email,
-                UserName = request.Email
+                Id = "user-1",
+                UserName = request.Email,
+                Email = request.Email
             };
 
-            List<Claim> claims = new()
+            IList<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Role, "Patient"),
-                new Claim("ReferenceId", "15")
+                new Claim("ReferenceId", "101")
             };
 
             _userManagerMock
@@ -431,8 +438,16 @@ namespace HealthAxis.API.Tests.Services
             _userManagerMock
                 .Setup(manager => manager.SetAuthenticationTokenAsync(
                     user,
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
+                    "HealthAxis",
+                    "RefreshToken",
+                    It.IsAny<string>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+            _userManagerMock
+                .Setup(manager => manager.SetAuthenticationTokenAsync(
+                    user,
+                    "HealthAxis",
+                    "RefreshTokenExpiryTime",
                     It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
 
@@ -444,41 +459,45 @@ namespace HealthAxis.API.Tests.Services
             Assert.Equal("Login successful.", result.Message);
             Assert.False(string.IsNullOrWhiteSpace(result.AccessToken));
             Assert.False(string.IsNullOrWhiteSpace(result.RefreshToken));
-            Assert.Equal(1800, result.ExpiresIn);
+            Assert.Equal(30 * 60, result.ExpiresIn);
             Assert.Equal(user.Id, result.UserId);
             Assert.Equal(user.Email, result.Email);
             Assert.Equal("Patient", result.Role);
-            Assert.Equal(15, result.ReferenceId);
+            Assert.Equal(101, result.ReferenceId);
 
             _userManagerMock.Verify(
                 manager => manager.SetAuthenticationTokenAsync(
                     user,
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
+                    "HealthAxis",
+                    "RefreshToken",
                     It.IsAny<string>()),
-                Times.Exactly(2));
+                Times.Once);
+
+            _userManagerMock.Verify(
+                manager => manager.SetAuthenticationTokenAsync(
+                    user,
+                    "HealthAxis",
+                    "RefreshTokenExpiryTime",
+                    It.IsAny<string>()),
+                Times.Once);
         }
 
         [Fact]
-        public async Task LoginAsync_WhenReferenceIdIsInvalid_ReturnsReferenceIdAsZero()
+        public async Task LoginAsync_WhenReferenceIdClaimIsInvalid_ReturnsReferenceIdAsZero()
         {
             // Arrange
-            LoginDto request = new()
-            {
-                Email = "patient@test.com",
-                Password = "Password@123"
-            };
+            LoginDto request = CreateLoginDto();
 
             IdentityUser user = new()
             {
-                Id = "patient-user-id",
-                Email = request.Email,
-                UserName = request.Email
+                Id = "user-2",
+                UserName = request.Email,
+                Email = request.Email
             };
 
-            List<Claim> claims = new()
+            IList<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Role, "Patient"),
+                new Claim(ClaimTypes.Role, "Doctor"),
                 new Claim("ReferenceId", "invalid-reference-id")
             };
 
@@ -507,6 +526,49 @@ namespace HealthAxis.API.Tests.Services
 
             // Assert
             Assert.True(result.Success);
+            Assert.Equal("Doctor", result.Role);
+            Assert.Equal(0, result.ReferenceId);
+        }
+
+        [Fact]
+        public async Task LoginAsync_WhenRoleAndReferenceClaimsAreMissing_ReturnsEmptyRoleAndZeroReferenceId()
+        {
+            // Arrange
+            LoginDto request = CreateLoginDto();
+
+            IdentityUser user = new()
+            {
+                Id = "user-3",
+                UserName = request.Email,
+                Email = request.Email
+            };
+
+            _userManagerMock
+                .Setup(manager => manager.FindByEmailAsync(request.Email))
+                .ReturnsAsync(user);
+
+            _userManagerMock
+                .Setup(manager => manager.CheckPasswordAsync(user, request.Password))
+                .ReturnsAsync(true);
+
+            _userManagerMock
+                .Setup(manager => manager.GetClaimsAsync(user))
+                .ReturnsAsync(new List<Claim>());
+
+            _userManagerMock
+                .Setup(manager => manager.SetAuthenticationTokenAsync(
+                    user,
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(IdentityResult.Success);
+
+            // Act
+            var result = await _authService.LoginAsync(request);
+
+            // Assert
+            Assert.True(result.Success);
+            Assert.Equal(string.Empty, result.Role);
             Assert.Equal(0, result.ReferenceId);
         }
 
@@ -516,7 +578,7 @@ namespace HealthAxis.API.Tests.Services
             // Arrange
             RefreshTokenDto request = new()
             {
-                UserId = "missing-user-id",
+                UserId = "invalid-user-id",
                 RefreshToken = "refresh-token"
             };
 
@@ -532,23 +594,23 @@ namespace HealthAxis.API.Tests.Services
             Assert.Equal("Invalid refresh token request.", result.Message);
             Assert.Equal(string.Empty, result.AccessToken);
             Assert.Equal(string.Empty, result.RefreshToken);
+            Assert.Equal(0, result.ExpiresIn);
         }
 
         [Fact]
-        public async Task RefreshTokenAsync_WhenRefreshTokenDoesNotMatch_ReturnsFailure()
+        public async Task RefreshTokenAsync_WhenStoredRefreshTokenDoesNotMatch_ReturnsFailure()
         {
             // Arrange
             RefreshTokenDto request = new()
             {
-                UserId = "user-id",
-                RefreshToken = "request-token"
+                UserId = "user-1",
+                RefreshToken = "request-refresh-token"
             };
 
             IdentityUser user = new()
             {
                 Id = request.UserId,
-                Email = "patient@test.com",
-                UserName = "patient@test.com"
+                Email = "patient@test.com"
             };
 
             _userManagerMock
@@ -558,9 +620,9 @@ namespace HealthAxis.API.Tests.Services
             _userManagerMock
                 .Setup(manager => manager.GetAuthenticationTokenAsync(
                     user,
-                    It.IsAny<string>(),
+                    "HealthAxis",
                     "RefreshToken"))
-                .ReturnsAsync("stored-token");
+                .ReturnsAsync("different-refresh-token");
 
             // Act
             var result = await _authService.RefreshTokenAsync(request);
@@ -568,23 +630,25 @@ namespace HealthAxis.API.Tests.Services
             // Assert
             Assert.False(result.Success);
             Assert.Equal("Invalid refresh token.", result.Message);
+            Assert.Equal(string.Empty, result.AccessToken);
+            Assert.Equal(string.Empty, result.RefreshToken);
+            Assert.Equal(0, result.ExpiresIn);
         }
 
         [Fact]
-        public async Task RefreshTokenAsync_WhenRefreshTokenExpiryMissing_ReturnsFailure()
+        public async Task RefreshTokenAsync_WhenExpiryValueIsMissing_ReturnsExpiredFailure()
         {
             // Arrange
             RefreshTokenDto request = new()
             {
-                UserId = "user-id",
-                RefreshToken = "valid-token"
+                UserId = "user-1",
+                RefreshToken = "valid-refresh-token"
             };
 
             IdentityUser user = new()
             {
                 Id = request.UserId,
-                Email = "patient@test.com",
-                UserName = "patient@test.com"
+                Email = "patient@test.com"
             };
 
             _userManagerMock
@@ -594,16 +658,16 @@ namespace HealthAxis.API.Tests.Services
             _userManagerMock
                 .Setup(manager => manager.GetAuthenticationTokenAsync(
                     user,
-                    It.IsAny<string>(),
+                    "HealthAxis",
                     "RefreshToken"))
                 .ReturnsAsync(request.RefreshToken);
 
             _userManagerMock
                 .Setup(manager => manager.GetAuthenticationTokenAsync(
                     user,
-                    It.IsAny<string>(),
+                    "HealthAxis",
                     "RefreshTokenExpiryTime"))
-                .ReturnsAsync(string.Empty);
+                .ReturnsAsync((string?)null);
 
             // Act
             var result = await _authService.RefreshTokenAsync(request);
@@ -614,20 +678,19 @@ namespace HealthAxis.API.Tests.Services
         }
 
         [Fact]
-        public async Task RefreshTokenAsync_WhenRefreshTokenExpired_ReturnsFailure()
+        public async Task RefreshTokenAsync_WhenExpiryValueIsInvalid_ReturnsExpiredFailure()
         {
             // Arrange
             RefreshTokenDto request = new()
             {
-                UserId = "user-id",
-                RefreshToken = "valid-token"
+                UserId = "user-1",
+                RefreshToken = "valid-refresh-token"
             };
 
             IdentityUser user = new()
             {
                 Id = request.UserId,
-                Email = "patient@test.com",
-                UserName = "patient@test.com"
+                Email = "patient@test.com"
             };
 
             _userManagerMock
@@ -637,14 +700,56 @@ namespace HealthAxis.API.Tests.Services
             _userManagerMock
                 .Setup(manager => manager.GetAuthenticationTokenAsync(
                     user,
-                    It.IsAny<string>(),
+                    "HealthAxis",
                     "RefreshToken"))
                 .ReturnsAsync(request.RefreshToken);
 
             _userManagerMock
                 .Setup(manager => manager.GetAuthenticationTokenAsync(
                     user,
-                    It.IsAny<string>(),
+                    "HealthAxis",
+                    "RefreshTokenExpiryTime"))
+                .ReturnsAsync("invalid-date");
+
+            // Act
+            var result = await _authService.RefreshTokenAsync(request);
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("Refresh token expired.", result.Message);
+        }
+
+        [Fact]
+        public async Task RefreshTokenAsync_WhenRefreshTokenIsExpired_ReturnsExpiredFailure()
+        {
+            // Arrange
+            RefreshTokenDto request = new()
+            {
+                UserId = "user-1",
+                RefreshToken = "valid-refresh-token"
+            };
+
+            IdentityUser user = new()
+            {
+                Id = request.UserId,
+                Email = "patient@test.com"
+            };
+
+            _userManagerMock
+                .Setup(manager => manager.FindByIdAsync(request.UserId))
+                .ReturnsAsync(user);
+
+            _userManagerMock
+                .Setup(manager => manager.GetAuthenticationTokenAsync(
+                    user,
+                    "HealthAxis",
+                    "RefreshToken"))
+                .ReturnsAsync(request.RefreshToken);
+
+            _userManagerMock
+                .Setup(manager => manager.GetAuthenticationTokenAsync(
+                    user,
+                    "HealthAxis",
                     "RefreshTokenExpiryTime"))
                 .ReturnsAsync(DateTime.UtcNow.AddDays(-1).ToString("O"));
 
@@ -654,29 +759,44 @@ namespace HealthAxis.API.Tests.Services
             // Assert
             Assert.False(result.Success);
             Assert.Equal("Refresh token expired.", result.Message);
+            Assert.Equal(string.Empty, result.AccessToken);
+            Assert.Equal(string.Empty, result.RefreshToken);
+            Assert.Equal(0, result.ExpiresIn);
+
+            _userManagerMock.Verify(
+                manager => manager.GetClaimsAsync(It.IsAny<IdentityUser>()),
+                Times.Never);
+
+            _userManagerMock.Verify(
+                manager => manager.SetAuthenticationTokenAsync(
+                    It.IsAny<IdentityUser>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                Times.Never);
         }
 
         [Fact]
-        public async Task RefreshTokenAsync_WhenRefreshTokenValid_ReturnsNewTokens()
+        public async Task RefreshTokenAsync_WhenValidRefreshToken_ReturnsNewTokens()
         {
             // Arrange
             RefreshTokenDto request = new()
             {
-                UserId = "user-id",
-                RefreshToken = "valid-token"
+                UserId = "user-1",
+                RefreshToken = "valid-refresh-token"
             };
 
             IdentityUser user = new()
             {
                 Id = request.UserId,
-                Email = "patient@test.com",
-                UserName = "patient@test.com"
+                UserName = "patient@test.com",
+                Email = "patient@test.com"
             };
 
-            List<Claim> claims = new()
+            IList<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Role, "Patient"),
-                new Claim("ReferenceId", "7")
+                new Claim("ReferenceId", "100")
             };
 
             _userManagerMock
@@ -686,14 +806,14 @@ namespace HealthAxis.API.Tests.Services
             _userManagerMock
                 .Setup(manager => manager.GetAuthenticationTokenAsync(
                     user,
-                    It.IsAny<string>(),
+                    "HealthAxis",
                     "RefreshToken"))
                 .ReturnsAsync(request.RefreshToken);
 
             _userManagerMock
                 .Setup(manager => manager.GetAuthenticationTokenAsync(
                     user,
-                    It.IsAny<string>(),
+                    "HealthAxis",
                     "RefreshTokenExpiryTime"))
                 .ReturnsAsync(DateTime.UtcNow.AddDays(1).ToString("O"));
 
@@ -717,15 +837,162 @@ namespace HealthAxis.API.Tests.Services
             Assert.Equal("Token refreshed successfully.", result.Message);
             Assert.False(string.IsNullOrWhiteSpace(result.AccessToken));
             Assert.False(string.IsNullOrWhiteSpace(result.RefreshToken));
-            Assert.Equal(1800, result.ExpiresIn);
+            Assert.Equal(30 * 60, result.ExpiresIn);
+            Assert.NotEqual(request.RefreshToken, result.RefreshToken);
 
             _userManagerMock.Verify(
                 manager => manager.SetAuthenticationTokenAsync(
                     user,
-                    It.IsAny<string>(),
+                    "HealthAxis",
+                    "RefreshToken",
+                    It.IsAny<string>()),
+                Times.Once);
+
+            _userManagerMock.Verify(
+                manager => manager.SetAuthenticationTokenAsync(
+                    user,
+                    "HealthAxis",
+                    "RefreshTokenExpiryTime",
+                    It.IsAny<string>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_WhenUserDoesNotExist_ReturnsFailure()
+        {
+            // Arrange
+            string userId = "invalid-user-id";
+            ChangePasswordDto request = CreateChangePasswordDto();
+
+            _userManagerMock
+                .Setup(manager => manager.FindByIdAsync(userId))
+                .ReturnsAsync((IdentityUser?)null);
+
+            // Act
+            var result = await _authService.ChangePasswordAsync(userId, request);
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("User not found.", result.Message);
+
+            _userManagerMock.Verify(
+                manager => manager.ChangePasswordAsync(
+                    It.IsAny<IdentityUser>(),
                     It.IsAny<string>(),
                     It.IsAny<string>()),
-                Times.Exactly(2));
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_WhenNewPasswordAndConfirmPasswordDoNotMatch_ReturnsFailure()
+        {
+            // Arrange
+            string userId = "user-1";
+
+            IdentityUser user = new()
+            {
+                Id = userId,
+                Email = "patient@test.com"
+            };
+
+            ChangePasswordDto request = CreateChangePasswordDto();
+            request.ConfirmPassword = "Different@123";
+
+            _userManagerMock
+                .Setup(manager => manager.FindByIdAsync(userId))
+                .ReturnsAsync(user);
+
+            // Act
+            var result = await _authService.ChangePasswordAsync(userId, request);
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("New password and confirm password do not match.", result.Message);
+
+            _userManagerMock.Verify(
+                manager => manager.ChangePasswordAsync(
+                    It.IsAny<IdentityUser>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_WhenIdentityChangePasswordFails_ReturnsFailureWithErrorMessage()
+        {
+            // Arrange
+            string userId = "user-1";
+
+            IdentityUser user = new()
+            {
+                Id = userId,
+                Email = "patient@test.com"
+            };
+
+            ChangePasswordDto request = CreateChangePasswordDto();
+
+            IdentityError identityError = new()
+            {
+                Description = "Current password is incorrect."
+            };
+
+            _userManagerMock
+                .Setup(manager => manager.FindByIdAsync(userId))
+                .ReturnsAsync(user);
+
+            _userManagerMock
+                .Setup(manager => manager.ChangePasswordAsync(
+                    user,
+                    request.CurrentPassword,
+                    request.NewPassword))
+                .ReturnsAsync(IdentityResult.Failed(identityError));
+
+            // Act
+            var result = await _authService.ChangePasswordAsync(userId, request);
+
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("Current password is incorrect.", result.Message);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_WhenValidRequest_ReturnsSuccess()
+        {
+            // Arrange
+            string userId = "user-1";
+
+            IdentityUser user = new()
+            {
+                Id = userId,
+                Email = "patient@test.com"
+            };
+
+            ChangePasswordDto request = CreateChangePasswordDto();
+
+            _userManagerMock
+                .Setup(manager => manager.FindByIdAsync(userId))
+                .ReturnsAsync(user);
+
+            _userManagerMock
+                .Setup(manager => manager.ChangePasswordAsync(
+                    user,
+                    request.CurrentPassword,
+                    request.NewPassword))
+                .ReturnsAsync(IdentityResult.Success);
+
+            // Act
+            var result = await _authService.ChangePasswordAsync(userId, request);
+
+            // Assert
+            Assert.True(result.Success);
+            Assert.Equal("Password changed successfully.", result.Message);
+
+            _userManagerMock.Verify(
+                manager => manager.ChangePasswordAsync(
+                    user,
+                    request.CurrentPassword,
+                    request.NewPassword),
+                Times.Once);
         }
 
         private static RegisterPatientDto CreateRegisterPatientDto()
@@ -734,36 +1001,55 @@ namespace HealthAxis.API.Tests.Services
             {
                 FullName = "Patient Test",
                 DateOfBirth = new DateTime(2000, 1, 1),
-                Gender = Gender.Male,
-                PhoneNumber = "9876543210",
+                Gender = default,
+                PhoneNumber = "9999999999",
                 Email = "patient@test.com",
-                Password = "Password@123",
-                ConfirmPassword = "Password@123"
+                Password = "Patient@123",
+                ConfirmPassword = "Patient@123"
+            };
+        }
+
+        private static LoginDto CreateLoginDto()
+        {
+            return new LoginDto
+            {
+                Email = "patient@test.com",
+                Password = "Patient@123"
+            };
+        }
+
+        private static ChangePasswordDto CreateChangePasswordDto()
+        {
+            return new ChangePasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
             };
         }
 
         private static IConfiguration CreateConfiguration()
         {
-            Dictionary<string, string?> configurationValues = new()
+            Dictionary<string, string?> settings = new()
             {
-                { "Jwt:Issuer", "HealthAxis.API" },
-                { "Jwt:Audience", "HealthAxis.Clients" },
-                { "Jwt:Key", "THIS_IS_A_DEVELOPMENT_SECRET_KEY_CHANGE_LATER_123456789" },
+                { "Jwt:Key", "ThisIsASecretKeyForJwtTokenTesting1234567890" },
+                { "Jwt:Issuer", "HealthAxisTestIssuer" },
+                { "Jwt:Audience", "HealthAxisTestAudience" },
                 { "Jwt:AccessTokenExpirationMinutes", "30" },
                 { "Jwt:RefreshTokenDays", "7" }
             };
 
             return new ConfigurationBuilder()
-                .AddInMemoryCollection(configurationValues)
+                .AddInMemoryCollection(settings)
                 .Build();
         }
 
         private static Mock<UserManager<IdentityUser>> CreateUserManagerMock()
         {
-            Mock<IUserStore<IdentityUser>> userStoreMock = new();
+            Mock<IUserStore<IdentityUser>> storeMock = new();
 
             return new Mock<UserManager<IdentityUser>>(
-                userStoreMock.Object,
+                storeMock.Object,
                 Mock.Of<IOptions<IdentityOptions>>(),
                 Mock.Of<IPasswordHasher<IdentityUser>>(),
                 Array.Empty<IUserValidator<IdentityUser>>(),

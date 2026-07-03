@@ -24,8 +24,8 @@ export class PatientLayout implements OnInit {
   isUserMenuOpen = false;
 
   constructor(
-    private tokenService: TokenService,
-    private router: Router
+    private readonly tokenService: TokenService,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {

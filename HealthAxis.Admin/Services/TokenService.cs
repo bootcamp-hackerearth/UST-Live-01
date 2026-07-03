@@ -12,6 +12,10 @@ namespace HealthAxis.Admin.Services
         private const string UserEmailKey = "healthaxis_user_email";
         private const string UserIdKey = "healthaxis_user_id";
 
+        private const string LocalStorageSetItem = "localStorage.setItem";
+        private const string LocalStorageGetItem = "localStorage.getItem";
+        private const string LocalStorageRemoveItem = "localStorage.removeItem";
+
         public TokenService(IJSRuntime jsRuntime)
         {
             _jsRuntime = jsRuntime;
@@ -25,27 +29,27 @@ namespace HealthAxis.Admin.Services
             string userId)
         {
             await _jsRuntime.InvokeVoidAsync(
-                "localStorage.setItem",
+                LocalStorageSetItem,
                 AccessTokenKey,
                 accessToken);
 
             await _jsRuntime.InvokeVoidAsync(
-                "localStorage.setItem",
+                LocalStorageSetItem,
                 RefreshTokenKey,
                 refreshToken);
 
             await _jsRuntime.InvokeVoidAsync(
-                "localStorage.setItem",
+                LocalStorageSetItem,
                 UserRoleKey,
                 role);
 
             await _jsRuntime.InvokeVoidAsync(
-                "localStorage.setItem",
+                LocalStorageSetItem,
                 UserEmailKey,
                 email);
 
             await _jsRuntime.InvokeVoidAsync(
-                "localStorage.setItem",
+                LocalStorageSetItem,
                 UserIdKey,
                 userId);
         }
@@ -53,37 +57,37 @@ namespace HealthAxis.Admin.Services
         public async Task<string?> GetAccessTokenAsync()
         {
             return await _jsRuntime.InvokeAsync<string?>(
-                "localStorage.getItem",
+                LocalStorageGetItem,
                 AccessTokenKey);
         }
 
         public async Task<string?> GetUserRoleAsync()
         {
             return await _jsRuntime.InvokeAsync<string?>(
-                "localStorage.getItem",
+                LocalStorageGetItem,
                 UserRoleKey);
         }
 
         public async Task ClearTokensAsync()
         {
             await _jsRuntime.InvokeVoidAsync(
-                "localStorage.removeItem",
+                LocalStorageRemoveItem,
                 AccessTokenKey);
 
             await _jsRuntime.InvokeVoidAsync(
-                "localStorage.removeItem",
+                LocalStorageRemoveItem,
                 RefreshTokenKey);
 
             await _jsRuntime.InvokeVoidAsync(
-                "localStorage.removeItem",
+                LocalStorageRemoveItem,
                 UserRoleKey);
 
             await _jsRuntime.InvokeVoidAsync(
-                "localStorage.removeItem",
+                LocalStorageRemoveItem,
                 UserEmailKey);
 
             await _jsRuntime.InvokeVoidAsync(
-                "localStorage.removeItem",
+                LocalStorageRemoveItem,
                 UserIdKey);
         }
     }

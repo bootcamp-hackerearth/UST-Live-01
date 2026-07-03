@@ -13,7 +13,7 @@ import { RegisterPatientRequest } from '../models/register-patient-request';
 export class AuthService {
   private readonly apiBaseUrl = 'https://localhost:7224/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   registerPatient(request: RegisterPatientRequest): Observable<unknown> {
     return this.http.post(`${this.apiBaseUrl}/auth/register`, request);
@@ -26,11 +26,10 @@ export class AuthService {
     );
   }
 
-  changePassword(request: ChangePasswordRequest) {
-  return this.http.put(
-    `${this.apiBaseUrl}/auth/change-password`,
-    request
-  );
+  changePassword(request: ChangePasswordRequest): Observable<unknown> {
+    return this.http.put(
+      `${this.apiBaseUrl}/auth/change-password`,
+      request
+    );
   }
-  
 }

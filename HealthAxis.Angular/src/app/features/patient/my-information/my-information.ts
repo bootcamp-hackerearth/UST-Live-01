@@ -32,8 +32,8 @@ export class MyInformation implements OnInit {
   };
 
   constructor(
-    private patientService: PatientService,
-    private tokenService: TokenService
+    private readonly patientService: PatientService,
+    private readonly tokenService: TokenService
   ) {}
 
   ngOnInit(): void {

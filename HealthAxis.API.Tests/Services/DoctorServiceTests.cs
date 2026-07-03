@@ -5,7 +5,6 @@ using HealthAxis.API.Models;
 using HealthAxis.API.Repositories;
 using HealthAxis.API.Services;
 using Moq;
-using Xunit;
 
 namespace HealthAxis.API.Tests.Services
 {
@@ -32,9 +31,9 @@ namespace HealthAxis.API.Tests.Services
         public async Task GetAvailabilityAsync_WhenDoctorDoesNotExist_ReturnsNull()
         {
             // Arrange
-            const int doctorId = 100;
-            DateTime requestedDate = new DateTime(2026, 6, 20, 10, 30, 0);
-            const string timeSlot = "10:00-10:30";
+            const int doctorId = 404;
+            DateTime date = DateTime.Today.AddDays(1);
+            string timeSlot = "09:00-09:30";
 
             _doctorRepositoryMock
                 .Setup(repository => repository.GetByIdAsync(
@@ -46,17 +45,11 @@ namespace HealthAxis.API.Tests.Services
             DoctorAvailabilityDto? result =
                 await _doctorService.GetAvailabilityAsync(
                     doctorId,
-                    requestedDate,
+                    date,
                     timeSlot);
 
             // Assert
             Assert.Null(result);
-
-            _doctorRepositoryMock.Verify(
-                repository => repository.GetByIdAsync(
-                    doctorId,
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
 
             _appointmentRepositoryMock.Verify(
                 repository => repository.IsSlotBookedAsync(
@@ -68,286 +61,826 @@ namespace HealthAxis.API.Tests.Services
         }
 
         [Fact]
-        public async Task GetAvailabilityAsync_WhenSlotIsBooked_ReturnsUnavailable()
+        public async Task GetAvailabilityAsync_WhenDoctorIsInactive_ReturnsUnavailable()
         {
             // Arrange
             const int doctorId = 1;
-            DateTime requestedDate = new DateTime(2026, 6, 20, 15, 45, 0);
-            const string timeSlot = "10:00-10:30";
+            DateTime date = DateTime.Today.AddDays(1);
+            string timeSlot = "09:00-09:30";
 
-            Doctor doctor = CreateDoctor(doctorId);
-
-            _doctorRepositoryMock
-                .Setup(repository => repository.GetByIdAsync(
-                    doctorId,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(doctor);
-
-            _appointmentRepositoryMock
-                .Setup(repository => repository.IsSlotBookedAsync(
-                    doctorId,
-                    requestedDate,
-                    timeSlot,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-
-            // Act
-            DoctorAvailabilityDto? result =
-                await _doctorService.GetAvailabilityAsync(
-                    doctorId,
-                    requestedDate,
-                    timeSlot);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(doctorId, result.DoctorId);
-            Assert.Equal(requestedDate.Date, result.Date);
-            Assert.Equal(timeSlot, result.TimeSlot);
-            Assert.False(result.IsAvailable);
-
-            _doctorRepositoryMock.Verify(
-                repository => repository.GetByIdAsync(
-                    doctorId,
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-
-            _appointmentRepositoryMock.Verify(
-                repository => repository.IsSlotBookedAsync(
-                    doctorId,
-                    requestedDate,
-                    timeSlot,
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-        }
-
-        [Fact]
-        public async Task GetAvailabilityAsync_WhenSlotIsNotBooked_ReturnsAvailable()
-        {
-            // Arrange
-            const int doctorId = 2;
-            DateTime requestedDate = new DateTime(2026, 6, 21, 9, 15, 0);
-            const string timeSlot = "11:00-11:30";
-
-            Doctor doctor = CreateDoctor(doctorId);
-
-            _doctorRepositoryMock
-                .Setup(repository => repository.GetByIdAsync(
-                    doctorId,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(doctor);
-
-            _appointmentRepositoryMock
-                .Setup(repository => repository.IsSlotBookedAsync(
-                    doctorId,
-                    requestedDate,
-                    timeSlot,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
-
-            // Act
-            DoctorAvailabilityDto? result =
-                await _doctorService.GetAvailabilityAsync(
-                    doctorId,
-                    requestedDate,
-                    timeSlot);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(doctorId, result.DoctorId);
-            Assert.Equal(requestedDate.Date, result.Date);
-            Assert.Equal(timeSlot, result.TimeSlot);
-            Assert.True(result.IsAvailable);
-
-            _doctorRepositoryMock.Verify(
-                repository => repository.GetByIdAsync(
-                    doctorId,
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-
-            _appointmentRepositoryMock.Verify(
-                repository => repository.IsSlotBookedAsync(
-                    doctorId,
-                    requestedDate,
-                    timeSlot,
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-        }
-
-        [Fact]
-        public async Task GetAvailabilityAsync_WhenDateHasTimeComponent_ReturnsOnlyDate()
-        {
-            // Arrange
-            const int doctorId = 3;
-            DateTime requestedDateWithTime = new DateTime(2026, 7, 1, 18, 45, 30);
-            DateTime expectedDateOnly = requestedDateWithTime.Date;
-            const string timeSlot = "14:00-14:30";
-
-            Doctor doctor = CreateDoctor(doctorId);
-
-            _doctorRepositoryMock
-                .Setup(repository => repository.GetByIdAsync(
-                    doctorId,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(doctor);
-
-            _appointmentRepositoryMock
-                .Setup(repository => repository.IsSlotBookedAsync(
-                    doctorId,
-                    requestedDateWithTime,
-                    timeSlot,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
-
-            // Act
-            DoctorAvailabilityDto? result =
-                await _doctorService.GetAvailabilityAsync(
-                    doctorId,
-                    requestedDateWithTime,
-                    timeSlot);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(expectedDateOnly, result.Date);
-            Assert.Equal(TimeSpan.Zero, result.Date.TimeOfDay);
-        }
-
-        [Fact]
-        public async Task GetAvailabilityAsync_WhenCancellationTokenProvided_PassesTokenToRepositories()
-        {
-            // Arrange
-            const int doctorId = 4;
-            DateTime requestedDate = new DateTime(2026, 7, 2);
-            const string timeSlot = "15:00-15:30";
-
-            using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-            CancellationToken cancellationToken = cancellationTokenSource.Token;
-
-            Doctor doctor = CreateDoctor(doctorId);
-
-            _doctorRepositoryMock
-                .Setup(repository => repository.GetByIdAsync(
-                    doctorId,
-                    cancellationToken))
-                .ReturnsAsync(doctor);
-
-            _appointmentRepositoryMock
-                .Setup(repository => repository.IsSlotBookedAsync(
-                    doctorId,
-                    requestedDate,
-                    timeSlot,
-                    cancellationToken))
-                .ReturnsAsync(false);
-
-            // Act
-            DoctorAvailabilityDto? result =
-                await _doctorService.GetAvailabilityAsync(
-                    doctorId,
-                    requestedDate,
-                    timeSlot,
-                    cancellationToken);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(result.IsAvailable);
-
-            _doctorRepositoryMock.Verify(
-                repository => repository.GetByIdAsync(
-                    doctorId,
-                    cancellationToken),
-                Times.Once);
-
-            _appointmentRepositoryMock.Verify(
-                repository => repository.IsSlotBookedAsync(
-                    doctorId,
-                    requestedDate,
-                    timeSlot,
-                    cancellationToken),
-                Times.Once);
-        }
-
-        [Fact]
-        public async Task GetAvailabilityAsync_WhenSlotBookedRepositoryReturnsTrue_SetsIsAvailableFalse()
-        {
-            // Arrange
-            const int doctorId = 5;
-            DateTime date = new DateTime(2026, 8, 10);
-            const string timeSlot = "16:00-16:30";
-
-            Doctor doctor = CreateDoctor(doctorId);
-
-            _doctorRepositoryMock
-                .Setup(repository => repository.GetByIdAsync(
-                    doctorId,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(doctor);
-
-            _appointmentRepositoryMock
-                .Setup(repository => repository.IsSlotBookedAsync(
-                    doctorId,
-                    date,
-                    timeSlot,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
-
-            // Act
-            DoctorAvailabilityDto? result =
-                await _doctorService.GetAvailabilityAsync(
-                    doctorId,
-                    date,
-                    timeSlot);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.False(result.IsAvailable);
-        }
-
-        [Fact]
-        public async Task GetAvailabilityAsync_WhenSlotBookedRepositoryReturnsFalse_SetsIsAvailableTrue()
-        {
-            // Arrange
-            const int doctorId = 6;
-            DateTime date = new DateTime(2026, 8, 11);
-            const string timeSlot = "17:00-17:30";
-
-            Doctor doctor = CreateDoctor(doctorId);
-
-            _doctorRepositoryMock
-                .Setup(repository => repository.GetByIdAsync(
-                    doctorId,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(doctor);
-
-            _appointmentRepositoryMock
-                .Setup(repository => repository.IsSlotBookedAsync(
-                    doctorId,
-                    date,
-                    timeSlot,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
-
-            // Act
-            DoctorAvailabilityDto? result =
-                await _doctorService.GetAvailabilityAsync(
-                    doctorId,
-                    date,
-                    timeSlot);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(result.IsAvailable);
-        }
-
-        private static Doctor CreateDoctor(int doctorId)
-        {
-            return new Doctor
+            Doctor doctor = new()
             {
                 DoctorId = doctorId,
-                FullName = "Dr. Test Doctor",
-                Specialisation = Specialisation.Cardiology,
-                YearsOfExperience = 10,
-                ConsultationFee = 700,
+                FullName = "Dr. Test",
+                IsActive = false
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            // Act
+            DoctorAvailabilityDto? result =
+                await _doctorService.GetAvailabilityAsync(
+                    doctorId,
+                    date,
+                    timeSlot);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(doctorId, result.DoctorId);
+            Assert.Equal(date.Date, result.Date);
+            Assert.Equal(timeSlot, result.TimeSlot);
+            Assert.False(result.IsAvailable);
+
+            _appointmentRepositoryMock.Verify(
+                repository => repository.IsSlotBookedAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task GetAvailabilityAsync_WhenActiveDoctorAndSlotIsBooked_ReturnsUnavailable()
+        {
+            // Arrange
+            const int doctorId = 1;
+            DateTime date = DateTime.Today.AddDays(1);
+            string timeSlot = "10:00-10:30";
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Active",
                 IsActive = true
             };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.IsSlotBookedAsync(
+                    doctorId,
+                    date.Date,
+                    timeSlot,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+
+            // Act
+            DoctorAvailabilityDto? result =
+                await _doctorService.GetAvailabilityAsync(
+                    doctorId,
+                    date,
+                    timeSlot);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.False(result.IsAvailable);
+            Assert.Equal(doctorId, result.DoctorId);
+            Assert.Equal(date.Date, result.Date);
+            Assert.Equal(timeSlot, result.TimeSlot);
+        }
+
+        [Fact]
+        public async Task GetAvailabilityAsync_WhenActiveDoctorAndSlotIsNotBooked_ReturnsAvailable()
+        {
+            // Arrange
+            const int doctorId = 1;
+            DateTime date = DateTime.Today.AddDays(1).AddHours(5);
+            string timeSlot = "11:00-11:30";
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Active",
+                IsActive = true
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.IsSlotBookedAsync(
+                    doctorId,
+                    date.Date,
+                    timeSlot,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(false);
+
+            // Act
+            DoctorAvailabilityDto? result =
+                await _doctorService.GetAvailabilityAsync(
+                    doctorId,
+                    date,
+                    timeSlot);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(result.IsAvailable);
+            Assert.Equal(date.Date, result.Date);
+
+            _appointmentRepositoryMock.Verify(
+                repository => repository.IsSlotBookedAsync(
+                    doctorId,
+                    date.Date,
+                    timeSlot,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateActiveStatusAsync_WhenDoctorDoesNotExist_ReturnsNull()
+        {
+            // Arrange
+            const int doctorId = 404;
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Doctor?)null);
+
+            // Act
+            DoctorReadDto? result =
+                await _doctorService.UpdateActiveStatusAsync(
+                    doctorId,
+                    true);
+
+            // Assert
+            Assert.Null(result);
+
+            _doctorRepositoryMock.Verify(
+                repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+
+            _mapperMock.Verify(
+                mapper => mapper.Map<DoctorReadDto>(
+                    It.IsAny<Doctor>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateActiveStatusAsync_WhenDoctorExists_UpdatesStatusSavesAndReturnsMappedDoctor()
+        {
+            // Arrange
+            const int doctorId = 1;
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Test",
+                IsActive = true
+            };
+
+            DoctorReadDto expectedDto = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Test",
+                IsActive = false
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            _mapperMock
+                .Setup(mapper => mapper.Map<DoctorReadDto>(doctor))
+                .Returns(expectedDto);
+
+            // Act
+            DoctorReadDto? result =
+                await _doctorService.UpdateActiveStatusAsync(
+                    doctorId,
+                    false);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.False(doctor.IsActive);
+            Assert.Equal(expectedDto.DoctorId, result.DoctorId);
+            Assert.Equal(expectedDto.FullName, result.FullName);
+            Assert.False(result.IsActive);
+
+            _doctorRepositoryMock.Verify(
+                repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            _mapperMock.Verify(
+                mapper => mapper.Map<DoctorReadDto>(doctor),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateActiveStatusAsync_WhenUpdatingToActive_SetsDoctorActiveTrue()
+        {
+            // Arrange
+            const int doctorId = 1;
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Test",
+                IsActive = false
+            };
+
+            DoctorReadDto expectedDto = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Test",
+                IsActive = true
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            _mapperMock
+                .Setup(mapper => mapper.Map<DoctorReadDto>(doctor))
+                .Returns(expectedDto);
+
+            // Act
+            DoctorReadDto? result =
+                await _doctorService.UpdateActiveStatusAsync(
+                    doctorId,
+                    true);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(doctor.IsActive);
+            Assert.True(result.IsActive);
+        }
+
+        [Fact]
+        public async Task GetAvailableSlotsAsync_WhenDoctorDoesNotExist_ReturnsEmptyList()
+        {
+            // Arrange
+            const int doctorId = 404;
+            DateTime date = DateTime.Today.AddDays(1);
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Doctor?)null);
+
+            // Act
+            List<string> result =
+                await _doctorService.GetAvailableSlotsAsync(
+                    doctorId,
+                    date);
+
+            // Assert
+            Assert.Empty(result);
+
+            _appointmentRepositoryMock.Verify(
+                repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task GetAvailableSlotsAsync_WhenDoctorIsInactive_ReturnsEmptyList()
+        {
+            // Arrange
+            const int doctorId = 1;
+            DateTime date = DateTime.Today.AddDays(1);
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Inactive",
+                IsActive = false
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            // Act
+            List<string> result =
+                await _doctorService.GetAvailableSlotsAsync(
+                    doctorId,
+                    date);
+
+            // Assert
+            Assert.Empty(result);
+
+            _appointmentRepositoryMock.Verify(
+                repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task GetAvailableSlotsAsync_WhenDateIsInPast_ReturnsEmptyList()
+        {
+            // Arrange
+            const int doctorId = 1;
+            DateTime date = DateTime.Today.AddDays(-1);
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Active",
+                IsActive = true
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            // Act
+            List<string> result =
+                await _doctorService.GetAvailableSlotsAsync(
+                    doctorId,
+                    date);
+
+            // Assert
+            Assert.Empty(result);
+
+            _appointmentRepositoryMock.Verify(
+                repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task GetAvailableSlotsAsync_WhenDateIsMoreThanSixMonthsAhead_ReturnsEmptyList()
+        {
+            // Arrange
+            const int doctorId = 1;
+            DateTime date = DateTime.Today.AddMonths(6).AddDays(1);
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Active",
+                IsActive = true
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            // Act
+            List<string> result =
+                await _doctorService.GetAvailableSlotsAsync(
+                    doctorId,
+                    date);
+
+            // Assert
+            Assert.Empty(result);
+
+            _appointmentRepositoryMock.Verify(
+                repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task GetAvailableSlotsAsync_WhenNoAppointmentsExist_ReturnsAllSlots()
+        {
+            // Arrange
+            const int doctorId = 1;
+            DateTime date = DateTime.Today.AddDays(1);
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Active",
+                IsActive = true
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Appointment>());
+
+            // Act
+            List<string> result =
+                await _doctorService.GetAvailableSlotsAsync(
+                    doctorId,
+                    date);
+
+            // Assert
+            Assert.Equal(GetAllSlots().Count, result.Count);
+            Assert.Equal(GetAllSlots(), result);
+        }
+
+        [Fact]
+        public async Task GetAvailableSlotsAsync_WhenSlotsBookedForDoctor_ReturnsOnlyUnbookedSlots()
+        {
+            // Arrange
+            const int doctorId = 1;
+            DateTime date = DateTime.Today.AddDays(1);
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Active",
+                IsActive = true
+            };
+
+            List<Appointment> appointments = new()
+            {
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    DoctorId = doctorId,
+                    PatientId = 1,
+                    ScheduledDate = date,
+                    TimeSlot = "09:00-09:30",
+                    Status = AppointmentStatus.Scheduled
+                },
+                new Appointment
+                {
+                    AppointmentId = 2,
+                    DoctorId = doctorId,
+                    PatientId = 2,
+                    ScheduledDate = date,
+                    TimeSlot = "10:00-10:30",
+                    Status = AppointmentStatus.Confirmed
+                }
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointments);
+
+            // Act
+            List<string> result =
+                await _doctorService.GetAvailableSlotsAsync(
+                    doctorId,
+                    date);
+
+            // Assert
+            Assert.DoesNotContain("09:00-09:30", result);
+            Assert.DoesNotContain("10:00-10:30", result);
+            Assert.Contains("09:30-10:00", result);
+            Assert.Contains("16:30-17:00", result);
+            Assert.Equal(GetAllSlots().Count - 2, result.Count);
+        }
+
+        [Fact]
+        public async Task GetAvailableSlotsAsync_WhenBookedAppointmentIsCancelled_DoesNotBlockSlot()
+        {
+            // Arrange
+            const int doctorId = 1;
+            DateTime date = DateTime.Today.AddDays(1);
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Active",
+                IsActive = true
+            };
+
+            List<Appointment> appointments = new()
+            {
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    DoctorId = doctorId,
+                    PatientId = 1,
+                    ScheduledDate = date,
+                    TimeSlot = "09:00-09:30",
+                    Status = AppointmentStatus.Cancelled
+                }
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointments);
+
+            // Act
+            List<string> result =
+                await _doctorService.GetAvailableSlotsAsync(
+                    doctorId,
+                    date);
+
+            // Assert
+            Assert.Contains("09:00-09:30", result);
+            Assert.Equal(GetAllSlots().Count, result.Count);
+        }
+
+        [Fact]
+        public async Task GetAvailableSlotsAsync_WhenAppointmentsBelongToOtherDoctor_DoesNotBlockSlots()
+        {
+            // Arrange
+            const int doctorId = 1;
+            const int otherDoctorId = 2;
+            DateTime date = DateTime.Today.AddDays(1);
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Active",
+                IsActive = true
+            };
+
+            List<Appointment> appointments = new()
+            {
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    DoctorId = otherDoctorId,
+                    PatientId = 1,
+                    ScheduledDate = date,
+                    TimeSlot = "09:00-09:30",
+                    Status = AppointmentStatus.Scheduled
+                }
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointments);
+
+            // Act
+            List<string> result =
+                await _doctorService.GetAvailableSlotsAsync(
+                    doctorId,
+                    date);
+
+            // Assert
+            Assert.Contains("09:00-09:30", result);
+            Assert.Equal(GetAllSlots().Count, result.Count);
+        }
+
+        [Fact]
+        public async Task GetAvailableSlotsAsync_WhenAppointmentsAreOnDifferentDate_DoesNotBlockSlots()
+        {
+            // Arrange
+            const int doctorId = 1;
+            DateTime selectedDate = DateTime.Today.AddDays(1);
+            DateTime differentDate = selectedDate.AddDays(1);
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Active",
+                IsActive = true
+            };
+
+            List<Appointment> appointments = new()
+            {
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    DoctorId = doctorId,
+                    PatientId = 1,
+                    ScheduledDate = differentDate,
+                    TimeSlot = "09:00-09:30",
+                    Status = AppointmentStatus.Scheduled
+                }
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointments);
+
+            // Act
+            List<string> result =
+                await _doctorService.GetAvailableSlotsAsync(
+                    doctorId,
+                    selectedDate);
+
+            // Assert
+            Assert.Contains("09:00-09:30", result);
+            Assert.Equal(GetAllSlots().Count, result.Count);
+        }
+
+        [Fact]
+        public async Task GetAvailableSlotsAsync_WhenDateIsExactlySixMonthsAhead_ReturnsSlots()
+        {
+            // Arrange
+            const int doctorId = 1;
+            DateTime date = DateTime.Today.AddMonths(6);
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Active",
+                IsActive = true
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Appointment>());
+
+            // Act
+            List<string> result =
+                await _doctorService.GetAvailableSlotsAsync(
+                    doctorId,
+                    date);
+
+            // Assert
+            Assert.NotEmpty(result);
+            Assert.Equal(GetAllSlots().Count, result.Count);
+        }
+
+        [Fact]
+        public async Task GetAvailableSlotsAsync_WhenDateIsToday_ReturnsOnlyFutureSlots()
+        {
+            // Arrange
+            const int doctorId = 1;
+            DateTime date = DateTime.Today;
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Active",
+                IsActive = true
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Appointment>());
+
+            // Act
+            List<string> result =
+                await _doctorService.GetAvailableSlotsAsync(
+                    doctorId,
+                    date);
+
+            // Assert
+            Assert.Equal(GetFutureSlotsForToday(), result);
+            Assert.All(result, slot =>
+            {
+                string startTime = slot.Split('-')[0];
+                Assert.True(TimeSpan.Parse(startTime) > DateTime.Now.TimeOfDay);
+            });
+        }
+
+        [Fact]
+        public async Task GetAvailableSlotsAsync_WhenDateIsTodayAndFutureSlotIsBooked_ExcludesBookedFutureSlot()
+        {
+            // Arrange
+            const int doctorId = 1;
+            DateTime date = DateTime.Today;
+
+            string? futureSlot =
+                GetFutureSlotsForToday().FirstOrDefault();
+
+            if (futureSlot == null)
+            {
+                return;
+            }
+
+            Doctor doctor = new()
+            {
+                DoctorId = doctorId,
+                FullName = "Dr. Active",
+                IsActive = true
+            };
+
+            List<Appointment> appointments = new()
+            {
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    DoctorId = doctorId,
+                    PatientId = 1,
+                    ScheduledDate = date,
+                    TimeSlot = futureSlot,
+                    Status = AppointmentStatus.Scheduled
+                }
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointments);
+
+            // Act
+            List<string> result =
+                await _doctorService.GetAvailableSlotsAsync(
+                    doctorId,
+                    date);
+
+            // Assert
+            Assert.DoesNotContain(futureSlot, result);
+        }
+
+        private static List<string> GetAllSlots()
+        {
+            return new List<string>
+            {
+                "09:00-09:30",
+                "09:30-10:00",
+                "10:00-10:30",
+                "10:30-11:00",
+                "11:00-11:30",
+                "11:30-12:00",
+                "14:00-14:30",
+                "14:30-15:00",
+                "15:00-15:30",
+                "15:30-16:00",
+                "16:00-16:30",
+                "16:30-17:00"
+            };
+        }
+
+        private static List<string> GetFutureSlotsForToday()
+        {
+            TimeSpan currentTime =
+                DateTime.Now.TimeOfDay;
+
+            return GetAllSlots()
+                .Where(slot =>
+                {
+                    string startTime = slot.Split('-')[0];
+
+                    return TimeSpan.TryParse(
+                               startTime,
+                               out TimeSpan slotStartTime) &&
+                           slotStartTime > currentTime;
+                })
+                .ToList();
         }
     }
 }

@@ -66,8 +66,11 @@
           <p>Select a date first. Available slots will appear below.</p>
 
           <div class="form-group">
-            <label>Appointment Date</label>
+            <label for="appointmentDate">Appointment Date</label>
+
             <input
+              id="appointmentDate"
+              name="appointmentDate"
               type="date"
               [(ngModel)]="selectedDate"
               [min]="minDate"
@@ -88,8 +91,8 @@
           }
 
           @if (availableSlots.length > 0) {
-            <div class="slot-section">
-              <label>Available Time Slots</label>
+            <fieldset class="slot-section">
+              <legend>Available Time Slots</legend>
 
               <div class="slot-grid">
                 @for (slot of availableSlots; track slot) {
@@ -97,13 +100,14 @@
                     type="button"
                     class="slot-btn"
                     [class.selected]="selectedSlot === slot"
+                    [attr.aria-pressed]="selectedSlot === slot"
                     (click)="selectedSlot = slot"
                   >
                     {{ slot }}
                   </button>
                 }
               </div>
-            </div>
+            </fieldset>
           }
 
           <button

@@ -144,7 +144,7 @@ export class PatientProfile implements OnInit {
       2: 'Other'
     };
 
-    return typeof value === 'string' && isNaN(Number(value))
+    return typeof value === 'string' && Number.isNaN(Number(value))
       ? value
       : genderMap[Number(value)] ?? '-';
   }

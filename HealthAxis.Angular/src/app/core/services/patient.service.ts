@@ -10,8 +10,6 @@ import { Appointment } from '../models/appointment.model';
 import { AppointmentCreateRequest } from '../models/appointment-create-request';
 import { HealthRecord } from '../models/health-record.model';
 
-import { UpdateAppointmentStatusRequest } from '../models/update-appointment-status-request';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +19,7 @@ export class PatientService {
 
   private readonly apiBaseUrl = 'https://localhost:7224/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getMyInformation(patientId: number): Observable<Patient> {
   return this.http.get<Patient>(

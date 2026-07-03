@@ -149,12 +149,13 @@
     <Property Name="sonar.java.jvmframeworkconfig.activate">true</Property>
     <Property Name="sonar.updatecenter.url">https://downloads.sonarsource.com/sonarqube/update/update-center.properties</Property>
     <Property Name="sonar.core.id">147B411E-AZ6DE1AjInH_RGULaukj</Property>
-    <Property Name="sonar.core.startTime">22-06-2026 14:27:10</Property>
+    <Property Name="sonar.core.startTime">03-07-2026 10:01:07</Property>
   </ServerSettings>
   <LocalSettings>
     <Property Name="sonar.host.url">http://localhost:9000</Property>
-    <Property Name="sonar.cs.vscoveragexml.reportsPaths">coverage.xml</Property>
-    <Property Name="sonar.exclusions">**/Migrations/**,coverage.xml</Property>
+    <Property Name="sonar.cs.vscoveragexml.reportsPaths">C:\Sprint3\HealthAxis\coverage.xml</Property>
+    <Property Name="sonar.verbose">true</Property>
+    <Property Name="sonar.exclusions">**/node_modules/**,**/bin/**,**/obj/**,**/Migrations/**,**/TestResults/**,**/coverage-report/**,**/*.css,**/*.razor,**/*.g.cs,**/*.designer.cs,**/*.slnLaunch.user,**/launchSettings.json,C:\Sprint3\HealthAxis\coverage.xml</Property>
   </LocalSettings>
   <ScannerOptsSettings />
   <AnalyzersSettings>
@@ -165,10 +166,10 @@
       <AnalyzerPlugins>
         <AnalyzerPlugin Key="csharp" Version="10.17.0.131074" StaticResourceName="SonarAnalyzer-csharp-10.17.0.131074.zip">
           <AssemblyPaths>
-            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\0\SonarAnalyzer.CSharp.dll</Path>
-            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\0\licenses\LICENSE.txt</Path>
-            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\0\licenses\THIRD_PARTY_LICENSES\Google.Protobuf-LICENSE.txt</Path>
-            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\0\licenses\THIRD_PARTY_LICENSES\StyleCop.Analyzers-LICENSE.txt</Path>
+            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\2\SonarAnalyzer.CSharp.dll</Path>
+            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\2\licenses\LICENSE.txt</Path>
+            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\2\licenses\THIRD_PARTY_LICENSES\Google.Protobuf-LICENSE.txt</Path>
+            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\2\licenses\THIRD_PARTY_LICENSES\StyleCop.Analyzers-LICENSE.txt</Path>
           </AssemblyPaths>
         </AnalyzerPlugin>
       </AnalyzerPlugins>
@@ -183,10 +184,10 @@
       <AnalyzerPlugins>
         <AnalyzerPlugin Key="vbnet" Version="10.17.0.131074" StaticResourceName="SonarAnalyzer-vbnet-10.17.0.131074.zip">
           <AssemblyPaths>
-            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\1\SonarAnalyzer.VisualBasic.dll</Path>
-            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\1\licenses\LICENSE.txt</Path>
-            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\1\licenses\THIRD_PARTY_LICENSES\Google.Protobuf-LICENSE.txt</Path>
-            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\1\licenses\THIRD_PARTY_LICENSES\StyleCop.Analyzers-LICENSE.txt</Path>
+            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\3\SonarAnalyzer.VisualBasic.dll</Path>
+            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\3\licenses\LICENSE.txt</Path>
+            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\3\licenses\THIRD_PARTY_LICENSES\Google.Protobuf-LICENSE.txt</Path>
+            <Path>C:\Users\287684\AppData\Local\Temp\.sonarqube\resources\3\licenses\THIRD_PARTY_LICENSES\StyleCop.Analyzers-LICENSE.txt</Path>
           </AssemblyPaths>
         </AnalyzerPlugin>
       </AnalyzerPlugins>

@@ -18,7 +18,7 @@ export class HealthHistory implements OnInit {
   healthRecords: HealthRecord[] = [];
 
   constructor(
-    private patientService: PatientService
+    private readonly patientService: PatientService
   ) {}
 
   ngOnInit(): void {
@@ -72,7 +72,7 @@ export class HealthHistory implements OnInit {
   }
 
   getSpecialisationName(value: number | string): string {
-    if (typeof value === 'string' && isNaN(Number(value))) {
+    if (typeof value === 'string' && Number.isNaN(Number(value))) {
       return value;
     }
 

@@ -30,7 +30,7 @@ export class MyAppointments implements OnInit {
   pageSize = 5;
   totalItems = 0;
 
-  constructor(private patientService: PatientService) {}
+  constructor(private readonly patientService: PatientService) {}
 
   ngOnInit(): void {
     this.loadAppointments();

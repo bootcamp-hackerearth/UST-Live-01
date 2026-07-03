@@ -13,9 +13,11 @@
   }
 
   <section class="selector-card">
-    <label>Select Patient</label>
+    <label for="selectedPatientId">Select Patient</label>
 
     <select
+      id="selectedPatientId"
+      name="selectedPatientId"
       [(ngModel)]="selectedPatientId"
       (ngModelChange)="onPatientChanged()"
     >
