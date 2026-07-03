@@ -143,8 +143,7 @@ public class AppointmentServiceTests
     {
         _repoMock.Setup(r => r.GetByIdAsync(1, default)).ReturnsAsync((Appointment?)null);
 
-        var result = await _service.UpdateAsync(1, new UpdateAppointmentStatusDto());
-
+        var result = await _service.UpdateAsync(1, new UpdateAppointmentStatusDto(), "Doctor");
         result.Should().BeNull();
     }
 
@@ -155,8 +154,10 @@ public class AppointmentServiceTests
 
         _repoMock.Setup(r => r.GetByIdAsync(1, default)).ReturnsAsync(existing);
 
+
         await Assert.ThrowsAsync<System.Exception>(() =>
-            _service.UpdateAsync(1, new UpdateAppointmentStatusDto { Status = "Cancelled" }));
+            _service.UpdateAsync(1, new UpdateAppointmentStatusDto { Status = "Cancelled" }, "Doctor"));
+
     }
 
     [Fact]
@@ -166,12 +167,14 @@ public class AppointmentServiceTests
 
         _repoMock.Setup(r => r.GetByIdAsync(1, default)).ReturnsAsync(existing);
 
+
         await Assert.ThrowsAsync<System.Exception>(() =>
             _service.UpdateAsync(1, new UpdateAppointmentStatusDto
             {
                 Status = "Cancelled",
                 CancellationReason = ""
-            }));
+            }, "Doctor"));
+
     }
 
     [Fact]
@@ -185,11 +188,13 @@ public class AppointmentServiceTests
         _repoMock.Setup(r => r.UpdateAsync(1, existing, default)).ReturnsAsync(updated);
         _mapperMock.Setup(m => m.Map<AppointmentDto?>(updated)).Returns(dto);
 
+
         var result = await _service.UpdateAsync(1, new UpdateAppointmentStatusDto
         {
             Status = "Cancelled",
             CancellationReason = "Patient request"
-        });
+        }, "Doctor");
+
 
         result.Status.Should().Be("Cancelled");
     }
@@ -206,10 +211,12 @@ public class AppointmentServiceTests
         _mapperMock.Setup(m => m.Map<AppointmentDto>(existing))
                    .Returns(new AppointmentDto());
 
+
         await _service.UpdateAsync(1, new UpdateAppointmentStatusDto
         {
             Status = "Completed"
-        });
+        }, "Doctor");
+
 
         _healthRecordMock.Verify(x =>
             x.CreateFromAppointment(It.IsAny<Appointment>()),

@@ -21,7 +21,7 @@ namespace HealthAxisApplicn.Repositories.Impl
                 .AsNoTracking()
                 .Where(a =>
                     a.DoctorId == doctorId &&
-                    a.ScheduledDate >= DateTime.UtcNow &&
+                    a.ScheduledDate.Date >= DateTime.UtcNow.Date &&
                     (a.Status == "Pending" || a.Status == "Confirmed")
                 )
                 .OrderBy(a => a.ScheduledDate)
@@ -83,6 +83,16 @@ namespace HealthAxisApplicn.Repositories.Impl
                 .AnyAsync(a =>
                     a.PatientId == patientId &&
                     a.ScheduledDate.Date == date.Date, ct);
+        }
+
+        public async Task<List<Appointment>> GetTodayAppointmentsAsync(int doctorId, CancellationToken ct = default)
+        {
+            return await _context.Appointments
+                .Where(a =>
+                    a.DoctorId == doctorId &&
+                    a.ScheduledDate.Date == DateTime.Today)
+                .OrderBy(a => a.TimeSlot)
+                .ToListAsync(ct);
         }
 
     }

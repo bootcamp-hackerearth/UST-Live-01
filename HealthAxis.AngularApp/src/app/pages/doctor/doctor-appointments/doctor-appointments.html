@@ -1,0 +1,88 @@
+<div class="container">
+
+  <h2>Doctor Appointments</h2>
+
+  <div *ngIf="appointments().length === 0">
+    No appointments found 😕
+  </div>
+
+  <div *ngFor="let appt of appointments()" class="card">
+
+    <h3>Patient ID: {{ appt.patientId }}</h3>
+
+    <p>Date: {{ appt.scheduledDate | date }}</p>
+    <p>Slot: {{ appt.timeSlot }}</p>
+    <p>Status: {{ appt.status }}</p>
+
+    <!-- Pending -->
+    <div *ngIf="appt.status === 'Pending'">
+
+      <button (click)="updateStatus(appt.appointmentId, 'Confirmed')">
+        ✅ Confirm
+      </button>
+
+      <button (click)="updateStatus(appt.appointmentId, 'Cancelled')">
+        ❌ Cancel
+      </button>
+
+    </div>
+
+    <!-- Confirmed -->
+    <div *ngIf="appt.status === 'Confirmed'">
+
+      <button (click)="updateStatus(appt.appointmentId, 'Completed')">
+        ✔ Complete
+      </button>
+
+      <button (click)="updateStatus(appt.appointmentId, 'Cancelled')">
+        ❌ Cancel
+      </button>
+
+    </div>
+
+    <!-- Completed -->
+    <div *ngIf="appt.status === 'Completed'">
+
+      <p>✅ Completed</p>
+
+      <button (click)="addHealthRecord(appt)">
+        ➕ Add Health Record
+      </button>
+
+    </div>
+
+    <!-- Cancelled -->
+    <div *ngIf="appt.status === 'Cancelled'">
+
+      <p>❌ Cancelled</p>
+
+      <p *ngIf="appt.cancellationReason">
+        Reason: {{ appt.cancellationReason }}
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- Cancellation Form -->
+
+  <div *ngIf="selectedAppointmentId()" class="cancel-box">
+
+    <h3>Cancellation Reason</h3>
+
+    <textarea rows="4"
+              placeholder="Enter cancellation reason..."
+              (input)="cancellationReason.set($any($event.target).value)">
+    </textarea>
+
+    <br><br>
+
+    <button (click)="confirmCancellation()">
+      Submit Cancellation
+    </button>
+
+  </div>
+
+  <p>{{ message() }}</p>
+
+</div>

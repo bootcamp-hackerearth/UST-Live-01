@@ -98,6 +98,16 @@ namespace HealthAxisApplicn.Services.Impl
             return mapper.Map<List<DoctorDto>>(doctors);
         }
 
+        public async Task<Doctor?> GetByUserIdAsync(string userId)
+        {
+            return await repository.GetByUserIdAsync(userId);
+        }
+        public async Task<List<DoctorDto>> FilterAsync(string? name, string? specialization)
+        {
+            var doctors = await repository.FilterAsync(name, specialization);
+            return mapper.Map<List<DoctorDto>>(doctors);
+        }
+
 
     }
 }

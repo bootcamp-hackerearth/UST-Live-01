@@ -59,5 +59,12 @@ namespace HealthAxisApplicn.Repositories.Impl
 
             return await query.ToListAsync(ct);
         }
+
+        public async Task<Patient?> GetByUserIdAsync(string userId)
+        {
+            return await _context.Patients
+                .FirstOrDefaultAsync(p => p.UserId == userId);
+        }
+
     }
 }

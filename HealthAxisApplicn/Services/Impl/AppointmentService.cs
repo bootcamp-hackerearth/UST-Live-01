@@ -10,7 +10,7 @@ namespace HealthAxisApplicn.Services.Impl
         public async Task<AppointmentDto> CreateAsync(CreateAppointmentDto entity, int patientId)
         {
             //(no past booking)
-            if (entity.ScheduledDate < DateTime.UtcNow)
+            if (entity.ScheduledDate.Date < DateTime.UtcNow.Date)
                 throw new Exception("Cannot book appointment in the past");
 
             //Validate time format
@@ -97,7 +97,7 @@ namespace HealthAxisApplicn.Services.Impl
             return mapper.Map<AppointmentDto?>(appointment);
         }
 
-        public async Task<AppointmentDto?> UpdateAsync(int id, UpdateAppointmentStatusDto entity)
+        public async Task<AppointmentDto?> UpdateAsync(int id, UpdateAppointmentStatusDto entity, string role)
         {
             var existing = await repository.GetByIdAsync(id);
 
@@ -120,17 +120,30 @@ namespace HealthAxisApplicn.Services.Impl
                 throw new Exception("Invalid status value");
             }
 
-            // ✅ STATE TRANSITION RULES
-            if (previousStatus == "Pending")
+            // ✅ PATIENT RESTRICTION
+            if (role == "Patient")
             {
-                if (entity.Status != "Confirmed" && entity.Status != "Cancelled")
-                    throw new Exception("Pending appointment can only be Confirmed or Cancelled");
+                if (entity.Status != "Cancelled")
+                    throw new Exception("Patient can only cancel appointments");
+
+                if (previousStatus != "Pending")
+                    throw new Exception("Patient can only cancel pending appointments");
             }
 
-            if (previousStatus == "Confirmed")
+            // ✅ STATE TRANSITIONS (for doctor)
+            if (role == "Doctor")
             {
-                if (entity.Status != "Completed" && entity.Status != "Cancelled")
-                    throw new Exception("Confirmed appointment can only be Completed or Cancelled");
+                if (previousStatus == "Pending")
+                {
+                    if (entity.Status != "Confirmed" && entity.Status != "Cancelled")
+                        throw new Exception("Pending appointment can only be Confirmed or Cancelled");
+                }
+
+                if (previousStatus == "Confirmed")
+                {
+                    if (entity.Status != "Completed" && entity.Status != "Cancelled")
+                        throw new Exception("Confirmed appointment can only be Completed or Cancelled");
+                }
             }
 
             // ✅ CANCELLATION RULE
@@ -143,22 +156,29 @@ namespace HealthAxisApplicn.Services.Impl
             }
             else
             {
-                // ✅ clear reason if not cancelled
                 existing.CancellationReason = null;
             }
 
-            // ✅ UPDATE STATUS
+            // ✅ UPDATE
             existing.Status = entity.Status;
 
             var updated = await repository.UpdateAsync(id, existing);
 
-            // ✅ HEALTH RECORD CREATION (ONLY ON FIRST COMPLETION)
+            // ✅ HEALTH RECORD CREATION
             if (previousStatus != "Completed" && entity.Status == "Completed")
             {
                 await healthRecordService.CreateFromAppointment(existing);
             }
 
             return mapper.Map<AppointmentDto>(updated);
+        }
+
+        public async Task<List<AppointmentDto>> GetTodayAppointmentsAsync(int doctorId)
+        {
+            var appointments =
+                await repository.GetTodayAppointmentsAsync(doctorId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
         }
 
     }

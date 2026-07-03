@@ -49,3 +49,14 @@ a {
   color: #38bdf8;
   cursor: pointer;
 }
+
+.error-box {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: #ffe6e6;
+  color: #d60000;
+  border: 1px solid #ffb3b3;
+  font-size: 14px;
+  font-weight: 500;
+}

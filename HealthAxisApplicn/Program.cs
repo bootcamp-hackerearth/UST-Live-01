@@ -149,14 +149,19 @@ builder.Services.AddAutoMapper(cfg =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowBlazor",
+    options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("https://localhost:7235")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
+            policy.WithOrigins(
+                    "https://localhost:7235",   
+                    "http://localhost:55799",   
+                    "http://localhost:4200"     
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod();
         });
 });
+
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
@@ -183,7 +188,7 @@ app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowBlazor");
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 

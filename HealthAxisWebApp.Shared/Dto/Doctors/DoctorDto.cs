@@ -48,6 +48,10 @@ namespace HealthAxisApplicn.Dto.Doctors
         [Required]
         [Range(0, 100000, ErrorMessage = "Consultation Fee cannot be negative or greater than 100000")]
         public decimal ConsultationFee { get; set; }
+
+        [Required]
+        public string UserId { get; set; } = string.Empty;
+
     }
 
     public class UpdateDoctorDto
@@ -78,5 +82,12 @@ namespace HealthAxisApplicn.Dto.Doctors
 
         [Required]
         public bool IsActive { get; set; }
+    }
+
+    public class DoctorPatientListDto
+    {
+        public int PatientId { get; set; }
+
+        public string PatientName { get; set; } = string.Empty;
     }
 }

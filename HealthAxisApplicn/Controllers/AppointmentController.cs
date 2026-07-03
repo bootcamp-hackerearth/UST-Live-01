@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthAxisApplicn.Controllers
 {
@@ -32,20 +33,26 @@ namespace HealthAxisApplicn.Controllers
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> Create([FromBody] CreateAppointmentDto entity)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                // ✅ GET PatientId FROM JWT
+                var patientId = int.Parse(User.FindFirst("PatientId")!.Value);
+
+                // ✅ CALL SERVICE
+                var result = await service.CreateAsync(entity, patientId);
+
+                return CreatedAtAction("GetById", new { id = result.AppointmentId }, result);
             }
-
-            // GET PatientId FROM JWT
-            var patientId = int.Parse(User.FindFirst("PatientId")!.Value);
-
-            // PASS TO SERVICE
-            var result = await service.CreateAsync(entity, patientId);
-
-            if (result is null) return NotFound();
-
-            return CreatedAtAction("GetById", new { id = result.AppointmentId }, result);
+            catch (Exception ex)
+            {
+                // ✅ RETURN CLEAN ERROR MESSAGE
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
 
@@ -73,15 +80,20 @@ namespace HealthAxisApplicn.Controllers
 
 
         [HttpPut("{id:int}")]
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor,Patient")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateAppointmentStatusDto entity)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
-            var result = await service.UpdateAsync(id, entity);
-            if (result is null) return NotFound();
+
+            // ✅ get user role
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            var result = await service.UpdateAsync(id, entity, role!);
+
+            if (result is null)
+                return NotFound();
+
             return Ok(result);
         }
 
@@ -111,6 +123,17 @@ namespace HealthAxisApplicn.Controllers
 
             return NoContent();
 
+        }
+
+        [HttpGet("doctor/today")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetTodayAppointments()
+        {
+            var doctorId = int.Parse(User.FindFirst("DoctorId")!.Value);
+
+            var result = await service.GetTodayAppointmentsAsync(doctorId);
+
+            return Ok(result);
         }
 
     }

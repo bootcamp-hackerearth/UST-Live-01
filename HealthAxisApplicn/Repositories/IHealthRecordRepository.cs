@@ -1,4 +1,5 @@
-﻿using HealthAxisApplicn.Models;
+﻿using HealthAxisApplicn.Dto.Doctors;
+using HealthAxisApplicn.Models;
 
 namespace HealthAxisApplicn.Repositories
 {
@@ -10,6 +11,8 @@ namespace HealthAxisApplicn.Repositories
         Task<List<HealthRecord>> GetRecordsByDoctorNameAsync(string doctorName, CancellationToken ct = default);
         Task<HealthRecord?> GetByAppointmentIdAsync(int appointmentId, CancellationToken ct = default);
         Task<bool> ExistsForAppointmentAsync(int appointmentId, CancellationToken ct = default);
+        Task<List<DoctorPatientListDto>> GetDoctorPatientsAsync(int doctorId);
+        Task<List<HealthRecord>> GetRecordsForDoctorPatientAsync( int doctorId,int patientId);
 
 
     }

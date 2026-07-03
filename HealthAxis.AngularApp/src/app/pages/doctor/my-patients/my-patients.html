@@ -1,0 +1,22 @@
+<div class="container">
+
+  <h2>Your Patients</h2>
+
+  <div *ngIf="patients().length === 0">
+    No patients found.
+  </div>
+
+  <div *ngFor="let patient of patients()"
+       class="patient-item">
+
+    <a [routerLink]="['/patient-details', patient.patientId]">
+
+      {{ patient.patientName }}
+
+    </a>
+
+  </div>
+
+  <p>{{ message() }}</p>
+
+</div>

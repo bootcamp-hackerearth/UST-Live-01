@@ -1,6 +1,7 @@
 ﻿using HealthAxisAdminPortal.Models;
 using HealthAxisAdminPortal.Services.FrontEndMemory;
 using HealthAxisAdminPortal.Services.Interfaces;
+using HealthAxisApplicn.Dto.Auth;
 using HealthAxisApplicn.Dto.Doctors;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -50,14 +51,36 @@ namespace HealthAxisAdminPortal.Services.Implementation
             }
         }
 
-        public async Task<bool> CreateAsync(CreateDoctorDto dto)
+        public async Task<bool> CreateAsync(RegisterDto register, CreateDoctorDto doctor)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "/api/doctors")
+            // ✅ STEP 1 → Register user
+            var registerRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/register")
             {
-                Content = JsonContent.Create(dto)
+                Content = JsonContent.Create(register)
             };
 
-            // ✅ ADD TOKEN (THIS WAS MISSING 🔥)
+            registerRequest.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", TokenStore.AccessToken);
+
+            var registerResponse = await http.SendAsync(registerRequest);
+
+            if (!registerResponse.IsSuccessStatusCode)
+            {
+                var content = await registerResponse.Content.ReadAsStringAsync();
+                throw new Exception(content);
+            }
+
+            var registerResult = await registerResponse.Content.ReadFromJsonAsync<AuthRegisterResponse>();
+
+            // ✅ STEP 2 → Use UserId for doctor creation
+            doctor.UserId = registerResult!.UserId;
+            doctor.Email = register.Email;
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/doctors")
+            {
+                Content = JsonContent.Create(doctor)
+            };
+
             request.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", TokenStore.AccessToken);
 

@@ -7,18 +7,32 @@
 }
 
 .card {
-  width: 320px;
-  padding: 30px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(15px);
-  text-align: center;
+  width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-  .card h2 {
-    color: #38bdf8;
-    margin-bottom: 10px;
+.card h2 {
+  color: #38bdf8;
+  margin-bottom: 10px;
+}
+
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+  form input,
+  form select,
+  form button,
+  form p {
+    grid-column: span 2; 
   }
+
+.half {
+  grid-column: span 1;
+}
 
 input {
   width: 100%;
@@ -38,6 +52,15 @@ button {
   background: linear-gradient(90deg, #06b6d4, #3b82f6);
   color: white;
   cursor: pointer;
+}
+
+select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
 }
 
 p {

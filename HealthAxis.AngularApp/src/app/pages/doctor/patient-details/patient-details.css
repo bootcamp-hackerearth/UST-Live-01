@@ -1,0 +1,26 @@
+.container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.patient-info {
+  background: #1e293b;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.record-card {
+  background: #334155;
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+h2,
+h3 {
+  color: #0f172a;
+}

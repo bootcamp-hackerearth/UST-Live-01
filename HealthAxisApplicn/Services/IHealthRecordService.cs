@@ -1,4 +1,5 @@
-﻿using HealthAxisApplicn.Dto.HealthRecords;
+﻿using HealthAxisApplicn.Dto.Doctors;
+using HealthAxisApplicn.Dto.HealthRecords;
 using HealthAxisApplicn.Models;
 
 namespace HealthAxisApplicn.Services
@@ -13,6 +14,7 @@ namespace HealthAxisApplicn.Services
         Task<List<HealthRecordDto>> GetRecordsByPatientNameAsync(string patientName);
         Task<List<HealthRecordDto>> GetRecordsByDoctorNameAsync(string doctorName);
         Task CreateFromAppointment(Appointment appointment);
-
+        Task<HealthRecordDto?> GetByAppointmentIdAsync(int appointmentId);
+        Task<List<DoctorPatientListDto>> GetDoctorPatientsAsync(int doctorId);
     }
 }

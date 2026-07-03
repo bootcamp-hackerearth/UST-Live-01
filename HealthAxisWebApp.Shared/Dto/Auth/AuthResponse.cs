@@ -51,6 +51,22 @@ namespace HealthAxisApplicn.Dto.Auth
         public string Message { get; set; } = string.Empty;
 
         public int ExpiresIn { get; set; }
+        public bool IsFirstLogin { get; set; }
     }
+
+
+    public class AuthRegisterResponse
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+    }
+
+
+    public class ChangePasswordDto
+    {
+        public string NewPassword { get; set; } = string.Empty;
+    }
+
 
 }

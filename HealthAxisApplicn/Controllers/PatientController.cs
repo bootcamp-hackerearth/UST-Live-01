@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthAxisApplicn.Controllers
 {
@@ -83,6 +84,43 @@ namespace HealthAxisApplicn.Controllers
         return Ok(result);
         }
 
+        [HttpGet("me")]
+        [Authorize(Roles = "Patient")]
+        public async Task<IActionResult> GetCurrentPatient()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var patient = await service.GetByUserIdAsync(userId);
+
+            if (patient == null)
+                return NotFound();
+
+            return Ok(new
+            {
+                patientName = patient.PatientName
+            });
+        }
+
+        [HttpGet("doctor/patient/{patientId:int}")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetPatientDetails(int patientId)
+        {
+            var doctorId =
+                int.Parse(User.FindFirst("DoctorId")!.Value);
+
+            var result =
+                await service.GetPatientDetailsForDoctorAsync(
+                    doctorId,
+                    patientId);
+
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
 
     }
 }

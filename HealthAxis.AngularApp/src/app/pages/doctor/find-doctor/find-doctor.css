@@ -1,0 +1,45 @@
+.container {
+  padding: 20px;
+}
+
+.search-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background-color: #2563eb;
+  color: white;
+}
+
+.doctor-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.doctor-card {
+  padding: 15px;
+  border-radius: 10px;
+  background: #1e293b;
+  color: white;
+  width: 220px;
+}
+
+.selected {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #2d3748;
+  color: white;
+}

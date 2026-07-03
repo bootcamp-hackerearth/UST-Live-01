@@ -41,6 +41,9 @@ namespace HealthAxisApplicn.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsFirstLogin")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -180,7 +183,6 @@ namespace HealthAxisApplicn.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Diagnosis")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DoctorId")
@@ -193,7 +195,6 @@ namespace HealthAxisApplicn.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Prescription")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("VisitDate")
@@ -201,7 +202,8 @@ namespace HealthAxisApplicn.Migrations
 
                     b.HasKey("HealthRecordId");
 
-                    b.HasIndex("AppointmentId");
+                    b.HasIndex("AppointmentId")
+                        .IsUnique();
 
                     b.HasIndex("DoctorId");
 
@@ -450,8 +452,8 @@ namespace HealthAxisApplicn.Migrations
             modelBuilder.Entity("HealthAxisApplicn.Models.HealthRecord", b =>
                 {
                     b.HasOne("HealthAxisApplicn.Models.Appointment", "Appointment")
-                        .WithMany()
-                        .HasForeignKey("AppointmentId")
+                        .WithOne()
+                        .HasForeignKey("HealthAxisApplicn.Models.HealthRecord", "AppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

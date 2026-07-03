@@ -1,4 +1,5 @@
-﻿using HealthAxisApplicn.Dto.Doctors;
+﻿using HealthAxisApplicn.Dto.Auth;
+using HealthAxisApplicn.Dto.Doctors;
 
 namespace HealthAxisAdminPortal.Services.Interfaces
 {
@@ -7,7 +8,7 @@ namespace HealthAxisAdminPortal.Services.Interfaces
     {
         Task<List<DoctorDto>?> GetAllAsync();
 
-        Task<bool> CreateAsync(CreateDoctorDto dto);
+        Task<bool> CreateAsync(RegisterDto register, CreateDoctorDto doctor);
 
         Task<bool> UpdateAsync(int id, UpdateDoctorDto dto);
 

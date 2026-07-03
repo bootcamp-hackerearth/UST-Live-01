@@ -1,0 +1,49 @@
+<div class="login">
+  <div class="card">
+    <h2>Create Patient Account</h2>
+
+    <form (submit)="register(); $event.preventDefault()">
+
+      <input class="half" type="text" placeholder="Patient Name"
+             (input)="name.set($any($event.target).value)" />
+
+      <input class="half" type="tel" placeholder="Phone Number"
+             (input)="phoneNo.set($any($event.target).value)" />
+
+      <select class="half"
+              (change)="gender.set($any($event.target).value)">
+        <option value="">Select Gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select>
+
+      <input class="half" type="date"
+             (input)="dateOfBirth.set($any($event.target).value)" />
+
+      <input type="text" placeholder="Insurance ID"
+             (input)="insuranceID.set($any($event.target).value)" />
+
+      <input type="email" placeholder="Email"
+             (input)="email.set($any($event.target).value)" />
+
+      <input type="password" placeholder="Password"
+             (input)="password.set($any($event.target).value)" />
+
+      <input type="password" placeholder="Confirm Password"
+             (input)="confirmPassword.set($any($event.target).value)" />
+
+      <button type="submit">Register</button>
+
+      <p>
+        Already have an account?
+        <a routerLink="/login">Login</a>
+      </p>
+
+      <!-- ✅ Feedback -->
+      <p *ngIf="error()" style="color:red">{{ error() }}</p>
+      <p *ngIf="success()" style="color:green">{{ success() }}</p>
+
+    </form>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+.container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.patient-item {
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+  .patient-item a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+    .patient-item a:hover {
+      color: #22c55e;
+    }

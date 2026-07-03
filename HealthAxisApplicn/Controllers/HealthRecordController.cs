@@ -62,5 +62,33 @@ namespace HealthAxisApplicn.Controllers
 
             return Ok(result);
         }
+
+
+        [HttpGet("appointment/{appointmentId:int}")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetByAppointment(int appointmentId)
+        {
+            var result = await service.GetByAppointmentIdAsync(appointmentId);
+
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
+
+        [HttpGet("doctor/patients")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetDoctorPatients()
+        {
+            var doctorId = int.Parse(
+                User.FindFirst("DoctorId")!.Value
+            );
+
+            var result =
+                await service.GetDoctorPatientsAsync(doctorId);
+
+            return Ok(result);
+        }
+
     }
 }

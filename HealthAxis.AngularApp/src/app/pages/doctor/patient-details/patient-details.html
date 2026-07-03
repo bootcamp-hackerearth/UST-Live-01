@@ -1,0 +1,66 @@
+<div class="container" *ngIf="patient()">
+
+  <h2>{{ patient().patient.patientName }}</h2>
+
+  <div class="patient-info">
+
+    <p>
+      <strong>Email:</strong>
+      {{ patient().patient.email }}
+    </p>
+
+    <p>
+      <strong>Phone:</strong>
+      {{ patient().patient.phoneNo }}
+    </p>
+
+    <p>
+      <strong>DOB:</strong>
+      {{ patient().patient.dateOfBirth | date }}
+    </p>
+
+    <p>
+      <strong>Gender:</strong>
+      {{ patient().patient.gender }}
+    </p>
+
+    <p>
+      <strong>Insurance ID:</strong>
+      {{ patient().patient.insuranceID || 'N/A' }}
+    </p>
+
+  </div>
+
+  <hr>
+
+  <h3>Health Records</h3>
+
+  <div *ngFor="let record of patient().healthRecords"
+       class="record-card">
+
+    <p>
+      <strong>Visit Date:</strong>
+      {{ record.visitDate | date }}
+    </p>
+
+    <p>
+      <strong>Diagnosis:</strong>
+      {{ record.diagnosis }}
+    </p>
+
+    <p>
+      <strong>Prescription:</strong>
+      {{ record.prescription }}
+    </p>
+
+    <p>
+      <strong>Notes:</strong>
+      {{ record.notes || 'N/A' }}
+    </p>
+
+  </div>
+
+</div>
+
+<p>{{ message() }}</p>
+`

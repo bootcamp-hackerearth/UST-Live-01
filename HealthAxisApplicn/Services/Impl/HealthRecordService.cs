@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HealthAxisApplicn.Dto.Doctors;
 using HealthAxisApplicn.Dto.HealthRecords;
 using HealthAxisApplicn.Models;
 using HealthAxisApplicn.Repositories;
@@ -85,5 +86,16 @@ namespace HealthAxisApplicn.Services.Impl
             await repository.CreateAsync(record);
         }
 
+        public async Task<HealthRecordDto?> GetByAppointmentIdAsync(int appointmentId)
+        {
+            var record = await repository.GetByAppointmentIdAsync(appointmentId);
+
+            return mapper.Map<HealthRecordDto?>(record);
+        }
+
+        public async Task<List<DoctorPatientListDto>> GetDoctorPatientsAsync(int doctorId)
+        {
+            return await repository.GetDoctorPatientsAsync(doctorId);
+        }
     }
 }

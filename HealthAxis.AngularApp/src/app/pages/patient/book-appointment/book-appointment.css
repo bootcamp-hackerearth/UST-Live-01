@@ -1,0 +1,96 @@
+/* ✅ Container */
+.container {
+  max-width: 500px;
+  margin: auto;
+  margin-top: 60px;
+  padding: 25px;
+  border-radius: 12px;
+  background: #1e293b;
+  color: white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ✅ Titles */
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h4 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* ✅ Doctor Info */
+.container h3 {
+  margin: 0;
+}
+
+.container p {
+  margin: 4px 0;
+  color: #cbd5f5;
+}
+
+/* ✅ Date input */
+input[type="date"] {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+}
+
+/* ✅ Slot container */
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+  /* ✅ Slot buttons */
+  .slots button {
+    flex: 1 1 30%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: #334155;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+    /* ✅ Hover effect */
+    .slots button:hover {
+      background: #2563eb;
+    }
+
+    /* ✅ Selected slot */
+    .slots button.selected {
+      background: #16a34a;
+    }
+
+/* ✅ Confirm button */
+.container > button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #22c55e;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+  /* ✅ Hover Confirm */
+  .container > button:hover {
+    background: #16a34a;
+  }
+
+/* ✅ Message */
+.container p:last-child {
+  margin-top: 15px;
+  text-align: center;
+  font-weight: 500;
+}

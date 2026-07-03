@@ -1,4 +1,5 @@
 ﻿using HealthAxisApplicn.Data;
+using HealthAxisApplicn.Dto.Doctors;
 using HealthAxisApplicn.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -49,6 +50,29 @@ namespace HealthAxisApplicn.Repositories.Impl
         {
             return await _context.Set<HealthRecord>()
                 .AnyAsync(h => h.AppointmentId == appointmentId, ct);
+        }
+
+        public async Task<List<DoctorPatientListDto>> GetDoctorPatientsAsync(int doctorId)
+        {
+            return await _context.HealthRecords
+                .Where(h => h.DoctorId == doctorId)
+                .Select(h => h.Patient)
+                .Distinct()
+                .Select(p => new DoctorPatientListDto
+                {
+                    PatientId = p.PatientId,
+                    PatientName = p.PatientName
+                })
+                .ToListAsync();
+        }
+        public async Task<List<HealthRecord>> GetRecordsForDoctorPatientAsync(int doctorId, int patientId)
+        {
+            return await _context.HealthRecords
+                .Where(h =>
+                    h.DoctorId == doctorId &&
+                    h.PatientId == patientId)
+                .OrderByDescending(h => h.VisitDate)
+                .ToListAsync();
         }
     }
 }

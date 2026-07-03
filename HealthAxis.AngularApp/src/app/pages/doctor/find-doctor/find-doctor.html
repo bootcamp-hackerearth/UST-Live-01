@@ -1,0 +1,35 @@
+<div class="container">
+
+  <h2>Find Doctor</h2>
+
+  <!-- ✅ Search Section -->
+  <div class="search-box">
+    <input placeholder="Doctor Name"
+           (input)="name.set($any($event.target).value)" />
+
+    <input placeholder="Specialization"
+           (input)="specialization.set($any($event.target).value)" />
+
+    <button (click)="search()">Search</button>
+  </div>
+
+  <!-- ✅ Doctor List -->
+  <div class="doctor-list" *ngIf="doctors().length > 0">
+
+    <div class="doctor-card" *ngFor="let doc of doctors()">
+
+      <h3>{{ doc.doctorName }}</h3>
+      <p>Specialization: {{ doc.specialisation }}</p>
+
+      <button (click)="book(doc)">Book</button>
+
+    </div>
+
+  </div>
+
+  <!-- ✅ No Results -->
+  <p *ngIf="doctors().length === 0">
+    No doctors found!
+  </p>
+
+</div>

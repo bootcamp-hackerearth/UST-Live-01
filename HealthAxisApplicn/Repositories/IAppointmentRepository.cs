@@ -12,6 +12,7 @@ namespace HealthAxisApplicn.Repositories
         Task<bool> DoctorHasConflictAsync(int doctorId, DateTime date, string timeSlot, CancellationToken ct = default);
         Task<bool> PatientHasConflictAsync(int patientId, DateTime date, string timeSlot, CancellationToken ct = default);
         Task<bool> PatientHasAppointmentOnDateAsync(int patientId, DateTime date, CancellationToken ct = default);
+        Task<List<Appointment>> GetTodayAppointmentsAsync(int doctorId, CancellationToken ct = default);
 
     }
 }

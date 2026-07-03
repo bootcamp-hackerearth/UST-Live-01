@@ -12,14 +12,23 @@ using System.Threading.Tasks;
 public class PatientServiceTests
 {
     private readonly Mock<IPatientRepository> _repoMock;
+    private readonly Mock<IHealthRecordRepository> _healthRecordRepoMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly PatientService _service;
 
     public PatientServiceTests()
     {
+
         _repoMock = new Mock<IPatientRepository>();
+        _healthRecordRepoMock = new Mock<IHealthRecordRepository>();
         _mapperMock = new Mock<IMapper>();
-        _service = new PatientService(_repoMock.Object, _mapperMock.Object);
+
+        _service = new PatientService(
+            _repoMock.Object,
+            _healthRecordRepoMock.Object,
+            _mapperMock.Object
+        );
+
     }
 
     [Fact]

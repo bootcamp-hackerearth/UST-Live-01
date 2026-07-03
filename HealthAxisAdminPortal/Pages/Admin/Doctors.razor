@@ -29,7 +29,6 @@
     @if (showEdit)
     {
         <div class="glass-card p-3 mb-4">
-
             <h5 class="mb-3">Edit Doctor</h5>
 
             <input class="form-control stylish-input mb-2"
@@ -55,67 +54,60 @@
                    class="form-control stylish-input mb-2"
                    @bind="editDoctor.ConsultationFee" />
 
-            <button class="btn btn-success me-2" @onclick="UpdateDoctor">
-                Save
-            </button>
-
-            <button class="btn btn-secondary" @onclick="() => showEdit = false">
-                Cancel
-            </button>
+            <button class="btn btn-success me-2" @onclick="UpdateDoctor">Save</button>
+            <button class="btn btn-secondary" @onclick="() => showEdit = false">Cancel</button>
         </div>
     }
 
     @if (showForm)
     {
         <div class="glass-card p-3 mb-4">
-
             <h5 class="mb-3">Add Doctor</h5>
 
-            <div class="mb-2">
-                <input class="form-control stylish-input"
-                       placeholder="Name"
-                       @bind="newDoctor.DoctorName" />
-            </div>
+            <input class="form-control stylish-input mb-2"
+                   placeholder="Name"
+                   @bind="newDoctor.DoctorName" />
 
-            <!-- ✅ EMAIL -->
-            <div class="mb-2">
-                <input class="form-control stylish-input"
-                       placeholder="Email"
-                       @bind="newDoctor.Email" />
-            </div>
+            <!-- ✅ EMAIL (Register DTO) -->
+            <input class="form-control stylish-input mb-2"
+                   placeholder="Email"
+                   @bind="register.Email" />
 
-            <div class="mb-2">
-                <select class="form-control stylish-input"
-                        @bind="newDoctor.Specialisation">
-                    <option value="">Select Specialisation</option>
+            <!-- ✅ PASSWORD -->
+            <input type="password"
+                   class="form-control stylish-input mb-2"
+                   placeholder="Password"
+                   @bind="register.Password" />
 
-                    @foreach (var spec in specialisations)
-                    {
-                        <option value="@spec">@spec</option>
-                    }
-                </select>
-            </div>
+            <!-- ✅ CONFIRM PASSWORD -->
+            <input type="password"
+                   class="form-control stylish-input mb-2"
+                   placeholder="Confirm Password"
+                   @bind="register.ConfirmPassword" />
 
-            <div class="mb-2">
-                <input type="number"
-                       class="form-control stylish-input"
-                       placeholder="Experience"
-                       @bind="newDoctor.YearsOfExperience" />
-            </div>
+            <select class="form-control stylish-input mb-2"
+                    @bind="newDoctor.Specialisation">
+                <option value="">Select Specialisation</option>
+                @foreach (var spec in specialisations)
+                {
+                    <option value="@spec">@spec</option>
+                }
+            </select>
 
-            <div class="mb-2">
-                <input type="number"
-                       class="form-control stylish-input"
-                       placeholder="Fee"
-                       @bind="newDoctor.ConsultationFee" />
-            </div>
+            <input type="number"
+                   class="form-control stylish-input mb-2"
+                   placeholder="Experience"
+                   @bind="newDoctor.YearsOfExperience" />
+
+            <input type="number"
+                   class="form-control stylish-input mb-2"
+                   placeholder="Fee"
+                   @bind="newDoctor.ConsultationFee" />
 
             <button class="btn btn-success me-2" @onclick="AddDoctor">Save</button>
             <button class="btn btn-secondary" @onclick="CancelForm">Cancel</button>
-
         </div>
     }
-    ``
 
     @if (doctors == null)
     {
@@ -128,11 +120,10 @@
     else
     {
         <table class="table custom-table">
-
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Email</th> 
+                    <th>Email</th>
                     <th>Specialization</th>
                     <th>Experience</th>
                     <th>Fee</th>
@@ -145,7 +136,6 @@
                 @foreach (var doctor in doctors)
                 {
                     <tr>
-
                         <td>@doctor.DoctorName</td>
                         <td>@doctor.Email</td>
                         <td>@doctor.Specialisation</td>
@@ -177,11 +167,9 @@
                                 ✏️ Edit
                             </button>
                         </td>
-
                     </tr>
                 }
             </tbody>
-
         </table>
     }
 
@@ -201,16 +189,9 @@
 
     private List<string> specialisations = new()
     {
-        "Cardiologist",
-        "Dermatologist",
-        "Neurologist",
-        "Pediatrician",
-        "Psychiatrist",
-        "OrthopedicSurgeon",
-        "Gynecologist",
-        "Oncologist",
-        "Endocrinologist",
-        "GeneralPractitioner"
+        "Cardiologist","Dermatologist","Neurologist","Pediatrician",
+        "Psychiatrist","OrthopedicSurgeon","Gynecologist",
+        "Oncologist","Endocrinologist","GeneralPractitioner"
     };
 
     private bool showForm = false;
@@ -225,8 +206,11 @@
     private string selectedSpecialisation = "";
 
     private CreateDoctorDto newDoctor = new();
-    private UpdateDoctorDto editDoctor = new();
 
+    // ✅ NEW Register DTO
+    private RegisterDto register = new() { Role = "Doctor" };
+
+    private UpdateDoctorDto editDoctor = new();
     private int editingId;
 
     protected override async Task OnInitializedAsync()
@@ -240,21 +224,28 @@
     {
         showForm = false;
         newDoctor = new CreateDoctorDto();
+        register = new RegisterDto { Role = "Doctor" };
     }
 
     private void CloseError() => showError = false;
 
+    // ✅ ✅ FINAL FIXED METHOD
     private async Task AddDoctor()
     {
         try
         {
-            var success = await doctorService.CreateAsync(newDoctor);
+            register.Name = newDoctor.DoctorName; // ✅ FIX
+            newDoctor.Email = register.Email;
+
+            var success = await doctorService.CreateAsync(register, newDoctor);
 
             if (success)
             {
                 showForm = false;
                 doctors = await doctorService.GetAllAsync();
+
                 newDoctor = new CreateDoctorDto();
+                register = new RegisterDto { Role = "Doctor" };
             }
         }
         catch (Exception ex)
@@ -271,7 +262,7 @@
         editDoctor = new UpdateDoctorDto
         {
             DoctorName = doctor.DoctorName,
-            Email = doctor.Email, 
+            Email = doctor.Email,
             Specialisation = doctor.Specialisation,
             YearsOfExperience = doctor.YearsOfExperience,
             ConsultationFee = doctor.ConsultationFee,
@@ -330,37 +321,33 @@
         showConfirm = true;
     }
 
-   private void ToggleStatus(DoctorDto doctor)
-{
-    confirmMessage = doctor.IsActive
-        ? "Deactivate this doctor?"
-        : "Activate this doctor?";
-
-    confirmAction = async () =>
+    private void ToggleStatus(DoctorDto doctor)
     {
-        try
-        {
-            var success = await doctorService.ToggleActiveAsync(doctor.DoctorId);
+        confirmMessage = doctor.IsActive
+            ? "Deactivate this doctor?"
+            : "Activate this doctor?";
 
-            if (success)
+        confirmAction = async () =>
+        {
+            try
             {
-                doctor.IsActive = !doctor.IsActive;
+                var success = await doctorService.ToggleActiveAsync(doctor.DoctorId);
+                if (success)
+                    doctor.IsActive = !doctor.IsActive;
             }
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-            showError = true;
-        }
-    };
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                showError = true;
+            }
+        };
 
-    showConfirm = true;
+        showConfirm = true;
     }
 
     private async Task HandleConfirm(bool result)
     {
         showConfirm = false;
-
         if (result && confirmAction != null)
         {
             await confirmAction();
@@ -370,14 +357,11 @@
     private async Task SearchDoctors(ChangeEventArgs e)
     {
         var name = e.Value?.ToString() ?? "";
-
         var result = await doctorService.SearchAsync(name);
 
         if (!string.IsNullOrWhiteSpace(selectedSpecialisation))
         {
-            result = result
-                .Where(d => d.Specialisation == selectedSpecialisation)
-                .ToList();
+            result = result.Where(d => d.Specialisation == selectedSpecialisation).ToList();
         }
 
         doctors = result;
@@ -391,9 +375,7 @@
 
         if (!string.IsNullOrWhiteSpace(selectedSpecialisation))
         {
-            doctors = doctors
-                .Where(d => d.Specialisation == selectedSpecialisation)
-                .ToList();
+            doctors = doctors.Where(d => d.Specialisation == selectedSpecialisation).ToList();
         }
     }
 }

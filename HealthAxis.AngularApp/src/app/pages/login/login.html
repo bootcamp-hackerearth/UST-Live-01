@@ -1,0 +1,32 @@
+<div class="login">
+  <div class="card">
+    <h2>Login to HealthAxis</h2>
+
+    <input type="email"
+           placeholder="Email"
+           (input)="email.set($any($event.target).value)" />
+
+    <input type="password"
+           placeholder="Password"
+           (input)="password.set($any($event.target).value)" />
+
+    <button (click)="login()">Login</button>
+
+    <!-- ✅ ADD THIS (VERY IMPORTANT) -->
+    <div *ngIf="error()" class="error-box">
+      ⚠️ {{ error() }}
+    </div>
+
+
+    <p>
+      New user?
+      <a routerLink="/register">Register</a>
+    </p>
+
+    <p class="mt-2">
+      Admin?
+      <a (click)="goToAdmin()" style="cursor:pointer">Login here</a>
+    </p>
+
+  </div>
+</div>

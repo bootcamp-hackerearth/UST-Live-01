@@ -8,5 +8,6 @@ namespace HealthAxisApplicn.Repositories
         Task<Patient?> SearchByPhoneNumberAsync(string phoneNumber, CancellationToken ct = default);
         Task<Patient?> SearchByEmailAsync(string email, CancellationToken ct = default);
         Task<List<Patient>> SearchAsync(string? name, string? phone, CancellationToken ct = default);
+        Task<Patient?> GetByUserIdAsync(string userId);
     }
 }

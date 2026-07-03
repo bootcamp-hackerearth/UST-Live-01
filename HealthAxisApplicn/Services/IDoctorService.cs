@@ -15,5 +15,7 @@ namespace HealthAxisApplicn.Services
         Task<DoctorDto> DeactivateDoctorAsync(int id);
         Task<bool> ToggleActiveAsync(int id);
         Task<List<DoctorDto>> SearchAsync(string query);
+        Task<Doctor?> GetByUserIdAsync(string userId);
+        Task<List<DoctorDto>> FilterAsync(string? name, string? specialization);
     }
 }

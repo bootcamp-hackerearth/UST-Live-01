@@ -39,5 +39,28 @@ namespace HealthAxisApplicn.Repositories.Impl
                          || d.Specialisation.ToLower().Contains(query))
                 .ToListAsync(ct);
         }
+
+        public async Task<Doctor?> GetByUserIdAsync(string userId)
+        {
+            return await _context.Doctors
+                .FirstOrDefaultAsync(d => d.UserId == userId);
+        }
+
+        public async Task<List<Doctor>> FilterAsync(string? name, string? specialization)
+        {
+            var query = _context.Doctors.AsQueryable();
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(d => d.DoctorName.ToLower().Contains(name.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(specialization))
+            {
+                query = query.Where(d => d.Specialisation.ToLower().Contains(specialization.ToLower()));
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }

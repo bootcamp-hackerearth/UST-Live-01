@@ -12,22 +12,40 @@ namespace HealthAxisApplicn.Services.Impl
 {
     public class AuthService(UserManager<ApplicationUser> userManager, IConfiguration configuration, AppDbContext dbContext) : IAuthService
     {
-        public async Task<(bool success, string message, string token, int ExpiresIn, string refreshToken)> LoginAsync(LoginDto request)
+        public async Task<AuthResponse> LoginAsync(LoginDto request)
         {
             var user = await userManager.FindByEmailAsync(request.Email);
+
             if (user is null)
-                return (false, "Invalid credentials", "", 0, "");
+            {
+                return new AuthResponse
+                {
+                    AccessToken = "",
+                    RefreshToken = "",
+                    ExpiresIn = 0,
+                    Message = "Invalid credentials",
+                    IsFirstLogin = false
+                };
+            }
 
             var isPasswordValid = await userManager.CheckPasswordAsync(user, request.Password);
+
             if (!isPasswordValid)
-                return (false, "Invalid password", "", 0, "");
+            {
+                return new AuthResponse
+                {
+                    AccessToken = "",
+                    RefreshToken = "",
+                    ExpiresIn = 0,
+                    Message = "Invalid password",
+                    IsFirstLogin = false
+                };
+            }
 
             var token = await GenerateJwtToken(user);
 
-            // ✅ Generate refresh token
             var refreshToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
 
-            // ✅ Save to DB
             var refreshTokenEntity = new RefreshToken
             {
                 Token = refreshToken,
@@ -41,21 +59,44 @@ namespace HealthAxisApplicn.Services.Impl
 
             var expiry = int.Parse(configuration["Jwt:AccessTokenExpirationMinutes"]!);
 
-            return (true, "Login successful", token, expiry, refreshToken);
+            return new AuthResponse
+            {
+                AccessToken = token,
+                RefreshToken = refreshToken,
+                ExpiresIn = expiry,
+                Message = "Login successful",
+
+                // ✅ CRITICAL
+                IsFirstLogin = user.IsFirstLogin
+            };
         }
 
 
 
 
-        public async Task<(bool Success, string Message, string UserId)> RegisterAsync(RegisterDto request)
+        public async Task<AuthRegisterResponse> RegisterAsync(RegisterDto request)
         {
             // Password validation
             if (request.Password != request.ConfirmPassword)
-                return (false, "Passwords do not match", string.Empty);
+            {
+                return new AuthRegisterResponse
+                {
+                    Success = false,
+                    Message = "Passwords do not match",
+                    UserId = ""
+                };
+            }
 
             // Role validation
             if (request.Role != "Admin" && request.Role != "Patient" && request.Role != "Doctor")
-                return (false, "Invalid role. Role should be either Admin, Doctor or Patient", string.Empty);
+            {
+                return new AuthRegisterResponse
+                {
+                    Success = false,
+                    Message = "Invalid role. Role should be either Admin, Doctor or Patient",
+                    UserId = ""
+                };
+            }
 
             var user = new ApplicationUser
             {
@@ -68,21 +109,39 @@ namespace HealthAxisApplicn.Services.Impl
             if (!result.Succeeded)
             {
                 var errors = string.Join(".", result.Errors.Select(e => e.Description));
-                return (false, errors, string.Empty);
+
+                return new AuthRegisterResponse
+                {
+                    Success = false,
+                    Message = errors,
+                    UserId = ""
+                };
             }
 
             await userManager.AddToRoleAsync(user, request.Role);
 
-            // ✅ FIXED PATIENT CREATION
+            // ✅ SET FIRST LOGIN FLAG
+            if (request.Role == "Patient")
+                user.IsFirstLogin = false;
+            else
+                user.IsFirstLogin = true;
+
+            await userManager.UpdateAsync(user);
+
+            // ✅ PATIENT CREATION (KEEP)
             if (request.Role == "Patient")
             {
-                // ✅ Basic validation
                 if (string.IsNullOrEmpty(request.Name) ||
                     request.DateOfBirth == null ||
                     string.IsNullOrEmpty(request.Gender) ||
                     string.IsNullOrEmpty(request.PhoneNo))
                 {
-                    return (false, "Missing patient details", "");
+                    return new AuthRegisterResponse
+                    {
+                        Success = false,
+                        Message = "Missing patient details",
+                        UserId = ""
+                    };
                 }
 
                 var patient = new Patient
@@ -98,36 +157,19 @@ namespace HealthAxisApplicn.Services.Impl
                 };
 
                 await dbContext.Patients.AddAsync(patient);
+                await dbContext.SaveChangesAsync();
             }
 
-            // ✅ CREATE DOCTOR
-            else if (request.Role == "Doctor")
+            // ❌ DOCTOR CREATION REMOVED (IMPORTANT FIX)
+
+            // ✅ SUCCESS RESPONSE
+            return new AuthRegisterResponse
             {
-                if (string.IsNullOrEmpty(request.Name))
-                {
-                    return (false, "Doctor name is required", "");
-                }
-
-                var doctor = new Doctor
-                {
-                    DoctorName = request.Name, // reuse name
-                    Email = request.Email,
-                    YearsOfExperience = 0,
-                    Specialisation = "GeneralPractitioner",
-                    ConsultationFee = 0,
-                    IsActive = true,
-                    UserId = user.Id
-                };
-
-                await dbContext.Doctors.AddAsync(doctor);
-            }
-            await dbContext.SaveChangesAsync();
-            return (true, "User registered successfully", user.Id);
+                Success = true,
+                Message = "User registered successfully",
+                UserId = user.Id
+            };
         }
-
-
-
-
 
 
         private async Task<string> GenerateJwtToken(ApplicationUser user)
@@ -159,7 +201,16 @@ namespace HealthAxisApplicn.Services.Impl
             if (patient != null)
             {
                 claim.Add(new Claim("PatientId", patient.PatientId.ToString())); 
-    }
+            }
+
+
+            var doctor = await dbContext.Doctors
+                    .FirstOrDefaultAsync(d => d.UserId == user.Id);
+
+            if (doctor != null)
+            {
+                claim.Add(new Claim("DoctorId", doctor.DoctorId.ToString()));
+            }
 
             var expirationMinutes = int.Parse(jwtSetting["AccessTokenExpirationMinutes"]);
 

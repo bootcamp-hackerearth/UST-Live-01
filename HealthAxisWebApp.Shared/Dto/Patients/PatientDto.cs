@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HealthAxisApplicn.Dto.HealthRecords;
+using System.ComponentModel.DataAnnotations;
 
 namespace HealthAxisApplicn.Dto.Patients
 {
@@ -78,7 +79,15 @@ namespace HealthAxisApplicn.Dto.Patients
         [RegularExpression(@"^$|^INS-[A-Z]{2}\d{4}$", ErrorMessage = "Insurance ID must be empty or in format INS-AB1234")] 
         public string? InsuranceID { get; set; }    
 
-
     }
+
+
+    public class PatientDetailsDto
+    {
+        public PatientDto Patient { get; set; } = null!;
+
+        public List<HealthRecordDto> HealthRecords { get; set; } = [];
+    }
+
 
 }
