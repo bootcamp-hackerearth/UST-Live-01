@@ -22,7 +22,9 @@ namespace HealthAxis.Shared.DTO.HealthRecordDtos
         [StringLength(1000, ErrorMessage = "Notes cannot exceed 1000 characters")]
         public string Notes { get; set; } = string.Empty;
 
-        public static ValidationResult? ValidateVisitDate(DateTime date, ValidationContext context)
+        public static ValidationResult? ValidateVisitDate(
+            DateTime date,
+            ValidationContext context)
         {
             if (date == default)
             {

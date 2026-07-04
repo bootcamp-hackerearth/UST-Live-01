@@ -271,8 +271,24 @@
   </section>
 
   @if (selectedHealthRecord(); as record) {
-    <div class="modal-backdrop" (click)="closeCompletedHealthRecord()">
-      <section class="record-view-modal" (click)="$event.stopPropagation()">
+    <!-- <div class="modal-backdrop" (click)="closeCompletedHealthRecord()"> -->
+      <div
+  class="modal-backdrop"
+  role="button"
+  tabindex="0"
+  (click)="closeModal()"
+  (keydown.enter)="closeMModal()"
+  (keydown.space)="closeModal()"
+>
+      <!-- <section class="record-view-modal" (click)="$event.stopPropagation()"> -->
+        <div
+  class="modal-card"
+  role="dialog"
+  aria-modal="true"
+  tabindex="-1"
+  (click)="$event.stopPropagation()"
+  (keydown)="$event.stopPropagation()"
+>
         <div class="modal-header">
           <div>
             <p>Completed Visit</p>

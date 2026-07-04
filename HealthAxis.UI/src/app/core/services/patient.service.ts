@@ -1,5 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
 import { Patient } from '../models/patient.model';
 import { HealthRecord } from '../models/health-record.model';
 import { environment } from '../../../environments/environment';
@@ -9,29 +11,33 @@ import { environment } from '../../../environments/environment';
 })
 export class PatientService {
   private readonly http = inject(HttpClient);
-  private readonly patientUrl = `${environment.apiBaseUrl}/Patient`;
+  private readonly patientUrl = `${environment.apiBaseUrl}/patients`;
 
-  getMyProfile() {
+  getMyProfile(): Observable<Patient> {
     return this.http.get<Patient>(`${this.patientUrl}/me`);
   }
 
-  updateMyProfile(data: Patient) {
+  updateMyProfile(data: Patient): Observable<Patient> {
     return this.http.put<Patient>(`${this.patientUrl}/me`, data);
   }
 
-  getMyHealthRecords() {
-    return this.http.get<HealthRecord[]>(`${this.patientUrl}/me/health-records`);
+  getMyHealthRecords(): Observable<HealthRecord[]> {
+    return this.http.get<HealthRecord[]>(
+      `${this.patientUrl}/me/health-records`
+    );
   }
 
-  getPatientById(id: number) {
+  getPatientById(id: number): Observable<Patient> {
     return this.http.get<Patient>(`${this.patientUrl}/${id}`);
   }
 
-  updatePatientById(id: number, data: Patient) {
+  updatePatientById(id: number, data: Patient): Observable<Patient> {
     return this.http.put<Patient>(`${this.patientUrl}/${id}`, data);
   }
 
-  getPatientHealthRecordsById(id: number) {
-    return this.http.get<HealthRecord[]>(`${this.patientUrl}/${id}/health-records`);
+  getPatientHealthRecordsById(id: number): Observable<HealthRecord[]> {
+    return this.http.get<HealthRecord[]>(
+      `${this.patientUrl}/${id}/health-records`
+    );
   }
 }

@@ -135,7 +135,7 @@ function waitForRefreshAndRetry(
   next: HttpHandlerFn
 ) {
   return refreshedTokenSubject.pipe(
-    filter((token): token is string => Boolean(token)),
+    filter(Boolean),
     take(1),
     switchMap((newAccessToken) => {
       const retryRequest = request.clone({

@@ -267,8 +267,21 @@
   </section>
 
   @if (selectedAppointment(); as appointment) {
-    <div class="modal-backdrop" (click)="closeAppointmentDetails()">
-      <section class="details-modal" (click)="$event.stopPropagation()">
+    <h2 id="appointmentDetailsTitle">Appointment Details</h2>
+    <div
+  class="modal-backdrop"
+  role="button"
+  tabindex="0"
+  aria-label="Close appointment details"
+  (click)="onAppointmentBackdropClick($event)"
+  (keydown.enter)="closeAppointmentDetails()"
+  (keydown.space)="closeAppointmentDetails(); $event.preventDefault()">
+
+  <section
+    class="details-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="appointmentDetailsTitle">
         <div class="modal-header">
           <div>
             <p>Appointment Details</p>

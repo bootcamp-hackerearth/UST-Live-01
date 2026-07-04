@@ -5,7 +5,7 @@
         ← Back to Dashboard
       </a>
 
-      <p>Doctor Appointments</p>
+     
       <h1>Upcoming Appointments</h1>
 
       <span>
@@ -224,8 +224,24 @@
   </section>
 
   @if (selectedAppointment(); as appointment) {
-    <div class="modal-backdrop" (click)="closeAppointmentDetails()">
-      <section class="details-modal" (click)="$event.stopPropagation()">
+    <!-- <div class="modal-backdrop" (click)="closeAppointmentDetails()"> -->
+      <div
+  class="modal-backdrop"
+  role="button"
+  tabindex="0"
+  (click)="closeModal()"
+  (keydown.enter)="closeModal()"
+  (keydown.space)="closeModal()"
+>
+      <!-- <section class="details-modal" (click)="$event.stopPropagation()"> -->
+        <div
+  class="modal-card"
+  role="dialog"
+  aria-modal="true"
+  tabindex="-1"
+  (click)="$event.stopPropagation()"
+  (keydown)="$event.stopPropagation()"
+>
         <div class="modal-header">
           <div>
             <p>Appointment Details</p>

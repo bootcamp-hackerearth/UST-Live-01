@@ -42,7 +42,7 @@ namespace HealthAxis.API.Middlewares
             return exception switch
             {
                 NotFoundException => StatusCodes.Status404NotFound,
-                ValidationException => StatusCodes.Status400BadRequest,
+                ValidationExceptions => StatusCodes.Status400BadRequest,
                 BusinessRuleException => StatusCodes.Status400BadRequest,
                 UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
                 _ => StatusCodes.Status500InternalServerError
@@ -54,7 +54,7 @@ namespace HealthAxis.API.Middlewares
             return exception switch
             {
                 NotFoundException => exception.Message,
-                ValidationException => exception.Message,
+                ValidationExceptions => exception.Message,
                 BusinessRuleException => exception.Message,
                 UnauthorizedAccessException => "Unauthorized access",
                 _ => "An unexpected error occurred. Please try again later."

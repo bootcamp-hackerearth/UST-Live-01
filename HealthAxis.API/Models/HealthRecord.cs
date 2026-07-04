@@ -1,6 +1,4 @@
 ﻿using HealthAxis.Shared.Utilities;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.VisualBasic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,6 +7,7 @@ namespace HealthAxis.API.Models
     public class HealthRecord
     {
         [Key]
+        [Column("RecordId")]
         public int HealthRecordId { get; set; }
 
         [Required(ErrorMessage = ValidationMessages.AppointmentRequired)]
@@ -34,9 +33,9 @@ namespace HealthAxis.API.Models
 
         [StringLength(ValidationLimits.NotesLength)]
         public string Notes { get; set; } = string.Empty;
+
         public DateTime? UpdatedDate { get; set; }
 
-        // Navigation properties
         [ForeignKey(nameof(AppointmentId))]
         public virtual Appointment Appointment { get; set; } = null!;
 

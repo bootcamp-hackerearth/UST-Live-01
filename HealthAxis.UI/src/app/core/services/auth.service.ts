@@ -172,7 +172,7 @@ refreshToken(): Observable<RefreshTokenResponse> {
     }
 
     const email = this.getEmailFromToken(accessToken);
-    const adminBaseUrl = environment.blazorAdminUrl.replace(/\/$/, '');
+    const adminBaseUrl = environment.blazorAdminUrl.replaceAll(/\/$/, '');
 
     const fragment = new URLSearchParams({
       accessToken,
@@ -183,7 +183,7 @@ refreshToken(): Observable<RefreshTokenResponse> {
       email
     });
 
-    window.location.href = `${adminBaseUrl}/external-login#${fragment.toString()}`;
+    globalThis.location.href = `${adminBaseUrl}/external-login#${fragment.toString()}`;
   }
 
   private storeAuthData(
@@ -270,7 +270,7 @@ refreshToken(): Observable<RefreshTokenResponse> {
         return {};
       }
 
-      const base64 = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
+      const base64 = payloadPart.replaceAll(/-/g, '+').replaceAll(/_/g, '/');
       const parsedPayload: unknown = JSON.parse(atob(base64));
 
       if (this.isRecord(parsedPayload)) {

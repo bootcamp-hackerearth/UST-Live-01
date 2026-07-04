@@ -49,14 +49,32 @@ namespace HealthAxis.API.Data
             modelBuilder.Entity<Appointment>().HasOne(a => a.Doctor).WithMany(d => d.Appointments).HasForeignKey(a => a.DoctorId).OnDelete(DeleteBehavior.Restrict);
         }
 
-        private static void ConfigureHealthRecordRelationships(
-            ModelBuilder modelBuilder)
+        private static void ConfigureHealthRecordRelationships(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<HealthRecord>().HasOne(h => h.Patient).WithMany(p => p.HealthRecords).HasForeignKey(h => h.PatientId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<HealthRecord>()
+                .HasKey(h => h.HealthRecordId);
 
-            modelBuilder.Entity<HealthRecord>().HasOne(h => h.Doctor).WithMany(d => d.HealthRecords).HasForeignKey(h => h.DoctorId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<HealthRecord>()
+                .Property(h => h.HealthRecordId)
+                .HasColumnName("RecordId");
 
-            modelBuilder.Entity<Appointment>().HasOne(a => a.HealthRecord).WithOne(hr => hr.Appointment).HasForeignKey<HealthRecord>(hr => hr.AppointmentId) .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<HealthRecord>()
+                .HasOne(h => h.Patient)
+                .WithMany(p => p.HealthRecords)
+                .HasForeignKey(h => h.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<HealthRecord>()
+                .HasOne(h => h.Doctor)
+                .WithMany(d => d.HealthRecords)
+                .HasForeignKey(h => h.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.HealthRecord)
+                .WithOne(hr => hr.Appointment)
+                .HasForeignKey<HealthRecord>(hr => hr.AppointmentId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         private static void SeedData(ModelBuilder modelBuilder)
@@ -113,30 +131,7 @@ namespace HealthAxis.API.Data
                     }
                 );
 
-            //modelBuilder.Entity<Patient>() .HasData(
-
-            //    new Patient
-            //    {
-            //        PatientId = 1,
-            //        FullName = "Anu",
-            //        DateOfBirth = new DateTime(1998, 5, 12),
-            //        Gender = Gender.Female,
-            //        PhoneNumber = "9876543210",
-            //        Email = "anu@example.com",
-            //        CreatedDate = new DateTime(2026, 1, 1)
-            //    },
-
-            //    new Patient
-            //    {
-            //        PatientId = 2,
-            //        FullName = "Rajit",
-            //        DateOfBirth = new DateTime(1992, 9, 25),
-            //        Gender = Gender.Male,
-            //        PhoneNumber = "9876543211",
-            //        Email = "rajit@example.com", 
-            //        CreatedDate = new DateTime(2026, 1, 1)
-            //    }
-            //);
+           
         }
     }
 }

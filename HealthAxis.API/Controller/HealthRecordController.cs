@@ -1,9 +1,10 @@
-﻿using HealthAxis.Shared.DTO.HealthRecordDtos;
-using HealthAxis.Shared.Enums;
+﻿using HealthAxis.API.Data;
 using HealthAxis.API.Services;
 using HealthAxis.API.Services.Interfaces;
+using HealthAxis.Shared.DTO.HealthRecordDtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace HealthAxis.API.Controller
@@ -12,26 +13,21 @@ namespace HealthAxis.API.Controller
     [ApiController]
     public class HealthRecordController : ControllerBase
     {
+        private readonly ApplicationDbContext _context;
         private readonly IHealthRecordService _healthRecordService;
         private readonly IPatientService _patientService;
         private readonly IDoctorService _doctorService;
-        private readonly IAppointmentService _appointmentService;
 
         public HealthRecordController(
+            ApplicationDbContext context,
             IHealthRecordService healthRecordService,
             IPatientService patientService,
-            IDoctorService doctorService,
-            IAppointmentService appointmentService)
+            IDoctorService doctorService)
         {
+            _context = context;
             _healthRecordService = healthRecordService;
             _patientService = patientService;
             _doctorService = doctorService;
-            _appointmentService = appointmentService;
-        }
-
-        private string? GetLoggedInUserId()
-        {
-            return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
         [HttpGet("patient/{patientId}")]
@@ -50,17 +46,11 @@ namespace HealthAxis.API.Controller
 
             if (User.IsInRole("Patient"))
             {
-                var patient = await _patientService.GetByUserIdAsync(userId);
+                var isAllowed = await IsLoggedInPatientAsync(
+                    userId,
+                    patientId);
 
-                if (patient == null)
-                {
-                    return NotFound(new
-                    {
-                        message = "Patient profile not found"
-                    });
-                }
-
-                if (patient.PatientId != patientId)
+                if (!isAllowed)
                 {
                     return StatusCode(403, new
                     {
@@ -81,11 +71,11 @@ namespace HealthAxis.API.Controller
                     });
                 }
 
-                var allowedPatient = await _patientService.GetPatientForDoctorAsync(
+                var hasAccess = await DoctorHasAccessToPatientAsync(
                     doctor.DoctorId,
                     patientId);
 
-                if (allowedPatient == null)
+                if (!hasAccess)
                 {
                     return StatusCode(403, new
                     {
@@ -97,6 +87,73 @@ namespace HealthAxis.API.Controller
             var records = await _healthRecordService.GetByPatientIdAsync(patientId);
 
             return Ok(records);
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Patient,Doctor")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid token"
+                });
+            }
+
+            var record = await _healthRecordService.GetByIdAsync(id);
+
+            if (record == null)
+            {
+                return NotFound(new
+                {
+                    message = "Health record not found"
+                });
+            }
+
+            if (User.IsInRole("Patient"))
+            {
+                var isAllowed = await IsLoggedInPatientAsync(
+                    userId,
+                    record.PatientId);
+
+                if (!isAllowed)
+                {
+                    return StatusCode(403, new
+                    {
+                        message = "You are not allowed to access another patient's health record"
+                    });
+                }
+            }
+
+            if (User.IsInRole("Doctor"))
+            {
+                var doctor = await _doctorService.GetByUserIdAsync(userId);
+
+                if (doctor == null)
+                {
+                    return NotFound(new
+                    {
+                        message = "Doctor profile not found"
+                    });
+                }
+
+                var hasAccess = await DoctorHasAccessToPatientAsync(
+                    doctor.DoctorId,
+                    record.PatientId);
+
+                if (!hasAccess)
+                {
+                    return StatusCode(403, new
+                    {
+                        message = "You are not allowed to access this health record"
+                    });
+                }
+            }
+
+            return Ok(record);
         }
 
         [HttpPost]
@@ -129,33 +186,6 @@ namespace HealthAxis.API.Controller
                 });
             }
 
-            var appointment = await _appointmentService.GetByIdAsync(
-                healthRecordDto.AppointmentId);
-
-            if (appointment == null)
-            {
-                return NotFound(new
-                {
-                    message = "Appointment not found"
-                });
-            }
-
-            if (appointment.DoctorId != doctor.DoctorId)
-            {
-                return StatusCode(403, new
-                {
-                    message = "You cannot add health record for another doctor's appointment"
-                });
-            }
-
-            if (appointment.Status != AppointmentStatus.Confirmed)
-            {
-                return BadRequest(new
-                {
-                    message = "Health record can be added only for confirmed appointments"
-                });
-            }
-
             var record = await _healthRecordService.AddAsync(
                 healthRecordDto,
                 doctor.DoctorId);
@@ -166,8 +196,8 @@ namespace HealthAxis.API.Controller
         [HttpPut("{id}")]
         [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> UpdateHealthRecord(
-    int id,
-    [FromBody] UpdateHealthRecordDto healthRecordDto)
+            int id,
+            [FromBody] UpdateHealthRecordDto healthRecordDto)
         {
             if (!ModelState.IsValid)
             {
@@ -199,72 +229,53 @@ namespace HealthAxis.API.Controller
                 healthRecordDto,
                 doctor.DoctorId);
 
-            return Ok(updatedRecord);
-        }
-
-        [HttpGet("{id}")]
-        [Authorize(Roles = "Patient,Doctor")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var userId = GetLoggedInUserId();
-
-            if (string.IsNullOrWhiteSpace(userId))
+            if (updatedRecord == null)
             {
-                return Unauthorized(new
+                return NotFound(new
                 {
-                    message = "Invalid token"
+                    message = "Health record not found"
                 });
             }
 
-            var record = await _healthRecordService.GetByIdAsync(id);
+            return Ok(updatedRecord);
+        }
 
-            if (User.IsInRole("Patient"))
+        private async Task<bool> IsLoggedInPatientAsync(
+            string userId,
+            int patientId)
+        {
+            var patient = await _patientService.GetByUserIdAsync(userId);
+
+            return patient != null && patient.PatientId == patientId;
+        }
+
+        private async Task<bool> DoctorHasAccessToPatientAsync(
+            int doctorId,
+            int patientId)
+        {
+            var hasAppointment = await _context.Appointments
+                .AsNoTracking()
+                .AnyAsync(appointment =>
+                    appointment.DoctorId == doctorId &&
+                    appointment.PatientId == patientId);
+
+            if (hasAppointment)
             {
-                var patient = await _patientService.GetByUserIdAsync(userId);
-
-                if (patient == null)
-                {
-                    return NotFound(new
-                    {
-                        message = "Patient profile not found"
-                    });
-                }
-
-                if (record.PatientId != patient.PatientId)
-                {
-                    return StatusCode(403, new
-                    {
-                        message = "You are not allowed to access another patient's health record"
-                    });
-                }
+                return true;
             }
 
-            if (User.IsInRole("Doctor"))
-            {
-                var doctor = await _doctorService.GetByUserIdAsync(userId);
+            return await _context.HealthRecords
+                .AsNoTracking()
+                .AnyAsync(record =>
+                    record.DoctorId == doctorId &&
+                    record.PatientId == patientId);
+        }
 
-                if (doctor == null)
-                {
-                    return NotFound(new
-                    {
-                        message = "Doctor profile not found"
-                    });
-                }
-
-                var allowedPatient = await _patientService.GetPatientForDoctorAsync(
-                    doctor.DoctorId,
-                    record.PatientId);
-
-                if (allowedPatient == null)
-                {
-                    return StatusCode(403, new
-                    {
-                        message = "You are not allowed to access this health record"
-                    });
-                }
-            }
-
-            return Ok(record);
+        private string? GetLoggedInUserId()
+        {
+            return User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue("sub")
+                ?? User.FindFirstValue("nameid");
         }
     }
 }

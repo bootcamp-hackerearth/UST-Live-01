@@ -1,13 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, catchError, of, throwError } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
 import {
   CreateHealthRecordRequest,
   HealthRecord,
   UpdateHealthRecordRequest
 } from '../models/health-record.model';
-import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -17,18 +17,24 @@ export class HealthRecordService {
   private readonly healthRecordUrl = `${environment.apiBaseUrl}/health-records`;
 
   getHealthRecordsByPatientId(patientId: number): Observable<HealthRecord[]> {
-    return this.http.get<HealthRecord[]>(
-      `${this.healthRecordUrl}/patient/${patientId}`
-    );
+    return this.http
+      .get<HealthRecord[]>(`${this.healthRecordUrl}/patient/${patientId}`)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 404) {
+            return of([]);
+          }
+
+          return throwError(() => error);
+        })
+      );
   }
 
   getHealthRecordById(id: number): Observable<HealthRecord> {
     return this.http.get<HealthRecord>(`${this.healthRecordUrl}/${id}`);
   }
 
-  createHealthRecord(
-    data: CreateHealthRecordRequest
-  ): Observable<HealthRecord> {
+  createHealthRecord(data: CreateHealthRecordRequest): Observable<HealthRecord> {
     return this.http.post<HealthRecord>(this.healthRecordUrl, data);
   }
 
@@ -36,9 +42,6 @@ export class HealthRecordService {
     id: number,
     data: UpdateHealthRecordRequest
   ): Observable<HealthRecord> {
-    return this.http.put<HealthRecord>(
-      `${this.healthRecordUrl}/${id}`,
-      data
-    );
+    return this.http.put<HealthRecord>(`${this.healthRecordUrl}/${id}`, data);
   }
 }

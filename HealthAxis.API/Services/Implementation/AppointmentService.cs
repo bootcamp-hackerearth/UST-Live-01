@@ -277,12 +277,12 @@ namespace HealthAxis.API.Services.Implementation
         {
             if (appointmentDto.PatientId <= 0)
             {
-                throw new ValidationException("Valid patient id is required.");
+                throw new ValidationExceptions("Valid patient id is required.");
             }
 
             if (appointmentDto.DoctorId <= 0)
             {
-                throw new ValidationException("Please select a valid doctor.");
+                throw new ValidationExceptions("Please select a valid doctor.");
             }
 
             var appointmentDate = appointmentDto.ScheduledDate.Date;
@@ -291,32 +291,32 @@ namespace HealthAxis.API.Services.Implementation
 
             if (appointmentDate < today)
             {
-                throw new ValidationException(
+                throw new ValidationExceptions(
                     "Appointment date cannot be in the past.");
             }
 
             if (appointmentDate > maxAllowedDate)
             {
-                throw new ValidationException(
+                throw new ValidationExceptions(
                     "Appointment date cannot be more than 6 months ahead.");
             }
 
             if (string.IsNullOrWhiteSpace(appointmentDto.TimeSlot))
             {
-                throw new ValidationException("Time slot is required.");
+                throw new ValidationExceptions("Time slot is required.");
             }
 
             var timeSlot = NormalizeTimeSlot(appointmentDto.TimeSlot);
 
             if (!AllowedTimeSlots.Contains(timeSlot))
             {
-                throw new ValidationException(
+                throw new ValidationExceptions(
                     "Invalid time slot selected. Please choose a valid hospital time slot.");
             }
 
             if (appointmentDate == today && IsPastTimeSlot(timeSlot))
             {
-                throw new ValidationException(
+                throw new ValidationExceptions(
                     "Past time slot cannot be booked.");
             }
         }
@@ -380,7 +380,7 @@ namespace HealthAxis.API.Services.Implementation
         {
             if (!Enum.IsDefined(typeof(AppointmentStatus), status))
             {
-                throw new ValidationException("Invalid appointment status.");
+                throw new ValidationExceptions("Invalid appointment status.");
             }
         }
 

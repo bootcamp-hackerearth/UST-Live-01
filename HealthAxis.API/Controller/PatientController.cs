@@ -1,28 +1,27 @@
-﻿using HealthAxis.Shared.DTO.PatientDtos;
-using HealthAxis.API.Services;
+﻿using HealthAxis.API.Services;
+using HealthAxis.API.Services.Interfaces;
+using HealthAxis.Shared.DTO.PatientDtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace HealthAxis.API.Controller
 {
-    [Route("api/[controller]")]
+    [Route("api/patients")]
     [ApiController]
     [Authorize(Roles = "Patient")]
     public class PatientController : ControllerBase
     {
         private readonly IPatientService _patientService;
+        private readonly IHealthRecordService _healthRecordService;
 
-        public PatientController(IPatientService patientService)
+        public PatientController(
+            IPatientService patientService,
+            IHealthRecordService healthRecordService)
         {
             _patientService = patientService;
+            _healthRecordService = healthRecordService;
         }
-
-        private string? GetLoggedInUserId()
-        {
-            return User.FindFirstValue(ClaimTypes.NameIdentifier);
-        }
-
 
         [HttpGet("me")]
         public async Task<IActionResult> GetMyProfile()
@@ -39,10 +38,16 @@ namespace HealthAxis.API.Controller
 
             var patient = await _patientService.GetByUserIdAsync(userId);
 
+            if (patient == null)
+            {
+                return NotFound(new
+                {
+                    message = "Patient profile not found"
+                });
+            }
+
             return Ok(patient);
         }
-
-
 
         [HttpPut("me")]
         public async Task<IActionResult> UpdateMyProfile(
@@ -80,8 +85,6 @@ namespace HealthAxis.API.Controller
             return Ok(updatedPatient);
         }
 
-
-
         [HttpGet("me/health-records")]
         public async Task<IActionResult> GetMyHealthRecords()
         {
@@ -105,13 +108,11 @@ namespace HealthAxis.API.Controller
                 });
             }
 
-            var records = await _patientService.GetHealthRecordsByPatientIdAsync(
+            var records = await _healthRecordService.GetByPatientIdAsync(
                 loggedInPatient.PatientId);
 
             return Ok(records);
         }
-
-
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPatientById(int id)
@@ -146,9 +147,6 @@ namespace HealthAxis.API.Controller
 
             return Ok(loggedInPatient);
         }
-
-
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePatient(
@@ -188,13 +186,12 @@ namespace HealthAxis.API.Controller
                 });
             }
 
-            var updatedPatient = await _patientService.UpdateAsync(id, patientDto);
+            var updatedPatient = await _patientService.UpdateAsync(
+                id,
+                patientDto);
 
             return Ok(updatedPatient);
         }
-
-
-
 
         [HttpGet("{id}/health-records")]
         public async Task<IActionResult> GetPatientHealthRecords(int id)
@@ -227,9 +224,16 @@ namespace HealthAxis.API.Controller
                 });
             }
 
-            var records = await _patientService.GetHealthRecordsByPatientIdAsync(id);
+            var records = await _healthRecordService.GetByPatientIdAsync(id);
 
             return Ok(records);
+        }
+
+        private string? GetLoggedInUserId()
+        {
+            return User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue("sub")
+                ?? User.FindFirstValue("nameid");
         }
     }
 }

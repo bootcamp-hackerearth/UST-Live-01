@@ -813,7 +813,17 @@ export class MyAppointments {
 
     return matchesStatus && (!searchValue || searchableText.includes(searchValue));
   }
+onAppointmentBackdropClick(event: MouseEvent): void {
+  if (event.target === event.currentTarget) {
+    this.closeAppointmentDetails();
+  }
+}
 
+onHealthRecordBackdropClick(event: MouseEvent): void {
+  if (event.target === event.currentTarget) {
+    this.closeHealthRecordDetails();
+  }
+}
   private isUpcomingAppointment(
     appointment: Appointment,
     today: Date

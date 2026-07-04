@@ -1,54 +1,90 @@
-﻿using HealthAxis.API.Exceptions;
+﻿using HealthAxis.API.Data;
+using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
-using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
 using HealthAxis.Shared.DTO.HealthRecordDtos;
 using HealthAxis.Shared.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthAxis.API.Services.Implementation
 {
-    public class HealthRecordService(
-        IHealthRecordRepository healthRecordRepository,
-        IPatientRepository patientRepository,
-        IAppointmentRepository appointmentRepository,
-        IDoctorRepository doctorRepository) : IHealthRecordService
+    public class HealthRecordService : IHealthRecordService
     {
-        public async Task<List<HealthRecordDto>> GetByPatientIdAsync(int patientId)
+        private readonly ApplicationDbContext _context;
+
+        public HealthRecordService(ApplicationDbContext context)
         {
-            var patient = await patientRepository.GetByIdAsync(patientId);
-
-            if (patient == null)
-            {
-                throw new NotFoundException("Patient not found");
-            }
-
-            var records = await healthRecordRepository.GetAllAsync();
-
-            var patientRecords = records
-                .Where(record => record.PatientId == patientId)
-                .OrderByDescending(record => record.VisitDate)
-                .ToList();
-
-            var result = new List<HealthRecordDto>();
-
-            foreach (var record in patientRecords)
-            {
-                result.Add(await MapToDtoAsync(record));
-            }
-
-            return result;
+            _context = context;
         }
 
-        public async Task<HealthRecordDto> GetByIdAsync(int id)
+        public async Task<List<HealthRecordDto>> GetByPatientIdAsync(int patientId)
         {
-            var record = await healthRecordRepository.GetByIdAsync(id);
-
-            if (record == null)
+            if (patientId <= 0)
             {
-                throw new NotFoundException("Health record not found");
+                return new List<HealthRecordDto>();
             }
 
-            return await MapToDtoAsync(record);
+            var patientExists = await _context.Patients
+                .AsNoTracking()
+                .AnyAsync(patient => patient.PatientId == patientId);
+
+            if (!patientExists)
+            {
+                return new List<HealthRecordDto>();
+            }
+
+            var records = await _context.HealthRecords
+                .AsNoTracking()
+                .Where(record => record.PatientId == patientId)
+                .OrderByDescending(record => record.VisitDate)
+                .Select(record => new HealthRecordDto
+                {
+                    HealthRecordId = record.HealthRecordId,
+                    RecordId = record.HealthRecordId,
+                    AppointmentId = record.AppointmentId,
+                    PatientId = record.PatientId,
+                    DoctorId = record.DoctorId,
+                    VisitDate = record.VisitDate,
+                    Diagnosis = record.Diagnosis ?? string.Empty,
+                    Prescription = record.Prescription ?? string.Empty,
+                    Notes = record.Notes ?? string.Empty,
+                    UpdatedDate = record.UpdatedDate,
+                    PatientName = record.Patient.FullName,
+                    DoctorName = record.Doctor.FullName,
+                    Specialisation = record.Doctor.Specialisation.ToString()
+                })
+                .ToListAsync();
+
+            return records;
+        }
+
+        public async Task<HealthRecordDto?> GetByIdAsync(int id)
+        {
+            if (id <= 0)
+            {
+                return null;
+            }
+
+            return await _context.HealthRecords
+                .AsNoTracking()
+                .Where(record => record.HealthRecordId == id)
+                .Select(record => new HealthRecordDto
+                {
+                    HealthRecordId = record.HealthRecordId,
+                    RecordId = record.HealthRecordId,
+                    AppointmentId = record.AppointmentId,
+                    PatientId = record.PatientId,
+                    DoctorId = record.DoctorId,
+                    VisitDate = record.VisitDate,
+                    Diagnosis = record.Diagnosis ?? string.Empty,
+                    Prescription = record.Prescription ?? string.Empty,
+                    Notes = record.Notes ?? string.Empty,
+                    UpdatedDate = record.UpdatedDate,
+                    PatientName = record.Patient.FullName,
+                    DoctorName = record.Doctor.FullName,
+                    Specialisation = record.Doctor.Specialisation.ToString()
+                })
+                .FirstOrDefaultAsync();
         }
 
         public async Task<HealthRecordDto> AddAsync(
@@ -57,8 +93,14 @@ namespace HealthAxis.API.Services.Implementation
         {
             ArgumentNullException.ThrowIfNull(healthRecordDto);
 
-            var appointment = await appointmentRepository.GetByIdAsync(
-                healthRecordDto.AppointmentId);
+            ValidateNewHealthRecordDetails(
+                healthRecordDto.VisitDate,
+                healthRecordDto.Diagnosis,
+                healthRecordDto.Prescription);
+
+            var appointment = await _context.Appointments
+                .FirstOrDefaultAsync(item =>
+                    item.AppointmentId == healthRecordDto.AppointmentId);
 
             if (appointment == null)
             {
@@ -71,32 +113,15 @@ namespace HealthAxis.API.Services.Implementation
                     "You cannot add health record for another doctor's appointment");
             }
 
-            var patient = await patientRepository.GetByIdAsync(
-                appointment.PatientId);
-
-            if (patient == null)
-            {
-                throw new NotFoundException("Patient not found");
-            }
-
-            var doctor = await doctorRepository.GetByIdAsync(
-                appointment.DoctorId);
-
-            if (doctor == null)
-            {
-                throw new NotFoundException("Doctor not found");
-            }
-
             if (appointment.Status != AppointmentStatus.Confirmed)
             {
                 throw new BusinessRuleException(
                     "Health record can be added only for confirmed appointments");
             }
 
-            var existingRecords = await healthRecordRepository.GetAllAsync();
-
-            var recordAlreadyExists = existingRecords.Any(record =>
-                record.AppointmentId == healthRecordDto.AppointmentId);
+            var recordAlreadyExists = await _context.HealthRecords
+                .AnyAsync(record =>
+                    record.AppointmentId == healthRecordDto.AppointmentId);
 
             if (recordAlreadyExists)
             {
@@ -104,145 +129,108 @@ namespace HealthAxis.API.Services.Implementation
                     "Health record already exists for this appointment");
             }
 
-            ValidateNewHealthRecordDetails(
-                healthRecordDto.VisitDate,
-                healthRecordDto.Diagnosis,
-                healthRecordDto.Prescription);
-
             var healthRecord = new HealthRecord
             {
-                AppointmentId = healthRecordDto.AppointmentId,
+                AppointmentId = appointment.AppointmentId,
                 PatientId = appointment.PatientId,
                 DoctorId = appointment.DoctorId,
                 VisitDate = healthRecordDto.VisitDate.Date,
                 Diagnosis = healthRecordDto.Diagnosis.Trim(),
                 Prescription = healthRecordDto.Prescription.Trim(),
-                Notes = healthRecordDto.Notes.Trim(),
+                Notes = (healthRecordDto.Notes ?? string.Empty).Trim(),
                 UpdatedDate = null
             };
 
-            var savedRecord = await healthRecordRepository.AddAsync(healthRecord);
+            _context.HealthRecords.Add(healthRecord);
 
             appointment.Status = AppointmentStatus.Completed;
 
-            await appointmentRepository.UpdateAsync(
-                appointment.AppointmentId,
-                appointment);
+            await _context.SaveChangesAsync();
 
-            return await MapToDtoAsync(savedRecord);
+            var savedRecord = await GetByIdAsync(healthRecord.HealthRecordId);
+
+            if (savedRecord == null)
+            {
+                throw new NotFoundException("Health record not found after saving");
+            }
+
+            return savedRecord;
         }
 
-        public async Task<HealthRecordDto> UpdateAsync(
+        public async Task<HealthRecordDto?> UpdateAsync(
             int id,
             UpdateHealthRecordDto healthRecordDto,
             int loggedInDoctorId)
         {
             ArgumentNullException.ThrowIfNull(healthRecordDto);
 
-            var record = await healthRecordRepository.GetByIdAsync(id);
+            ValidateUpdatedHealthRecordDetails(
+                healthRecordDto.Diagnosis,
+                healthRecordDto.Prescription);
+
+            var record = await _context.HealthRecords
+                .FirstOrDefaultAsync(item => item.HealthRecordId == id);
 
             if (record == null)
             {
-                throw new NotFoundException("Health record not found");
+                return null;
             }
 
-            var appointment = await appointmentRepository.GetByIdAsync(
-                record.AppointmentId);
-
-            if (appointment == null)
-            {
-                throw new NotFoundException("Appointment not found");
-            }
-
-            if (appointment.DoctorId != loggedInDoctorId ||
-                record.DoctorId != loggedInDoctorId)
+            if (record.DoctorId != loggedInDoctorId)
             {
                 throw new BusinessRuleException(
                     "You cannot edit another doctor's health record");
             }
 
-            ValidateUpdatedHealthRecordDetails(
-                healthRecordDto.Diagnosis,
-                healthRecordDto.Prescription);
-
             record.Diagnosis = healthRecordDto.Diagnosis.Trim();
             record.Prescription = healthRecordDto.Prescription.Trim();
-            record.Notes = healthRecordDto.Notes.Trim();
+            record.Notes = (healthRecordDto.Notes ?? string.Empty).Trim();
             record.UpdatedDate = DateTime.UtcNow;
 
-            var updatedRecord = await healthRecordRepository.UpdateAsync(
-                id,
-                record);
+            await _context.SaveChangesAsync();
 
-            if (updatedRecord == null)
-            {
-                throw new NotFoundException("Health record not found");
-            }
-
-            return await MapToDtoAsync(updatedRecord);
-        }
-
-        private async Task<HealthRecordDto> MapToDtoAsync(HealthRecord record)
-        {
-            var patient = await patientRepository.GetByIdAsync(record.PatientId);
-            var doctor = await doctorRepository.GetByIdAsync(record.DoctorId);
-
-            return new HealthRecordDto
-            {
-                RecordId = record.HealthRecordId,
-                AppointmentId = record.AppointmentId,
-                PatientId = record.PatientId,
-                PatientName = patient?.FullName ?? string.Empty,
-                DoctorId = record.DoctorId,
-                DoctorName = doctor?.FullName ?? string.Empty,
-                Specialisation = doctor?.Specialisation.ToString() ?? string.Empty,
-                VisitDate = record.VisitDate,
-                Diagnosis = record.Diagnosis,
-                Prescription = record.Prescription,
-                Notes = record.Notes,
-                UpdatedDate = record.UpdatedDate
-            };
+            return await GetByIdAsync(id);
         }
 
         private static void ValidateNewHealthRecordDetails(
             DateTime visitDate,
-            string diagnosis,
-            string prescription)
+            string? diagnosis,
+            string? prescription)
         {
             if (visitDate == default)
             {
-                throw new ValidationException("Visit date is required");
+                throw new ValidationExceptions("Visit date is required");
             }
 
             if (visitDate.Date > DateTime.Today)
             {
-                throw new ValidationException(
+                throw new ValidationExceptions(
                     "Visit date cannot be in the future");
             }
 
             if (string.IsNullOrWhiteSpace(diagnosis))
             {
-                throw new ValidationException("Diagnosis is required");
+                throw new ValidationExceptions("Diagnosis is required");
             }
 
             if (string.IsNullOrWhiteSpace(prescription))
             {
-                throw new ValidationException("Prescription is required");
+                throw new ValidationExceptions("Prescription is required");
             }
         }
 
         private static void ValidateUpdatedHealthRecordDetails(
-            string diagnosis,
-            string prescription)
+            string? diagnosis,
+            string? prescription)
         {
             if (string.IsNullOrWhiteSpace(diagnosis))
             {
-                throw new ValidationException("Diagnosis is required");
+                throw new ValidationExceptions("Diagnosis is required");
             }
 
             if (string.IsNullOrWhiteSpace(prescription))
             {
-                throw new ValidationException("Prescription is required");
+                throw new ValidationExceptions("Prescription is required");
             }
         }
     }

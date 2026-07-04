@@ -188,8 +188,23 @@
 </section>
 
 @if (selectedRecord(); as record) {
-  <div class="record-dialog-backdrop" (click)="closeRecordDetails()">
-    <section class="record-dialog" (click)="$event.stopPropagation()">
+  <h2 id="healthRecordDetailsTitle">Health Record Details</h2>
+  <!-- <div class="record-dialog-backdrop" (click)="closeRecordDetails()">
+    <section class="record-dialog" (click)="$event.stopPropagation()"> -->
+      <div
+  class="modal-backdrop"
+  role="button"
+  tabindex="0"
+  aria-label="Close health record details"
+  (click)="onHealthRecordBackdropClick($event)"
+  (keydown.enter)="closeHealthRecordDetails()"
+  (keydown.space)="closeHealthRecordDetails(); $event.preventDefault()">
+
+  <section
+    class="health-record-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="healthRecordDetailsTitle">
 <div class="document-header">
   <div>
     <span class="document-label">

@@ -65,7 +65,7 @@ namespace HealthAxis.API.Services.Implementation
 
             if (emailExists)
             {
-                throw new ValidationException("Email already registered");
+                throw new ValidationExceptions("Email already registered");
             }
 
             var phoneExists = patients.Any(p =>
@@ -74,7 +74,7 @@ namespace HealthAxis.API.Services.Implementation
 
             if (phoneExists)
             {
-                throw new ValidationException("Phone number already registered");
+                throw new ValidationExceptions("Phone number already registered");
             }
 
             existingPatient.FullName = patientDto.FullName;
@@ -171,21 +171,5 @@ namespace HealthAxis.API.Services.Implementation
 
             return mapper.Map<PatientDto>(patient);
         }
-    //    public async Task<PagedResponseDto<PatientDto>> GetPagedAsync(
-    //PaginationQueryDto paginationQuery)
-    //    {
-    //        var totalRecords = await patientRepository.CountAsync();
-
-    //        var patients = await patientRepository.GetPagedAsync(
-    //            paginationQuery,
-    //            patient => patient.PatientId);
-
-    //        var patientDtos = mapper.Map<List<PatientDto>>(patients);
-
-    //        return PagedResponseFactory.Create(
-    //            patientDtos,
-    //            paginationQuery,
-    //            totalRecords);
-    //    }
     }
 }

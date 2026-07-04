@@ -6,16 +6,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+
 namespace HealthAxis.API.Controller
 {
-    [Route("api/[controller]")]
+    [Route("api/doctors")]
     [ApiController]
     public class DoctorController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         private readonly IDoctorService _doctorService;
         private readonly IPatientService _patientService;
-        public DoctorController(ApplicationDbContext context, IDoctorService doctorService, IPatientService patientService)
+
+        public DoctorController(
+            ApplicationDbContext context,
+            IDoctorService doctorService,
+            IPatientService patientService)
         {
             _context = context;
             _doctorService = doctorService;
@@ -24,7 +29,75 @@ namespace HealthAxis.API.Controller
 
         private string? GetLoggedInUserId()
         {
-            return User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue("sub")
+                ?? User.FindFirstValue("nameid");
+        }
+
+        [HttpGet("me")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetMyDoctorProfile()
+        {
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid token"
+                });
+            }
+
+            var doctor = await _doctorService.GetByUserIdAsync(userId);
+
+            if (doctor == null)
+            {
+                return NotFound(new
+                {
+                    message = "Doctor profile not found. Please link this doctor account with the doctor table."
+                });
+            }
+
+            return Ok(doctor);
+        }
+
+        [HttpPut("me/status")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> UpdateMyStatus(
+            [FromBody] UpdateDoctorStatusDto dto)
+        {
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid token"
+                });
+            }
+
+            var doctor = await _context.Doctors
+                .FirstOrDefaultAsync(item => item.UserId == userId);
+
+            if (doctor == null)
+            {
+                return NotFound(new
+                {
+                    message = "Doctor profile not found. Please link this doctor account with the doctor table."
+                });
+            }
+
+            doctor.IsActive = dto.IsActive;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = dto.IsActive
+                    ? "You are now active. Patients can book appointments."
+                    : "You are now inactive. Patients cannot book new appointments.",
+                isActive = doctor.IsActive
+            });
         }
 
         [HttpGet("me/patients")]
@@ -55,46 +128,6 @@ namespace HealthAxis.API.Controller
                 doctor.DoctorId);
 
             return Ok(patients);
-        }
-
-        [Authorize(Roles = "Doctor")]
-        [HttpPut("me/status")]
-        [Authorize(Roles = "Doctor")]
-        [HttpPut("me/status")]
-        public async Task<IActionResult> UpdateMyStatus(UpdateDoctorStatusDto dto)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return Unauthorized(new
-                {
-                    message = "Doctor user id claim is missing."
-                });
-            }
-
-            var doctor = await _context.Doctors
-                .FirstOrDefaultAsync(item => item.UserId == userId);
-
-            if (doctor is null)
-            {
-                return NotFound(new
-                {
-                    message = "Doctor profile not found."
-                });
-            }
-
-            doctor.IsActive = dto.IsActive;
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                message = dto.IsActive
-                    ? "You are now active."
-                    : "You are now inactive.",
-                isActive = doctor.IsActive
-            });
         }
 
         [HttpGet("me/patients/{patientId}")]
@@ -136,8 +169,6 @@ namespace HealthAxis.API.Controller
             return Ok(patient);
         }
 
-
-
         [HttpGet]
         [Authorize(Roles = "Patient,Admin")]
         public async Task<IActionResult> GetAllDoctors()
@@ -145,25 +176,6 @@ namespace HealthAxis.API.Controller
             var doctors = await _doctorService.GetAllAsync();
 
             return Ok(doctors);
-        }
-
-        [HttpGet("me")]
-        [Authorize(Roles = "Doctor")]
-        public async Task<IActionResult> GetMyDoctorProfile()
-        {
-            var userId = GetLoggedInUserId();
-
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return Unauthorized(new
-                {
-                    message = "Invalid token"
-                });
-            }
-
-            var doctor = await _doctorService.GetByUserIdAsync(userId);
-
-            return Ok(doctor);
         }
 
         [HttpGet("{id}")]
@@ -219,7 +231,9 @@ namespace HealthAxis.API.Controller
                 doctor.DoctorId,
                 doctor.FullName,
                 doctor.IsActive,
-                Message = doctor.IsActive ? "Doctor is available" : "Doctor is not available"
+                Message = doctor.IsActive
+                    ? "Doctor is available"
+                    : "Doctor is not available"
             });
         }
     }
