@@ -1,2 +1,0 @@
-Ž
-roslynCS8613çNullability of reference types in return type of 'Task<Appointment> Repository<Appointment>.GetProfileAsync(int id)' doesn't match implicitly implemented member 'Task<Appointment?> IRepository<Appointment>.GetProfileAsync(int id)'. 2		A W@R

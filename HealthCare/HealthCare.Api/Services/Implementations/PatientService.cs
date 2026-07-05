@@ -37,7 +37,7 @@ namespace HealthCare.Api.Services.Implementations
         {
             var patient = await _repository.GetProfileAsync(id);
             if (patient == null)
-                throw new PatientNotFoundException(id);
+                throw new PatientNotFoundException("Patient Not Found");
             _mapper.Map(dto, patient);
 
             await _repository.UpdateAsync(patient);
@@ -48,17 +48,17 @@ namespace HealthCare.Api.Services.Implementations
         {
             var patient = await _repository.GetProfileAsync(id);
             if (patient == null)
-                throw new PatientNotFoundException(id);
+                throw new PatientNotFoundException("Patient Not Found");
             await _repository.DeleteAsync(id);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<PatientListDto> GetByIdAsync(int id)
+        public async Task<PatientListDto?> GetByIdAsync(int id)
         {
             var patient = await _patientRepository.GetMyProfileAsync(id);
 
             if (patient == null)
-                throw new PatientNotFoundException(id);
+                throw new PatientNotFoundException("Patient Not Found");
 
             return patient;
         }
@@ -72,7 +72,7 @@ namespace HealthCare.Api.Services.Implementations
             return _mapper.Map<IEnumerable<PatientListDto>>(patients);
         }
 
-        public async Task<PagedResult<PatientListDto>> GetAllAsync(PatientFilter filter)
+        public async Task<PagedResult<PatientListDto?>> GetAllAsync(PatientFilter filter)
         {
             IQueryable<Patient> query = _context.Patients.AsQueryable();
 
@@ -99,7 +99,7 @@ namespace HealthCare.Api.Services.Implementations
                 .Take(filter.PageSize)
                 .ToListAsync();
 
-            return new PagedResult<PatientListDto>
+            return new PagedResult<PatientListDto?>
             {
                 Items = _mapper.Map<IEnumerable<PatientListDto>>(items),
                 PageNumber = filter.PageNumber,

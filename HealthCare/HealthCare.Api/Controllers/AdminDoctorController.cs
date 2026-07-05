@@ -1,5 +1,6 @@
 ﻿using Healthcare.Shared.DTOs.Authentication;
 using Healthcare.Shared.DTOs.Doctor;
+using HealthCare.Api.Exceptions;
 using HealthCare.Api.Services.Implementations;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,7 +31,7 @@ namespace HealthCare.Api.Controllers
         {
             var result = await _doctorService.GetByIdAsync(id);
             if (result == null)
-                throw new Exception("Doctor Not Found");
+                throw new DoctorNotFoundException("Doctor Not Found");
 
             return Ok(result);
         }

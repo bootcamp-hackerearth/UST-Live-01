@@ -38,7 +38,7 @@ namespace HealthCare.Api.Services.Implementations
         {
             var doctor = await _repository.GetProfileAsync(id);
             if (doctor == null)
-                throw new DoctorNotFoundException(id);
+                throw new DoctorNotFoundException("Doctor Not found");
             _mapper.Map(dto, doctor);
 
             await _repository.UpdateAsync(doctor);
@@ -49,7 +49,7 @@ namespace HealthCare.Api.Services.Implementations
         {
             var doctor = await _repository.GetProfileAsync(id);
             if (doctor == null)
-                throw new DoctorNotFoundException(id);
+                throw new DoctorNotFoundException("Doctor Not Found");
             await _repository.DeleteAsync(id);
             await _context.SaveChangesAsync();
         }
@@ -64,25 +64,25 @@ namespace HealthCare.Api.Services.Implementations
         {
             IQueryable<Doctor> query = _context.Doctors.AsQueryable();
 
-            // ✅ Name
+            // Name
             if (!string.IsNullOrWhiteSpace(filter.FullName))
             {
                 query = query.Where(d => d.FullName.Contains(filter.FullName));
             }
 
-            // ✅ Specialisation
+            // Specialisation
             if (!string.IsNullOrWhiteSpace(filter.Specialisation))
             {
                 query = query.Where(d => d.Specialisation == filter.Specialisation);
             }
 
-            // ✅ Experience
+            // Experience
             if (filter.MinExperience.HasValue)
             {
                 query = query.Where(d => d.YearsOfExperience >= filter.MinExperience.Value);
             }
 
-            // ✅ Status
+            // Status
             if (filter.IsActive.HasValue)
             {
                 query = query.Where(d => d.IsActive == filter.IsActive.Value);
@@ -214,7 +214,7 @@ namespace HealthCare.Api.Services.Implementations
             ).FirstOrDefaultAsync();
 
             if (doctor == null)
-                throw new Exception("Doctor not found");
+                throw new DoctorNotFoundException("Doctor not found");
 
             return doctor;
         }

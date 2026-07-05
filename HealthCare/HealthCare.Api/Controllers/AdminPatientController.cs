@@ -5,93 +5,126 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-[Route("api/admin")]
-public class AdminPatientController : ControllerBase
+
+
+namespace HealthCare.Api.Controllers
 {
-    private readonly IPatientService _patientService;
-    private readonly IAuthService _authService;
-    public AdminPatientController(IPatientService patientService, IAuthService authService)
+
+    [ApiController]
+    [Route("api/admin/patients")]
+    public class AdminPatientController : ControllerBase
     {
-        _patientService = patientService;
-        _authService = authService;
-    }
+        private readonly IPatientService _patientService;
+        private readonly IAuthService _authService;
+        public AdminPatientController(IPatientService patientService, IAuthService authService)
+        {
+            _patientService = patientService;
+            _authService = authService;
+        }
 
-    // Get patient by id
+        // Get patient by id
 
-    [HttpGet("{id}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> GetPatientById(int id)
-    {
-        var result = await _patientService.GetByIdAsync(id);
-        if (result == null) return NotFound("Patient Not Found");
-        return Ok(result);
-    }
+        [HttpGet("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> GetPatientById(int id)
+        {
 
-    //Get All pat
-    [HttpGet("patients")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> GetAllPatient(PatientFilter filter)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            if (id <= 0)
+            {
+                return BadRequest("Invalid patient id.");
+            }
 
-        var result = await _patientService.GetAllAsync(filter);
-        return Ok(result);
-    }
+            var result = await _patientService.GetByIdAsync(id);
+            return Ok(result);
+        }
 
-    //update patient
-    [HttpPut("{id}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdatePatientDto dto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        //Get All pat
+        [HttpGet()]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> GetAllPatient([FromQuery] PatientFilter filter)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        await _patientService.UpdateAsync(id, dto);
-        return Ok();
-    }
+            var result = await _patientService.GetAllAsync(filter);
+            return Ok(result);
+        }
 
-    //Update status
-    [HttpPatch("patients/{id}/status")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> UpdatePatientStatus(int id, [FromBody] bool isActive)
-    {
-        await _patientService.UpdateStatusAsync(id, isActive);
-        return Ok();
-    }
+        //update patient
+        [HttpPut("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdatePatientDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-    //delete patient
-    [HttpDelete("{id}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> DeletePatient(int id)
-    {
-        await _patientService.DeleteAsync(id);
-        return Ok();
-    }
+            if (id <= 0)
+                return BadRequest("Invalid patient id.");
 
-    //register
-    [HttpPost("register")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> RegisterPatient(CreatePatientDto dto)
-    {
-        await _authService.RegisterPatientAsync(dto);
-        return Ok(new { message = "Registration successful" });
-    }
+            await _patientService.UpdateAsync(id, dto);
+            return Ok();
+        }
 
-    //Serach by name 
-    [HttpGet("search")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> SearchByName(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            return BadRequest("Name is required");
+        //Update status
+        [HttpPatch("{id}/status")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> UpdatePatientStatus(int id, [FromBody] bool isActive)
+        {
 
-        var result = await _patientService.SearchByNameAsync(name);
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
 
-        if (!result.Any())
-            return NotFound($"No patients found with name '{name}'");
+            await _patientService.UpdateStatusAsync(id, isActive);
+            return Ok();
+        }
 
-        return Ok(result);
+        //delete patient
+        [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> DeletePatient(int id)
+        {
+
+            if (id <= 0)
+            {
+                return BadRequest("Invalid patient id.");
+            }
+
+            await _patientService.DeleteAsync(id);
+            return Ok();
+        }
+
+        //register
+        [HttpPost("register")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> RegisterPatient([FromBody] CreatePatientDto dto)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            await _authService.RegisterPatientAsync(dto);
+            return Ok(new { message = "Registration successful" });
+        }
+
+        //Serach by name 
+        [HttpGet("search")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> SearchByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return BadRequest("Name is required");
+
+            var result = await _patientService.SearchByNameAsync(name);
+
+            if (!result.Any())
+                return NotFound($"No patients found with name '{name}'");
+
+            return Ok(result);
+        }
     }
 
 }

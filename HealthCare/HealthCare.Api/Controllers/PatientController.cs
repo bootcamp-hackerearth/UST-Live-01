@@ -38,7 +38,10 @@ namespace HealthCare.Api.Controllers
         public async Task<IActionResult> Update( UpdatePatientDto dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            {
+                return ValidationProblem(ModelState);
+            }
+
 
             var patientId = GetPatientIdFromClaims();
             await _service.UpdateAsync(patientId, dto);

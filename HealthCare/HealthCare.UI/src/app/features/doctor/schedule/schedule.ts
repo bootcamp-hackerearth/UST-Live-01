@@ -28,7 +28,7 @@ export class ScheduleComponent implements OnInit {
 
   selectedDate = new Date().toISOString().split('T')[0];
 
-  constructor(private appointmentService: AppointmentService,private toastr:ToastrService) {}
+  constructor(private readonly appointmentService: AppointmentService,private readonly toastr:ToastrService) {}
 
   ngOnInit(): void {
     this.loadAppointments();

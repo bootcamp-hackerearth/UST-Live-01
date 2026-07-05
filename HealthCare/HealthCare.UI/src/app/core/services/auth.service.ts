@@ -1,32 +1,24 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, switchMap } from 'rxjs';
-
+import { Observable} from 'rxjs';
 import { Login } from '../models/login.model';
+import { API_ENDPOINTS } from '../config/api-endpoints';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private readonly api = 'https://localhost:7225/api/auth';
-
   constructor(private http: HttpClient) { }
 
   // Login
   login(data: Login): Observable<any> {
-    return this.http.post<any>(
-      `${this.api}/login`,
-      data
-    );
+    return this.http.post<any>(API_ENDPOINTS.LOGIN, data);
   }
 
   // Register
   register(data: any): Observable<any> {
-    return this.http.post<any>(
-      `${this.api}/register-patient`,
-      data
-    );
+    return this.http.post<any>(API_ENDPOINTS.REGISTER_PATIENT, data);
   }
 
   // Save JWT
@@ -75,17 +67,15 @@ export class AuthService {
     ] || null;
   }
 
-  refreshToken() {
+refreshToken(): Observable<{ token: string }> {
   const refreshToken = localStorage.getItem('refreshToken');
 
-  return this.http.post<{ token: string }>('/api/refresh', {
-    refreshToken
-  }).pipe(
-    switchMap(response => {
-      return [response.token];
-    })
+  return this.http.post<{ token: string }>(
+    '/api/refresh',
+    { refreshToken }
   );
 }
+
 
 logout() {
   localStorage.clear();

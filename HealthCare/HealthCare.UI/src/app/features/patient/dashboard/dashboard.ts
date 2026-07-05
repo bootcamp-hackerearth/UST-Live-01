@@ -37,8 +37,8 @@ cancelledCount = computed(() =>this.appointments().filter(a => a.status === 'Can
 );
 
   constructor(
-    private patientService: PatientService,
-    private appointmentService: AppointmentService
+    private readonly patientService: PatientService,
+    private readonly appointmentService: AppointmentService
   ) {}
 
   ngOnInit() {

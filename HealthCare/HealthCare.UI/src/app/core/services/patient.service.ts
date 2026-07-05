@@ -8,9 +8,6 @@ import { API_ENDPOINTS } from "../config/api-endpoints";
 })
 export class PatientService {
 
-  // private patientApi = 'https://localhost:7225/api/patients';
-  // private healthApi = 'https://localhost:7225/api/healthrecords';
-
   constructor(private http: HttpClient) {}
 
   //  PROFILE

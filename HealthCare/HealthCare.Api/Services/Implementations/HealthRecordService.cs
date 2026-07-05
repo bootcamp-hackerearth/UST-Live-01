@@ -34,7 +34,7 @@ namespace HealthCare.Api.Services.Implementations
                 .FirstOrDefaultAsync(a => a.AppointmentId == dto.AppointmentId);
 
             if (appointment == null)
-                throw new Exception("Invalid appointment");
+                throw new InvalidOperationException("Invalid appointment");
 
             var record = _mapper.Map<HealthRecord>(dto);
 
@@ -68,10 +68,10 @@ namespace HealthCare.Api.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-        public async Task<HealthRecordListDto> GetByIdAsync(int id)
+        public async Task<HealthRecordListDto?> GetByIdAsync(int id)
         {
             var record = await _repository.GetProfileAsync(id);
-            return record == null ? null : _mapper.Map<HealthRecordListDto?>(record);
+            return record == null ? null : _mapper.Map<HealthRecordListDto>(record);
         }
 
         public async Task<PagedResult<HealthRecordListDto>> GetAllAsync(HealthRecordFilter filter)

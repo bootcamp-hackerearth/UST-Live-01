@@ -3,6 +3,7 @@ using Healthcare.Shared.DTOs.Authentication;
 using Healthcare.Shared.DTOs.Patient;
 using HealthCare.Api.Data;
 using HealthCare.Api.Models;
+using HealthCare.Api.Exceptions;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Implementations;
 using Microsoft.AspNetCore.Identity;
@@ -124,7 +125,7 @@ namespace HealthCare.Api.Tests
             _userManagerMock.Setup(u => u.CheckPasswordAsync(user, "123"))
                 .ReturnsAsync(false);
 
-            await Assert.ThrowsAsync<Exception>(() =>
+            await Assert.ThrowsAsync<InvalidCredentialsException>(() =>
                 _service.LoginAsync(new LoginDto
                 {
                     Email = user.Email,
@@ -214,7 +215,7 @@ namespace HealthCare.Api.Tests
             _userManagerMock.Setup(u => u.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((IdentityUser?)null);
 
-            await Assert.ThrowsAsync<Exception>(() =>
+            await Assert.ThrowsAsync<InvalidCredentialsException>(() =>
                 _service.LoginAsync(new LoginDto
                 {
                     Email = "invalid@test.com",
@@ -236,9 +237,9 @@ namespace HealthCare.Api.Tests
                 .ReturnsAsync(true);
 
             _userManagerMock.Setup(u => u.GetRolesAsync(user))
-                .ReturnsAsync(new List<string>()); // no roles
+                .ReturnsAsync(new List<string>());
 
-            await Assert.ThrowsAsync<Exception>(() =>
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 _service.LoginAsync(new LoginDto
                 {
                     Email = user.Email,
@@ -265,7 +266,7 @@ namespace HealthCare.Api.Tests
             _patientRepoMock.Setup(p => p.GetByUserIdAsync(user.Id))
                 .ReturnsAsync((Patient?)null);
 
-            await Assert.ThrowsAsync<Exception>(() =>
+            await Assert.ThrowsAsync<PatientNotFoundException>(() =>
                 _service.LoginAsync(new LoginDto
                 {
                     Email = user.Email,
@@ -319,7 +320,7 @@ namespace HealthCare.Api.Tests
             _doctorRepoMock.Setup(d => d.GetByUserIdAsync(user.Id))
                 .ReturnsAsync((Doctor?)null);
 
-            await Assert.ThrowsAsync<Exception>(() =>
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 _service.LoginAsync(new LoginDto
                 {
                     Email = user.Email,
@@ -366,7 +367,7 @@ namespace HealthCare.Api.Tests
             _userManagerMock.Setup(u => u.GetRolesAsync(user))
                 .ReturnsAsync(new List<string> { "Other" });
 
-            await Assert.ThrowsAsync<Exception>(() =>
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 _service.LoginAsync(new LoginDto
                 {
                     Email = user.Email,

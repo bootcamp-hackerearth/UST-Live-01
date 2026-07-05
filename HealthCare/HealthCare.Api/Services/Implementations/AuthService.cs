@@ -1,16 +1,17 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using AutoMapper;
-using HealthCare.Api.Data;
+﻿using AutoMapper;
 using Healthcare.Shared.DTOs.Authentication;
+using Healthcare.Shared.DTOs.Patient;
+using HealthCare.Api.Data;
+using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
-using Microsoft.EntityFrameworkCore;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Healthcare.Shared.DTOs.Patient;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace HealthCare.Api.Services.Implementations
 {
@@ -100,7 +101,7 @@ namespace HealthCare.Api.Services.Implementations
         {
 
             if (dto.Password != dto.ConfirmPassword)
-                throw new Exception("Passwords do not match");
+                throw new ArgumentException("Passwords do not match.");
 
 
             var user = await CreateUserAsync(dto.Email, dto.Password, "Doctor");
@@ -121,20 +122,20 @@ namespace HealthCare.Api.Services.Implementations
             var user = await _userManager.FindByEmailAsync(dto.Email);
 
             if (user == null)
-                throw new Exception("User not found");
+                throw new InvalidCredentialsException();
 
             var validPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
 
             if (!validPassword)
-                throw new Exception("Invalid password");
+                throw new InvalidCredentialsException();
 
             var roles = await _userManager.GetRolesAsync(user);
 
             if (!roles.Any())
-                throw new Exception("User has no role assigned");
+                throw new InvalidOperationException("User has no role assigned");
 
 
-            var role = roles.First();
+            var role = roles[0];
 
             string token;
 
@@ -143,7 +144,7 @@ namespace HealthCare.Api.Services.Implementations
                 var patient = await _patientRepo.GetByUserIdAsync(user.Id);
 
                 if (patient == null)
-                    throw new Exception("Patient record not found");
+                    throw new PatientNotFoundException("Patient record not found");
 
                 token = GenerateJwtToken(user, role, patientId: patient.PatientId);
             }
@@ -155,7 +156,7 @@ namespace HealthCare.Api.Services.Implementations
                 await _context.SaveChangesAsync();
 
                 if (doctor == null)
-                    throw new Exception("Doctor record not found");
+                    throw new InvalidOperationException("Doctor record not found");
 
                 token = GenerateJwtToken(user, role, doctorId: doctor.DoctorId);
             }
@@ -166,7 +167,7 @@ namespace HealthCare.Api.Services.Implementations
             }
             else
             {
-                throw new Exception("Unknown role");
+                throw new InvalidOperationException("Unknown role");
             }
 
             return new AuthorResponseDto
@@ -185,14 +186,13 @@ namespace HealthCare.Api.Services.Implementations
         }
 
 
-
         //Chnage Password
         public async Task ChangePasswordAsync(string userId, ChangePasswordDto dto)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
-                throw new InvalidOperationException("User not found");
+                throw new UserNotFoundException();
 
             if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
                 throw new ArgumentException("Current password is required");

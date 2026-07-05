@@ -1,0 +1,1 @@
+uR^C:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\Healthcare.Shared.csproj¢net10.0òCSharp14

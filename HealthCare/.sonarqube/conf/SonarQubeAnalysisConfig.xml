@@ -12,7 +12,7 @@
   <HasBeginStepCommandLineTruststorePassword>false</HasBeginStepCommandLineTruststorePassword>
   <SonarQubeHostUrl>http://localhost:9000</SonarQubeHostUrl>
   <SonarQubeVersion>26.1.0.118079</SonarQubeVersion>
-  <SonarProjectKey>HealthCare-APP</SonarProjectKey>
+  <SonarProjectKey>HealthCare</SonarProjectKey>
   <AdditionalConfig>
     <ConfigSetting Id="BuildUri" />
     <ConfigSetting Id="TfsUri" />
@@ -148,14 +148,14 @@
     <Property Name="sonaranalyzer-vbnet.pluginKey">vbnet</Property>
     <Property Name="sonar.java.jvmframeworkconfig.activate">true</Property>
     <Property Name="sonar.updatecenter.url">https://downloads.sonarsource.com/sonarqube/update/update-center.properties</Property>
-    <Property Name="sonar.core.id">147B411E-AZ8mNhutPMY7he--t8tq</Property>
-    <Property Name="sonar.core.startTime">7/3/2026 10:24:19 AM</Property>
+    <Property Name="sonar.core.id">147B411E-AZ8srFgbQR-49H1p4nDh</Property>
+    <Property Name="sonar.core.startTime">7/4/2026 4:14:19 PM</Property>
   </ServerSettings>
   <LocalSettings>
     <Property Name="sonar.host.url">http://localhost:9000</Property>
-    <Property Name="sonar.coverage.exclusions">**/bin/**,**/obj/**,**/Migrations/**,**/Controllers/**,**/Data/**,**/DTOs/**,**/Mapping/**,**/Models/**,**/Properties/**,**/Repositories/**,**/Program.cs,**/Exceptions/**,**/Middleware/**</Property>
-    <Property Name="sonar.cs.opencover.reportsPaths">TestResults/**/coverage.opencover.xml</Property>
-    <Property Name="sonar.exclusions">**/bin/**,**/obj/**,**/Migrations/**,TestResults/**/coverage.opencover.xml</Property>
+    <Property Name="sonar.cs.vscoveragexml.reportsPaths">coverage.xml</Property>
+    <Property Name="sonar.coverage.exclusions">**/Controllers/**,**/Repositories/**,**/Data/**,**/Models/**,**/Mapping/**,**/Middleware/**,**/Exceptions/**,**/Program.cs,**/Healthcare.Shared/**,**/HealthCare.UI/**,**/HealthCareAdmin.UI/**</Property>
+    <Property Name="sonar.exclusions">**/Migrations/**,**/*.html,**/*.css,**/*.razor,coverage.xml</Property>
   </LocalSettings>
   <ScannerOptsSettings />
   <AnalyzersSettings>

@@ -1,2 +1,0 @@
-Ô
-roslynCA2016­Forward the 'cancellationToken' parameter to the 'WriteAsJsonAsync' method or pass in 'CancellationToken.None' explicitly to indicate intentionally not propagating the token 2** 7@R

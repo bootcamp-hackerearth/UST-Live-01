@@ -140,6 +140,27 @@
         {
           "ruleId": "CS0169",
           "level": "warning",
+          "message": "The field 'Dashboard.totalPatients' is never used",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 101,
+                  "startColumn": 17,
+                  "endLine": 101,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "CS0169",
+          "level": "warning",
           "message": "The field 'Dashboard.totalDoctors' is never used",
           "locations": [
             {
@@ -159,24 +180,87 @@
           }
         },
         {
-          "ruleId": "CS0169",
+          "ruleId": "S2933",
           "level": "warning",
-          "message": "The field 'Dashboard.totalPatients' is never used",
+          "message": "Make 'pageSize' 'readonly'.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Patient/PatientList.razor",
                 "region": {
-                  "startLine": 101,
+                  "startLine": 206,
                   "startColumn": 17,
-                  "endLine": 101,
-                  "endColumn": 30
+                  "endLine": 206,
+                  "endColumn": 25
                 }
               }
             }
           ],
           "properties": {
-            "warningLevel": 3
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2933",
+          "level": "warning",
+          "message": "Make 'pageSize' 'readonly'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/DoctorList.razor",
+                "region": {
+                  "startLine": 208,
+                  "startColumn": 17,
+                  "endLine": 208,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2933",
+          "level": "warning",
+          "message": "Make 'availableSlots' 'readonly'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/RegisterDoctorModal.razor",
+                "region": {
+                  "startLine": 239,
+                  "startColumn": 26,
+                  "endLine": 239,
+                  "endColumn": 40
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2933",
+          "level": "warning",
+          "message": "Make 'specialisations' 'readonly'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/RegisterDoctorModal.razor",
+                "region": {
+                  "startLine": 365,
+                  "startColumn": 26,
+                  "endLine": 365,
+                  "endColumn": 41
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
           }
         },
         {
@@ -348,81 +432,18 @@
           }
         },
         {
-          "ruleId": "S2933",
+          "ruleId": "S1075",
           "level": "warning",
-          "message": "Make 'availableSlots' 'readonly'.",
+          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/RegisterDoctorModal.razor",
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Program.cs",
                 "region": {
-                  "startLine": 239,
-                  "startColumn": 26,
-                  "endLine": 239,
-                  "endColumn": 40
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2933",
-          "level": "warning",
-          "message": "Make 'specialisations' 'readonly'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/RegisterDoctorModal.razor",
-                "region": {
-                  "startLine": 365,
-                  "startColumn": 26,
-                  "endLine": 365,
-                  "endColumn": 41
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2933",
-          "level": "warning",
-          "message": "Make 'pageSize' 'readonly'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Patient/PatientList.razor",
-                "region": {
-                  "startLine": 206,
-                  "startColumn": 17,
-                  "endLine": 206,
-                  "endColumn": 25
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2933",
-          "level": "warning",
-          "message": "Make 'pageSize' 'readonly'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/DoctorList.razor",
-                "region": {
-                  "startLine": 208,
-                  "startColumn": 17,
-                  "endLine": 208,
-                  "endColumn": 25
+                  "startLine": 15,
+                  "startColumn": 23,
+                  "endLine": 15,
+                  "endColumn": 48
                 }
               }
             }
@@ -474,18 +495,39 @@
           }
         },
         {
-          "ruleId": "S1075",
+          "ruleId": "S1481",
           "level": "warning",
-          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
+          "message": "Remove the unused local variable 'doctorResult'.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Program.cs",
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
                 "region": {
-                  "startLine": 15,
-                  "startColumn": 23,
-                  "endLine": 15,
-                  "endColumn": 48
+                  "startLine": 130,
+                  "startColumn": 13,
+                  "endLine": 130,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1481",
+          "level": "warning",
+          "message": "Remove the unused local variable 'patientResult'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 139,
+                  "startColumn": 13,
+                  "endLine": 139,
+                  "endColumn": 26
                 }
               }
             }
@@ -520,48 +562,6 @@
                   "startColumn": 43,
                   "endLine": 30,
                   "endColumn": 62
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S1481",
-          "level": "warning",
-          "message": "Remove the unused local variable 'doctorResult'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
-                "region": {
-                  "startLine": 130,
-                  "startColumn": 13,
-                  "endLine": 130,
-                  "endColumn": 25
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S1481",
-          "level": "warning",
-          "message": "Remove the unused local variable 'patientResult'.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
-                "region": {
-                  "startLine": 139,
-                  "startColumn": 13,
-                  "endLine": 139,
-                  "endColumn": 26
                 }
               }
             }

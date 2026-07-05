@@ -18,8 +18,8 @@ implements OnInit {
  loading = signal(true);
 
   constructor(
-    private appointmentService: AppointmentService,
-    private cd: ChangeDetectorRef
+    private readonly appointmentService: AppointmentService,
+    private readonly cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {

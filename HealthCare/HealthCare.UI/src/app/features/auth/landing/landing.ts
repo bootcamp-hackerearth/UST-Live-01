@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component } from '@angular/core';
 import { LoginModal } from '../login-modal/login-modal';
 import { RegisterModal } from '../register-modal/register-modal';
 

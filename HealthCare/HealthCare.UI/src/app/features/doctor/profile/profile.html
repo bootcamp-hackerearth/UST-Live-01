@@ -1,57 +1,294 @@
-<div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-6">
+<div class="max-w-7xl mx-auto px-4 py-6 bg-slate-100 min-h-screen">
 
-  <!--  HEADER -->
-  <div class="mb-6">
-    <h2 class="text-2xl font-bold text-[#0B5ED7]">
-      My Profile
-    </h2>
+  @if(loading()) {
+
+    <div class="h-[500px] flex items-center justify-center">
+      <div class="text-xl text-slate-500 animate-pulse">
+        Loading Profile...
+      </div>
+    </div>
+
+  } @else {
+
+    <!-- PROFILE CARD -->
+    <section class="bg-white rounded-[30px] shadow-lg overflow-hidden">
+
+      <!-- HEADER -->
+      <div class="relative h-16 bg-gradient-to-r from-blue-700 to-blue-500">
+
+        <div class="absolute right-6 top-1 opacity-10">
+          <svg
+            class="w-20 h-20 text-white"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24">
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3.172 5.172a4 4 0 015.656 0L12 8.343l3.172-3.171a4 4 0 115.656 5.656L12 19.657 3.172 10.828a4 4 0 010-5.656z" />
+          </svg>
+        </div>
+
+        <div
+          class="absolute bottom-0 left-0 h-10 w-[76%] bg-white rounded-tr-[40px]">
+        </div>
+
+      </div>
+
+      <!-- BODY -->
+      <div class="relative px-5 py-3">
+
+        <div class="flex items-center gap-4">
+
+          <!-- Avatar -->
+          <div
+            class="-mt-8 w-20 h-20 rounded-full border-4 border-white shadow-md bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+
+            <span class="text-2xl font-bold text-white">
+              {{ getInitials() }}
+            </span>
+
+          </div>
+
+          <!-- Info -->
+          <div>
+
+            <h1 class="text-2xl font-bold text-slate-900">
+              Dr {{ doctor().fullName }}
+            </h1>
+
+            <div class="flex items-center gap-2 mt-1">
+
+              <h3 class="text-sm font-semibold text-cyan-600">
+                {{ doctor().specialisation }}
+              </h3>
+
+              <div
+                class="w-6 h-6 rounded-full bg-cyan-100 flex items-center justify-center text-xs">
+                🦷
+              </div>
+
+            </div>
+
+            <p class="text-xs text-slate-500 mt-1">
+              Caring for your healthy smile
+            </p>
+
+          </div>
+
+        </div>
+
+       <!-- INFO CARDS -->
+<div class="grid grid-cols-2 lg:grid-cols-6 gap-2 mt-4">
+
+  <!-- Doctor ID -->
+  <div class="border rounded-lg px-2 py-1.5 flex items-center gap-2 bg-blue-50">
+
+    <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px]">
+      🪪
+    </div>
+
+    <div>
+      <p class="text-[15px] text-slate-500">Doctor ID</p>
+      <h3 class="text-[9px] font-normal text-slate-700">
+        {{doctor().doctorId}}
+      </h3>
+    </div>
+
   </div>
 
-  <!--  LOADING -->
-@if(loading()){
+  <!-- Email -->
+  <div class="border rounded-lg px-2 py-1.5 flex items-center gap-2 bg-blue-50 lg:col-span-2">
 
-  <div class="text-center py-10">
-    Loading profile...
-  </div>
-
-}
-@else {
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-    <div>
-      <label>Doctor ID</label>
-      <p>{{doctor().doctorId}}</p>
+    <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px]">
+      ✉️
     </div>
 
-    <div>
-      <label>Full Name</label>
-      <p>{{doctor().fullName}}</p>
-    </div>
+    <div class="flex-1 min-w-0">
+      <p class="text-[15px] text-slate-500">Email</p>
 
-    <div>
-      <label>Email</label>
-      <p>{{doctor().email || 'Not available'}}</p>
-    </div>
-
-    <div>
-      <label>Specialisation</label>
-      <p>{{doctor().specialisation}}</p>
-    </div>
-
-    <div>
-      <label>Experience</label>
-      <p>{{doctor().yearsOfExperience}} years</p>
-    </div>
-
-    <div>
-      <label>Consultation Fee</label>
-      <p>₹ {{doctor().consultationFee}}</p>
+      <h3 class="text-[9px] font-normal text-slate-700 break-all">
+        {{doctor().email}}
+      </h3>
     </div>
 
   </div>
 
-}
+  <!-- Experience -->
+  <div class="border rounded-lg px-2 py-1.5 flex items-center gap-2 bg-green-50">
+
+    <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-[10px]">
+      💼
+    </div>
+
+    <div>
+      <p class="text-[15px] text-slate-500">Experience</p>
+
+      <h3 class="text-[9px] font-normal text-slate-700">
+        {{doctor().yearsOfExperience}} Yrs
+      </h3>
+    </div>
+
+  </div>
+
+  <!-- Fee -->
+  <div class="border rounded-lg px-2 py-1.5 flex items-center gap-2 bg-orange-50">
+
+    <div class="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center text-[10px]">
+      ₹
+    </div>
+
+    <div>
+      <p class="text-[15px] text-slate-500">Fee</p>
+
+      <h3 class="text-[9px] font-normal text-slate-700">
+        ₹ {{doctor().consultationFee}}
+      </h3>
+    </div>
+
+  </div>
+
+  <!-- Specialisation -->
+  <div class="border rounded-lg px-2 py-1.5 flex items-center gap-2 bg-purple-50">
+
+    <div class="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-[10px]">
+      🩺
+    </div>
+
+    <div>
+      <p class="text-[15px] text-slate-500">Speciality</p>
+
+      
+<h3 class="text-[9px] font-normal text-slate-700">
+  {{doctor().specialisation}}
+</h3>
+
+    </div>
+
+  </div>
 
 </div>
+      </div>
+      <!-- BODY CLOSED -->
 
+    </section>
+
+    <!-- LEAVES SECTION -->
+    <section class="bg-white rounded-[30px] shadow-lg mt-6 p-6">
+
+      <div class="flex items-center gap-3 mb-6">
+
+        <div
+          class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-xl">
+          📅
+        </div>
+
+        <div>
+
+          <h2 class="text-2xl font-bold text-slate-900">
+            My Leaves
+          </h2>
+
+          <p class="text-sm text-slate-500">
+            Leave dates you've applied for
+          </p>
+
+        </div>
+
+      </div>
+
+      @if(leaves().length === 0) {
+
+        <div class="text-center py-8 text-slate-500">
+          No leave applications found.
+        </div>
+
+      } @else {
+
+        <div class="overflow-x-auto border rounded-2xl">
+
+          <table class="w-full">
+
+            <thead>
+              <tr class="bg-blue-50 text-blue-700">
+
+                <th class="text-left p-3 text-sm">
+                  Leave Date
+                </th>
+
+                <th class="text-left p-3 text-sm">
+                  Day
+                </th>
+
+                <th class="text-left p-3 text-sm">
+                  Reason
+                </th>
+
+                <th class="text-left p-3 text-sm">
+                  Status
+                </th>
+
+                <th class="text-left p-3 text-sm">
+                  Applied On
+                </th>
+
+              </tr>
+            </thead>
+
+            <tbody>
+
+              @for(leave of leaves(); track leave.leaveDate) {
+
+                <tr class="border-t hover:bg-blue-50">
+
+                  <td class="p-3 text-sm">
+                    📅 {{ leave.leaveDate }}
+                  </td>
+
+                  <td class="p-3 text-sm">
+                    {{ getDay(leave.leaveDate) }}
+                  </td>
+
+                  <td class="p-3 text-sm">
+                    {{ leave.reason || '-' }}
+                  </td>
+
+                  <td class="p-3">
+
+                    <span
+                      class="px-3 py-1 text-xs font-semibold rounded-full"
+                      [ngClass]="{
+                        'bg-green-100 text-green-700': leave.status === 'Approved',
+                        'bg-orange-100 text-orange-700': leave.status === 'Pending',
+                        'bg-red-100 text-red-700': leave.status === 'Rejected'
+                      }">
+
+                      {{ leave.status }}
+
+                    </span>
+
+                  </td>
+
+                  <td class="p-3 text-sm">
+                    {{ leave.appliedOn }}
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
+
+    </section>
+
+  }
+
+</div>

@@ -4,8 +4,7 @@ import { CommonModule } from '@angular/common';
 import { PatientService }
 from '../../../core/services/patient.service';
 
-import { HealthRecord }
-from '../../../core/models/health-record.model';
+import { HealthRecord }from '../../../core/models/health-record.model';
 
 @Component({
   selector: 'app-health-history',
@@ -21,7 +20,7 @@ implements OnInit {
   loading = signal(false);
 
   constructor(
-    private patientService: PatientService
+    private readonly patientService: PatientService
   ) {}
 
   ngOnInit(): void {

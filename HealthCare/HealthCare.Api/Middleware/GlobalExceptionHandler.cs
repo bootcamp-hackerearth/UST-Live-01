@@ -6,16 +6,22 @@ namespace HealthCare.Api.Middleware
 {
     public class GlobalExceptionHandler : IExceptionHandler
     {
-        private ILogger<GlobalExceptionHandler> _logger;
+        private readonly ILogger<GlobalExceptionHandler> _logger;
 
-        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler>logger)
+        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
         {
-            _logger=logger;
+            _logger = logger;
         }
-        public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
-        {
-            _logger.LogError(exception, "An Unexpected Error Occured:{Message}", exception.Message);
 
+        public async ValueTask<bool> TryHandleAsync(
+            HttpContext httpContext,
+            Exception exception,
+            CancellationToken cancellationToken)
+        {
+            _logger.LogError(
+                exception,
+                "An Unexpected Error Occured:{Message}",
+                exception.Message);
 
             var (statusCode, message) = exception switch
             {
@@ -23,10 +29,7 @@ namespace HealthCare.Api.Middleware
                 DoctorNotFoundException => (StatusCodes.Status404NotFound, exception.Message),
                 AppointmentNotFoundException => (StatusCodes.Status404NotFound, exception.Message),
                 HealthRecordNotFoundException => (StatusCodes.Status404NotFound, exception.Message),
-
-                //InvalidDataException => (StatusCodes.Status400BadRequest, exception.Message),
-
-                _ => (StatusCodes.Status500InternalServerError, "Internal server error")
+                _=> (StatusCodes.Status500InternalServerError, "Internal server error")
             };
 
             var response = new ErrorResponse
@@ -39,10 +42,9 @@ namespace HealthCare.Api.Middleware
 
             httpContext.Response.StatusCode = statusCode;
 
-            await httpContext.Response.WriteAsJsonAsync(response);
+            await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
 
             return true;
         }
-
     }
 }

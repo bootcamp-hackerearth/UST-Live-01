@@ -13,150 +13,153 @@ using Microsoft.OpenApi;
 using System.Security.Claims;
 using System.Text;
 
-public partial class Program
+namespace HealthCare.Api
 {
-    private static async Task Main(string[] args)
+    public partial class Program
     {
-        //appconfig
-        var builder = WebApplication.CreateBuilder(args);
-
-        //Mapping
-        builder.Services.AddAutoMapper(cfg =>
+        private static async Task Main(string[] args)
         {
-            cfg.AddProfile<MappingProfile>();
-        });
+            //appconfig
+            var builder = WebApplication.CreateBuilder(args);
 
-        //Exception Handler
-        builder.Services.AddProblemDetails();
-        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+            //Mapping
+            builder.Services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<MappingProfile>();
+            });
 
-        builder.Services.AddControllers();
-        builder.Services.AddEndpointsApiExplorer();
+            //Exception Handler
+            builder.Services.AddProblemDetails();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-        //DB conn
-        builder.Services.AddDbContext<HealthCareDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("Dbconn"))
-        );
+            builder.Services.AddControllers();
+            builder.Services.AddEndpointsApiExplorer();
 
-        //CORS
+            //DB conn
+            builder.Services.AddDbContext<HealthCareDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("Dbconn"))
+            );
+
+            //CORS
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll",policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+                options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             });
 
 
-        builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-        {
-            options.User.RequireUniqueEmail = true;
-            options.Password.RequireDigit = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequireNonAlphanumeric = true;
-            options.Password.RequiredLength = 8;
-        })
-           .AddEntityFrameworkStores<HealthCareDbContext>().AddDefaultTokenProviders();
-
-
-        // JWT Auth
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
-        {
-            var jwt = builder.Configuration.GetSection("Jwt");
-
-            options.TokenValidationParameters = new TokenValidationParameters
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
-                ValidateIssuer = true,
-                ValidIssuer = jwt["Issuer"],
-                ValidateAudience = true,
-                ValidAudience = jwt["Audience"],
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!)),
-                RoleClaimType = ClaimTypes.Role,
-                NameClaimType = ClaimTypes.NameIdentifier,
-                ClockSkew = TimeSpan.Zero
-            };
-            options.Events = new JwtBearerEvents
+                options.User.RequireUniqueEmail = true;
+                options.Password.RequireDigit = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 8;
+            })
+               .AddEntityFrameworkStores<HealthCareDbContext>().AddDefaultTokenProviders();
+
+
+            // JWT Auth
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
             {
-                OnAuthenticationFailed = context =>
+                var jwt = builder.Configuration.GetSection("Jwt");
+
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    // Set a breakpoint here in Visual Studio
-                    Console.WriteLine($"JWT Error: {context.Exception.Message}");
-                    return Task.CompletedTask;
-                }
-            };
-        });
-       
-        builder.Services.AddAuthorization();
-        builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-        builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-        builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
-        builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-        builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
-
-        builder.Services.AddSwaggerGen();
-        builder.Services.AddScoped<IAuthService, AuthService>();
-        builder.Services.AddScoped<IPatientService, PatientService>();
-        builder.Services.AddScoped<IDoctorService, DoctorService>();
-        builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-        builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
-        builder.Services.AddEndpointsApiExplorer();
-
-
-        //swagger
-
-        builder.Services.AddSwaggerGen(options =>
-        {
-            options.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "HealthApp API",
-                Version = "v1"
+                    ValidateIssuer = true,
+                    ValidIssuer = jwt["Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = jwt["Audience"],
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!)),
+                    RoleClaimType = ClaimTypes.Role,
+                    NameClaimType = ClaimTypes.NameIdentifier,
+                    ClockSkew = TimeSpan.Zero
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        // Set a breakpoint here in Visual Studio
+                        Console.WriteLine($"JWT Error: {context.Exception.Message}");
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
-            options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+            builder.Services.AddAuthorization();
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+            builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+            builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
+
+            builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IPatientService, PatientService>();
+            builder.Services.AddScoped<IDoctorService, DoctorService>();
+            builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+            builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
+            builder.Services.AddEndpointsApiExplorer();
+
+
+            //swagger
+
+            builder.Services.AddSwaggerGen(options =>
             {
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT",
-                Description = "Enter JWT token only. Do not type Bearer."
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "HealthApp API",
+                    Version = "v1"
+                });
+
+                options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Description = "Enter JWT token only. Do not type Bearer."
+                });
+
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("bearer", document)] = []
+                });
             });
 
-            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            var app = builder.Build();
+            app.UseExceptionHandler();
+
+            using (var scope = app.Services.CreateScope())
             {
-                [new OpenApiSecuritySchemeReference("bearer", document)] = []
-            });
-        });
+                var services = scope.ServiceProvider;
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+                await RoleSeeder.SeedRoleAsync(roleManager);
+                await AdminSeeder.SeedAdminAsync( userManager,roleManager,builder.Configuration);
 
-        var app = builder.Build();
-        app.UseExceptionHandler();
+            }
 
-        using (var scope = app.Services.CreateScope())
-        {
-            var services = scope.ServiceProvider;
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
-            await RoleSeeder.SeedRoleAsync(roleManager);
-            await AdminSeeder.SeedAdminAsync(userManager, roleManager);
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+
+            }
+
+            app.UseCors("AllowAll");
+
+            app.UseHttpsRedirection();
+            app.UseRouting();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
+
+            app.MapControllers();
+
+            await app.RunAsync();
         }
-
-        if (app.Environment.IsDevelopment())
-        {
-            // app.MapOpenApi();
-            app.UseSwagger();
-            app.UseSwaggerUI();
-
-        }
-
-        app.UseCors("AllowAll");
-
-        app.UseHttpsRedirection();
-        app.UseRouting();
-
-        app.UseAuthentication();
-
-        app.UseAuthorization();
-
-        app.MapControllers();
-
-        app.Run();
     }
 }

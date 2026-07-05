@@ -9,7 +9,6 @@ import { API_ENDPOINTS } from '../config/api-endpoints';
 })
 export class AppointmentService {
 
-
   constructor(private http: HttpClient) { }
 
 

@@ -107,7 +107,7 @@ namespace HealthCare.Api.Controllers
         }
 
 
-        [HttpGet("doctor/{doctorId:int}")]
+        [HttpGet("doctor")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> GetDoctorAppointments()

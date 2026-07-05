@@ -1,17 +1,4 @@
-∞
-fC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Patient\UpdatePatientDto.cs
-
- !
-
-		 
-
- #
-
- 
-
- "
-
- "∆
+∆
 dC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Patient\PatientListDto.cs
 
  
@@ -20,11 +7,11 @@ dC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Pati
 
  
 
- 
+ 
 
- !
+ "
 
-		 
+		 
 
 
 
@@ -67,25 +54,20 @@ fC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Pati
 
  
 
-		 Õ
-YC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\PagedResult.cs
+		 ∞
+fC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Patient\UpdatePatientDto.cs
 
- 
-  
+ !
 
- $
+		 
 
- 
- 
-
-G O
- 
-
-2 <
+ #
 
-
-
- ¢
+ 
+
+ "
+
+ "¢
 pC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\HealthRecord\UpdateHealthRecordDto.cs
 
  &
@@ -96,24 +78,7 @@ pC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Heal
 
  "
 
- ƒ
-nC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\HealthRecord\HealthRecordListDto.cs
-
- $
-
- 
-
-  
-
- !
-
- 
-
-		 "
-
-
-
- á
+ á
 mC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\HealthRecord\HealthRecordFilter.cs
 
  #
@@ -166,7 +131,25 @@ dC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Doct
 
  $
 
- &ƒ
+ &Õ
+YC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\PagedResult.cs
+
+ 
+  
+
+ $
+
+ 
+ 
+
+G O
+ 
+
+2 <
+
+
+
+ ƒ
 bC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Doctor\DoctorListDto.cs
 
  
@@ -185,7 +168,24 @@ bC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Doct
 
  &
 
- ü
+ ƒ
+nC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\HealthRecord\HealthRecordListDto.cs
+
+ $
+
+ 
+
+  
+
+ !
+
+ 
+
+		 "
+
+
+
+ ü
 aC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Doctor\DoctorFilter.cs
 
  
@@ -203,7 +203,66 @@ iC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Doct
 
  *
 
- >â
+ >ﬁ
+pC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentSummaryDto.cs
+
+ &
+
+ 
+
+  
+
+ $
+
+ 
+
+ !
+
+ !
+
+ !
+
+ #›
+oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Authentication\PatientRegisterDto.cs
+
+ #
+
+ 
+
+ #
+
+ 
+
+ "
+
+ 
+
+ 
+
+ &
+
+!! "‹
+nC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Authentication\DoctorRegisterDto.cs
+
+ "
+
+
+
+ 
+
+ $
+
+ $
+
+ &
+
+ 
+
+ 
+
+!! %
+
+%% &â
 cC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Doctor\CreateLeaveDto.cs
 
  
@@ -230,28 +289,14 @@ eC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Auth
 
  
 
- ‹
-nC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Authentication\DoctorRegisterDto.cs
+ ï
+oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\UpdateAppointmentDto.cs
 
- "
+ %
 
-
-
- 
+		 
 
- $
-
- $
-
- &
-
- 
-
- 
-
-!! %
-
-%% &¨
+ )¨
 nC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Authentication\ChangePasswordDto.cs
 
  "
@@ -262,66 +307,20 @@ nC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Auth
 
  "
 
-		 )›
-oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Authentication\PatientRegisterDto.cs
+		 )™
+lC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentStatus.cs
 
- #
+ )
 
- 
+
+
+ #
 
- #
+ %
 
- 
+ %
 
- "
-
- 
-
- 
-
- &
-
-!! "ï
-oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\UpdateAppointmentDto.cs
-
- %
-
-		 
-
- )ç
-sC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\PagedAppointmentResponse.cs
-
-		 )
-
-* /ﬁ
-pC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentSummaryDto.cs
-
- &
-
- 
-
-  
-
- $
-
- 
-
- !
-
- !
-
- !
-
- #°
-oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\CreateAppointmentDto.cs
-
- %
-
- 
-
- %
-
- ≈
+ %≈
 oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentReportDto.cs
 
  %
@@ -338,14 +337,21 @@ oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appo
 
 
 
- #í
-lC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentFilter.cs
+ #ç
+sC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\PagedAppointmentResponse.cs
 
- "
+		 )
 
- 
++ 0°
+oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\CreateAppointmentDto.cs
 
- &€
+ %
+
+ 
+
+ %
+
+ €
 mC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentListDto.cs
 
  #
@@ -356,9 +362,9 @@ mC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appo
 
  "
 
- !
+ "
 
-		  
+		 !
 
 
 
@@ -366,4 +372,11 @@ mC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appo
 
  
 
- 
+ í
+lC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentFilter.cs
+
+ "
+
+ 
+
+ &

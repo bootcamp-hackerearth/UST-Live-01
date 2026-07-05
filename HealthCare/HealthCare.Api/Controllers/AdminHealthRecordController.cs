@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCare.Api.Controllers
 {
-    [Route("api/admin")]
+    [Route("api/admin/records")]
     [ApiController]
     public class AdminHealthRecordController : ControllerBase
     {
@@ -18,7 +18,7 @@ namespace HealthCare.Api.Controllers
         }
 
 
-        [HttpDelete("/records/{id}")]
+        [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> DeleteHealthRecord(int id)
         {

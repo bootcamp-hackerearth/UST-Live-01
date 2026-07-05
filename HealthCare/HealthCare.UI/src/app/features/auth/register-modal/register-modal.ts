@@ -22,9 +22,9 @@ export class RegisterModal {
   isLoading = false;
 
   constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private toastr: ToastrService
+    private readonly fb: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly toastr: ToastrService
   ) {
 
     this.registerForm = this.fb.group({

@@ -84,9 +84,8 @@ namespace HealthCare.Api.Tests
                 PatientId = 1,
                 VisitDate = DateTime.Now
             };
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _service.AddAsync(dto, 10));
 
-            await Assert.ThrowsAsync<Exception>(() =>
-                _service.AddAsync(dto, 10));
         }
 
         // Update

@@ -11,9 +11,6 @@ import { API_ENDPOINTS } from '../config/api-endpoints';
 })
 export class DoctorService {
 
-  // private api =
-  //   'https://localhost:7225/api/doctors';
-
   constructor(private http:HttpClient){}
 
 

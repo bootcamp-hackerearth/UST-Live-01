@@ -26,8 +26,8 @@ export class LeaveComponent {
   loading = signal(false);
 
   constructor(
-    private doctorService: DoctorService,
-    private toastr: ToastrService
+    private readonly doctorService: DoctorService,
+    private readonly toastr: ToastrService
   ) {}
 
   addDate() {
@@ -53,7 +53,9 @@ export class LeaveComponent {
       ...list,
       {
         leaveDate: this.selectedDate,
-        reason: this.reason
+        reason: this.reason,
+        status: 'Pending',
+        appliedOn: new Date().toISOString().split('T')[0]
       }
     ]);
 

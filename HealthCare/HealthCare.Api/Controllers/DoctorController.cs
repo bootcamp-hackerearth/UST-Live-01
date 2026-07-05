@@ -53,7 +53,7 @@ namespace HealthCare.Api.Controllers
                 return BadRequest(ModelState);
 
             var doctorId = GetDoctorIdFromClaims();
-            var result = await _service.CreateLeave(doctorId, leaves);
+            await _service.CreateLeave(doctorId, leaves);
             return Ok(new { message = "Leaves added successfully" });
         }
 

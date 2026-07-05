@@ -25,8 +25,8 @@ export class DoctorDashboardComponent implements OnInit {
   todaySchedule = signal<any[]>([]);
 
   constructor(
-    private appointmentService: AppointmentService,
-    private doctorService: DoctorService
+    private readonly appointmentService: AppointmentService,
+    private readonly doctorService: DoctorService
   ) {}
 
   ngOnInit(): void {

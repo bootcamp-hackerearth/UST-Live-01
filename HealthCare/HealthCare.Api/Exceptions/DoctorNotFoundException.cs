@@ -3,8 +3,10 @@
     public class DoctorNotFoundException : Exception
     {
 
-        public DoctorNotFoundException(int id)
-                    : base($"Doctor with ID {id} not found") { }
+
+        public DoctorNotFoundException(string message)
+                : base(message) { }
+
 
     }
 }

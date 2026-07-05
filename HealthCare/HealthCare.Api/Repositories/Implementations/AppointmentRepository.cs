@@ -10,14 +10,14 @@ namespace HealthCare.Api.Repositories.Implementations
     {
 
         public AppointmentRepository(HealthCareDbContext context) : base(context) { }
-
         public async Task<List<string>> AvailableTimeSlots(DateOnly date, int doctorId) =>
             await _dbSet
                 .Where(a => a.ScheduledDate == date
                          && a.DoctorId == doctorId
-                         && a.Status != "Cancelled")
+                         && a.Status != AppointmentStatus.Cancelled)
                 .Select(a => a.TimeSlot)
                 .ToListAsync();
+
 
         public async Task<bool> IsAvailable(DateOnly date, int doctorId, string timeSlot)
         {
@@ -42,11 +42,13 @@ namespace HealthCare.Api.Repositories.Implementations
                 .Select(g => new AppointmentReportDto
                 {
                     Date = g.Key,
-                    PendingCount = g.Count(a => a.Status == "Pending"),
-                    ConfirmedCount = g.Count(a => a.Status == "Confirmed"),
-                    CancelledCount = g.Count(a => a.Status == "Cancelled"),
-                    CompletedCount = g.Count(a => a.Status == "Completed"),
-                    DailyRevenue = g .Where(a => a.Status == "Completed").Sum(a => a.Doctor.ConsultationFee)
+                    PendingCount = g.Count(a => a.Status == AppointmentStatus.Pending),
+                    ConfirmedCount = g.Count(a => a.Status == AppointmentStatus.Confirmed),
+                    CancelledCount = g.Count(a => a.Status == AppointmentStatus.Cancelled),
+                    CompletedCount = g.Count(a => a.Status == AppointmentStatus.Completed),
+                    DailyRevenue = g.Where(a => a.Status == AppointmentStatus.Completed)
+                .Sum(a => a.Doctor.ConsultationFee)
+
                 })
 
                 .OrderBy(r => r.Date)
@@ -114,15 +116,16 @@ namespace HealthCare.Api.Repositories.Implementations
             var appointments = await _dbSet
                 .Where(a => a.DoctorId == doctorId
                          && a.ScheduledDate == date
-                         && a.Status != "Cancelled")
+                         && a.Status != AppointmentStatus.Cancelled)
                 .ToListAsync();
 
             foreach (var appointment in appointments)
             {
-                appointment.Status = "Cancelled";
+                appointment.Status = AppointmentStatus.Cancelled;
                 appointment.CancellationReason = "Doctor on leave";
             }
+
         }
 
-     }
+    }
 }

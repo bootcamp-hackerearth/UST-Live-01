@@ -4,9 +4,9 @@
     {
         public int PatientId { get; set; }
         public string FullName { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string PhoneNumber { get; set; } = null!;
-        public string Gender { get; set; } = null!;
+        public string? Email { get; set; }
+        public string? PhoneNumber { get; set; } 
+        public string? Gender { get; set; } 
         public bool HasInsurance { get; set; }
         public bool IsActive { get; set; }  
 

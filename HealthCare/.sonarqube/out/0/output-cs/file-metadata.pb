@@ -25,8 +25,9 @@ nC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Auth
 nC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Authentication\AuthorResponseDto.csutf-8x
 oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\UpdateAppointmentDto.csutf-8|
 sC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\PagedAppointmentResponse.csutf-8x
-oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\CreateAppointmentDto.csutf-8y
-pC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentSummaryDto.csutf-8x
-oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentReportDto.csutf-8u
-lC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentFilter.csutf-8v
-mC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentListDto.csutf-8
+oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\CreateAppointmentDto.csutf-8x
+oC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentReportDto.csutf-8y
+pC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentSummaryDto.csutf-8u
+lC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentStatus.csutf-8v
+mC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentListDto.csutf-8u
+lC:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\DTOs\Appointments\AppointmentFilter.csutf-8

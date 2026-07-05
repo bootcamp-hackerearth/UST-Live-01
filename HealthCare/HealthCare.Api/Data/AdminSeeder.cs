@@ -5,10 +5,10 @@ namespace HealthCare.Api.Data
     public class AdminSeeder
     {
 
-        public static async Task SeedAdminAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task SeedAdminAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
-            string adminEmail = "admin@healthcare.com";
-            string adminPassword = "Admin@123";
+            string adminEmail = configuration["AdminSettings:Email"]!;
+            string adminPassword = configuration["AdminSettings:Password"]!;
 
             await RoleSeeder.SeedRoleAsync(roleManager);
 
@@ -31,8 +31,9 @@ namespace HealthCare.Api.Data
                 }
                 else
                 {
-                    throw new Exception("Admin creation failed: " +
-                        string.Join(", ", result.Errors.Select(e => e.Description)));
+                    throw new InvalidOperationException("Admin creation failed: " + string.Join(", ", result.Errors.Select(e => e.Description))
+                    );
+
                 }
             }
         }

@@ -67,14 +67,7 @@ fC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Pages\Da
 
  $`
 ^C:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Layout\MainLayout.razorW
-UC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\_Imports.razorÜ
-bC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Pages\LoadingRedirect.razor
- " 'F K
-   
-
-" 4
- $ 
-  ®	
+UC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\_Imports.razor®	
 fC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Pages\Patient\PatientList.razorB
 
 ÂÂ( .TT TT* 0^^ %
@@ -177,7 +170,14 @@ fC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Pages\Pa
 ææ )
 ŠŠ 
 ’’  
-££ ð
+££ Ü
+bC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Pages\LoadingRedirect.razor
+ " 'F K
+   
+
+" 4
+ $ 
+  ð
 mC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Pages\Doctor\RegisterDoctorModal.razor
 
 ¡¡7 8
@@ -305,7 +305,8 @@ mC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Pages\Do
  #
 ýý )
 ‹‹ 
-—— +”
+—— +a
+_C:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Layout\EmptyLayout.razor”
 dC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Pages\Doctor\DoctorList.razor
 
 ¤¤ 
@@ -444,8 +445,7 @@ pC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Pages\Ap
 ll !; Eii  
  pp 
 ‡‡ 
- -xx .a
-_C:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Layout\EmptyLayout.razorR
+ -xx .R
 PC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\App.razor‡
 aC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\Services\PatientService.cs
 

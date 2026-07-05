@@ -8,7 +8,7 @@ namespace Healthcare.Shared.DTOs.Appointments
 
     public class PagedAppointmentResponse
     {
-        public List<AppointmentReportDto> Items { get; set; }
+        public List<AppointmentReportDto?> Items { get; set; }
     }
 
 }

@@ -11,13 +11,13 @@ namespace HealthCare.Api.Repositories.Implementations
     {
   
         public PatientRepository(HealthCareDbContext context) : base(context) { }
-        public async Task<Patient?> GetByUserIdAsync(string userId)
+        public async Task<Patient?> GetByUserIdAsync(string? userId)
         {
             return await _context.Patients
                 .FirstOrDefaultAsync(p => p.UserId == userId);
         }
 
-        public async Task<PatientListDto> GetMyProfileAsync(int id)
+        public async Task<PatientListDto?> GetMyProfileAsync(int id)
         {
             var patient = await (
                 from p in _context.Patients
@@ -35,7 +35,7 @@ namespace HealthCare.Api.Repositories.Implementations
             ).FirstOrDefaultAsync();
 
             if (patient == null)
-                throw new PatientNotFoundException(id);
+                throw new PatientNotFoundException("Patient Not Found");
 
             return patient;
         }

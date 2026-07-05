@@ -1,15 +1,28 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpInterceptorFn,
+  HttpErrorResponse
+} from '@angular/common/http';
+
 import { inject } from '@angular/core';
-import { catchError, switchMap, throwError } from 'rxjs';
+import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
+
+import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const authService = inject(AuthService);
+  const router = inject(Router);
+  const toastr = inject(ToastrService);
+
   const token = authService.getToken();
 
-  // Skip auth endpoints
-  if (req.url.includes('/login') || req.url.includes('/register')) {
+  // Skip Login & Register
+  if (
+    req.url.includes('/login') ||
+    req.url.includes('/register')
+  ) {
     return next(req);
   }
 
@@ -22,36 +35,26 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     : req;
 
   return next(authReq).pipe(
+
     catchError((error: HttpErrorResponse) => {
 
-      //  Token expired or unauthorized
       if (error.status === 401) {
 
-        return authService.refreshToken().pipe(
-          switchMap((newToken: string) => {
+        authService.logout();
 
-            // Save new token
-            localStorage.setItem('token', newToken);
-
-            // Retry original request with new token
-            const retryReq = req.clone({
-              setHeaders: {
-                Authorization: `Bearer ${newToken}`
-              }
-            });
-
-            return next(retryReq);
-          }),
-          catchError(err => {
-            //    Token expired
-            alert('Session expired. Please login again.');
-            authService.logout();
-            return throwError(() => err);
-          })
+        toastr.error(
+          'Session expired. Please login again.',
+          'Session Expired'
         );
+
+        router.navigate(['/']);
+
       }
 
       return throwError(() => error);
+
     })
+
   );
+
 };

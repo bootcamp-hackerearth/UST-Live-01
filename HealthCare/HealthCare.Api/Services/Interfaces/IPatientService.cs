@@ -5,8 +5,8 @@ namespace HealthCare.Api.Services.Interfaces
 {
     public interface IPatientService
     {
-        Task<PatientListDto> GetByIdAsync(int id);
-        Task<PagedResult<PatientListDto>> GetAllAsync(PatientFilter filter);
+        Task<PatientListDto?> GetByIdAsync(int id);
+        Task<PagedResult<PatientListDto?>> GetAllAsync(PatientFilter filter);
         Task AddAsync(CreatePatientDto dto);
         Task UpdateAsync(int id,UpdatePatientDto dto);
         Task DeleteAsync(int id);

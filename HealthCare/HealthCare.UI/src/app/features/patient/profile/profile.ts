@@ -21,8 +21,8 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private patientService: PatientService,
-    private toastr: ToastrService
+    private readonly patientService: PatientService,
+    private readonly toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
