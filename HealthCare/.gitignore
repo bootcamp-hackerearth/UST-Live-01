@@ -5,9 +5,26 @@
 bin/
 obj/
 
+# Sonar
+.sonarqube/
+sonar-project.properties
+.coverage
+coverage.xml
+
 # User-specific files
 *.user
 *.suo
+*.db
+*.db-shm
+*.db-wal
+appsettings.Local.json
+secrets.json
+TestResults/
+*.log
+*.tmp
+*.pid
+thumbs.db
+Desktop.ini
 
 # Node
 /node_modules
