@@ -1,6 +1,3 @@
-/* ================================
-   PATIENT STYLE DOCTOR DASHBOARD - FIXED
-================================ */
 
 /* BASE LAYOUT */
 .dashboard {
@@ -595,10 +592,6 @@ header h1 {
     flex-wrap: wrap;
   }
 }
-
-/* ================================
-   PATIENT STYLE DOCTOR DASHBOARD
-================================ */
 
 .dashboard {
   display: flex;
