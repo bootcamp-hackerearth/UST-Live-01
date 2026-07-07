@@ -9,6 +9,7 @@ using HealthCareApp.Shared.Dtos.Appointments;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
 using MassTransit;
+using HealthCareApp.Helpers;
 
 namespace HealthCareApp.Services.Impl
 {
@@ -328,6 +329,14 @@ namespace HealthCareApp.Services.Impl
                 TimeSlot = savedAppointment.TimeSlot
             });
 
+            ConsoleHighlightHelper.WriteAppointmentEventBox(
+                "APPOINTMENT BOOKED EVENT PUBLISHED TO RABBITMQ",
+                savedAppointment.AppointmentId,
+                patient.PatientName,
+                savedAppointment.DoctorId,
+                savedAppointment.ScheduledDate.Date,
+                savedAppointment.TimeSlot);
+
             logger.LogInformation(
                 "AppointmentBookedEvent published. AppointmentId: {AppointmentId}, PatientName: {PatientName}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
                 savedAppointment.AppointmentId,
@@ -338,7 +347,6 @@ namespace HealthCareApp.Services.Impl
 
             return mapper.Map<AppointmentDto>(savedAppointment);
         }
-
         public async Task<AppointmentDto> UpdateAppointmentAsync(int appointmentId, UpdateAppointmentDto dto)
         {
             ValidateAppointmentId(appointmentId);
