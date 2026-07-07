@@ -5,7 +5,6 @@
         ← Back to Dashboard
       </a>
 
-     
       <h1>Upcoming Appointments</h1>
 
       <span>
@@ -149,9 +148,7 @@
                 <td>{{ getSafeText(appointment.timeSlot, 'Not assigned') }}</td>
 
                 <td>
-                  <span
-                    [class]="'status-badge ' + getStatusClass(appointment.status)"
-                  >
+                  <span [class]="'status-badge ' + getStatusClass(appointment.status)">
                     {{ getStatusLabel(appointment.status) }}
                   </span>
                 </td>
@@ -224,33 +221,36 @@
   </section>
 
   @if (selectedAppointment(); as appointment) {
-    <!-- <div class="modal-backdrop" (click)="closeAppointmentDetails()"> -->
-      <div
-  class="modal-backdrop"
-  role="button"
-  tabindex="0"
-  (click)="closeModal()"
-  (keydown.enter)="closeModal()"
-  (keydown.space)="closeModal()"
->
-      <!-- <section class="details-modal" (click)="$event.stopPropagation()"> -->
-        <div
-  class="modal-card"
-  role="dialog"
-  aria-modal="true"
-  tabindex="-1"
-  (click)="$event.stopPropagation()"
-  (keydown)="$event.stopPropagation()"
->
+    <div
+      class="modal-backdrop"
+      role="button"
+      tabindex="0"
+      aria-label="Close appointment details"
+      (click)="closeAppointmentDetails()"
+      (keydown.enter)="closeAppointmentDetails()"
+      (keydown.space)="closeAppointmentDetails(); $event.preventDefault()"
+    >
+      <section
+        class="details-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="appointmentDetailsTitle"
+        tabindex="-1"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()"
+      >
         <div class="modal-header">
           <div>
             <p>Appointment Details</p>
-            <h2>Appointment #{{ appointment.appointmentId }}</h2>
+            <h2 id="appointmentDetailsTitle">
+              Appointment #{{ appointment.appointmentId }}
+            </h2>
           </div>
 
           <button
             type="button"
             class="close-button"
+            aria-label="Close appointment details"
             (click)="closeAppointmentDetails()"
           >
             ×
@@ -317,17 +317,34 @@
   }
 
   @if (cancelTarget(); as appointment) {
-    <div class="modal-backdrop">
-      <section class="cancel-modal">
+    <div
+      class="modal-backdrop"
+      role="button"
+      tabindex="0"
+      aria-label="Close cancellation dialog"
+      (click)="closeCancelDialog()"
+      (keydown.enter)="closeCancelDialog()"
+      (keydown.space)="closeCancelDialog(); $event.preventDefault()"
+    >
+      <section
+        class="cancel-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cancelDialogTitle"
+        tabindex="-1"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()"
+      >
         <div class="modal-header">
           <div>
             <p>Cancel Appointment</p>
-            <h2>Confirm Cancellation</h2>
+            <h2 id="cancelDialogTitle">Confirm Cancellation</h2>
           </div>
 
           <button
             type="button"
             class="close-button"
+            aria-label="Close cancellation dialog"
             (click)="closeCancelDialog()"
           >
             ×

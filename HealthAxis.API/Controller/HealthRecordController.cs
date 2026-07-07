@@ -13,6 +13,10 @@ namespace HealthAxis.API.Controller
     [ApiController]
     public class HealthRecordController : ControllerBase
     {
+        private const string InvalidToken = "Invalid token";
+        private const string DoctorProfileNotFound = "Doctor profile not found";
+
+
         private readonly ApplicationDbContext _context;
         private readonly IHealthRecordService _healthRecordService;
         private readonly IPatientService _patientService;
@@ -40,7 +44,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -67,7 +71,7 @@ namespace HealthAxis.API.Controller
                 {
                     return NotFound(new
                     {
-                        message = "Doctor profile not found"
+                        message = DoctorProfileNotFound
                     });
                 }
 
@@ -99,7 +103,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -136,7 +140,7 @@ namespace HealthAxis.API.Controller
                 {
                     return NotFound(new
                     {
-                        message = "Doctor profile not found"
+                        message = DoctorProfileNotFound
                     });
                 }
 
@@ -172,7 +176,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -182,7 +186,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Doctor profile not found"
+                    message = DoctorProfileNotFound
                 });
             }
 
@@ -210,7 +214,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -220,7 +224,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Doctor profile not found"
+                    message = DoctorProfileNotFound
                 });
             }
 

@@ -12,6 +12,9 @@ namespace HealthAxis.API.Controller
     [Authorize(Roles = "Patient")]
     public class PatientController : ControllerBase
     {
+        private const string InvalidToken = "Invalid token";
+        private const string ProfileNotFound = "Patient profile not found";
+
         private readonly IPatientService _patientService;
         private readonly IHealthRecordService _healthRecordService;
 
@@ -32,7 +35,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -42,7 +45,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Patient profile not found"
+                    message = ProfileNotFound
                 });
             }
 
@@ -64,7 +67,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -74,7 +77,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Patient profile not found"
+                    message = ProfileNotFound
                 });
             }
 
@@ -94,7 +97,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -104,7 +107,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Patient profile not found"
+                    message = ProfileNotFound
                 });
             }
 
@@ -123,7 +126,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -133,7 +136,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Patient profile not found"
+                    message = ProfileNotFound
                 });
             }
 
@@ -164,7 +167,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -174,7 +177,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Patient profile not found"
+                    message = ProfileNotFound
                 });
             }
 
@@ -202,7 +205,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -212,7 +215,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Patient profile not found"
+                    message = ProfileNotFound
                 });
             }
 

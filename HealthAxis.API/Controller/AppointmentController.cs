@@ -16,6 +16,8 @@ namespace HealthAxis.API.Controller
         private readonly IPatientService _patientService;
         private readonly IDoctorService _doctorService;
 
+        private const string InvalidToken = "Invalid token";
+        private const string PatientProfileNotFound = "Patient profile not found";
         public AppointmentController(
             IAppointmentService appointmentService,
             IPatientService patientService,
@@ -50,7 +52,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -60,7 +62,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Patient profile not found"
+                    message = PatientProfileNotFound
                 });
             }
 
@@ -80,7 +82,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -90,7 +92,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Doctor profile not found"
+                    message = PatientProfileNotFound
                 });
             }
 
@@ -120,7 +122,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -132,7 +134,7 @@ namespace HealthAxis.API.Controller
                 {
                     return NotFound(new
                     {
-                        message = "Patient profile not found"
+                        message = PatientProfileNotFound
                     });
                 }
 
@@ -185,7 +187,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -195,7 +197,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Patient profile not found"
+                    message = PatientProfileNotFound
                 });
             }
 
@@ -209,8 +211,8 @@ namespace HealthAxis.API.Controller
         [HttpPut("{id}/status")]
         [Authorize(Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> UpdateAppointmentStatus(
-            int id,
-            [FromBody] UpdateAppointmentStatusDto statusDto)
+           int id,
+           [FromBody] UpdateAppointmentStatusDto statusDto)
         {
             if (!ModelState.IsValid)
             {
@@ -219,6 +221,58 @@ namespace HealthAxis.API.Controller
 
             var appointment = await _appointmentService.GetByIdAsync(id);
 
+            var appointmentValidationResult = ValidateAppointmentForStatusUpdate(appointment);
+
+            if (appointmentValidationResult != null)
+            {
+                return appointmentValidationResult;
+            }
+
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = InvalidToken
+                });
+            }
+
+            var permissionResult = await ValidateStatusUpdatePermissionAsync(
+                appointment!,
+                statusDto,
+                userId);
+
+            if (permissionResult != null)
+            {
+                return permissionResult;
+            }
+
+            statusDto.CancellationReason =
+                string.IsNullOrWhiteSpace(statusDto.CancellationReason)
+                    ? null
+                    : statusDto.CancellationReason.Trim();
+
+            var updatedAppointment = await _appointmentService.UpdateStatusAsync(
+                id,
+                statusDto);
+
+            return Ok(updatedAppointment);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteAppointment(int id)
+        {
+            var appointment = await _appointmentService.DeleteAsync(id);
+
+            return Ok(appointment);
+        }
+
+
+        private IActionResult? ValidateAppointmentForStatusUpdate(
+    AppointmentDto? appointment)
+        {
             if (appointment == null)
             {
                 return NotFound(new
@@ -236,93 +290,99 @@ namespace HealthAxis.API.Controller
                 });
             }
 
-            var userId = GetLoggedInUserId();
+            return null;
+        }
 
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return Unauthorized(new
-                {
-                    message = "Invalid token"
-                });
-            }
-
+        private async Task<IActionResult?> ValidateStatusUpdatePermissionAsync(
+            AppointmentDto appointment,
+            UpdateAppointmentStatusDto statusDto,
+            string userId)
+        {
             if (User.IsInRole("Patient"))
             {
-                var patient = await _patientService.GetByUserIdAsync(userId);
-
-                if (patient == null)
-                {
-                    return NotFound(new
-                    {
-                        message = "Patient profile not found"
-                    });
-                }
-
-                if (appointment.PatientId != patient.PatientId)
-                {
-                    return StatusCode(403, new
-                    {
-                        message = "You cannot update another patient's appointment"
-                    });
-                }
-
-                if (statusDto.Status != AppointmentStatus.Cancelled)
-                {
-                    return StatusCode(403, new
-                    {
-                        message = "Patient can only cancel appointment"
-                    });
-                }
-
-                statusDto.CancellationReason =
-                    string.IsNullOrWhiteSpace(statusDto.CancellationReason)
-                        ? null
-                        : statusDto.CancellationReason.Trim();
+                return await ValidatePatientStatusUpdateAsync(
+                    appointment,
+                    statusDto,
+                    userId);
             }
 
             if (User.IsInRole("Doctor"))
             {
-                var doctor = await _doctorService.GetByUserIdAsync(userId);
-
-                if (doctor == null)
-                {
-                    return NotFound(new
-                    {
-                        message = "Doctor profile not found"
-                    });
-                }
-
-                if (appointment.DoctorId != doctor.DoctorId)
-                {
-                    return StatusCode(403, new
-                    {
-                        message = "You cannot update another doctor's appointment"
-                    });
-                }
-
-                if (statusDto.Status != AppointmentStatus.Confirmed)
-                {
-                    return StatusCode(403, new
-                    {
-                        message = "Doctor can only confirm appointment here. Completion happens after adding health record"
-                    });
-                }
+                return await ValidateDoctorStatusUpdateAsync(
+                    appointment,
+                    statusDto,
+                    userId);
             }
 
-            var updatedAppointment = await _appointmentService.UpdateStatusAsync(
-                id,
-                statusDto);
-
-            return Ok(updatedAppointment);
+            return null;
         }
 
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteAppointment(int id)
+        private async Task<IActionResult?> ValidatePatientStatusUpdateAsync(
+            AppointmentDto appointment,
+            UpdateAppointmentStatusDto statusDto,
+            string userId)
         {
-            var appointment = await _appointmentService.DeleteAsync(id);
+            var patient = await _patientService.GetByUserIdAsync(userId);
 
-            return Ok(appointment);
+            if (patient == null)
+            {
+                return NotFound(new
+                {
+                    message = PatientProfileNotFound
+                });
+            }
+
+            if (appointment.PatientId != patient.PatientId)
+            {
+                return StatusCode(403, new
+                {
+                    message = "You cannot update another patient's appointment"
+                });
+            }
+
+            if (statusDto.Status != AppointmentStatus.Cancelled)
+            {
+                return StatusCode(403, new
+                {
+                    message = "Patient can only cancel appointment"
+                });
+            }
+
+            return null;
+        }
+
+        private async Task<IActionResult?> ValidateDoctorStatusUpdateAsync(
+            AppointmentDto appointment,
+            UpdateAppointmentStatusDto statusDto,
+            string userId)
+        {
+            var doctor = await _doctorService.GetByUserIdAsync(userId);
+
+            if (doctor == null)
+            {
+                return NotFound(new
+                {
+                    message = "Doctor profile not found"
+                });
+            }
+
+            if (appointment.DoctorId != doctor.DoctorId)
+            {
+                return StatusCode(403, new
+                {
+                    message = "You cannot update another doctor's appointment"
+                });
+            }
+
+            if (statusDto.Status != AppointmentStatus.Confirmed)
+            {
+                return StatusCode(403, new
+                {
+                    message = "Doctor can only confirm appointment here. Completion happens after adding health record"
+                });
+            }
+
+            return null;
         }
     }
 }

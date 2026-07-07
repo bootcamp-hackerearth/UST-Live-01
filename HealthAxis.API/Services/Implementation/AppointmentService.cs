@@ -13,7 +13,8 @@ namespace HealthAxis.API.Services.Implementation
         IAppointmentRepository appointmentRepository,
         IPatientRepository patientRepository,
         IDoctorRepository doctorRepository,
-        IMapper mapper) : IAppointmentService
+        IMapper mapper,
+        ILogger<AppointmentService> logger) : IAppointmentService
     {
         private static readonly HashSet<string> AllowedTimeSlots =
             new(StringComparer.OrdinalIgnoreCase)
@@ -135,6 +136,8 @@ namespace HealthAxis.API.Services.Implementation
             var savedAppointment = await appointmentRepository.AddAsync(
                 appointment);
 
+            LogAppointmentBookedEvent(savedAppointment);
+
             return await MapAppointmentAsync(savedAppointment);
         }
 
@@ -206,6 +209,26 @@ namespace HealthAxis.API.Services.Implementation
             }
 
             return await MapAppointmentAsync(deletedAppointment);
+        }
+
+        private void LogAppointmentBookedEvent(Appointment appointment)
+        {
+            logger.LogInformation(
+                "AppointmentBooked event logged. EventType: " +
+                "{EventType}, " +
+                "AppointmentId: {AppointmentId}, " +
+                "PatientId: {PatientId}, " +
+                "DoctorId: {DoctorId}, " +
+                "ScheduledDate: {ScheduledDate}, " +
+                "TimeSlot: {TimeSlot}, " +
+                "Status: {Status}",
+                "AppointmentBooked",
+                appointment.AppointmentId,
+                appointment.PatientId,
+                appointment.DoctorId,
+                appointment.ScheduledDate,
+                appointment.TimeSlot,
+                appointment.Status);
         }
 
         private async Task<List<AppointmentDto>> MapAppointmentListAsync(

@@ -8,7 +8,10 @@ namespace HealthAxis.API.Data
 {
     public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
 
         public DbSet<Patient> Patients { get; set; }
 
@@ -18,120 +21,180 @@ namespace HealthAxis.API.Data
 
         public DbSet<HealthRecord> HealthRecords { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public DbSet<Notification> Notifications { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            ConfigureAppointmentRelationships(modelBuilder);
+            ConfigureAppointmentRelationships(builder);
 
-            ConfigureHealthRecordRelationships(modelBuilder);
+            ConfigureHealthRecordRelationships(builder);
 
-            modelBuilder.Entity<Doctor>().Property(d => d.ConsultationFee).HasPrecision(10, 2);
+            ConfigureNotification(builder);
 
-            modelBuilder.Entity<Patient>().HasIndex(p => p.Email).IsUnique();
+            builder.Entity<Doctor>()
+                .Property(doctor => doctor.ConsultationFee)
+                .HasPrecision(10, 2);
 
-            modelBuilder.Entity<Patient>() .HasOne(p => p.User) .WithOne() .HasForeignKey<Patient>(p => p.UserId) .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Patient>()
+                .HasIndex(patient => patient.Email)
+                .IsUnique();
 
-            modelBuilder.Entity<Patient>() .Property(p => p.Gender).HasConversion<string>().HasMaxLength(10);
+            builder.Entity<Patient>()
+                .HasOne(patient => patient.User)
+                .WithOne()
+                .HasForeignKey<Patient>(patient => patient.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Doctor>() .Property(d => d.Specialisation).HasConversion<string>() .HasMaxLength(50);
+            builder.Entity<Patient>()
+                .Property(patient => patient.Gender)
+                .HasConversion<string>()
+                .HasMaxLength(10);
 
-            modelBuilder.Entity<Appointment>() .Property(a => a.Status) .HasConversion<string>().HasMaxLength(20);
-            modelBuilder.Entity<Doctor>().HasOne(d => d.User) .WithOne().HasForeignKey<Doctor>(d => d.UserId) .OnDelete(DeleteBehavior.SetNull);
+            builder.Entity<Doctor>()
+                .Property(doctor => doctor.Specialisation)
+                .HasConversion<string>()
+                .HasMaxLength(50);
 
-            SeedData(modelBuilder);
+            builder.Entity<Appointment>()
+                .Property(appointment => appointment.Status)
+                .HasConversion<string>()
+                .HasMaxLength(20);
+
+            builder.Entity<Doctor>()
+                .HasOne(doctor => doctor.User)
+                .WithOne()
+                .HasForeignKey<Doctor>(doctor => doctor.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            SeedData(builder);
         }
 
         private static void ConfigureAppointmentRelationships(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Appointment>().HasOne(a => a.Patient).WithMany(p => p.Appointments) .HasForeignKey(a => a.PatientId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Appointment>()
+                .HasOne(appointment => appointment.Patient)
+                .WithMany(patient => patient.Appointments)
+                .HasForeignKey(appointment => appointment.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Appointment>().HasOne(a => a.Doctor).WithMany(d => d.Appointments).HasForeignKey(a => a.DoctorId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Appointment>()
+                .HasOne(appointment => appointment.Doctor)
+                .WithMany(doctor => doctor.Appointments)
+                .HasForeignKey(appointment => appointment.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         private static void ConfigureHealthRecordRelationships(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<HealthRecord>()
-                .HasKey(h => h.HealthRecordId);
+                .HasKey(healthRecord => healthRecord.HealthRecordId);
 
             modelBuilder.Entity<HealthRecord>()
-                .Property(h => h.HealthRecordId)
+                .Property(healthRecord => healthRecord.HealthRecordId)
                 .HasColumnName("RecordId");
 
             modelBuilder.Entity<HealthRecord>()
-                .HasOne(h => h.Patient)
-                .WithMany(p => p.HealthRecords)
-                .HasForeignKey(h => h.PatientId)
+                .HasOne(healthRecord => healthRecord.Patient)
+                .WithMany(patient => patient.HealthRecords)
+                .HasForeignKey(healthRecord => healthRecord.PatientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<HealthRecord>()
-                .HasOne(h => h.Doctor)
-                .WithMany(d => d.HealthRecords)
-                .HasForeignKey(h => h.DoctorId)
+                .HasOne(healthRecord => healthRecord.Doctor)
+                .WithMany(doctor => doctor.HealthRecords)
+                .HasForeignKey(healthRecord => healthRecord.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Appointment>()
-                .HasOne(a => a.HealthRecord)
-                .WithOne(hr => hr.Appointment)
-                .HasForeignKey<HealthRecord>(hr => hr.AppointmentId)
+                .HasOne(appointment => appointment.HealthRecord)
+                .WithOne(healthRecord => healthRecord.Appointment)
+                .HasForeignKey<HealthRecord>(healthRecord => healthRecord.AppointmentId)
                 .OnDelete(DeleteBehavior.Cascade);
+        }
+
+        private static void ConfigureNotification(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Notification>()
+                .HasKey(notification => notification.NotificationId);
+
+            modelBuilder.Entity<Notification>()
+                .Property(notification => notification.Title)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            modelBuilder.Entity<Notification>()
+                .Property(notification => notification.Message)
+                .HasMaxLength(1000)
+                .IsRequired();
+
+            modelBuilder.Entity<Notification>()
+                .Property(notification => notification.NotificationType)
+                .HasMaxLength(50);
+
+            modelBuilder.Entity<Notification>()
+                .HasIndex(notification => notification.CreatedDate);
+
+            modelBuilder.Entity<Notification>()
+                .HasIndex(notification => notification.PatientId);
+
+            modelBuilder.Entity<Notification>()
+                .HasIndex(notification => notification.DoctorId);
         }
 
         private static void SeedData(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Doctor>().HasData(
-                    new Doctor
-                    {
-                        DoctorId = 1,
-                        FullName = "Dr Arjun Reddy",
-                        Specialisation = Specialisation.Cardiology,
-                        YearsOfExperience = 12,
-                        ConsultationFee = 850m,
-                        IsActive = true
-                    },
+                new Doctor
+                {
+                    DoctorId = 1,
+                    FullName = "Dr Arjun Reddy",
+                    Specialisation = Specialisation.Cardiology,
+                    YearsOfExperience = 12,
+                    ConsultationFee = 850m,
+                    IsActive = true
+                },
 
-                    new Doctor
-                    {
-                        DoctorId = 2,
-                        FullName = "Dr Navya ",
-                        Specialisation = Specialisation.Dermatology,
-                        YearsOfExperience = 8,
-                        ConsultationFee = 700m,
-                        IsActive = true
-                    },
+                new Doctor
+                {
+                    DoctorId = 2,
+                    FullName = "Dr Navya ",
+                    Specialisation = Specialisation.Dermatology,
+                    YearsOfExperience = 8,
+                    ConsultationFee = 700m,
+                    IsActive = true
+                },
 
-                    new Doctor
-                    {
-                        DoctorId = 3,
-                        FullName = "Dr Rohit Shetty",
-                        Specialisation = Specialisation.Neurology,
-                        YearsOfExperience = 15,
-                        ConsultationFee = 1200m,
-                        IsActive = true
-                    },
+                new Doctor
+                {
+                    DoctorId = 3,
+                    FullName = "Dr Rohit Shetty",
+                    Specialisation = Specialisation.Neurology,
+                    YearsOfExperience = 15,
+                    ConsultationFee = 1200m,
+                    IsActive = true
+                },
 
-                    new Doctor
-                    {
-                        DoctorId = 4,
-                        FullName = "Dr Priya Kumar",
-                        Specialisation = Specialisation.Pediatrics,
-                        YearsOfExperience = 6,
-                        ConsultationFee = 650m,
-                        IsActive = true
-                    },
+                new Doctor
+                {
+                    DoctorId = 4,
+                    FullName = "Dr Priya Kumar",
+                    Specialisation = Specialisation.Pediatrics,
+                    YearsOfExperience = 6,
+                    ConsultationFee = 650m,
+                    IsActive = true
+                },
 
-                    new Doctor
-                    {
-                        DoctorId = 5,
-                        FullName = "Dr Siddharth Rao",
-                        Specialisation = Specialisation.Orthopedics,
-                        YearsOfExperience = 10,
-                        ConsultationFee = 900m,
-                        IsActive = true
-                    }
-                );
-
-           
+                new Doctor
+                {
+                    DoctorId = 5,
+                    FullName = "Dr Siddharth Rao",
+                    Specialisation = Specialisation.Orthopedics,
+                    YearsOfExperience = 10,
+                    ConsultationFee = 900m,
+                    IsActive = true
+                });
         }
     }
 }

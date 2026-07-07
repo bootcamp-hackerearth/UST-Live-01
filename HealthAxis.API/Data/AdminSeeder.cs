@@ -4,6 +4,8 @@ namespace HealthAxis.API.Data
 {
     public static class AdminSeeder
     {
+
+        private const string Admin = "Admin";
         public static async Task SeedAdminAsync(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager)
@@ -11,9 +13,9 @@ namespace HealthAxis.API.Data
             string adminEmail = "admin@healthaxis.com";
             string adminPassword = "Admin@123";
 
-            if (!await roleManager.RoleExistsAsync("Admin"))
+            if (!await roleManager.RoleExistsAsync(Admin))
             {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
+                await roleManager.CreateAsync(new IdentityRole(Admin));
             }
 
             var existingAdmin =  await userManager.FindByEmailAsync(adminEmail);
@@ -31,14 +33,14 @@ namespace HealthAxis.API.Data
 
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                    await userManager.AddToRoleAsync(adminUser, Admin);
                 }
             }
             else
             {
-                if (!await userManager.IsInRoleAsync( existingAdmin, "Admin"))
+                if (!await userManager.IsInRoleAsync( existingAdmin, Admin))
                 {
-                    await userManager.AddToRoleAsync(existingAdmin, "Admin");
+                    await userManager.AddToRoleAsync(existingAdmin, Admin);
                 }
             }
         }

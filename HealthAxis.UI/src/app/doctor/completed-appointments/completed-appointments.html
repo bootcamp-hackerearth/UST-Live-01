@@ -271,28 +271,30 @@
   </section>
 
   @if (selectedHealthRecord(); as record) {
-    <!-- <div class="modal-backdrop" (click)="closeCompletedHealthRecord()"> -->
-      <div
-  class="modal-backdrop"
-  role="button"
-  tabindex="0"
-  (click)="closeModal()"
-  (keydown.enter)="closeMModal()"
-  (keydown.space)="closeModal()"
->
-      <!-- <section class="record-view-modal" (click)="$event.stopPropagation()"> -->
-        <div
-  class="modal-card"
-  role="dialog"
-  aria-modal="true"
-  tabindex="-1"
-  (click)="$event.stopPropagation()"
-  (keydown)="$event.stopPropagation()"
->
+    <div
+      class="modal-backdrop"
+      role="button"
+      tabindex="0"
+      aria-label="Close completed health record"
+      (click)="closeCompletedHealthRecord()"
+      (keydown.enter)="closeCompletedHealthRecord()"
+      (keydown.space)="closeCompletedHealthRecord(); $event.preventDefault()"
+    >
+      <section
+        class="record-view-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="completedHealthRecordTitle"
+        tabindex="-1"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()"
+      >
         <div class="modal-header">
           <div>
             <p>Completed Visit</p>
-            <h2>Health Record #{{ getRecordId(record) }}</h2>
+            <h2 id="completedHealthRecordTitle">
+              Health Record #{{ getRecordId(record) }}
+            </h2>
           </div>
 
           <div class="modal-top-actions">
@@ -307,6 +309,7 @@
             <button
               type="button"
               class="close-button"
+              aria-label="Close completed health record"
               (click)="closeCompletedHealthRecord()"
             >
               ×
@@ -365,17 +368,34 @@
   }
 
   @if (selectedAppointment()) {
-    <div class="modal-backdrop">
-      <section class="record-modal">
+    <div
+      class="modal-backdrop"
+      role="button"
+      tabindex="0"
+      aria-label="Close health record dialog"
+      (click)="closeHealthRecordDialog()"
+      (keydown.enter)="closeHealthRecordDialog()"
+      (keydown.space)="closeHealthRecordDialog(); $event.preventDefault()"
+    >
+      <section
+        class="record-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="addHealthRecordTitle"
+        tabindex="-1"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()"
+      >
         <div class="modal-header">
           <div>
             <p>Health Record</p>
-            <h2>Add Treatment Details</h2>
+            <h2 id="addHealthRecordTitle">Add Treatment Details</h2>
           </div>
 
           <button
             type="button"
             class="close-button"
+            aria-label="Close health record dialog"
             (click)="closeHealthRecordDialog()"
           >
             ×

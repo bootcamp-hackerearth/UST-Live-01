@@ -6,6 +6,7 @@ using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Implementation;
 using HealthAxis.Shared.DTO.AppointmentDtos;
 using HealthAxis.Shared.Enums;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System.Threading;
 
@@ -19,6 +20,7 @@ namespace HealthAxis.API.Tests.Services
         private readonly Mock<IPatientRepository> _patientRepositoryMock;
         private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<ILogger<AppointmentService>> _loggerMock;
         private readonly AppointmentService _service;
 
         public AppointmentServiceTests()
@@ -27,6 +29,7 @@ namespace HealthAxis.API.Tests.Services
             _patientRepositoryMock = new Mock<IPatientRepository>();
             _doctorRepositoryMock = new Mock<IDoctorRepository>();
             _mapperMock = new Mock<IMapper>();
+            _loggerMock = new Mock<ILogger<AppointmentService>>();
 
             _mapperMock
                 .Setup(mapper => mapper.Map<AppointmentDto>(It.IsAny<Appointment>()))
@@ -36,7 +39,8 @@ namespace HealthAxis.API.Tests.Services
                 _appointmentRepositoryMock.Object,
                 _patientRepositoryMock.Object,
                 _doctorRepositoryMock.Object,
-                _mapperMock.Object);
+                _mapperMock.Object,
+                _loggerMock.Object);
         }
 
         [Fact]

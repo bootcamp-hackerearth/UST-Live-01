@@ -172,7 +172,7 @@ refreshToken(): Observable<RefreshTokenResponse> {
     }
 
     const email = this.getEmailFromToken(accessToken);
-    const adminBaseUrl = environment.blazorAdminUrl.replaceAll(/\/$/, '');
+    const adminBaseUrl = environment.blazorAdminUrl.replace(/\/$/, '');
 
     const fragment = new URLSearchParams({
       accessToken,
@@ -270,7 +270,7 @@ refreshToken(): Observable<RefreshTokenResponse> {
         return {};
       }
 
-      const base64 = payloadPart.replaceAll(/-/g, '+').replaceAll(/_/g, '/');
+      const base64 = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
       const parsedPayload: unknown = JSON.parse(atob(base64));
 
       if (this.isRecord(parsedPayload)) {

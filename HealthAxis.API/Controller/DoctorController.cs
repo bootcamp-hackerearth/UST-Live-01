@@ -13,6 +13,9 @@ namespace HealthAxis.API.Controller
     [ApiController]
     public class DoctorController : ControllerBase
     {
+
+        private const string InvalidToken = "Invalid token";
+
         private readonly ApplicationDbContext _context;
         private readonly IDoctorService _doctorService;
         private readonly IPatientService _patientService;
@@ -44,7 +47,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -72,7 +75,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -110,7 +113,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -140,7 +143,7 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
@@ -190,7 +193,7 @@ namespace HealthAxis.API.Controller
                 {
                     return Unauthorized(new
                     {
-                        message = "Invalid token"
+                        message = InvalidToken
                     });
                 }
 

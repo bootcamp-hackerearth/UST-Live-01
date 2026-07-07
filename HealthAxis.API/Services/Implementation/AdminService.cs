@@ -22,6 +22,8 @@ namespace HealthAxis.API.Services.Implementation
 {
     public class AdminService : IAdminService
     {
+        private const string Doctor = "Doctor";
+
         private readonly IDoctorRepository _doctorRepository;
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly UserManager<IdentityUser> _userManager;
@@ -72,11 +74,6 @@ namespace HealthAxis.API.Services.Implementation
                 throw new ValidationExceptions("Doctor email is required");
             }
 
-            //if (!doctorDto.Email.EndsWith( "@gmail.com",
-            //        StringComparison.OrdinalIgnoreCase))
-            //{
-            //    throw new ValidationException("Only Gmail address is allowed");
-            //}
 
             if (!Enum.IsDefined( typeof(Specialisation), doctorDto.Specialisation))
             {
@@ -105,10 +102,10 @@ namespace HealthAxis.API.Services.Implementation
                 throw new BusinessRuleException("Doctor email already exists");
             }
 
-            var roleExists = _roleManager.RoleExistsAsync("Doctor").GetAwaiter().GetResult();
+            var roleExists = _roleManager.RoleExistsAsync(Doctor).GetAwaiter().GetResult();
             if (!roleExists)
             {
-                await _roleManager.CreateAsync(new IdentityRole("Doctor"));
+                await _roleManager.CreateAsync(new IdentityRole(Doctor));
             }
 
             var temporaryPassword = GenerateTemporaryPassword();
@@ -129,7 +126,7 @@ namespace HealthAxis.API.Services.Implementation
                 throw new ValidationExceptions(errors);
             }
 
-            await _userManager.AddToRoleAsync(user, "Doctor");
+            await _userManager.AddToRoleAsync(user, Doctor);
 
             var doctor = new Doctor
             {
@@ -337,7 +334,7 @@ namespace HealthAxis.API.Services.Implementation
             DateTime? createdDate = null;
             var isActive = true;
 
-            if (string.Equals(role, "Doctor", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(role, Doctor, StringComparison.OrdinalIgnoreCase))
             {
                 var doctor = doctors.FirstOrDefault(doctorRecord =>
                     doctorRecord.UserId == user.Id);
@@ -415,31 +412,7 @@ namespace HealthAxis.API.Services.Implementation
         {
             return "Doctor@" + Random.Shared.Next(1000, 9999);
         }
-        private static void ValidateDoctor(DoctorDto doctorDto)
-        {
-            if (string.IsNullOrWhiteSpace(doctorDto.FullName))
-            {
-                throw new ValidationExceptions("Doctor full name is required");
-            }
-
-            if (!Enum.IsDefined(typeof(Specialisation), doctorDto.Specialisation))
-            {
-                throw new ValidationExceptions("Invalid specialisation");
-            }
-
-            if (doctorDto.YearsOfExperience < 0 ||
-                doctorDto.YearsOfExperience > 60)
-            {
-                throw new ValidationExceptions(
-                    "Years of experience must be between 0 and 60");
-            }
-
-            if (doctorDto.ConsultationFee <= 0)
-            {
-                throw new ValidationExceptions(
-                    "Consultation fee must be greater than 0");
-            }
-        }
+   
         private async Task<DoctorDto> MapDoctorForAdminAsync(Doctor doctor)
         {
             var email = string.Empty;
@@ -579,7 +552,7 @@ namespace HealthAxis.API.Services.Implementation
                 string fullName = user.Email ?? string.Empty;
                 bool isActive = true;
 
-                if (string.Equals(role, "Doctor", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(role, Doctor, StringComparison.OrdinalIgnoreCase))
                 {
                     var doctor = doctors.FirstOrDefault(d => d.UserId == user.Id);
 

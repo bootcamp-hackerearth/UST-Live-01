@@ -137,11 +137,11 @@ namespace HealthAxis.API.Services.Implementation
                     401);
             }
 
-            var isValidDate = DateTime.TryParse(
-                savedExpiry,
-                null,
-                DateTimeStyles.RoundtripKind,
-                out var refreshTokenExpiry);
+var isValidDate = DateTime.TryParse(
+    savedExpiry,
+    CultureInfo.InvariantCulture,
+    DateTimeStyles.RoundtripKind,
+    out var refreshTokenExpiry);
 
             if (!isValidDate || refreshTokenExpiry < DateTime.UtcNow)
             {
