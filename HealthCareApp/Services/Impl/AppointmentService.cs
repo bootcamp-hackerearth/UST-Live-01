@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
-using HealthCareApp.Shared.Constants;
-using HealthCareApp.Shared.Dtos.Auth;
-using HealthCareApp.Shared.Enums;
 using HealthCareApp.Exceptions;
+using HealthCareApp.Messaging.Events;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
-using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Services.Interface;
+using HealthCareApp.Shared.Constants;
 using HealthCareApp.Shared.Dtos.Appointments;
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Enums;
+using MassTransit;
 
 namespace HealthCareApp.Services.Impl
 {
@@ -15,9 +17,10 @@ namespace HealthCareApp.Services.Impl
         IPatientRepository patientRepository,
         IDoctorRepository doctorRepository,
         IHealthRecordRepository healthRecordRepository,
-        IMapper mapper) : IAppointmentService
+        IMapper mapper,
+        IPublishEndpoint publishEndpoint,
+        ILogger<AppointmentService> logger) : IAppointmentService
     {
-
         private const string AppointmentEntityName = "Appointment";
         private const string AppointmentDetailsRequiredMessage = "Appointment details are required.";
         private const string CancellationDetailsRequiredMessage = "Cancellation details are required.";
@@ -31,18 +34,14 @@ namespace HealthCareApp.Services.Impl
             return new AppointmentDailyStatusSummaryDto
             {
                 Date = selectedDate.ToString("yyyy-MM-dd"),
-
                 Total = appointments.Count,
-
                 Pending = appointments.Count(a => a.Status == AppointmentStatus.Pending),
-
                 Confirmed = appointments.Count(a => a.Status == AppointmentStatus.Confirmed),
-
                 Completed = appointments.Count(a => a.Status == AppointmentStatus.Completed),
-
                 Cancelled = appointments.Count(a => a.Status == AppointmentStatus.Cancelled)
             };
         }
+
         public async Task<AppointmentFilterOptionsDto> GetAppointmentFilterOptionsAsync()
         {
             var appointments = await appointmentRepository.GetAppointmentsForFilterOptionsAsync();
@@ -83,6 +82,7 @@ namespace HealthCareApp.Services.Impl
                 Doctors = doctors
             };
         }
+
         public async Task<List<AppointmentDto>> GetAllAppointmentsAsync()
         {
             var appointments = await appointmentRepository.GetAllAsync();
@@ -90,86 +90,87 @@ namespace HealthCareApp.Services.Impl
             return mapper.Map<List<AppointmentDto>>(appointments);
         }
 
-        public async Task<PagedResponse<AppointmentDto>> GetAllAppointmentsPagedAsync(AppointmentPaginationQueryDto query)
-{
+        public async Task<PagedResponse<AppointmentDto>> GetAllAppointmentsPagedAsync(
+            AppointmentPaginationQueryDto query)
+        {
             query ??= new AppointmentPaginationQueryDto();
 
             int pageNumber = query.PageNumber <= 0 ? 1 : query.PageNumber;
 
-    int pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+            int pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
 
-    pageSize = pageSize > 100 ? 100 : pageSize;
+            pageSize = pageSize > 100 ? 100 : pageSize;
 
-    var appointments = await appointmentRepository.GetAllAsync();
+            var appointments = await appointmentRepository.GetAllAsync();
 
-    var filteredAppointments = appointments.AsEnumerable();
+            var filteredAppointments = appointments.AsEnumerable();
 
-    if (!string.IsNullOrWhiteSpace(query.SearchTerm))
-    {
-        string searchTerm = query.SearchTerm.Trim();
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                string searchTerm = query.SearchTerm.Trim();
 
-        filteredAppointments = filteredAppointments.Where(a =>
-            (a.Patient != null &&
-             a.Patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-            (a.Doctor != null &&
-             a.Doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-            a.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-            (!string.IsNullOrWhiteSpace(a.CancellationReason) &&
-             a.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
-    }
+                filteredAppointments = filteredAppointments.Where(a =>
+                    (a.Patient != null &&
+                     a.Patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (a.Doctor != null &&
+                     a.Doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    a.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrWhiteSpace(a.CancellationReason) &&
+                     a.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
+            }
 
-    if (query.PatientId is not null)
-    {
-        filteredAppointments = filteredAppointments.Where(a =>
-            a.PatientId == query.PatientId.Value);
-    }
+            if (query.PatientId is not null)
+            {
+                filteredAppointments = filteredAppointments.Where(a =>
+                    a.PatientId == query.PatientId.Value);
+            }
 
-    if (query.DoctorId is not null)
-    {
-        filteredAppointments = filteredAppointments.Where(a =>
-            a.DoctorId == query.DoctorId.Value);
-    }
+            if (query.DoctorId is not null)
+            {
+                filteredAppointments = filteredAppointments.Where(a =>
+                    a.DoctorId == query.DoctorId.Value);
+            }
 
-    if (query.Status is not null)
-    {
-        filteredAppointments = filteredAppointments.Where(a =>
-            a.Status == query.Status.Value);
-    }
+            if (query.Status is not null)
+            {
+                filteredAppointments = filteredAppointments.Where(a =>
+                    a.Status == query.Status.Value);
+            }
 
-    if (query.ScheduledDate is not null)
-    {
-        filteredAppointments = filteredAppointments.Where(a =>
-            a.ScheduledDate.Date == query.ScheduledDate.Value.Date);
-    }
+            if (query.ScheduledDate is not null)
+            {
+                filteredAppointments = filteredAppointments.Where(a =>
+                    a.ScheduledDate.Date == query.ScheduledDate.Value.Date);
+            }
 
-    if (query.UpcomingOnly is not null && query.UpcomingOnly.Value)
-    {
-        filteredAppointments = filteredAppointments.Where(a =>
-            a.ScheduledDate.Date >= DateTime.Today &&
-            a.Status != AppointmentStatus.Cancelled &&
-            a.Status != AppointmentStatus.Completed);
-    }
+            if (query.UpcomingOnly is not null && query.UpcomingOnly.Value)
+            {
+                filteredAppointments = filteredAppointments.Where(a =>
+                    a.ScheduledDate.Date >= DateTime.Today &&
+                    a.Status != AppointmentStatus.Cancelled &&
+                    a.Status != AppointmentStatus.Completed);
+            }
 
-    int totalRecords = filteredAppointments.Count();
+            int totalRecords = filteredAppointments.Count();
 
-    var pagedAppointments = filteredAppointments
-        .OrderByDescending(a => a.ScheduledDate)
-        .ThenBy(a => a.TimeSlot)
-        .Skip((pageNumber - 1) * pageSize)
-        .Take(pageSize)
-        .ToList();
+            var pagedAppointments = filteredAppointments
+                .OrderByDescending(a => a.ScheduledDate)
+                .ThenBy(a => a.TimeSlot)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
 
-    var mappedAppointments = mapper.Map<List<AppointmentDto>>(pagedAppointments);
+            var mappedAppointments = mapper.Map<List<AppointmentDto>>(pagedAppointments);
 
-    return new PagedResponse<AppointmentDto>
-    {
-        Items = mappedAppointments,
-        PageNumber = pageNumber,
-        PageSize = pageSize,
-        TotalRecords = totalRecords,
-        TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
-    };
-}
+            return new PagedResponse<AppointmentDto>
+            {
+                Items = mappedAppointments,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalRecords = totalRecords,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
+            };
+        }
 
         public async Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId)
         {
@@ -269,7 +270,7 @@ namespace HealthCareApp.Services.Impl
                 throw new AppointmentRuleException(AppointmentDetailsRequiredMessage);
             }
 
-            await ValidatePatientExistsAsync(dto.PatientId);
+            var patient = await ValidatePatientExistsAsync(dto.PatientId);
 
             var doctor = await ValidateDoctorExistsAsync(dto.DoctorId);
 
@@ -317,6 +318,23 @@ namespace HealthCareApp.Services.Impl
             appointment.CreatedDate = DateTime.Now;
 
             var savedAppointment = await appointmentRepository.CreateAsync(appointment);
+
+            await publishEndpoint.Publish(new AppointmentBookedEvent
+            {
+                AppointmentId = savedAppointment.AppointmentId,
+                PatientName = patient.PatientName,
+                DoctorId = savedAppointment.DoctorId,
+                ScheduledDate = savedAppointment.ScheduledDate.Date,
+                TimeSlot = savedAppointment.TimeSlot
+            });
+
+            logger.LogInformation(
+                "AppointmentBookedEvent published. AppointmentId: {AppointmentId}, PatientName: {PatientName}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
+                savedAppointment.AppointmentId,
+                patient.PatientName,
+                savedAppointment.DoctorId,
+                savedAppointment.ScheduledDate.Date,
+                savedAppointment.TimeSlot);
 
             return mapper.Map<AppointmentDto>(savedAppointment);
         }
@@ -637,6 +655,7 @@ namespace HealthCareApp.Services.Impl
                 TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
             };
         }
+
         public async Task<List<AppointmentDto>> GetMyUpcomingAppointmentsForPatientAsync(string identityUserId)
         {
             var patient = await GetLoggedInPatientAsync(identityUserId);
@@ -689,8 +708,6 @@ namespace HealthCareApp.Services.Impl
 
             var patient = await GetLoggedInPatientAsync(identityUserId);
 
-            
-            // Ignore any patientId sent from body and force logged-in patient's PatientId.
             dto.PatientId = patient.PatientId;
 
             return await BookAppointmentAsync(dto);
@@ -723,6 +740,7 @@ namespace HealthCareApp.Services.Impl
 
             return await CancelAppointmentAsync(dto);
         }
+
         public async Task<List<AppointmentDto>> GetMyAppointmentsForDoctorAsync(string identityUserId)
         {
             var doctor = await GetLoggedInDoctorAsync(identityUserId);
@@ -731,6 +749,7 @@ namespace HealthCareApp.Services.Impl
 
             return mapper.Map<List<AppointmentDto>>(appointments);
         }
+
         public async Task<List<AppointmentDto>> GetMyUpcomingAppointmentsForDoctorAsync(string identityUserId)
         {
             var doctor = await GetLoggedInDoctorAsync(identityUserId);
@@ -759,8 +778,8 @@ namespace HealthCareApp.Services.Impl
         }
 
         public async Task<AppointmentDto> GetAppointmentByIdForDoctorAsync(
-    int appointmentId,
-    string identityUserId)
+            int appointmentId,
+            string identityUserId)
         {
             ValidateAppointmentId(appointmentId);
 
@@ -782,8 +801,8 @@ namespace HealthCareApp.Services.Impl
         }
 
         public async Task<AppointmentDto> ConfirmAppointmentForDoctorAsync(
-    int appointmentId,
-    string identityUserId)
+            int appointmentId,
+            string identityUserId)
         {
             ValidateAppointmentId(appointmentId);
 
@@ -805,8 +824,8 @@ namespace HealthCareApp.Services.Impl
         }
 
         public async Task<AppointmentDto> CompleteAppointmentForDoctorAsync(
-    int appointmentId,
-    string identityUserId)
+            int appointmentId,
+            string identityUserId)
         {
             ValidateAppointmentId(appointmentId);
 
@@ -828,8 +847,8 @@ namespace HealthCareApp.Services.Impl
         }
 
         public async Task<AppointmentDto> CancelAppointmentForDoctorAsync(
-    CancelAppointmentDto dto,
-    string identityUserId)
+            CancelAppointmentDto dto,
+            string identityUserId)
         {
             if (dto is null)
             {
@@ -854,6 +873,7 @@ namespace HealthCareApp.Services.Impl
 
             return await CancelAppointmentAsync(dto);
         }
+
         private async Task<Doctor> GetLoggedInDoctorAsync(string identityUserId)
         {
             if (string.IsNullOrWhiteSpace(identityUserId))
@@ -870,6 +890,7 @@ namespace HealthCareApp.Services.Impl
 
             return doctor;
         }
+
         private async Task<Patient> GetLoggedInPatientAsync(string identityUserId)
         {
             if (string.IsNullOrWhiteSpace(identityUserId))
@@ -886,6 +907,7 @@ namespace HealthCareApp.Services.Impl
 
             return patient;
         }
+
         private static void ValidateAppointmentId(int appointmentId)
         {
             if (appointmentId <= 0)
@@ -910,7 +932,7 @@ namespace HealthCareApp.Services.Impl
             }
         }
 
-        private async Task ValidatePatientExistsAsync(int patientId)
+        private async Task<Patient> ValidatePatientExistsAsync(int patientId)
         {
             ValidatePatientId(patientId);
 
@@ -920,6 +942,8 @@ namespace HealthCareApp.Services.Impl
             {
                 throw new EntityNotFoundException("Patient", patientId);
             }
+
+            return patient;
         }
 
         private async Task<Doctor> ValidateDoctorExistsAsync(int doctorId)

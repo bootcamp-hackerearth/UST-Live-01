@@ -1,19 +1,33 @@
+using HealthCareApp.BackgroundServices;
 using HealthCareApp.Data;
 using HealthCareApp.Mapping;
+using HealthCareApp.Messaging.Consumers;
+using HealthCareApp.Messaging.Test;
 using HealthCareApp.Middleware;
 using HealthCareApp.Repository.Impl;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Services;
 using HealthCareApp.Services.Impl;
 using HealthCareApp.Services.Interface;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Register Serilog.
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext();
+});
 
 // Add services to the container.
 builder.Services.AddControllers()
@@ -66,6 +80,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddAuthorization();
+
+// Swagger/OpenAPI.
+builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -88,14 +107,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-
-builder.Services.AddAuthorization();
-
 // Register DbContext for generic repository constructor.
 builder.Services.AddScoped<DbContext, HealthAxisDbContext>();
-
-// Register AuthService.
-builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Register AutoMapper.
 builder.Services.AddAutoMapper(cfg =>
@@ -112,21 +125,62 @@ builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
-
 // Register services.
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 
+// Register background services.
+builder.Services.AddHostedService<HeartbeatBackgroundService>();
+builder.Services.AddHostedService<NotificationCleanupService>();
+
+// Register MassTransit with RabbitMQ.
+builder.Services.AddMassTransit(configurator =>
+{
+    configurator.SetKebabCaseEndpointNameFormatter();
+
+    // Temporary RabbitMQ connectivity test consumer.
+    configurator.AddConsumer<TestRabbitMqConsumer>();
+
+    // Real Sprint 4 AppointmentBooked event consumer.
+    configurator.AddConsumer<AppointmentBookedConsumer>();
+
+    configurator.UsingRabbitMq((context, rabbitMqConfig) =>
+    {
+        var rabbitMqSection = builder.Configuration.GetSection("RabbitMq");
+
+        rabbitMqConfig.Host(
+            rabbitMqSection["Host"],
+            rabbitMqSection["VirtualHost"],
+            hostConfig =>
+            {
+                hostConfig.Username(rabbitMqSection["Username"]!);
+                hostConfig.Password(rabbitMqSection["Password"]!);
+            });
+
+        // Temporary queue for RabbitMQ connectivity testing.
+        rabbitMqConfig.ReceiveEndpoint(
+            rabbitMqSection["TestQueue"]!,
+            endpoint =>
+            {
+                endpoint.ConfigureConsumer<TestRabbitMqConsumer>(context);
+            });
+
+        // Real queue for AppointmentBookedEvent.
+        rabbitMqConfig.ReceiveEndpoint(
+            rabbitMqSection["AppointmentBookedQueue"]!,
+            endpoint =>
+            {
+                endpoint.ConfigureConsumer<AppointmentBookedConsumer>(context);
+            });
+    });
+});
+
 // Register Global Exception Handler.
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
-
-// Swagger/OpenAPI.
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 const string ClientCorsPolicy = "ClientCorsPolicy";
 
@@ -144,7 +198,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-
 var app = builder.Build();
 
 // Seed roles and default admin.
@@ -158,8 +211,16 @@ using (var scope = app.Services.CreateScope())
 
     await AdminSeeder.SeedAdminAsync(userManager, roleManager, builder.Configuration);
 }
+
 // Global exception handler middleware.
 app.UseExceptionHandler();
+
+// Serilog request logging middleware.
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate =
+        "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+});
 
 // Configure HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -170,7 +231,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
 app.UseCors(ClientCorsPolicy);
 
 app.UseAuthentication();
@@ -179,4 +239,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-await app.RunAsync();
+try
+{
+    await app.RunAsync();
+}
+finally
+{
+    Log.CloseAndFlush();
+}

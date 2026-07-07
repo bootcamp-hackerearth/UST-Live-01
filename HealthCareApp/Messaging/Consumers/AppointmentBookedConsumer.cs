@@ -1,0 +1,48 @@
+﻿using HealthCareApp.Data;
+using HealthCareApp.Messaging.Events;
+using HealthCareApp.Models;
+using MassTransit;
+
+namespace HealthCareApp.Messaging.Consumers
+{
+    public class AppointmentBookedConsumer : IConsumer<AppointmentBookedEvent>
+    {
+        private readonly HealthAxisDbContext dbContext;
+
+        private readonly ILogger<AppointmentBookedConsumer> logger;
+
+        public AppointmentBookedConsumer(
+            HealthAxisDbContext dbContext,
+            ILogger<AppointmentBookedConsumer> logger)
+        {
+            this.dbContext = dbContext;
+            this.logger = logger;
+        }
+
+        public async Task Consume(ConsumeContext<AppointmentBookedEvent> context)
+        {
+            var appointmentBookedEvent = context.Message;
+
+            var notification = new Notification
+            {
+                DoctorId = appointmentBookedEvent.DoctorId,
+                AppointmentId = appointmentBookedEvent.AppointmentId,
+                Message =
+                    $"New appointment booked by {appointmentBookedEvent.PatientName} " +
+                    $"on {appointmentBookedEvent.ScheduledDate:yyyy-MM-dd} " +
+                    $"at {appointmentBookedEvent.TimeSlot}.",
+                IsRead = false,
+                CreatedDate = DateTime.Now
+            };
+
+            dbContext.Notifications.Add(notification);
+
+            await dbContext.SaveChangesAsync(context.CancellationToken);
+
+            logger.LogInformation(
+                "AppointmentBookedEvent consumed. Notification created. DoctorId: {DoctorId}, AppointmentId: {AppointmentId}",
+                appointmentBookedEvent.DoctorId,
+                appointmentBookedEvent.AppointmentId);
+        }
+    }
+}

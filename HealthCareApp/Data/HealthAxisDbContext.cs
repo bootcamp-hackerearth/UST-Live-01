@@ -1,5 +1,5 @@
-﻿using HealthCareApp.Shared.Enums;
-using HealthCareApp.Models;
+﻿using HealthCareApp.Models;
+using HealthCareApp.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +21,8 @@ namespace HealthCareApp.Data
 
         public DbSet<HealthRecord> HealthRecords { get; set; }
 
+        public DbSet<Notification> Notifications { get; set; }
+
         private static DateTime UtcDate(int year, int month, int day)
         {
             return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
@@ -30,46 +32,59 @@ namespace HealthCareApp.Data
         {
             base.OnModelCreating(builder);
 
-            // Patient to IdentityUser relationship
+            // Patient to IdentityUser relationship.
             builder.Entity<Patient>()
-                .HasOne(p => p.IdentityUser)
+                .HasOne(patient => patient.IdentityUser)
                 .WithOne()
-                .HasForeignKey<Patient>(p => p.IdentityUserId)
+                .HasForeignKey<Patient>(patient => patient.IdentityUserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Appointment relationships
+            // Appointment relationships.
             builder.Entity<Appointment>()
-                .HasOne(a => a.Patient)
-                .WithMany(p => p.Appointments)
-                .HasForeignKey(a => a.PatientId)
+                .HasOne(appointment => appointment.Patient)
+                .WithMany(patient => patient.Appointments)
+                .HasForeignKey(appointment => appointment.PatientId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Appointment>()
-                .HasOne(a => a.Doctor)
-                .WithMany(d => d.Appointments)
-                .HasForeignKey(a => a.DoctorId)
+                .HasOne(appointment => appointment.Doctor)
+                .WithMany(doctor => doctor.Appointments)
+                .HasForeignKey(appointment => appointment.DoctorId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // HealthRecord relationships
+            // HealthRecord relationships.
             builder.Entity<HealthRecord>()
-                .HasOne(hr => hr.Patient)
-                .WithMany(p => p.HealthRecords)
-                .HasForeignKey(hr => hr.PatientId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            builder.Entity<HealthRecord>()
-                .HasOne(hr => hr.Doctor)
-                .WithMany(d => d.HealthRecords)
-                .HasForeignKey(hr => hr.DoctorId)
+                .HasOne(healthRecord => healthRecord.Patient)
+                .WithMany(patient => patient.HealthRecords)
+                .HasForeignKey(healthRecord => healthRecord.PatientId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<HealthRecord>()
-                .HasOne(hr => hr.Appointment)
-                .WithOne(a => a.HealthRecord)
-                .HasForeignKey<HealthRecord>(hr => hr.AppointmentId)
+                .HasOne(healthRecord => healthRecord.Doctor)
+                .WithMany(doctor => doctor.HealthRecords)
+                .HasForeignKey(healthRecord => healthRecord.DoctorId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Patient seed data
+            builder.Entity<HealthRecord>()
+                .HasOne(healthRecord => healthRecord.Appointment)
+                .WithOne(appointment => appointment.HealthRecord)
+                .HasForeignKey<HealthRecord>(healthRecord => healthRecord.AppointmentId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Notification relationships.
+            builder.Entity<Notification>()
+                .HasOne(notification => notification.Doctor)
+                .WithMany()
+                .HasForeignKey(notification => notification.DoctorId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Notification>()
+                .HasOne(notification => notification.Appointment)
+                .WithMany()
+                .HasForeignKey(notification => notification.AppointmentId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Patient seed data.
             builder.Entity<Patient>().HasData(
                 new Patient
                 {
@@ -109,7 +124,7 @@ namespace HealthCareApp.Data
                 }
             );
 
-            // Doctor seed data
+            // Doctor seed data.
             builder.Entity<Doctor>().HasData(
                 new Doctor
                 {
@@ -152,7 +167,7 @@ namespace HealthCareApp.Data
                 }
             );
 
-            // Appointment seed data
+            // Appointment seed data.
             builder.Entity<Appointment>().HasData(
                 new Appointment
                 {
@@ -189,7 +204,7 @@ namespace HealthCareApp.Data
                 }
             );
 
-            // HealthRecord seed data
+            // HealthRecord seed data.
             builder.Entity<HealthRecord>().HasData(
                 new HealthRecord
                 {
