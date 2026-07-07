@@ -13,6 +13,8 @@ namespace HealthAxis.API.Data
         {
         }
 
+        public DbSet<Notification> Notifications { get; set; }
+
         public DbSet<Patient> Patients { get; set; }
 
         public DbSet<Doctor> Doctors { get; set; }

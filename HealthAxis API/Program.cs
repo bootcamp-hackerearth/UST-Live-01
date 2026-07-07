@@ -11,8 +11,24 @@ using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using HealthAxis.API.BackgroundServices;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File(
+        path: "Logs/healthaxis-api-.log",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 7)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+builder.Services.AddHostedService<HealthAxisHeartbeatService>();
+builder.Services.AddHostedService<NotificationCleanupService>();
 
 // Add controllers.
 builder.Services.AddControllers()
@@ -235,6 +251,12 @@ if (app.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
+
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate =
+        "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+});
 
 app.UseHttpsRedirection();
 
