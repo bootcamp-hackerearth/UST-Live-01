@@ -3,6 +3,7 @@ using HealthCare.Api.Mapping;
 using HealthCare.Api.Middleware;
 using HealthCare.Api.Repositories.Implementations;
 using HealthCare.Api.Repositories.Interfaces;
+using HealthCare.Api.Services;
 using HealthCare.Api.Services.Implementations;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,6 +29,9 @@ namespace HealthCare.Api
                 cfg.AddProfile<MappingProfile>();
             });
 
+            //Hosted Servive
+            builder.Services.AddHostedService<HeartbeatService>();
+            builder.Services.AddHostedService<NotificationCleanupService>();
             //Exception Handler
             builder.Services.AddProblemDetails();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

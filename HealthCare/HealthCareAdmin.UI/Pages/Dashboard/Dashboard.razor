@@ -114,11 +114,17 @@
         var token = await JS.InvokeAsync<string>("localStorage.getItem", "token");
 
         //  Auth check
-        if (string.IsNullOrEmpty(token))
+
+        if (string.IsNullOrWhiteSpace(token))
         {
-            Nav.NavigateTo("/login");
+            await JS.InvokeVoidAsync(
+                "localStorage.removeItem",
+                "token");
+
+            Nav.NavigateTo("https://localhost:4200", true);
             return;
         }
+
 
         // Load dashboard data
         dashboard = await AppointmentService.GetDashboard();
