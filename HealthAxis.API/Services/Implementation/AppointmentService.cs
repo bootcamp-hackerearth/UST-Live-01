@@ -136,7 +136,8 @@ namespace HealthAxis.API.Services.Implementation
             var savedAppointment = await appointmentRepository.AddAsync(
                 appointment);
 
-            LogAppointmentBookedEvent(savedAppointment);
+            LogAppointmentBookedEvent(savedAppointment, patient.FullName,
+    doctor.FullName);
 
             return await MapAppointmentAsync(savedAppointment);
         }
@@ -211,21 +212,31 @@ namespace HealthAxis.API.Services.Implementation
             return await MapAppointmentAsync(deletedAppointment);
         }
 
-        private void LogAppointmentBookedEvent(Appointment appointment)
+        private void LogAppointmentBookedEvent(
+     Appointment appointment,
+     string patientName,
+     string doctorName)
         {
             logger.LogInformation(
-                "AppointmentBooked event logged. EventType: " +
-                "{EventType}, " +
-                "AppointmentId: {AppointmentId}, " +
-                "PatientId: {PatientId}, " +
-                "DoctorId: {DoctorId}, " +
-                "ScheduledDate: {ScheduledDate}, " +
-                "TimeSlot: {TimeSlot}, " +
-                "Status: {Status}",
+                """
+        ┌──────────────────────────────────────────────────────────────┐
+        │                    HEALTHAXIS EVENT LOG                      │
+        ├──────────────────────────────────────────────────────────────┤
+        │ Event Type      : {EventType}
+        │ Patient Name    : {PatientName}
+        │ Doctor Name     : {DoctorName}
+        │ Doctor ID       : {DoctorId}
+        │ Appointment ID  : {AppointmentId}
+        │ Scheduled Date  : {ScheduledDate:yyyy-MM-dd}
+        │ Time Slot       : {TimeSlot}
+        │ Status          : {Status}
+        └──────────────────────────────────────────────────────────────┘
+        """,
                 "AppointmentBooked",
-                appointment.AppointmentId,
-                appointment.PatientId,
+                patientName,
+                doctorName,
                 appointment.DoctorId,
+                appointment.AppointmentId,
                 appointment.ScheduledDate,
                 appointment.TimeSlot,
                 appointment.Status);
