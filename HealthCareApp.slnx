@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="HealthCareApp.AdminBlazor/HealthCareApp.AdminBlazor.csproj" Id="9e991e8b-b1c5-4e91-a827-36fb0dc1bc08" />
+  <Project Path="HealthCareApp.Shared/HealthCareApp.Shared.csproj" Id="c90dbb37-3ba6-46bf-98b7-d1cfc7d2a095" />
+  <Project Path="HealthCareApp.Testing/HealthCareApp.Testing.csproj" Id="89d5bbc9-210b-45a0-87cd-3751ece6c634" />
+  <Project Path="HealthCareApp/HealthCareApp.csproj" />
+</Solution>

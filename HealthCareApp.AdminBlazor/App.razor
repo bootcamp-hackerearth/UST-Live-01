@@ -1,0 +1,59 @@
+﻿﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    <LayoutView Layout="@typeof(MainLayout)">
+                        <section class="ha-access-page">
+                            <div class="ha-access-card">
+                                <div class="ha-access-logo">HA</div>
+
+                                <div class="ha-access-kicker">
+                                    Admin Portal
+                                </div>
+
+                                <h1>Access restricted</h1>
+
+                                <p>
+                                    Only authorized Admin users can access the HealthAxis Admin Portal.
+                                    Please sign in with an Admin account to continue.
+                                </p>
+
+                                <a class="ha-access-primary-link" href="login">
+                                    Go to Login
+                                </a>
+                            </div>
+                        </section>
+                    </LayoutView>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <section class="ha-access-page">
+                    <div class="ha-access-card">
+                        <div class="ha-access-logo">HA</div>
+
+                        <div class="ha-access-kicker">
+                            Page Not Found
+                        </div>
+
+                        <h1>Route unavailable</h1>
+
+                        <p>
+                            The page you are looking for does not exist in the HealthAxis Admin Portal.
+                            Please return to the login page or use the sidebar navigation after signing in.
+                        </p>
+
+                        <a class="ha-access-primary-link" href="login">
+                            Go to Login
+                        </a>
+                    </div>
+                </section>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

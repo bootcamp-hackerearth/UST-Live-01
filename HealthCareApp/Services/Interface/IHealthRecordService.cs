@@ -1,0 +1,47 @@
+﻿using HealthCareApp.Shared.Dtos.HealthRecords;
+using HealthCareApp.Shared.Dtos.Pagination;
+namespace HealthCareApp.Services
+{
+    public interface IHealthRecordService
+    {
+        Task<List<HealthRecordDto>> GetAllHealthRecordsAsync();
+
+        Task<HealthRecordDto> GetHealthRecordByIdAsync(int healthRecordId);
+
+        Task<List<HealthRecordDto>> GetHealthRecordsByPatientIdAsync(int patientId);
+
+        Task<List<HealthRecordDto>> GetHealthRecordsByDoctorIdAsync(int doctorId);
+
+        Task<List<HealthRecordDto>> GetHealthRecordsByAppointmentIdAsync(int appointmentId);
+
+        Task<HealthRecordDto> AddHealthRecordAsync(AddHealthRecordDto dto);
+
+        Task<HealthRecordDto> UpdateHealthRecordAsync(int healthRecordId, UpdateHealthRecordDto dto);
+
+        Task<HealthRecordDto> DeleteHealthRecordAsync(int healthRecordId);
+
+        Task<List<HealthRecordDto>> GetMyHealthRecordsForPatientAsync(string identityUserId);
+
+        Task<HealthRecordDto> GetHealthRecordByIdForPatientAsync(int healthRecordId,string identityUserId);
+
+        Task<List<HealthRecordDto>> GetMyHealthRecordsForDoctorAsync(string identityUserId);
+        Task<List<HealthRecordDto>> GetPatientHealthRecordsForTreatingDoctorAsync(
+    int patientId,
+    string identityUserId);
+        Task<PagedResponse<HealthRecordDto>> GetMyHealthRecordsForPatientPagedAsync(
+    string identityUserId,
+    HealthRecordPaginationQueryDto query);
+
+        Task<PagedResponse<HealthRecordDto>> GetMyHealthRecordsForDoctorPagedAsync(
+            string identityUserId,
+            HealthRecordPaginationQueryDto query);
+
+        Task<HealthRecordDto> GetHealthRecordByIdForDoctorAsync(int healthRecordId,string identityUserId);
+
+        Task<List<HealthRecordDto>> GetHealthRecordsByAppointmentIdForDoctorAsync(int appointmentId,string identityUserId);
+
+        Task<HealthRecordDto> AddHealthRecordForDoctorAsync(AddHealthRecordDto dto,string identityUserId);
+
+        Task<HealthRecordDto> UpdateHealthRecordForDoctorAsync(int healthRecordId, UpdateHealthRecordDto dto,string identityUserId);
+    }
+}

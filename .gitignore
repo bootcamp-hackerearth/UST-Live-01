@@ -1,0 +1,40 @@
+﻿# Visual Studio workspace files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build artifacts
+**/bin/
+**/obj/
+packages/
+
+# Logs
+Logs/
+*.log
+
+# Test results and coverage
+TestResults/
+.TestResults/
+coverage.xml
+*.coverage
+*.coveragexml
+coverage.cobertura.xml
+
+# SonarQube / SonarScanner
+.sonar/
+.sonarqube/
+sonar-project.properties.user
+.scannerwork/
+
+# Local caches
+*.lscache
+
+# .NET local tool manifest if you do not want to share local tools
+dotnet-tools.json
+
+# Node / Angular
+node_modules/
+dist/
+.angular/

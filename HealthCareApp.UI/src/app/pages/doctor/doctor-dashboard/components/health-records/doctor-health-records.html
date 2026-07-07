@@ -1,0 +1,291 @@
+<section class="dr-records-shell">
+
+  <div class="dr-hero-card">
+    <div>
+      <span class="dr-kicker">Medical Records</span>
+
+      <h2>Health Records</h2>
+
+      <p>
+        Review patient diagnoses, prescriptions, and consultation summaries added from completed visits.
+      </p>
+    </div>
+
+    <div class="dr-hero-badge">
+      <strong>{{ totalRecords }}</strong>
+      <span>Records Added</span>
+    </div>
+  </div>
+
+  <section class="dr-filter-card">
+
+    <div class="dr-search-field">
+      <label>
+        Search Health Records
+
+        <input
+          type="text"
+          name="doctorHealthRecordSearch"
+          placeholder="Search by patient, diagnosis, prescription, or appointment ID"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilters()">
+      </label>
+    </div>
+
+    <div class="dr-filter-grid">
+
+      <label>
+        Visit Date
+
+        <input
+          type="date"
+          name="visitDateFilter"
+          [(ngModel)]="selectedVisitDate"
+          (ngModelChange)="applyFilters()">
+      </label>
+
+      <label>
+        Page Size
+
+        <select
+          name="doctorHealthRecordPageSize"
+          [(ngModel)]="pageSize"
+          (ngModelChange)="changePageSize()">
+
+          @for (size of pageSizeOptions; track size) {
+            <option [value]="size">
+              {{ size }}
+            </option>
+          }
+
+        </select>
+      </label>
+
+    </div>
+
+    @if (hasActiveFilters) {
+      <div class="dr-filter-actions">
+        <button
+          type="button"
+          class="dr-clear-filters-btn"
+          (click)="clearFilters()">
+          Clear Filters
+        </button>
+      </div>
+    }
+
+  </section>
+
+  @if (isLoading) {
+    <div class="dr-empty-card">
+      <div class="dr-empty-icon">↻</div>
+
+      <h3>Loading health records...</h3>
+
+      <p>
+        Please wait while HealthAxis loads your added medical records.
+      </p>
+    </div>
+  }
+
+  @if (!isLoading && errorMessage) {
+    <div class="dr-empty-card">
+      <div class="dr-empty-icon">!</div>
+
+      <h3>Unable to load health records</h3>
+
+      <p>
+        {{ errorMessage }}
+      </p>
+
+      <button
+        type="button"
+        class="dr-clear-filters-btn"
+        (click)="loadRecords()">
+        Retry
+      </button>
+    </div>
+  }
+
+  @if (!isLoading && !errorMessage && records.length === 0) {
+    <div class="dr-empty-card">
+      <div class="dr-empty-icon">▣</div>
+
+      <h3>No health records available</h3>
+
+      <p>
+        Records added after completed consultations will appear here.
+      </p>
+    </div>
+  }
+
+  @if (!isLoading && !errorMessage && records.length > 0) {
+    <div class="dr-record-grid">
+
+      @for (record of records; track record.healthRecordId) {
+
+        <button
+          type="button"
+          class="dr-record-card"
+          aria-label="View health record details"
+          (click)="openDetails(record)">
+
+          <div class="dr-record-top">
+            <div class="dr-record-icon">
+              HR
+            </div>
+
+            <div class="dr-record-title">
+              <span>Patient Record</span>
+
+              <h3>{{ record.patientName }}</h3>
+
+              <p>{{ formatDate(record.visitDate) }}</p>
+            </div>
+
+            <span class="dr-view-btn">
+              View
+            </span>
+          </div>
+
+          <div class="dr-diagnosis-box">
+            <span>Diagnosis</span>
+            <strong>{{ record.diagnosis }}</strong>
+          </div>
+
+          <div class="dr-record-detail-grid">
+
+            <div class="dr-detail-tile">
+              <span>Prescription</span>
+              <p>{{ record.prescription }}</p>
+            </div>
+
+            @if (record.notes) {
+              <div class="dr-detail-tile">
+                <span>Doctor Notes</span>
+                <p>{{ record.notes }}</p>
+              </div>
+            }
+
+          </div>
+
+          <div class="dr-card-footer">
+            <span>Appointment #{{ record.appointmentId }}</span>
+            <small>Click to view full medical summary</small>
+          </div>
+
+        </button>
+
+      }
+
+    </div>
+
+    <section class="dr-pagination-card">
+
+      <div>
+        <strong>Page {{ pageNumber }} of {{ totalPages || 1 }}</strong>
+        <span>Total Records: {{ totalRecords }}</span>
+      </div>
+
+      <div class="dr-pagination-actions">
+        <button
+          type="button"
+          class="dr-page-btn"
+          [disabled]="!canGoPrevious"
+          (click)="goToPreviousPage()">
+          Previous
+        </button>
+
+        <button
+          type="button"
+          class="dr-page-btn"
+          [disabled]="!canGoNext"
+          (click)="goToNextPage()">
+          Next
+        </button>
+      </div>
+
+    </section>
+  }
+
+  @if (isModalOpen && selectedRecord) {
+
+    <div
+      class="dr-modal-backdrop"
+      (click)="closeModal()"
+      (keydown.escape)="closeModal()">
+
+      <dialog
+        open
+        class="dr-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeModal(); $event.stopPropagation()">
+
+        <div class="dr-modal-accent"></div>
+
+        <div class="dr-modal-header">
+          <div>
+            <span class="dr-modal-kicker">Health Record Details</span>
+
+            <h3>{{ selectedRecord.patientName }}</h3>
+
+            <p>
+              {{ formatDate(selectedRecord.visitDate) }} • Appointment #{{ selectedRecord.appointmentId }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="dr-modal-close"
+            (click)="closeModal()">
+            ×
+          </button>
+        </div>
+
+        <div class="dr-modal-summary">
+
+          <div>
+            <span>Patient</span>
+            <strong>{{ selectedRecord.patientName }}</strong>
+          </div>
+
+          <div>
+            <span>Doctor</span>
+            <strong>{{ selectedRecord.doctorName }}</strong>
+          </div>
+
+          <div>
+            <span>Visit Date</span>
+            <strong>{{ formatDate(selectedRecord.visitDate) }}</strong>
+          </div>
+
+        </div>
+
+        <div class="dr-modal-body">
+
+          <div class="dr-modal-section diagnosis">
+            <span>Diagnosis</span>
+            <p>{{ selectedRecord.diagnosis }}</p>
+          </div>
+
+          <div class="dr-modal-section">
+            <span>Prescription</span>
+            <p>{{ selectedRecord.prescription }}</p>
+          </div>
+
+          @if (selectedRecord.notes) {
+            <div class="dr-modal-section">
+              <span>Doctor Notes</span>
+              <p>{{ selectedRecord.notes }}</p>
+            </div>
+          }
+
+        </div>
+
+      </dialog>
+
+    </div>
+
+  }
+
+</section>

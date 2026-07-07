@@ -1,0 +1,221 @@
+﻿@page "/admin"
+@page "/admin/dashboard"
+@layout AdminLayout
+
+@using HealthCareApp.Shared.Dtos.Dashboard
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@inject IAuthService AuthService
+@inject IAdminDashboardService DashboardService
+@inject NavigationManager Navigation
+
+<PageTitle>Admin Dashboard | HealthAxis</PageTitle>
+
+@if (isLoading)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+            <p>Loading HealthAxis dashboard...</p>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="hc-alert-error">
+        @errorMessage
+    </div>
+}
+else if (dashboardReport is not null)
+{
+    <div class="hc-page-heading">
+        <div>
+            <h1>Dashboard</h1>
+            <p>Monitor today’s HealthAxis operations and manage admin activity.</p>
+        </div>
+
+        <div class="hc-dashboard-date-card">
+            <span>Today</span>
+            <strong>@DateTime.Today.ToString("dd MMM yyyy")</strong>
+        </div>
+    </div>
+
+    <div class="hc-report-grid ha-dashboard-report-grid">
+        <div class="hc-report-card hc-report-blue ha-dashboard-report-card">
+            <div class="hc-report-icon ha-dashboard-report-icon">✚</div>
+            <div>
+                <p>Total Doctors</p>
+                <h2>@dashboardReport.TotalDoctors</h2>
+                <span class="ha-dashboard-card-meta">Registered doctor profiles</span>
+            </div>
+        </div>
+
+        <div class="hc-report-card hc-report-teal ha-dashboard-report-card">
+            <div class="hc-report-icon ha-dashboard-report-icon">♙</div>
+            <div>
+                <p>Total Patients</p>
+                <h2>@dashboardReport.TotalPatients</h2>
+                <span class="ha-dashboard-card-meta">Patient records managed</span>
+            </div>
+        </div>
+
+        <div class="hc-report-card hc-report-purple ha-dashboard-report-card">
+            <div class="hc-report-icon ha-dashboard-report-icon">📅</div>
+            <div>
+                <p>Total Appointments</p>
+                <h2>@dashboardReport.TotalAppointments</h2>
+                <span class="ha-dashboard-card-meta">Overall appointment activity</span>
+            </div>
+        </div>
+
+        <div class="hc-report-card hc-report-orange ha-dashboard-report-card">
+            <div class="hc-report-icon ha-dashboard-report-icon">▣</div>
+            <div>
+                <p>Today’s Schedule</p>
+                <h2>@dashboardReport.TodaysAppointments</h2>
+                <span class="ha-dashboard-card-meta">Appointments planned today</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="hc-section-grid">
+        <section class="hc-dashboard-section ha-dashboard-panel">
+            <div class="hc-section-header">
+                <div>
+                    <h3>Today’s Overview</h3>
+                    <p>Live operational summary for the current day.</p>
+                </div>
+            </div>
+
+            <div class="hc-mini-report-grid">
+                <div class="hc-mini-card ha-mini-card">
+                    <span class="hc-mini-label">Today’s Appointments</span>
+                    <strong>@dashboardReport.TodaysAppointments</strong>
+                    <p>Scheduled for today</p>
+                </div>
+
+                <div class="hc-mini-card ha-mini-card">
+                    <span class="hc-mini-label">Today’s Patients</span>
+                    <strong>@dashboardReport.TodaysPatients</strong>
+                    <p>Patient activity today</p>
+                </div>
+
+                <div class="hc-mini-card success ha-mini-card">
+                    <span class="hc-mini-label">Completed Today</span>
+                    <strong>@dashboardReport.CompletedToday</strong>
+                    <p>Completed appointment count</p>
+                </div>
+
+                <div class="hc-mini-card warning ha-mini-card">
+                    <span class="hc-mini-label">Pending Today</span>
+                    <strong>@dashboardReport.PendingToday</strong>
+                    <p>Waiting for confirmation</p>
+                </div>
+
+                <div class="hc-mini-card danger ha-mini-card">
+                    <span class="hc-mini-label">Cancelled Today</span>
+                    <strong>@dashboardReport.CancelledToday</strong>
+                    <p>Cancelled appointment count</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="hc-dashboard-section ha-dashboard-panel">
+            <div class="hc-section-header">
+                <div>
+                    <h3>Quick Actions</h3>
+                    <p>Jump into frequent HealthAxis admin tasks.</p>
+                </div>
+            </div>
+
+            <div class="hc-quick-actions">
+                <button class="hc-action-card ha-action-card" @onclick="GoToDoctors">
+                    <span>✚</span>
+                    <div>
+                        <strong>Manage Doctors</strong>
+                        <p>Add, update, and activate doctor profiles.</p>
+                    </div>
+                </button>
+
+                <button class="hc-action-card ha-action-card" @onclick="GoToPatients">
+                    <span>♙</span>
+                    <div>
+                        <strong>View Patients</strong>
+                        <p>Review patient profiles and demographic details.</p>
+                    </div>
+                </button>
+
+                <button class="hc-action-card ha-action-card" @onclick="GoToAppointments">
+                    <span>📅</span>
+                    <div>
+                        <strong>Manage Appointments</strong>
+                        <p>Book appointments and review appointment status.</p>
+                    </div>
+                </button>
+            </div>
+        </section>
+    </div>
+}
+
+@code {
+    private AdminDashboardReportDto? dashboardReport;
+
+    private bool isLoading = true;
+
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+
+            Navigation.NavigateTo(
+                    "/login?sessionExpired=true",
+                    replace: true);
+            return;
+        }
+
+        await LoadDashboardReport();
+
+    }
+    
+
+    private async Task LoadDashboardReport()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+
+            dashboardReport = await DashboardService.GetDashboardReportAsync();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            errorMessage = "Unable to load dashboard data. Please check whether the API is running.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void GoToDoctors()
+    {
+        Navigation.NavigateTo("/admin/doctors");
+    }
+
+    private void GoToPatients()
+    {
+        Navigation.NavigateTo("/admin/patients");
+    }
+
+    private void GoToAppointments()
+    {
+        Navigation.NavigateTo("/admin/appointments");
+    }
+}

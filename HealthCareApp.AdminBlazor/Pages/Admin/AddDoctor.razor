@@ -1,0 +1,447 @@
+﻿@page "/admin/doctors/add"
+@layout AdminLayout
+@implements IDisposable
+
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+@using HealthCareApp.Shared.Dtos
+@using HealthCareApp.Shared.Dtos.Doctors
+@using HealthCareApp.Shared.Enums
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+
+@inject IAuthService AuthService
+@inject IDoctorAdminService DoctorService
+@inject NavigationManager Navigation
+@inject IToastService ToastService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Add Doctor | HealthAxis Admin</PageTitle>
+
+<div class="hc-page-heading">
+    <div>
+        <h1>Add Doctor</h1>
+
+        <p>Register a new doctor profile for HealthAxis.</p>
+    </div>
+
+    <button class="hc-secondary-btn" @onclick="BackToDoctors">
+        Back to Doctors
+    </button>
+</div>
+
+<section class="hc-form-shell">
+    <div class="hc-form-card">
+
+        <div class="hc-form-card-header">
+            <div class="hc-form-icon">✚</div>
+
+            <div>
+                <h3>Doctor Registration</h3>
+
+                <p>
+                    Admin creates doctor account.
+                    API will generate a temporary password.
+                </p>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="hc-alert-error">
+                @errorMessage
+            </div>
+        }
+
+        @if (editContext is not null)
+        {
+            <EditForm EditContext="editContext" OnValidSubmit="SaveDoctor">
+                <DataAnnotationsValidator />
+
+                <div class="hc-form-grid">
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Full Name</label>
+
+                        <InputText class="hc-form-control"
+                                   placeholder="Enter doctor full name"
+                                   disabled="@(isSaving || createdDoctor is not null)"
+                                   @bind-Value="doctor.FullName" />
+
+                        <ValidationMessage For="@(() => doctor.FullName)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Email Address</label>
+
+                        <InputText class="hc-form-control"
+                                   placeholder="doctor@example.com"
+                                   disabled="@(isSaving || createdDoctor is not null)"
+                                   @bind-Value="doctor.Email" />
+
+                        <ValidationMessage For="@(() => doctor.Email)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Specialisation</label>
+
+                        <InputSelect class="hc-form-control"
+                                     disabled="@(isSaving || createdDoctor is not null)"
+                                     @bind-Value="doctor.Specialisation">
+                            @foreach (var specialisation in Enum.GetValues<SpecialisationType>())
+                            {
+                                <option value="@specialisation">
+                                    @specialisation
+                                </option>
+                            }
+                        </InputSelect>
+
+                        <ValidationMessage For="@(() => doctor.Specialisation)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Practice Start Date</label>
+
+                        <InputDate class="hc-form-control"
+                                   max="@TodayDateInputValue"
+                                   disabled="@(isSaving || createdDoctor is not null)"
+                                   @bind-Value="doctor.PracticeStartDate" />
+
+                        <ValidationMessage For="@(() => doctor.PracticeStartDate)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Consultation Fee</label>
+
+                        <InputNumber class="hc-form-control"
+                                     disabled="@(isSaving || createdDoctor is not null)"
+                                     @bind-Value="doctor.ConsultationFee" />
+
+                        <ValidationMessage For="@(() => doctor.ConsultationFee)" />
+                    </div>
+
+                </div>
+
+                <div class="hc-form-actions">
+                    <button type="submit"
+                            class="hc-page-primary-btn"
+                            disabled="@(isSaving || createdDoctor is not null)">
+                        @(isSaving ? "Saving Doctor..." : "Save Doctor")
+                    </button>
+
+                    <button type="button"
+                            class="hc-secondary-btn"
+                            disabled="@isSaving"
+                            @onclick="BackToDoctors">
+                        Cancel
+                    </button>
+                </div>
+
+            </EditForm>
+        }
+
+    </div>
+</section>
+
+@if (createdDoctor is not null)
+{
+    <div class="ha-modal-backdrop">
+        <div class="ha-doctor-created-modal">
+            <div class="ha-logout-icon">
+                HA
+            </div>
+
+            <h3>
+                Doctor Account Created
+            </h3>
+
+            <p>
+                Please copy the temporary password now. It will not be shown again.
+            </p>
+
+            <div class="ha-created-doctor-grid">
+                <div class="ha-created-doctor-card">
+                    <span>Doctor Name</span>
+
+                    <strong>@createdDoctor.DoctorName</strong>
+                </div>
+
+                <div class="ha-created-doctor-card">
+                    <span>Email</span>
+
+                    <strong>@createdDoctor.Email</strong>
+                </div>
+            </div>
+
+            <div class="ha-temp-password-box">
+                <div>
+                    <span>Temporary Password</span>
+
+                    <strong>@createdDoctor.TemporaryPassword</strong>
+                </div>
+
+                <button type="button"
+                        class="hc-secondary-btn"
+                        @onclick="CopyTemporaryPassword">
+                    Copy
+                </button>
+            </div>
+
+            <div class="hc-details-note">
+                <span>Important</span>
+
+                <p>
+                    Share this temporary password securely with the doctor.
+                    The doctor can use this password to log in and change it later.
+                </p>
+            </div>
+
+            <div class="ha-logout-actions">
+                <button class="ha-modal-secondary-btn"
+                        @onclick="CreateAnotherDoctor">
+                    Add Another Doctor
+                </button>
+
+                <button class="hc-page-primary-btn"
+                        @onclick="BackToDoctors">
+                    Go to Doctors
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private CreateDoctorDto doctor = new()
+    {
+        Specialisation = SpecialisationType.GeneralPractitioner,
+
+        PracticeStartDate = DateTime.Today.AddYears(-1)
+    };
+
+    private EditContext? editContext;
+
+    private ValidationMessageStore? validationMessageStore;
+
+    private DoctorCreatedResponseDto? createdDoctor;
+
+    private bool isSaving;
+
+    private string? errorMessage;
+
+    private static string TodayDateInputValue
+    {
+        get
+        {
+            return DateTime.Today.ToString("yyyy-MM-dd");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+
+            Navigation.NavigateTo(
+                        "/login?sessionExpired=true",
+                        replace: true);
+
+            return;
+        }
+        InitializeEditContext();
+    }
+
+    private void InitializeEditContext()
+    {
+        if (editContext is not null)
+        {
+            editContext.OnValidationRequested -= HandleValidationRequested;
+
+            editContext.OnFieldChanged -= HandleFieldChanged;
+        }
+
+        editContext = new EditContext(doctor);
+
+        validationMessageStore = new ValidationMessageStore(editContext);
+
+        editContext.OnValidationRequested += HandleValidationRequested;
+
+        editContext.OnFieldChanged += HandleFieldChanged;
+    }
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    {
+        ValidatePracticeStartDateField();
+    }
+
+    private void HandleFieldChanged(object? sender, FieldChangedEventArgs args)
+    {
+        if (args.FieldIdentifier.FieldName == nameof(doctor.PracticeStartDate))
+        {
+            ValidatePracticeStartDateField();
+        }
+    }
+
+    private void ValidatePracticeStartDateField()
+    {
+        if (editContext is null || validationMessageStore is null)
+        {
+            return;
+        }
+
+        var fieldIdentifier = FieldIdentifier.Create(() => doctor.PracticeStartDate);
+
+        validationMessageStore.Clear(fieldIdentifier);
+
+        if (doctor.PracticeStartDate.Date > DateTime.Today)
+        {
+            validationMessageStore.Add(
+                fieldIdentifier,
+                "Practice start date cannot be in the future.");
+        }
+
+        editContext.NotifyValidationStateChanged();
+    }
+
+    private async Task SaveDoctor()
+    {
+        if (isSaving)
+        {
+            return;
+        }
+
+        try
+        {
+            isSaving = true;
+
+            errorMessage = null;
+
+            ValidatePracticeStartDateField();
+
+            if (editContext is not null && editContext.GetValidationMessages().Any())
+            {
+                return;
+            }
+
+            createdDoctor = await DoctorService.CreateDoctorAsync(doctor);
+
+            if (createdDoctor is not null)
+            {
+                ToastService.ShowSuccess(
+                    "Doctor Created",
+                    $"{createdDoctor.DoctorName} was registered successfully.");
+            }
+            else
+            {
+                errorMessage = "Doctor creation completed, but no response details were returned.";
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = GetFriendlyCreateDoctorErrorMessage(ex.Message);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Unable to add doctor. {ex.Message}";
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task CopyTemporaryPassword()
+    {
+        if (createdDoctor is null ||
+            string.IsNullOrWhiteSpace(createdDoctor.TemporaryPassword))
+        {
+            ToastService.ShowWarning(
+                "Nothing to Copy",
+                "Temporary password is not available.");
+
+            return;
+        }
+
+        try
+        {
+            await JSRuntime.InvokeVoidAsync(
+                "navigator.clipboard.writeText",
+                createdDoctor.TemporaryPassword);
+
+            ToastService.ShowSuccess(
+                "Copied",
+                "Temporary password copied to clipboard.");
+        }
+        catch
+        {
+            ToastService.ShowError(
+                "Copy Failed",
+                "Unable to copy temporary password. Please copy it manually.");
+        }
+    }
+
+    private static string GetFriendlyCreateDoctorErrorMessage(string exceptionMessage)
+    {
+        if (exceptionMessage.Contains("409", StringComparison.OrdinalIgnoreCase) ||
+            exceptionMessage.Contains("Conflict", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Unable to add doctor. A doctor or login account with this email already exists.";
+        }
+
+        if (exceptionMessage.Contains("400", StringComparison.OrdinalIgnoreCase) ||
+            exceptionMessage.Contains("BadRequest", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Unable to add doctor. Please check the entered doctor details.";
+        }
+
+        if (exceptionMessage.Contains("401", StringComparison.OrdinalIgnoreCase) ||
+            exceptionMessage.Contains("403", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Unable to add doctor. Your admin session is not authorized.";
+        }
+
+        return "Unable to add doctor. Please try again.";
+    }
+
+    private void CreateAnotherDoctor()
+    {
+        doctor = new CreateDoctorDto
+        {
+            Specialisation = SpecialisationType.GeneralPractitioner,
+
+            PracticeStartDate = DateTime.Today.AddYears(-1)
+        };
+
+        createdDoctor = null;
+
+        errorMessage = null;
+
+        InitializeEditContext();
+
+        ToastService.ShowInfo(
+            "Ready",
+            "You can register another doctor now.");
+    }
+
+    private void BackToDoctors()
+    {
+        Navigation.NavigateTo("/admin/doctors");
+    }
+
+    public void Dispose()
+    {
+        if (editContext is not null)
+        {
+            editContext.OnValidationRequested -= HandleValidationRequested;
+
+            editContext.OnFieldChanged -= HandleFieldChanged;
+        }
+    }
+}

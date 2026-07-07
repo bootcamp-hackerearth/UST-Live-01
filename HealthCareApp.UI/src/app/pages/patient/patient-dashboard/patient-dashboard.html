@@ -1,0 +1,438 @@
+<div class="pd-page" [class.pd-sidebar-open]="isSidebarOpen">
+
+  @if (isSidebarOpen) {
+    <button
+      type="button"
+      class="pd-sidebar-overlay"
+      aria-label="Close sidebar"
+      (click)="closeSidebar()">
+    </button>
+  }
+
+  <aside class="pd-sidebar" [class.open]="isSidebarOpen">
+    <div class="pd-brand">
+      <div class="pd-brand-logo">HA</div>
+
+      <div class="pd-brand-copy">
+        <h2>HealthAxis</h2>
+        <span>Patient Portal</span>
+      </div>
+
+      <button
+        type="button"
+        class="pd-sidebar-toggle"
+        (click)="toggleSidebar()">
+        ☰
+      </button>
+    </div>
+
+    <nav class="pd-menu">
+      <button
+        type="button"
+        [class.active]="activeSection === 'dashboard'"
+        (click)="setActiveSection('dashboard')">
+        <span>⌂</span>
+        <strong>Dashboard</strong>
+      </button>
+
+      <button
+        type="button"
+        [class.active]="activeSection === 'book'"
+        (click)="setActiveSection('book')">
+        <span>＋</span>
+        <strong>Book Appointment</strong>
+      </button>
+
+      <button
+        type="button"
+        [class.active]="activeSection === 'appointments'"
+        (click)="setActiveSection('appointments')">
+        <span>◷</span>
+        <strong>My Appointments</strong>
+      </button>
+
+      <button
+        type="button"
+        [class.active]="activeSection === 'records'"
+        (click)="setActiveSection('records')">
+        <span>▣</span>
+        <strong>Health Records</strong>
+      </button>
+
+      <button
+        type="button"
+        [class.active]="activeSection === 'profile'"
+        (click)="setActiveSection('profile')">
+        <span>◎</span>
+        <strong>Profile</strong>
+      </button>
+
+      <button
+        type="button"
+        class="pd-logout-menu-btn"
+        (click)="logout()">
+        <span>↪</span>
+        <strong>Logout</strong>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="pd-main">
+
+    <header class="pd-topbar">
+      <div class="pd-topbar-left">
+        <div>
+          <span class="pd-kicker">Patient Workspace</span>
+
+          <h1>
+            Welcome back, {{ patientFirstName }}
+          </h1>
+
+          <p>
+            Manage appointments, care records, and your HealthAxis profile from one place.
+          </p>
+        </div>
+      </div>
+
+      <div class="pd-user-card">
+        <div class="pd-user-avatar">
+          {{ patientFirstName[0] || 'P' }}
+        </div>
+
+        <div>
+          <strong>{{ patient?.patientName || 'Patient' }}</strong>
+          <span>{{ patient?.email || 'Loading profile...' }}</span>
+        </div>
+      </div>
+    </header>
+
+    @if (isDashboardLoading && activeSection === 'dashboard') {
+      <section class="pd-empty-card">
+        Loading your HealthAxis workspace...
+      </section>
+    }
+
+    @if (!isDashboardLoading && dashboardErrorMessage && activeSection === 'dashboard') {
+      <section class="pd-empty-card">
+        <strong>Unable to load dashboard</strong>
+
+        <p>
+          {{ dashboardErrorMessage }}
+        </p>
+
+        <button type="button" (click)="retryDashboardLoad()">
+          Retry
+        </button>
+      </section>
+    }
+
+    @if (!isDashboardLoading && !dashboardErrorMessage && activeSection === 'dashboard') {
+
+      <section class="pd-premium-dashboard">
+
+        <article class="pd-hero-panel">
+          <div class="pd-hero-content">
+            <span class="pd-hero-label">Care Overview</span>
+
+            <h2>
+              Your healthcare journey, organized beautifully.
+            </h2>
+
+            <p>
+              Track upcoming appointments, pending confirmations, completed visits,
+              and health records from one smart HealthAxis workspace.
+            </p>
+
+            <div class="pd-hero-actions">
+              <button type="button" (click)="setActiveSection('book')">
+                Book Appointment
+              </button>
+
+              <button
+                type="button"
+                class="secondary"
+                (click)="setActiveSection('records')">
+                View Records
+              </button>
+            </div>
+          </div>
+
+          <div class="pd-chart-card">
+            <div class="pd-donut-wrap">
+              <div
+                class="pd-donut"
+                [style.background]="chartBackground">
+                <div class="pd-donut-center">
+                  <strong>{{ totalOverviewCount }}</strong>
+                  <span>Total Items</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pd-chart-legend">
+              <div>
+                <span class="blue-dot"></span>
+                Upcoming
+                <strong>{{ upcomingPercentage }}%</strong>
+              </div>
+
+              <div>
+                <span class="amber-dot"></span>
+                Pending
+                <strong>{{ pendingPercentage }}%</strong>
+              </div>
+
+              <div>
+                <span class="green-dot"></span>
+                Completed
+                <strong>{{ completedPercentage }}%</strong>
+              </div>
+
+              <div>
+                <span class="purple-dot"></span>
+                Records
+                <strong>{{ recordPercentage }}%</strong>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <section class="pd-summary-grid premium">
+          <article class="pd-summary-card blue">
+            <span>Upcoming</span>
+            <strong>{{ summary.upcomingCount }}</strong>
+            <p>Appointments scheduled ahead</p>
+          </article>
+
+          <article class="pd-summary-card amber">
+            <span>Pending</span>
+            <strong>{{ summary.pendingCount }}</strong>
+            <p>Waiting confirmation</p>
+          </article>
+
+          <article class="pd-summary-card green">
+            <span>Completed</span>
+            <strong>{{ summary.completedCount }}</strong>
+            <p>Completed consultations</p>
+          </article>
+
+          <article class="pd-summary-card purple">
+            <span>Health Records</span>
+            <strong>{{ summary.healthRecordCount }}</strong>
+            <p>Care records available</p>
+          </article>
+        </section>
+
+        <section class="pd-dashboard-grid premium-grid">
+
+          <article class="pd-panel pd-next-panel premium-panel">
+            <div class="pd-panel-header">
+              <div>
+                <span class="pd-panel-eyebrow">Next Visit</span>
+                <h3>Next Appointment</h3>
+                <p>Your closest scheduled visit</p>
+              </div>
+
+              <button type="button" (click)="setActiveSection('appointments')">
+                View All
+              </button>
+            </div>
+
+            @if (nextAppointment) {
+              <div class="pd-next-card premium-next">
+                <div class="pd-date-box">
+                  <strong>{{ formatDate(nextAppointment.scheduledDate).split(' ')[0] }}</strong>
+                  <span>{{ formatDate(nextAppointment.scheduledDate).split(' ')[1] }}</span>
+                </div>
+
+                <div class="pd-next-info">
+                  <h4>{{ nextAppointment.doctorName }}</h4>
+
+                  <p>{{ nextAppointment.specialisation }}</p>
+
+                  <div class="pd-next-tags">
+                    <span class="pd-time-pill">
+                      {{ nextAppointment.timeSlot }}
+                    </span>
+
+                    <span [class]="getStatusClass(nextAppointment.status)">
+                      {{ nextAppointment.status }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <div class="pd-empty-card">
+                No upcoming appointments found.
+              </div>
+            }
+          </article>
+
+          <article class="pd-panel premium-panel">
+            <div class="pd-panel-header">
+              <div>
+                <span class="pd-panel-eyebrow">Shortcuts</span>
+                <h3>Quick Actions</h3>
+                <p>Common patient tasks</p>
+              </div>
+            </div>
+
+            <div class="pd-action-grid premium-actions">
+              <button type="button" (click)="setActiveSection('book')">
+                <span>＋</span>
+                <strong>Book Appointment</strong>
+                <small>Choose doctor and slot</small>
+              </button>
+
+              <button type="button" (click)="setActiveSection('appointments')">
+                <span>◷</span>
+                <strong>View Appointments</strong>
+                <small>Track visit status</small>
+              </button>
+
+              <button type="button" (click)="setActiveSection('records')">
+                <span>▣</span>
+                <strong>Health Records</strong>
+                <small>View medical history</small>
+              </button>
+
+              <button type="button" (click)="setActiveSection('profile')">
+                <span>◎</span>
+                <strong>Edit Profile</strong>
+                <small>Update personal details</small>
+              </button>
+            </div>
+          </article>
+
+          <article class="pd-panel pd-wide-panel premium-panel">
+            <div class="pd-panel-header">
+              <div>
+                <span class="pd-panel-eyebrow">Latest Medical Note</span>
+                <h3>Recent Health Record</h3>
+                <p>Latest consultation summary</p>
+              </div>
+
+              <button type="button" (click)="setActiveSection('records')">
+                Open Records
+              </button>
+            </div>
+
+            @if (latestHealthRecord) {
+              <div class="pd-record-preview premium-record-preview">
+                <div>
+                  <span>Visit Date</span>
+                  <strong>{{ formatDate(latestHealthRecord.visitDate) }}</strong>
+                </div>
+
+                <div>
+                  <span>Doctor</span>
+                  <strong>{{ latestHealthRecord.doctorName }}</strong>
+                </div>
+
+                <div>
+                  <span>Diagnosis</span>
+                  <strong>{{ latestHealthRecord.diagnosis }}</strong>
+                </div>
+
+                <p>
+                  {{ latestHealthRecord.notes || latestHealthRecord.prescription }}
+                </p>
+              </div>
+            } @else {
+              <div class="pd-empty-card">
+                No health records available.
+              </div>
+            }
+          </article>
+
+        </section>
+
+      </section>
+    }
+
+    @if (activeSection === 'book') {
+      <app-book-appointment
+        (bookingSuccess)="handleBookingSuccess()">
+      </app-book-appointment>
+    }
+
+    @if (activeSection === 'appointments') {
+      <app-appointment-list
+        (refreshDashboard)="handleAppointmentCancel()">
+      </app-appointment-list>
+    }
+
+    @if (activeSection === 'records') {
+      <app-health-records></app-health-records>
+    }
+
+    @if (activeSection === 'profile') {
+      <app-patient-profile
+        (profileUpdated)="handleProfileUpdated()"
+        (passwordChanged)="handlePasswordChanged()">
+      </app-patient-profile>
+    }
+
+  </main>
+
+  @if (isLogoutModalOpen) {
+    <div
+      class="pd-confirm-backdrop"
+      (click)="closeLogoutModal()"
+      (keydown.escape)="closeLogoutModal()">
+
+      <dialog
+        open
+        class="pd-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeLogoutModal(); $event.stopPropagation()">
+
+        <div class="pd-confirm-icon">
+          ↪
+        </div>
+
+        <div>
+          <span class="pd-confirm-kicker">Logout Confirmation</span>
+
+          <h3>Do you want to logout?</h3>
+
+          <p>
+            You will be redirected to the HealthAxis home page.
+          </p>
+        </div>
+
+        <div class="pd-confirm-actions">
+          <button
+            type="button"
+            class="pd-confirm-cancel"
+            (click)="closeLogoutModal()">
+            Stay Logged In
+          </button>
+
+          <button
+            type="button"
+            class="pd-confirm-logout"
+            (click)="confirmLogout()">
+            Yes, Logout
+          </button>
+        </div>
+
+      </dialog>
+
+    </div>
+  }
+
+  @if (toastMessage) {
+    <div
+      class="pd-toast"
+      [class.success]="toastType === 'success'"
+      [class.warning]="toastType === 'warning'">
+      <span>{{ toastMessage }}</span>
+
+      <button type="button" (click)="dismissToast()">
+        ×
+      </button>
+    </div>
+  }
+
+</div>

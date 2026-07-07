@@ -1,0 +1,655 @@
+﻿@page "/admin/patients"
+@layout AdminLayout
+
+@using HealthCareApp.Shared.Dtos.Pagination
+@using HealthCareApp.Shared.Dtos.Patients
+@using HealthCareApp.Shared.Enums
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@using System.Globalization
+
+@inject IAuthService AuthService
+@inject IPatientAdminService PatientService
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+
+<PageTitle>Patients | HealthAxis Admin</PageTitle>
+
+@if (isLoading)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+
+            <p>Loading patient profiles from database...</p>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="hc-alert-error">
+        @errorMessage
+    </div>
+}
+else
+{
+    <div class="hc-page-heading">
+        <div>
+            <h1>Patients</h1>
+
+            <p>View HealthAxis patient profile information.</p>
+        </div>
+    </div>
+
+    <div class="hc-doctor-stat-grid ha-management-stat-grid">
+        <div class="hc-doctor-stat-card blue ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Total Matching Patients</span>
+
+                <strong>@totalRecords</strong>
+
+                <small>Patient profiles matching current filters</small>
+            </div>
+
+            <div class="ha-stat-card-icon">◉</div>
+        </div>
+
+        <div class="hc-doctor-stat-card green ha-management-stat-card ha-compact-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Gender On Page</span>
+
+                <div class="ha-compact-stat-row">
+                    <div class="ha-compact-stat-pill">
+                        <small>Male</small>
+                        <strong>@MalePatientsOnPage</strong>
+                    </div>
+
+                    <div class="ha-compact-stat-pill">
+                        <small>Female</small>
+                        <strong>@FemalePatientsOnPage</strong>
+                    </div>
+
+                    <div class="ha-compact-stat-pill">
+                        <small>Others</small>
+                        <strong>@OtherPatientsOnPage</strong>
+                    </div>
+                </div>
+
+                <small>Patient gender split on this page</small>
+            </div>
+
+            <div class="ha-stat-card-icon">♙</div>
+        </div>
+
+        <div class="hc-doctor-stat-card red ha-management-stat-card ha-compact-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Insurance On Page</span>
+
+                <div class="ha-compact-stat-row two">
+                    <div class="ha-compact-stat-pill">
+                        <small>With</small>
+                        <strong>@WithInsuranceOnPage</strong>
+                    </div>
+
+                    <div class="ha-compact-stat-pill">
+                        <small>Without</small>
+                        <strong>@WithoutInsuranceOnPage</strong>
+                    </div>
+                </div>
+
+                <small>Insurance availability on this page</small>
+            </div>
+
+            <div class="ha-stat-card-icon">!</div>
+        </div>
+
+        <div class="hc-doctor-stat-card purple ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Page</span>
+
+                <strong>@currentPage / @totalPages</strong>
+
+                <small>Backend paginated result</small>
+            </div>
+
+            <div class="ha-stat-card-icon">▣</div>
+        </div>
+    </div>
+
+    <section class="hc-list-panel ha-management-panel">
+        <div class="ha-list-panel-header">
+            <div>
+                <h3>Patient Directory</h3>
+
+                <p>Search and filter patient records directly from backend data.</p>
+            </div>
+
+            <span class="ha-result-count">
+                Showing @StartRecord to @EndRecord of @totalRecords
+            </span>
+        </div>
+
+        <div class="hc-list-toolbar ha-list-toolbar">
+            <div class="hc-search-box">
+                <span>⌕</span>
+
+                <input placeholder="Search patient by name, email, phone, or insurance ID..."
+                       value="@searchTerm"
+                       @oninput="OnSearchChanged" />
+            </div>
+
+            <select class="hc-filter-select"
+                    value="@selectedGender"
+                    @onchange="OnGenderChanged">
+                <option value="">All Gender</option>
+
+                @foreach (var gender in Enum.GetValues<GenderType>())
+                {
+                    <option value="@gender">@gender</option>
+                }
+            </select>
+
+            <select class="hc-filter-select"
+                    value="@selectedInsuranceStatus"
+                    @onchange="OnInsuranceStatusChanged">
+                <option value="">All Insurance</option>
+
+                <option value="insured">With Insurance</option>
+
+                <option value="not-insured">Without Insurance</option>
+            </select>
+        </div>
+
+        <div class="hc-form-actions" style="margin-top: 0; margin-bottom: 20px;">
+            <select class="hc-filter-select"
+                    value="@pageSize"
+                    @onchange="OnPageSizeChanged">
+                <option value="5">5 per page</option>
+
+                <option value="10">10 per page</option>
+
+                <option value="20">20 per page</option>
+
+                <option value="50">50 per page</option>
+            </select>
+
+            <button type="button"
+                    class="hc-secondary-btn"
+                    @onclick="ClearFilters">
+                Clear Filters
+            </button>
+        </div>
+
+        @if (!patients.Any())
+        {
+            <div class="hc-empty-state ha-empty-state">
+                <div class="hc-empty-icon">◉</div>
+
+                <h3>No patient profiles found</h3>
+
+                <p>Try adjusting search text, gender, or insurance filters.</p>
+            </div>
+        }
+        else
+        {
+            <div class="hc-table-wrapper">
+                <table class="hc-admin-table ha-management-table">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+
+                            <th>Gender</th>
+
+                            <th>Date Of Birth</th>
+
+                            <th>Phone</th>
+
+                            <th>Insurance</th>
+
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var patient in patients)
+                        {
+                            var dateOfBirth = ParseDate(patient.DateOfBirth);
+
+                            <tr>
+                                <td>
+                                    <div class="hc-doctor-cell">
+                                        <div class="hc-patient-avatar ha-patient-avatar">
+                                            @GetInitials(patient.FullName)
+                                        </div>
+
+                                        <div>
+                                            <strong>@patient.FullName</strong>
+
+                                            <span>@patient.Email</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="hc-specialisation-pill ha-gender-pill">
+                                        @patient.Gender
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="ha-table-strong-text">
+                                        @FormatDate(dateOfBirth)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="ha-phone-pill">
+                                        @patient.PhoneNumber
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(patient.InsuranceId))
+                                    {
+                                        <span class="hc-status-badge active ha-insurance-pill">
+                                            @patient.InsuranceId
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="hc-status-badge inactive ha-insurance-pill">
+                                            Not Available
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="hc-table-actions">
+                                        <button class="hc-action-btn view"
+                                                @onclick="() => GoToPatientDetails(patient.PatientId)">
+                                            View
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="hc-form-actions" style="justify-content: space-between; margin-top: 22px;">
+                <button type="button"
+                        class="hc-secondary-btn"
+                        disabled="@(currentPage <= 1)"
+                        @onclick="PreviousPage">
+                    Previous
+                </button>
+
+                <div style="font-weight: 900; color: #334155;">
+                    Page @currentPage of @totalPages
+                </div>
+
+                <button type="button"
+                        class="hc-secondary-btn"
+                        disabled="@(currentPage >= totalPages)"
+                        @onclick="NextPage">
+                    Next
+                </button>
+            </div>
+        }
+    </section>
+}
+
+@code {
+    private CancellationTokenSource? searchCancellationTokenSource;
+
+    private List<PatientDto> patients = new();
+
+    private string searchTerm = string.Empty;
+
+    private string selectedGender = string.Empty;
+
+    private string selectedInsuranceStatus = string.Empty;
+
+    private int currentPage = 1;
+
+    private int pageSize = 10;
+
+    private int totalRecords;
+
+    private int totalPages = 1;
+
+    private bool isLoading = true;
+
+    private string? errorMessage;
+
+    private int StartRecord
+    {
+        get
+        {
+            if (totalRecords == 0)
+            {
+                return 0;
+            }
+
+            return ((currentPage - 1) * pageSize) + 1;
+        }
+    }
+
+    private int EndRecord
+    {
+        get
+        {
+            int calculatedEnd = currentPage * pageSize;
+
+            if (calculatedEnd > totalRecords)
+            {
+                return totalRecords;
+            }
+
+            return calculatedEnd;
+        }
+    }
+
+    private int MalePatientsOnPage
+    {
+        get
+        {
+            return patients.Count(patient => IsGender(patient, "Male"));
+        }
+    }
+
+    private int FemalePatientsOnPage
+    {
+        get
+        {
+            return patients.Count(patient => IsGender(patient, "Female"));
+        }
+    }
+
+    private int OtherPatientsOnPage
+    {
+        get
+        {
+            return patients.Count(patient =>
+                !IsGender(patient, "Male") &&
+                !IsGender(patient, "Female"));
+        }
+    }
+
+    private int WithInsuranceOnPage
+    {
+        get
+        {
+            return patients.Count(patient =>
+                !string.IsNullOrWhiteSpace(patient.InsuranceId));
+        }
+    }
+
+    private int WithoutInsuranceOnPage
+    {
+        get
+        {
+            return patients.Count(patient =>
+                string.IsNullOrWhiteSpace(patient.InsuranceId));
+        }
+    }
+
+    private static bool IsGender(PatientDto patient, string gender)
+    {
+        return string.Equals(
+            Convert.ToString(patient.Gender, CultureInfo.InvariantCulture),
+            gender,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+
+            return;
+        }
+
+        await LoadPatientsAsync();
+    }
+
+    private async Task LoadPatientsAsync(bool showFullPageLoader = true)
+    {
+        try
+        {
+            if (showFullPageLoader)
+            {
+                isLoading = true;
+            }
+
+            errorMessage = null;
+
+            var query = BuildPatientQuery();
+
+            var response = await PatientService.GetPatientsPagedAsync(query);
+
+            patients = response.Items ?? new List<PatientDto>();
+
+            currentPage = response.PageNumber;
+
+            pageSize = response.PageSize;
+
+            totalRecords = response.TotalRecords;
+
+            totalPages = response.TotalPages <= 0 ? 1 : response.TotalPages;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (System.Net.Http.HttpRequestException)
+        {
+            errorMessage = "Unable to load patients. Please check whether the API is running.";
+        }
+        finally
+        {
+            if (showFullPageLoader)
+            {
+                isLoading = false;
+            }
+        }
+    }
+
+    private PatientPaginationQueryDto BuildPatientQuery()
+    {
+        var query = new PatientPaginationQueryDto
+        {
+            PageNumber = currentPage,
+
+            PageSize = pageSize,
+
+            SearchTerm = string.IsNullOrWhiteSpace(searchTerm)
+                ? null
+                : searchTerm.Trim()
+        };
+
+        if (Enum.TryParse<GenderType>(selectedGender, out var gender))
+        {
+            query.Gender = gender;
+        }
+
+        if (selectedInsuranceStatus == "insured")
+        {
+            query.HasInsurance = true;
+        }
+        else if (selectedInsuranceStatus == "not-insured")
+        {
+            query.HasInsurance = false;
+        }
+
+        return query;
+    }
+
+    private async Task OnSearchChanged(ChangeEventArgs args)
+    {
+        searchTerm = args.Value?.ToString() ?? string.Empty;
+
+        currentPage = 1;
+
+        var currentSearchToken = await ResetSearchCancellationTokenSourceAsync();
+
+        try
+        {
+            await Task.Delay(400, currentSearchToken);
+
+            await LoadPatientsAsync(showFullPageLoader: false);
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore cancelled search request.
+        }
+    }
+
+    private async Task<CancellationToken> ResetSearchCancellationTokenSourceAsync()
+    {
+        var previousCancellationTokenSource = searchCancellationTokenSource;
+
+        searchCancellationTokenSource = new CancellationTokenSource();
+
+        if (previousCancellationTokenSource is not null)
+        {
+            await previousCancellationTokenSource.CancelAsync();
+
+            previousCancellationTokenSource.Dispose();
+        }
+
+        return searchCancellationTokenSource.Token;
+    }
+
+    private async Task OnGenderChanged(ChangeEventArgs args)
+    {
+        selectedGender = args.Value?.ToString() ?? string.Empty;
+
+        currentPage = 1;
+
+        await LoadPatientsAsync(showFullPageLoader: false);
+    }
+
+    private async Task OnInsuranceStatusChanged(ChangeEventArgs args)
+    {
+        selectedInsuranceStatus = args.Value?.ToString() ?? string.Empty;
+
+        currentPage = 1;
+
+        await LoadPatientsAsync(showFullPageLoader: false);
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs args)
+    {
+        if (int.TryParse(
+                args.Value?.ToString(),
+                NumberStyles.Integer,
+                CultureInfo.InvariantCulture,
+                out var selectedPageSize))
+        {
+            pageSize = selectedPageSize;
+
+            currentPage = 1;
+
+            await LoadPatientsAsync(showFullPageLoader: false);
+        }
+    }
+
+    private async Task ClearFilters()
+    {
+        searchTerm = string.Empty;
+
+        selectedGender = string.Empty;
+
+        selectedInsuranceStatus = string.Empty;
+
+        currentPage = 1;
+
+        await LoadPatientsAsync(showFullPageLoader: false);
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage <= 1)
+        {
+            return;
+        }
+
+        currentPage--;
+
+        await LoadPatientsAsync(showFullPageLoader: false);
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage >= totalPages)
+        {
+            return;
+        }
+
+        currentPage++;
+
+        await LoadPatientsAsync(showFullPageLoader: false);
+    }
+
+    private void GoToPatientDetails(int patientId)
+    {
+        Navigation.NavigateTo($"/admin/patients/details/{patientId}");
+    }
+
+    private static DateTime ParseDate(string date)
+    {
+        return DateTime.TryParse(
+            date,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out var parsedDate)
+                ? parsedDate
+                : DateTime.MinValue;
+    }
+
+    private static string FormatDate(DateTime date)
+    {
+        if (date == DateTime.MinValue)
+        {
+            return "Not Available";
+        }
+
+        return date.ToString("dd MMM yyyy", CultureInfo.InvariantCulture);
+    }
+
+    private static string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return "PT";
+        }
+
+        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length == 1)
+        {
+            if (parts[0].Length >= 2)
+            {
+                return parts[0][..2].ToUpper(CultureInfo.InvariantCulture);
+            }
+
+            return parts[0].ToUpper(CultureInfo.InvariantCulture);
+        }
+
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper(CultureInfo.InvariantCulture);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (searchCancellationTokenSource is not null)
+        {
+            await searchCancellationTokenSource.CancelAsync();
+
+            searchCancellationTokenSource.Dispose();
+        }
+    }
+}

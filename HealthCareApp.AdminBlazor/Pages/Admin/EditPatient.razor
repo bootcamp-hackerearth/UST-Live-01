@@ -1,0 +1,229 @@
+﻿@page "/admin/patients/edit/{patientId:int}"
+@layout AdminLayout
+
+@using HealthCareApp.Shared.Dtos.Patients
+@using HealthCareApp.Shared.Enums
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@using System.Globalization
+
+@inject IAuthService AuthService
+@inject IPatientAdminService PatientService
+@inject NavigationManager Navigation
+
+<PageTitle>Edit Patient | HealthCareApp Admin</PageTitle>
+
+<div class="hc-page-heading">
+    <div>
+        <h1>Edit Patient</h1>
+        <p>Update patient profile, contact details, and insurance information.</p>
+    </div>
+
+    <button class="hc-secondary-btn" @onclick="BackToPatients">
+        Back to Patients
+    </button>
+</div>
+
+@if (isLoading)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+            <p>Loading patient details...</p>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="hc-alert-error">
+        @errorMessage
+    </div>
+
+    <button class="hc-secondary-btn mt-3" @onclick="BackToPatients">
+        Back to Patients
+    </button>
+}
+else
+{
+    <section class="hc-form-shell">
+        <div class="hc-form-card">
+            <div class="hc-form-card-header">
+                <div class="hc-form-icon">✎</div>
+                <div>
+                    <h3>Update Patient Profile</h3>
+                    <p>Changes made here will update the selected patient profile in the admin workspace.</p>
+                </div>
+            </div>
+
+            <EditForm Model="patient" OnValidSubmit="UpdatePatient">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="hc-form-grid">
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Full Name</label>
+                        <InputText class="hc-form-control"
+                                   placeholder="Enter patient full name"
+                                   @bind-Value="patient.FullName" />
+                        <ValidationMessage For="@(() => patient.FullName)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Date Of Birth</label>
+                        <InputDate class="hc-form-control"
+                                   @bind-Value="patient.DateOfBirth" />
+                        <ValidationMessage For="@(() => patient.DateOfBirth)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Gender</label>
+                        <InputSelect class="hc-form-control"
+                                     @bind-Value="patient.Gender">
+                            @foreach (var gender in Enum.GetValues<GenderType>())
+                            {
+                                <option value="@gender">@gender</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => patient.Gender)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Email Address</label>
+                        <InputText class="hc-form-control"
+                                   placeholder="patient@example.com"
+                                   @bind-Value="patient.Email" />
+                        <ValidationMessage For="@(() => patient.Email)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Phone Number</label>
+                        <InputText class="hc-form-control"
+                                   placeholder="9876543210"
+                                   @bind-Value="patient.PhoneNumber" />
+                        <ValidationMessage For="@(() => patient.PhoneNumber)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Insurance ID</label>
+                        <InputText class="hc-form-control"
+                                   placeholder="Enter insurance reference"
+                                   @bind-Value="patient.InsuranceId" />
+                        <ValidationMessage For="@(() => patient.InsuranceId)" />
+                    </div>
+                </div>
+
+                <div class="hc-form-actions">
+                    <button type="submit" class="hc-page-primary-btn">
+                        Update Patient
+                    </button>
+
+                    <button type="button" class="hc-secondary-btn" @onclick="BackToPatients">
+                        Cancel
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </section>
+}
+
+@code {
+    [Parameter]
+    public int patientId { get; set; }
+
+    private UpdatePatientDto patient = new UpdatePatientDto
+    {
+        DateOfBirth = DateTime.Today.AddYears(-18),
+        Gender = GenderType.Male
+    };
+
+    private bool isLoading = true;
+
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadPatient();
+    }
+
+    private async Task LoadPatient()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        var existingPatient = await PatientService.GetPatientByIdAsync(patientId);
+
+        if (existingPatient is null)
+        {
+            errorMessage = "Patient profile was not found.";
+            isLoading = false;
+            return;
+        }
+
+        if (!DateTime.TryParse(
+                existingPatient.DateOfBirth,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var dateOfBirth))
+        {
+            dateOfBirth = DateTime.Today.AddYears(-18);
+        }
+
+        patient = new UpdatePatientDto
+        {
+            FullName = existingPatient.FullName,
+            DateOfBirth = dateOfBirth,
+            Gender = existingPatient.Gender,
+            Email = existingPatient.Email,
+            PhoneNumber = existingPatient.PhoneNumber,
+            InsuranceId = existingPatient.InsuranceId
+        };
+
+        isLoading = false;
+    }
+    private async Task UpdatePatient()
+    {
+        errorMessage = null;
+
+        if (patient.DateOfBirth.Date > DateTime.Today)
+        {
+            errorMessage = "Date of birth cannot be a future date.";
+            return;
+        }
+
+        var minimumDateOfBirth = new DateTime(
+            1900,
+            1,
+            1,
+            0,
+            0,
+            0,
+            DateTimeKind.Unspecified);
+
+        if (patient.DateOfBirth.Date < minimumDateOfBirth.Date)
+        {
+            errorMessage = "Date of birth cannot be before 01 Jan 1900.";
+            return;
+        }
+
+        var updatedPatient = await PatientService.UpdatePatientAsync(patientId, patient);
+
+        if (updatedPatient is null)
+        {
+            errorMessage = "Unable to update patient. Patient profile was not found.";
+            return;
+        }
+
+        Navigation.NavigateTo("/admin/patients");
+    }
+    private void BackToPatients()
+    {
+        Navigation.NavigateTo("/admin/patients");
+    }
+}

@@ -1,0 +1,29 @@
+﻿@page "/"
+@page "/login"
+
+@inject NavigationManager Navigation
+@inject IConfiguration Configuration
+
+<PageTitle>Redirecting | HealthAxis</PageTitle>
+
+<div style="min-height:100vh; display:grid; place-items:center; font-family:Arial;">
+    <div style="text-align:center;">
+        <h3>Redirecting to HealthAxis Login...</h3>
+        <p>Please continue from the Angular HealthAxis login page.</p>
+    </div>
+</div>
+
+@code {
+    private string AngularHomeUrl =>
+        Configuration["AppUrls:AngularHomeUrl"] ?? "/";
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        Navigation.NavigateTo(AngularHomeUrl, forceLoad: true);
+    }
+}

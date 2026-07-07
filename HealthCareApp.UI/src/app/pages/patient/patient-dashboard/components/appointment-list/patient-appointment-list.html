@@ -1,0 +1,343 @@
+<section class="al-appointments-shell">
+
+  <div class="al-hero-card">
+    <div>
+      <span class="al-kicker">Appointment Timeline</span>
+
+      <h2>My Appointments</h2>
+
+      <p>
+        Review your scheduled, pending, completed, and cancelled appointments in one clean timeline.
+      </p>
+    </div>
+
+    <div class="al-hero-badge">
+      <strong>{{ totalRecords }}</strong>
+      <span>Total Visits</span>
+    </div>
+  </div>
+
+  <section class="al-filter-card">
+
+    <div class="al-search-field">
+      <label>
+        Search Appointments
+
+        <input
+          type="text"
+          name="appointmentSearch"
+          placeholder="Search by doctor name, time slot, reason, or appointment ID"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilters()">
+      </label>
+    </div>
+
+    <div class="al-filter-grid">
+
+      <label>
+        Status
+
+        <select
+          name="statusFilter"
+          [(ngModel)]="selectedStatus"
+          (ngModelChange)="applyFilters()">
+
+          <option value="">All Status</option>
+
+          @for (status of statusOptions; track status) {
+            <option [value]="status">
+              {{ status }}
+            </option>
+          }
+
+        </select>
+      </label>
+
+      <label>
+        Scheduled Date
+
+        <input
+          type="date"
+          name="dateFilter"
+          [(ngModel)]="selectedDate"
+          (ngModelChange)="applyFilters()">
+      </label>
+
+      <label>
+        Page Size
+
+        <select
+          name="pageSize"
+          [(ngModel)]="pageSize"
+          (ngModelChange)="changePageSize()">
+
+          @for (size of pageSizeOptions; track size) {
+            <option [value]="size">
+              {{ size }}
+            </option>
+          }
+
+        </select>
+      </label>
+
+    </div>
+
+    @if (hasActiveFilters) {
+      <div class="al-filter-actions">
+        <button
+          type="button"
+          class="al-clear-filters-btn"
+          (click)="clearFilters()">
+          Clear Filters
+        </button>
+      </div>
+    }
+
+  </section>
+
+  @if (isLoading) {
+    <div class="al-empty-card">
+      <div class="al-empty-icon">↻</div>
+
+      <h3>Loading appointments...</h3>
+
+      <p>
+        Please wait while HealthAxis loads your latest appointment timeline.
+      </p>
+    </div>
+  }
+
+  @if (!isLoading && errorMessage) {
+    <div class="al-empty-card">
+      <div class="al-empty-icon">!</div>
+
+      <h3>Unable to load appointments</h3>
+
+      <p>
+        {{ errorMessage }}
+      </p>
+
+      <button
+        type="button"
+        class="al-clear-filters-btn"
+        (click)="loadAppointments()">
+        Retry
+      </button>
+    </div>
+  }
+
+  @if (!isLoading && !errorMessage && appointments.length === 0) {
+    <div class="al-empty-card">
+      <div class="al-empty-icon">◷</div>
+
+      <h3>No appointments found</h3>
+
+      <p>
+        Your booked appointments will appear here.
+      </p>
+    </div>
+  }
+
+  @if (!isLoading && !errorMessage && appointments.length > 0) {
+    <div class="al-timeline">
+
+      @for (appt of appointments; track appt.appointmentId) {
+
+        <article
+          class="al-appt-card"
+          [class.pending]="appt.status === 'Pending'"
+          [class.confirmed]="appt.status === 'Confirmed'"
+          [class.completed]="appt.status === 'Completed'"
+          [class.cancelled]="appt.status === 'Cancelled'">
+
+          <div class="al-status-rail"></div>
+
+          <div class="al-appt-main">
+
+            <div class="al-appt-header">
+              <div>
+                <span class="al-appt-label">Doctor Consultation</span>
+
+                <h3>{{ appt.doctorName }}</h3>
+
+                <p>{{ appt.specialisation }}</p>
+              </div>
+
+              <span [class]="getStatusClass(appt.status)">
+                {{ appt.status }}
+              </span>
+            </div>
+
+            <div class="al-appt-info-grid">
+
+              <div class="al-info-tile">
+                <span>Date</span>
+                <strong>📅 {{ formatDate(appt.scheduledDate) }}</strong>
+              </div>
+
+              <div class="al-info-tile">
+                <span>Time Slot</span>
+                <strong>🕒 {{ appt.timeSlot }}</strong>
+              </div>
+
+              <div class="al-info-tile">
+                <span>Appointment ID</span>
+                <strong>#{{ appt.appointmentId }}</strong>
+              </div>
+
+            </div>
+
+            @if (appt.cancellationReason) {
+              <div class="al-cancel-reason">
+                <strong>Cancellation Reason:</strong>
+                {{ appt.cancellationReason }}
+              </div>
+            }
+
+            <div class="al-appt-footer">
+              <p>
+                @if (appt.status === 'Pending') {
+                  This appointment is waiting for confirmation.
+                }
+
+                @if (appt.status === 'Confirmed') {
+                  This appointment has been confirmed by the clinic.
+                }
+
+                @if (appt.status === 'Completed') {
+                  This consultation has been completed.
+                }
+
+                @if (appt.status === 'Cancelled') {
+                  This appointment has been cancelled.
+                }
+              </p>
+
+              @if (appt.status === 'Pending') {
+                <button
+                  type="button"
+                  class="al-cancel-btn"
+                  (click)="openCancelModal(appt)">
+                  Cancel Appointment
+                </button>
+              }
+            </div>
+
+          </div>
+
+        </article>
+
+      }
+
+    </div>
+
+    <section class="al-pagination-card">
+
+      <div>
+        <strong>Page {{ pageNumber }} of {{ totalPages || 1 }}</strong>
+        <span>Total Records: {{ totalRecords }}</span>
+      </div>
+
+      <div class="al-pagination-actions">
+        <button
+          type="button"
+          class="al-page-btn"
+          [disabled]="!canGoPrevious"
+          (click)="goToPreviousPage()">
+          Previous
+        </button>
+
+        <button
+          type="button"
+          class="al-page-btn"
+          [disabled]="!canGoNext"
+          (click)="goToNextPage()">
+          Next
+        </button>
+      </div>
+
+    </section>
+  }
+
+  @if (isCancelModalOpen && selectedAppointment) {
+    <div
+      class="al-modal-backdrop"
+      (click)="closeCancelModal()"
+      (keydown.escape)="closeCancelModal()">
+
+      <dialog
+        open
+        class="al-cancel-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeCancelModal(); $event.stopPropagation()">
+
+        <div class="al-modal-accent"></div>
+
+        <div class="al-modal-header">
+          <div>
+            <span>Cancel Appointment</span>
+
+            <h3>{{ selectedAppointment.doctorName }}</h3>
+
+            <p>
+              {{ formatDate(selectedAppointment.scheduledDate) }}
+              •
+              {{ selectedAppointment.timeSlot }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="al-modal-close"
+            (click)="closeCancelModal()">
+            ×
+          </button>
+        </div>
+
+        <div class="al-warning-box">
+          <strong>Are you sure you want to cancel this appointment?</strong>
+          <p>
+            Please provide a short reason so the clinic can understand why this visit is being cancelled.
+          </p>
+        </div>
+
+        <label class="al-reason-field">
+          Cancellation Reason
+
+          <textarea
+            name="cancellationReason"
+            rows="4"
+            maxlength="250"
+            placeholder="Example: I am unavailable at this time."
+            [(ngModel)]="cancellationReason">
+          </textarea>
+        </label>
+
+        @if (cancellationMessage) {
+          <div class="al-modal-message">
+            {{ cancellationMessage }}
+          </div>
+        }
+
+        <div class="al-modal-actions">
+          <button
+            type="button"
+            class="al-keep-btn"
+            (click)="closeCancelModal()">
+            Keep Appointment
+          </button>
+
+          <button
+            type="button"
+            class="al-confirm-cancel-btn"
+            (click)="confirmCancellation()">
+            Confirm Cancellation
+          </button>
+        </div>
+
+      </dialog>
+
+    </div>
+  }
+
+</section>

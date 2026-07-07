@@ -1,0 +1,565 @@
+<section class="pp-profile-shell">
+
+  <div class="pp-hero-card">
+    <div>
+      <span class="pp-kicker">Patient Account Center</span>
+
+      <h2>My Profile</h2>
+
+      <p>
+        View and manage your personal HealthAxis profile, contact information,
+        insurance details, and account security.
+      </p>
+    </div>
+
+    @if (!isEditMode && !isPasswordMode && !isLoading) {
+      <div class="pp-hero-actions">
+        <button
+          type="button"
+          class="pp-primary-action"
+          (click)="enableEdit()">
+          Edit Profile
+        </button>
+
+        <button
+          type="button"
+          class="pp-secondary-action"
+          (click)="enablePasswordChange()">
+          Change Password
+        </button>
+      </div>
+    }
+  </div>
+
+  @if (isLoading) {
+    <div class="pp-form-message">
+      Loading patient profile...
+    </div>
+  }
+
+  @if (!isLoading && message && !isEditMode) {
+    <div class="pp-form-message">
+      {{ message }}
+    </div>
+  }
+
+  @if (!isLoading && patient) {
+
+    @if (!isEditMode && !isPasswordMode) {
+
+      <div class="pp-profile-overview">
+
+        <article class="pp-identity-card">
+          <div class="pp-avatar">
+            {{ patient.patientName[0] }}
+          </div>
+
+          <div>
+            <span>Patient Identity</span>
+
+            <h3>{{ patient.patientName }}</h3>
+
+            <p>{{ patient.email }}</p>
+          </div>
+        </article>
+
+        <section class="pp-info-grid">
+
+          <article class="pp-info-tile">
+            <span>Full Name</span>
+            <strong>{{ patient.patientName }}</strong>
+          </article>
+
+          <article class="pp-info-tile">
+            <span>Date of Birth</span>
+            <strong>{{ patient.dateOfBirth }}</strong>
+          </article>
+
+          <article class="pp-info-tile">
+            <span>Gender</span>
+            <strong>{{ patient.gender }}</strong>
+          </article>
+
+          <article class="pp-info-tile">
+            <span>Email</span>
+            <strong>{{ patient.email }}</strong>
+          </article>
+
+          <article class="pp-info-tile">
+            <span>Phone Number</span>
+            <strong>{{ patient.phoneNumber }}</strong>
+          </article>
+
+          <article class="pp-info-tile">
+            <span>Insurance ID</span>
+            <strong>{{ patient.insuranceId || 'Not Provided' }}</strong>
+          </article>
+
+        </section>
+
+      </div>
+
+    }
+
+    @if (isEditMode) {
+
+      <form class="pp-form-card" (ngSubmit)="saveProfile()">
+
+        <div class="pp-form-heading">
+          <span>Edit Profile</span>
+
+          <h3>Update Personal Details</h3>
+
+          <p>
+            Keep your patient information accurate for appointment booking and care records.
+          </p>
+        </div>
+
+        <div class="pp-form-grid">
+
+          <div class="pp-field-card">
+            <label>
+              Full Name
+
+              <input
+                type="text"
+                name="patientName"
+                maxlength="100"
+                [(ngModel)]="form.patientName">
+            </label>
+
+            @if (hasSubmitted && isNameInvalid) {
+              <div class="pp-field-error">
+                Name must be 2-100 characters and contain only letters with single spaces.
+              </div>
+            }
+          </div>
+
+          <div class="pp-field-card">
+            <label>
+              Date of Birth
+
+              <input
+                type="date"
+                name="dateOfBirth"
+                [max]="todayDate"
+                [(ngModel)]="form.dateOfBirth">
+            </label>
+
+            @if (hasSubmitted && isDateOfBirthInvalid) {
+              <div class="pp-field-error">
+                Date of birth is required and cannot be a future date.
+              </div>
+            }
+          </div>
+
+          <div class="pp-field-card">
+            <label>
+              Gender
+
+              <select
+                name="gender"
+                [(ngModel)]="form.gender">
+
+                <option value="">Select Gender</option>
+
+                @for (gender of genderOptions; track gender) {
+                  <option [value]="gender">
+                    {{ gender }}
+                  </option>
+                }
+
+              </select>
+            </label>
+
+            @if (hasSubmitted && isGenderInvalid) {
+              <div class="pp-field-error">
+                Gender is required.
+              </div>
+            }
+          </div>
+
+          <div class="pp-field-card">
+            <label>
+              Email
+
+              <input
+                type="email"
+                name="email"
+                [(ngModel)]="form.email"
+                disabled>
+            </label>
+
+            @if (hasSubmitted && isEmailInvalid) {
+              <div class="pp-field-error">
+                Enter a valid email address.
+              </div>
+            }
+          </div>
+
+          <div class="pp-field-card">
+            <label>
+              Phone Number
+
+              <input
+                type="text"
+                name="phoneNumber"
+                placeholder="9876543210"
+                maxlength="10"
+                [(ngModel)]="form.phoneNumber">
+            </label>
+
+            @if (hasSubmitted && isPhoneInvalid) {
+              <div class="pp-field-error">
+                Phone number must contain exactly 10 digits.
+              </div>
+            }
+          </div>
+
+          <div class="pp-field-card">
+            <label>
+              Insurance ID
+
+              <input
+                type="text"
+                name="insuranceId"
+                maxlength="30"
+                [(ngModel)]="form.insuranceId">
+            </label>
+
+            @if (hasSubmitted && isInsuranceInvalid) {
+              <div class="pp-field-error">
+                Insurance ID is required and cannot exceed 30 characters.
+              </div>
+            }
+          </div>
+
+        </div>
+
+        @if (message) {
+          <div class="pp-form-message">
+            {{ message }}
+          </div>
+        }
+
+        <div class="pp-form-actions">
+          <button
+            type="button"
+            class="pp-cancel-btn"
+            (click)="cancelEdit()">
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="pp-save-btn">
+            Save Changes
+          </button>
+        </div>
+
+      </form>
+
+    }
+
+    @if (isPasswordMode) {
+
+      <form class="pp-form-card" (ngSubmit)="changePassword()">
+
+        <div class="pp-form-heading">
+          <span>Account Security</span>
+
+          <h3>Change Password</h3>
+
+          <p>
+            Use a strong password with uppercase letter, number, and special character.
+          </p>
+        </div>
+
+        <div class="pp-security-note">
+          <div class="pp-security-icon">🔒</div>
+
+          <div>
+            <strong>Password safety tip</strong>
+
+            <p>
+              Avoid reusing old passwords. Choose a unique password for your HealthAxis account.
+            </p>
+          </div>
+        </div>
+
+        <div class="pp-form-grid">
+
+          <div class="pp-field-card">
+            <label>
+              Current Password
+
+              <input
+                type="password"
+                name="currentPassword"
+                [(ngModel)]="passwordForm.currentPassword">
+            </label>
+
+            @if (hasPasswordSubmitted && isCurrentPasswordInvalid) {
+              <div class="pp-field-error">
+                Current password is required.
+              </div>
+            }
+          </div>
+
+          <div class="pp-field-card">
+            <label>
+              New Password
+
+              <input
+                type="password"
+                name="newPassword"
+                [(ngModel)]="passwordForm.newPassword">
+            </label>
+
+            @if (hasPasswordSubmitted && isNewPasswordInvalid) {
+              <div class="pp-field-error">
+                New password must be at least 8 characters and include 1 uppercase letter,
+                1 number, and 1 special character.
+              </div>
+            }
+
+            @if (hasPasswordSubmitted && isSamePasswordInvalid) {
+              <div class="pp-field-error">
+                New password must be different from current password.
+              </div>
+            }
+          </div>
+
+          <div class="pp-field-card">
+            <label>
+              Confirm Password
+
+              <input
+                type="password"
+                name="confirmPassword"
+                [(ngModel)]="passwordForm.confirmPassword">
+            </label>
+
+            @if (hasPasswordSubmitted && isConfirmPasswordInvalid) {
+              <div class="pp-field-error">
+                Confirm password is required.
+              </div>
+            }
+
+            @if (hasPasswordSubmitted && isPasswordMismatch) {
+              <div class="pp-field-error">
+                New password and confirm password do not match.
+              </div>
+            }
+          </div>
+
+        </div>
+
+        @if (passwordMessage) {
+          <div class="pp-form-message">
+            {{ passwordMessage }}
+          </div>
+        }
+
+        <div class="pp-form-actions">
+          <button
+            type="button"
+            class="pp-cancel-btn"
+            (click)="cancelPasswordChange()">
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="pp-save-btn">
+            Change Password
+          </button>
+        </div>
+
+      </form>
+
+    }
+
+  }
+
+  @if (isProfileSaveConfirmModalOpen) {
+    <div
+      class="pp-confirm-backdrop"
+      (click)="closeProfileSaveConfirmModal()"
+      (keydown.escape)="closeProfileSaveConfirmModal()">
+
+      <dialog
+        open
+        class="pp-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeProfileSaveConfirmModal(); $event.stopPropagation()">
+
+        <div class="pp-confirm-icon success">
+          ✓
+        </div>
+
+        <span class="pp-confirm-kicker">Confirm Profile Update</span>
+
+        <h3>Save profile changes?</h3>
+
+        <p>
+          Your updated profile details will be saved to your HealthAxis patient account.
+        </p>
+
+        <div class="pp-confirm-actions">
+          <button
+            type="button"
+            class="pp-confirm-cancel"
+            (click)="closeProfileSaveConfirmModal()">
+            Review Again
+          </button>
+
+          <button
+            type="button"
+            class="pp-confirm-primary"
+            (click)="confirmSaveProfile()">
+            Yes, Save Changes
+          </button>
+        </div>
+
+      </dialog>
+
+    </div>
+  }
+
+  @if (isDiscardProfileModalOpen) {
+    <div
+      class="pp-confirm-backdrop"
+      (click)="closeDiscardProfileModal()"
+      (keydown.escape)="closeDiscardProfileModal()">
+
+      <dialog
+        open
+        class="pp-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeDiscardProfileModal(); $event.stopPropagation()">
+
+        <div class="pp-confirm-icon warning">
+          !
+        </div>
+
+        <span class="pp-confirm-kicker">Unsaved Changes</span>
+
+        <h3>Discard profile changes?</h3>
+
+        <p>
+          You have unsaved profile details. If you discard, your changes will be lost.
+        </p>
+
+        <div class="pp-confirm-actions">
+          <button
+            type="button"
+            class="pp-confirm-cancel"
+            (click)="closeDiscardProfileModal()">
+            Keep Editing
+          </button>
+
+          <button
+            type="button"
+            class="pp-confirm-danger"
+            (click)="confirmDiscardProfileChanges()">
+            Discard Changes
+          </button>
+        </div>
+
+      </dialog>
+
+    </div>
+  }
+
+  @if (isDiscardPasswordModalOpen) {
+    <div
+      class="pp-confirm-backdrop"
+      (click)="closeDiscardPasswordModal()"
+      (keydown.escape)="closeDiscardPasswordModal()">
+
+      <dialog
+        open
+        class="pp-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeDiscardPasswordModal(); $event.stopPropagation()">
+
+        <div class="pp-confirm-icon warning">
+          !
+        </div>
+
+        <span class="pp-confirm-kicker">Password Form</span>
+
+        <h3>Discard password changes?</h3>
+
+        <p>
+          You have entered password details. If you discard, the password fields will be cleared.
+        </p>
+
+        <div class="pp-confirm-actions">
+          <button
+            type="button"
+            class="pp-confirm-cancel"
+            (click)="closeDiscardPasswordModal()">
+            Keep Editing
+          </button>
+
+          <button
+            type="button"
+            class="pp-confirm-danger"
+            (click)="confirmDiscardPasswordChanges()">
+            Discard Changes
+          </button>
+        </div>
+
+      </dialog>
+
+    </div>
+  }
+
+  @if (isPasswordConfirmModalOpen) {
+    <div
+      class="pp-confirm-backdrop"
+      (click)="closePasswordConfirmModal()"
+      (keydown.escape)="closePasswordConfirmModal()">
+
+      <dialog
+        open
+        class="pp-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closePasswordConfirmModal(); $event.stopPropagation()">
+
+        <div class="pp-confirm-icon success">
+          ✓
+        </div>
+
+        <span class="pp-confirm-kicker">Confirm Password Change</span>
+
+        <h3>Change your password?</h3>
+
+        <p>
+          After changing your password, use the new password for future logins.
+        </p>
+
+        <div class="pp-confirm-actions">
+          <button
+            type="button"
+            class="pp-confirm-cancel"
+            (click)="closePasswordConfirmModal()">
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="pp-confirm-primary"
+            (click)="confirmPasswordChange()">
+            Yes, Change Password
+          </button>
+        </div>
+
+      </dialog>
+
+    </div>
+  }
+
+</section>

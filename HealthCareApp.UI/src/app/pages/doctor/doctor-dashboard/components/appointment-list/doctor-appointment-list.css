@@ -1,0 +1,889 @@
+/* ==============================
+   DOCTOR APPOINTMENTS SHELL
+============================== */
+
+.da-appointments-shell {
+  display: grid;
+  gap: 22px;
+  animation: da-page-enter 0.32s ease;
+}
+
+/* ==============================
+   HERO
+============================== */
+
+.da-hero-card {
+  position: relative;
+  overflow: hidden;
+  padding: 20px 26px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(239, 246, 255, 0.92));
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 30px 80px rgba(37, 99, 235, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.da-hero-card::after {
+  content: "";
+  position: absolute;
+  right: -52px;
+  top: -52px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.da-kicker {
+  position: relative;
+  z-index: 1;
+  color: #0284c7;
+  font-size: 11px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.da-hero-card h2 {
+  position: relative;
+  z-index: 1;
+  margin: 10px 0 0;
+  color: #0f172a;
+  font-size: clamp(28px, 3vw, 38px);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  font-weight: 1000;
+}
+
+.da-hero-card p {
+  position: relative;
+  z-index: 1;
+  max-width: 650px;
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 750;
+}
+
+.da-hero-badge {
+  position: relative;
+  z-index: 1;
+  min-width: 120px;
+  padding: 14px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.08);
+  text-align: center;
+}
+
+.da-hero-badge strong {
+  display: block;
+  color: #2563eb;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 1000;
+}
+
+.da-hero-badge span {
+  display: block;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+/* ==============================
+   FILTER CARD
+============================== */
+
+.da-filter-card {
+  padding: 20px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 38%),
+    rgba(255, 255, 255, 0.94);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.07);
+  display: grid;
+  gap: 16px;
+}
+
+.da-search-field label,
+.da-filter-grid label {
+  display: block;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.da-search-field input,
+.da-filter-grid input,
+.da-filter-grid select {
+  width: 100%;
+  height: 48px;
+  margin-top: 9px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.da-search-field input:focus,
+.da-filter-grid input:focus,
+.da-filter-grid select:focus {
+  border-color: #38bdf8;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
+}
+
+.da-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.da-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.da-clear-filters-btn {
+  height: 42px;
+  padding: 0 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 15px;
+  color: #334155;
+  background: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.da-clear-filters-btn:hover {
+  transform: translateY(-2px);
+  background: #f8fafc;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+
+/* ==============================
+   EMPTY
+============================== */
+
+.da-empty-card {
+  padding: 34px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px dashed #bfdbfe;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.07);
+  text-align: center;
+}
+
+.da-empty-icon {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 16px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  color: #0284c7;
+  background: #e0f2fe;
+  font-size: 28px;
+  font-weight: 1000;
+}
+
+.da-empty-card h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 1000;
+}
+
+.da-empty-card p {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+/* ==============================
+   TIMELINE / CARD
+============================== */
+
+.da-timeline {
+  display: grid;
+  gap: 18px;
+}
+
+.da-appt-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr);
+  border-radius: 30px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(248, 251, 255, 0.94));
+  border: 1px solid #dbeafe;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.08);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.da-appt-card:hover {
+  transform: translateY(-5px);
+  border-color: #93c5fd;
+  box-shadow: 0 30px 84px rgba(37, 99, 235, 0.16);
+}
+
+.da-status-rail {
+  width: 8px;
+  background: #2563eb;
+}
+
+.da-appt-card.pending .da-status-rail {
+  background: linear-gradient(180deg, #f59e0b, #d97706);
+}
+
+.da-appt-card.confirmed .da-status-rail {
+  background: linear-gradient(180deg, #38bdf8, #0284c7);
+}
+
+.da-appt-card.completed .da-status-rail {
+  background: linear-gradient(180deg, #22c55e, #16a34a);
+}
+
+.da-appt-card.cancelled .da-status-rail {
+  background: linear-gradient(180deg, #f87171, #dc2626);
+}
+
+.da-appt-main {
+  padding: 24px;
+}
+
+.da-appt-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.da-appt-label {
+  color: #0284c7;
+  font-size: 11px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.da-appt-header h3 {
+  margin: 8px 0 0;
+  color: #0f172a;
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 1000;
+  letter-spacing: -0.04em;
+}
+
+.da-appt-header p {
+  margin: 7px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* ==============================
+   STATUS BADGES
+============================== */
+
+.da-status {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 1000;
+}
+
+.da-status.pending {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.da-status.confirmed {
+  color: #075985;
+  background: #e0f2fe;
+}
+
+.da-status.completed {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.da-status.cancelled {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+/* ==============================
+   INFO GRID
+============================== */
+
+.da-appt-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.da-info-tile {
+  padding: 15px;
+  border-radius: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.da-info-tile span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.da-info-tile strong {
+  display: block;
+  margin-top: 8px;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 1000;
+}
+
+/* ==============================
+   FOOTER / ACTIONS
+============================== */
+
+.da-appt-footer {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.da-appt-footer p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 800;
+}
+
+.da-action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.da-confirm-btn,
+.da-complete-btn {
+  height: 42px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 15px;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.da-confirm-btn {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24);
+}
+
+.da-complete-btn {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 14px 28px rgba(22, 163, 74, 0.22);
+}
+
+.da-confirm-btn:hover,
+.da-complete-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* ==============================
+   ACTION MODAL
+============================== */
+
+.da-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  padding: 24px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  animation: da-modal-fade 0.2s ease;
+}
+
+.da-action-modal {
+  width: min(560px, 100%);
+  overflow: hidden;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 38%),
+    linear-gradient(145deg, #ffffff 0%, #f8fbff 60%, #eef6ff 100%);
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 35px 90px rgba(15, 23, 42, 0.32);
+  animation: da-modal-enter 0.24s ease;
+}
+
+.da-modal-accent {
+  height: 7px;
+  background: linear-gradient(90deg, #0ea5e9, #2563eb);
+}
+
+.da-modal-accent.complete {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.da-modal-header {
+  padding: 24px 26px 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.da-modal-header span {
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.da-modal-header h3 {
+  margin: 8px 0 0;
+  color: #0f172a;
+  font-size: 26px;
+  line-height: 1.15;
+  font-weight: 1000;
+  letter-spacing: -0.045em;
+}
+
+.da-modal-header p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.da-modal-close {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  color: #0f172a;
+  background: #eff6ff;
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+.da-modal-close:hover {
+  transform: rotate(90deg);
+  background: #dbeafe;
+}
+
+.da-action-summary {
+  margin: 0 26px 18px;
+  padding: 16px;
+  border-radius: 20px;
+  color: #075985;
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
+}
+
+.da-action-summary strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 1000;
+}
+
+.da-action-summary p {
+  margin: 7px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 750;
+}
+
+.da-modal-message {
+  margin: 16px 26px 0;
+  padding: 13px 15px;
+  border-radius: 16px;
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.da-modal-actions {
+  padding: 22px 26px 26px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.da-keep-btn,
+.da-confirm-action-btn {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.da-keep-btn {
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  background: #ffffff;
+}
+
+.da-confirm-action-btn {
+  border: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.24);
+}
+
+.da-confirm-action-btn.complete {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 16px 34px rgba(22, 163, 74, 0.24);
+}
+
+.da-keep-btn:hover,
+.da-confirm-action-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* ==============================
+   ANIMATIONS / RESPONSIVE
+============================== */
+
+@keyframes da-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes da-modal-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes da-modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 980px) {
+  .da-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .da-hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .da-hero-badge {
+    width: 100%;
+  }
+
+  .da-appt-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .da-appt-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .da-action-buttons,
+  .da-confirm-btn,
+  .da-complete-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .da-hero-card,
+  .da-appt-main {
+    padding: 20px;
+  }
+
+  .da-appt-header {
+    flex-direction: column;
+  }
+
+  .da-status {
+    align-self: flex-start;
+  }
+
+  .da-modal-actions {
+    flex-direction: column;
+  }
+
+  .da-keep-btn,
+  .da-confirm-action-btn {
+    width: 100%;
+  }
+}
+
+/* ==============================
+   HEALTH RECORD MODAL EXTENSIONS
+============================== */
+
+.da-action-modal.wide {
+  width: min(720px, 100%);
+}
+
+.da-modal-accent.danger {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.da-action-summary.complete {
+  color: #166534;
+  background: #dcfce7;
+  border-color: #bbf7d0;
+}
+
+.da-action-summary.danger {
+  color: #991b1b;
+  background: #fee2e2;
+  border-color: #fecaca;
+}
+
+.da-record-form {
+  padding: 0 26px 26px;
+  display: grid;
+  gap: 14px;
+}
+
+.da-record-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.da-record-display {
+  padding: 14px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.da-record-display span {
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.da-record-display strong {
+  display: block;
+  margin-top: 7px;
+  color: #0f172a;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 1000;
+}
+
+.da-record-field {
+  display: block;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.da-record-field textarea {
+  width: 100%;
+  margin-top: 9px;
+  padding: 14px;
+  box-sizing: border-box;
+  border-radius: 18px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  resize: vertical;
+  min-height: 100px;
+  background: #ffffff;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.6;
+}
+
+.da-record-field textarea:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
+}
+
+.da-confirm-action-btn.danger {
+  border: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 16px 34px rgba(220, 38, 38, 0.24);
+}
+
+@media (max-width: 720px) {
+  .da-record-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.da-disabled-action-btn {
+  height: 42px;
+  padding: 0 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 15px;
+  color: #64748b;
+  background: #f1f5f9;
+  cursor: not-allowed;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+}
+
+/* ==============================
+   DOCTOR APPOINTMENT PAGINATION
+============================== */
+
+.da-pagination-card {
+  padding: 18px 20px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.da-pagination-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 1000;
+}
+
+.da-pagination-card span {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.da-pagination-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.da-page-btn {
+  height: 40px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 14px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+}
+
+.da-page-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+@media (max-width: 640px) {
+  .da-pagination-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .da-pagination-actions {
+    width: 100%;
+  }
+
+  .da-page-btn {
+    flex: 1;
+  }
+}

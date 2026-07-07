@@ -1,0 +1,887 @@
+/* ================================
+   HEALTH RECORDS SHELL
+================================ */
+
+.hr-records-shell {
+  display: grid;
+  gap: 22px;
+  animation: hr-page-enter 0.32s ease;
+}
+
+/* ================================
+   HERO SECTION
+================================ */
+
+.hr-hero-card {
+  position: relative;
+  overflow: hidden;
+  padding: 30px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(239, 246, 255, 0.92));
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 30px 80px rgba(37, 99, 235, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.hr-hero-card::after {
+  content: "";
+  position: absolute;
+  right: -52px;
+  top: -52px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.hr-kicker {
+  position: relative;
+  z-index: 1;
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.hr-hero-card h2 {
+  position: relative;
+  z-index: 1;
+  margin: 14px 0 0;
+  color: #0f172a;
+  font-size: clamp(32px, 4vw, 54px);
+  line-height: 1;
+  letter-spacing: -0.06em;
+  font-weight: 1000;
+}
+
+.hr-hero-card p {
+  position: relative;
+  z-index: 1;
+  max-width: 650px;
+  margin: 16px 0 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.75;
+  font-weight: 750;
+}
+
+.hr-hero-badge {
+  position: relative;
+  z-index: 1;
+  min-width: 150px;
+  padding: 18px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.08);
+  text-align: center;
+}
+
+.hr-hero-badge strong {
+  display: block;
+  color: #7c3aed;
+  font-size: 38px;
+  line-height: 1;
+  font-weight: 1000;
+}
+
+.hr-hero-badge span {
+  display: block;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* ================================
+   EMPTY STATE
+================================ */
+
+.hr-empty-card {
+  padding: 34px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px dashed #bfdbfe;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.07);
+  text-align: center;
+}
+
+.hr-empty-icon {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 16px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  color: #7c3aed;
+  background: #ede9fe;
+  font-size: 28px;
+  font-weight: 1000;
+}
+
+.hr-empty-card h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 1000;
+}
+
+.hr-empty-card p {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+/* ================================
+   RECORD GRID
+================================ */
+
+.hr-record-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+/* ================================
+   RECORD CARD
+================================ */
+
+.hr-record-card {
+  position: relative;
+  overflow: hidden;
+  padding: 22px;
+  border-radius: 30px;
+  cursor: pointer;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 36%),
+    linear-gradient(145deg, #ffffff 0%, #f8fbff 58%, #eef6ff 100%);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.08);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.hr-record-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: linear-gradient(180deg, #7c3aed, #2563eb, #0ea5e9);
+}
+
+.hr-record-card:hover {
+  transform: translateY(-6px);
+  border-color: #93c5fd;
+  box-shadow: 0 30px 84px rgba(37, 99, 235, 0.16);
+}
+
+.hr-record-card:active {
+  transform: scale(0.99);
+}
+
+.hr-record-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.hr-record-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 19px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, #7c3aed, #2563eb);
+  font-size: 15px;
+  font-weight: 1000;
+  box-shadow: 0 16px 32px rgba(124, 58, 237, 0.22);
+}
+
+.hr-record-title {
+  min-width: 0;
+  flex: 1;
+}
+
+.hr-record-title span {
+  color: #0284c7;
+  font-size: 11px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hr-record-title h3 {
+  margin: 7px 0 0;
+  color: #0f172a;
+  font-size: 20px;
+  line-height: 1.15;
+  font-weight: 1000;
+  letter-spacing: -0.035em;
+}
+
+.hr-record-title p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.hr-view-btn {
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 999px;
+  color: #1d4ed8;
+  background: #dbeafe;
+  font-size: 12px;
+  font-weight: 1000;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+.hr-view-btn:hover {
+  transform: translateY(-2px);
+  background: #bfdbfe;
+}
+
+/* ================================
+   CARD CONTENT
+================================ */
+
+.hr-diagnosis-box {
+  margin-top: 18px;
+  padding: 15px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #e0f2fe;
+}
+
+.hr-diagnosis-box span,
+.hr-detail-tile span {
+  display: block;
+  margin-bottom: 7px;
+  color: #0284c7;
+  font-size: 11px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hr-diagnosis-box strong {
+  display: block;
+  color: #0f172a;
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 950;
+}
+
+.hr-record-detail-grid {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.hr-detail-tile {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.hr-detail-tile p {
+  margin: 0;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.65;
+  font-weight: 750;
+}
+
+.hr-card-footer {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.hr-card-footer span {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.hr-card-footer small {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+/* ================================
+   MODAL BACKDROP
+================================ */
+
+.hr-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  padding: 24px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(14px);
+  animation: hr-backdrop-enter 0.2s ease;
+}
+
+/* ================================
+   MODAL
+================================ */
+
+.hr-modal {
+  position: relative;
+  width: min(680px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 0;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.14), transparent 38%),
+    linear-gradient(145deg, #ffffff 0%, #f8fbff 58%, #eef6ff 100%);
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 35px 90px rgba(15, 23, 42, 0.32);
+  animation: hr-modal-enter 0.24s ease;
+}
+
+.hr-modal-accent {
+  height: 7px;
+  background: linear-gradient(90deg, #7c3aed, #2563eb, #38bdf8);
+}
+
+/* ================================
+   MODAL HEADER
+================================ */
+
+.hr-modal-header {
+  padding: 26px 28px 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.hr-modal-kicker {
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hr-modal-header h3 {
+  margin: 9px 0 0;
+  color: #0f172a;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 1000;
+  letter-spacing: -0.045em;
+}
+
+.hr-modal-header p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.hr-modal-close {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  color: #0f172a;
+  background: #eff6ff;
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+.hr-modal-close:hover {
+  transform: rotate(90deg);
+  background: #dbeafe;
+}
+
+/* ================================
+   MODAL SUMMARY
+================================ */
+
+.hr-modal-summary {
+  margin: 0 28px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.hr-modal-summary div {
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #dbeafe;
+}
+
+.hr-modal-summary span {
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hr-modal-summary strong {
+  display: block;
+  margin-top: 7px;
+  color: #0f172a;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 1000;
+}
+
+/* ================================
+   MODAL BODY
+================================ */
+
+.hr-modal-body {
+  padding: 22px 28px 30px;
+  display: grid;
+  gap: 16px;
+}
+
+.hr-modal-section {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.05);
+}
+
+.hr-modal-section.diagnosis {
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 40%),
+    #ffffff;
+}
+
+.hr-modal-section span {
+  display: block;
+  margin-bottom: 9px;
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hr-modal-section p {
+  margin: 0;
+  color: #1e293b;
+  font-size: 15px;
+  line-height: 1.75;
+  font-weight: 750;
+}
+
+/* ================================
+   ANIMATIONS
+================================ */
+
+@keyframes hr-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hr-backdrop-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hr-modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 900px) {
+  .hr-record-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hr-hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hr-hero-badge {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .hr-hero-card,
+  .hr-record-card {
+    padding: 20px;
+    border-radius: 26px;
+  }
+
+  .hr-record-top {
+    flex-direction: column;
+  }
+
+  .hr-view-btn {
+    align-self: flex-start;
+  }
+
+  .hr-card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hr-modal {
+    border-radius: 24px;
+  }
+
+  .hr-modal-header {
+    padding: 24px 22px 14px;
+  }
+
+  .hr-modal-header h3 {
+    font-size: 24px;
+  }
+
+  .hr-modal-summary {
+    margin: 0 22px;
+    grid-template-columns: 1fr;
+  }
+
+  .hr-modal-body {
+    padding: 20px 22px 26px;
+  }
+}
+
+
+/* ================================
+   HEALTH RECORD SEARCH + FILTERS
+================================ */
+
+.hr-filter-card {
+  padding: 20px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(124, 58, 237, 0.08), transparent 38%),
+    rgba(255, 255, 255, 0.94);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.07);
+  display: grid;
+  gap: 16px;
+}
+
+.hr-search-field label,
+.hr-filter-grid label {
+  display: block;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.hr-search-field input,
+.hr-filter-grid input {
+  width: 100%;
+  height: 48px;
+  margin-top: 9px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.hr-search-field input:focus,
+.hr-filter-grid input:focus {
+  border-color: #a78bfa;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+
+.hr-filter-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px);
+  gap: 14px;
+}
+
+.hr-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hr-clear-filters-btn {
+  height: 42px;
+  padding: 0 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 15px;
+  color: #334155;
+  background: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.hr-clear-filters-btn:hover {
+  transform: translateY(-2px);
+  background: #f8fafc;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+
+/* ================================
+   FILTER RESPONSIVE
+================================ */
+
+@media (max-width: 640px) {
+  .hr-filter-card {
+    padding: 18px;
+    border-radius: 26px;
+  }
+
+  .hr-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hr-filter-actions {
+    justify-content: stretch;
+  }
+
+  .hr-clear-filters-btn {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   FINAL HEALTH RECORDS HERO SIZE FIX
+========================================================= */
+
+.hr-hero-card {
+  padding: 20px 26px !important;
+  border-radius: 28px !important;
+  min-height: auto !important;
+}
+
+.hr-kicker {
+  font-size: 11px !important;
+}
+
+.hr-hero-card h2 {
+  font-size: clamp(28px, 3vw, 38px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.04em !important;
+  margin-top: 10px !important;
+}
+
+.hr-hero-card p {
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+  margin-top: 10px !important;
+  max-width: 620px !important;
+}
+
+.hr-hero-badge {
+  min-width: 105px !important;
+  padding: 13px !important;
+  border-radius: 22px !important;
+}
+
+.hr-hero-badge strong {
+  font-size: 28px !important;
+}
+
+.hr-hero-badge span {
+  font-size: 11px !important;
+}
+
+.hr-pagination-card {
+  padding: 18px 20px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.hr-pagination-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 1000;
+}
+
+.hr-pagination-card span {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.hr-pagination-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.hr-page-btn {
+  height: 40px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 14px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+}
+
+.hr-page-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+@media (max-width: 640px) {
+  .hr-pagination-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hr-pagination-actions {
+    width: 100%;
+  }
+
+  .hr-page-btn {
+    flex: 1;
+  }
+}
+
+/* ==============================
+   HEALTH RECORD FILTER ALIGNMENT
+============================== */
+
+.hr-filter-grid {
+  display: grid;
+  grid-template-columns: 320px 180px;
+  gap: 16px;
+  align-items: end;
+  width: fit-content;
+}
+
+.hr-filter-grid label {
+  display: block;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 1000;
+}
+
+.hr-filter-grid input,
+.hr-filter-grid select {
+  width: 100%;
+  height: 48px;
+  margin-top: 9px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 850;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.hr-filter-grid input:focus,
+.hr-filter-grid select:focus {
+  border-color: #38bdf8;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
+}
+
+.hr-filter-grid input:hover,
+.hr-filter-grid select:hover {
+  border-color: #93c5fd;
+  background: #ffffff;
+}
+
+@media (max-width: 700px) {
+  .hr-filter-grid {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+}

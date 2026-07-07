@@ -1,0 +1,1297 @@
+﻿@page "/admin/appointments"
+@layout AdminLayout
+@implements IAsyncDisposable
+
+@using HealthCareApp.Shared.Dtos.Appointments
+@using HealthCareApp.Shared.Dtos.Pagination
+@using HealthCareApp.Shared.Enums
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@using System.Globalization
+
+@inject IAuthService AuthService
+@inject IAppointmentAdminService AppointmentService
+@inject NavigationManager Navigation
+
+<PageTitle>Appointments | HealthAxis Admin</PageTitle>
+
+@if (isLoading)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+
+            <p>Loading appointment schedules...</p>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="hc-alert-error">
+        @errorMessage
+    </div>
+}
+else
+{
+    <div class="hc-page-heading">
+        <div>
+            <h1>Appointments</h1>
+
+            <p>View and filter HealthAxis appointment schedules.</p>
+        </div>
+    </div>
+
+    <div class="hc-doctor-stat-grid ha-management-stat-grid">
+        <div class="hc-doctor-stat-card blue ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>@PrimaryCardTitle</span>
+
+                <strong>@PrimaryCardCount</strong>
+
+                <small>@PrimaryCardText</small>
+            </div>
+
+            <div class="ha-stat-card-icon">◷</div>
+        </div>
+
+        <div class="hc-doctor-stat-card green ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Today On This Page</span>
+
+                <strong>@TodayAppointmentsOnPage</strong>
+
+                <small>Scheduled today in current appointment page</small>
+            </div>
+
+            <div class="ha-stat-card-icon">▣</div>
+        </div>
+
+        <div class="hc-doctor-stat-card purple ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Upcoming On This Page</span>
+
+                <strong>@UpcomingAppointmentsOnPage</strong>
+
+                <small>Future appointments in current appointment page</small>
+            </div>
+
+            <div class="ha-stat-card-icon">→</div>
+        </div>
+
+        <div class="hc-doctor-stat-card red ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Page</span>
+
+                <strong>@currentPage / @DisplayTotalPages</strong>
+
+                <small>@PageCardText</small>
+            </div>
+
+            <div class="ha-stat-card-icon">!</div>
+        </div>
+    </div>
+
+    <section class="ha-daily-summary-compact">
+        <div class="ha-daily-summary-header">
+            <div>
+                <h3>Daily Status Overview</h3>
+
+                <p>Appointment status count for selected date.</p>
+            </div>
+
+            <input type="date"
+                   class="ha-daily-summary-date"
+                   value="@SelectedDailySummaryDateValue"
+                   @onchange="OnDailySummaryDateChanged" />
+        </div>
+
+        @if (isDailySummaryLoading)
+        {
+            <div class="ha-daily-summary-row">
+                <span class="ha-daily-loading-text">
+                    Loading daily summary...
+                </span>
+            </div>
+        }
+        else
+        {
+            <div class="ha-daily-summary-row">
+                <div class="ha-daily-summary-item total">
+                    <span>Total</span>
+
+                    <strong>@dailyStatusSummary.Total</strong>
+                </div>
+
+                <div class="ha-daily-summary-item pending">
+                    <span>Pending</span>
+
+                    <strong>@dailyStatusSummary.Pending</strong>
+                </div>
+
+                <div class="ha-daily-summary-item confirmed">
+                    <span>Confirmed</span>
+
+                    <strong>@dailyStatusSummary.Confirmed</strong>
+                </div>
+
+                <div class="ha-daily-summary-item completed">
+                    <span>Completed</span>
+
+                    <strong>@dailyStatusSummary.Completed</strong>
+                </div>
+
+                <div class="ha-daily-summary-item cancelled">
+                    <span>Cancelled</span>
+
+                    <strong>@dailyStatusSummary.Cancelled</strong>
+                </div>
+            </div>
+        }
+    </section>
+
+    <section class="hc-list-panel ha-management-panel">
+        <div class="ha-list-panel-header">
+            <div>
+                <h3>Appointment Directory</h3>
+
+                <p>@DirectoryDescription</p>
+            </div>
+
+            <span class="ha-result-count">
+                @ResultSummary
+            </span>
+        </div>
+
+        <div class="hc-list-toolbar ha-list-toolbar">
+            <div class="hc-search-box">
+                <span>⌕</span>
+
+                <input placeholder="@SearchPlaceholder"
+                       value="@searchTerm"
+                       @oninput="OnSearchChanged" />
+            </div>
+
+            <select class="hc-filter-select"
+                    value="@selectedStatusFilter"
+                    @onchange="OnStatusFilterChanged">
+                <option value="all">All Status</option>
+
+                <option value="today">Today</option>
+
+                <option value="upcoming">Upcoming</option>
+
+                <option value="pending">Pending</option>
+
+                <option value="confirmed">Confirmed</option>
+
+                <option value="completed">Completed</option>
+
+                <option value="cancelled">Cancelled</option>
+            </select>
+
+            <select class="hc-filter-select"
+                    value="@selectedFilterType"
+                    @onchange="OnFilterTypeChanged">
+                <option value="all">Roles</option>
+
+                <option value="doctors">Doctors</option>
+
+                <option value="patients">Patients</option>
+            </select>
+        </div>
+
+        <div class="hc-form-actions" style="margin-top: 0; margin-bottom: 20px;">
+            <select class="hc-filter-select"
+                    value="@pageSize"
+                    @onchange="OnPageSizeChanged">
+                <option value="5">5 per page</option>
+
+                <option value="10">10 per page</option>
+
+                <option value="20">20 per page</option>
+
+                <option value="50">50 per page</option>
+            </select>
+
+            <button type="button"
+                    class="hc-secondary-btn"
+                    @onclick="ClearFilters">
+                Clear Filters
+            </button>
+
+            @if (IsViewingPersonAppointments)
+            {
+                <button type="button"
+                        class="hc-secondary-btn"
+                        @onclick="BackToPeopleList">
+                    @BackButtonText
+                </button>
+            }
+        </div>
+
+        @if (IsShowingPeopleList)
+        {
+            var filteredPeopleList = GetFilteredPeopleList();
+            var pagedFilteredPeople = GetPagedFilteredPeople(filteredPeopleList);
+
+            if (!filteredPeopleList.Any())
+            {
+                <div class="hc-empty-state ha-empty-state">
+                    <div class="hc-empty-icon">◉</div>
+
+                    <h3>No records found</h3>
+
+                    <p>Try changing the search text or filter type.</p>
+                </div>
+            }
+            else
+            {
+                <div class="hc-table-wrapper">
+                    <table class="hc-admin-table ha-management-table">
+                        <thead>
+                            <tr>
+                                <th>@PeopleColumnTitle</th>
+
+                                <th>ID</th>
+
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var person in pagedFilteredPeople)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="hc-doctor-cell">
+                                            <div class="hc-patient-avatar ha-appointment-avatar">
+                                                @GetInitials(person.Name)
+                                            </div>
+
+                                            <div>
+                                                <strong>@person.Name</strong>
+
+                                                <span>@PeopleIdLabel: @person.Id</span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="ha-table-strong-text">
+                                            @person.Id
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="hc-table-actions">
+                                            <button class="hc-action-btn view"
+                                                    @onclick="() => ViewPersonAppointments(person.Id)">
+                                                View
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="hc-form-actions" style="justify-content: space-between; margin-top: 22px;">
+                    <button type="button"
+                            class="hc-secondary-btn"
+                            disabled="@(currentPage <= 1)"
+                            @onclick="PreviousPage">
+                        Previous
+                    </button>
+
+                    <div style="font-weight: 900; color: #334155;">
+                        Page @currentPage of @PeopleTotalPages
+                    </div>
+
+                    <button type="button"
+                            class="hc-secondary-btn"
+                            disabled="@(currentPage >= PeopleTotalPages)"
+                            @onclick="NextPage">
+                        Next
+                    </button>
+                </div>
+            }
+        }
+        else
+        {
+            @if (!appointments.Any())
+            {
+                <div class="hc-empty-state ha-empty-state">
+                    <div class="hc-empty-icon">◷</div>
+
+                    <h3>No appointment records found</h3>
+
+                    <p>Try adjusting search text, status, or filter type.</p>
+                </div>
+            }
+            else
+            {
+                <div class="hc-table-wrapper">
+                    <table class="hc-admin-table ha-management-table">
+                        <thead>
+                            <tr>
+                                <th>Appointment</th>
+
+                                <th>Patient</th>
+
+                                <th>Doctor</th>
+
+                                <th>Date</th>
+
+                                <th>Time Slot</th>
+
+                                <th>Status</th>
+
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var appointment in appointments)
+                            {
+                                var scheduledDate = ParseDate(appointment.ScheduledDate);
+
+                                <tr>
+                                    <td>
+                                        <div class="ha-appointment-id-card">
+                                            <strong>#@appointment.AppointmentId</strong>
+
+                                            <span>Appointment record</span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="hc-doctor-cell">
+                                            <div class="hc-patient-avatar ha-appointment-avatar">
+                                                @GetInitials(appointment.PatientName)
+                                            </div>
+
+                                            <div>
+                                                <strong>@appointment.PatientName</strong>
+
+                                                <span>Patient ID: @appointment.PatientId</span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="ha-doctor-reference">
+                                            <strong>@appointment.DoctorName</strong>
+
+                                            <span>Doctor ID: @appointment.DoctorId</span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="ha-table-strong-text">
+                                            @FormatDate(scheduledDate)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="ha-time-pill">
+                                            @appointment.TimeSlot
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="@GetStatusBadgeClass(appointment.Status)">
+                                            @appointment.Status
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="hc-table-actions">
+                                            <button class="hc-action-btn view"
+                                                    @onclick="() => GoToAppointmentDetails(appointment.AppointmentId)">
+                                                View
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="hc-form-actions" style="justify-content: space-between; margin-top: 22px;">
+                    <button type="button"
+                            class="hc-secondary-btn"
+                            disabled="@(currentPage <= 1)"
+                            @onclick="PreviousPage">
+                        Previous
+                    </button>
+
+                    <div style="font-weight: 900; color: #334155;">
+                        Page @currentPage of @totalPages
+                    </div>
+
+                    <button type="button"
+                            class="hc-secondary-btn"
+                            disabled="@(currentPage >= totalPages)"
+                            @onclick="NextPage">
+                        Next
+                    </button>
+                </div>
+            }
+        }
+    </section>
+}
+
+@code {
+    private CancellationTokenSource? searchCancellationTokenSource;
+
+    private const string AllStatusFilter = "all";
+
+    private const string TodayFilter = "today";
+
+    private const string UpcomingFilter = "upcoming";
+
+    private const string PendingFilter = "pending";
+
+    private const string ConfirmedFilter = "confirmed";
+
+    private const string CompletedFilter = "completed";
+
+    private const string CancelledFilter = "cancelled";
+
+    private const string FilterTypeAll = "all";
+
+    private const string FilterTypePatients = "patients";
+
+    private const string FilterTypeDoctors = "doctors";
+
+    private List<AppointmentDto> appointments = new();
+
+    private string searchTerm = string.Empty;
+
+    private string selectedStatusFilter = AllStatusFilter;
+
+    private string selectedFilterType = FilterTypeAll;
+
+    private int? selectedFilterPersonId;
+
+    private AppointmentFilterOptionsDto filterOptions = new();
+
+    private AppointmentDailyStatusSummaryDto dailyStatusSummary = new();
+
+    private DateTime selectedDailySummaryDate = DateTime.Today;
+
+    private bool isDailySummaryLoading;
+
+    private int currentPage = 1;
+
+    private int pageSize = 10;
+
+    private int totalRecords;
+
+    private int totalPages = 1;
+
+    private bool isLoading = true;
+
+    private string? errorMessage;
+
+    private bool IsShowingPeopleList
+    {
+        get
+        {
+            return selectedFilterType != FilterTypeAll &&
+                   selectedFilterPersonId is null;
+        }
+    }
+
+    private bool IsViewingPersonAppointments
+    {
+        get
+        {
+            return selectedFilterType != FilterTypeAll &&
+                   selectedFilterPersonId is not null;
+        }
+    }
+
+    private int TodayAppointmentsOnPage
+    {
+        get
+        {
+            return appointments.Count(appointment =>
+                ParseDate(appointment.ScheduledDate).Date == DateTime.Today);
+        }
+    }
+
+    private int UpcomingAppointmentsOnPage
+    {
+        get
+        {
+            return appointments.Count(appointment =>
+                ParseDate(appointment.ScheduledDate).Date > DateTime.Today);
+        }
+    }
+
+    private int StartRecord
+    {
+        get
+        {
+            if (totalRecords == 0)
+            {
+                return 0;
+            }
+
+            return ((currentPage - 1) * pageSize) + 1;
+        }
+    }
+
+    private int EndRecord
+    {
+        get
+        {
+            int calculatedEnd = currentPage * pageSize;
+
+            if (calculatedEnd > totalRecords)
+            {
+                return totalRecords;
+            }
+
+            return calculatedEnd;
+        }
+    }
+
+    private List<AppointmentFilterPersonDto> CurrentPeople
+    {
+        get
+        {
+            if (selectedFilterType == FilterTypeDoctors)
+            {
+                return filterOptions.Doctors;
+            }
+
+            if (selectedFilterType == FilterTypePatients)
+            {
+                return filterOptions.Patients;
+            }
+
+            return new List<AppointmentFilterPersonDto>();
+        }
+    }
+
+    private IEnumerable<AppointmentFilterPersonDto> FilteredPeople
+    {
+        get
+        {
+            var people = CurrentPeople.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                people = people.Where(person =>
+                    person.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    person.Id.ToString(CultureInfo.InvariantCulture).Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return people.OrderBy(person => person.Name);
+        }
+    }
+
+    private List<AppointmentFilterPersonDto> GetFilteredPeopleList()
+    {
+        return FilteredPeople.ToList();
+    }
+
+    private IEnumerable<AppointmentFilterPersonDto> GetPagedFilteredPeople(
+        List<AppointmentFilterPersonDto> filteredPeopleList)
+    {
+        return filteredPeopleList
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize);
+    }
+
+    private int PeopleTotalRecords
+    {
+        get
+        {
+            return GetFilteredPeopleList().Count;
+        }
+    }
+
+    private int PeopleTotalPages
+    {
+        get
+        {
+            if (PeopleTotalRecords == 0)
+            {
+                return 1;
+            }
+
+            return (int)Math.Ceiling(PeopleTotalRecords / (double)pageSize);
+        }
+    }
+
+    private int PeopleStartRecord
+    {
+        get
+        {
+            if (PeopleTotalRecords == 0)
+            {
+                return 0;
+            }
+
+            return ((currentPage - 1) * pageSize) + 1;
+        }
+    }
+
+    private int PeopleEndRecord
+    {
+        get
+        {
+            int calculatedEnd = currentPage * pageSize;
+
+            if (calculatedEnd > PeopleTotalRecords)
+            {
+                return PeopleTotalRecords;
+            }
+
+            return calculatedEnd;
+        }
+    }
+
+    private int DisplayTotalPages
+    {
+        get
+        {
+            return IsShowingPeopleList
+                ? PeopleTotalPages
+                : totalPages;
+        }
+    }
+
+    private string PageCardText
+    {
+        get
+        {
+            return IsShowingPeopleList
+                ? "Paginated role filter result"
+                : "Backend paginated appointment result";
+        }
+    }
+
+    private string PrimaryCardTitle
+    {
+        get
+        {
+            if (IsShowingPeopleList && selectedFilterType == FilterTypeDoctors)
+            {
+                return "Doctors With Appointments";
+            }
+
+            if (IsShowingPeopleList && selectedFilterType == FilterTypePatients)
+            {
+                return "Patients With Appointments";
+            }
+
+            return "Total Matching Appointments";
+        }
+    }
+
+    private int PrimaryCardCount
+    {
+        get
+        {
+            if (IsShowingPeopleList)
+            {
+                return PeopleTotalRecords;
+            }
+
+            return totalRecords;
+        }
+    }
+
+    private string PrimaryCardText
+    {
+        get
+        {
+            if (IsShowingPeopleList)
+            {
+                return "Records available for appointment filtering";
+            }
+
+            return "Appointment records matching current filters";
+        }
+    }
+
+    private string DirectoryDescription
+    {
+        get
+        {
+            if (IsShowingPeopleList && selectedFilterType == FilterTypeDoctors)
+            {
+                return "Select a doctor to view that doctor's appointment records.";
+            }
+
+            if (IsShowingPeopleList && selectedFilterType == FilterTypePatients)
+            {
+                return "Select a patient to view that patient's appointment records.";
+            }
+
+            if (IsViewingPersonAppointments && selectedFilterType == FilterTypeDoctors)
+            {
+                return "Showing appointments for the selected doctor.";
+            }
+
+            if (IsViewingPersonAppointments && selectedFilterType == FilterTypePatients)
+            {
+                return "Showing appointments for the selected patient.";
+            }
+
+            return "Search, filter, and review patient-doctor appointment activity.";
+        }
+    }
+
+    private string ResultSummary
+    {
+        get
+        {
+            if (IsShowingPeopleList)
+            {
+                return $"Showing {PeopleStartRecord} to {PeopleEndRecord} of {PeopleTotalRecords}";
+            }
+
+            return $"Showing {StartRecord} to {EndRecord} of {totalRecords}";
+        }
+    }
+
+    private string SearchPlaceholder
+    {
+        get
+        {
+            if (IsShowingPeopleList && selectedFilterType == FilterTypeDoctors)
+            {
+                return "Search doctor by name or ID...";
+            }
+
+            if (IsShowingPeopleList && selectedFilterType == FilterTypePatients)
+            {
+                return "Search patient by name or ID...";
+            }
+
+            return "Search by patient, doctor, date, time slot, or cancellation reason...";
+        }
+    }
+
+    private string PeopleColumnTitle
+    {
+        get
+        {
+            return selectedFilterType == FilterTypeDoctors
+                ? "Doctor"
+                : "Patient";
+        }
+    }
+
+    private string PeopleIdLabel
+    {
+        get
+        {
+            return selectedFilterType == FilterTypeDoctors
+                ? "Doctor ID"
+                : "Patient ID";
+        }
+    }
+
+    private string BackButtonText
+    {
+        get
+        {
+            return selectedFilterType == FilterTypeDoctors
+                ? "Back to Doctors"
+                : "Back to Patients";
+        }
+    }
+
+    private string SelectedDailySummaryDateValue
+    {
+        get
+        {
+            return selectedDailySummaryDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo(
+                "/login?sessionExpired=true",
+                replace: true);
+
+            return;
+        }
+
+        await LoadAppointmentFilterOptionsAsync();
+
+        await LoadDailyStatusSummaryAsync();
+
+        await LoadAppointmentsAsync();
+    }
+
+    private async Task LoadAppointmentFilterOptionsAsync()
+    {
+        try
+        {
+            filterOptions = await AppointmentService.GetAppointmentFilterOptionsAsync();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+
+            filterOptions = new AppointmentFilterOptionsDto();
+        }
+        catch (System.Net.Http.HttpRequestException)
+        {
+            errorMessage = "Unable to load appointment filter options. Please check whether the API is running.";
+
+            filterOptions = new AppointmentFilterOptionsDto();
+        }
+    }
+
+    private async Task LoadDailyStatusSummaryAsync()
+    {
+        try
+        {
+            isDailySummaryLoading = true;
+
+            dailyStatusSummary = await AppointmentService.GetDailyStatusSummaryAsync(
+                selectedDailySummaryDate);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+
+            dailyStatusSummary = new AppointmentDailyStatusSummaryDto
+            {
+                Date = selectedDailySummaryDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+            };
+        }
+        catch (System.Net.Http.HttpRequestException)
+        {
+            errorMessage = "Unable to load daily appointment summary. Please check whether the API is running.";
+
+            dailyStatusSummary = new AppointmentDailyStatusSummaryDto
+            {
+                Date = selectedDailySummaryDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+            };
+        }
+        finally
+        {
+            isDailySummaryLoading = false;
+        }
+    }
+
+    private async Task LoadAppointmentsAsync(bool showFullPageLoader = true)
+    {
+        try
+        {
+            if (showFullPageLoader)
+            {
+                isLoading = true;
+            }
+
+            errorMessage = null;
+
+            var query = BuildAppointmentQuery();
+
+            var response = await AppointmentService.GetAppointmentsPagedAsync(query);
+
+            appointments = response.Items ?? new List<AppointmentDto>();
+
+            currentPage = response.PageNumber;
+
+            pageSize = response.PageSize;
+
+            totalRecords = response.TotalRecords;
+
+            totalPages = response.TotalPages <= 0 ? 1 : response.TotalPages;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+
+            appointments = new List<AppointmentDto>();
+        }
+        catch (System.Net.Http.HttpRequestException)
+        {
+            errorMessage = "Unable to load appointments. Please check whether the API is running.";
+
+            appointments = new List<AppointmentDto>();
+        }
+        finally
+        {
+            if (showFullPageLoader)
+            {
+                isLoading = false;
+            }
+        }
+    }
+
+    private AppointmentPaginationQueryDto BuildAppointmentQuery()
+    {
+        DateTime? searchDate = TryParseSearchDate(searchTerm);
+
+        var query = new AppointmentPaginationQueryDto
+        {
+            PageNumber = currentPage,
+
+            PageSize = pageSize,
+
+            SearchTerm = IsShowingPeopleList || searchDate is not null || string.IsNullOrWhiteSpace(searchTerm)
+                ? null
+                : searchTerm.Trim()
+        };
+
+        if (selectedStatusFilter == TodayFilter)
+        {
+            query.ScheduledDate = DateTime.Today;
+        }
+        else if (selectedStatusFilter == UpcomingFilter)
+        {
+            query.UpcomingOnly = true;
+        }
+        else if (selectedStatusFilter == PendingFilter)
+        {
+            query.Status = AppointmentStatus.Pending;
+        }
+        else if (selectedStatusFilter == ConfirmedFilter)
+        {
+            query.Status = AppointmentStatus.Confirmed;
+        }
+        else if (selectedStatusFilter == CompletedFilter)
+        {
+            query.Status = AppointmentStatus.Completed;
+        }
+        else if (selectedStatusFilter == CancelledFilter)
+        {
+            query.Status = AppointmentStatus.Cancelled;
+        }
+
+        if (searchDate is not null &&
+            selectedStatusFilter != TodayFilter &&
+            selectedStatusFilter != UpcomingFilter)
+        {
+            query.ScheduledDate = searchDate.Value.Date;
+        }
+
+        if (selectedFilterType == FilterTypePatients &&
+            selectedFilterPersonId is not null)
+        {
+            query.PatientId = selectedFilterPersonId.Value;
+        }
+        else if (selectedFilterType == FilterTypeDoctors &&
+                 selectedFilterPersonId is not null)
+        {
+            query.DoctorId = selectedFilterPersonId.Value;
+        }
+
+        return query;
+    }
+
+    private static DateTime? TryParseSearchDate(string searchValue)
+    {
+        if (string.IsNullOrWhiteSpace(searchValue))
+        {
+            return null;
+        }
+
+        string trimmedValue = searchValue.Trim();
+
+        string[] allowedFormats =
+        {
+            "yyyy-MM-dd",
+            "dd-MM-yyyy",
+            "dd/MM/yyyy",
+            "MM/dd/yyyy",
+            "dd MMM yyyy",
+            "dd MMMM yyyy",
+            "MMM dd yyyy",
+            "MMMM dd yyyy"
+        };
+
+        if (DateTime.TryParseExact(
+                trimmedValue,
+                allowedFormats,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var exactDate))
+        {
+            return exactDate.Date;
+        }
+
+        if (DateTime.TryParse(
+                trimmedValue,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var parsedDate))
+        {
+            return parsedDate.Date;
+        }
+
+        return null;
+    }
+
+    private async Task OnDailySummaryDateChanged(ChangeEventArgs args)
+    {
+        if (DateTime.TryParse(
+                args.Value?.ToString(),
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var selectedDate))
+        {
+            selectedDailySummaryDate = selectedDate.Date;
+
+            await LoadDailyStatusSummaryAsync();
+        }
+    }
+
+    private async Task OnSearchChanged(ChangeEventArgs args)
+    {
+        searchTerm = args.Value?.ToString() ?? string.Empty;
+
+        currentPage = 1;
+
+        if (searchCancellationTokenSource is not null)
+        {
+            await searchCancellationTokenSource.CancelAsync();
+            searchCancellationTokenSource.Dispose();
+        }
+
+        searchCancellationTokenSource = new CancellationTokenSource();
+
+        var currentSearchToken = searchCancellationTokenSource.Token;
+
+        try
+        {
+            await Task.Delay(400, currentSearchToken);
+
+            if (IsShowingPeopleList)
+            {
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                await LoadAppointmentsAsync(showFullPageLoader: false);
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            // Search debounce cancellation is expected when the user types again before the delay completes.
+        }
+    }
+
+    private async Task OnStatusFilterChanged(ChangeEventArgs args)
+    {
+        selectedStatusFilter = args.Value?.ToString() ?? AllStatusFilter;
+
+        currentPage = 1;
+
+        if (!IsShowingPeopleList)
+        {
+            await LoadAppointmentsAsync(showFullPageLoader: false);
+        }
+    }
+
+    private async Task OnFilterTypeChanged(ChangeEventArgs args)
+    {
+        selectedFilterType = args.Value?.ToString() ?? FilterTypeAll;
+
+        selectedFilterPersonId = null;
+
+        currentPage = 1;
+
+        appointments = new List<AppointmentDto>();
+
+        if (selectedFilterType == FilterTypeAll)
+        {
+            await LoadAppointmentsAsync(showFullPageLoader: false);
+        }
+        else
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task ViewPersonAppointments(int personId)
+    {
+        selectedFilterPersonId = personId;
+
+        currentPage = 1;
+
+        await LoadAppointmentsAsync(showFullPageLoader: false);
+    }
+
+    private async Task BackToPeopleList()
+    {
+        selectedFilterPersonId = null;
+
+        appointments = new List<AppointmentDto>();
+
+        currentPage = 1;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs args)
+    {
+        if (int.TryParse(args.Value?.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var selectedPageSize))
+        {
+            pageSize = selectedPageSize;
+
+            currentPage = 1;
+
+            if (IsShowingPeopleList)
+            {
+                await InvokeAsync(StateHasChanged);
+
+                return;
+            }
+
+            await LoadAppointmentsAsync(showFullPageLoader: false);
+        }
+    }
+
+    private async Task ClearFilters()
+    {
+        searchTerm = string.Empty;
+
+        selectedStatusFilter = AllStatusFilter;
+
+        selectedFilterType = FilterTypeAll;
+
+        selectedFilterPersonId = null;
+
+        currentPage = 1;
+
+        await LoadAppointmentsAsync(showFullPageLoader: false);
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage <= 1)
+        {
+            return;
+        }
+
+        currentPage--;
+
+        if (IsShowingPeopleList)
+        {
+            await InvokeAsync(StateHasChanged);
+
+            return;
+        }
+
+        await LoadAppointmentsAsync(showFullPageLoader: false);
+    }
+
+    private async Task NextPage()
+    {
+        int maxPages = IsShowingPeopleList
+            ? PeopleTotalPages
+            : totalPages;
+
+        if (currentPage >= maxPages)
+        {
+            return;
+        }
+
+        currentPage++;
+
+        if (IsShowingPeopleList)
+        {
+            await InvokeAsync(StateHasChanged);
+
+            return;
+        }
+
+        await LoadAppointmentsAsync(showFullPageLoader: false);
+    }
+
+    private void GoToAppointmentDetails(int appointmentId)
+    {
+        Navigation.NavigateTo($"/admin/appointments/details/{appointmentId}");
+    }
+
+    private static DateTime ParseDate(string date)
+    {
+        return DateTime.TryParse(
+            date,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out var parsedDate)
+                ? parsedDate
+                : DateTime.MinValue;
+    }
+
+    private static string FormatDate(DateTime date)
+    {
+        if (date == DateTime.MinValue)
+        {
+            return "Not Available";
+        }
+
+        return date.ToString("dd MMM yyyy", CultureInfo.InvariantCulture);
+    }
+
+    private static string GetInitials(string? fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return "NA";
+        }
+
+        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length == 1)
+        {
+            if (parts[0].Length >= 2)
+            {
+                return parts[0][..2].ToUpper(CultureInfo.InvariantCulture);
+            }
+
+            return parts[0].ToUpper(CultureInfo.InvariantCulture);
+        }
+
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper(CultureInfo.InvariantCulture);
+    }
+
+    private static string GetStatusBadgeClass(AppointmentStatus status)
+    {
+        return status switch
+        {
+            AppointmentStatus.Pending =>
+                "hc-status-badge pending ha-appointment-status",
+
+            AppointmentStatus.Confirmed =>
+                "hc-status-badge confirmed ha-appointment-status",
+
+            AppointmentStatus.Completed =>
+                "hc-status-badge completed ha-appointment-status",
+
+            AppointmentStatus.Cancelled =>
+                "hc-status-badge cancelled ha-appointment-status",
+
+            _ =>
+                "hc-status-badge ha-appointment-status"
+        };
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (searchCancellationTokenSource is not null)
+        {
+            await searchCancellationTokenSource.CancelAsync();
+            searchCancellationTokenSource.Dispose();
+        }
+    }
+}

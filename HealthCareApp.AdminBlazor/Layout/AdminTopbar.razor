@@ -1,0 +1,90 @@
+﻿﻿@using HealthCareApp.AdminBlazor.Services.Interfaces
+
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject IConfiguration Configuration
+
+<header class="hc-topbar">
+    <div>
+        <div class="hc-topbar-kicker">Admin Console</div>
+        <h2 class="hc-topbar-title">HealthAxis Management Dashboard</h2>
+    </div>
+
+    <div class="hc-topbar-actions">
+        <div class="hc-admin-chip">
+            <div class="hc-admin-avatar">A</div>
+            <div>
+                <div class="hc-admin-name">@adminEmail</div>
+                <div class="hc-admin-role">Administrator</div>
+            </div>
+        </div>
+
+        <button class="hc-topbar-logout" @onclick="ShowLogoutConfirmation">
+            Logout
+        </button>
+    </div>
+</header>
+
+@if (showLogoutConfirmation)
+{
+    <div class="ha-modal-backdrop">
+        <div class="ha-logout-modal">
+            <div class="ha-logout-icon">HA</div>
+
+            <h3>Logout from HealthAxis?</h3>
+
+            <p>
+                Your current admin session will be closed. You can sign in again anytime
+                from the HealthAxis main login page.
+            </p>
+
+            <div class="ha-logout-actions">
+                <button class="ha-modal-secondary-btn" @onclick="HideLogoutConfirmation">
+                    Cancel
+                </button>
+
+                <button class="ha-modal-danger-btn" @onclick="ConfirmLogout">
+                    Yes, Logout
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private string adminEmail = "Admin";
+
+    private bool showLogoutConfirmation;
+
+    private string AngularHomeUrl =>
+        Configuration["AppUrls:AngularHomeUrl"] ?? "/";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var email = await AuthService.GetCurrentUserEmailAsync();
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            adminEmail = email;
+        }
+    }
+
+    private void ShowLogoutConfirmation()
+    {
+        showLogoutConfirmation = true;
+    }
+
+    private void HideLogoutConfirmation()
+    {
+        showLogoutConfirmation = false;
+    }
+
+    private async Task ConfirmLogout()
+    {
+        await AuthService.LogoutAsync();
+
+        showLogoutConfirmation = false;
+
+        Navigation.NavigateTo(AngularHomeUrl, forceLoad: true);
+    }
+}

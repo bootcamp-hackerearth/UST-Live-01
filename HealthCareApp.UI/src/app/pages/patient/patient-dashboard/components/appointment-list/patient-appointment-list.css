@@ -1,0 +1,873 @@
+
+/* ==============================
+   APPOINTMENTS SHELL
+============================== */
+
+.al-appointments-shell {
+  display: grid;
+  gap: 22px;
+  animation: al-page-enter 0.32s ease;
+}
+
+/* ==============================
+   HERO
+============================== */
+
+.al-hero-card {
+  position: relative;
+  overflow: hidden;
+  padding: 30px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(239, 246, 255, 0.92));
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 30px 80px rgba(37, 99, 235, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.al-hero-card::after {
+  content: "";
+  position: absolute;
+  right: -52px;
+  top: -52px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.al-kicker {
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.al-hero-card h2 {
+  position: relative;
+  z-index: 1;
+  margin: 14px 0 0;
+  color: #0f172a;
+  font-size: clamp(32px, 4vw, 54px);
+  line-height: 1;
+  letter-spacing: -0.06em;
+  font-weight: 1000;
+}
+
+.al-hero-card p {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 16px 0 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.75;
+  font-weight: 750;
+}
+
+.al-hero-badge {
+  position: relative;
+  z-index: 1;
+  min-width: 130px;
+  padding: 18px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.08);
+  text-align: center;
+}
+
+.al-hero-badge strong {
+  display: block;
+  color: #2563eb;
+  font-size: 38px;
+  line-height: 1;
+  font-weight: 1000;
+}
+
+.al-hero-badge span {
+  display: block;
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* ==============================
+   EMPTY
+============================== */
+
+.al-empty-card {
+  padding: 34px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px dashed #bfdbfe;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.07);
+  text-align: center;
+}
+
+.al-empty-icon {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 16px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  color: #0284c7;
+  background: #e0f2fe;
+  font-size: 28px;
+  font-weight: 1000;
+}
+
+.al-empty-card h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 1000;
+}
+
+.al-empty-card p {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+/* ==============================
+   TIMELINE
+============================== */
+
+.al-timeline {
+  display: grid;
+  gap: 18px;
+}
+
+/* ==============================
+   APPOINTMENT CARD
+============================== */
+
+.al-appt-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr);
+  border-radius: 30px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(248, 251, 255, 0.94));
+  border: 1px solid #dbeafe;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.08);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.al-appt-card:hover {
+  transform: translateY(-5px);
+  border-color: #93c5fd;
+  box-shadow: 0 30px 84px rgba(37, 99, 235, 0.16);
+}
+
+.al-status-rail {
+  width: 8px;
+  background: #2563eb;
+}
+
+.al-appt-card.pending .al-status-rail {
+  background: linear-gradient(180deg, #f59e0b, #d97706);
+}
+
+.al-appt-card.confirmed .al-status-rail {
+  background: linear-gradient(180deg, #22c55e, #16a34a);
+}
+
+.al-appt-card.completed .al-status-rail {
+  background: linear-gradient(180deg, #38bdf8, #2563eb);
+}
+
+.al-appt-card.cancelled .al-status-rail {
+  background: linear-gradient(180deg, #f87171, #dc2626);
+}
+
+.al-appt-main {
+  padding: 24px;
+}
+
+/* ==============================
+   HEADER
+============================== */
+
+.al-appt-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.al-appt-label {
+  color: #0284c7;
+  font-size: 11px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.al-appt-header h3 {
+  margin: 8px 0 0;
+  color: #0f172a;
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 1000;
+  letter-spacing: -0.04em;
+}
+
+.al-appt-header p {
+  margin: 7px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* ==============================
+   STATUS BADGES
+============================== */
+
+.pd-status {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 1000;
+}
+
+.pd-status.pending {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.pd-status.confirmed {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.pd-status.completed {
+  color: #1d4ed8;
+  background: #dbeafe;
+}
+
+.pd-status.cancelled {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+/* ==============================
+   INFO GRID
+============================== */
+
+.al-appt-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.al-info-tile {
+  padding: 15px;
+  border-radius: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.al-info-tile span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.al-info-tile strong {
+  display: block;
+  margin-top: 8px;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 1000;
+}
+
+/* ==============================
+   CANCEL REASON
+============================== */
+
+.al-cancel-reason {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 800;
+}
+
+.al-cancel-reason strong {
+  font-weight: 1000;
+}
+
+/* ==============================
+   FOOTER
+============================== */
+
+.al-appt-footer {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.al-appt-footer p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 800;
+}
+
+.al-cancel-btn {
+  flex-shrink: 0;
+  height: 42px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 15px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  box-shadow: 0 14px 28px rgba(220, 38, 38, 0.22);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.al-cancel-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 42px rgba(220, 38, 38, 0.28);
+}
+
+/* ==============================
+   ANIMATIONS
+============================== */
+
+@keyframes al-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+
+@media (max-width: 860px) {
+  .al-hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .al-hero-badge {
+    width: 100%;
+  }
+
+  .al-appt-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .al-appt-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .al-cancel-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .al-hero-card,
+  .al-appt-main {
+    padding: 20px;
+  }
+
+  .al-appt-header {
+    flex-direction: column;
+  }
+
+  .pd-status {
+    align-self: flex-start;
+  }
+}
+
+/* ==============================
+   CANCEL MODAL
+============================== */
+
+.al-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  padding: 24px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  animation: al-modal-fade 0.2s ease;
+}
+
+.al-cancel-modal {
+  width: min(560px, 100%);
+  overflow: hidden;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(248, 113, 113, 0.12), transparent 38%),
+    linear-gradient(145deg, #ffffff 0%, #fff7f7 60%, #f8fbff 100%);
+  border: 1px solid #fecaca;
+  box-shadow: 0 35px 90px rgba(15, 23, 42, 0.32);
+  animation: al-modal-enter 0.24s ease;
+}
+
+.al-modal-accent {
+  height: 7px;
+  background: linear-gradient(90deg, #ef4444, #dc2626, #f97316);
+}
+
+.al-modal-header {
+  padding: 24px 26px 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.al-modal-header span {
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.al-modal-header h3 {
+  margin: 8px 0 0;
+  color: #0f172a;
+  font-size: 26px;
+  line-height: 1.15;
+  font-weight: 1000;
+  letter-spacing: -0.045em;
+}
+
+.al-modal-header p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.al-modal-close {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  color: #0f172a;
+  background: #fee2e2;
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease;
+}
+
+.al-modal-close:hover {
+  transform: rotate(90deg);
+  background: #fecaca;
+}
+
+.al-warning-box {
+  margin: 0 26px 18px;
+  padding: 16px;
+  border-radius: 20px;
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+
+.al-warning-box strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 1000;
+}
+
+.al-warning-box p {
+  margin: 7px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 750;
+}
+
+.al-reason-field {
+  display: block;
+  margin: 0 26px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.al-reason-field textarea {
+  width: 100%;
+  margin-top: 9px;
+  padding: 14px;
+  box-sizing: border-box;
+  border-radius: 18px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  resize: vertical;
+  min-height: 112px;
+  background: #ffffff;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.6;
+}
+
+.al-reason-field textarea:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+}
+
+.al-modal-message {
+  margin: 16px 26px 0;
+  padding: 13px 15px;
+  border-radius: 16px;
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.al-modal-actions {
+  padding: 22px 26px 26px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.al-keep-btn,
+.al-confirm-cancel-btn {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.al-keep-btn {
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  background: #ffffff;
+}
+
+.al-confirm-cancel-btn {
+  border: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 16px 34px rgba(220, 38, 38, 0.24);
+}
+
+.al-keep-btn:hover,
+.al-confirm-cancel-btn:hover {
+  transform: translateY(-2px);
+}
+
+@keyframes al-modal-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes al-modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 560px) {
+  .al-modal-actions {
+    flex-direction: column;
+  }
+
+  .al-keep-btn,
+  .al-confirm-cancel-btn {
+    width: 100%;
+  }
+}
+
+/* ==============================
+   APPOINTMENT SEARCH + FILTERS
+============================== */
+
+.al-filter-card {
+  padding: 20px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 38%),
+    rgba(255, 255, 255, 0.94);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.07);
+  display: grid;
+  gap: 16px;
+}
+
+.al-search-field label,
+.al-filter-grid label {
+  display: block;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.al-search-field input,
+.al-filter-grid input,
+.al-filter-grid select {
+  width: 100%;
+  height: 48px;
+  margin-top: 9px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.al-search-field input:focus,
+.al-filter-grid input:focus,
+.al-filter-grid select:focus {
+  border-color: #38bdf8;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
+}
+
+.al-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.al-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.al-clear-filters-btn {
+  height: 42px;
+  padding: 0 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 15px;
+  color: #334155;
+  background: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.al-clear-filters-btn:hover {
+  transform: translateY(-2px);
+  background: #f8fafc;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+
+/* ==============================
+   FILTER RESPONSIVE
+============================== */
+
+@media (max-width: 1100px) {
+  .al-filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .al-filter-card {
+    padding: 18px;
+    border-radius: 26px;
+  }
+
+  .al-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .al-filter-actions {
+    justify-content: stretch;
+  }
+
+  .al-clear-filters-btn {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   FINAL APPOINTMENTS HERO SIZE FIX
+========================================================= */
+
+.al-hero-card {
+  padding: 20px 26px !important;
+  border-radius: 28px !important;
+  min-height: auto !important;
+}
+
+.al-kicker {
+  font-size: 11px !important;
+}
+
+.al-hero-card h2 {
+  font-size: clamp(28px, 3vw, 38px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.04em !important;
+  margin-top: 10px !important;
+}
+
+.al-hero-card p {
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+  margin-top: 10px !important;
+  max-width: 620px !important;
+}
+
+.al-hero-badge {
+  min-width: 105px !important;
+  padding: 13px !important;
+  border-radius: 22px !important;
+}
+
+.al-hero-badge strong {
+  font-size: 28px !important;
+}
+
+.al-hero-badge span {
+  font-size: 11px !important;
+}
+.al-pagination-card {
+  padding: 18px 20px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.al-pagination-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 1000;
+}
+
+.al-pagination-card span {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.al-pagination-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.al-page-btn {
+  height: 40px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 14px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+}
+
+.al-page-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+@media (max-width: 640px) {
+  .al-pagination-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .al-pagination-actions {
+    width: 100%;
+  }
+
+  .al-page-btn {
+    flex: 1;
+  }
+}

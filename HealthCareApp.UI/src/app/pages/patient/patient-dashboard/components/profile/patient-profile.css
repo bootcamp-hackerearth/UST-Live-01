@@ -1,0 +1,702 @@
+/* ================================
+   PROFILE SHELL
+================================ */
+
+.pp-profile-shell {
+  display: grid;
+  gap: 22px;
+  animation: pp-page-enter 0.32s ease;
+}
+
+/* ================================
+   HERO CARD
+================================ */
+
+.pp-hero-card {
+  position: relative;
+  overflow: hidden;
+  padding: 30px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(239, 246, 255, 0.92));
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 30px 80px rgba(37, 99, 235, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.pp-hero-card::after {
+  content: "";
+  position: absolute;
+  right: -52px;
+  top: -52px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.pp-kicker {
+  position: relative;
+  z-index: 1;
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.pp-hero-card h2 {
+  position: relative;
+  z-index: 1;
+  margin: 14px 0 0;
+  color: #0f172a;
+  font-size: clamp(32px, 4vw, 54px);
+  line-height: 1;
+  letter-spacing: -0.06em;
+  font-weight: 1000;
+}
+
+.pp-hero-card p {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 16px 0 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.75;
+  font-weight: 750;
+}
+
+.pp-hero-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pp-primary-action,
+.pp-secondary-action,
+.pp-save-btn,
+.pp-cancel-btn {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.pp-primary-action,
+.pp-save-btn {
+  border: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.24);
+}
+
+.pp-secondary-action,
+.pp-cancel-btn {
+  border: 1px solid #dbeafe;
+  color: #0f172a;
+  background: #ffffff;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
+}
+
+.pp-primary-action:hover,
+.pp-secondary-action:hover,
+.pp-save-btn:hover,
+.pp-cancel-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* ================================
+   PROFILE OVERVIEW
+================================ */
+
+.pp-profile-overview {
+  display: grid;
+  gap: 18px;
+}
+
+.pp-identity-card {
+  position: relative;
+  overflow: hidden;
+  padding: 26px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.13), transparent 38%),
+    linear-gradient(145deg, #ffffff, #f8fbff);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.pp-identity-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: linear-gradient(180deg, #0ea5e9, #2563eb);
+}
+
+.pp-avatar {
+  width: 92px;
+  height: 92px;
+  border-radius: 30px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  font-size: 38px;
+  font-weight: 1000;
+  box-shadow: 0 18px 38px rgba(37, 99, 235, 0.26);
+}
+
+.pp-identity-card span {
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pp-identity-card h3 {
+  margin: 9px 0 0;
+  color: #0f172a;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 1000;
+  letter-spacing: -0.05em;
+}
+
+.pp-identity-card p {
+  margin: 9px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.pp-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pp-info-tile {
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.06);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.pp-info-tile:hover {
+  transform: translateY(-4px);
+  border-color: #93c5fd;
+  box-shadow: 0 24px 60px rgba(37, 99, 235, 0.13);
+}
+
+.pp-info-tile span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.pp-info-tile strong {
+  display: block;
+  margin-top: 9px;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 1000;
+  word-break: break-word;
+}
+
+/* ================================
+   FORM CARD
+================================ */
+
+.pp-form-card {
+  padding: 28px;
+  border-radius: 34px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(248, 251, 255, 0.94));
+  border: 1px solid #dbeafe;
+  box-shadow: 0 26px 70px rgba(15, 23, 42, 0.09);
+  display: grid;
+  gap: 20px;
+}
+
+.pp-form-heading span {
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pp-form-heading h3 {
+  margin: 8px 0 0;
+  color: #0f172a;
+  font-size: 30px;
+  font-weight: 1000;
+  letter-spacing: -0.045em;
+}
+
+.pp-form-heading p {
+  max-width: 720px;
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 750;
+}
+
+.pp-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.pp-field-card {
+  padding: 18px;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.pp-field-card:hover {
+  transform: translateY(-3px);
+  border-color: #93c5fd;
+  box-shadow: 0 18px 42px rgba(37, 99, 235, 0.11);
+}
+
+.pp-field-card label {
+  display: block;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.pp-field-card input,
+.pp-field-card select {
+  width: 100%;
+  height: 48px;
+  margin-top: 9px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  background: #f8fafc;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 750;
+  font-family: inherit;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.pp-field-card input:focus,
+.pp-field-card select:focus {
+  border-color: #38bdf8;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
+}
+
+/* ================================
+   SECURITY NOTE
+================================ */
+
+.pp-security-note {
+  padding: 18px;
+  border-radius: 24px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.pp-security-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: #e0f2fe;
+  font-size: 22px;
+}
+
+.pp-security-note strong {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 1000;
+}
+
+.pp-security-note p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 750;
+}
+
+/* ================================
+   MESSAGES / VALIDATION
+================================ */
+
+.pp-field-error {
+  margin-top: 8px;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.pp-form-message {
+  padding: 14px 16px;
+  border-radius: 18px;
+  color: #0369a1;
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.pp-field-card input.ng-invalid.ng-touched,
+.pp-field-card select.ng-invalid.ng-touched {
+  border-color: #f87171;
+  background: #fff7f7;
+}
+
+/* ================================
+   ACTIONS
+================================ */
+
+.pp-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* ================================
+   ANIMATIONS
+================================ */
+
+@keyframes pp-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 920px) {
+  .pp-hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pp-hero-actions {
+    width: 100%;
+  }
+
+  .pp-primary-action,
+  .pp-secondary-action {
+    flex: 1;
+  }
+
+  .pp-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pp-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .pp-hero-card,
+  .pp-form-card,
+  .pp-identity-card {
+    padding: 22px;
+    border-radius: 28px;
+  }
+
+  .pp-identity-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pp-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pp-form-actions {
+    flex-direction: column;
+  }
+
+  .pp-save-btn,
+  .pp-cancel-btn {
+    width: 100%;
+  }
+}
+
+/* ================================
+   PROFILE CONFIRMATION MODALS
+================================ */
+
+.pp-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 7000;
+  padding: 24px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  animation: pp-confirm-fade 0.2s ease;
+}
+
+.pp-confirm-modal {
+  width: min(480px, 100%);
+  padding: 28px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 38%),
+    linear-gradient(145deg, #ffffff 0%, #f8fbff 60%, #eef6ff 100%);
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 35px 90px rgba(15, 23, 42, 0.32);
+  text-align: center;
+  animation: pp-confirm-enter 0.24s ease;
+}
+
+.pp-confirm-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 1000;
+}
+
+.pp-confirm-icon.warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 18px 38px rgba(217, 119, 6, 0.24);
+}
+
+.pp-confirm-icon.success {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  box-shadow: 0 18px 38px rgba(37, 99, 235, 0.24);
+}
+
+.pp-confirm-kicker {
+  display: block;
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pp-confirm-modal h3 {
+  margin: 10px 0 0;
+  color: #0f172a;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 1000;
+  letter-spacing: -0.045em;
+}
+
+.pp-confirm-modal p {
+  margin: 12px auto 0;
+  max-width: 360px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.65;
+  font-weight: 750;
+}
+
+.pp-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.pp-confirm-cancel,
+.pp-confirm-primary,
+.pp-confirm-danger {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.pp-confirm-cancel {
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+}
+
+.pp-confirm-primary {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  border: 0;
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.24);
+}
+
+.pp-confirm-danger {
+  color: #ffffff;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: 0;
+  box-shadow: 0 16px 34px rgba(220, 38, 38, 0.24);
+}
+
+.pp-confirm-cancel:hover,
+.pp-confirm-primary:hover,
+.pp-confirm-danger:hover {
+  transform: translateY(-2px);
+}
+
+.pp-confirm-cancel:hover {
+  background: #f8fafc;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+}
+
+.pp-confirm-primary:hover {
+  box-shadow: 0 20px 42px rgba(37, 99, 235, 0.3);
+}
+
+.pp-confirm-danger:hover {
+  box-shadow: 0 20px 42px rgba(220, 38, 38, 0.3);
+}
+
+@keyframes pp-confirm-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pp-confirm-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 560px) {
+  .pp-confirm-modal {
+    padding: 24px;
+    border-radius: 26px;
+  }
+
+  .pp-confirm-actions {
+    flex-direction: column;
+  }
+
+  .pp-confirm-cancel,
+  .pp-confirm-primary,
+  .pp-confirm-danger {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   FINAL PROFILE HERO SIZE FIX
+========================================================= */
+
+.pp-hero-card {
+  padding: 20px 26px !important;
+  border-radius: 28px !important;
+  min-height: auto !important;
+}
+
+.pp-kicker {
+  font-size: 11px !important;
+}
+
+.pp-hero-card h2 {
+  font-size: clamp(28px, 3vw, 38px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.04em !important;
+  margin-top: 10px !important;
+}
+
+.pp-hero-card p {
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+  margin-top: 10px !important;
+  max-width: 650px !important;
+}
+
+.pp-hero-actions {
+  gap: 10px !important;
+}
+
+.pp-primary-action,
+.pp-secondary-action {
+  height: 40px !important;
+  padding: 0 14px !important;
+  font-size: 12px !important;
+  border-radius: 14px !important;
+}
+
+.pp-field-card input:disabled {
+  cursor: not-allowed;
+  color: #64748b;
+  background: #e2e8f0;
+}

@@ -1,0 +1,70 @@
+﻿@page "/admin-login-bridge"
+
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject IConfiguration Configuration
+
+<div style="min-height:100vh; display:grid; place-items:center; font-family:Arial;">
+    <div style="text-align:center;">
+        <h3>Signing you in...</h3>
+        <p>Please wait while HealthAxis opens your admin portal.</p>
+    </div>
+</div>
+
+@code {
+    private const string TokenStorageKey = "token";
+
+    private string AngularHomeUrl =>
+        Configuration["AppUrls:AngularHomeUrl"] ?? "/";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+
+        var token = GetQueryValue(uri.Query, "token");
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            Navigation.NavigateTo(AngularHomeUrl, forceLoad: true);
+            return;
+        }
+
+        await JS.InvokeVoidAsync("localStorage.setItem", TokenStorageKey, token);
+
+        Navigation.NavigateTo("/admin/dashboard", forceLoad: true);
+    }
+
+    private static string GetQueryValue(string queryString, string key)
+    {
+        if (string.IsNullOrWhiteSpace(queryString))
+        {
+            return string.Empty;
+        }
+
+        var query = queryString.TrimStart('?');
+
+        var pairs = query.Split('&', StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var pair in pairs)
+        {
+            var parts = pair.Split('=', 2);
+
+            if (parts.Length != 2)
+            {
+                continue;
+            }
+
+            if (parts[0] == key)
+            {
+                return Uri.UnescapeDataString(parts[1]);
+            }
+        }
+
+        return string.Empty;
+    }
+}
