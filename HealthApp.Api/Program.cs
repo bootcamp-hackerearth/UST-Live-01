@@ -143,6 +143,8 @@ builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 
+builder.Services.AddHostedService<HeartbeatService>();
+
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>
 {
