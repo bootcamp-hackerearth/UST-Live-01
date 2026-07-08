@@ -13,6 +13,9 @@ using System.Text;
 using System.Text.Json;
 using HealthAxis.API.BackgroundServices;
 using Serilog;
+using MassTransit;
+using HealthAxis.API.Consumers;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +32,28 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 builder.Services.AddHostedService<HealthAxisHeartbeatService>();
 builder.Services.AddHostedService<NotificationCleanupService>();
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<AppointmentBookedConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        cfg.ReceiveEndpoint(
+            "appointment-booked-notification-queue",
+            e =>
+            {
+                e.ConfigureConsumer<AppointmentBookedConsumer>(
+                    context);
+            });
+    });
+});
 
 // Add controllers.
 builder.Services.AddControllers()
