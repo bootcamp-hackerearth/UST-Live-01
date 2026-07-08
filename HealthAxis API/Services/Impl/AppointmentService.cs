@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using HealthAxis.API.DTOs.Appointments;
 using HealthAxis.API.Enums;
+using HealthAxis.API.Messages;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories;
+using MassTransit;
 
 namespace HealthAxis.API.Services
 {
@@ -14,18 +16,24 @@ namespace HealthAxis.API.Services
         private readonly IDoctorRepository _doctorRepository;
         private readonly IPatientRepository _patientRepository;
         private readonly IMapper _mapper;
+        private readonly IPublishEndpoint _publishEndpoint;
+        private readonly ILogger<AppointmentService> _logger;
 
         public AppointmentService(
             IAppointmentRepository appointmentRepository,
             IDoctorRepository doctorRepository,
             IPatientRepository patientRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IPublishEndpoint publishEndpoint,
+            ILogger<AppointmentService> logger)
             : base(appointmentRepository, mapper)
         {
             _appointmentRepository = appointmentRepository;
             _doctorRepository = doctorRepository;
             _patientRepository = patientRepository;
             _mapper = mapper;
+            _publishEndpoint = publishEndpoint;
+            _logger = logger;
         }
 
         public new async Task<AppointmentReadDto> CreateAsync(
@@ -52,7 +60,7 @@ namespace HealthAxis.API.Services
             }
 
             DateTime maxAllowedDate =
-            DateTime.Today.AddMonths(6);
+                DateTime.Today.AddMonths(6);
 
             if (createDto.ScheduledDate.Date > maxAllowedDate)
             {
@@ -130,6 +138,28 @@ namespace HealthAxis.API.Services
                 await _appointmentRepository.CreateAsync(
                     appointmentToCreate,
                     ct);
+
+            AppointmentBookedEvent appointmentBookedEvent = new()
+            {
+                AppointmentId = createdAppointment.AppointmentId,
+                PatientName = patient.FullName,
+                DoctorId = createdAppointment.DoctorId,
+                ScheduledDate = createdAppointment.ScheduledDate,
+                TimeSlot = createdAppointment.TimeSlot
+            };
+
+            _logger.LogInformation(
+                "Publishing AppointmentBookedEvent for AppointmentId {AppointmentId}, DoctorId {DoctorId}",
+                appointmentBookedEvent.AppointmentId,
+                appointmentBookedEvent.DoctorId);
+
+            await _publishEndpoint.Publish(
+                appointmentBookedEvent,
+                ct);
+
+            _logger.LogInformation(
+                "AppointmentBookedEvent published successfully for AppointmentId {AppointmentId}",
+                appointmentBookedEvent.AppointmentId);
 
             return await MapAppointmentWithNamesAsync(
                 createdAppointment,
@@ -209,7 +239,7 @@ namespace HealthAxis.API.Services
             else if (statusUpdateDto.Status == AppointmentStatus.Cancelled)
             {
                 appointment.Cancel(
-                    statusUpdateDto.CancellationReason);
+                    statusUpdateDto.CancellationReason ?? string.Empty);
             }
             else if (statusUpdateDto.Status == AppointmentStatus.Completed)
             {
@@ -223,12 +253,9 @@ namespace HealthAxis.API.Services
 
             await _appointmentRepository.SaveChangesAsync(ct);
 
-            AppointmentReadDto dto =
-                await MapAppointmentWithNamesAsync(
-                    appointment,
-                    ct);
-
-            return dto;
+            return await MapAppointmentWithNamesAsync(
+                appointment,
+                ct);
         }
 
         public async Task<List<AppointmentReportDto>> GetAppointmentReportAsync(
