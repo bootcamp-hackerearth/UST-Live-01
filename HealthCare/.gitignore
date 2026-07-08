@@ -49,3 +49,5 @@ __screenshots__/
 !.vscode/extensions.json
 !.vscode/mcp.json
 .history/*
+
+logs/

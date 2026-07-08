@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using Healthcare.Shared.DTOs;
 using Healthcare.Shared.DTOs.Appointments;
+using Healthcare.Shared.Events;
 using HealthCare.Api.Data;
 using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -17,13 +19,20 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IDoctorService _doctorService;
         private readonly IMapper _mapper;
         private readonly HealthCareDbContext _context;
-      
-        public AppointmentService(IAppointmentRepository repository, IDoctorService doctorService, HealthCareDbContext context, IMapper mapper)
+        private readonly IPublishEndpoint _publishEndpoint;
+
+        public AppointmentService(
+            IAppointmentRepository repository, 
+            IDoctorService doctorService, 
+            HealthCareDbContext context, 
+            IMapper mapper,
+            IPublishEndpoint publishEndpoint)
         {
             _repository = repository;
             _doctorService = doctorService;
             _context = context;
             _mapper = mapper;
+            _publishEndpoint = publishEndpoint;
         }
 
         public async Task AddAsync(CreateAppointmentDto dto, int patientId)
@@ -37,6 +46,34 @@ namespace HealthCare.Api.Services.Implementations
             await _repository.AddAsync(appointment);
 
             await _context.SaveChangesAsync();
+
+            // Publish AppointmentBookedEvent
+            try
+            {
+              
+                var patient = await _context.Patients.FindAsync(patientId);
+                var doctor = await _context.Doctors.FindAsync(appointment.DoctorId);
+
+                if (patient != null && doctor != null)
+                {
+                    var appointmentBookedEvent = new AppointmentBookedEvent
+                    {
+                        AppointmentId = appointment.AppointmentId,
+                        PatientId = patientId,
+                        DoctorId = appointment.DoctorId,
+                        PatientName = patient.FullName,
+                        DoctorName = doctor.FullName,
+                        ScheduledDate = appointment.ScheduledDate,
+                        TimeSlot = appointment.TimeSlot,
+                    };
+
+                    await _publishEndpoint.Publish(appointmentBookedEvent);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error publishing AppointmentBookedEvent: {ex.Message}");
+            }
         }
 
         public async Task UpdateAsync(int id, UpdateAppointmentDto dto)

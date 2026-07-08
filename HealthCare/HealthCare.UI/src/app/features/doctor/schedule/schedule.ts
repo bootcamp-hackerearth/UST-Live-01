@@ -13,11 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterLink
-  ],
+  imports: [CommonModule,FormsModule,RouterLink],
   templateUrl: './schedule.html',
   styleUrl: './schedule.css'
 })

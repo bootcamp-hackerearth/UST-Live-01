@@ -1,6 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef } from '@angular/core';
 import { AppointmentService }
 from '../../../core/services/appointment.service';
 
@@ -19,7 +18,6 @@ implements OnInit {
 
   constructor(
     private readonly appointmentService: AppointmentService,
-    private readonly cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
