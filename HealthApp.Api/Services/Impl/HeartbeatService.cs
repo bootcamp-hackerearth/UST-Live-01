@@ -2,7 +2,10 @@
 {
     public class HeartbeatService : BackgroundService
     {
-        private static readonly TimeSpan HeartbeatInterval =
+        private static readonly TimeSpan InitialDelay =
+            TimeSpan.FromSeconds(2);
+
+        private static readonly TimeSpan HeartbeatDelay =
             TimeSpan.FromSeconds(10);
 
         private readonly ILogger<HeartbeatService> _logger;
@@ -18,18 +21,22 @@
         {
             var heartbeatCount = 0;
 
-            _logger.LogInformation(
-                "\n" +
-                "==================================================\n" +
-                " HEARTBEAT SERVICE STARTED\n" +
-                " Interval       : {IntervalSeconds} seconds\n" +
-                " Started At UTC : {StartedAtUtc}\n" +
-                "==================================================",
-                HeartbeatInterval.TotalSeconds,
-                DateTime.UtcNow);
-
             try
             {
+                await Task.Delay(
+                    InitialDelay,
+                    stoppingToken);
+
+                _logger.LogInformation(
+                    "\n" +
+                    "==================================================\n" +
+                    " HEARTBEAT SERVICE STARTED\n" +
+                    " Interval       : {IntervalSeconds} seconds\n" +
+                    " Started At UTC : {StartedAtUtc}\n" +
+                    "==================================================",
+                    HeartbeatDelay.TotalSeconds,
+                    DateTime.UtcNow);
+
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     heartbeatCount++;
@@ -45,7 +52,7 @@
                         DateTime.UtcNow);
 
                     await Task.Delay(
-                        HeartbeatInterval,
+                        HeartbeatDelay,
                         stoppingToken);
                 }
             }
