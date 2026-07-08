@@ -22,7 +22,7 @@ namespace HealthAxisCore_Api.BackgroundServices
                     "HealthAxis heartbeat running at {CurrentTime}",
                     DateTime.Now);
 
-                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
             }
 
             _logger.LogInformation("HealthAxis heartbeat background service stopped.");

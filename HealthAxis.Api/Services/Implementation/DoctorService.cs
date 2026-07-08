@@ -4,15 +4,27 @@ using HealthAxisCore_Api.Extensions;
 using HealthAxisCore_Api.Models.Dtos;
 using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Interfaces;
+using Microsoft.Extensions.Caching.Distributed;
+using Serilog;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace HealthAxisCore_Api.Services.Implementation
 {
     public class DoctorService(
         IDoctorRepository repository,
-        IMapper mapper
+        IMapper mapper,
+        IDistributedCache distributedCache
     ) : IDoctorService
     {
+        private static readonly Serilog.ILogger Logger =
+            Log.ForContext<DoctorService>();
+
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
         public async Task<List<DoctorDto>> GetDoctorsAsync(
             string? specialisation,
             ClaimsPrincipal user,
@@ -106,7 +118,8 @@ namespace HealthAxisCore_Api.Services.Implementation
 
                 if (doctorId != id)
                 {
-                    throw new UnauthorizedException("You can view only your own doctor profile");
+                    throw new UnauthorizedException(
+                        "You can view only your own doctor profile");
                 }
             }
 
@@ -126,21 +139,74 @@ namespace HealthAxisCore_Api.Services.Implementation
                 throw new InvalidException("Cannot check past date");
             }
 
-            return await repository.GetAvailableSlotsAsync(id, date, ct);
+            var cacheKey = BuildDoctorAvailabilityCacheKey(id, date);
+
+            var cachedValue = await distributedCache.GetStringAsync(
+                cacheKey,
+                ct);
+
+            if (!string.IsNullOrWhiteSpace(cachedValue))
+            {
+                var cachedSlots = JsonSerializer.Deserialize<List<string>>(
+                    cachedValue,
+                    JsonOptions);
+
+                Logger.Information(
+                    "Doctor availability cache HIT. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+                    id,
+                    date.Date,
+                    cacheKey);
+
+                return cachedSlots ?? new List<string>();
+            }
+
+            Logger.Information(
+                "Doctor availability cache MISS. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+                id,
+                date.Date,
+                cacheKey);
+
+            var availableSlots = await repository.GetAvailableSlotsAsync(
+                id,
+                date,
+                ct);
+
+            var serializedSlots = JsonSerializer.Serialize(
+                availableSlots,
+                JsonOptions);
+
+            await distributedCache.SetStringAsync(
+                cacheKey,
+                serializedSlots,
+                new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                },
+                ct);
+
+            Logger.Information(
+                "Doctor availability cached. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}, TtlMinutes: {TtlMinutes}",
+                id,
+                date.Date,
+                cacheKey,
+                5);
+
+            return availableSlots;
         }
 
         public async Task<DoctorDto> UpdateOwnStatusAsync(
-    int id,
-    bool isActive,
-    ClaimsPrincipal user,
-    CancellationToken ct = default)
+            int id,
+            bool isActive,
+            ClaimsPrincipal user,
+            CancellationToken ct = default)
         {
             var loggedInDoctorId = user.GetDoctorId()
                 ?? throw new UnauthorizedException("DoctorId claim missing");
 
             if (loggedInDoctorId != id)
             {
-                throw new UnauthorizedException("You can update only your own doctor profile status");
+                throw new UnauthorizedException(
+                    "You can update only your own doctor profile status");
             }
 
             var doctor = await repository.GetByIdAsync(id, ct)
@@ -155,6 +221,13 @@ namespace HealthAxisCore_Api.Services.Implementation
                 ?? throw new NotFoundException("Doctor not found");
 
             return mapper.Map<DoctorDto>(updated);
+        }
+
+        private static string BuildDoctorAvailabilityCacheKey(
+            int doctorId,
+            DateTime date)
+        {
+            return $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
         }
     }
 }

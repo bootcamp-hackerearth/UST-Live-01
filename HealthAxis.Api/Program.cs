@@ -5,6 +5,7 @@ using HealthAxisCore_Api.Messaging.Consumers;
 using HealthAxisCore_Api.Messaging.Publishers;
 using HealthAxisCore_Api.Middleware;
 using HealthAxisCore_Api.Models;
+using HealthAxisCore_Api.Options;
 using HealthAxisCore_Api.Repositories.Implementation;
 using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Implementation;
@@ -186,6 +187,13 @@ builder.Services.AddSingleton<RabbitMQPublisher>();
 
 builder.Services.AddHostedService<HealthAxisHeartbeatService>();
 builder.Services.AddHostedService<AppointmentBookedConsumer>();
+builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection("Garnet"));
+builder.Services.AddStackExchangeRedisCache(option =>
+{
+    var garnetOptions = builder.Configuration.GetSection("Garnet").Get<GarnetOptions>() ?? new GarnetOptions();
+    option.Configuration = garnetOptions.ConnectionString;
+    option.InstanceName = garnetOptions.InstanceName;
+});
 
 builder.Services.AddAutoMapper(cfg =>
 {

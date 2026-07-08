@@ -7,6 +7,7 @@ using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Models.Dtos;
 using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Interfaces;
+using Microsoft.Extensions.Caching.Distributed;
 using Serilog;
 using System.Globalization;
 using System.Security.Claims;
@@ -17,7 +18,8 @@ namespace HealthAxisCore_Api.Services.Implementation
         IAppointmentRepository appointmentRepository,
         IDoctorRepository doctorRepository,
         IMapper mapper,
-        RabbitMQPublisher publisher
+        RabbitMQPublisher publisher,
+        IDistributedCache distributedCache
     ) : IAppointmentService
     {
         private static readonly Serilog.ILogger Logger =
@@ -122,6 +124,22 @@ namespace HealthAxisCore_Api.Services.Implementation
             var savedAppointment = await appointmentRepository.CreateAsync(
                 appointment,
                 ct);
+
+            // CHANGE: Invalidate Garnet/Redis doctor availability cache after successful booking.
+            var availabilityCacheKey =
+                BuildDoctorAvailabilityCacheKey(
+                    savedAppointment.DoctorId,
+                    savedAppointment.ScheduledDate);
+
+            await distributedCache.RemoveAsync(
+                availabilityCacheKey,
+                ct);
+
+            Logger.Information(
+                "Doctor availability cache invalidated after appointment booking. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+                savedAppointment.DoctorId,
+                savedAppointment.ScheduledDate.Date,
+                availabilityCacheKey);
 
             var savedAppointmentDetails =
                 await appointmentRepository.GetDetailsAsync(
@@ -250,6 +268,13 @@ namespace HealthAxisCore_Api.Services.Implementation
             {
                 throw new NotFoundException("Appointment not found");
             }
+        }
+
+        private static string BuildDoctorAvailabilityCacheKey(
+            int doctorId,
+            DateTime scheduledDate)
+        {
+            return $"doctors:{doctorId}:availability:{scheduledDate:yyyy-MM-dd}";
         }
 
         private static void EnsureWithinDoctorWorkingHours(string timeSlot)
