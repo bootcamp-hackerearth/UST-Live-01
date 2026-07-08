@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using HealthCareApp.Exceptions;
+using HealthCareApp.Helpers;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
+using HealthCareApp.Services.Interface;
 using HealthCareApp.Shared.Constants;
 using HealthCareApp.Shared.Dtos.Doctors;
 using HealthCareApp.Shared.Dtos.Pagination;
@@ -16,11 +18,16 @@ namespace HealthCareApp.Services
         IAppointmentRepository appointmentRepository,
         IMapper mapper,
         UserManager<IdentityUser> userManager,
-        RoleManager<IdentityRole> roleManager) : IDoctorService
+        RoleManager<IdentityRole> roleManager,
+        ICacheService cacheService,
+        ILogger<DoctorService> logger) : IDoctorService
     {
         private const string DoctorEntityName = "Doctor";
         private const string DoctorRoleName = "Doctor";
         private const string DoctorDetailsRequiredMessage = "Doctor details are required.";
+
+        private static readonly TimeSpan DoctorAvailabilityCacheDuration =
+            TimeSpan.FromMinutes(5);
 
         private static readonly Regex DoctorFullNameRegex = new(
             @"^[A-Za-z]+(?: [A-Za-z]+)*$",
@@ -267,6 +274,84 @@ namespace HealthCareApp.Services
         {
             ValidateDoctorId(doctorId);
 
+            if (date is not null)
+            {
+                var selectedDate = date.Value.Date;
+
+                var cacheKey = BuildDoctorAvailabilityCacheKey(
+                    doctorId,
+                    selectedDate);
+
+                var cachedAvailability = await cacheService.GetAsync<List<SlotAvailabilityDto>>(
+                    cacheKey);
+
+                if (cachedAvailability is not null)
+                {
+                    logger.LogInformation(
+                        "Doctor availability cache HIT. CacheKey: {CacheKey}, DoctorId: {DoctorId}, Date: {Date}",
+                        cacheKey,
+                        doctorId,
+                        selectedDate.ToString("yyyy-MM-dd"));
+
+                    ConsoleHighlightHelper.WriteCacheBox(
+                        "DOCTOR AVAILABILITY CACHE HIT - DATA FROM GARNET",
+                        cacheKey,
+                        "HIT",
+                        ConsoleColor.DarkGreen);
+
+                    return cachedAvailability;
+                }
+
+                logger.LogInformation(
+                    "Doctor availability cache MISS. CacheKey: {CacheKey}, DoctorId: {DoctorId}, Date: {Date}",
+                    cacheKey,
+                    doctorId,
+                    selectedDate.ToString("yyyy-MM-dd"));
+
+                ConsoleHighlightHelper.WriteCacheBox(
+                    "DOCTOR AVAILABILITY CACHE MISS - FETCHING FROM SQL SERVER",
+                    cacheKey,
+                    "MISS",
+                    ConsoleColor.DarkRed);
+
+                var availability = await BuildDoctorAvailabilityFromDatabaseAsync(
+                    doctorId,
+                    selectedDate);
+
+                await cacheService.SetAsync(
+                    cacheKey,
+                    availability,
+                    DoctorAvailabilityCacheDuration);
+
+                logger.LogInformation(
+                    "Doctor availability cached for {Minutes} minutes. CacheKey: {CacheKey}, DoctorId: {DoctorId}, Date: {Date}",
+                    DoctorAvailabilityCacheDuration.TotalMinutes,
+                    cacheKey,
+                    doctorId,
+                    selectedDate.ToString("yyyy-MM-dd"));
+
+                ConsoleHighlightHelper.WriteCacheBox(
+                    "DOCTOR AVAILABILITY CACHED IN GARNET FOR 5 MINUTES",
+                    cacheKey,
+                    "SET",
+                    ConsoleColor.DarkBlue);
+
+                return availability;
+            }
+
+            logger.LogInformation(
+                "Doctor availability requested without date. Cache skipped. DoctorId: {DoctorId}",
+                doctorId);
+
+            return await BuildDoctorAvailabilityFromDatabaseAsync(
+                doctorId,
+                null);
+        }
+
+        private async Task<List<SlotAvailabilityDto>> BuildDoctorAvailabilityFromDatabaseAsync(
+            int doctorId,
+            DateTime? date)
+        {
             var doctor = await repository.GetByIdAsync(doctorId);
 
             if (doctor is null)
@@ -285,7 +370,7 @@ namespace HealthCareApp.Services
             {
                 bookedSlots = await appointmentRepository.GetBookedTimeSlotsByDoctorAndDateAsync(
                     doctorId,
-                    date.Value);
+                    date.Value.Date);
             }
 
             var bookedSlotSet = bookedSlots.ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -297,6 +382,13 @@ namespace HealthCareApp.Services
                     IsBooked = bookedSlotSet.Contains(slot)
                 })
                 .ToList();
+        }
+
+        private static string BuildDoctorAvailabilityCacheKey(
+            int doctorId,
+            DateTime date)
+        {
+            return $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
         }
 
         private static void ValidateDoctorId(int doctorId)

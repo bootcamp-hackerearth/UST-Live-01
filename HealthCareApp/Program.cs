@@ -4,6 +4,7 @@ using HealthCareApp.Mapping;
 using HealthCareApp.Messaging.Consumers;
 using HealthCareApp.Messaging.Test;
 using HealthCareApp.Middleware;
+using HealthCareApp.Options;
 using HealthCareApp.Repository.Impl;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Services;
@@ -36,6 +37,21 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy =
             System.Text.Json.JsonNamingPolicy.CamelCase;
     });
+
+// Register Garnet/Redis options.
+builder.Services.Configure<GarnetOptions>(
+    builder.Configuration.GetSection("Garnet"));
+
+// Register distributed cache using Garnet/Redis.
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    var garnetOptions = builder.Configuration
+        .GetSection("Garnet")
+        .Get<GarnetOptions>()!;
+
+    options.Configuration = garnetOptions.ConnectionString;
+    options.InstanceName = garnetOptions.InstanceName;
+});
 
 // Register HealthAxisDbContext with SQL Server.
 builder.Services.AddDbContext<HealthAxisDbContext>(options =>
@@ -131,6 +147,7 @@ builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
+builder.Services.AddScoped<ICacheService, CacheService>();
 
 // Register background services.
 builder.Services.AddHostedService<HeartbeatBackgroundService>();

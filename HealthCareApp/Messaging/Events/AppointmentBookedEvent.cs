@@ -10,6 +10,7 @@
 
         public DateTime ScheduledDate { get; set; }
 
-        public string TimeSlot { get; set; } = string.Empty;
+        public string TimeSlot { get; set; } = string.Empty; 
     }
 }
+//This is the event contract.
