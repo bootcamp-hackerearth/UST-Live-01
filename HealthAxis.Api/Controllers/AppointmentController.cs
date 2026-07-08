@@ -28,10 +28,12 @@ namespace HealthAxisCore_Api.Controllers
         [HttpPost]
         [Authorize(Roles = "Patient")]
         public async Task<ActionResult<AppointmentDto>> Create(
-            CreateAppointmentDto request,
-            CancellationToken ct)
+    CreateAppointmentDto request,
+    CancellationToken ct)
         {
-            return Ok(await service.CreateAsync(request, User, ct));
+            var createdAppointment = await service.CreateAsync(request, User, ct);
+
+            return StatusCode(StatusCodes.Status201Created, createdAppointment);
         }
 
         [HttpPut("{id:int}/status")]

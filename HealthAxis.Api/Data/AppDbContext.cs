@@ -16,6 +16,9 @@ namespace HealthAxisCore_Api.Data
         public DbSet<HealthRecord> HealthRecords { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<AdminHandoffCode> AdminHandoffCodes { get; set; }
+
+        public DbSet<Notification> Notifications { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -66,6 +69,12 @@ namespace HealthAxisCore_Api.Data
                 .HasOne(h => h.Appointment)
                 .WithMany()
                 .HasForeignKey(h => h.AppointmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Notification>()
+                .HasOne(n => n.Doctor)
+                .WithMany()
+                .HasForeignKey(n => n.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

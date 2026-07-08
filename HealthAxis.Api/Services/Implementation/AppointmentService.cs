@@ -1,10 +1,13 @@
 using AutoMapper;
 using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Extensions;
+using HealthAxisCore_Api.Messaging.Contracts;
+using HealthAxisCore_Api.Messaging.Publishers;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Models.Dtos;
 using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Interfaces;
+using Serilog;
 using System.Globalization;
 using System.Security.Claims;
 
@@ -13,9 +16,13 @@ namespace HealthAxisCore_Api.Services.Implementation
     public class AppointmentService(
         IAppointmentRepository appointmentRepository,
         IDoctorRepository doctorRepository,
-        IMapper mapper
+        IMapper mapper,
+        RabbitMQPublisher publisher
     ) : IAppointmentService
     {
+        private static readonly Serilog.ILogger Logger =
+            Log.ForContext<AppointmentService>();
+
         public async Task<List<AppointmentDto>> GetAppointmentsAsync(
             int? patientId,
             int? doctorId,
@@ -44,19 +51,19 @@ namespace HealthAxisCore_Api.Services.Implementation
         }
 
         public async Task<AppointmentDto> CreateAsync(
-     CreateAppointmentDto request,
-     ClaimsPrincipal user,
-     CancellationToken ct = default)
+            CreateAppointmentDto request,
+            ClaimsPrincipal user,
+            CancellationToken ct = default)
         {
             var patientId = user.GetPatientId()
                 ?? throw new UnauthorizedException("PatientId claim missing");
-            
+
             var patientAlreadyBookedAtSameTime =
-    await appointmentRepository.PatientHasAppointmentAtSlotAsync(
-        patientId,
-        request.ScheduledDate,
-        request.TimeSlot,
-        ct);
+                await appointmentRepository.PatientHasAppointmentAtSlotAsync(
+                    patientId,
+                    request.ScheduledDate,
+                    request.TimeSlot,
+                    ct);
 
             if (patientAlreadyBookedAtSameTime)
             {
@@ -106,20 +113,51 @@ namespace HealthAxisCore_Api.Services.Implementation
                 throw new InvalidException("Slot not available");
             }
 
-            var appt = mapper.Map<Appointment>(request);
+            var appointment = mapper.Map<Appointment>(request);
 
-            appt.PatientId = patientId;
-            appt.Status = "Pending";
-            appt.CancellationReason = string.Empty;
+            appointment.PatientId = patientId;
+            appointment.Status = "Pending";
+            appointment.CancellationReason = string.Empty;
 
-            var saved = await appointmentRepository.CreateAsync(
-                appt,
+            var savedAppointment = await appointmentRepository.CreateAsync(
+                appointment,
                 ct);
 
-            return mapper.Map<AppointmentDto>(
+            var savedAppointmentDetails =
                 await appointmentRepository.GetDetailsAsync(
-                    saved.AppointmentId,
-                    ct) ?? saved);
+                    savedAppointment.AppointmentId,
+                    ct) ?? savedAppointment;
+
+            var appointmentDto = mapper.Map<AppointmentDto>(savedAppointmentDetails);
+
+            Logger.Information(
+                "Appointment booked successfully. AppointmentId: {AppointmentId}, PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
+                savedAppointmentDetails.AppointmentId,
+                savedAppointmentDetails.PatientId,
+                savedAppointmentDetails.DoctorId,
+                savedAppointmentDetails.ScheduledDate,
+                savedAppointmentDetails.TimeSlot);
+
+            await publisher.PublishAppointmentBookedAsync(
+                new AppointmentBookedEvent
+                {
+                    AppointmentId = savedAppointmentDetails.AppointmentId,
+                    PatientId = savedAppointmentDetails.PatientId,
+                    PatientName = savedAppointmentDetails.Patient?.PatientName
+                        ?? appointmentDto.PatientName,
+                    DoctorId = savedAppointmentDetails.DoctorId,
+                    ScheduledDate = savedAppointmentDetails.ScheduledDate,
+                    TimeSlot = savedAppointmentDetails.TimeSlot,
+                    OccurredAt = DateTime.UtcNow
+                },
+                ct);
+
+            Logger.Information(
+                "AppointmentBookedEvent publish requested. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}",
+                savedAppointmentDetails.AppointmentId,
+                savedAppointmentDetails.DoctorId);
+
+            return appointmentDto;
         }
 
         public async Task<AppointmentDto> UpdateStatusAsync(
@@ -128,7 +166,7 @@ namespace HealthAxisCore_Api.Services.Implementation
             ClaimsPrincipal user,
             CancellationToken ct = default)
         {
-            var appt = await appointmentRepository.GetDetailsAsync(id, ct)
+            var appointment = await appointmentRepository.GetDetailsAsync(id, ct)
                 ?? throw new NotFoundException("Appointment not found");
 
             if (user.IsPatient())
@@ -136,7 +174,7 @@ namespace HealthAxisCore_Api.Services.Implementation
                 var patientId = user.GetPatientId()
                     ?? throw new UnauthorizedException("PatientId claim missing");
 
-                if (appt.PatientId != patientId)
+                if (appointment.PatientId != patientId)
                 {
                     throw new UnauthorizedException(
                         "You can update only your own appointment");
@@ -154,7 +192,7 @@ namespace HealthAxisCore_Api.Services.Implementation
                 var doctorId = user.GetDoctorId()
                     ?? throw new UnauthorizedException("DoctorId claim missing");
 
-                if (appt.DoctorId != doctorId)
+                if (appointment.DoctorId != doctorId)
                 {
                     throw new UnauthorizedException(
                         "You can update only your own appointment");
@@ -176,31 +214,32 @@ namespace HealthAxisCore_Api.Services.Implementation
                     throw new InvalidException("Cancellation reason is required");
                 }
 
-                EnsureCancellationAllowed(appt);
+                EnsureCancellationAllowed(appointment);
             }
-            if (appt.Status == "Cancelled")
+
+            if (appointment.Status == "Cancelled")
             {
                 throw new InvalidException("Cancelled appointment cannot be updated");
             }
 
-            if (appt.Status == "Completed" && request.Status != "Completed")
+            if (appointment.Status == "Completed" && request.Status != "Completed")
             {
                 throw new InvalidException("Completed appointment cannot be changed");
             }
 
-            appt.Status = request.Status;
-            appt.CancellationReason = request.CancellationReason ?? string.Empty;
+            appointment.Status = request.Status;
+            appointment.CancellationReason = request.CancellationReason ?? string.Empty;
 
-            var updated = await appointmentRepository.UpdateAsync(
+            var updatedAppointment = await appointmentRepository.UpdateAsync(
                 id,
-                appt,
+                appointment,
                 ct)
                 ?? throw new NotFoundException("Appointment not found");
 
             return mapper.Map<AppointmentDto>(
                 await appointmentRepository.GetDetailsAsync(
-                    updated.AppointmentId,
-                    ct) ?? updated);
+                    updatedAppointment.AppointmentId,
+                    ct) ?? updatedAppointment);
         }
 
         public async Task DeleteAsync(
