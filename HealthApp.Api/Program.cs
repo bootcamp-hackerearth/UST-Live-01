@@ -1,3 +1,4 @@
+using HealthApp.Api.Consumers;
 using HealthApp.Api.Data;
 using HealthApp.Api.Handler;
 using HealthApp.Api.Mapping;
@@ -6,26 +7,29 @@ using HealthApp.Api.Repositories.Impl;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Impl;
 using HealthApp.Api.Services.Interfaces;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
+using Serilog.Events;
 using System.Text;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
-    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", Serilog.Events.LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
-    .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+    .MinimumLevel.Override("System", LogEventLevel.Warning)
     .WriteTo.Console()
     .WriteTo.File(
         "Logs/healthapp-.log",
-        rollingInterval: RollingInterval.Day)
+        rollingInterval: RollingInterval.Day
+        )
     .Enrich.FromLogContext()
     .CreateLogger();
 
@@ -149,6 +153,23 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 
 builder.Services.AddHostedService<HeartbeatService>();
+
+// MassTransit / RabbitMQ
+builder.Services.AddMassTransit(config =>
+{
+    config.AddConsumer<AppointmentBookedConsumer>();
+
+    config.UsingRabbitMq((context, rabbitConfig) =>
+    {
+        rabbitConfig.Host("localhost", "/", host =>
+        {
+            host.Username("guest");
+            host.Password("guest");
+        });
+
+        rabbitConfig.ConfigureEndpoints(context);
+    });
+});
 
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>

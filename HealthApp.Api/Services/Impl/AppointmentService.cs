@@ -6,6 +6,8 @@ using HealthApp.Api.Services.Interfaces;
 using HealthApp.Shared.Constants;
 using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
+using HealthApp.Shared.Events;
+using MassTransit;
 
 namespace HealthApp.Api.Services.Impl
 {
@@ -15,17 +17,20 @@ namespace HealthApp.Api.Services.Impl
         private readonly IPatientRepository _patientRepository;
         private readonly IDoctorRepository _doctorRepository;
         private readonly IMapper _mapper;
+        private readonly IPublishEndpoint _publishEndpoint;
 
         public AppointmentService(
             IAppointmentRepository appointmentRepository,
             IPatientRepository patientRepository,
             IDoctorRepository doctorRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IPublishEndpoint publishEndpoint)
         {
             _appointmentRepository = appointmentRepository;
             _patientRepository = patientRepository;
             _doctorRepository = doctorRepository;
             _mapper = mapper;
+            _publishEndpoint = publishEndpoint;
         }
 
         public async Task<PagedResultDto<AppointmentDto>> GetAppointmentsAsync(
@@ -191,6 +196,17 @@ namespace HealthApp.Api.Services.Impl
 
             createdAppointment.Patient = patient;
             createdAppointment.Doctor = doctor;
+
+            var appointmentBookedEvent = new AppointmentBookedEvent(
+                createdAppointment.AppointmentId,
+                createdAppointment.PatientId,
+                patient.FullName ?? string.Empty,
+                createdAppointment.DoctorId,
+                doctor.FullName ?? string.Empty,
+                createdAppointment.ScheduledDate.ToDateTime(TimeOnly.MinValue),
+                createdAppointment.TimeSlot ?? string.Empty);
+
+            await _publishEndpoint.Publish(appointmentBookedEvent);
 
             return _mapper.Map<AppointmentDto>(createdAppointment);
         }
