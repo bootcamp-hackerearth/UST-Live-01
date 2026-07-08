@@ -12,11 +12,28 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
+using HealthAxis.API.BackgroundServices;
+using Serilog;
+using HealthAxis.API.Messaging;
 
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File(
+        path: "Logs/healthaxis-api-.log",
+        rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
+
 
 // ✅ Controllers
 builder.Services.AddControllers();
+//heartbeatservices
+builder.Services.AddHostedService<HeartbeatService>();
+builder.Services.AddHostedService<NotificationCleanupService>();
+builder.Services.AddSingleton<RabbitMqPublisher>();
+builder.Services.AddHostedService<AppointmentBookedConsumer>();
 
 // ✅ Global Exception Handler
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -24,6 +41,7 @@ builder.Services.AddProblemDetails();
 
 // ✅ Swagger + JWT Auth
 builder.Services.AddEndpointsApiExplorer();
+
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -131,6 +149,7 @@ builder.Services.AddCors(p =>
 builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
+app.UseSerilogRequestLogging();
 
 app.UseCors("AllowAll");
 

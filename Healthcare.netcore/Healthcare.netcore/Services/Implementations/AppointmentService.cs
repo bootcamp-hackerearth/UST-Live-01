@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
-using HealthAxis.Shared.DTOs.Appointment;
-using HealthAxis.Shared.Enums;
+using HealthAxis.API.Events;
 using HealthAxis.API.Exceptions;
+using HealthAxis.API.Messaging;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
+using HealthAxis.Shared.DTOs.Appointment;
+using HealthAxis.Shared.Enums;
 using CustomValidationException = HealthAxis.API.Exceptions.ValidationException;
 
 namespace HealthAxis.API.Services.Implementations
@@ -15,23 +17,27 @@ namespace HealthAxis.API.Services.Implementations
         private readonly IRepository<Doctor> _doctorRepository;
         private readonly IRepository<Patient> _patientRepository;
         private readonly IMapper _mapper;
+        private readonly RabbitMqPublisher? _publisher;
 
         public AppointmentService(
             IRepository<Appointment> appointmentRepository,
             IRepository<Doctor> doctorRepository,
             IRepository<Patient> patientRepository,
-            IMapper mapper)
+            IMapper mapper,
+            RabbitMqPublisher? publisher = null)
         {
             _appointmentRepository = appointmentRepository;
             _doctorRepository = doctorRepository;
             _patientRepository = patientRepository;
             _mapper = mapper;
+            _publisher = publisher;
         }
 
         // ✅ GET /api/appointments
         public async Task<IEnumerable<AppointmentDto>> GetAllAsync()
         {
             var appointments = await _appointmentRepository.GetAllAsync();
+
             return _mapper.Map<IEnumerable<AppointmentDto>>(appointments);
         }
 
@@ -89,6 +95,21 @@ namespace HealthAxis.API.Services.Implementations
             appointment.Status = AppointmentStatus.Pending;
 
             await _appointmentRepository.AddAsync(appointment);
+
+            if (_publisher != null)
+            {
+                await _publisher.PublishAppointmentBookedAsync(new AppointmentBookedEvent
+                {
+                    EventType = "AppointmentBooked",
+                    AppointmentId = appointment.AppointmentId,
+                    PatientId = patient.PatientId,
+                    PatientName = patient.FullName,
+                    DoctorId = doctor.DoctorId,
+                    ScheduledDate = appointment.ScheduledDate,
+                    TimeSlot = appointment.TimeSlot,
+                    OccurredAt = DateTime.UtcNow
+                });
+            }
 
             return _mapper.Map<AppointmentDto>(appointment);
         }
@@ -171,8 +192,5 @@ namespace HealthAxis.API.Services.Implementations
 
             return true;
         }
-
-
     }
-
 }

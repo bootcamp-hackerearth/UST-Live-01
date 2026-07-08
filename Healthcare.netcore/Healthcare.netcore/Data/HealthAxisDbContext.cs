@@ -20,6 +20,7 @@ namespace HealthAxis.API.Data
 
         public DbSet<HealthRecord> HealthRecords { get; set; }
 
+        public DbSet<Notification> Notifications { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
