@@ -15,15 +15,21 @@ namespace HealthAxisCore_Api.Services.Implementations
         private readonly IDoctorRepository _repository;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ICacheService _cacheService;
+        private readonly ILogger<DoctorService> _logger;
 
         public DoctorService(
             IDoctorRepository repository,
             IMapper mapper,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ICacheService cacheService,
+            ILogger<DoctorService> logger)
         {
             _repository = repository;
             _mapper = mapper;
             _userManager = userManager;
+            _cacheService = cacheService;
+            _logger = logger;
         }
 
         public async Task<PagedResponseDto<DoctorResponseDto>> GetPagedAsync(
@@ -69,8 +75,7 @@ namespace HealthAxisCore_Api.Services.Implementations
                 query = query.Where(d =>
                     d.Specialisation.ToString().Equals(
                         specialisation,
-                        StringComparison.OrdinalIgnoreCase
-                    ));
+                        StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(status) && status != "All")
@@ -156,7 +161,10 @@ namespace HealthAxisCore_Api.Services.Implementations
 
             await _userManager.AddToRoleAsync(user, "Doctor");
 
-            Console.WriteLine($"Doctor Temporary Password: {tempPassword}");
+            await _cacheService.RemoveAsync("available-doctors");
+
+            _logger.LogInformation(
+                "CACHE INVALIDATED - Key: available-doctors. Doctor created.");
 
             return new CreateDoctorResultDto
             {
@@ -184,6 +192,11 @@ namespace HealthAxisCore_Api.Services.Implementations
 
             await _repository.UpdateAsync(doctor);
 
+            await _cacheService.RemoveAsync("available-doctors");
+
+            _logger.LogInformation(
+                "CACHE INVALIDATED - Key: available-doctors. Doctor updated.");
+
             return true;
         }
 
@@ -198,6 +211,11 @@ namespace HealthAxisCore_Api.Services.Implementations
 
             await _repository.DeleteAsync(id);
 
+            await _cacheService.RemoveAsync("available-doctors");
+
+            _logger.LogInformation(
+                "CACHE INVALIDATED - Key: available-doctors. Doctor deleted.");
+
             return true;
         }
 
@@ -206,9 +224,50 @@ namespace HealthAxisCore_Api.Services.Implementations
             SpecialisationType? specialization,
             bool? isActive)
         {
-            var doctors = await _repository.GetDoctors(name, specialization, isActive);
+            if (name == null &&
+                specialization == null &&
+                isActive == true)
+            {
+                const string cacheKey = "available-doctors";
 
-            return _mapper.Map<IEnumerable<DoctorResponseDto>>(doctors);
+                var cachedDoctors =
+                    await _cacheService.GetAsync<List<DoctorResponseDto>>(cacheKey);
+
+                if (cachedDoctors != null)
+                {
+                    _logger.LogInformation(
+                        "CACHE HIT - Key: {CacheKey}",
+                        cacheKey);
+
+                    return cachedDoctors;
+                }
+
+                _logger.LogInformation(
+                    "CACHE MISS - Key: {CacheKey}. Loading available doctors from database.",
+                    cacheKey);
+
+                var doctors =
+                    await _repository.GetDoctors(name, specialization, isActive);
+
+                var doctorDtos =
+                    _mapper.Map<List<DoctorResponseDto>>(doctors);
+
+                await _cacheService.SetAsync(
+                    cacheKey,
+                    doctorDtos,
+                    TimeSpan.FromMinutes(5));
+
+                _logger.LogInformation(
+                    "CACHE SET - Key: {CacheKey}. Cached for 5 minutes.",
+                    cacheKey);
+
+                return doctorDtos;
+            }
+
+            var filteredDoctors =
+                await _repository.GetDoctors(name, specialization, isActive);
+
+            return _mapper.Map<IEnumerable<DoctorResponseDto>>(filteredDoctors);
         }
 
         public async Task<bool> SetStatusAsync(int doctorId, bool status)
@@ -221,6 +280,11 @@ namespace HealthAxisCore_Api.Services.Implementations
             }
 
             await _repository.SetStatus(doctorId, status);
+
+            await _cacheService.RemoveAsync("available-doctors");
+
+            _logger.LogInformation(
+                "CACHE INVALIDATED - Key: available-doctors. Doctor status changed.");
 
             return true;
         }

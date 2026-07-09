@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using FluentAssertions;
+using HealthAxis.Shared.DTOs.Common;
 using HealthAxis.Shared.DTOs.Doctor;
 using HealthAxis.Shared.Enums;
 using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Repositories;
 using HealthAxisCore_Api.Services.Implementations;
+using HealthAxisCore_Api.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -14,494 +17,580 @@ namespace HealthAxisCore_Api.Tests.Services
 {
     public class DoctorServiceTests
     {
-        private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
+        private readonly Mock<IDoctorRepository> _repositoryMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
-        private readonly DoctorService _service;
+        private readonly Mock<ICacheService> _cacheServiceMock;
+        private readonly Mock<ILogger<DoctorService>> _loggerMock;
+
+        private readonly DoctorService _doctorService;
 
         public DoctorServiceTests()
         {
-            _doctorRepositoryMock = new Mock<IDoctorRepository>();
+            _repositoryMock = new Mock<IDoctorRepository>();
             _mapperMock = new Mock<IMapper>();
-            _userManagerMock = MockUserManager();
+            _cacheServiceMock = new Mock<ICacheService>();
+            _loggerMock = new Mock<ILogger<DoctorService>>();
 
-            _service = new DoctorService(
-                _doctorRepositoryMock.Object,
+            var userStoreMock = new Mock<IUserStore<ApplicationUser>>();
+
+            _userManagerMock = new Mock<UserManager<ApplicationUser>>(
+                userStoreMock.Object,
+                null!,
+                null!,
+                null!,
+                null!,
+                null!,
+                null!,
+                null!,
+                null!);
+
+            _doctorService = new DoctorService(
+                _repositoryMock.Object,
                 _mapperMock.Object,
-                _userManagerMock.Object
-            );
+                _userManagerMock.Object,
+                _cacheServiceMock.Object,
+                _loggerMock.Object);
         }
 
-        // ------------------------------------------------------------
-        // GetPagedAsync
-        // ------------------------------------------------------------
+        private static List<Doctor> GetSampleDoctors()
+        {
+            return new List<Doctor>
+            {
+                new Doctor
+                {
+                    DoctorId = 1,
+                    DoctorName = "John Smith",
+                    Email = "john@test.com",
+                    Specialisation = SpecialisationType.Cardiologist,
+                    YearsOfExperience = 10,
+                    ConsultationFee = 500,
+                    IsActive = true,
+                    CreatedDate = DateTime.Now
+                },
+                new Doctor
+                {
+                    DoctorId = 2,
+                    DoctorName = "David Miller",
+                    Email = "david@test.com",
+                    Specialisation = SpecialisationType.Neurologist,
+                    YearsOfExperience = 8,
+                    ConsultationFee = 700,
+                    IsActive = false,
+                    CreatedDate = DateTime.Now
+                },
+                new Doctor
+                {
+                    DoctorId = 3,
+                    DoctorName = "Anna John",
+                    Email = "anna@test.com",
+                    Specialisation = SpecialisationType.Cardiologist,
+                    YearsOfExperience = 5,
+                    ConsultationFee = 450,
+                    IsActive = true,
+                    CreatedDate = DateTime.Now
+                }
+            };
+        }
+
+        private static List<DoctorResponseDto> GetSampleDoctorResponseDtos()
+        {
+            return new List<DoctorResponseDto>
+            {
+                new DoctorResponseDto
+                {
+                    DoctorId = 1,
+                    DoctorName = "John Smith",
+                    Email = "john@test.com",
+                    Specialisation = SpecialisationType.Cardiologist,
+                    YearsOfExperience = 10,
+                    ConsultationFee = 500,
+                    IsActive = true
+                },
+                new DoctorResponseDto
+                {
+                    DoctorId = 2,
+                    DoctorName = "David Miller",
+                    Email = "david@test.com",
+                    Specialisation = SpecialisationType.Neurologist,
+                    YearsOfExperience = 8,
+                    ConsultationFee = 700,
+                    IsActive = false
+                }
+            };
+        }
+
+        // -------------------------------------------------------
+        // GetPagedAsync Tests
+        // -------------------------------------------------------
 
         [Fact]
-        public async Task GetPagedAsync_WhenPageNumberLessThanOne_ShouldDefaultToOne()
+        public async Task GetPagedAsync_ShouldReturnPagedDoctors_WhenNoFiltersApplied()
         {
+            // Arrange
             var doctors = GetSampleDoctors();
 
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
                 .ReturnsAsync(doctors);
 
-            SetupPagedMapper();
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns((List<Doctor> source) =>
+                    source.Select(d => new DoctorResponseDto
+                    {
+                        DoctorId = d.DoctorId,
+                        DoctorName = d.DoctorName,
+                        Email = d.Email,
+                        Specialisation = d.Specialisation,
+                        IsActive = d.IsActive
+                    }).ToList());
 
-            var result = await _service.GetPagedAsync(
-                0,
-                10,
-                null,
-                null,
-                null
-            );
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 1,
+                pageSize: 2,
+                search: null,
+                specialisation: null,
+                status: null);
 
+            // Assert
+            result.Should().NotBeNull();
+            result.Items.Should().HaveCount(2);
+            result.TotalCount.Should().Be(3);
             result.PageNumber.Should().Be(1);
-            result.PageSize.Should().Be(10);
-            result.TotalCount.Should().Be(doctors.Count);
+            result.PageSize.Should().Be(2);
+            result.TotalPages.Should().Be(2);
+
+            _repositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
         }
 
         [Fact]
-        public async Task GetPagedAsync_WhenPageSizeLessThanOne_ShouldDefaultToTen()
+        public async Task GetPagedAsync_ShouldDefaultPageNumberToOne_WhenPageNumberLessThanOne()
         {
-            var doctors = GetSampleDoctors();
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(GetSampleDoctors());
 
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(doctors);
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns(new List<DoctorResponseDto>());
 
-            SetupPagedMapper();
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 0,
+                pageSize: 10,
+                search: null,
+                specialisation: null,
+                status: null);
 
-            var result = await _service.GetPagedAsync(
-                1,
-                0,
-                null,
-                null,
-                null
-            );
+            // Assert
+            result.PageNumber.Should().Be(1);
+        }
 
+        [Fact]
+        public async Task GetPagedAsync_ShouldDefaultPageSizeToTen_WhenPageSizeLessThanOne()
+        {
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(GetSampleDoctors());
+
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns(new List<DoctorResponseDto>());
+
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 1,
+                pageSize: 0,
+                search: null,
+                specialisation: null,
+                status: null);
+
+            // Assert
             result.PageSize.Should().Be(10);
         }
 
         [Fact]
-        public async Task GetPagedAsync_WhenPageSizeGreaterThanHundred_ShouldLimitToHundred()
+        public async Task GetPagedAsync_ShouldLimitPageSizeToHundred_WhenPageSizeGreaterThanHundred()
         {
-            var doctors = GetSampleDoctors();
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(GetSampleDoctors());
 
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(doctors);
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns(new List<DoctorResponseDto>());
 
-            SetupPagedMapper();
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 1,
+                pageSize: 150,
+                search: null,
+                specialisation: null,
+                status: null);
 
-            var result = await _service.GetPagedAsync(
-                1,
-                150,
-                null,
-                null,
-                null
-            );
-
+            // Assert
             result.PageSize.Should().Be(100);
         }
 
         [Fact]
-        public async Task GetPagedAsync_WithSearchByDoctorName_ShouldReturnMatchingDoctor()
+        public async Task GetPagedAsync_ShouldFilterByDoctorName_WhenSearchProvided()
         {
-            var doctors = GetSampleDoctors();
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(GetSampleDoctors());
 
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(doctors);
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns((List<Doctor> source) =>
+                    source.Select(d => new DoctorResponseDto
+                    {
+                        DoctorId = d.DoctorId,
+                        DoctorName = d.DoctorName
+                    }).ToList());
 
-            SetupPagedMapper();
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 1,
+                pageSize: 10,
+                search: "John",
+                specialisation: null,
+                status: null);
 
-            var result = await _service.GetPagedAsync(
-                1,
-                10,
-                "Asha",
-                null,
-                null
-            );
-
-            result.TotalCount.Should().Be(1);
-            result.Items.First().DoctorName.Should().Be("Asha Kumar");
-        }
-
-        [Fact]
-        public async Task GetPagedAsync_WithSearchByEmail_ShouldReturnMatchingDoctor()
-        {
-            var doctors = GetSampleDoctors();
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(doctors);
-
-            SetupPagedMapper();
-
-            var result = await _service.GetPagedAsync(
-                1,
-                10,
-                "ravi",
-                null,
-                null
-            );
-
-            result.TotalCount.Should().Be(1);
-            result.Items.First().Email.Should().Be("ravi@test.com");
-        }
-
-        [Fact]
-        public async Task GetPagedAsync_WithSearchBySpecialisation_ShouldReturnMatchingDoctors()
-        {
-            var doctors = GetSampleDoctors();
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(doctors);
-
-            SetupPagedMapper();
-
-            var result = await _service.GetPagedAsync(
-                1,
-                10,
-                "Cardiologist",
-                null,
-                null
-            );
-
-            result.TotalCount.Should().Be(1);
-            result.Items.First().Specialisation.Should().Be(SpecialisationType.Cardiologist);
-        }
-
-        [Fact]
-        public async Task GetPagedAsync_WithSpecialisationFilter_ShouldReturnMatchingDoctors()
-        {
-            var doctors = GetSampleDoctors();
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(doctors);
-
-            SetupPagedMapper();
-
-            var result = await _service.GetPagedAsync(
-                1,
-                10,
-                null,
-                "Neurologist",
-                null
-            );
-
-            result.TotalCount.Should().Be(1);
-            result.Items.First().Specialisation.Should().Be(SpecialisationType.Neurologist);
-        }
-
-        [Fact]
-        public async Task GetPagedAsync_WithSpecialisationAll_ShouldNotFilterBySpecialisation()
-        {
-            var doctors = GetSampleDoctors();
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(doctors);
-
-            SetupPagedMapper();
-
-            var result = await _service.GetPagedAsync(
-                1,
-                10,
-                null,
-                "All",
-                null
-            );
-
-            result.TotalCount.Should().Be(doctors.Count);
-        }
-
-        [Fact]
-        public async Task GetPagedAsync_WithActiveStatus_ShouldReturnOnlyActiveDoctors()
-        {
-            var doctors = GetSampleDoctors();
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(doctors);
-
-            SetupPagedMapper();
-
-            var result = await _service.GetPagedAsync(
-                1,
-                10,
-                null,
-                null,
-                "Active"
-            );
-
-            result.Items.Should().OnlyContain(x => x.IsActive);
-        }
-
-        [Fact]
-        public async Task GetPagedAsync_WithInactiveStatus_ShouldReturnOnlyInactiveDoctors()
-        {
-            var doctors = GetSampleDoctors();
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(doctors);
-
-            SetupPagedMapper();
-
-            var result = await _service.GetPagedAsync(
-                1,
-                10,
-                null,
-                null,
-                "Inactive"
-            );
-
-            result.Items.Should().OnlyContain(x => !x.IsActive);
-        }
-
-        [Fact]
-        public async Task GetPagedAsync_WithStatusAll_ShouldNotFilterByStatus()
-        {
-            var doctors = GetSampleDoctors();
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(doctors);
-
-            SetupPagedMapper();
-
-            var result = await _service.GetPagedAsync(
-                1,
-                10,
-                null,
-                null,
-                "All"
-            );
-
-            result.TotalCount.Should().Be(doctors.Count);
-        }
-
-        [Fact]
-        public async Task GetPagedAsync_ShouldApplyPagination()
-        {
-            var doctors = GetSampleDoctors();
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(doctors);
-
-            SetupPagedMapper();
-
-            var result = await _service.GetPagedAsync(
-                1,
-                2,
-                null,
-                null,
-                null
-            );
-
+            // Assert
+            result.TotalCount.Should().Be(2);
             result.Items.Should().HaveCount(2);
-            result.TotalCount.Should().Be(doctors.Count);
-            result.TotalPages.Should().Be((int)Math.Ceiling(doctors.Count / 2.0));
         }
 
         [Fact]
-        public async Task GetPagedAsync_ShouldOrderDoctorsByName()
+        public async Task GetPagedAsync_ShouldFilterByEmail_WhenSearchProvided()
         {
-            var doctors = GetSampleDoctors();
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(GetSampleDoctors());
 
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
-                .ReturnsAsync(doctors);
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns((List<Doctor> source) =>
+                    source.Select(d => new DoctorResponseDto
+                    {
+                        DoctorId = d.DoctorId,
+                        Email = d.Email
+                    }).ToList());
 
-            SetupPagedMapper();
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 1,
+                pageSize: 10,
+                search: "david@test.com",
+                specialisation: null,
+                status: null);
 
-            var result = await _service.GetPagedAsync(
-                1,
-                10,
-                null,
-                null,
-                null
-            );
-
-            result.Items.First().DoctorName.Should().Be("Asha Kumar");
+            // Assert
+            result.TotalCount.Should().Be(1);
         }
 
-        // ------------------------------------------------------------
-        // GetAllAsync
-        // ------------------------------------------------------------
+        [Fact]
+        public async Task GetPagedAsync_ShouldFilterBySpecialisationSearch_WhenSearchProvided()
+        {
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(GetSampleDoctors());
+
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns((List<Doctor> source) =>
+                    source.Select(d => new DoctorResponseDto
+                    {
+                        DoctorId = d.DoctorId,
+                        Specialisation = d.Specialisation
+                    }).ToList());
+
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 1,
+                pageSize: 10,
+                search: "Cardiology",
+                specialisation: null,
+                status: null);
+
+            // Assert
+            result.TotalCount.Should().Be(2);
+        }
 
         [Fact]
-        public async Task GetAllAsync_ShouldReturnMappedDoctors()
+        public async Task GetPagedAsync_ShouldFilterBySpecialisation_WhenSpecialisationProvided()
         {
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(GetSampleDoctors());
+
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns((List<Doctor> source) =>
+                    source.Select(d => new DoctorResponseDto
+                    {
+                        DoctorId = d.DoctorId,
+                        Specialisation = d.Specialisation
+                    }).ToList());
+
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 1,
+                pageSize: 10,
+                search: null,
+                specialisation: "Neurology",
+                status: null);
+
+            // Assert
+            result.TotalCount.Should().Be(1);
+        }
+
+        [Fact]
+        public async Task GetPagedAsync_ShouldNotFilterBySpecialisation_WhenSpecialisationIsAll()
+        {
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(GetSampleDoctors());
+
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns(new List<DoctorResponseDto>());
+
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 1,
+                pageSize: 10,
+                search: null,
+                specialisation: "All",
+                status: null);
+
+            // Assert
+            result.TotalCount.Should().Be(3);
+        }
+
+        [Fact]
+        public async Task GetPagedAsync_ShouldFilterActiveDoctors_WhenStatusIsActive()
+        {
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(GetSampleDoctors());
+
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns((List<Doctor> source) =>
+                    source.Select(d => new DoctorResponseDto
+                    {
+                        DoctorId = d.DoctorId,
+                        IsActive = d.IsActive
+                    }).ToList());
+
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 1,
+                pageSize: 10,
+                search: null,
+                specialisation: null,
+                status: "Active");
+
+            // Assert
+            result.TotalCount.Should().Be(2);
+        }
+
+        [Fact]
+        public async Task GetPagedAsync_ShouldFilterInactiveDoctors_WhenStatusIsInactive()
+        {
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(GetSampleDoctors());
+
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns((List<Doctor> source) =>
+                    source.Select(d => new DoctorResponseDto
+                    {
+                        DoctorId = d.DoctorId,
+                        IsActive = d.IsActive
+                    }).ToList());
+
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 1,
+                pageSize: 10,
+                search: null,
+                specialisation: null,
+                status: "Inactive");
+
+            // Assert
+            result.TotalCount.Should().Be(1);
+        }
+
+        [Fact]
+        public async Task GetPagedAsync_ShouldNotFilterByStatus_WhenStatusIsAll()
+        {
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(GetSampleDoctors());
+
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns(new List<DoctorResponseDto>());
+
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 1,
+                pageSize: 10,
+                search: null,
+                specialisation: null,
+                status: "All");
+
+            // Assert
+            result.TotalCount.Should().Be(3);
+        }
+
+        [Fact]
+        public async Task GetPagedAsync_ShouldReturnEmptyResult_WhenNoDoctorsMatch()
+        {
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(GetSampleDoctors());
+
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
+                .Returns(new List<DoctorResponseDto>());
+
+            // Act
+            var result = await _doctorService.GetPagedAsync(
+                pageNumber: 1,
+                pageSize: 10,
+                search: "Unknown",
+                specialisation: null,
+                status: null);
+
+            // Assert
+            result.TotalCount.Should().Be(0);
+            result.TotalPages.Should().Be(0);
+            result.Items.Should().BeEmpty();
+        }
+
+        // -------------------------------------------------------
+        // GetAllAsync Tests
+        // -------------------------------------------------------
+
+        [Fact]
+        public async Task GetAllAsync_ShouldReturnAllDoctors()
+        {
+            // Arrange
             var doctors = GetSampleDoctors();
+            var doctorDtos = GetSampleDoctorResponseDtos();
 
-            var mappedDoctors = doctors.Select(d => ToDoctorResponseDto(d)).ToList();
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetAllAsync())
+            _repositoryMock
+                .Setup(x => x.GetAllAsync())
                 .ReturnsAsync(doctors);
 
             _mapperMock
-                .Setup(mapper => mapper.Map<IEnumerable<DoctorResponseDto>>(doctors))
-                .Returns(mappedDoctors);
+                .Setup(x => x.Map<IEnumerable<DoctorResponseDto>>(doctors))
+                .Returns(doctorDtos);
 
-            var result = await _service.GetAllAsync();
+            // Act
+            var result = await _doctorService.GetAllAsync();
 
+            // Assert
             result.Should().NotBeNull();
-            result.Should().HaveCount(doctors.Count);
+            result.Should().HaveCount(2);
 
-            _doctorRepositoryMock.Verify(repo => repo.GetAllAsync(), Times.Once);
+            _repositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
+            _mapperMock.Verify(
+                x => x.Map<IEnumerable<DoctorResponseDto>>(doctors),
+                Times.Once);
         }
 
-        // ------------------------------------------------------------
-        // GetByIdAsync
-        // ------------------------------------------------------------
+        // -------------------------------------------------------
+        // GetByIdAsync Tests
+        // -------------------------------------------------------
 
         [Fact]
-        public async Task GetByIdAsync_WhenDoctorExists_ShouldReturnMappedDoctor()
+        public async Task GetByIdAsync_ShouldReturnDoctor_WhenDoctorExists()
         {
-            var doctor = new Doctor
+            // Arrange
+            var doctor = GetSampleDoctors().First();
+
+            var doctorDto = new DoctorResponseDto
             {
-                DoctorId = 1,
-                DoctorName = "Asha Kumar",
-                Email = "asha@test.com",
-                Specialisation = SpecialisationType.Cardiologist,
-                YearsOfExperience = 10,
-                ConsultationFee = 500,
-                IsActive = true
+                DoctorId = doctor.DoctorId,
+                DoctorName = doctor.DoctorName,
+                Email = doctor.Email,
+                Specialisation = doctor.Specialisation,
+                IsActive = doctor.IsActive
             };
 
-            var mappedDoctor = ToDoctorResponseDto(doctor);
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetByIdAsync(1))
+            _repositoryMock
+                .Setup(x => x.GetByIdAsync(1))
                 .ReturnsAsync(doctor);
 
             _mapperMock
-                .Setup(mapper => mapper.Map<DoctorResponseDto>(doctor))
-                .Returns(mappedDoctor);
+                .Setup(x => x.Map<DoctorResponseDto>(doctor))
+                .Returns(doctorDto);
 
-            var result = await _service.GetByIdAsync(1);
+            // Act
+            var result = await _doctorService.GetByIdAsync(1);
 
+            // Assert
             result.Should().NotBeNull();
             result!.DoctorId.Should().Be(1);
-            result.DoctorName.Should().Be("Asha Kumar");
+            result.DoctorName.Should().Be("John Smith");
+
+            _repositoryMock.Verify(x => x.GetByIdAsync(1), Times.Once);
         }
 
         [Fact]
-        public async Task GetByIdAsync_WhenDoctorDoesNotExist_ShouldThrowEntityNotFoundException()
+        public async Task GetByIdAsync_ShouldThrowEntityNotFoundException_WhenDoctorDoesNotExist()
         {
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetByIdAsync(1))
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetByIdAsync(99))
                 .ReturnsAsync((Doctor?)null);
 
-            var act = async () => await _service.GetByIdAsync(1);
+            // Act
+            Func<Task> act = async () => await _doctorService.GetByIdAsync(99);
 
-            await act.Should()
-                .ThrowAsync<EntityNotFoundException>()
+            // Assert
+            await act.Should().ThrowAsync<EntityNotFoundException>()
                 .WithMessage("Doctor not found");
         }
 
-        // ------------------------------------------------------------
-        // CreateAsync
-        // ------------------------------------------------------------
+        // -------------------------------------------------------
+        // CreateAsync Tests
+        // -------------------------------------------------------
 
         [Fact]
-        public async Task CreateAsync_WhenValidRequest_ShouldCreateDoctorAndIdentityUser()
+        public async Task CreateAsync_ShouldCreateDoctorAndUser_WhenValidDtoProvided()
         {
+            // Arrange
             var dto = new CreateDoctorDto
             {
-                DoctorName = "Asha Kumar",
-                Email = "asha@test.com",
+                DoctorName = "Michael Brown",
+                Email = "michael@test.com",
                 Specialisation = SpecialisationType.Cardiologist,
-                YearsOfExperience = 10,
-                ConsultationFee = 500,
+                YearsOfExperience = 12,
+                ConsultationFee = 600,
                 IsActive = true
             };
 
-            var doctorEntity = new Doctor
-            {
-                DoctorName = dto.DoctorName,
-                Email = dto.Email,
-                Specialisation = dto.Specialisation,
-                YearsOfExperience = dto.YearsOfExperience,
-                ConsultationFee = dto.ConsultationFee,
-                IsActive = dto.IsActive
-            };
-
-            _mapperMock
-                .Setup(mapper => mapper.Map<Doctor>(dto))
-                .Returns(doctorEntity);
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.AddAsync(doctorEntity))
-                .Callback<Doctor>(doctor => doctor.DoctorId = 101)
-                .Returns(Task.CompletedTask);
-
-            _userManagerMock
-                .Setup(manager => manager.CreateAsync(
-                    It.IsAny<ApplicationUser>(),
-                    It.IsAny<string>()))
-                .ReturnsAsync(IdentityResult.Success);
-
-            _userManagerMock
-                .Setup(manager => manager.AddToRoleAsync(
-                    It.IsAny<ApplicationUser>(),
-                    "Doctor"))
-                .ReturnsAsync(IdentityResult.Success);
-
-            var result = await _service.CreateAsync(dto);
-
-            result.Should().NotBeNull();
-            result.DoctorId.Should().Be(101);
-            result.DoctorName.Should().Be(dto.DoctorName);
-            result.Email.Should().Be(dto.Email);
-            result.Specialisation.Should().Be(dto.Specialisation);
-            result.YearsOfExperience.Should().Be(dto.YearsOfExperience);
-            result.ConsultationFee.Should().Be(dto.ConsultationFee);
-            result.IsActive.Should().BeTrue();
-            result.TemporaryPassword.Should().NotBeNullOrWhiteSpace();
-            result.TemporaryPassword.Should().StartWith("Temp@");
-
-            doctorEntity.CreatedDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
-
-            _doctorRepositoryMock.Verify(repo => repo.AddAsync(doctorEntity), Times.Once);
-
-            _userManagerMock.Verify(manager => manager.CreateAsync(
-                    It.Is<ApplicationUser>(user =>
-                        user.Email == dto.Email &&
-                        user.UserName == dto.Email &&
-                        user.Role == "Doctor" &&
-                        user.ReferenceId == 101 &&
-                        user.IsFirstLogin &&
-                        user.TemporaryPassword != null),
-                    It.Is<string>(password => password.StartsWith("Temp@"))),
-                Times.Once);
-
-            _userManagerMock.Verify(manager => manager.AddToRoleAsync(
-                    It.IsAny<ApplicationUser>(),
-                    "Doctor"),
-                Times.Once);
-        }
-
-        [Fact]
-        public async Task CreateAsync_WhenIdentityCreateFails_ShouldThrowBusinessRuleException()
-        {
-            var dto = new CreateDoctorDto
-            {
-                DoctorName = "Ravi Menon",
-                Email = "ravi@test.com",
-                Specialisation = SpecialisationType.Neurologist,
-                YearsOfExperience = 8,
-                ConsultationFee = 700,
-                IsActive = true
-            };
-
-            var doctorEntity = new Doctor
+            var doctor = new Doctor
             {
                 DoctorId = 10,
                 DoctorName = dto.DoctorName,
@@ -513,376 +602,646 @@ namespace HealthAxisCore_Api.Tests.Services
             };
 
             _mapperMock
-                .Setup(mapper => mapper.Map<Doctor>(dto))
-                .Returns(doctorEntity);
+                .Setup(x => x.Map<Doctor>(dto))
+                .Returns(doctor);
 
-            _doctorRepositoryMock
-                .Setup(repo => repo.AddAsync(doctorEntity))
+            _repositoryMock
+                .Setup(x => x.AddAsync(doctor))
                 .Returns(Task.CompletedTask);
 
             _userManagerMock
-                .Setup(manager => manager.CreateAsync(
+                .Setup(x => x.CreateAsync(
                     It.IsAny<ApplicationUser>(),
                     It.IsAny<string>()))
-                .ReturnsAsync(IdentityResult.Failed(
-                    new IdentityError
-                    {
-                        Description = "Email already exists"
-                    },
-                    new IdentityError
-                    {
-                        Description = "Password is too weak"
-                    }
-                ));
+                .ReturnsAsync(IdentityResult.Success);
 
-            var act = async () => await _service.CreateAsync(dto);
+            _userManagerMock
+                .Setup(x => x.AddToRoleAsync(
+                    It.IsAny<ApplicationUser>(),
+                    "Doctor"))
+                .ReturnsAsync(IdentityResult.Success);
 
-            await act.Should()
-                .ThrowAsync<BusinessRuleException>()
-                .WithMessage("Email already exists, Password is too weak");
+            _cacheServiceMock
+                .Setup(x => x.RemoveAsync("available-doctors"))
+                .Returns(Task.CompletedTask);
 
-            _doctorRepositoryMock.Verify(repo => repo.AddAsync(doctorEntity), Times.Once);
+            // Act
+            var result = await _doctorService.CreateAsync(dto);
 
-            _userManagerMock.Verify(manager => manager.AddToRoleAsync(
+            // Assert
+            result.Should().NotBeNull();
+            result.DoctorId.Should().Be(10);
+            result.DoctorName.Should().Be("Michael Brown");
+            result.Email.Should().Be("michael@test.com");
+            result.TemporaryPassword.Should().NotBeNullOrWhiteSpace();
+            result.TemporaryPassword.Should().StartWith("Temp@");
+
+            _repositoryMock.Verify(x => x.AddAsync(doctor), Times.Once);
+
+            _userManagerMock.Verify(
+                x => x.CreateAsync(
+                    It.Is<ApplicationUser>(u =>
+                        u.UserName == doctor.Email &&
+                        u.Email == doctor.Email &&
+                        u.Role == "Doctor" &&
+                        u.ReferenceId == doctor.DoctorId &&
+                        u.IsFirstLogin == true),
+                    It.Is<string>(p => p.StartsWith("Temp@"))),
+                Times.Once);
+
+            _userManagerMock.Verify(
+                x => x.AddToRoleAsync(
+                    It.IsAny<ApplicationUser>(),
+                    "Doctor"),
+                Times.Once);
+
+            _cacheServiceMock.Verify(
+                x => x.RemoveAsync("available-doctors"),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task CreateAsync_ShouldThrowBusinessRuleException_WhenUserCreationFails()
+        {
+            // Arrange
+            var dto = new CreateDoctorDto
+            {
+                DoctorName = "Failed Doctor",
+                Email = "failed@test.com"
+            };
+
+            var doctor = new Doctor
+            {
+                DoctorId = 20,
+                DoctorName = dto.DoctorName,
+                Email = dto.Email
+            };
+
+            _mapperMock
+                .Setup(x => x.Map<Doctor>(dto))
+                .Returns(doctor);
+
+            _repositoryMock
+                .Setup(x => x.AddAsync(doctor))
+                .Returns(Task.CompletedTask);
+
+            _userManagerMock
+                .Setup(x => x.CreateAsync(
+                    It.IsAny<ApplicationUser>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(
+                    IdentityResult.Failed(
+                        new IdentityError
+                        {
+                            Description = "Email already exists"
+                        },
+                        new IdentityError
+                        {
+                            Description = "Password is weak"
+                        }));
+
+            // Act
+            Func<Task> act = async () => await _doctorService.CreateAsync(dto);
+
+            // Assert
+            await act.Should().ThrowAsync<BusinessRuleException>()
+                .WithMessage("*Email already exists*Password is weak*");
+
+            _repositoryMock.Verify(x => x.AddAsync(doctor), Times.Once);
+
+            _userManagerMock.Verify(
+                x => x.AddToRoleAsync(
                     It.IsAny<ApplicationUser>(),
                     It.IsAny<string>()),
                 Times.Never);
+
+            _cacheServiceMock.Verify(
+                x => x.RemoveAsync(It.IsAny<string>()),
+                Times.Never);
         }
 
-        // ------------------------------------------------------------
-        // UpdateAsync
-        // ------------------------------------------------------------
-
         [Fact]
-        public async Task UpdateAsync_WhenDoctorExists_ShouldUpdateDoctorAndReturnTrue()
+        public async Task CreateAsync_ShouldSetCreatedDate_WhenDoctorCreated()
         {
+            // Arrange
+            var dto = new CreateDoctorDto
+            {
+                DoctorName = "Created Date Doctor",
+                Email = "created@test.com"
+            };
+
             var doctor = new Doctor
             {
-                DoctorId = 1,
-                DoctorName = "Old Name",
-                Email = "old@test.com",
-                Specialisation = SpecialisationType.Pediatrician,
-                YearsOfExperience = 5,
-                ConsultationFee = 300,
-                IsActive = true
+                DoctorId = 5,
+                DoctorName = dto.DoctorName,
+                Email = dto.Email
             };
-
-            var dto = new CreateDoctorDto
-            {
-                DoctorName = "New Name",
-                Email = "new@test.com",
-                Specialisation = SpecialisationType.Dermatologist,
-                YearsOfExperience = 9,
-                ConsultationFee = 800,
-                IsActive = false
-            };
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetByIdAsync(1))
-                .ReturnsAsync(doctor);
 
             _mapperMock
-                .Setup(mapper => mapper.Map(dto, doctor))
-                .Callback<CreateDoctorDto, Doctor>((source, destination) =>
-                {
-                    destination.DoctorName = source.DoctorName;
-                    destination.Email = source.Email;
-                    destination.Specialisation = source.Specialisation;
-                    destination.YearsOfExperience = source.YearsOfExperience;
-                    destination.ConsultationFee = source.ConsultationFee;
-                    destination.IsActive = source.IsActive;
-                })
+                .Setup(x => x.Map<Doctor>(dto))
                 .Returns(doctor);
 
-            _doctorRepositoryMock
-                .Setup(repo => repo.UpdateAsync(doctor))
-                .Returns(Task.CompletedTask);
+            _userManagerMock
+                .Setup(x => x.CreateAsync(
+                    It.IsAny<ApplicationUser>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(IdentityResult.Success);
 
-            var result = await _service.UpdateAsync(1, dto);
+            _userManagerMock
+                .Setup(x => x.AddToRoleAsync(
+                    It.IsAny<ApplicationUser>(),
+                    "Doctor"))
+                .ReturnsAsync(IdentityResult.Success);
 
-            result.Should().BeTrue();
-            doctor.DoctorName.Should().Be(dto.DoctorName);
-            doctor.Email.Should().Be(dto.Email);
-            doctor.Specialisation.Should().Be(dto.Specialisation);
-            doctor.YearsOfExperience.Should().Be(dto.YearsOfExperience);
-            doctor.ConsultationFee.Should().Be(dto.ConsultationFee);
-            doctor.IsActive.Should().BeFalse();
+            // Act
+            await _doctorService.CreateAsync(dto);
 
-            _doctorRepositoryMock.Verify(repo => repo.UpdateAsync(doctor), Times.Once);
+            // Assert
+            doctor.CreatedDate.Should().NotBe(default);
+            doctor.CreatedDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
         }
 
+        // -------------------------------------------------------
+        // UpdateAsync Tests
+        // -------------------------------------------------------
+
         [Fact]
-        public async Task UpdateAsync_WhenDoctorDoesNotExist_ShouldThrowEntityNotFoundException()
+        public async Task UpdateAsync_ShouldUpdateDoctor_WhenDoctorExists()
         {
+            // Arrange
+            var doctor = GetSampleDoctors().First();
+
             var dto = new CreateDoctorDto
             {
-                DoctorName = "New Name",
-                Email = "new@test.com",
-                Specialisation = SpecialisationType.Dermatologist,
-                YearsOfExperience = 9,
-                ConsultationFee = 800,
+                DoctorName = "Updated Doctor",
+                Email = "updated@test.com",
+                Specialisation = SpecialisationType.Neurologist,
+                YearsOfExperience = 15,
+                ConsultationFee = 900,
                 IsActive = true
             };
 
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetByIdAsync(1))
-                .ReturnsAsync((Doctor?)null);
+            _repositoryMock
+                .Setup(x => x.GetByIdAsync(1))
+                .ReturnsAsync(doctor);
 
-            var act = async () => await _service.UpdateAsync(1, dto);
-
-            await act.Should()
-                .ThrowAsync<EntityNotFoundException>()
-                .WithMessage("Doctor not found");
-
-            _doctorRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<Doctor>()), Times.Never);
-        }
-
-        // ------------------------------------------------------------
-        // DeleteAsync
-        // ------------------------------------------------------------
-
-        [Fact]
-        public async Task DeleteAsync_WhenDoctorExists_ShouldDeleteDoctorAndReturnTrue()
-        {
-            _doctorRepositoryMock
-                .Setup(repo => repo.Exists(1))
-                .ReturnsAsync(true);
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.DeleteAsync(1))
+            _repositoryMock
+                .Setup(x => x.UpdateAsync(doctor))
                 .Returns(Task.CompletedTask);
 
-            var result = await _service.DeleteAsync(1);
+            _cacheServiceMock
+                .Setup(x => x.RemoveAsync("available-doctors"))
+                .Returns(Task.CompletedTask);
 
+            // Act
+            var result = await _doctorService.UpdateAsync(1, dto);
+
+            // Assert
             result.Should().BeTrue();
 
-            _doctorRepositoryMock.Verify(repo => repo.DeleteAsync(1), Times.Once);
+            _mapperMock.Verify(
+                x => x.Map(dto, doctor),
+                Times.Once);
+
+            _repositoryMock.Verify(
+                x => x.UpdateAsync(doctor),
+                Times.Once);
+
+            _cacheServiceMock.Verify(
+                x => x.RemoveAsync("available-doctors"),
+                Times.Once);
         }
 
         [Fact]
-        public async Task DeleteAsync_WhenDoctorDoesNotExist_ShouldThrowEntityNotFoundException()
+        public async Task UpdateAsync_ShouldThrowEntityNotFoundException_WhenDoctorDoesNotExist()
         {
-            _doctorRepositoryMock
-                .Setup(repo => repo.Exists(1))
-                .ReturnsAsync(false);
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetByIdAsync(99))
+                .ReturnsAsync((Doctor?)null);
 
-            var act = async () => await _service.DeleteAsync(1);
+            var dto = new CreateDoctorDto();
 
-            await act.Should()
-                .ThrowAsync<EntityNotFoundException>()
+            // Act
+            Func<Task> act = async () => await _doctorService.UpdateAsync(99, dto);
+
+            // Assert
+            await act.Should().ThrowAsync<EntityNotFoundException>()
                 .WithMessage("Doctor not found");
 
-            _doctorRepositoryMock.Verify(repo => repo.DeleteAsync(It.IsAny<int>()), Times.Never);
+            _repositoryMock.Verify(
+                x => x.UpdateAsync(It.IsAny<Doctor>()),
+                Times.Never);
+
+            _cacheServiceMock.Verify(
+                x => x.RemoveAsync(It.IsAny<string>()),
+                Times.Never);
         }
 
-        // ------------------------------------------------------------
-        // FilterAsync
-        // ------------------------------------------------------------
+        // -------------------------------------------------------
+        // DeleteAsync Tests
+        // -------------------------------------------------------
 
         [Fact]
-        public async Task FilterAsync_ShouldReturnMappedDoctors()
+        public async Task DeleteAsync_ShouldDeleteDoctor_WhenDoctorExists()
         {
-            var doctors = new List<Doctor>
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.Exists(1))
+                .ReturnsAsync(true);
+
+            _repositoryMock
+                .Setup(x => x.DeleteAsync(1))
+                .Returns(Task.CompletedTask);
+
+            _cacheServiceMock
+                .Setup(x => x.RemoveAsync("available-doctors"))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _doctorService.DeleteAsync(1);
+
+            // Assert
+            result.Should().BeTrue();
+
+            _repositoryMock.Verify(x => x.Exists(1), Times.Once);
+            _repositoryMock.Verify(x => x.DeleteAsync(1), Times.Once);
+
+            _cacheServiceMock.Verify(
+                x => x.RemoveAsync("available-doctors"),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteAsync_ShouldThrowEntityNotFoundException_WhenDoctorDoesNotExist()
+        {
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.Exists(99))
+                .ReturnsAsync(false);
+
+            // Act
+            Func<Task> act = async () => await _doctorService.DeleteAsync(99);
+
+            // Assert
+            await act.Should().ThrowAsync<EntityNotFoundException>()
+                .WithMessage("Doctor not found");
+
+            _repositoryMock.Verify(x => x.DeleteAsync(It.IsAny<int>()), Times.Never);
+
+            _cacheServiceMock.Verify(
+                x => x.RemoveAsync(It.IsAny<string>()),
+                Times.Never);
+        }
+
+        // -------------------------------------------------------
+        // FilterAsync Cache Tests
+        // -------------------------------------------------------
+
+        [Fact]
+        public async Task FilterAsync_ShouldReturnCachedDoctors_WhenCacheHit()
+        {
+            // Arrange
+            var cachedDoctors = new List<DoctorResponseDto>
             {
-                new Doctor
+                new DoctorResponseDto
                 {
                     DoctorId = 1,
-                    DoctorName = "Asha Kumar",
-                    Email = "asha@test.com",
+                    DoctorName = "Cached Doctor",
+                    Email = "cached@test.com",
                     Specialisation = SpecialisationType.Cardiologist,
-                    YearsOfExperience = 10,
-                    ConsultationFee = 500,
                     IsActive = true
                 }
             };
 
-            var mappedDoctors = doctors.Select(d => ToDoctorResponseDto(d)).ToList();
+            _cacheServiceMock
+                .Setup(x => x.GetAsync<List<DoctorResponseDto>>("available-doctors"))
+                .ReturnsAsync(cachedDoctors);
 
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetDoctors(
-                    "Asha",
-                    SpecialisationType.Cardiologist,
-                    true))
-                .ReturnsAsync(doctors);
+            // Act
+            var result = await _doctorService.FilterAsync(
+                name: null,
+                specialization: null,
+                isActive: true);
 
-            _mapperMock
-                .Setup(mapper => mapper.Map<IEnumerable<DoctorResponseDto>>(doctors))
-                .Returns(mappedDoctors);
-
-            var result = await _service.FilterAsync(
-                "Asha",
-                SpecialisationType.Cardiologist,
-                true
-            );
-
-            result.Should().HaveCount(1);
-            result.First().DoctorName.Should().Be("Asha Kumar");
-            result.First().Specialisation.Should().Be(SpecialisationType.Cardiologist);
-            result.First().IsActive.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task FilterAsync_WhenRepositoryReturnsEmptyList_ShouldReturnEmptyMappedList()
-        {
-            var doctors = new List<Doctor>();
-            var mappedDoctors = new List<DoctorResponseDto>();
-
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetDoctors(null, null, null))
-                .ReturnsAsync(doctors);
-
-            _mapperMock
-                .Setup(mapper => mapper.Map<IEnumerable<DoctorResponseDto>>(doctors))
-                .Returns(mappedDoctors);
-
-            var result = await _service.FilterAsync(null, null, null);
-
+            // Assert
             result.Should().NotBeNull();
-            result.Should().BeEmpty();
+            result.Should().HaveCount(1);
+            result.First().DoctorName.Should().Be("Cached Doctor");
+
+            _cacheServiceMock.Verify(
+                x => x.GetAsync<List<DoctorResponseDto>>("available-doctors"),
+                Times.Once);
+
+            _repositoryMock.Verify(
+                x => x.GetDoctors(
+                    It.IsAny<string?>(),
+                    It.IsAny<SpecialisationType?>(),
+                    It.IsAny<bool?>()),
+                Times.Never);
+
+            _cacheServiceMock.Verify(
+                x => x.SetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<List<DoctorResponseDto>>(),
+                    It.IsAny<TimeSpan>()),
+                Times.Never);
         }
 
-        // ------------------------------------------------------------
-        // SetStatusAsync
-        // ------------------------------------------------------------
-
         [Fact]
-        public async Task SetStatusAsync_WhenDoctorExists_ShouldSetStatusAndReturnTrue()
+        public async Task FilterAsync_ShouldLoadDoctorsFromRepositoryAndSetCache_WhenCacheMiss()
         {
-            var doctor = new Doctor
-            {
-                DoctorId = 1,
-                DoctorName = "Asha Kumar",
-                Email = "asha@test.com",
-                Specialisation = SpecialisationType.Cardiologist,
-                YearsOfExperience = 10,
-                ConsultationFee = 500,
-                IsActive = true
-            };
+            // Arrange
+            var doctors = GetSampleDoctors()
+                .Where(x => x.IsActive)
+                .ToList();
 
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetByIdAsync(1))
-                .ReturnsAsync(doctor);
+            var mappedDoctors = doctors
+                .Select(d => new DoctorResponseDto
+                {
+                    DoctorId = d.DoctorId,
+                    DoctorName = d.DoctorName,
+                    Email = d.Email,
+                    Specialisation = d.Specialisation,
+                    IsActive = d.IsActive
+                })
+                .ToList();
 
-            _doctorRepositoryMock
-                .Setup(repo => repo.SetStatus(1, false))
+            _cacheServiceMock
+                .Setup(x => x.GetAsync<List<DoctorResponseDto>>("available-doctors"))
+                .ReturnsAsync((List<DoctorResponseDto>?)null);
+
+            _repositoryMock
+                .Setup(x => x.GetDoctors(null, null, true))
+                .ReturnsAsync(doctors);
+
+            _mapperMock
+                .Setup(x => x.Map<List<DoctorResponseDto>>(doctors))
+                .Returns(mappedDoctors);
+
+            _cacheServiceMock
+                .Setup(x => x.SetAsync(
+                    "available-doctors",
+                    mappedDoctors,
+                    It.IsAny<TimeSpan>()))
                 .Returns(Task.CompletedTask);
 
-            var result = await _service.SetStatusAsync(1, false);
+            // Act
+            var result = await _doctorService.FilterAsync(
+                name: null,
+                specialization: null,
+                isActive: true);
 
-            result.Should().BeTrue();
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().HaveCount(2);
 
-            _doctorRepositoryMock.Verify(repo => repo.SetStatus(1, false), Times.Once);
+            _cacheServiceMock.Verify(
+                x => x.GetAsync<List<DoctorResponseDto>>("available-doctors"),
+                Times.Once);
+
+            _repositoryMock.Verify(
+                x => x.GetDoctors(null, null, true),
+                Times.Once);
+
+            _mapperMock.Verify(
+                x => x.Map<List<DoctorResponseDto>>(doctors),
+                Times.Once);
+
+            _cacheServiceMock.Verify(
+                x => x.SetAsync(
+                    "available-doctors",
+                    mappedDoctors,
+                    It.Is<TimeSpan>(t => t == TimeSpan.FromMinutes(5))),
+                Times.Once);
         }
 
         [Fact]
-        public async Task SetStatusAsync_WhenDoctorDoesNotExist_ShouldThrowEntityNotFoundException()
+        public async Task FilterAsync_ShouldBypassCache_WhenNameFilterProvided()
         {
-            _doctorRepositoryMock
-                .Setup(repo => repo.GetByIdAsync(1))
+            // Arrange
+            var doctors = GetSampleDoctors()
+                .Where(x => x.DoctorName.Contains("John"))
+                .ToList();
+
+            var doctorDtos = doctors
+                .Select(d => new DoctorResponseDto
+                {
+                    DoctorId = d.DoctorId,
+                    DoctorName = d.DoctorName
+                });
+
+            _repositoryMock
+                .Setup(x => x.GetDoctors("John", null, true))
+                .ReturnsAsync(doctors);
+
+            _mapperMock
+                .Setup(x => x.Map<IEnumerable<DoctorResponseDto>>(doctors))
+                .Returns(doctorDtos);
+
+            // Act
+            var result = await _doctorService.FilterAsync(
+                name: "John",
+                specialization: null,
+                isActive: true);
+
+            // Assert
+            result.Should().HaveCount(2);
+
+            _cacheServiceMock.Verify(
+                x => x.GetAsync<List<DoctorResponseDto>>(It.IsAny<string>()),
+                Times.Never);
+
+            _cacheServiceMock.Verify(
+                x => x.SetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<List<DoctorResponseDto>>(),
+                    It.IsAny<TimeSpan>()),
+                Times.Never);
+
+            _repositoryMock.Verify(
+                x => x.GetDoctors("John", null, true),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task FilterAsync_ShouldBypassCache_WhenSpecializationFilterProvided()
+        {
+            // Arrange
+            var doctors = GetSampleDoctors()
+                .Where(x => x.Specialisation == SpecialisationType.Cardiologist)
+                .ToList();
+
+            var doctorDtos = doctors
+                .Select(d => new DoctorResponseDto
+                {
+                    DoctorId = d.DoctorId,
+                    Specialisation = d.Specialisation
+                });
+
+            _repositoryMock
+                .Setup(x => x.GetDoctors(null, SpecialisationType.Cardiologist, true))
+                .ReturnsAsync(doctors);
+
+            _mapperMock
+                .Setup(x => x.Map<IEnumerable<DoctorResponseDto>>(doctors))
+                .Returns(doctorDtos);
+
+            // Act
+            var result = await _doctorService.FilterAsync(
+                name: null,
+                specialization: SpecialisationType.Cardiologist,
+                isActive: true);
+
+            // Assert
+            result.Should().HaveCount(2);
+
+            _cacheServiceMock.Verify(
+                x => x.GetAsync<List<DoctorResponseDto>>(It.IsAny<string>()),
+                Times.Never);
+
+            _repositoryMock.Verify(
+                x => x.GetDoctors(null, SpecialisationType.Cardiologist, true),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task FilterAsync_ShouldBypassCache_WhenIsActiveIsFalse()
+        {
+            // Arrange
+            var doctors = GetSampleDoctors()
+                .Where(x => !x.IsActive)
+                .ToList();
+
+            var doctorDtos = doctors
+                .Select(d => new DoctorResponseDto
+                {
+                    DoctorId = d.DoctorId,
+                    IsActive = d.IsActive
+                });
+
+            _repositoryMock
+                .Setup(x => x.GetDoctors(null, null, false))
+                .ReturnsAsync(doctors);
+
+            _mapperMock
+                .Setup(x => x.Map<IEnumerable<DoctorResponseDto>>(doctors))
+                .Returns(doctorDtos);
+
+            // Act
+            var result = await _doctorService.FilterAsync(
+                name: null,
+                specialization: null,
+                isActive: false);
+
+            // Assert
+            result.Should().HaveCount(1);
+
+            _cacheServiceMock.Verify(
+                x => x.GetAsync<List<DoctorResponseDto>>(It.IsAny<string>()),
+                Times.Never);
+
+            _repositoryMock.Verify(
+                x => x.GetDoctors(null, null, false),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task FilterAsync_ShouldBypassCache_WhenIsActiveIsNull()
+        {
+            // Arrange
+            var doctors = GetSampleDoctors();
+
+            var doctorDtos = doctors
+                .Select(d => new DoctorResponseDto
+                {
+                    DoctorId = d.DoctorId
+                });
+
+            _repositoryMock
+                .Setup(x => x.GetDoctors(null, null, null))
+                .ReturnsAsync(doctors);
+
+            _mapperMock
+                .Setup(x => x.Map<IEnumerable<DoctorResponseDto>>(doctors))
+                .Returns(doctorDtos);
+
+            // Act
+            var result = await _doctorService.FilterAsync(
+                name: null,
+                specialization: null,
+                isActive: null);
+
+            // Assert
+            result.Should().HaveCount(3);
+
+            _cacheServiceMock.Verify(
+                x => x.GetAsync<List<DoctorResponseDto>>(It.IsAny<string>()),
+                Times.Never);
+
+            _repositoryMock.Verify(
+                x => x.GetDoctors(null, null, null),
+                Times.Once);
+        }
+
+        // -------------------------------------------------------
+        // SetStatusAsync Tests
+        // -------------------------------------------------------
+
+        [Fact]
+        public async Task SetStatusAsync_ShouldSetDoctorStatus_WhenDoctorExists()
+        {
+            // Arrange
+            var doctor = GetSampleDoctors().First();
+
+            _repositoryMock
+                .Setup(x => x.GetByIdAsync(1))
+                .ReturnsAsync(doctor);
+
+            _repositoryMock
+                .Setup(x => x.SetStatus(1, false))
+                .Returns(Task.CompletedTask);
+
+            _cacheServiceMock
+                .Setup(x => x.RemoveAsync("available-doctors"))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _doctorService.SetStatusAsync(1, false);
+
+            // Assert
+            result.Should().BeTrue();
+
+            _repositoryMock.Verify(x => x.GetByIdAsync(1), Times.Once);
+            _repositoryMock.Verify(x => x.SetStatus(1, false), Times.Once);
+
+            _cacheServiceMock.Verify(
+                x => x.RemoveAsync("available-doctors"),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task SetStatusAsync_ShouldThrowEntityNotFoundException_WhenDoctorDoesNotExist()
+        {
+            // Arrange
+            _repositoryMock
+                .Setup(x => x.GetByIdAsync(99))
                 .ReturnsAsync((Doctor?)null);
 
-            var act = async () => await _service.SetStatusAsync(1, false);
+            // Act
+            Func<Task> act = async () => await _doctorService.SetStatusAsync(99, false);
 
-            await act.Should()
-                .ThrowAsync<EntityNotFoundException>()
+            // Assert
+            await act.Should().ThrowAsync<EntityNotFoundException>()
                 .WithMessage("Doctor not found");
 
-            _doctorRepositoryMock.Verify(repo => repo.SetStatus(It.IsAny<int>(), It.IsAny<bool>()), Times.Never);
-        }
+            _repositoryMock.Verify(
+                x => x.SetStatus(It.IsAny<int>(), It.IsAny<bool>()),
+                Times.Never);
 
-        // ------------------------------------------------------------
-        // Helpers
-        // ------------------------------------------------------------
-
-        private static List<Doctor> GetSampleDoctors()
-        {
-            return new List<Doctor>
-            {
-                new Doctor
-                {
-                    DoctorId = 1,
-                    DoctorName = "Ravi Menon",
-                    Email = "ravi@test.com",
-                    Specialisation = SpecialisationType.Neurologist,
-                    YearsOfExperience = 8,
-                    ConsultationFee = 700,
-                    IsActive = true,
-                    CreatedDate = DateTime.Today.AddDays(-10)
-                },
-                new Doctor
-                {
-                    DoctorId = 2,
-                    DoctorName = "Asha Kumar",
-                    Email = "asha@test.com",
-                    Specialisation = SpecialisationType.Cardiologist,
-                    YearsOfExperience = 10,
-                    ConsultationFee = 500,
-                    IsActive = true,
-                    CreatedDate = DateTime.Today.AddDays(-8)
-                },
-                new Doctor
-                {
-                    DoctorId = 3,
-                    DoctorName = "Meera Nair",
-                    Email = "meera@test.com",
-                    Specialisation = SpecialisationType.Dermatologist,
-                    YearsOfExperience = 6,
-                    ConsultationFee = 600,
-                    IsActive = false,
-                    CreatedDate = DateTime.Today.AddDays(-5)
-                },
-                new Doctor
-                {
-                    DoctorId = 4,
-                    DoctorName = "John Mathew",
-                    Email = "john@test.com",
-                    Specialisation = SpecialisationType.Pediatrician,
-                    YearsOfExperience = 12,
-                    ConsultationFee = 900,
-                    IsActive = false,
-                    CreatedDate = DateTime.Today.AddDays(-3)
-                }
-            };
-        }
-
-        private void SetupPagedMapper()
-        {
-            _mapperMock
-                .Setup(mapper => mapper.Map<List<DoctorResponseDto>>(It.IsAny<List<Doctor>>()))
-                .Returns((List<Doctor> source) =>
-                    source.Select(ToDoctorResponseDto).ToList()
-                );
-        }
-
-        private static DoctorResponseDto ToDoctorResponseDto(Doctor doctor)
-        {
-            return new DoctorResponseDto
-            {
-                DoctorId = doctor.DoctorId,
-                DoctorName = doctor.DoctorName,
-                Email = doctor.Email,
-                Specialisation = doctor.Specialisation,
-                YearsOfExperience = doctor.YearsOfExperience,
-                ConsultationFee = doctor.ConsultationFee,
-                IsActive = doctor.IsActive
-            };
-        }
-
-        private static Mock<UserManager<ApplicationUser>> MockUserManager()
-        {
-            var store = new Mock<IUserStore<ApplicationUser>>();
-
-            return new Mock<UserManager<ApplicationUser>>(
-                store.Object,
-                null!,
-                null!,
-                null!,
-                null!,
-                null!,
-                null!,
-                null!,
-                null!
-            );
+            _cacheServiceMock.Verify(
+                x => x.RemoveAsync(It.IsAny<string>()),
+                Times.Never);
         }
     }
 }

@@ -3,10 +3,13 @@ using FluentAssertions;
 using HealthAxis.Shared.DTOs.Appointment;
 using HealthAxis.Shared.DTOs.Common;
 using HealthAxis.Shared.Enums;
+using HealthAxisCore_Api.Contracts;
 using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Repositories;
 using HealthAxisCore_Api.Services.Implementations;
+using MassTransit;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -16,25 +19,47 @@ namespace HealthAxisCore_Api.Tests.Services
     {
         private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
         private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
+        private readonly Mock<IPatientRepository> _patientRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<IPublishEndpoint> _publishEndpointMock;
+        private readonly Mock<ILogger<AppointmentService>> _loggerMock;
+
         private readonly AppointmentService _service;
 
         public AppointmentServiceTests()
         {
             _appointmentRepositoryMock = new Mock<IAppointmentRepository>();
             _doctorRepositoryMock = new Mock<IDoctorRepository>();
+            _patientRepositoryMock = new Mock<IPatientRepository>();
             _mapperMock = new Mock<IMapper>();
+            _publishEndpointMock = new Mock<IPublishEndpoint>();
+            _loggerMock = new Mock<ILogger<AppointmentService>>();
+
+            _patientRepositoryMock
+                .Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync((int patientId) => new Patient
+                {
+                    PatientId = patientId,
+                    PatientName = "Test Patient",
+                    Email = $"patient{patientId}@example.com",
+                    PhoneNumber = "000-000-0000"
+                });
+
+            _publishEndpointMock
+                .Setup(endpoint => endpoint.Publish(
+                    It.IsAny<AppointmentBookedEvent>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
 
             _service = new AppointmentService(
                 _appointmentRepositoryMock.Object,
                 _doctorRepositoryMock.Object,
-                _mapperMock.Object
+                _patientRepositoryMock.Object,
+                _mapperMock.Object,
+                _publishEndpointMock.Object,
+                _loggerMock.Object
             );
         }
-
-        // ------------------------------------------------------------
-        // GetAllAsync
-        // ------------------------------------------------------------
 
         [Fact]
         public async Task GetAllAsync_ShouldReturnMappedAppointments()
@@ -81,10 +106,6 @@ namespace HealthAxisCore_Api.Tests.Services
 
             _appointmentRepositoryMock.Verify(repo => repo.GetAllAsync(), Times.Once);
         }
-
-        // ------------------------------------------------------------
-        // GetPagedAsync
-        // ------------------------------------------------------------
 
         [Fact]
         public async Task GetPagedAsync_WhenPageNumberLessThanOne_ShouldDefaultToOne()
@@ -350,10 +371,6 @@ namespace HealthAxisCore_Api.Tests.Services
             result.TotalPages.Should().Be((int)Math.Ceiling(appointments.Count / 2.0));
         }
 
-        // ------------------------------------------------------------
-        // GetByIdAsync
-        // ------------------------------------------------------------
-
         [Fact]
         public async Task GetByIdAsync_WhenAppointmentExists_ShouldReturnMappedAppointment()
         {
@@ -404,10 +421,6 @@ namespace HealthAxisCore_Api.Tests.Services
                 .ThrowAsync<EntityNotFoundException>()
                 .WithMessage("Appointment not found");
         }
-
-        // ------------------------------------------------------------
-        // CreateAsync Validation
-        // ------------------------------------------------------------
 
         [Fact]
         public async Task CreateAsync_WhenDtoIsNull_ShouldThrowAppointmentRuleException()
@@ -748,7 +761,11 @@ namespace HealthAxisCore_Api.Tests.Services
                 }
             };
 
-            var appointmentEntity = new Appointment();
+            var appointmentEntity = new Appointment
+            {
+                PatientId = dto.PatientId,
+                DoctorId = dto.DoctorId
+            };
 
             var response = new AppointmentResponseDto
             {
@@ -785,6 +802,13 @@ namespace HealthAxisCore_Api.Tests.Services
                 repo => repo.AddAsync(It.IsAny<Appointment>()),
                 Times.Once
             );
+
+            _publishEndpointMock.Verify(
+                endpoint => endpoint.Publish(
+                    It.IsAny<AppointmentBookedEvent>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once
+            );
         }
 
         [Fact]
@@ -798,7 +822,11 @@ namespace HealthAxisCore_Api.Tests.Services
                 TimeSlot = "10:00"
             };
 
-            var appointmentEntity = new Appointment();
+            var appointmentEntity = new Appointment
+            {
+                PatientId = dto.PatientId,
+                DoctorId = dto.DoctorId
+            };
 
             var response = new AppointmentResponseDto
             {
@@ -842,11 +870,14 @@ namespace HealthAxisCore_Api.Tests.Services
                 repo => repo.AddAsync(appointmentEntity),
                 Times.Once
             );
-        }
 
-        // ------------------------------------------------------------
-        // DeleteAsync
-        // ------------------------------------------------------------
+            _publishEndpointMock.Verify(
+                endpoint => endpoint.Publish(
+                    It.IsAny<AppointmentBookedEvent>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once
+            );
+        }
 
         [Fact]
         public async Task DeleteAsync_WhenAppointmentExists_ShouldDeleteAndReturnTrue()
@@ -877,10 +908,6 @@ namespace HealthAxisCore_Api.Tests.Services
 
             _appointmentRepositoryMock.Verify(repo => repo.DeleteAsync(It.IsAny<int>()), Times.Never);
         }
-
-        // ------------------------------------------------------------
-        // GetByDoctorAsync
-        // ------------------------------------------------------------
 
         [Fact]
         public async Task GetByDoctorAsync_WhenAppointmentsExist_ShouldReturnMappedAppointments()
@@ -945,10 +972,6 @@ namespace HealthAxisCore_Api.Tests.Services
                 .WithMessage("No appointments found for this doctor");
         }
 
-        // ------------------------------------------------------------
-        // GetByPatientAsync
-        // ------------------------------------------------------------
-
         [Fact]
         public async Task GetByPatientAsync_WhenAppointmentsExist_ShouldReturnMappedAppointments()
         {
@@ -1011,10 +1034,6 @@ namespace HealthAxisCore_Api.Tests.Services
                 .ThrowAsync<EntityNotFoundException>()
                 .WithMessage("No appointments found for this patient");
         }
-
-        // ------------------------------------------------------------
-        // FilterAsync
-        // ------------------------------------------------------------
 
         [Fact]
         public async Task FilterAsync_WhenAppointmentsExist_ShouldReturnMappedAppointments()
@@ -1100,10 +1119,6 @@ namespace HealthAxisCore_Api.Tests.Services
                 .WithMessage("No appointments found for given criteria");
         }
 
-        // ------------------------------------------------------------
-        // CancelAsync
-        // ------------------------------------------------------------
-
         [Fact]
         public async Task CancelAsync_WhenAppointmentNotFound_ShouldThrowEntityNotFoundException()
         {
@@ -1174,10 +1189,6 @@ namespace HealthAxisCore_Api.Tests.Services
                 Times.Once
             );
         }
-
-        // ------------------------------------------------------------
-        // ConfirmAsync
-        // ------------------------------------------------------------
 
         [Fact]
         public async Task ConfirmAsync_WhenAppointmentNotFound_ShouldThrowEntityNotFoundException()
@@ -1268,10 +1279,6 @@ namespace HealthAxisCore_Api.Tests.Services
             );
         }
 
-        // ------------------------------------------------------------
-        // CompleteAsync
-        // ------------------------------------------------------------
-
         [Fact]
         public async Task CompleteAsync_WhenAppointmentNotFound_ShouldThrowEntityNotFoundException()
         {
@@ -1361,10 +1368,6 @@ namespace HealthAxisCore_Api.Tests.Services
             );
         }
 
-        // ------------------------------------------------------------
-        // GetBookedSlotsAsync
-        // ------------------------------------------------------------
-
         [Fact]
         public async Task GetBookedSlotsAsync_WhenDoctorIdInvalid_ShouldThrowAppointmentRuleException()
         {
@@ -1410,10 +1413,6 @@ namespace HealthAxisCore_Api.Tests.Services
             result.Should().Contain("09:00");
             result.Should().Contain("10:00");
         }
-
-        // ------------------------------------------------------------
-        // Helpers
-        // ------------------------------------------------------------
 
         private static List<Appointment> GetSampleAppointments()
         {

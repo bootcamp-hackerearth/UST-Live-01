@@ -2,10 +2,12 @@
 using HealthAxis.Shared.DTOs.Appointment;
 using HealthAxis.Shared.DTOs.Common;
 using HealthAxis.Shared.Enums;
+using HealthAxisCore_Api.Contracts;
 using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Repositories;
 using HealthAxisCore_Api.Services.Interfaces;
+using MassTransit;
 
 namespace HealthAxisCore_Api.Services.Implementations
 {
@@ -13,16 +15,25 @@ namespace HealthAxisCore_Api.Services.Implementations
     {
         private readonly IAppointmentRepository _repository;
         private readonly IDoctorRepository _doctorRepository;
+        private readonly IPatientRepository _patientRepository;
         private readonly IMapper _mapper;
+        private readonly IPublishEndpoint _publishEndpoint;
+        private readonly ILogger<AppointmentService> _logger;
 
         public AppointmentService(
             IAppointmentRepository repository,
             IDoctorRepository doctorRepository,
-            IMapper mapper)
+            IPatientRepository patientRepository,
+            IMapper mapper,
+            IPublishEndpoint publishEndpoint,
+            ILogger<AppointmentService> logger)
         {
             _repository = repository;
             _doctorRepository = doctorRepository;
+            _patientRepository = patientRepository;
             _mapper = mapper;
+            _publishEndpoint = publishEndpoint;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<AppointmentResponseDto>> GetAllAsync()
@@ -221,6 +232,28 @@ namespace HealthAxisCore_Api.Services.Implementations
             appointment.CreatedDate = DateTime.Now;
 
             await _repository.AddAsync(appointment);
+
+            var patient = await _patientRepository.GetByIdAsync(appointment.PatientId);
+
+            var patientName = patient?.PatientName ?? $"Patient #{appointment.PatientId}";
+
+            await _publishEndpoint.Publish(new AppointmentBookedEvent
+            {
+                AppointmentId = appointment.AppointmentId,
+                PatientName = patientName,
+                DoctorId = appointment.DoctorId,
+                ScheduledDate = appointment.ScheduledDate,
+                TimeSlot = appointment.TimeSlot
+            });
+
+            _logger.LogInformation(
+                "Appointment booked and AppointmentBookedEvent published. AppointmentId: {AppointmentId}, PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
+                appointment.AppointmentId,
+                appointment.PatientId,
+                appointment.DoctorId,
+                appointment.ScheduledDate,
+                appointment.TimeSlot
+            );
 
             return _mapper.Map<AppointmentResponseDto>(appointment);
         }
