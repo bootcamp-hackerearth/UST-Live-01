@@ -21,12 +21,14 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly HealthCareDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger<DoctorService> _logger;
         private readonly IDistributedCache _cache;
-        public DoctorService(IDoctorRepository repository, HealthCareDbContext context, IMapper mapper, IAppointmentRepository appointmentRepository,IDistributedCache distributedCache)
+        public DoctorService(IDoctorRepository repository, HealthCareDbContext context, IMapper mapper, IAppointmentRepository appointmentRepository,IDistributedCache distributedCache, ILogger<DoctorService> logger)
         {
             _repository = repository;
             _context = context;
             _mapper = mapper;
+            _logger = logger;
             _appointmentRepository = appointmentRepository;
             _cache = distributedCache;
         }
@@ -238,14 +240,25 @@ namespace HealthCare.Api.Services.Implementations
             var cachedData = await _cache.GetStringAsync(cachedKey);
 
             if (!string.IsNullOrEmpty(cachedData))
+            {
+                _logger.LogInformation("###############################/n");
+                _logger.LogInformation("CACHE HIT: {CacheKey}", cachedKey);
+                _logger.LogInformation("###############################/n");
                 return JsonSerializer.Deserialize<List<DoctorListDto>>(cachedData)!;
-                
+            }
+            _logger.LogInformation("##################################/n");
+            _logger.LogInformation("CACHE MISS: {CacheKey}", cachedKey);
+            _logger.LogInformation("##################################/n");
+
             var doctors= await _repository.AvailableDoctors(specialisation, date);
 
             await _cache.SetStringAsync(cachedKey, JsonSerializer.Serialize(doctors), new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
             });
+            _logger.LogInformation("#################################/n");
+            _logger.LogInformation("CACHE SET: {CacheKey}", cachedKey);
+            _logger.LogInformation("#################################/n");
 
             return doctors;
         }
@@ -256,9 +269,6 @@ namespace HealthCare.Api.Services.Implementations
 
         }
 
-    }
-            
-
-
+    }          
     
 }

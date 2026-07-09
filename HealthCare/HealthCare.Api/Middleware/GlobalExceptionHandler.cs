@@ -29,7 +29,10 @@ namespace HealthCare.Api.Middleware
                 DoctorNotFoundException => (StatusCodes.Status404NotFound, exception.Message),
                 AppointmentNotFoundException => (StatusCodes.Status404NotFound, exception.Message),
                 HealthRecordNotFoundException => (StatusCodes.Status404NotFound, exception.Message),
-                _=> (StatusCodes.Status500InternalServerError, "Internal server error")
+                UserNotFoundException=>(StatusCodes.Status404NotFound,exception.Message),
+                InvalidCredentialsException => (StatusCodes.Status401Unauthorized,exception.Message),
+
+                _ => (StatusCodes.Status500InternalServerError, "Internal server error")
             };
 
             var response = new ErrorResponse

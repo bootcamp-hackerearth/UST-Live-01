@@ -10,6 +10,7 @@ using HealthCare.Api.Services.Interfaces;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using Serilog.Core;
 using System.Linq.Expressions;
 
 namespace HealthCare.Api.Services.Implementations
@@ -20,6 +21,7 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IDoctorService _doctorService;
         private readonly IMapper _mapper;
         private readonly HealthCareDbContext _context;
+        private readonly ILogger<AppointmentService> _logger;
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly IDistributedCache _cache;
         public AppointmentService(
@@ -28,6 +30,7 @@ namespace HealthCare.Api.Services.Implementations
             HealthCareDbContext context, 
             IMapper mapper,
             IPublishEndpoint publishEndpoint,
+            ILogger <AppointmentService>logger,
             IDistributedCache cache)
         {
             _repository = repository;
@@ -35,6 +38,7 @@ namespace HealthCare.Api.Services.Implementations
             _context = context;
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
+            _logger = logger;
             _cache = cache;
         }
 
@@ -49,11 +53,15 @@ namespace HealthCare.Api.Services.Implementations
             await _repository.AddAsync(appointment);
 
             await _context.SaveChangesAsync();
+            _logger.LogInformation("****************** DATABASE *******************/n");
+            _logger.LogInformation("Appointment created. AppointmentId={AppointmentId}, PatientId={PatientId}, DoctorId={DoctorId}",appointment.AppointmentId,patientId, appointment.DoctorId);
+            _logger.LogInformation("***********************************************/n");
+
 
             // Publish AppointmentBookedEvent
             try
             {
-              
+
                 var patient = await _context.Patients.FindAsync(patientId);
                 var doctor = await _context.Doctors.FindAsync(appointment.DoctorId);
 
@@ -72,10 +80,13 @@ namespace HealthCare.Api.Services.Implementations
 
                     await _publishEndpoint.Publish(appointmentBookedEvent);
                 }
+
+
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error publishing AppointmentBookedEvent: {ex.Message}");
+                _logger.LogError(ex, "Error publishing AppointmentBookedEvent for AppointmentId {AppointmentId}", appointment.AppointmentId);
+
             }
         }
 
@@ -88,15 +99,22 @@ namespace HealthCare.Api.Services.Implementations
 
             await _repository.UpdateAsync(appointment);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("****************** DATABASE *******************/n");
+            _logger.LogInformation("Appointment {AppointmentId} updated", appointment.AppointmentId);
+            _logger.LogInformation("***********************************************/n");
         }
 
         public async Task DeleteAsync(int id)
         {
             var appointment = await _repository.GetProfileAsync(id);
+
             if (appointment == null)
                 throw new AppointmentNotFoundException(id);
             await _repository.DeleteAsync(id);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("****************** DATABASE *******************/n");
+            _logger.LogWarning("Appointment {AppointmentId} cancelled",appointment.AppointmentId);
+            _logger.LogInformation("***********************************************/n");
         }
 
         public async Task<AppointmentListDto?> GetByIdAsync(int id)
@@ -253,10 +271,17 @@ namespace HealthCare.Api.Services.Implementations
                 TotalRevenue = revenue
             };
         }
-        private async Task InvalidateAvailabilityCache(string specialisation, DateOnly date)
+        private async Task InvalidateAvailabilityCache(string specialisation,DateOnly date)
         {
-            await _cache.RemoveAsync($"doctor-availability:{specialisation}:{date:yyyy-MM-dd}");
-
+            var cacheKey = $"doctor-availability:{specialisation}:{date:yyyy-MM-dd}";
+            try
+            {
+                await _cache.RemoveAsync(cacheKey);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex,"Cache invalidation failed for {CacheKey}",cacheKey);
+            }
         }
     }
 }
