@@ -14,16 +14,26 @@ using Microsoft.OpenApi;
 using System.Text;
 using HealthAxis.API.BackgroundServices;
 using Serilog;
-using HealthAxis.API.Messaging;
+using Serilog.Events;
+using HealthAxis.API.Options;
+
+using HealthAxis.API.Consumers;
+using MassTransit;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
     .WriteTo.Console()
     .WriteTo.File(
         path: "Logs/healthaxis-api-.log",
         rollingInterval: RollingInterval.Day)
     .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Host.UseSerilog();
 
 
@@ -32,8 +42,9 @@ builder.Services.AddControllers();
 //heartbeatservices
 builder.Services.AddHostedService<HeartbeatService>();
 builder.Services.AddHostedService<NotificationCleanupService>();
-builder.Services.AddSingleton<RabbitMqPublisher>();
-builder.Services.AddHostedService<AppointmentBookedConsumer>();
+builder.Services.AddHostedService<HeartbeatService>();
+builder.Services.AddHostedService<NotificationCleanupService>();
+
 
 // ✅ Global Exception Handler
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -115,13 +126,7 @@ builder.Services.AddScoped<IPatientService, PatientService>();
 
 // ✅ Doctor
 // ✅ Doctor
-builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
-
-builder.Services.AddScoped<IDoctorService>(sp =>
-    new DoctorService(
-        sp.GetRequiredService<HealthAxisDbContext>(),
-        sp.GetRequiredService<UserManager<ApplicationUser>>()
-    ));
+builder.Services.AddScoped<IDoctorService, DoctorService>();
 
 
 // ✅ Appointment
@@ -147,6 +152,44 @@ builder.Services.AddCors(p =>
 
 // ✅ AutoMapper
 builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
+
+// ✅ MassTransit + RabbitMQ
+builder.Services.AddMassTransit(x =>
+{
+x.AddConsumer<AppointmentBookedConsumer>();
+
+x.UsingRabbitMq((context, cfg) =>
+{
+var rabbitConfig = builder.Configuration.GetSection("RabbitMq");
+
+cfg.Host(
+    rabbitConfig["HostName"],
+    rabbitConfig["VirtualHost"],
+    h =>
+    {
+
+        h.Username(rabbitConfig["UserName"]!);
+        h.Password(rabbitConfig["Password"]!);
+    });
+
+    cfg.ReceiveEndpoint(rabbitConfig["AppointmentQueue"]!, e =>
+    {
+        e.ConfigureConsumer<AppointmentBookedConsumer>(context);
+    });
+});
+});
+builder.Services.Configure<GarnetOptions>(
+    builder.Configuration.GetSection("Garnet"));
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    var garnetOptions = builder.Configuration
+        .GetSection("Garnet")
+        .Get<GarnetOptions>() ?? new GarnetOptions();
+
+    options.Configuration = garnetOptions.ConnectionString;
+    options.InstanceName = garnetOptions.InstanceName;
+});
 
 var app = builder.Build();
 app.UseSerilogRequestLogging();

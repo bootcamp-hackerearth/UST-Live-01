@@ -166,6 +166,11 @@
   font-weight: 800;
 }
 
+.status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 .status.confirmed {
   background: #dcfce7;
   color: #15803d;
@@ -181,18 +186,7 @@
   color: #b91c1c;
 }
 
-/* BUTTONS */
-.record-btn,
-.reason-btn {
-  border: none;
-  border-radius: 12px;
-  padding: 9px 15px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-
-
+/* ACTIONS */
 .actions {
   display: flex;
   align-items: center;
@@ -205,25 +199,56 @@
   font-size: 13px;
 }
 
+.record-btn,
+.reason-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 9px 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .record-btn {
   background: #2563eb;
   color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 9px 14px;
-  font-weight: 900;
-  cursor: pointer;
 }
 
 .reason-btn {
   background: #fee2e2;
   color: #b91c1c;
+}
+
+/* PAGINATION */
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.page-btn,
+.page-number {
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 9px 14px;
-  font-weight: 900;
+  background: #eef2f7;
+  color: #334155;
+  font-weight: 800;
   cursor: pointer;
 }
+
+.page-number.active {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.page-btn:disabled {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
 /* HEALTH RECORD DETAILS MODAL */
 .modal-backdrop {
   position: fixed;

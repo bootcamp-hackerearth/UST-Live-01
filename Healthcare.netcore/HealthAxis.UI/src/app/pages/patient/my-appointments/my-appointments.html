@@ -21,12 +21,15 @@
         <input
           type="text"
           [(ngModel)]="searchText"
+          (ngModelChange)="onFilterChanged()"
           placeholder="Search doctor or specialisation">
       </div>
 
       <div class="field">
         <label>Status</label>
-        <select [(ngModel)]="selectedStatus">
+        <select
+          [(ngModel)]="selectedStatus"
+          (ngModelChange)="onFilterChanged()">
           <option value="">All</option>
           <option value="Pending">Pending</option>
           <option value="Confirmed">Confirmed</option>
@@ -37,7 +40,10 @@
 
       <div class="field">
         <label>Date</label>
-        <input type="date" [(ngModel)]="selectedDate">
+        <input
+          type="date"
+          [(ngModel)]="selectedDate"
+          (ngModelChange)="onFilterChanged()">
       </div>
 
       <button class="clear-btn" (click)="clearFilters()">Clear</button>
@@ -53,7 +59,7 @@
       <h3>Appointment list</h3>
 
       <span>
-        Showing {{ filteredAppointments().length }} of {{ appointments.length }} appointment(s)
+        Showing {{ pagedAppointments().length }} of {{ filteredAppointments().length }} appointment(s)
       </span>
     </div>
 
@@ -72,7 +78,7 @@
         <span>Action</span>
       </div>
 
-      <div class="table-row" *ngFor="let a of filteredAppointments()">
+      <div class="table-row" *ngFor="let a of pagedAppointments()">
 
         <span>{{ a.displayDate }}</span>
 
@@ -115,6 +121,33 @@
         </span>
 
       </div>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination" *ngIf="totalPages > 1">
+
+      <button
+        class="page-btn"
+        (click)="previousPage()"
+        [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <button
+        class="page-number"
+        *ngFor="let page of pageNumbers"
+        [class.active]="page === currentPage"
+        (click)="goToPage(page)">
+        {{ page }}
+      </button>
+
+      <button
+        class="page-btn"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages">
+        Next
+      </button>
 
     </div>
 

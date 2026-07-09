@@ -91,9 +91,15 @@ namespace HealthAxis.API.Controllers
         }
 
         [HttpGet("{id}/availability")]
-        public async Task<IActionResult> GetAvailability(int id, CancellationToken ct)
+        public async Task<IActionResult> GetAvailability(
+    int id,
+    [FromQuery] DateTime? date,
+    CancellationToken ct)
         {
-            var availability = await _service.GetAvailabilityAsync(id, ct);
+            var availabilityDate = date ?? DateTime.Today;
+
+            var availability = await _service.GetAvailabilityAsync(id, availabilityDate, ct);
+
             return Ok(availability);
         }
     }

@@ -1,7 +1,12 @@
-﻿namespace HealthAxis.API.Services.Interfaces
+﻿using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.Doctor;
+
+namespace HealthAxis.API.Services.Interfaces
 {
     public interface IDoctorService
     {
+        Task<IEnumerable<DoctorDto>> GetAllAsync();
+
         Task<PagedResponse<DoctorDto>> GetAllAsync(
             PaginationParams paginationParams,
             CancellationToken ct = default);
@@ -10,8 +15,17 @@
             int id,
             CancellationToken ct = default);
 
+        Task<DoctorDto?> GetByUserIdAsync(
+            string userId,
+            CancellationToken ct = default);
+
         Task<object> GetAvailabilityAsync(
             int id,
+            CancellationToken ct = default);
+
+        Task<DoctorAvailabilityDto> GetAvailabilityAsync(
+            int id,
+            DateTime date,
             CancellationToken ct = default);
 
         Task<DoctorDto> AddAsync(
@@ -22,6 +36,5 @@
             int id,
             UpdateDoctorDto dto,
             CancellationToken ct = default);
-        Task<DoctorDto?> GetByUserIdAsync(string userId, CancellationToken ct = default);
     }
 }

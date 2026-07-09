@@ -13,13 +13,13 @@ import { forkJoin } from 'rxjs';
 })
 export class AddRecord implements OnInit {
 
-  private http = inject(HttpClient);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly http = inject(HttpClient);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  private doctorsUrl = 'https://localhost:7130/api/doctors';
-  private appointmentsUrl = 'https://localhost:7130/api/appointments';
-  private patientsUrl = 'https://localhost:7130/api/patients';
-  private healthRecordsUrl = 'https://localhost:7130/api/health-records';
+  private readonly doctorsUrl = 'https://localhost:7130/api/doctors';
+  private readonly appointmentsUrl = 'https://localhost:7130/api/appointments';
+  private readonly patientsUrl = 'https://localhost:7130/api/patients';
+  private readonly healthRecordsUrl = 'https://localhost:7130/api/health-records';
 
   searchText = '';
   fromDate = '';

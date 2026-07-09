@@ -7,9 +7,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class PatientService {
 
   private readonly patientBaseUrl = 'https://localhost:7130/api/patients';
-  private readonly  authBaseUrl = 'https://localhost:7130/api/auth';
+  private readonly authBaseUrl = 'https://localhost:7130/api/auth';
 
-  constructor(private readonly  http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
     const token = typeof window !== 'undefined'
@@ -23,6 +23,32 @@ export class PatientService {
     }
 
     return new HttpHeaders();
+  }
+
+  getPatients(pageNumber: number = 1, pageSize: number = 10) {
+    return this.http.get<any>(
+      this.patientBaseUrl,
+      {
+        headers: this.getHeaders(),
+        params: {
+          pageNumber,
+          pageSize
+        }
+      }
+    );
+  }
+
+  getDoctorPatients(pageNumber: number = 1, pageSize: number = 10) {
+    return this.http.get<any>(
+      `${this.patientBaseUrl}/doctor`,
+      {
+        headers: this.getHeaders(),
+        params: {
+          pageNumber,
+          pageSize
+        }
+      }
+    );
   }
 
   getCurrentPatient() {
@@ -47,7 +73,10 @@ export class PatientService {
   changePassword(data: any) {
     return this.http.post<any>(
       `${this.authBaseUrl}/change-password`,
-      data
+      data,
+      {
+        headers: this.getHeaders()
+      }
     );
   }
 }

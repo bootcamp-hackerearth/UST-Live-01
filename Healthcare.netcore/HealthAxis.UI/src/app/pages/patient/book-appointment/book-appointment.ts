@@ -5,7 +5,6 @@ import { DoctorService } from '../../../services/doctor';
 import { AppointmentService } from '../../../services/appointment';
 import { Router } from '@angular/router';
 
-
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
@@ -15,10 +14,10 @@ import { Router } from '@angular/router';
 })
 export class BookAppointment implements OnInit {
 
-  private doctorService = inject(DoctorService);
-  private appointmentService = inject(AppointmentService);
-  private cdr = inject(ChangeDetectorRef);
-  private router = inject(Router);
+  private readonly doctorService = inject(DoctorService);
+  private readonly appointmentService = inject(AppointmentService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly router = inject(Router);
 
   appointmentDate = '';
   selectedSpecialisation = '';
@@ -30,9 +29,13 @@ export class BookAppointment implements OnInit {
   submitted = false;
   isBooking = false;
 
+  successMessage = '';
+  errorMessage = '';
+
   doctors: any[] = [];
 
-  slots = ['09:00', '09:30', '10:00', '14:00'];
+  currentPage = 1;
+  pageSize = 3;
 
   specialisations = [
     { value: '', label: 'All specialisations' },
@@ -48,17 +51,23 @@ export class BookAppointment implements OnInit {
       this.loadDoctors();
     }
   }
-  
+
   loadDoctors() {
     this.doctorService.getDoctors().subscribe({
       next: (res: any) => {
         console.log('Doctors for booking ✅:', res);
 
-        this.doctors = res.items || res.data || [];
+        this.doctors = (Array.isArray(res) ? res : res.items || res.data || [])
+          .map((doctor: any) => ({
+            ...doctor,
+            availableSlots: []
+          }));
+
         this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error('Doctor load failed ❌:', err);
+        this.showError('Unable to load doctors. Please try again.');
       }
     });
   }
@@ -96,7 +105,7 @@ export class BookAppointment implements OnInit {
   }
 
   getSpecialisationName(value: number): string {
-    switch (value) {
+    switch (Number(value)) {
       case 0: return 'General Medicine';
       case 1: return 'Pediatrician';
       case 2: return 'Cardiology';
@@ -105,28 +114,27 @@ export class BookAppointment implements OnInit {
       default: return 'Other';
     }
   }
-  get isValidAppointmentDate(): boolean {
-  return !!this.appointmentDate && this.appointmentDate >= this.todayDate;
-}
 
-get displayAppointmentDate(): string {
-  if (!this.isValidAppointmentDate) {
-    return 'selected date';
+  get isValidAppointmentDate(): boolean {
+    return !!this.appointmentDate && this.appointmentDate >= this.todayDate;
   }
 
-  const date = new Date(this.appointmentDate);
+  get displayAppointmentDate(): string {
+    if (!this.isValidAppointmentDate) {
+      return 'selected date';
+    }
 
-  return date.toLocaleDateString('en-IN', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  });
-}
+    const date = new Date(this.appointmentDate);
 
+    return date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  }
 
   filteredDoctors() {
     return this.doctors.filter((d: any) => {
-
       const matchesSearch =
         !this.searchText ||
         d.fullName.toLowerCase().includes(this.searchText.toLowerCase());
@@ -139,6 +147,115 @@ get displayAppointmentDate(): string {
     });
   }
 
+  pagedDoctors() {
+    const filtered = this.filteredDoctors();
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+
+    return filtered.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredDoctors().length / this.pageSize);
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, index) => index + 1);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) {
+      return;
+    }
+
+    this.currentPage = page;
+    this.selectedDoctor = null;
+    this.selectedSlot = '';
+    this.clearAvailableSlots();
+    this.refreshAvailabilityForDisplayedDoctors();
+  }
+
+  previousPage(): void {
+    if (this.currentPage <= 1) {
+      return;
+    }
+
+    this.currentPage--;
+    this.selectedDoctor = null;
+    this.selectedSlot = '';
+    this.clearAvailableSlots();
+    this.refreshAvailabilityForDisplayedDoctors();
+  }
+
+  nextPage(): void {
+    if (this.currentPage >= this.totalPages) {
+      return;
+    }
+
+    this.currentPage++;
+    this.selectedDoctor = null;
+    this.selectedSlot = '';
+    this.clearAvailableSlots();
+    this.refreshAvailabilityForDisplayedDoctors();
+  }
+
+  onSearchCriteriaChanged(): void {
+    this.selectedDoctor = null;
+    this.selectedSlot = '';
+    this.currentPage = 1;
+
+    this.clearAvailableSlots();
+
+    this.refreshAvailabilityForDisplayedDoctors();
+  }
+
+  clearAvailableSlots(): void {
+    this.doctors = this.doctors.map((doctor: any) => ({
+      ...doctor,
+      availableSlots: []
+    }));
+  }
+
+  refreshAvailabilityForDisplayedDoctors(): void {
+    if (!this.isValidAppointmentDate) {
+      return;
+    }
+
+    if (this.selectedSpecialisation === '') {
+      console.log('Select specialisation to load doctor availability.');
+      return;
+    }
+
+    const visibleDoctors = this.pagedDoctors();
+
+    visibleDoctors.forEach((doctor: any) => {
+      this.doctorService
+        .getDoctorAvailability(doctor.doctorId, this.appointmentDate)
+        .subscribe({
+          next: availability => {
+            console.log('Doctor availability from Garnet/API ✅:', availability);
+
+            doctor.isActive = availability.isActive;
+            doctor.availableSlots = availability.availableSlots || [];
+
+            if (
+              this.selectedDoctor?.doctorId === doctor.doctorId &&
+              this.selectedSlot &&
+              !doctor.availableSlots.includes(this.selectedSlot)
+            ) {
+              this.selectedDoctor = null;
+              this.selectedSlot = '';
+            }
+
+            this.cdr.detectChanges();
+          },
+          error: err => {
+            console.error('Doctor availability load failed ❌:', err);
+            this.showError('Unable to load doctor availability.');
+          }
+        });
+    });
+  }
+
   clearFilters() {
     this.appointmentDate = '';
     this.selectedSpecialisation = '';
@@ -146,6 +263,9 @@ get displayAppointmentDate(): string {
     this.selectedDoctor = null;
     this.selectedSlot = '';
     this.submitted = false;
+    this.currentPage = 1;
+
+    this.clearAvailableSlots();
   }
 
   selectSlot(doctor: any, slot: string) {
@@ -154,62 +274,76 @@ get displayAppointmentDate(): string {
   }
 
   confirmAppointment(doctor: any) {
-  this.submitted = true;
+    this.submitted = true;
 
-  if (!this.appointmentDate || this.appointmentDate < this.todayDate) {
-    return;
-  }
-
-  if (!this.selectedSlot || this.selectedDoctor?.doctorId !== doctor.doctorId) {
-    return;
-  }
-
-  const patientId = Number(localStorage.getItem('patientId'));
-
-  if (!patientId) {
-    alert('Patient profile not loaded. Please open Profile once and try again.');
-    return;
-  }
-
-  const payload = {
-    patientId: patientId,
-    doctorId: doctor.doctorId,
-    scheduledDate: this.appointmentDate,
-    timeSlot: this.selectedSlot
-  };
-
-  console.log('Booking payload ✅:', payload);
-
-  this.isBooking = true;
-
-  this.appointmentService.bookAppointment(payload).subscribe({
-    next: (res: any) => {
-      console.log('Appointment booked ✅:', res);
-
-      //  stop loading first
-      this.isBooking = false;
-      this.submitted = false;
-      this.selectedDoctor = null;
-      this.selectedSlot = '';
-
-      //  show success
-      alert('Appointment booked successfully ✅');
-
-      //  go to appointments page so it reloads data
-      this.router.navigate(['/patient/appointments']);
-    },
-    error: (err: any) => {
-      console.error('Booking failed ❌:', err);
-
-      this.isBooking = false;
-
-      const message =
-        err?.error?.message ||
-        err?.error ||
-        'Booking failed. Please check selected date/time.';
-
-      alert(message);
+    if (!this.appointmentDate || this.appointmentDate < this.todayDate) {
+      return;
     }
-  });
-}
+
+    if (!this.selectedSlot || this.selectedDoctor?.doctorId !== doctor.doctorId) {
+      return;
+    }
+
+    const patientId = Number(localStorage.getItem('patientId'));
+
+    if (!patientId) {
+      this.showError('Patient profile not loaded. Please open Profile once and try again.');
+      return;
+    }
+
+    const payload = {
+      patientId: patientId,
+      doctorId: doctor.doctorId,
+      scheduledDate: this.appointmentDate,
+      timeSlot: this.selectedSlot
+    };
+
+    console.log('Booking payload ✅:', payload);
+
+    this.isBooking = true;
+
+    this.appointmentService.bookAppointment(payload).subscribe({
+      next: (res: any) => {
+        console.log('Appointment booked ✅:', res);
+
+        this.isBooking = false;
+        this.submitted = false;
+        this.selectedDoctor = null;
+        this.selectedSlot = '';
+
+        this.successMessage = 'Appointment booked successfully';
+        this.errorMessage = '';
+
+        this.cdr.detectChanges();
+
+        setTimeout(() => {
+          this.router.navigate(['/patient/appointments']);
+        }, 2500);
+      },
+      error: (err: any) => {
+        console.error('Booking failed ❌:', err);
+
+        this.isBooking = false;
+
+        const message =
+          err?.error?.message ||
+          err?.error ||
+          'Booking failed. Please check selected date/time.';
+
+        this.showError(message);
+      }
+    });
+  }
+
+  private showError(message: string): void {
+    this.errorMessage = message;
+    this.successMessage = '';
+
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      this.errorMessage = '';
+      this.cdr.detectChanges();
+    }, 3000);
+  }
 }

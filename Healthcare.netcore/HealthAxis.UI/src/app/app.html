@@ -1,1 +1,10 @@
+<div
+  class="global-alert"
+  *ngIf="alertMessage"
+  [class.success]="alertType === 'success'"
+  [class.error]="alertType === 'error'"
+  [class.info]="alertType === 'info'">
+  {{ alertMessage }}
+</div>
+
 <router-outlet></router-outlet>

@@ -20,19 +20,24 @@ export class DoctorSearch implements OnInit {
   onlyAvailable = true;
   sortBy: 'experience' | 'fee' = 'experience';
 
+  currentPage = 1;
+  pageSize = 5;
+  totalRecords = 0;
+  totalPages = 0;
+
   specialisations = [
     { value: '', label: 'All specialisations' },
     { value: 0, label: 'General Medicine' },
     { value: 1, label: 'Pediatrician' },
-    { value: 2, label: 'Cardiologist' },
-    { value: 3, label: 'Dermatologist' },
-    { value: 4, label: 'Neurologist' }
+    { value: 2, label: 'Cardiology' },
+    { value: 3, label: 'Dermatology' },
+    { value: 4, label: 'Orthopaedics' }
   ];
 
   constructor(
-    private router: Router,
-    private doctorService: DoctorService,
-    private cdr: ChangeDetectorRef
+    private readonly router: Router,
+    private readonly doctorService: DoctorService,
+    private readonly cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -42,32 +47,37 @@ export class DoctorSearch implements OnInit {
   }
 
   loadDoctors() {
-    this.doctorService.getDoctors().subscribe({
+    this.doctorService.getDoctors(this.currentPage, this.pageSize).subscribe({
       next: (res: any) => {
-        console.log('API RESPONSE ✅:', res);
+        console.log('Doctors paged response ✅:', res);
+
         this.doctors = res.items || res.data || [];
+        this.currentPage = res.pageNumber || this.currentPage;
+        this.pageSize = res.pageSize || this.pageSize;
+        this.totalRecords = res.totalRecords || 0;
+        this.totalPages = res.totalPages || 0;
+
         this.cdr.detectChanges();
       },
       error: (err: any) => {
-        console.error('API ERROR ❌:', err);
+        console.error('Doctor load failed ❌:', err);
       }
     });
   }
 
   getSpecialisationName(value: number): string {
-    switch (value) {
+    switch (Number(value)) {
       case 0: return 'General Medicine';
       case 1: return 'Pediatrician';
-      case 2: return 'Cardiologist';
-      case 3: return 'Dermatologist';
-      case 4: return 'Neurologist';
+      case 2: return 'Cardiology';
+      case 3: return 'Dermatology';
+      case 4: return 'Orthopaedics';
       default: return 'Other';
     }
   }
 
   filteredDoctors() {
     let result = this.doctors.filter((d: any) => {
-
       const matchesSearch =
         !this.searchText ||
         d.fullName.toLowerCase().includes(this.searchText.toLowerCase());
@@ -108,5 +118,36 @@ export class DoctorSearch implements OnInit {
     this.router.navigate(['/patient/book'], {
       state: { doctor: d }
     });
+  }
+
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) {
+      return;
+    }
+
+    this.currentPage = page;
+    this.loadDoctors();
+  }
+
+  nextPage() {
+    if (this.currentPage >= this.totalPages) {
+      return;
+    }
+
+    this.currentPage++;
+    this.loadDoctors();
+  }
+
+  previousPage() {
+    if (this.currentPage <= 1) {
+      return;
+    }
+
+    this.currentPage--;
+    this.loadDoctors();
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, index) => index + 1);
   }
 }

@@ -13,11 +13,11 @@ import { forkJoin } from 'rxjs';
 })
 export class HealthHistory implements OnInit {
 
-  private http = inject(HttpClient);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly http = inject(HttpClient);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  private healthRecordsUrl = 'https://localhost:7130/api/health-records';
-  private doctorsUrl = 'https://localhost:7130/api/doctors';
+  private readonly healthRecordsUrl = 'https://localhost:7130/api/health-records';
+  private readonly doctorsUrl = 'https://localhost:7130/api/doctors';
 
   showFilters = false;
 

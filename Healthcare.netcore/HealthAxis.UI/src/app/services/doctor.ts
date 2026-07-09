@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+export interface DoctorAvailability {
+  doctorId: number;
+  fullName: string;
+  isActive: boolean;
+  date: string;
+  availableSlots: string[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -8,19 +16,42 @@ export class DoctorService {
 
   private readonly baseUrl = 'https://localhost:7130/api/doctors';
 
-  constructor(private readonly  http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
-  getDoctors() {
+  private getHeaders(): HttpHeaders {
+    const token = typeof window !== 'undefined'
+      ? localStorage.getItem('token')
+      : null;
 
-    const token = localStorage.getItem('token');
+    if (token) {
+      return new HttpHeaders({
+        Authorization: `Bearer ${token}`
+      });
+    }
 
-    console.log("TOKEN ✅:", token);
+    return new HttpHeaders();
+  }
 
+  getDoctors(pageNumber: number = 1, pageSize: number = 10) {
     return this.http.get<any>(
       this.baseUrl,
       {
-        headers: {
-          Authorization: `Bearer ${token}`
+        headers: this.getHeaders(),
+        params: {
+          pageNumber,
+          pageSize
+        }
+      }
+    );
+  }
+
+  getDoctorAvailability(doctorId: number, date: string) {
+    return this.http.get<DoctorAvailability>(
+      `${this.baseUrl}/${doctorId}/availability`,
+      {
+        headers: this.getHeaders(),
+        params: {
+          date
         }
       }
     );

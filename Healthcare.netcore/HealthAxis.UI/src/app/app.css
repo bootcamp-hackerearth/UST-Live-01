@@ -1,1 +1,26 @@
-/* Global application component styles can be added here when needed. */
+.global-alert {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  min-width: 280px;
+  max-width: 440px;
+  padding: 14px 22px;
+  border-radius: 12px;
+  color: #ffffff;
+  font-weight: 800;
+  font-family: "Segoe UI", sans-serif;
+  z-index: 99999;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.25);
+}
+
+.global-alert.success {
+  background: #16a34a;
+}
+
+.global-alert.error {
+  background: #dc2626;
+}
+
+.global-alert.info {
+  background: #2563eb;
+}

@@ -465,3 +465,1250 @@ WHERE [h].[PatientId] = @patientId
 2026-07-08 00:37:23.114 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T00:37:23.1147659+05:30"
 2026-07-08 00:37:33.123 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T00:37:33.1233492+05:30"
 2026-07-08 00:37:43.140 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T00:37:43.1400095+05:30"
+2026-07-08 09:42:24.834 +05:30 [INF] User profile is available. Using 'C:\Users\310481\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-07-08 09:42:26.816 +05:30 [INF] Executed DbCommand (112ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-08 09:42:26.963 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-08 09:42:26.972 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-08 09:42:27.013 +05:30 [INF] Executed DbCommand (16ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[MustChangePassword], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-08 09:42:27.131 +05:30 [INF] HeartbeatService started.
+2026-07-08 09:42:27.131 +05:30 [INF] NotificationCleanupService started.
+2026-07-08 09:42:27.134 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:42:27.1342694+05:30"
+2026-07-08 09:42:27.286 +05:30 [INF] Executed DbCommand (24ms) [Parameters=[@cutoffDate='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SELECT [n].[Id], [n].[CreatedAt], [n].[DoctorId], [n].[IsRead], [n].[Message]
+FROM [Notifications] AS [n]
+WHERE [n].[CreatedAt] < @cutoffDate
+2026-07-08 09:42:27.290 +05:30 [INF] No old notifications found for cleanup.
+2026-07-08 09:42:27.323 +05:30 [INF] AppointmentBookedConsumer started in background.
+2026-07-08 09:42:27.691 +05:30 [INF] Now listening on: https://localhost:7130
+2026-07-08 09:42:27.693 +05:30 [INF] Now listening on: http://localhost:5145
+2026-07-08 09:42:27.768 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-08 09:42:27.770 +05:30 [INF] Hosting environment: Development
+2026-07-08 09:42:27.772 +05:30 [INF] Content root path: C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore
+2026-07-08 09:42:37.144 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:42:37.1446650+05:30"
+2026-07-08 09:42:47.151 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:42:47.1503960+05:30"
+2026-07-08 09:42:57.161 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:42:57.1614140+05:30"
+2026-07-08 09:43:05.087 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/auth/login - null null
+2026-07-08 09:43:05.125 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:05.134 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 12.3972 ms
+2026-07-08 09:43:05.141 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/auth/login - 204 null null 57.0069ms
+2026-07-08 09:43:05.147 +05:30 [INF] Request starting HTTP/2 POST https://localhost:7130/api/auth/login - application/json 47
+2026-07-08 09:43:05.157 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:05.200 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.AuthController.Login (Healthcare.netcore)'
+2026-07-08 09:43:05.247 +05:30 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(HealthAxis.Shared.DTOs.Auth.LoginDto) on controller HealthAxis.API.Controllers.AuthController (Healthcare.netcore).
+2026-07-08 09:43:05.342 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[MustChangePassword], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-08 09:43:05.528 +05:30 [INF] Executed DbCommand (11ms) [Parameters=[@userId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a0].[Name]
+FROM [AspNetUserRoles] AS [a]
+INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+WHERE [a].[UserId] = @userId
+2026-07-08 09:43:05.794 +05:30 [INF] Executed DbCommand (25ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (DbType = DateTime2), @p2='?' (DbType = Boolean), @p3='?' (Size = 4000), @p4='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [RefreshTokens] ([CreatedAt], [ExpiresAt], [IsRevoked], [Token], [UserId])
+OUTPUT INSERTED.[Id]
+VALUES (@p0, @p1, @p2, @p3, @p4);
+2026-07-08 09:43:05.831 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Auth.AuthResponse'.
+2026-07-08 09:43:05.842 +05:30 [INF] Executed action HealthAxis.API.Controllers.AuthController.Login (Healthcare.netcore) in 587.6161ms
+2026-07-08 09:43:05.844 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.AuthController.Login (Healthcare.netcore)'
+2026-07-08 09:43:05.848 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 691.4596 ms
+2026-07-08 09:43:05.856 +05:30 [INF] Request finished HTTP/2 POST https://localhost:7130/api/auth/login - 200 null application/json; charset=utf-8 708.8855ms
+2026-07-08 09:43:05.863 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/patients/me - null null
+2026-07-08 09:43:05.867 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/patients/me - null null
+2026-07-08 09:43:05.870 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:05.875 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:05.876 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 6.7207 ms
+2026-07-08 09:43:05.879 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 4.6685 ms
+2026-07-08 09:43:05.881 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/patients/me - 204 null null 19.3818ms
+2026-07-08 09:43:05.885 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/patients/me - 204 null null 17.7808ms
+2026-07-08 09:43:05.886 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/patients/me - null null
+2026-07-08 09:43:05.896 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:05.975 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.PatientController.GetCurrentPatient (Healthcare.netcore)'
+2026-07-08 09:43:05.992 +05:30 [INF] Route matched with {action = "GetCurrentPatient", controller = "Patient"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetCurrentPatient() on controller HealthAxis.API.Controllers.PatientController (Healthcare.netcore).
+2026-07-08 09:43:06.217 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-08 09:43:06.239 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[InsuranceId], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+2026-07-08 09:43:06.276 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Patient.PatientDto'.
+2026-07-08 09:43:06.292 +05:30 [INF] Executed action HealthAxis.API.Controllers.PatientController.GetCurrentPatient (Healthcare.netcore) in 296.1457ms
+2026-07-08 09:43:06.294 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/patients/me - null null
+2026-07-08 09:43:06.294 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.PatientController.GetCurrentPatient (Healthcare.netcore)'
+2026-07-08 09:43:06.297 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:06.298 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 402.2450 ms
+2026-07-08 09:43:06.302 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/patients/me - 200 null application/json; charset=utf-8 415.1502ms
+2026-07-08 09:43:06.305 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.PatientController.GetCurrentPatient (Healthcare.netcore)'
+2026-07-08 09:43:06.307 +05:30 [INF] Route matched with {action = "GetCurrentPatient", controller = "Patient"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetCurrentPatient() on controller HealthAxis.API.Controllers.PatientController (Healthcare.netcore).
+2026-07-08 09:43:06.312 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[InsuranceId], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+2026-07-08 09:43:06.317 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Patient.PatientDto'.
+2026-07-08 09:43:06.319 +05:30 [INF] Executed action HealthAxis.API.Controllers.PatientController.GetCurrentPatient (Healthcare.netcore) in 9.6079ms
+2026-07-08 09:43:06.320 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.PatientController.GetCurrentPatient (Healthcare.netcore)'
+2026-07-08 09:43:06.321 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 24.5173 ms
+2026-07-08 09:43:06.324 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/patients/me - 200 null application/json; charset=utf-8 29.5269ms
+2026-07-08 09:43:06.326 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/doctors - null null
+2026-07-08 09:43:06.327 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/appointments - null null
+2026-07-08 09:43:06.327 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/patients/1006/health-records - null null
+2026-07-08 09:43:06.332 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:06.336 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:06.340 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:06.341 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 8.7229 ms
+2026-07-08 09:43:06.342 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 5.3787 ms
+2026-07-08 09:43:06.343 +05:30 [INF] HTTP OPTIONS /api/patients/1006/health-records responded 204 in 3.1511 ms
+2026-07-08 09:43:06.345 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/doctors - 204 null null 18.928ms
+2026-07-08 09:43:06.347 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/appointments - 204 null null 20.8373ms
+2026-07-08 09:43:06.348 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/doctors - null null
+2026-07-08 09:43:06.350 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/patients/1006/health-records - 204 null null 22.9136ms
+2026-07-08 09:43:06.350 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/appointments - null null
+2026-07-08 09:43:06.352 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/patients/1006/health-records - null null
+2026-07-08 09:43:06.359 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:06.365 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:06.368 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:06.372 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.AppointmentController.Get (Healthcare.netcore)'
+2026-07-08 09:43:06.372 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore)'
+2026-07-08 09:43:06.372 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.PatientController.GetHealthRecords (Healthcare.netcore)'
+2026-07-08 09:43:06.380 +05:30 [INF] Route matched with {action = "Get", controller = "Appointment"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get() on controller HealthAxis.API.Controllers.AppointmentController (Healthcare.netcore).
+2026-07-08 09:43:06.382 +05:30 [INF] Route matched with {action = "GetAll", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll(HealthAxis.Shared.DTOs.Common.PaginationParams, System.Threading.CancellationToken) on controller HealthAxis.API.Controllers.DoctorController (Healthcare.netcore).
+2026-07-08 09:43:06.382 +05:30 [INF] Route matched with {action = "GetHealthRecords", controller = "Patient"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetHealthRecords(Int32) on controller HealthAxis.API.Controllers.PatientController (Healthcare.netcore).
+2026-07-08 09:43:06.405 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlot]
+FROM [Appointments] AS [a]
+2026-07-08 09:43:06.434 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[InsuranceId], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+WHERE [p].[PatientId] = @p
+2026-07-08 09:43:06.444 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthAxis.Shared.DTOs.Appointment.AppointmentDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 09:43:06.451 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [h].[RecordId], [h].[AppointmentId], [h].[Diagnosis], [h].[DoctorId], [h].[Notes], [h].[PatientId], [h].[Prescription], [h].[VisitDate]
+FROM [HealthRecords] AS [h]
+2026-07-08 09:43:06.452 +05:30 [INF] Executed action HealthAxis.API.Controllers.AppointmentController.Get (Healthcare.netcore) in 69.4128ms
+2026-07-08 09:43:06.455 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.AppointmentController.Get (Healthcare.netcore)'
+2026-07-08 09:43:06.456 +05:30 [INF] HTTP GET /api/appointments responded 200 in 90.6398 ms
+2026-07-08 09:43:06.458 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/appointments - 200 null application/json; charset=utf-8 108.7905ms
+2026-07-08 09:43:06.476 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthAxis.Shared.DTOs.HealthRecord.HealthRecordDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 09:43:06.479 +05:30 [INF] Executed action HealthAxis.API.Controllers.PatientController.GetHealthRecords (Healthcare.netcore) in 92.4092ms
+2026-07-08 09:43:06.481 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.PatientController.GetHealthRecords (Healthcare.netcore)'
+2026-07-08 09:43:06.483 +05:30 [INF] HTTP GET /api/patients/1006/health-records responded 200 in 115.2337 ms
+2026-07-08 09:43:06.486 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/patients/1006/health-records - 200 null application/json; charset=utf-8 133.4446ms
+2026-07-08 09:43:06.743 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Doctors] AS [d]
+2026-07-08 09:43:06.811 +05:30 [INF] Executed DbCommand (20ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [d].[DoctorId], [d].[FullName], [d].[Specialisation], [d].[YearsOfExperience], [d].[ConsultationFee], [d].[IsActive], (
+    SELECT COUNT(*)
+    FROM [Appointments] AS [a]
+    WHERE [d].[DoctorId] = [a].[DoctorId] AND CONVERT(date, [a].[ScheduledDate]) >= CONVERT(date, GETDATE()) AND [a].[Status] <> 3) AS [UpcomingAppointmentCount]
+FROM [Doctors] AS [d]
+ORDER BY [d].[DoctorId]
+OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+2026-07-08 09:43:06.817 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Common.PagedResponse`1[[HealthAxis.Shared.DTOs.Doctor.DoctorDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 09:43:06.830 +05:30 [INF] Executed action HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore) in 445.4201ms
+2026-07-08 09:43:06.832 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore)'
+2026-07-08 09:43:06.833 +05:30 [INF] HTTP GET /api/doctors responded 200 in 474.3757 ms
+2026-07-08 09:43:06.836 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/doctors - 200 null application/json; charset=utf-8 487.4075ms
+2026-07-08 09:43:07.170 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:43:07.1708694+05:30"
+2026-07-08 09:43:11.380 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/doctors - null null
+2026-07-08 09:43:11.383 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:11.384 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 1.0454 ms
+2026-07-08 09:43:11.387 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/doctors - 204 null null 7.4079ms
+2026-07-08 09:43:11.389 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/doctors - null null
+2026-07-08 09:43:11.396 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:11.398 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore)'
+2026-07-08 09:43:11.400 +05:30 [INF] Route matched with {action = "GetAll", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll(HealthAxis.Shared.DTOs.Common.PaginationParams, System.Threading.CancellationToken) on controller HealthAxis.API.Controllers.DoctorController (Healthcare.netcore).
+2026-07-08 09:43:11.422 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Doctors] AS [d]
+2026-07-08 09:43:11.439 +05:30 [INF] Executed DbCommand (10ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [d].[DoctorId], [d].[FullName], [d].[Specialisation], [d].[YearsOfExperience], [d].[ConsultationFee], [d].[IsActive], (
+    SELECT COUNT(*)
+    FROM [Appointments] AS [a]
+    WHERE [d].[DoctorId] = [a].[DoctorId] AND CONVERT(date, [a].[ScheduledDate]) >= CONVERT(date, GETDATE()) AND [a].[Status] <> 3) AS [UpcomingAppointmentCount]
+FROM [Doctors] AS [d]
+ORDER BY [d].[DoctorId]
+OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+2026-07-08 09:43:11.442 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Common.PagedResponse`1[[HealthAxis.Shared.DTOs.Doctor.DoctorDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 09:43:11.445 +05:30 [INF] Executed action HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore) in 42.4961ms
+2026-07-08 09:43:11.448 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore)'
+2026-07-08 09:43:11.449 +05:30 [INF] HTTP GET /api/doctors responded 200 in 53.2708 ms
+2026-07-08 09:43:11.451 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/doctors - 200 null application/json; charset=utf-8 61.3118ms
+2026-07-08 09:43:17.177 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:43:17.1771629+05:30"
+2026-07-08 09:43:27.188 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:43:27.1881284+05:30"
+2026-07-08 09:43:37.201 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:43:37.2010800+05:30"
+2026-07-08 09:43:47.207 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:43:47.2070056+05:30"
+2026-07-08 09:43:57.220 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:43:57.2206704+05:30"
+2026-07-08 09:43:59.427 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/appointments - null null
+2026-07-08 09:43:59.432 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:59.433 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 1.4979 ms
+2026-07-08 09:43:59.436 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/appointments - 204 null null 8.9247ms
+2026-07-08 09:43:59.437 +05:30 [INF] Request starting HTTP/2 POST https://localhost:7130/api/appointments - application/json 79
+2026-07-08 09:43:59.440 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:43:59.441 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.AppointmentController.Create (Healthcare.netcore)'
+2026-07-08 09:43:59.445 +05:30 [INF] Route matched with {action = "Create", controller = "Appointment"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Create(HealthAxis.Shared.DTOs.Appointment.CreateAppointmentDto) on controller HealthAxis.API.Controllers.AppointmentController (Healthcare.netcore).
+2026-07-08 09:43:59.460 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[InsuranceId], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+WHERE [p].[PatientId] = @p
+2026-07-08 09:43:59.473 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[DoctorId], [d].[ConsultationFee], [d].[FullName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Doctors] AS [d]
+WHERE [d].[DoctorId] = @p
+2026-07-08 09:43:59.486 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlot]
+FROM [Appointments] AS [a]
+2026-07-08 09:43:59.549 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[@p0='?' (Size = 500), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime2), @p4='?' (DbType = Int32), @p5='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Appointments] ([CancellationReason], [DoctorId], [PatientId], [ScheduledDate], [Status], [TimeSlot])
+OUTPUT INSERTED.[AppointmentId]
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5);
+2026-07-08 09:43:59.565 +05:30 [INF] Published AppointmentBookedEvent for AppointmentId 34, DoctorId 2
+2026-07-08 09:43:59.569 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Appointment.AppointmentDto'.
+2026-07-08 09:43:59.571 +05:30 [INF] Executed action HealthAxis.API.Controllers.AppointmentController.Create (Healthcare.netcore) in 124.582ms
+2026-07-08 09:43:59.572 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.AppointmentController.Create (Healthcare.netcore)'
+2026-07-08 09:43:59.573 +05:30 [INF] HTTP POST /api/appointments responded 200 in 133.4589 ms
+2026-07-08 09:43:59.575 +05:30 [INF] Request finished HTTP/2 POST https://localhost:7130/api/appointments - 200 null application/json; charset=utf-8 137.1862ms
+2026-07-08 09:43:59.579 +05:30 [INF] Consumed AppointmentBookedEvent: AppointmentId=34, Patient=Raju, DoctorId=2, Date="2026-07-22T00:00:00.0000000", Slot=09:00
+2026-07-08 09:43:59.595 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (DbType = Int32), @p2='?' (DbType = Boolean), @p3='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Notifications] ([CreatedAt], [DoctorId], [IsRead], [Message])
+OUTPUT INSERTED.[Id]
+VALUES (@p0, @p1, @p2, @p3);
+2026-07-08 09:43:59.600 +05:30 [INF] Notification created for DoctorId 2 for AppointmentId 34
+2026-07-08 09:44:07.234 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:44:07.2342243+05:30"
+2026-07-08 09:44:17.248 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:44:17.2485802+05:30"
+2026-07-08 09:44:27.262 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:44:27.2629538+05:30"
+2026-07-08 09:44:37.274 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:44:37.2746683+05:30"
+2026-07-08 09:44:47.279 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:44:47.2789213+05:30"
+2026-07-08 09:44:57.289 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:44:57.2890785+05:30"
+2026-07-08 09:45:07.292 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:45:07.2924700+05:30"
+2026-07-08 09:45:17.305 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:45:17.3052286+05:30"
+2026-07-08 09:45:27.310 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:45:27.3105249+05:30"
+2026-07-08 09:45:37.324 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:45:37.3247341+05:30"
+2026-07-08 09:45:47.338 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:45:47.3378966+05:30"
+2026-07-08 09:45:57.344 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:45:57.3438258+05:30"
+2026-07-08 09:46:07.349 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:46:07.3492136+05:30"
+2026-07-08 09:46:17.358 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:46:17.3584501+05:30"
+2026-07-08 09:46:27.366 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:46:27.3662987+05:30"
+2026-07-08 09:46:37.378 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:46:37.3783787+05:30"
+2026-07-08 09:46:47.392 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:46:47.3912488+05:30"
+2026-07-08 09:46:57.397 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:46:57.3977385+05:30"
+2026-07-08 09:47:07.412 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:47:07.4126267+05:30"
+2026-07-08 09:47:17.426 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:47:17.4264200+05:30"
+2026-07-08 09:47:27.435 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:47:27.4352584+05:30"
+2026-07-08 09:47:37.442 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:47:37.4427987+05:30"
+2026-07-08 09:47:47.452 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:47:47.4526883+05:30"
+2026-07-08 09:47:52.689 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/appointments - null null
+2026-07-08 09:47:52.689 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/doctors - null null
+2026-07-08 09:47:52.691 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:47:52.691 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/health-records/patient/1006 - null null
+2026-07-08 09:47:52.693 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:47:52.694 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 3.2593 ms
+2026-07-08 09:47:52.696 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:47:52.697 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 4.0222 ms
+2026-07-08 09:47:52.699 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/appointments - 204 null null 10.3863ms
+2026-07-08 09:47:52.700 +05:30 [INF] HTTP OPTIONS /api/health-records/patient/1006 responded 204 in 3.7603 ms
+2026-07-08 09:47:52.703 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/doctors - 204 null null 14.3402ms
+2026-07-08 09:47:52.704 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/appointments - null null
+2026-07-08 09:47:52.707 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/doctors - null null
+2026-07-08 09:47:52.707 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/health-records/patient/1006 - 204 null null 16.0734ms
+2026-07-08 09:47:52.709 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/health-records/patient/1006 - null null
+2026-07-08 09:47:52.713 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:47:52.715 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:47:52.724 +05:30 [INF] CORS policy execution successful.
+2026-07-08 09:47:52.725 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.AppointmentController.Get (Healthcare.netcore)'
+2026-07-08 09:47:52.725 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore)'
+2026-07-08 09:47:52.726 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.HealthRecordController.GetByPatient (Healthcare.netcore)'
+2026-07-08 09:47:52.727 +05:30 [INF] Route matched with {action = "Get", controller = "Appointment"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get() on controller HealthAxis.API.Controllers.AppointmentController (Healthcare.netcore).
+2026-07-08 09:47:52.728 +05:30 [INF] Route matched with {action = "GetAll", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll(HealthAxis.Shared.DTOs.Common.PaginationParams, System.Threading.CancellationToken) on controller HealthAxis.API.Controllers.DoctorController (Healthcare.netcore).
+2026-07-08 09:47:52.735 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlot]
+FROM [Appointments] AS [a]
+2026-07-08 09:47:52.735 +05:30 [INF] Route matched with {action = "GetByPatient", controller = "HealthRecord"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetByPatient(Int32) on controller HealthAxis.API.Controllers.HealthRecordController (Healthcare.netcore).
+2026-07-08 09:47:52.738 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthAxis.Shared.DTOs.Appointment.AppointmentDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 09:47:52.739 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Doctors] AS [d]
+2026-07-08 09:47:52.741 +05:30 [INF] Executed action HealthAxis.API.Controllers.AppointmentController.Get (Healthcare.netcore) in 10.7781ms
+2026-07-08 09:47:52.744 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.AppointmentController.Get (Healthcare.netcore)'
+2026-07-08 09:47:52.745 +05:30 [INF] HTTP GET /api/appointments responded 200 in 32.3398 ms
+2026-07-08 09:47:52.746 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[InsuranceId], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+WHERE [p].[PatientId] = @p
+2026-07-08 09:47:52.747 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/appointments - 200 null application/json; charset=utf-8 43.3324ms
+2026-07-08 09:47:52.757 +05:30 [INF] Executed DbCommand (13ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [d].[DoctorId], [d].[FullName], [d].[Specialisation], [d].[YearsOfExperience], [d].[ConsultationFee], [d].[IsActive], (
+    SELECT COUNT(*)
+    FROM [Appointments] AS [a]
+    WHERE [d].[DoctorId] = [a].[DoctorId] AND CONVERT(date, [a].[ScheduledDate]) >= CONVERT(date, GETDATE()) AND [a].[Status] <> 3) AS [UpcomingAppointmentCount]
+FROM [Doctors] AS [d]
+ORDER BY [d].[DoctorId]
+OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+2026-07-08 09:47:52.760 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Common.PagedResponse`1[[HealthAxis.Shared.DTOs.Doctor.DoctorDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 09:47:52.762 +05:30 [INF] Executed action HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore) in 30.0612ms
+2026-07-08 09:47:52.763 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore)'
+2026-07-08 09:47:52.764 +05:30 [INF] HTTP GET /api/doctors responded 200 in 49.1119 ms
+2026-07-08 09:47:52.765 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[@patientId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [h].[RecordId], [h].[AppointmentId], [h].[Diagnosis], [h].[DoctorId], [h].[Notes], [h].[PatientId], [h].[Prescription], [h].[VisitDate]
+FROM [HealthRecords] AS [h]
+WHERE [h].[PatientId] = @patientId
+2026-07-08 09:47:52.766 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/doctors - 200 null application/json; charset=utf-8 58.5244ms
+2026-07-08 09:47:52.772 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthAxis.Shared.DTOs.HealthRecord.HealthRecordDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 09:47:52.773 +05:30 [INF] Executed action HealthAxis.API.Controllers.HealthRecordController.GetByPatient (Healthcare.netcore) in 33.8473ms
+2026-07-08 09:47:52.776 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.HealthRecordController.GetByPatient (Healthcare.netcore)'
+2026-07-08 09:47:52.777 +05:30 [INF] HTTP GET /api/health-records/patient/1006 responded 200 in 53.3654 ms
+2026-07-08 09:47:52.779 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/health-records/patient/1006 - 200 null application/json; charset=utf-8 69.9644ms
+2026-07-08 09:47:57.460 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:47:57.4601923+05:30"
+2026-07-08 09:48:07.467 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:48:07.4676308+05:30"
+2026-07-08 09:48:17.475 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:48:17.4750989+05:30"
+2026-07-08 09:48:27.479 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:48:27.4798830+05:30"
+2026-07-08 09:48:37.496 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:48:37.4960145+05:30"
+2026-07-08 09:48:47.508 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:48:47.5080633+05:30"
+2026-07-08 09:48:57.522 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:48:57.5219415+05:30"
+2026-07-08 09:49:07.526 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:49:07.5264937+05:30"
+2026-07-08 09:49:17.541 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:49:17.5414346+05:30"
+2026-07-08 09:49:27.550 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:49:27.5502001+05:30"
+2026-07-08 09:49:37.559 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:49:37.5590443+05:30"
+2026-07-08 09:49:47.569 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:49:47.5690675+05:30"
+2026-07-08 09:49:57.573 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:49:57.5737611+05:30"
+2026-07-08 09:50:07.588 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:50:07.5881370+05:30"
+2026-07-08 09:50:17.597 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:50:17.5970191+05:30"
+2026-07-08 09:50:27.611 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:50:27.6116589+05:30"
+2026-07-08 09:50:37.626 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:50:37.6264250+05:30"
+2026-07-08 09:50:47.640 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:50:47.6401783+05:30"
+2026-07-08 09:50:57.643 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:50:57.6435448+05:30"
+2026-07-08 09:51:07.652 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:51:07.6526652+05:30"
+2026-07-08 09:51:17.656 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:51:17.6562763+05:30"
+2026-07-08 09:51:27.666 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:51:27.6667379+05:30"
+2026-07-08 09:51:37.673 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:51:37.6734537+05:30"
+2026-07-08 09:51:47.675 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:51:47.6754339+05:30"
+2026-07-08 09:51:57.684 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:51:57.6845658+05:30"
+2026-07-08 09:52:07.698 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:52:07.6980162+05:30"
+2026-07-08 09:52:17.704 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:52:17.7044650+05:30"
+2026-07-08 09:52:27.715 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:52:27.7155533+05:30"
+2026-07-08 09:52:37.730 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:52:37.7308398+05:30"
+2026-07-08 09:52:47.744 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:52:47.7446300+05:30"
+2026-07-08 09:52:57.755 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:52:57.7552161+05:30"
+2026-07-08 09:53:07.771 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:53:07.7719435+05:30"
+2026-07-08 09:53:17.784 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:53:17.7845395+05:30"
+2026-07-08 09:53:27.790 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:53:27.7901049+05:30"
+2026-07-08 09:53:37.794 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:53:37.7940947+05:30"
+2026-07-08 09:53:47.803 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:53:47.8038088+05:30"
+2026-07-08 09:53:57.820 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:53:57.8203310+05:30"
+2026-07-08 09:54:07.835 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:54:07.8350760+05:30"
+2026-07-08 09:54:17.840 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:54:17.8400878+05:30"
+2026-07-08 09:54:27.846 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:54:27.8466470+05:30"
+2026-07-08 09:54:37.852 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:54:37.8523979+05:30"
+2026-07-08 09:54:47.864 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:54:47.8645419+05:30"
+2026-07-08 09:54:57.882 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:54:57.8825088+05:30"
+2026-07-08 09:55:07.899 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:55:07.8999101+05:30"
+2026-07-08 09:55:17.918 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:55:17.9181964+05:30"
+2026-07-08 09:55:27.933 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:55:27.9335425+05:30"
+2026-07-08 09:55:37.943 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:55:37.9435019+05:30"
+2026-07-08 09:55:47.947 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:55:47.9478668+05:30"
+2026-07-08 09:55:57.960 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:55:57.9602065+05:30"
+2026-07-08 09:56:07.974 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:56:07.9742970+05:30"
+2026-07-08 09:56:17.990 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:56:17.9908516+05:30"
+2026-07-08 09:56:28.005 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:56:28.0050551+05:30"
+2026-07-08 09:56:38.014 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:56:38.0141358+05:30"
+2026-07-08 09:56:48.029 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:56:48.0292417+05:30"
+2026-07-08 09:56:58.042 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:56:58.0429279+05:30"
+2026-07-08 09:57:08.061 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:57:08.0614548+05:30"
+2026-07-08 09:57:18.072 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:57:18.0724587+05:30"
+2026-07-08 09:57:28.087 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:57:28.0879188+05:30"
+2026-07-08 09:57:38.094 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:57:38.0947289+05:30"
+2026-07-08 09:57:48.106 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:57:48.1063774+05:30"
+2026-07-08 09:57:58.115 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:57:58.1157727+05:30"
+2026-07-08 09:58:08.131 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:58:08.1310943+05:30"
+2026-07-08 09:58:18.137 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:58:18.1370716+05:30"
+2026-07-08 09:58:28.142 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:58:28.1422994+05:30"
+2026-07-08 09:58:38.152 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:58:38.1520256+05:30"
+2026-07-08 09:58:48.162 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:58:48.1623308+05:30"
+2026-07-08 09:58:58.172 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:58:58.1725413+05:30"
+2026-07-08 09:59:08.178 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:59:08.1785933+05:30"
+2026-07-08 09:59:18.194 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:59:18.1943766+05:30"
+2026-07-08 09:59:28.208 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:59:28.2086245+05:30"
+2026-07-08 09:59:38.223 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:59:38.2239397+05:30"
+2026-07-08 09:59:48.235 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:59:48.2353501+05:30"
+2026-07-08 09:59:58.241 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T09:59:58.2419716+05:30"
+2026-07-08 10:00:08.258 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:00:08.2583857+05:30"
+2026-07-08 10:00:18.268 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:00:18.2689258+05:30"
+2026-07-08 10:00:28.273 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:00:28.2732870+05:30"
+2026-07-08 10:00:38.278 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:00:38.2787642+05:30"
+2026-07-08 10:00:48.282 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:00:48.2827878+05:30"
+2026-07-08 10:00:58.287 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:00:58.2874523+05:30"
+2026-07-08 10:01:08.305 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:01:08.3056307+05:30"
+2026-07-08 10:01:18.313 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:01:18.3133418+05:30"
+2026-07-08 10:01:28.320 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:01:28.3208728+05:30"
+2026-07-08 10:01:38.327 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:01:38.3277305+05:30"
+2026-07-08 10:01:48.336 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:01:48.3366722+05:30"
+2026-07-08 10:01:58.353 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:01:58.3532710+05:30"
+2026-07-08 10:02:08.370 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:02:08.3703078+05:30"
+2026-07-08 10:02:18.377 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:02:18.3775245+05:30"
+2026-07-08 10:02:28.384 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:02:28.3841558+05:30"
+2026-07-08 10:02:38.396 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:02:38.3964050+05:30"
+2026-07-08 10:02:48.399 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:02:48.3992296+05:30"
+2026-07-08 10:02:58.416 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:02:58.4168082+05:30"
+2026-07-08 10:03:08.422 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:03:08.4220376+05:30"
+2026-07-08 10:03:18.433 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:03:18.4331464+05:30"
+2026-07-08 10:03:28.442 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:03:28.4427137+05:30"
+2026-07-08 10:03:38.455 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:03:38.4551218+05:30"
+2026-07-08 10:03:48.458 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:03:48.4585997+05:30"
+2026-07-08 10:03:58.466 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:03:58.4668651+05:30"
+2026-07-08 10:04:08.479 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:04:08.4790437+05:30"
+2026-07-08 10:04:18.491 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:04:18.4916792+05:30"
+2026-07-08 10:04:28.506 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:04:28.5068372+05:30"
+2026-07-08 10:04:38.521 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:04:38.5213371+05:30"
+2026-07-08 10:04:48.527 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:04:48.5276584+05:30"
+2026-07-08 10:04:58.535 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:04:58.5353288+05:30"
+2026-07-08 10:19:13.281 +05:30 [INF] User profile is available. Using 'C:\Users\310481\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-07-08 10:19:15.483 +05:30 [INF] Executed DbCommand (80ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-08 10:19:15.611 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-08 10:19:15.618 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-08 10:19:15.659 +05:30 [INF] Executed DbCommand (10ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[MustChangePassword], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-08 10:19:15.768 +05:30 [INF] NotificationCleanupService started.
+2026-07-08 10:19:15.768 +05:30 [INF] HeartbeatService started.
+2026-07-08 10:19:15.772 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:19:15.7722599+05:30"
+2026-07-08 10:19:15.873 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[@cutoffDate='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SELECT [n].[Id], [n].[CreatedAt], [n].[DoctorId], [n].[IsRead], [n].[Message]
+FROM [Notifications] AS [n]
+WHERE [n].[CreatedAt] < @cutoffDate
+2026-07-08 10:19:15.877 +05:30 [INF] No old notifications found for cleanup.
+2026-07-08 10:19:15.931 +05:30 [INF] AppointmentBookedConsumer started in background.
+2026-07-08 10:19:16.187 +05:30 [INF] Now listening on: https://localhost:7130
+2026-07-08 10:19:16.189 +05:30 [INF] Now listening on: http://localhost:5145
+2026-07-08 10:19:16.262 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-08 10:19:16.265 +05:30 [INF] Hosting environment: Development
+2026-07-08 10:19:16.267 +05:30 [INF] Content root path: C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore
+2026-07-08 10:19:21.283 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/patients/me - null null
+2026-07-08 10:19:21.333 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:21.340 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 11.4969 ms
+2026-07-08 10:19:21.350 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/patients/me - 204 null null 67.5346ms
+2026-07-08 10:19:21.355 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/patients/me - null null
+2026-07-08 10:19:21.362 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:21.461 +05:30 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '08-07-2026 04:28:05', Current time (UTC): '08-07-2026 04:49:21'.
+   at Microsoft.IdentityModel.Tokens.ValidatorUtilities.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2026-07-08 10:19:21.491 +05:30 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '08-07-2026 04:28:05', Current time (UTC): '08-07-2026 04:49:21'.
+2026-07-08 10:19:21.496 +05:30 [INF] Authorization failed. These requirements were not met:
+DenyAnonymousAuthorizationRequirement: Requires an authenticated user.
+RolesAuthorizationRequirement:User.IsInRole must be true for one of the following roles: (Patient)
+2026-07-08 10:19:21.507 +05:30 [INF] AuthenticationScheme: Bearer was challenged.
+2026-07-08 10:19:21.511 +05:30 [INF] HTTP GET /api/patients/me responded 401 in 149.1737 ms
+2026-07-08 10:19:21.516 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/patients/me - 401 0 null 161.4924ms
+2026-07-08 10:19:25.786 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:19:25.7861284+05:30"
+2026-07-08 10:19:35.793 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:19:35.7938550+05:30"
+2026-07-08 10:19:42.438 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/auth/login - null null
+2026-07-08 10:19:42.442 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:42.443 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 1.7963 ms
+2026-07-08 10:19:42.445 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/auth/login - 204 null null 6.7888ms
+2026-07-08 10:19:42.447 +05:30 [INF] Request starting HTTP/2 POST https://localhost:7130/api/auth/login - application/json 47
+2026-07-08 10:19:42.453 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:42.460 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.AuthController.Login (Healthcare.netcore)'
+2026-07-08 10:19:42.487 +05:30 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(HealthAxis.Shared.DTOs.Auth.LoginDto) on controller HealthAxis.API.Controllers.AuthController (Healthcare.netcore).
+2026-07-08 10:19:42.552 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[MustChangePassword], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-08 10:19:42.741 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[@userId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a0].[Name]
+FROM [AspNetUserRoles] AS [a]
+INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+WHERE [a].[UserId] = @userId
+2026-07-08 10:19:43.015 +05:30 [INF] Executed DbCommand (30ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (DbType = DateTime2), @p2='?' (DbType = Boolean), @p3='?' (Size = 4000), @p4='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [RefreshTokens] ([CreatedAt], [ExpiresAt], [IsRevoked], [Token], [UserId])
+OUTPUT INSERTED.[Id]
+VALUES (@p0, @p1, @p2, @p3, @p4);
+2026-07-08 10:19:43.044 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Auth.AuthResponse'.
+2026-07-08 10:19:43.053 +05:30 [INF] Executed action HealthAxis.API.Controllers.AuthController.Login (Healthcare.netcore) in 559.4687ms
+2026-07-08 10:19:43.055 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.AuthController.Login (Healthcare.netcore)'
+2026-07-08 10:19:43.058 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 605.1424 ms
+2026-07-08 10:19:43.064 +05:30 [INF] Request finished HTTP/2 POST https://localhost:7130/api/auth/login - 200 null application/json; charset=utf-8 616.7055ms
+2026-07-08 10:19:43.070 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/patients/me - null null
+2026-07-08 10:19:43.070 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/patients/me - null null
+2026-07-08 10:19:43.073 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:43.075 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:43.076 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 2.9208 ms
+2026-07-08 10:19:43.076 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 1.3751 ms
+2026-07-08 10:19:43.079 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/patients/me - 204 null null 8.3249ms
+2026-07-08 10:19:43.081 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/patients/me - 204 null null 10.4291ms
+2026-07-08 10:19:43.081 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/patients/me - null null
+2026-07-08 10:19:43.090 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:43.106 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.PatientController.GetCurrentPatient (Healthcare.netcore)'
+2026-07-08 10:19:43.112 +05:30 [INF] Route matched with {action = "GetCurrentPatient", controller = "Patient"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetCurrentPatient() on controller HealthAxis.API.Controllers.PatientController (Healthcare.netcore).
+2026-07-08 10:19:43.320 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-08 10:19:43.344 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[InsuranceId], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+2026-07-08 10:19:43.390 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Patient.PatientDto'.
+2026-07-08 10:19:43.404 +05:30 [INF] Executed action HealthAxis.API.Controllers.PatientController.GetCurrentPatient (Healthcare.netcore) in 290.0533ms
+2026-07-08 10:19:43.406 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/patients/me - null null
+2026-07-08 10:19:43.406 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.PatientController.GetCurrentPatient (Healthcare.netcore)'
+2026-07-08 10:19:43.408 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:43.409 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 319.3929 ms
+2026-07-08 10:19:43.412 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/patients/me - 200 null application/json; charset=utf-8 330.7417ms
+2026-07-08 10:19:43.414 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.PatientController.GetCurrentPatient (Healthcare.netcore)'
+2026-07-08 10:19:43.414 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/doctors - null null
+2026-07-08 10:19:43.415 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/appointments - null null
+2026-07-08 10:19:43.415 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/patients/1006/health-records - null null
+2026-07-08 10:19:43.417 +05:30 [INF] Route matched with {action = "GetCurrentPatient", controller = "Patient"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetCurrentPatient() on controller HealthAxis.API.Controllers.PatientController (Healthcare.netcore).
+2026-07-08 10:19:43.419 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:43.421 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:43.423 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:43.426 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 7.1315 ms
+2026-07-08 10:19:43.426 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 5.7328 ms
+2026-07-08 10:19:43.427 +05:30 [INF] HTTP OPTIONS /api/patients/1006/health-records responded 204 in 3.8116 ms
+2026-07-08 10:19:43.428 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[InsuranceId], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+2026-07-08 10:19:43.429 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/doctors - 204 null null 14.3746ms
+2026-07-08 10:19:43.430 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/appointments - 204 null null 15.6473ms
+2026-07-08 10:19:43.431 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/doctors - null null
+2026-07-08 10:19:43.432 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/patients/1006/health-records - 204 null null 17.0406ms
+2026-07-08 10:19:43.432 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/appointments - null null
+2026-07-08 10:19:43.435 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/patients/1006/health-records - null null
+2026-07-08 10:19:43.435 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Patient.PatientDto'.
+2026-07-08 10:19:43.442 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:43.447 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:43.449 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:19:43.451 +05:30 [INF] Executed action HealthAxis.API.Controllers.PatientController.GetCurrentPatient (Healthcare.netcore) in 25.9512ms
+2026-07-08 10:19:43.452 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore)'
+2026-07-08 10:19:43.452 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.AppointmentController.Get (Healthcare.netcore)'
+2026-07-08 10:19:43.453 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.PatientController.GetHealthRecords (Healthcare.netcore)'
+2026-07-08 10:19:43.454 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.PatientController.GetCurrentPatient (Healthcare.netcore)'
+2026-07-08 10:19:43.458 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 50.1770 ms
+2026-07-08 10:19:43.460 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/patients/me - 200 null application/json; charset=utf-8 54.5807ms
+2026-07-08 10:19:43.462 +05:30 [INF] Route matched with {action = "Get", controller = "Appointment"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get() on controller HealthAxis.API.Controllers.AppointmentController (Healthcare.netcore).
+2026-07-08 10:19:43.463 +05:30 [INF] Route matched with {action = "GetAll", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll(HealthAxis.Shared.DTOs.Common.PaginationParams, System.Threading.CancellationToken) on controller HealthAxis.API.Controllers.DoctorController (Healthcare.netcore).
+2026-07-08 10:19:43.463 +05:30 [INF] Route matched with {action = "GetHealthRecords", controller = "Patient"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetHealthRecords(Int32) on controller HealthAxis.API.Controllers.PatientController (Healthcare.netcore).
+2026-07-08 10:19:43.489 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlot]
+FROM [Appointments] AS [a]
+2026-07-08 10:19:43.526 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthAxis.Shared.DTOs.Appointment.AppointmentDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 10:19:43.531 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Doctors] AS [d]
+2026-07-08 10:19:43.532 +05:30 [INF] Executed action HealthAxis.API.Controllers.AppointmentController.Get (Healthcare.netcore) in 66.5845ms
+2026-07-08 10:19:43.535 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.AppointmentController.Get (Healthcare.netcore)'
+2026-07-08 10:19:43.536 +05:30 [INF] HTTP GET /api/appointments responded 200 in 89.1459 ms
+2026-07-08 10:19:43.539 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/appointments - 200 null application/json; charset=utf-8 106.8394ms
+2026-07-08 10:19:43.589 +05:30 [INF] Executed DbCommand (16ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [d].[DoctorId], [d].[FullName], [d].[Specialisation], [d].[YearsOfExperience], [d].[ConsultationFee], [d].[IsActive], (
+    SELECT COUNT(*)
+    FROM [Appointments] AS [a]
+    WHERE [d].[DoctorId] = [a].[DoctorId] AND CONVERT(date, [a].[ScheduledDate]) >= CONVERT(date, GETDATE()) AND [a].[Status] <> 3) AS [UpcomingAppointmentCount]
+FROM [Doctors] AS [d]
+ORDER BY [d].[DoctorId]
+OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+2026-07-08 10:19:43.595 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Common.PagedResponse`1[[HealthAxis.Shared.DTOs.Doctor.DoctorDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 10:19:43.612 +05:30 [INF] Executed action HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore) in 143.9577ms
+2026-07-08 10:19:43.614 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore)'
+2026-07-08 10:19:43.615 +05:30 [INF] HTTP GET /api/doctors responded 200 in 173.3285 ms
+2026-07-08 10:19:43.618 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/doctors - 200 null application/json; charset=utf-8 187.7571ms
+2026-07-08 10:19:43.749 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[InsuranceId], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+WHERE [p].[PatientId] = @p
+2026-07-08 10:19:43.764 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [h].[RecordId], [h].[AppointmentId], [h].[Diagnosis], [h].[DoctorId], [h].[Notes], [h].[PatientId], [h].[Prescription], [h].[VisitDate]
+FROM [HealthRecords] AS [h]
+2026-07-08 10:19:43.789 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthAxis.Shared.DTOs.HealthRecord.HealthRecordDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 10:19:43.791 +05:30 [INF] Executed action HealthAxis.API.Controllers.PatientController.GetHealthRecords (Healthcare.netcore) in 321.9529ms
+2026-07-08 10:19:43.793 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.PatientController.GetHealthRecords (Healthcare.netcore)'
+2026-07-08 10:19:43.794 +05:30 [INF] HTTP GET /api/patients/1006/health-records responded 200 in 344.6142 ms
+2026-07-08 10:19:43.795 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/patients/1006/health-records - 200 null application/json; charset=utf-8 360.7221ms
+2026-07-08 10:19:45.802 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:19:45.8024585+05:30"
+2026-07-08 10:19:55.806 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:19:55.8065867+05:30"
+2026-07-08 10:20:01.435 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/doctors - null null
+2026-07-08 10:20:01.447 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:20:01.448 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 1.4828 ms
+2026-07-08 10:20:01.452 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/doctors - 204 null null 16.941ms
+2026-07-08 10:20:01.455 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/doctors - null null
+2026-07-08 10:20:01.458 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:20:01.460 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore)'
+2026-07-08 10:20:01.461 +05:30 [INF] Route matched with {action = "GetAll", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll(HealthAxis.Shared.DTOs.Common.PaginationParams, System.Threading.CancellationToken) on controller HealthAxis.API.Controllers.DoctorController (Healthcare.netcore).
+2026-07-08 10:20:01.476 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Doctors] AS [d]
+2026-07-08 10:20:01.488 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [d].[DoctorId], [d].[FullName], [d].[Specialisation], [d].[YearsOfExperience], [d].[ConsultationFee], [d].[IsActive], (
+    SELECT COUNT(*)
+    FROM [Appointments] AS [a]
+    WHERE [d].[DoctorId] = [a].[DoctorId] AND CONVERT(date, [a].[ScheduledDate]) >= CONVERT(date, GETDATE()) AND [a].[Status] <> 3) AS [UpcomingAppointmentCount]
+FROM [Doctors] AS [d]
+ORDER BY [d].[DoctorId]
+OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+2026-07-08 10:20:01.490 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Common.PagedResponse`1[[HealthAxis.Shared.DTOs.Doctor.DoctorDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 10:20:01.491 +05:30 [INF] Executed action HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore) in 28.6142ms
+2026-07-08 10:20:01.492 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore)'
+2026-07-08 10:20:01.494 +05:30 [INF] HTTP GET /api/doctors responded 200 in 35.7283 ms
+2026-07-08 10:20:01.495 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/doctors - 200 null application/json; charset=utf-8 39.7457ms
+2026-07-08 10:20:05.817 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:20:05.8174229+05:30"
+2026-07-08 10:20:15.832 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:20:15.8328857+05:30"
+2026-07-08 10:20:18.539 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/appointments - null null
+2026-07-08 10:20:18.543 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:20:18.544 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 1.2515 ms
+2026-07-08 10:20:18.547 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/appointments - 204 null null 7.1885ms
+2026-07-08 10:20:18.549 +05:30 [INF] Request starting HTTP/2 POST https://localhost:7130/api/appointments - application/json 79
+2026-07-08 10:20:18.553 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:20:18.554 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.AppointmentController.Create (Healthcare.netcore)'
+2026-07-08 10:20:18.559 +05:30 [INF] Route matched with {action = "Create", controller = "Appointment"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Create(HealthAxis.Shared.DTOs.Appointment.CreateAppointmentDto) on controller HealthAxis.API.Controllers.AppointmentController (Healthcare.netcore).
+2026-07-08 10:20:18.570 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[InsuranceId], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+WHERE [p].[PatientId] = @p
+2026-07-08 10:20:18.579 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[DoctorId], [d].[ConsultationFee], [d].[FullName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Doctors] AS [d]
+WHERE [d].[DoctorId] = @p
+2026-07-08 10:20:18.594 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlot]
+FROM [Appointments] AS [a]
+2026-07-08 10:20:18.655 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[@p0='?' (Size = 500), @p1='?' (DbType = Int32), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime2), @p4='?' (DbType = Int32), @p5='?' (Size = 20)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Appointments] ([CancellationReason], [DoctorId], [PatientId], [ScheduledDate], [Status], [TimeSlot])
+OUTPUT INSERTED.[AppointmentId]
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5);
+2026-07-08 10:20:18.668 +05:30 [INF] Published AppointmentBookedEvent for AppointmentId 35, DoctorId 5
+2026-07-08 10:20:18.672 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Appointment.AppointmentDto'.
+2026-07-08 10:20:18.673 +05:30 [INF] Executed action HealthAxis.API.Controllers.AppointmentController.Create (Healthcare.netcore) in 112.4652ms
+2026-07-08 10:20:18.675 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.AppointmentController.Create (Healthcare.netcore)'
+2026-07-08 10:20:18.676 +05:30 [INF] HTTP POST /api/appointments responded 200 in 123.0726 ms
+2026-07-08 10:20:18.677 +05:30 [INF] Request finished HTTP/2 POST https://localhost:7130/api/appointments - 200 null application/json; charset=utf-8 128.5815ms
+2026-07-08 10:20:18.680 +05:30 [INF] ===============================
+APPOINTMENT EVENT RECEIVED
+===============================
+Event Type  : AppointmentBooked
+Appointment : 35
+Patient     : Raju
+Doctor      : 5
+Date        : 15-Jul-2026
+Time Slot   : 14:00
+Occurred At : 08-Jul-2026 04:50:18
+===============================
+2026-07-08 10:20:18.692 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (DbType = Int32), @p2='?' (DbType = Boolean), @p3='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Notifications] ([CreatedAt], [DoctorId], [IsRead], [Message])
+OUTPUT INSERTED.[Id]
+VALUES (@p0, @p1, @p2, @p3);
+2026-07-08 10:20:18.695 +05:30 [INF] Notification created for DoctorId 5 for AppointmentId 35
+2026-07-08 10:20:21.371 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/doctors - null null
+2026-07-08 10:20:21.371 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/appointments - null null
+2026-07-08 10:20:21.371 +05:30 [INF] Request starting HTTP/2 OPTIONS https://localhost:7130/api/health-records/patient/1006 - null null
+2026-07-08 10:20:21.375 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:20:21.377 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:20:21.379 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:20:21.380 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 5.5139 ms
+2026-07-08 10:20:21.381 +05:30 [INF] HTTP OPTIONS /api/health-records/patient/1006 responded 204 in 2.0704 ms
+2026-07-08 10:20:21.381 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.AppointmentController.Get (Healthcare.netcore)'
+2026-07-08 10:20:21.384 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/doctors - 204 null null 13.137ms
+2026-07-08 10:20:21.386 +05:30 [INF] Request finished HTTP/2 OPTIONS https://localhost:7130/api/health-records/patient/1006 - 204 null null 14.9842ms
+2026-07-08 10:20:21.386 +05:30 [INF] Route matched with {action = "Get", controller = "Appointment"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Get() on controller HealthAxis.API.Controllers.AppointmentController (Healthcare.netcore).
+2026-07-08 10:20:21.388 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/doctors - null null
+2026-07-08 10:20:21.389 +05:30 [INF] Request starting HTTP/2 GET https://localhost:7130/api/health-records/patient/1006 - null null
+2026-07-08 10:20:21.397 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:20:21.398 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlot]
+FROM [Appointments] AS [a]
+2026-07-08 10:20:21.399 +05:30 [INF] CORS policy execution successful.
+2026-07-08 10:20:21.400 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore)'
+2026-07-08 10:20:21.404 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthAxis.Shared.DTOs.Appointment.AppointmentDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 10:20:21.405 +05:30 [INF] Executing endpoint 'HealthAxis.API.Controllers.HealthRecordController.GetByPatient (Healthcare.netcore)'
+2026-07-08 10:20:21.405 +05:30 [INF] Route matched with {action = "GetAll", controller = "Doctor"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAll(HealthAxis.Shared.DTOs.Common.PaginationParams, System.Threading.CancellationToken) on controller HealthAxis.API.Controllers.DoctorController (Healthcare.netcore).
+2026-07-08 10:20:21.406 +05:30 [INF] Executed action HealthAxis.API.Controllers.AppointmentController.Get (Healthcare.netcore) in 11.4523ms
+2026-07-08 10:20:21.409 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.AppointmentController.Get (Healthcare.netcore)'
+2026-07-08 10:20:21.410 +05:30 [INF] HTTP GET /api/appointments responded 200 in 33.4131 ms
+2026-07-08 10:20:21.411 +05:30 [INF] Executed DbCommand (0ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Doctors] AS [d]
+2026-07-08 10:20:21.412 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/appointments - 200 null application/json; charset=utf-8 41.1809ms
+2026-07-08 10:20:21.413 +05:30 [INF] Route matched with {action = "GetByPatient", controller = "HealthRecord"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetByPatient(Int32) on controller HealthAxis.API.Controllers.HealthRecordController (Healthcare.netcore).
+2026-07-08 10:20:21.414 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [d].[DoctorId], [d].[FullName], [d].[Specialisation], [d].[YearsOfExperience], [d].[ConsultationFee], [d].[IsActive], (
+    SELECT COUNT(*)
+    FROM [Appointments] AS [a]
+    WHERE [d].[DoctorId] = [a].[DoctorId] AND CONVERT(date, [a].[ScheduledDate]) >= CONVERT(date, GETDATE()) AND [a].[Status] <> 3) AS [UpcomingAppointmentCount]
+FROM [Doctors] AS [d]
+ORDER BY [d].[DoctorId]
+OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+2026-07-08 10:20:21.419 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthAxis.Shared.DTOs.Common.PagedResponse`1[[HealthAxis.Shared.DTOs.Doctor.DoctorDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 10:20:21.421 +05:30 [INF] Executed action HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore) in 12.4257ms
+2026-07-08 10:20:21.422 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[InsuranceId], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+WHERE [p].[PatientId] = @p
+2026-07-08 10:20:21.422 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.DoctorController.GetAll (Healthcare.netcore)'
+2026-07-08 10:20:21.425 +05:30 [INF] HTTP GET /api/doctors responded 200 in 27.8307 ms
+2026-07-08 10:20:21.426 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/doctors - 200 null application/json; charset=utf-8 38.5549ms
+2026-07-08 10:20:21.432 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[@patientId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [h].[RecordId], [h].[AppointmentId], [h].[Diagnosis], [h].[DoctorId], [h].[Notes], [h].[PatientId], [h].[Prescription], [h].[VisitDate]
+FROM [HealthRecords] AS [h]
+WHERE [h].[PatientId] = @patientId
+2026-07-08 10:20:21.438 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthAxis.Shared.DTOs.HealthRecord.HealthRecordDto, HealthcareAxis.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-08 10:20:21.439 +05:30 [INF] Executed action HealthAxis.API.Controllers.HealthRecordController.GetByPatient (Healthcare.netcore) in 22.699ms
+2026-07-08 10:20:21.441 +05:30 [INF] Executed endpoint 'HealthAxis.API.Controllers.HealthRecordController.GetByPatient (Healthcare.netcore)'
+2026-07-08 10:20:21.442 +05:30 [INF] HTTP GET /api/health-records/patient/1006 responded 200 in 42.8950 ms
+2026-07-08 10:20:21.443 +05:30 [INF] Request finished HTTP/2 GET https://localhost:7130/api/health-records/patient/1006 - 200 null application/json; charset=utf-8 54.1833ms
+2026-07-08 10:20:25.840 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:20:25.8403522+05:30"
+2026-07-08 10:20:35.852 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:20:35.8526038+05:30"
+2026-07-08 10:20:45.864 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:20:45.8649610+05:30"
+2026-07-08 10:20:55.874 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:20:55.8748596+05:30"
+2026-07-08 10:21:05.895 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:21:05.8949008+05:30"
+2026-07-08 10:21:15.904 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:21:15.9048098+05:30"
+2026-07-08 10:21:26.008 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:21:26.0087758+05:30"
+2026-07-08 10:21:36.117 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:21:36.1176801+05:30"
+2026-07-08 10:21:46.129 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:21:46.1294887+05:30"
+2026-07-08 10:21:56.136 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:21:56.1360870+05:30"
+2026-07-08 10:22:06.153 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:22:06.1532613+05:30"
+2026-07-08 10:22:16.160 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:22:16.1605526+05:30"
+2026-07-08 10:22:26.163 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:22:26.1631874+05:30"
+2026-07-08 10:22:36.173 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:22:36.1734022+05:30"
+2026-07-08 10:22:46.178 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:22:46.1781723+05:30"
+2026-07-08 10:22:56.193 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:22:56.1932836+05:30"
+2026-07-08 10:23:06.204 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:23:06.2041889+05:30"
+2026-07-08 10:23:16.218 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:23:16.2189379+05:30"
+2026-07-08 10:23:26.234 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:23:26.2340286+05:30"
+2026-07-08 10:23:36.251 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:23:36.2508073+05:30"
+2026-07-08 10:23:46.257 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:23:46.2575433+05:30"
+2026-07-08 10:23:56.274 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:23:56.2749358+05:30"
+2026-07-08 10:24:06.288 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:24:06.2880664+05:30"
+2026-07-08 10:24:16.306 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:24:16.3059743+05:30"
+2026-07-08 10:24:26.312 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:24:26.3122281+05:30"
+2026-07-08 10:24:36.321 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:24:36.3219435+05:30"
+2026-07-08 10:24:46.331 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:24:46.3312912+05:30"
+2026-07-08 10:24:56.346 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:24:56.3464255+05:30"
+2026-07-08 10:25:06.354 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:25:06.3543873+05:30"
+2026-07-08 10:25:16.368 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:25:16.3687195+05:30"
+2026-07-08 10:25:26.377 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:25:26.3770598+05:30"
+2026-07-08 10:25:36.385 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:25:36.3858171+05:30"
+2026-07-08 10:25:46.391 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:25:46.3914402+05:30"
+2026-07-08 10:25:56.397 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:25:56.3975396+05:30"
+2026-07-08 10:26:06.411 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:26:06.4119252+05:30"
+2026-07-08 10:26:16.418 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:26:16.4183889+05:30"
+2026-07-08 10:26:26.437 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:26:26.4375914+05:30"
+2026-07-08 10:26:36.450 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:26:36.4509569+05:30"
+2026-07-08 10:26:46.468 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:26:46.4682171+05:30"
+2026-07-08 10:26:56.472 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:26:56.4726944+05:30"
+2026-07-08 10:27:06.485 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:27:06.4858894+05:30"
+2026-07-08 10:27:16.495 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:27:16.4955300+05:30"
+2026-07-08 10:27:26.507 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:27:26.5070519+05:30"
+2026-07-08 10:27:36.521 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:27:36.5211403+05:30"
+2026-07-08 10:27:46.525 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:27:46.5259468+05:30"
+2026-07-08 10:27:56.539 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:27:56.5395760+05:30"
+2026-07-08 10:28:06.616 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:28:06.6166526+05:30"
+2026-07-08 10:28:16.619 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:28:16.6192093+05:30"
+2026-07-08 10:28:26.629 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:28:26.6291296+05:30"
+2026-07-08 10:28:36.646 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:28:36.6459567+05:30"
+2026-07-08 10:28:46.664 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:28:46.6641284+05:30"
+2026-07-08 10:28:56.678 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:28:56.6787975+05:30"
+2026-07-08 10:29:06.691 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:29:06.6916550+05:30"
+2026-07-08 10:29:16.706 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:29:16.7060270+05:30"
+2026-07-08 10:29:26.713 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:29:26.7135239+05:30"
+2026-07-08 10:29:36.719 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:29:36.7190650+05:30"
+2026-07-08 10:29:46.734 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:29:46.7347123+05:30"
+2026-07-08 10:29:56.740 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:29:56.7402706+05:30"
+2026-07-08 10:30:06.750 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:30:06.7508179+05:30"
+2026-07-08 10:30:16.763 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:30:16.7637682+05:30"
+2026-07-08 10:30:26.773 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:30:26.7735703+05:30"
+2026-07-08 10:30:36.789 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:30:36.7891636+05:30"
+2026-07-08 10:30:46.807 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:30:46.8079557+05:30"
+2026-07-08 10:30:56.819 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:30:56.8195576+05:30"
+2026-07-08 10:31:06.826 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:31:06.8261635+05:30"
+2026-07-08 10:31:16.844 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:31:16.8449140+05:30"
+2026-07-08 10:31:26.855 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:31:26.8552866+05:30"
+2026-07-08 10:31:42.295 +05:30 [INF] NotificationCleanupService started.
+2026-07-08 10:31:42.295 +05:30 [INF] HeartbeatService started.
+2026-07-08 10:31:42.327 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:31:42.3266984+05:30"
+2026-07-08 10:31:42.385 +05:30 [INF] AppointmentBookedConsumer started in background.
+2026-07-08 10:31:42.391 +05:30 [INF] No old notifications found for cleanup.
+2026-07-08 10:33:03.066 +05:30 [INF] HeartbeatService started.
+2026-07-08 10:33:03.066 +05:30 [INF] NotificationCleanupService started.
+2026-07-08 10:33:03.116 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:33:03.1148380+05:30"
+2026-07-08 10:33:03.219 +05:30 [INF] No old notifications found for cleanup.
+2026-07-08 10:33:03.237 +05:30 [INF] AppointmentBookedConsumer started in background.
+2026-07-08 10:33:13.132 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:33:13.1319555+05:30"
+2026-07-08 10:33:23.144 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:33:23.1440897+05:30"
+2026-07-08 10:33:33.164 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:33:33.1641737+05:30"
+2026-07-08 10:33:43.174 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:33:43.1741916+05:30"
+2026-07-08 10:33:51.499 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 4.1349 ms
+2026-07-08 10:33:51.788 +05:30 [INF] HTTP POST /api/auth/login responded 401 in 264.6749 ms
+2026-07-08 10:33:53.192 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:33:53.1921150+05:30"
+2026-07-08 10:34:03.201 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:34:03.2016476+05:30"
+2026-07-08 10:34:13.206 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:34:13.2059546+05:30"
+2026-07-08 10:34:15.173 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 1.0916 ms
+2026-07-08 10:34:15.457 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 278.4822 ms
+2026-07-08 10:34:15.466 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 0.0890 ms
+2026-07-08 10:34:15.468 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 0.0979 ms
+2026-07-08 10:34:15.637 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-08 10:34:15.686 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 193.3129 ms
+2026-07-08 10:34:15.693 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 4.7107 ms
+2026-07-08 10:34:15.698 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 0.0694 ms
+2026-07-08 10:34:15.698 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 0.0590 ms
+2026-07-08 10:34:15.698 +05:30 [INF] HTTP OPTIONS /api/patients/1006/health-records responded 204 in 0.0471 ms
+2026-07-08 10:34:15.759 +05:30 [INF] HTTP GET /api/appointments responded 200 in 55.6554 ms
+2026-07-08 10:34:15.793 +05:30 [INF] HTTP GET /api/doctors responded 200 in 91.5069 ms
+2026-07-08 10:34:15.975 +05:30 [INF] HTTP GET /api/patients/1006/health-records responded 200 in 270.5313 ms
+2026-07-08 10:34:19.382 +05:30 [INF] HTTP GET /api/doctors responded 200 in 18.7099 ms
+2026-07-08 10:34:23.211 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:34:23.2110449+05:30"
+2026-07-08 10:34:33.219 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:34:33.2189648+05:30"
+2026-07-08 10:34:42.806 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 0.1544 ms
+2026-07-08 10:34:42.907 +05:30 [INF] Published AppointmentBookedEvent for AppointmentId 36, DoctorId 4
+2026-07-08 10:34:42.911 +05:30 [INF] HTTP POST /api/appointments responded 200 in 97.7275 ms
+2026-07-08 10:34:42.917 +05:30 [INF] ===============================
+APPOINTMENT EVENT RECEIVED
+===============================
+Event Type  : AppointmentBooked
+Appointment : 36
+Patient     : Raju
+Doctor      : 4
+Date        : 24-Jul-2026
+Time Slot   : 09:00
+Occurred At : 08-Jul-2026 05:04:42
+===============================
+2026-07-08 10:34:42.930 +05:30 [INF] Notification created for DoctorId 4 for AppointmentId 36
+2026-07-08 10:34:43.234 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:34:43.2348387+05:30"
+2026-07-08 10:34:46.488 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 0.2247 ms
+2026-07-08 10:34:46.488 +05:30 [INF] HTTP OPTIONS /api/health-records/patient/1006 responded 204 in 0.2276 ms
+2026-07-08 10:34:46.493 +05:30 [INF] HTTP GET /api/appointments responded 200 in 5.7951 ms
+2026-07-08 10:34:46.500 +05:30 [INF] HTTP GET /api/doctors responded 200 in 7.4425 ms
+2026-07-08 10:34:46.517 +05:30 [INF] HTTP GET /api/health-records/patient/1006 responded 200 in 22.3946 ms
+2026-07-08 10:34:53.243 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:34:53.2432286+05:30"
+2026-07-08 10:35:03.256 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:35:03.2565015+05:30"
+2026-07-08 10:35:13.267 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:35:13.2674482+05:30"
+2026-07-08 10:35:23.278 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:35:23.2780801+05:30"
+2026-07-08 10:35:33.284 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:35:33.2846332+05:30"
+2026-07-08 10:35:43.287 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:35:43.2878670+05:30"
+2026-07-08 10:35:53.302 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:35:53.3027526+05:30"
+2026-07-08 10:36:03.316 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:36:03.3167111+05:30"
+2026-07-08 10:36:13.330 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:36:13.3305959+05:30"
+2026-07-08 10:36:23.348 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:36:23.3478033+05:30"
+2026-07-08 10:36:33.353 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:36:33.3521420+05:30"
+2026-07-08 10:36:43.371 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:36:43.3711465+05:30"
+2026-07-08 10:36:53.374 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:36:53.3746520+05:30"
+2026-07-08 10:37:03.382 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:37:03.3828904+05:30"
+2026-07-08 10:37:13.398 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:37:13.3988028+05:30"
+2026-07-08 10:37:23.411 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:37:23.4104974+05:30"
+2026-07-08 10:37:33.418 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:37:33.4181483+05:30"
+2026-07-08 10:37:43.436 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:37:43.4369088+05:30"
+2026-07-08 10:37:53.451 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:37:53.4517250+05:30"
+2026-07-08 10:38:03.471 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:38:03.4709514+05:30"
+2026-07-08 10:38:13.483 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:38:13.4837956+05:30"
+2026-07-08 10:38:23.500 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:38:23.5002603+05:30"
+2026-07-08 10:38:33.510 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:38:33.5105214+05:30"
+2026-07-08 10:38:43.515 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:38:43.5156211+05:30"
+2026-07-08 10:38:53.527 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:38:53.5276985+05:30"
+2026-07-08 10:39:03.541 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:39:03.5418374+05:30"
+2026-07-08 10:39:13.556 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:39:13.5566583+05:30"
+2026-07-08 10:39:23.558 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:39:23.5586330+05:30"
+2026-07-08 10:39:33.573 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:39:33.5734968+05:30"
+2026-07-08 10:39:43.587 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:39:43.5876633+05:30"
+2026-07-08 10:39:53.594 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:39:53.5949097+05:30"
+2026-07-08 10:40:03.598 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:40:03.5983067+05:30"
+2026-07-08 10:40:13.612 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:40:13.6124126+05:30"
+2026-07-08 10:40:23.625 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:40:23.6259495+05:30"
+2026-07-08 10:40:33.632 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:40:33.6320466+05:30"
+2026-07-08 10:40:43.636 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:40:43.6362107+05:30"
+2026-07-08 10:40:53.649 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:40:53.6493234+05:30"
+2026-07-08 10:41:03.653 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:41:03.6539513+05:30"
+2026-07-08 10:41:13.662 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:41:13.6623392+05:30"
+2026-07-08 10:41:23.670 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:41:23.6698380+05:30"
+2026-07-08 10:41:33.688 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:41:33.6889188+05:30"
+2026-07-08 10:41:43.704 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:41:43.7040160+05:30"
+2026-07-08 10:41:53.716 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:41:53.7169021+05:30"
+2026-07-08 10:42:03.732 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:42:03.7323779+05:30"
+2026-07-08 10:42:13.745 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:42:13.7453378+05:30"
+2026-07-08 10:42:23.757 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:42:23.7565601+05:30"
+2026-07-08 10:42:33.766 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:42:33.7661998+05:30"
+2026-07-08 10:42:43.773 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:42:43.7733629+05:30"
+2026-07-08 10:42:53.785 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:42:53.7850788+05:30"
+2026-07-08 10:43:03.792 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:43:03.7915625+05:30"
+2026-07-08 10:43:13.798 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:43:13.7980804+05:30"
+2026-07-08 10:43:23.807 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:43:23.8078734+05:30"
+2026-07-08 10:43:33.823 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:43:33.8233960+05:30"
+2026-07-08 10:43:43.830 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:43:43.8307183+05:30"
+2026-07-08 10:43:53.836 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:43:53.8364811+05:30"
+2026-07-08 10:44:03.838 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:44:03.8380860+05:30"
+2026-07-08 10:44:13.850 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:44:13.8505937+05:30"
+2026-07-08 10:44:23.857 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:44:23.8572011+05:30"
+2026-07-08 10:44:33.869 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:44:33.8696196+05:30"
+2026-07-08 10:44:43.879 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:44:43.8790265+05:30"
+2026-07-08 10:44:53.883 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:44:53.8839322+05:30"
+2026-07-08 10:45:03.890 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:45:03.8907601+05:30"
+2026-07-08 10:45:13.896 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:45:13.8963323+05:30"
+2026-07-08 10:45:23.911 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:45:23.9117448+05:30"
+2026-07-08 10:45:33.923 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:45:33.9232023+05:30"
+2026-07-08 10:45:43.927 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:45:43.9272857+05:30"
+2026-07-08 10:45:53.935 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:45:53.9356100+05:30"
+2026-07-08 10:46:03.951 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:46:03.9518182+05:30"
+2026-07-08 10:46:13.964 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:46:13.9647917+05:30"
+2026-07-08 10:46:23.980 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:46:23.9806089+05:30"
+2026-07-08 10:46:33.997 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T10:46:33.9978814+05:30"
+2026-07-08 15:23:21.315 +05:30 [INF] NotificationCleanupService started.
+2026-07-08 15:23:21.315 +05:30 [INF] HeartbeatService started.
+2026-07-08 15:23:21.364 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:23:21.3640040+05:30"
+2026-07-08 15:23:21.491 +05:30 [INF] AppointmentBookedConsumer started in background.
+2026-07-08 15:23:21.495 +05:30 [INF] No old notifications found for cleanup.
+2026-07-08 15:23:31.375 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:23:31.3755623+05:30"
+2026-07-08 15:23:41.379 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:23:41.3787384+05:30"
+2026-07-08 15:23:51.391 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:23:51.3911854+05:30"
+2026-07-08 15:24:01.411 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:24:01.4112727+05:30"
+2026-07-08 15:24:11.450 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:24:11.4505037+05:30"
+2026-07-08 15:24:21.459 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:24:21.4594774+05:30"
+2026-07-08 15:24:31.465 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:24:31.4653994+05:30"
+2026-07-08 15:24:41.477 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:24:41.4766529+05:30"
+2026-07-08 15:24:51.489 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:24:51.4893909+05:30"
+2026-07-08 15:25:01.495 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:25:01.4953155+05:30"
+2026-07-08 15:25:11.506 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:25:11.5059134+05:30"
+2026-07-08 15:25:21.521 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:25:21.5211280+05:30"
+2026-07-08 15:25:31.534 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:25:31.5340349+05:30"
+2026-07-08 15:25:41.551 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:25:41.5510998+05:30"
+2026-07-08 15:25:51.557 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:25:51.5577624+05:30"
+2026-07-08 15:26:01.572 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:26:01.5729129+05:30"
+2026-07-08 15:26:11.583 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:26:11.5831779+05:30"
+2026-07-08 15:26:21.595 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:26:21.5958824+05:30"
+2026-07-08 15:26:31.602 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:26:31.6027501+05:30"
+2026-07-08 15:26:41.609 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T15:26:41.6093835+05:30"
+2026-07-08 22:12:52.284 +05:30 [INF] Configured endpoint appointment.events.queue, Consumer: HealthAxis.API.Consumers.AppointmentBookedConsumer
+2026-07-08 22:12:52.801 +05:30 [INF] HeartbeatService started.
+2026-07-08 22:12:52.804 +05:30 [INF] NotificationCleanupService started.
+2026-07-08 22:12:52.810 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:12:52.8078696+05:30"
+2026-07-08 22:12:53.155 +05:30 [INF] No old notifications found for cleanup.
+2026-07-08 22:13:02.838 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:13:02.8381253+05:30"
+2026-07-08 22:13:12.846 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:13:12.8464098+05:30"
+2026-07-08 22:13:22.856 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:13:22.8565208+05:30"
+2026-07-08 22:13:32.865 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:13:32.8652115+05:30"
+2026-07-08 22:13:42.890 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:13:42.8893841+05:30"
+2026-07-08 22:13:52.907 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:13:52.9070350+05:30"
+2026-07-08 22:14:02.918 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:14:02.9187490+05:30"
+2026-07-08 22:14:12.922 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:14:12.9219167+05:30"
+2026-07-08 22:14:22.931 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:14:22.9317793+05:30"
+2026-07-08 22:14:32.942 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:14:32.9428237+05:30"
+2026-07-08 22:14:42.952 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:14:42.9526498+05:30"
+2026-07-08 22:14:52.959 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:14:52.9580630+05:30"
+2026-07-08 22:15:02.966 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:15:02.9664018+05:30"
+2026-07-08 22:15:12.983 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:15:12.9831663+05:30"
+2026-07-08 22:15:23.003 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:15:23.0021015+05:30"
+2026-07-08 22:15:33.021 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:15:33.0217407+05:30"
+2026-07-08 22:15:43.042 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:15:43.0421963+05:30"
+2026-07-08 22:15:53.048 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:15:53.0479294+05:30"
+2026-07-08 22:16:03.065 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:16:03.0651297+05:30"
+2026-07-08 22:16:13.080 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:16:13.0794805+05:30"
+2026-07-08 22:16:23.096 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:16:23.0962957+05:30"
+2026-07-08 22:16:33.116 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:16:33.1164833+05:30"
+2026-07-08 22:16:43.134 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:16:43.1342797+05:30"
+2026-07-08 22:16:53.152 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:16:53.1524986+05:30"
+2026-07-08 22:17:03.167 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:17:03.1672093+05:30"
+2026-07-08 22:17:13.172 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:17:13.1728145+05:30"
+2026-07-08 22:17:23.183 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:17:23.1837122+05:30"
+2026-07-08 22:17:33.198 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:17:33.1985560+05:30"
+2026-07-08 22:17:43.215 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:17:43.2154601+05:30"
+2026-07-08 22:17:53.230 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:17:53.2303973+05:30"
+2026-07-08 22:18:03.237 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:18:03.2374326+05:30"
+2026-07-08 22:18:13.240 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:18:13.2406599+05:30"
+2026-07-08 22:18:23.258 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:18:23.2584435+05:30"
+2026-07-08 22:18:33.274 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:18:33.2748247+05:30"
+2026-07-08 22:18:43.290 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:18:43.2906098+05:30"
+2026-07-08 22:18:53.298 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:18:53.2980544+05:30"
+2026-07-08 22:19:03.304 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:19:03.3046781+05:30"
+2026-07-08 22:19:13.317 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:19:13.3173091+05:30"
+2026-07-08 22:19:23.331 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:19:23.3309968+05:30"
+2026-07-08 22:19:33.346 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:19:33.3463245+05:30"
+2026-07-08 22:19:43.360 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:19:43.3609107+05:30"
+2026-07-08 22:19:53.380 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:19:53.3805428+05:30"
+2026-07-08 22:20:03.386 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:20:03.3868546+05:30"
+2026-07-08 22:20:13.395 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:20:13.3954181+05:30"
+2026-07-08 22:20:14.353 +05:30 [INF] HTTP OPTIONS /api/health-records/patient/1006 responded 204 in 12.8233 ms
+2026-07-08 22:20:14.353 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 12.8042 ms
+2026-07-08 22:20:14.353 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 12.9378 ms
+2026-07-08 22:20:14.353 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 12.6914 ms
+2026-07-08 22:20:14.768 +05:30 [INF] HTTP GET /api/health-records/patient/1006 responded 401 in 336.0589 ms
+2026-07-08 22:20:14.768 +05:30 [INF] HTTP GET /api/patients/me responded 401 in 335.7786 ms
+2026-07-08 22:20:14.768 +05:30 [INF] HTTP GET /api/appointments responded 401 in 336.1771 ms
+2026-07-08 22:20:14.768 +05:30 [INF] HTTP GET /api/doctors responded 401 in 336.2449 ms
+2026-07-08 22:20:23.412 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:20:23.4125587+05:30"
+2026-07-08 22:20:33.422 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:20:33.4224846+05:30"
+2026-07-08 22:20:36.616 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 0.3969 ms
+2026-07-08 22:20:38.677 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 2040.8352 ms
+2026-07-08 22:20:38.706 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 0.1384 ms
+2026-07-08 22:20:38.715 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 0.1052 ms
+2026-07-08 22:20:39.164 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-08 22:20:39.351 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 634.0684 ms
+2026-07-08 22:20:39.368 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 12.2106 ms
+2026-07-08 22:20:39.377 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 0.0872 ms
+2026-07-08 22:20:39.378 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 0.1180 ms
+2026-07-08 22:20:39.378 +05:30 [INF] HTTP OPTIONS /api/patients/1006/health-records responded 204 in 0.1049 ms
+2026-07-08 22:20:39.566 +05:30 [INF] HTTP GET /api/appointments responded 200 in 179.0650 ms
+2026-07-08 22:20:39.633 +05:30 [INF] HTTP GET /api/patients/1006/health-records responded 200 in 240.7258 ms
+2026-07-08 22:20:40.322 +05:30 [INF] HTTP GET /api/doctors responded 200 in 935.9042 ms
+2026-07-08 22:20:42.838 +05:30 [INF] HTTP OPTIONS /api/health-records/patient/1006 responded 204 in 0.1156 ms
+2026-07-08 22:20:42.851 +05:30 [INF] HTTP GET /api/appointments responded 200 in 13.2050 ms
+2026-07-08 22:20:42.881 +05:30 [INF] HTTP GET /api/doctors responded 200 in 43.0397 ms
+2026-07-08 22:20:42.934 +05:30 [INF] HTTP GET /api/health-records/patient/1006 responded 200 in 82.7710 ms
+2026-07-08 22:20:43.439 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:20:43.4394010+05:30"
+2026-07-08 22:20:44.192 +05:30 [INF] HTTP GET /api/doctors responded 200 in 12.7222 ms
+2026-07-08 22:20:53.455 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:20:53.4553352+05:30"
+2026-07-08 22:21:03.463 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:21:03.4636910+05:30"
+2026-07-08 22:21:13.468 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:21:13.4685477+05:30"
+2026-07-08 22:21:23.485 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:21:23.4851781+05:30"
+2026-07-08 22:21:33.501 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:21:33.5011320+05:30"
+2026-07-08 22:21:43.505 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:21:43.5055042+05:30"
+2026-07-08 22:21:53.511 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:21:53.5113865+05:30"
+2026-07-08 22:22:02.183 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 0.3529 ms
+2026-07-08 22:22:02.653 +05:30 [ERR] An error occurred while processing request: Method not found: 'RabbitMQ.Client.IConnection RabbitMQ.Client.ConnectionFactory.CreateConnection(System.Collections.Generic.IList`1<System.String>, System.String)'.
+System.MissingMethodException: Method not found: 'RabbitMQ.Client.IConnection RabbitMQ.Client.ConnectionFactory.CreateConnection(System.Collections.Generic.IList`1<System.String>, System.String)'.
+   at MassTransit.RabbitMqTransport.ConnectionContextFactory.CreateConnection(ISupervisor supervisor)
+   at MassTransit.RabbitMqTransport.ConnectionContextFactory.CreateConnection(ISupervisor supervisor)
+   at System.Runtime.CompilerServices.AsyncMethodBuilderCore.Start[TStateMachine](TStateMachine& stateMachine)
+   at MassTransit.RabbitMqTransport.ConnectionContextFactory.CreateConnection(ISupervisor supervisor)
+   at MassTransit.RabbitMqTransport.ConnectionContextFactory.<>c__DisplayClass3_0.<MassTransit.Agents.IPipeContextFactory<MassTransit.RabbitMqTransport.ConnectionContext>.CreateContext>b__0() in /_/src/Transports/MassTransit.RabbitMqTransport/RabbitMqTransport/ConnectionContextFactory.cs:line 30
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at MassTransit.Internals.TaskExtensions.<>c__DisplayClass2_0`1.<<OrCanceled>g__WaitAsync|0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at MassTransit.Internals.TaskExtensions.<>c__DisplayClass2_0`1.<<OrCanceled>g__WaitAsync|0>d.MoveNext() in /_/src/MassTransit.Abstractions/Internals/Extensions/TaskExtensions.cs:line 72
+--- End of stack trace from previous location ---
+   at MassTransit.RabbitMqTransport.ConnectionContextFactory.CreateSharedConnection(Task`1 context, CancellationToken cancellationToken) in /_/src/Transports/MassTransit.RabbitMqTransport/RabbitMqTransport/ConnectionContextFactory.cs:line 58
+   at MassTransit.Agents.PipeContextSupervisor`1.Send(IPipe`1 pipe, CancellationToken cancellationToken)
+   at MassTransit.Agents.PipeContextSupervisor`1.Send(IPipe`1 pipe, CancellationToken cancellationToken) in /_/src/MassTransit/Agents/PipeContextSupervisor.cs:line 61
+   at MassTransit.Agents.PipeContextSupervisor`1.Send(IPipe`1 pipe, CancellationToken cancellationToken) in /_/src/MassTransit/Agents/PipeContextSupervisor.cs:line 67
+   at MassTransit.SupervisorExtensions.<>c__DisplayClass5_0`2.<<CreateAgent>g__HandleSupervisorTask|0>d.MoveNext() in /_/src/MassTransit/SupervisorExtensions.cs:line 139
+--- End of stack trace from previous location ---
+   at MassTransit.SupervisorExtensions.CreateAgent[T,TAgent](ISupervisor`1 supervisor, IAsyncPipeContextAgent`1 asyncContext, Func`3 agentFactory, CancellationToken cancellationToken)
+   at MassTransit.Internals.TaskExtensions.<>c__DisplayClass2_0`1.<<OrCanceled>g__WaitAsync|0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at MassTransit.Internals.TaskExtensions.<>c__DisplayClass2_0`1.<<OrCanceled>g__WaitAsync|0>d.MoveNext() in /_/src/MassTransit.Abstractions/Internals/Extensions/TaskExtensions.cs:line 72
+--- End of stack trace from previous location ---
+   at MassTransit.RabbitMqTransport.ModelContextFactory.CreateSharedModel(Task`1 context, CancellationToken cancellationToken) in /_/src/Transports/MassTransit.RabbitMqTransport/RabbitMqTransport/ModelContextFactory.cs:line 50
+   at MassTransit.Agents.PipeContextSupervisor`1.Send(IPipe`1 pipe, CancellationToken cancellationToken)
+   at MassTransit.Agents.PipeContextSupervisor`1.Send(IPipe`1 pipe, CancellationToken cancellationToken) in /_/src/MassTransit/Agents/PipeContextSupervisor.cs:line 61
+   at MassTransit.Agents.PipeContextSupervisor`1.Send(IPipe`1 pipe, CancellationToken cancellationToken) in /_/src/MassTransit/Agents/PipeContextSupervisor.cs:line 67
+   at MassTransit.SupervisorExtensions.<>c__DisplayClass5_0`2.<<CreateAgent>g__HandleSupervisorTask|0>d.MoveNext() in /_/src/MassTransit/SupervisorExtensions.cs:line 139
+--- End of stack trace from previous location ---
+   at MassTransit.RabbitMqTransport.ScopeModelContextFactory.CreateSharedModel(Task`1 context, CancellationToken cancellationToken) in /_/src/Transports/MassTransit.RabbitMqTransport/RabbitMqTransport/ScopeModelContextFactory.cs:line 50
+   at MassTransit.Agents.PipeContextSupervisor`1.Send(IPipe`1 pipe, CancellationToken cancellationToken)
+   at MassTransit.Agents.PipeContextSupervisor`1.Send(IPipe`1 pipe, CancellationToken cancellationToken) in /_/src/MassTransit/Agents/PipeContextSupervisor.cs:line 61
+   at MassTransit.Agents.PipeContextSupervisor`1.Send(IPipe`1 pipe, CancellationToken cancellationToken) in /_/src/MassTransit/Agents/PipeContextSupervisor.cs:line 67
+   at MassTransit.Transports.HostConfigurationRetryExtensions.Retry(IHostConfiguration hostConfiguration, Func`1 factory, CancellationToken cancellationToken, CancellationToken stoppingToken) in /_/src/MassTransit/Transports/HostConfigurationRetryExtensions.cs:line 39
+   at HealthAxis.API.Services.Implementations.AppointmentService.AddAsync(CreateAppointmentDto dto) in C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore\Services\Implementations\AppointmentService.cs:line 98
+   at HealthAxis.API.Controllers.AppointmentController.Create(CreateAppointmentDto dto) in C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore\Controllers\AppointmentController.cs:line 37
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddlewareImpl.<Invoke>g__Awaited|10_0(ExceptionHandlerMiddlewareImpl middleware, HttpContext context, Task task)
+2026-07-08 22:22:02.779 +05:30 [ERR] HTTP POST /api/appointments responded 500 in 578.9404 ms
+2026-07-08 22:22:03.522 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:22:03.5226757+05:30"
+2026-07-08 22:22:13.533 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:22:13.5337734+05:30"
+2026-07-08 22:22:23.542 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:22:23.5427967+05:30"
+2026-07-08 22:22:33.547 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:22:33.5468903+05:30"
+2026-07-08 22:22:43.564 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:22:43.5641743+05:30"
+2026-07-08 22:22:53.574 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:22:53.5734635+05:30"
+2026-07-08 22:23:03.583 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:23:03.5835850+05:30"
+2026-07-08 22:23:13.601 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:23:13.6018173+05:30"
+2026-07-08 22:23:23.615 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:23:23.6157565+05:30"
+2026-07-08 22:23:33.628 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:23:33.6282436+05:30"
+2026-07-08 22:23:43.654 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:23:43.6544970+05:30"
+2026-07-08 22:23:53.659 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:23:53.6591533+05:30"
+2026-07-08 22:24:03.663 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:24:03.6635943+05:30"
+2026-07-08 22:24:13.672 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:24:13.6722876+05:30"
+2026-07-08 22:24:23.686 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:24:23.6864540+05:30"
+2026-07-08 22:24:33.702 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:24:33.7022228+05:30"
+2026-07-08 22:24:43.705 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:24:43.7059289+05:30"
+2026-07-08 22:24:53.716 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:24:53.7162133+05:30"
+2026-07-08 22:25:03.722 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:25:03.7220608+05:30"
+2026-07-08 22:25:13.734 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:25:13.7349444+05:30"
+2026-07-08 22:25:23.752 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:25:23.7525352+05:30"
+2026-07-08 22:25:33.767 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:25:33.7673593+05:30"
+2026-07-08 22:25:43.773 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:25:43.7738831+05:30"
+2026-07-08 22:25:53.786 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:25:53.7859729+05:30"
+2026-07-08 22:26:03.791 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:26:03.7916008+05:30"
+2026-07-08 22:26:13.806 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:26:13.8069729+05:30"
+2026-07-08 22:26:23.816 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:26:23.8162684+05:30"
+2026-07-08 22:26:33.824 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:26:33.8245387+05:30"
+2026-07-08 22:26:43.832 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:26:43.8327196+05:30"
+2026-07-08 22:26:53.840 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:26:53.8404272+05:30"
+2026-07-08 22:27:03.843 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:27:03.8437809+05:30"
+2026-07-08 22:27:13.858 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:27:13.8583390+05:30"
+2026-07-08 22:27:23.867 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:27:23.8679667+05:30"
+2026-07-08 22:27:33.881 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:27:33.8818642+05:30"
+2026-07-08 22:27:43.886 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:27:43.8861212+05:30"
+2026-07-08 22:27:53.897 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:27:53.8977505+05:30"
+2026-07-08 22:28:03.912 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:28:03.9122869+05:30"
+2026-07-08 22:28:13.917 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:28:13.9177368+05:30"
+2026-07-08 22:28:23.934 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:28:23.9342958+05:30"
+2026-07-08 22:28:33.938 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:28:33.9389138+05:30"
+2026-07-08 22:28:43.943 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:28:43.9436435+05:30"
+2026-07-08 22:28:53.950 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:28:53.9505483+05:30"
+2026-07-08 22:29:03.960 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:29:03.9606396+05:30"
+2026-07-08 22:29:13.980 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:29:13.9806539+05:30"
+2026-07-08 22:29:23.996 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:29:23.9967579+05:30"
+2026-07-08 22:29:34.003 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:29:34.0031948+05:30"
+2026-07-08 22:29:44.021 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:29:44.0215239+05:30"
+2026-07-08 22:29:54.032 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:29:54.0329584+05:30"
+2026-07-08 22:30:04.037 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:30:04.0372831+05:30"
+2026-07-08 22:30:14.044 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:30:14.0445157+05:30"
+2026-07-08 22:30:24.057 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:30:24.0571744+05:30"
+2026-07-08 22:30:34.062 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:30:34.0628461+05:30"
+2026-07-08 22:30:44.065 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:30:44.0659347+05:30"
+2026-07-08 22:30:54.081 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:30:54.0815815+05:30"
+2026-07-08 22:31:04.089 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:31:04.0898327+05:30"
+2026-07-08 22:31:14.094 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:31:14.0948669+05:30"
+2026-07-08 22:31:24.105 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:31:24.1055734+05:30"
+2026-07-08 22:31:34.120 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:31:34.1203339+05:30"
+2026-07-08 22:31:44.137 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:31:44.1370249+05:30"
+2026-07-08 22:31:54.143 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:31:54.1434682+05:30"
+2026-07-08 22:32:04.161 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:32:04.1613331+05:30"
+2026-07-08 22:32:14.166 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:32:14.1668542+05:30"
+2026-07-08 22:32:24.177 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:32:24.1773332+05:30"
+2026-07-08 22:32:34.181 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:32:34.1814616+05:30"
+2026-07-08 22:32:44.188 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:32:44.1887404+05:30"
+2026-07-08 22:32:54.193 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:32:54.1933322+05:30"
+2026-07-08 22:33:04.209 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:33:04.2095675+05:30"
+2026-07-08 22:33:14.224 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:33:14.2245459+05:30"
+2026-07-08 22:33:24.238 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:33:24.2384878+05:30"
+2026-07-08 22:33:34.252 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:33:34.2525415+05:30"
+2026-07-08 22:33:44.326 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:33:44.3259829+05:30"
+2026-07-08 22:33:54.339 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:33:54.3394974+05:30"
+2026-07-08 22:34:04.343 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:34:04.3432946+05:30"
+2026-07-08 22:34:14.353 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:34:14.3537725+05:30"
+2026-07-08 22:34:24.358 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:34:24.3579972+05:30"
+2026-07-08 22:34:34.376 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:34:34.3761942+05:30"
+2026-07-08 22:59:03.855 +05:30 [INF] Configured endpoint appointment.events.queue, Consumer: HealthAxis.API.Consumers.AppointmentBookedConsumer
+2026-07-08 22:59:04.220 +05:30 [INF] HeartbeatService started.
+2026-07-08 22:59:04.221 +05:30 [INF] NotificationCleanupService started.
+2026-07-08 22:59:04.222 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:59:04.2218751+05:30"
+2026-07-08 22:59:04.333 +05:30 [INF] No old notifications found for cleanup.
+2026-07-08 22:59:05.031 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-08 22:59:14.241 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:59:14.2408581+05:30"
+2026-07-08 22:59:24.245 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:59:24.2450929+05:30"
+2026-07-08 22:59:34.264 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:59:34.2646616+05:30"
+2026-07-08 22:59:44.274 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:59:44.2745226+05:30"
+2026-07-08 22:59:54.282 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T22:59:54.2818057+05:30"
+2026-07-08 23:00:04.296 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:00:04.2965340+05:30"
+2026-07-08 23:00:14.300 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:00:14.3001137+05:30"
+2026-07-08 23:00:24.316 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:00:24.3165308+05:30"
+2026-07-08 23:00:27.542 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 10.4948 ms
+2026-07-08 23:00:28.890 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 1308.0591 ms
+2026-07-08 23:00:28.913 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 0.8259 ms
+2026-07-08 23:00:28.915 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 0.1004 ms
+2026-07-08 23:00:29.591 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-08 23:00:29.797 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 876.9382 ms
+2026-07-08 23:00:29.830 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 28.7634 ms
+2026-07-08 23:00:29.841 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 0.0765 ms
+2026-07-08 23:00:29.842 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 0.1505 ms
+2026-07-08 23:00:29.842 +05:30 [INF] HTTP OPTIONS /api/patients/1006/health-records responded 204 in 0.1159 ms
+2026-07-08 23:00:30.057 +05:30 [INF] HTTP GET /api/appointments responded 200 in 201.0152 ms
+2026-07-08 23:00:30.127 +05:30 [INF] HTTP GET /api/patients/1006/health-records responded 200 in 266.2352 ms
+2026-07-08 23:00:30.821 +05:30 [INF] HTTP GET /api/doctors responded 200 in 971.0823 ms
+2026-07-08 23:00:34.209 +05:30 [INF] HTTP GET /api/doctors responded 200 in 51.4007 ms
+2026-07-08 23:00:34.323 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:00:34.3228853+05:30"
+2026-07-08 23:00:44.338 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:00:44.3380070+05:30"
+2026-07-08 23:00:49.639 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 0.2449 ms
+2026-07-08 23:00:50.401 +05:30 [INF] AppointmentBookedEvent published using MassTransit for AppointmentId 38, DoctorId 5
+2026-07-08 23:00:50.414 +05:30 [INF] HTTP POST /api/appointments responded 200 in 764.9010 ms
+2026-07-08 23:00:50.471 +05:30 [INF] ===============================
+APPOINTMENT EVENT RECEIVED
+===============================
+Event Type  : AppointmentBooked
+Appointment : 38
+Patient     : Raju
+Doctor      : 5
+Date        : 17-Jul-2026
+Time Slot   : 09:00
+Occurred At : 08-Jul-2026 17:30:50
+===============================
+2026-07-08 23:00:50.531 +05:30 [INF] Notification created for DoctorId 5 for AppointmentId 38
+2026-07-08 23:00:54.354 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:00:54.3545341+05:30"
+2026-07-08 23:00:55.762 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 0.0938 ms
+2026-07-08 23:00:55.762 +05:30 [INF] HTTP OPTIONS /api/health-records/patient/1006 responded 204 in 0.0499 ms
+2026-07-08 23:00:55.762 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 0.0938 ms
+2026-07-08 23:00:55.790 +05:30 [INF] HTTP GET /api/appointments responded 200 in 17.3574 ms
+2026-07-08 23:00:55.796 +05:30 [INF] HTTP GET /api/doctors responded 200 in 14.9801 ms
+2026-07-08 23:00:55.847 +05:30 [INF] HTTP GET /api/health-records/patient/1006 responded 200 in 73.2631 ms
+2026-07-08 23:01:04.373 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:01:04.3727557+05:30"
+2026-07-08 23:01:14.389 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:01:14.3889640+05:30"
+2026-07-08 23:01:24.395 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:01:24.3953099+05:30"
+2026-07-08 23:01:34.400 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:01:34.4007524+05:30"
+2026-07-08 23:01:44.420 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:01:44.4187459+05:30"
+2026-07-08 23:01:54.433 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:01:54.4330092+05:30"
+2026-07-08 23:02:04.445 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:02:04.4449187+05:30"
+2026-07-08 23:02:14.451 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:02:14.4516060+05:30"
+2026-07-08 23:02:24.456 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:02:24.4565408+05:30"
+2026-07-08 23:02:34.468 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:02:34.4681234+05:30"
+2026-07-08 23:02:44.480 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:02:44.4799185+05:30"
+2026-07-08 23:02:54.498 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:02:54.4982468+05:30"
+2026-07-08 23:03:04.507 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:03:04.5072238+05:30"
+2026-07-08 23:03:14.524 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:03:14.5231157+05:30"
+2026-07-08 23:03:24.543 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:03:24.5434501+05:30"
+2026-07-08 23:03:34.553 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:03:34.5532707+05:30"
+2026-07-08 23:03:44.569 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:03:44.5693873+05:30"
+2026-07-08 23:03:54.588 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:03:54.5874839+05:30"
+2026-07-08 23:04:04.595 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:04:04.5954131+05:30"
+2026-07-08 23:04:14.600 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:04:14.6003661+05:30"
+2026-07-08 23:04:24.615 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:04:24.6157042+05:30"
+2026-07-08 23:04:34.627 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:04:34.6275142+05:30"
+2026-07-08 23:04:44.636 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:04:44.6367877+05:30"
+2026-07-08 23:04:54.654 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:04:54.6533490+05:30"
+2026-07-08 23:05:04.661 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:05:04.6615245+05:30"
+2026-07-08 23:05:14.668 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:05:14.6680648+05:30"
+2026-07-08 23:05:24.678 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:05:24.6781253+05:30"
+2026-07-08 23:05:34.694 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:05:34.6939473+05:30"
+2026-07-08 23:05:44.701 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:05:44.7017192+05:30"
+2026-07-08 23:05:54.717 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:05:54.7172318+05:30"
+2026-07-08 23:06:04.722 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:06:04.7220114+05:30"
+2026-07-08 23:06:14.726 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:06:14.7266894+05:30"
+2026-07-08 23:06:24.741 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:06:24.7416888+05:30"
+2026-07-08 23:06:34.757 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:06:34.7574603+05:30"
+2026-07-08 23:06:44.759 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:06:44.7595882+05:30"
+2026-07-08 23:06:54.769 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:06:54.7698743+05:30"
+2026-07-08 23:07:04.786 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:07:04.7869020+05:30"
+2026-07-08 23:07:14.796 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:07:14.7955520+05:30"
+2026-07-08 23:07:24.804 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:07:24.8042063+05:30"
+2026-07-08 23:07:34.820 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:07:34.8202078+05:30"
+2026-07-08 23:07:44.833 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:07:44.8333384+05:30"
+2026-07-08 23:07:54.846 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-08T23:07:54.8467549+05:30"

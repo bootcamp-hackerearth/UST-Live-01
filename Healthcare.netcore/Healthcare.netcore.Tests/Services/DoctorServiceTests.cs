@@ -235,7 +235,7 @@ namespace Healthcare.netcore.Tests.Services
                 .Setup(x => x.GetByIdAsync(6))
                 .ReturnsAsync(doctor);
 
-            var result = await _service.GetAvailabilityAsync(6);
+            var result = await _service.GetAvailabilityAsync(6, CancellationToken.None);
 
             result.Should().NotBeNull();
         }
@@ -247,7 +247,7 @@ namespace Healthcare.netcore.Tests.Services
                 .Setup(x => x.GetByIdAsync(100))
                 .ReturnsAsync((Doctor?)null);
 
-            Func<Task> action = async () => await _service.GetAvailabilityAsync(100);
+            Func<Task> action = async () => await _service.GetAvailabilityAsync(100, CancellationToken.None);
 
             await action.Should()
                 .ThrowAsync<NotFoundException>()

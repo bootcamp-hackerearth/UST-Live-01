@@ -2,6 +2,32 @@
   padding: 6px 4px 30px;
   font-family: "Segoe UI", sans-serif;
 }
+.success-banner {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-weight: 800;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 18px rgba(22, 163, 74, 0.12);
+}
+
+.error-banner {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-weight: 800;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 18px rgba(220, 38, 38, 0.12);
+}
+.save-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
 
 .portal-text {
   color: #2563eb;
@@ -221,6 +247,18 @@
 }
 
 
+
+.error-text {
+  display: block;
+  margin-top: 6px;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 800;
+}
+.invalid-field {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
+}
 
 .error-text {
   display: block;

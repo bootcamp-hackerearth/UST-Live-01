@@ -1,3 +1,4 @@
+
 <div class="search-page">
 
   <h1>Search Doctors</h1>
@@ -60,7 +61,10 @@
 
     <div class="table-header">
       <h2>Doctors</h2>
-      <span>Showing {{ filteredDoctors().length }} doctor(s)</span>
+      <span>
+        Showing {{ filteredDoctors().length }} doctor(s)
+        | Page {{ currentPage }} of {{ totalPages }}
+      </span>
     </div>
 
     <div class="table">
@@ -97,6 +101,33 @@
         </span>
 
       </div>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination" *ngIf="totalPages > 1">
+
+      <button
+        class="page-btn"
+        (click)="previousPage()"
+        [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <button
+        class="page-number"
+        *ngFor="let page of pageNumbers"
+        [class.active]="page === currentPage"
+        (click)="goToPage(page)">
+        {{ page }}
+      </button>
+
+      <button
+        class="page-btn"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages">
+        Next
+      </button>
 
     </div>
 

@@ -12,9 +12,9 @@ import { PatientService } from '../../../services/patient';
 })
 export class Profile implements OnInit {
 
-  private patientService = inject(PatientService);
-  private zone = inject(NgZone);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly patientService = inject(PatientService);
+  private readonly zone = inject(NgZone);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   isEditMode = false;
   isPasswordMode = false;
@@ -24,6 +24,9 @@ export class Profile implements OnInit {
 
   isSaving = false;
   isChangingPassword = false;
+
+  successMessage = '';
+  errorMessage = '';
 
   patient = {
     patientId: 0,
@@ -69,15 +72,22 @@ export class Profile implements OnInit {
         this.zone.run(() => {
           this.patient = mappedPatient;
           this.backupPatient = { ...mappedPatient };
-
-          // ✅ IMPORTANT FIX: force UI refresh immediately
           this.cdr.detectChanges();
         });
       },
       error: (err: any) => {
         console.error('Patient profile load failed ❌:', err);
+        this.showError('Failed to load patient profile.');
       }
     });
+  }
+
+  get todayDate(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  get minDateOfBirth(): string {
+    return '1900-01-01';
   }
 
   get avatarInitial(): string {
@@ -96,80 +106,111 @@ export class Profile implements OnInit {
   }
 
   get fullNameError(): string {
-    if (!this.submitted) return '';
+  if (!this.submitted && !this.isEditMode) return '';
 
-    if (!this.patient.fullName.trim()) {
-      return 'Full name is required.';
-    }
+  const fullName = this.patient.fullName.trim();
 
-    if (this.patient.fullName.trim().length < 3) {
-      return 'Full name must be at least 3 characters.';
-    }
-
-    return '';
+  if (!fullName) {
+    return 'Full name is required.';
   }
 
+  if (fullName.length < 3) {
+    return 'Full name must be at least 3 characters.';
+  }
+
+  const namePattern = /^[A-Za-z ]+$/;
+
+  if (!namePattern.test(fullName)) {
+    return 'Full name should contain only letters and spaces.';
+  }
+
+  return '';
+}
   get emailError(): string {
-    if (!this.submitted) return '';
+  if (!this.submitted && !this.isEditMode) return '';
 
-    if (!this.patient.email.trim()) {
-      return 'Email is required.';
-    }
+  const email = this.patient.email.trim();
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailPattern.test(this.patient.email.trim())) {
-      return 'Enter a valid email address.';
-    }
-
-    return '';
+  if (!email) {
+    return 'Email is required.';
   }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailPattern.test(email)) {
+    return 'Enter a valid email address.';
+  }
+
+  return '';
+}
 
   get phoneError(): string {
     if (!this.submitted) return '';
 
-    if (!this.patient.phoneNumber.trim()) {
+    const phoneNumber = this.patient.phoneNumber.trim();
+
+    if (!phoneNumber) {
       return 'Phone number is required.';
     }
 
     const phonePattern = /^[0-9]{10}$/;
 
-    if (!phonePattern.test(this.patient.phoneNumber.trim())) {
-      return 'Phone number must be 10 digits.';
+    if (!phonePattern.test(phoneNumber)) {
+      return 'Phone number must be exactly 10 digits.';
     }
 
     return '';
   }
 
-  get dobError(): string {
-    if (!this.submitted) return '';
+ get dobError(): string {
+  if (!this.submitted && !this.isEditMode) return '';
 
-    if (!this.patient.dateOfBirth) {
-      return 'Date of birth is required.';
-    }
-
-    const selectedDate = new Date(this.patient.dateOfBirth);
-    const today = new Date();
-
-    if (selectedDate > today) {
-      return 'Future date is not allowed.';
-    }
-
-    return '';
+  if (!this.patient.dateOfBirth) {
+    return 'Date of birth is required.';
   }
+
+  const selectedDate = new Date(this.patient.dateOfBirth);
+  const today = new Date();
+  const minDate = new Date('1900-01-01');
+
+  if (selectedDate < minDate) {
+    return 'Date of birth year must be 1900 or later.';
+  }
+
+  if (selectedDate > today) {
+    return 'Future date is not allowed.';
+  }
+
+  return '';
+}
+
+ get genderError(): string {
+  if (!this.submitted) return '';
+
+  const genderValue = Number(this.patient.gender);
+
+  if (![0, 1, 2].includes(genderValue)) {
+    return 'Gender is required.';
+  }
+
+  return '';
+}
 
   hasProfileErrors(): boolean {
     return !!(
       this.fullNameError ||
       this.emailError ||
       this.phoneError ||
-      this.dobError
+      this.dobError ||
+      this.genderError
     );
   }
 
   enableEdit() {
     this.backupPatient = { ...this.patient };
     this.submitted = false;
+    this.successMessage = '';
+    this.errorMessage = '';
     this.isEditMode = true;
     this.isPasswordMode = false;
   }
@@ -178,24 +219,26 @@ export class Profile implements OnInit {
     this.patient = { ...this.backupPatient };
     this.submitted = false;
     this.isEditMode = false;
-
-    // ✅ also refresh after cancel
+    this.successMessage = '';
+    this.errorMessage = '';
     this.cdr.detectChanges();
   }
 
   saveProfile() {
     this.submitted = true;
+    this.successMessage = '';
+    this.errorMessage = '';
 
     if (this.hasProfileErrors()) {
       return;
     }
 
     const payload = {
-      fullName: this.patient.fullName,
+      fullName: this.patient.fullName.trim(),
       dateOfBirth: this.patient.dateOfBirth,
       gender: Number(this.patient.gender),
-      phoneNumber: this.patient.phoneNumber,
-      email: this.patient.email
+      phoneNumber: this.patient.phoneNumber.trim(),
+      email: this.patient.email.trim()
     };
 
     console.log('Profile update payload ✅:', payload);
@@ -206,11 +249,11 @@ export class Profile implements OnInit {
       next: (res: any) => {
         console.log('Profile updated ✅:', res);
 
-        alert('Profile updated successfully ✅');
-
         this.isSaving = false;
         this.isEditMode = false;
         this.submitted = false;
+
+        this.showSuccess('Profile updated successfully.');
 
         this.loadCurrentPatient();
       },
@@ -224,7 +267,7 @@ export class Profile implements OnInit {
           err?.error ||
           'Profile update failed.';
 
-        alert(message);
+        this.showError(message);
       }
     });
   }
@@ -242,12 +285,22 @@ export class Profile implements OnInit {
   get newPasswordError(): string {
     if (!this.passwordSubmitted) return '';
 
-    if (!this.passwordModel.newPassword.trim()) {
+    const newPassword = this.passwordModel.newPassword;
+
+    if (!newPassword.trim()) {
       return 'New password is required.';
     }
 
-    if (this.passwordModel.newPassword.length < 6) {
-      return 'New password must be at least 6 characters.';
+    if (newPassword.length < 8) {
+      return 'New password must be at least 8 characters.';
+    }
+
+    const hasUppercase = /[A-Z]/.test(newPassword);
+    const hasDigit = /[0-9]/.test(newPassword);
+    const hasSpecial = /[^A-Za-z0-9]/.test(newPassword);
+
+    if (!hasUppercase || !hasDigit || !hasSpecial) {
+      return 'Password must contain uppercase letter, number, and special character.';
     }
 
     return '';
@@ -277,6 +330,8 @@ export class Profile implements OnInit {
 
   enablePasswordChange() {
     this.passwordSubmitted = false;
+    this.successMessage = '';
+    this.errorMessage = '';
     this.isPasswordMode = true;
     this.isEditMode = false;
 
@@ -290,6 +345,8 @@ export class Profile implements OnInit {
   cancelPasswordChange() {
     this.passwordSubmitted = false;
     this.isPasswordMode = false;
+    this.successMessage = '';
+    this.errorMessage = '';
 
     this.passwordModel = {
       oldPassword: '',
@@ -299,63 +356,84 @@ export class Profile implements OnInit {
   }
 
   changePassword() {
-  this.passwordSubmitted = true;
+    this.passwordSubmitted = true;
+    this.successMessage = '';
+    this.errorMessage = '';
 
-  if (this.hasPasswordErrors()) {
-    return;
-  }
-
-  const payload = {
-    email: this.patient.email,
-    oldPassword: this.passwordModel.oldPassword,
-    newPassword: this.passwordModel.newPassword,
-    confirmPassword: this.passwordModel.confirmPassword
-  };
-
-  console.log('Change password payload ✅:', payload);
-
-  this.isChangingPassword = true;
-  this.cdr.detectChanges();
-
-  this.patientService.changePassword(payload).subscribe({
-    next: (res: any) => {
-      console.log('Password changed ✅:', res);
-
-      this.zone.run(() => {
-        this.isChangingPassword = false;
-        this.isPasswordMode = false;
-        this.passwordSubmitted = false;
-
-        this.passwordModel = {
-          oldPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        };
-
-        this.cdr.detectChanges();
-      });
-
-      setTimeout(() => {
-        alert('Password changed successfully ✅');
-      }, 0);
-    },
-    error: (err: any) => {
-      console.error('Password change failed ❌:', err);
-
-      this.zone.run(() => {
-        this.isChangingPassword = false;
-        this.cdr.detectChanges();
-      });
-
-      const message =
-        err?.error?.message ||
-        err?.error ||
-        'Password change failed.';
-
-      setTimeout(() => {
-        alert(message);
-      }, 0);
+    if (this.hasPasswordErrors()) {
+      return;
     }
-  });
-}
+
+    const payload = {
+      email: this.patient.email,
+      oldPassword: this.passwordModel.oldPassword,
+      newPassword: this.passwordModel.newPassword,
+      confirmPassword: this.passwordModel.confirmPassword
+    };
+
+    console.log('Change password payload ✅:', payload);
+
+    this.isChangingPassword = true;
+    this.cdr.detectChanges();
+
+    this.patientService.changePassword(payload).subscribe({
+      next: (res: any) => {
+        console.log('Password changed ✅:', res);
+
+        this.zone.run(() => {
+          this.isChangingPassword = false;
+          this.isPasswordMode = false;
+          this.passwordSubmitted = false;
+
+          this.passwordModel = {
+            oldPassword: '',
+            newPassword: '',
+            confirmPassword: ''
+          };
+
+          this.showSuccess('Password changed successfully.');
+          this.cdr.detectChanges();
+        });
+      },
+      error: (err: any) => {
+        console.error('Password change failed ❌:', err);
+
+        this.zone.run(() => {
+          this.isChangingPassword = false;
+          this.cdr.detectChanges();
+        });
+
+        const message =
+          err?.error?.message ||
+          err?.error ||
+          'Password change failed.';
+
+        this.showError(message);
+      }
+    });
   }
+
+  private showSuccess(message: string): void {
+    this.successMessage = message;
+    this.errorMessage = '';
+
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      this.successMessage = '';
+      this.cdr.detectChanges();
+    }, 3000);
+  }
+
+  private showError(message: string): void {
+    this.errorMessage = message;
+    this.successMessage = '';
+
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      this.errorMessage = '';
+      this.cdr.detectChanges();
+    }, 3000);
+  }
+}

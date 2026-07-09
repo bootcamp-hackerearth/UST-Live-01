@@ -13,8 +13,8 @@ import { forkJoin } from 'rxjs';
 })
 export class Dashboard implements OnInit {
 
-  private http = inject(HttpClient);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly http = inject(HttpClient);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   doctorName = 'Doctor';
 
@@ -22,8 +22,8 @@ export class Dashboard implements OnInit {
   pendingAppointments = 0;
   completedAppointments = 0;
 
-  private doctorsUrl = 'https://localhost:7130/api/doctors';
-  private appointmentsUrl = 'https://localhost:7130/api/appointments';
+  private readonly doctorsUrl = 'https://localhost:7130/api/doctors';
+  private readonly appointmentsUrl = 'https://localhost:7130/api/appointments';
 
   ngOnInit() {
     if (typeof window !== 'undefined') {

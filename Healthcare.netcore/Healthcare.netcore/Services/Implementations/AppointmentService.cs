@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using HealthAxis.API.Events;
 using HealthAxis.API.Exceptions;
-using HealthAxis.API.Messaging;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
 using HealthAxis.Shared.DTOs.Appointment;
 using HealthAxis.Shared.Enums;
+using MassTransit;
+using Microsoft.Extensions.Caching.Distributed;
 using CustomValidationException = HealthAxis.API.Exceptions.ValidationException;
 
 namespace HealthAxis.API.Services.Implementations
@@ -17,23 +18,28 @@ namespace HealthAxis.API.Services.Implementations
         private readonly IRepository<Doctor> _doctorRepository;
         private readonly IRepository<Patient> _patientRepository;
         private readonly IMapper _mapper;
-        private readonly RabbitMqPublisher? _publisher;
+        private readonly IPublishEndpoint? _publishEndpoint;
+        private readonly ILogger<AppointmentService>? _logger;
+        private readonly IDistributedCache? _cache;
 
         public AppointmentService(
             IRepository<Appointment> appointmentRepository,
             IRepository<Doctor> doctorRepository,
             IRepository<Patient> patientRepository,
             IMapper mapper,
-            RabbitMqPublisher? publisher = null)
+            IPublishEndpoint? publishEndpoint = null,
+            ILogger<AppointmentService>? logger = null,
+            IDistributedCache? cache = null)
         {
             _appointmentRepository = appointmentRepository;
             _doctorRepository = doctorRepository;
             _patientRepository = patientRepository;
             _mapper = mapper;
-            _publisher = publisher;
+            _publishEndpoint = publishEndpoint;
+            _logger = logger;
+            _cache = cache;
         }
 
-        // ✅ GET /api/appointments
         public async Task<IEnumerable<AppointmentDto>> GetAllAsync()
         {
             var appointments = await _appointmentRepository.GetAllAsync();
@@ -41,7 +47,6 @@ namespace HealthAxis.API.Services.Implementations
             return _mapper.Map<IEnumerable<AppointmentDto>>(appointments);
         }
 
-        // ✅ POST /api/appointments
         public async Task<AppointmentDto> AddAsync(CreateAppointmentDto dto)
         {
             if (dto.ScheduledDate.Date < DateTime.Today)
@@ -96,25 +101,44 @@ namespace HealthAxis.API.Services.Implementations
 
             await _appointmentRepository.AddAsync(appointment);
 
-            if (_publisher != null)
+            await RemoveDoctorAvailabilityCacheAsync(
+                doctor.DoctorId,
+                appointment.ScheduledDate,
+                "Appointment booked");
+
+            if (_publishEndpoint != null)
             {
-                await _publisher.PublishAppointmentBookedAsync(new AppointmentBookedEvent
+                try
                 {
-                    EventType = "AppointmentBooked",
-                    AppointmentId = appointment.AppointmentId,
-                    PatientId = patient.PatientId,
-                    PatientName = patient.FullName,
-                    DoctorId = doctor.DoctorId,
-                    ScheduledDate = appointment.ScheduledDate,
-                    TimeSlot = appointment.TimeSlot,
-                    OccurredAt = DateTime.UtcNow
-                });
+                    await _publishEndpoint.Publish(new AppointmentBookedEvent
+                    {
+                        EventType = "AppointmentBooked",
+                        AppointmentId = appointment.AppointmentId,
+                        PatientId = patient.PatientId,
+                        PatientName = patient.FullName,
+                        DoctorId = doctor.DoctorId,
+                        ScheduledDate = appointment.ScheduledDate,
+                        TimeSlot = appointment.TimeSlot,
+                        OccurredAt = DateTime.UtcNow
+                    });
+
+                    _logger?.LogInformation(
+                        "AppointmentBookedEvent published using MassTransit for AppointmentId {AppointmentId}, DoctorId {DoctorId}",
+                        appointment.AppointmentId,
+                        doctor.DoctorId);
+                }
+                catch (Exception exception)
+                {
+                    _logger?.LogError(
+                        exception,
+                        "Appointment was booked, but failed to publish AppointmentBookedEvent for AppointmentId {AppointmentId}",
+                        appointment.AppointmentId);
+                }
             }
 
             return _mapper.Map<AppointmentDto>(appointment);
         }
 
-        // ✅ PUT /api/appointments/{id}/status
         public async Task<AppointmentDto> UpdateStatusAsync(int id, UpdateAppointmentStatusDto dto)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(id);
@@ -165,10 +189,14 @@ namespace HealthAxis.API.Services.Implementations
 
             await _appointmentRepository.UpdateAsync(id, appointment, CancellationToken.None);
 
+            await RemoveDoctorAvailabilityCacheAsync(
+                appointment.DoctorId,
+                appointment.ScheduledDate,
+                $"Appointment status changed to {appointment.Status}");
+
             return _mapper.Map<AppointmentDto>(appointment);
         }
 
-        // ✅ DELETE /api/appointments/{id}
         public async Task<bool> DeleteAsync(int id)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(id);
@@ -190,7 +218,50 @@ namespace HealthAxis.API.Services.Implementations
 
             await _appointmentRepository.DeleteAsync(id);
 
+            await RemoveDoctorAvailabilityCacheAsync(
+                appointment.DoctorId,
+                appointment.ScheduledDate,
+                "Appointment deleted");
+
             return true;
+        }
+
+        private async Task RemoveDoctorAvailabilityCacheAsync(
+            int doctorId,
+            DateTime scheduledDate,
+            string reason,
+            CancellationToken ct = default)
+        {
+            if (_cache == null)
+            {
+                return;
+            }
+
+            var cacheKey = $"doctors:{doctorId}:availability:{scheduledDate:yyyy-MM-dd}";
+
+            await _cache.RemoveAsync(cacheKey, ct);
+
+            _logger?.LogInformation(
+                "{CacheRemovedMessage}",
+                BuildCacheRemovedMessage(doctorId, scheduledDate, cacheKey, reason));
+        }
+
+        private static string BuildCacheRemovedMessage(
+            int doctorId,
+            DateTime date,
+            string cacheKey,
+            string reason)
+        {
+            return
+                Environment.NewLine +
+                "========================================" + Environment.NewLine +
+                "CACHE REMOVED - DOCTOR AVAILABILITY" + Environment.NewLine +
+                "========================================" + Environment.NewLine +
+                $"Doctor Id : {doctorId}" + Environment.NewLine +
+                $"Date      : {date:yyyy-MM-dd}" + Environment.NewLine +
+                $"Key       : {cacheKey}" + Environment.NewLine +
+                $"Reason    : {reason}" + Environment.NewLine +
+                "========================================";
         }
     }
 }

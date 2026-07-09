@@ -11,11 +11,35 @@
   letter-spacing: 1px;
 }
 
-.book-page h1 {
+/* This replaces old h1 styling */
+.page-title {
   margin: 6px 0 22px;
   font-size: 34px;
   font-weight: 800;
   color: #243044;
+}
+
+/* SUCCESS / ERROR BANNERS */
+.success-banner {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-weight: 800;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 18px rgba(22, 163, 74, 0.12);
+}
+
+.error-banner {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-weight: 800;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 18px rgba(220, 38, 38, 0.12);
 }
 
 /* FILTER CARD */
@@ -28,10 +52,12 @@
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
 }
 
-.search-card h3 {
+/* This replaces old h3 styling */
+.section-title {
   margin: 0 0 18px;
   color: #2563eb;
   font-size: 20px;
+  font-weight: 800;
 }
 
 .search-row {
@@ -71,14 +97,15 @@
 }
 
 .clear-btn {
-  height: 44px;
-  padding: 0 18px;
+  height: 54px;
+  padding: 0 22px;
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   background: #eef2f7;
   color: #334155;
-  font-weight: 800;
+  font-weight: 900;
   cursor: pointer;
+  margin-top: 24px;
 }
 
 /* ERRORS */
@@ -113,10 +140,11 @@
   margin-bottom: 18px;
 }
 
-.available-header h3 {
+.available-header .section-title {
   margin: 0;
   color: #334155;
   font-size: 22px;
+  font-weight: 800;
 }
 
 .available-header span {
@@ -135,7 +163,7 @@
   background: #ffffff;
   border: 1px solid #eef2f7;
   border-radius: 18px;
-  padding: 20px;
+  padding: 20px 24px;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
 }
 
@@ -146,9 +174,11 @@
   align-items: flex-start;
 }
 
-.doctor-top h2 {
+/* This replaces old h2 styling */
+.doctor-name-title {
   margin: 0;
   font-size: 22px;
+  font-weight: 800;
   color: #243044;
 }
 
@@ -156,6 +186,7 @@
   color: #2563eb;
   font-weight: 800;
   margin: 6px 0;
+  font-size: 16px;
 }
 
 .meta {
@@ -185,10 +216,12 @@
   margin-top: 18px;
 }
 
-.slot-section h4 {
+/* This replaces old h4 styling */
+.slot-title {
   margin: 0 0 10px;
   color: #334155;
   font-size: 15px;
+  font-weight: 800;
 }
 
 .slots {
@@ -222,7 +255,7 @@
   margin-top: 18px;
   border: none;
   border-radius: 14px;
-  padding: 12px 22px;
+  padding: 12px 28px;
   background: #2563eb;
   color: white;
   font-weight: 900;
@@ -235,5 +268,36 @@
 
 .request-btn:disabled {
   background: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* PAGINATION */
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.page-btn,
+.page-number {
+  border: none;
+  border-radius: 10px;
+  padding: 9px 14px;
+  background: #eef2f7;
+  color: #334155;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.page-number.active {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.page-btn:disabled {
+  background: #cbd5e1;
+  color: #64748b;
   cursor: not-allowed;
 }

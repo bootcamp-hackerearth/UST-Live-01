@@ -13,10 +13,10 @@ import { DoctorProfileService } from '../../../services/doctor-profile';
 })
 export class DoctorProfile implements OnInit {
 
-  private doctorProfileService = inject(DoctorProfileService);
-  private http = inject(HttpClient);
-  private zone = inject(NgZone);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly doctorProfileService = inject(DoctorProfileService);
+  private readonly http = inject(HttpClient);
+  private readonly zone = inject(NgZone);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   doctor = {
     doctorId: 0,
@@ -40,8 +40,8 @@ export class DoctorProfile implements OnInit {
     confirmPassword: ''
   };
 
-  private authUrl = 'https://localhost:7130/api/auth/change-password';
-  private doctorStatusUrl = 'https://localhost:7130/api/doctors/me/status';
+  private readonly authUrl = 'https://localhost:7130/api/auth/change-password';
+  private readonly doctorStatusUrl = 'https://localhost:7130/api/doctors/me/status';
 
   ngOnInit() {
     if (typeof window !== 'undefined') {

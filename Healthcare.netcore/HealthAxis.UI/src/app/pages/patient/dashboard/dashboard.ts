@@ -13,9 +13,9 @@ import { forkJoin } from 'rxjs';
 })
 export class Dashboard implements OnInit {
 
-  private http = inject(HttpClient);
-  private zone = inject(NgZone);
-  private cdr = inject(ChangeDetectorRef);
+  private readonly http = inject(HttpClient);
+  private readonly zone = inject(NgZone);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   patientName = 'Patient';
 
@@ -25,10 +25,10 @@ export class Dashboard implements OnInit {
 
   upcomingAppointmentText = 'No upcoming appointments';
 
-  private patientUrl = 'https://localhost:7130/api/patients/me';
-  private doctorsUrl = 'https://localhost:7130/api/doctors';
-  private appointmentsUrl = 'https://localhost:7130/api/appointments';
-  private patientsUrl = 'https://localhost:7130/api/patients';
+  private readonly patientUrl = 'https://localhost:7130/api/patients/me';
+  private readonly doctorsUrl = 'https://localhost:7130/api/doctors';
+  private readonly appointmentsUrl = 'https://localhost:7130/api/appointments';
+  private readonly patientsUrl = 'https://localhost:7130/api/patients';
 
   ngOnInit() {
     if (typeof window !== 'undefined') {

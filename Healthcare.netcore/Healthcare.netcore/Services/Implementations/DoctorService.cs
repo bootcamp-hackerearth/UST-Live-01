@@ -10,7 +10,9 @@ using HealthAxis.Shared.DTOs.Doctor;
 using HealthAxis.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json;
 using ValidationException = HealthAxis.API.Exceptions.ValidationException;
 
 namespace HealthAxis.API.Services.Implementations
@@ -21,26 +23,48 @@ namespace HealthAxis.API.Services.Implementations
         private readonly IDoctorRepository? _doctorRepository;
         private readonly UserManager<ApplicationUser>? _userManager;
         private readonly IMapper? _mapper;
+        private readonly IDistributedCache? _cache;
+        private readonly ILogger<DoctorService>? _logger;
 
-        // ✅ Runtime DI constructor
-        // This constructor is used by API at runtime.
-        // It allows Admin doctor creation to also create ApplicationUser login.
+        private static readonly DistributedCacheEntryOptions AvailabilityCacheOptions = new()
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+        };
+
+        private static readonly List<string> AllSlots = new()
+        {
+            "09:00",
+            "09:30",
+            "10:00",
+            "10:30",
+            "11:00",
+            "11:30",
+            "14:00",
+            "14:30",
+            "15:00",
+            "15:30",
+            "16:00",
+            "16:30"
+        };
+
         [ActivatorUtilitiesConstructor]
         public DoctorService(
             HealthAxisDbContext context,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IDistributedCache cache,
+            ILogger<DoctorService> logger)
         {
             _context = context;
             _userManager = userManager;
+            _cache = cache;
+            _logger = logger;
         }
 
-        // ✅ Keep this constructor for old tests / old direct usages
         public DoctorService(HealthAxisDbContext context)
         {
             _context = context;
         }
 
-        // ✅ Repository constructor used by unit tests
         public DoctorService(
             IDoctorRepository doctorRepository,
             UserManager<ApplicationUser> userManager,
@@ -214,6 +238,40 @@ namespace HealthAxis.API.Services.Implementations
             int id,
             CancellationToken ct = default)
         {
+            return await GetAvailabilityAsync(id, DateTime.Today, ct);
+        }
+
+        public async Task<DoctorAvailabilityDto> GetAvailabilityAsync(
+            int id,
+            DateTime date,
+            CancellationToken ct = default)
+        {
+            var availabilityDate = date.Date;
+            var cacheKey = $"doctors:{id}:availability:{availabilityDate:yyyy-MM-dd}";
+
+            if (_cache != null)
+            {
+                var cachedAvailability = await _cache.GetStringAsync(cacheKey, ct);
+
+                if (!string.IsNullOrWhiteSpace(cachedAvailability))
+                {
+                    var cachedDto = JsonSerializer.Deserialize<DoctorAvailabilityDto>(cachedAvailability);
+
+                    if (cachedDto != null)
+                    {
+                        _logger?.LogInformation(
+                            "{CacheHitMessage}",
+                            BuildCacheHitMessage(id, availabilityDate, cacheKey));
+
+                        return cachedDto;
+                    }
+                }
+
+                _logger?.LogInformation(
+                    "{CacheMissMessage}",
+                    BuildCacheMissMessage(id, availabilityDate, cacheKey));
+            }
+
             Doctor? doctor;
 
             if (_doctorRepository != null)
@@ -236,12 +294,51 @@ namespace HealthAxis.API.Services.Implementations
                 throw new NotFoundException("Doctor not found");
             }
 
-            return new
+            var bookedSlots = new List<string>();
+
+            if (_context != null)
             {
-                doctor.DoctorId,
-                doctor.FullName,
-                doctor.IsActive
+                bookedSlots = await _context.Appointments
+                    .AsNoTracking()
+                    .Where(a =>
+                        a.DoctorId == id &&
+                        a.ScheduledDate.Date == availabilityDate &&
+                        a.Status != AppointmentStatus.Cancelled)
+                    .Select(a => a.TimeSlot)
+                    .ToListAsync(ct);
+            }
+
+            var availableSlots = doctor.IsActive
+                ? AllSlots.Except(bookedSlots).ToList()
+                : new List<string>();
+
+            var availability = new DoctorAvailabilityDto
+            {
+                DoctorId = doctor.DoctorId,
+                FullName = doctor.FullName,
+                IsActive = doctor.IsActive,
+                Date = availabilityDate,
+                AvailableSlots = availableSlots
             };
+
+            if (_cache != null)
+            {
+                await _cache.SetStringAsync(
+                    cacheKey,
+                    JsonSerializer.Serialize(availability),
+                    AvailabilityCacheOptions,
+                    ct);
+
+                _logger?.LogInformation(
+                    "{CacheStoredMessage}",
+                    BuildCacheStoredMessage(
+                        id,
+                        availabilityDate,
+                        cacheKey,
+                        availableSlots.Count));
+            }
+
+            return availability;
         }
 
         public async Task<DoctorDto> AddAsync(
@@ -372,6 +469,8 @@ namespace HealthAxis.API.Services.Implementations
 
                 var updatedDoctor = await _doctorRepository.UpdateAsync(id, existingDoctor, ct);
 
+                await RemoveAvailabilityCacheAsync(id, DateTime.Today, ct);
+
                 return _mapper.Map<DoctorDto>(updatedDoctor);
             }
 
@@ -397,7 +496,98 @@ namespace HealthAxis.API.Services.Implementations
 
             await _context.SaveChangesAsync(ct);
 
+            await RemoveAvailabilityCacheAsync(id, DateTime.Today, ct);
+
             return MapToDto(doctor);
+        }
+
+        private async Task RemoveAvailabilityCacheAsync(
+            int doctorId,
+            DateTime date,
+            CancellationToken ct)
+        {
+            if (_cache == null)
+            {
+                return;
+            }
+
+            var cacheKey = $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
+
+            await _cache.RemoveAsync(cacheKey, ct);
+
+            _logger?.LogInformation(
+                "{CacheRemovedMessage}",
+                BuildCacheRemovedMessage(doctorId, date, cacheKey));
+        }
+
+        private static string BuildCacheHitMessage(
+            int doctorId,
+            DateTime date,
+            string cacheKey)
+        {
+            return
+                Environment.NewLine +
+                "========================================" + Environment.NewLine +
+                "CACHE HIT - DOCTOR AVAILABILITY" + Environment.NewLine +
+                "========================================" + Environment.NewLine +
+                $"Doctor Id : {doctorId}" + Environment.NewLine +
+                $"Date      : {date:yyyy-MM-dd}" + Environment.NewLine +
+                $"Key       : {cacheKey}" + Environment.NewLine +
+                "Source    : Garnet Cache" + Environment.NewLine +
+                "========================================";
+        }
+
+        private static string BuildCacheMissMessage(
+            int doctorId,
+            DateTime date,
+            string cacheKey)
+        {
+            return
+                Environment.NewLine +
+                "========================================" + Environment.NewLine +
+                "CACHE MISS - DOCTOR AVAILABILITY" + Environment.NewLine +
+                "========================================" + Environment.NewLine +
+                $"Doctor Id : {doctorId}" + Environment.NewLine +
+                $"Date      : {date:yyyy-MM-dd}" + Environment.NewLine +
+                $"Key       : {cacheKey}" + Environment.NewLine +
+                "Source    : SQL Server Required" + Environment.NewLine +
+                "========================================";
+        }
+
+        private static string BuildCacheStoredMessage(
+            int doctorId,
+            DateTime date,
+            string cacheKey,
+            int slotCount)
+        {
+            return
+                Environment.NewLine +
+                "========================================" + Environment.NewLine +
+                "CACHE STORED IN GARNET" + Environment.NewLine +
+                "========================================" + Environment.NewLine +
+                $"Doctor Id : {doctorId}" + Environment.NewLine +
+                $"Date      : {date:yyyy-MM-dd}" + Environment.NewLine +
+                $"Key       : {cacheKey}" + Environment.NewLine +
+                "TTL       : 5 Minutes" + Environment.NewLine +
+                $"Slots     : {slotCount}" + Environment.NewLine +
+                "========================================";
+        }
+
+        private static string BuildCacheRemovedMessage(
+            int doctorId,
+            DateTime date,
+            string cacheKey)
+        {
+            return
+                Environment.NewLine +
+                "========================================" + Environment.NewLine +
+                "CACHE REMOVED - DOCTOR AVAILABILITY" + Environment.NewLine +
+                "========================================" + Environment.NewLine +
+                $"Doctor Id : {doctorId}" + Environment.NewLine +
+                $"Date      : {date:yyyy-MM-dd}" + Environment.NewLine +
+                $"Key       : {cacheKey}" + Environment.NewLine +
+                "Reason    : Doctor schedule/status updated" + Environment.NewLine +
+                "========================================";
         }
 
         private static DoctorDto MapToDto(Doctor doctor)

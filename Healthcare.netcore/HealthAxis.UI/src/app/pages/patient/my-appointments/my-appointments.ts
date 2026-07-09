@@ -13,11 +13,11 @@ import { forkJoin } from 'rxjs';
 })
 export class MyAppointments implements OnInit {
 
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
 
-  private appointmentsUrl = 'https://localhost:7130/api/appointments';
-  private doctorsUrl = 'https://localhost:7130/api/doctors';
-  private healthRecordsUrl = 'https://localhost:7130/api/health-records';
+  private readonly appointmentsUrl = 'https://localhost:7130/api/appointments';
+  private readonly doctorsUrl = 'https://localhost:7130/api/doctors';
+  private readonly healthRecordsUrl = 'https://localhost:7130/api/health-records';
 
   showFilters = false;
 
@@ -28,6 +28,9 @@ export class MyAppointments implements OnInit {
   appointments: any[] = [];
   doctors: any[] = [];
   healthRecords: any[] = [];
+
+  currentPage = 1;
+  pageSize = 5;
 
   showRecordModal = false;
   selectedHealthRecord: any = null;
@@ -91,7 +94,6 @@ export class MyAppointments implements OnInit {
 
             const hasRecord = !!record;
 
-            // If health record exists, patient should see it as completed for review flow
             const finalStatus = hasRecord
               ? 'Completed'
               : this.getStatusName(a.status);
@@ -118,6 +120,8 @@ export class MyAppointments implements OnInit {
             };
           });
 
+        this.currentPage = 1;
+
         console.log('Mapped patient appointments ✅:', this.appointments);
       },
       error: (err: any) => {
@@ -135,6 +139,11 @@ export class MyAppointments implements OnInit {
     this.selectedStatus = '';
     this.selectedDate = '';
     this.searchText = '';
+    this.currentPage = 1;
+  }
+
+  onFilterChanged(): void {
+    this.currentPage = 1;
   }
 
   filteredAppointments() {
@@ -154,6 +163,45 @@ export class MyAppointments implements OnInit {
 
       return matchesSearch && matchesStatus && matchesDate;
     });
+  }
+
+  pagedAppointments() {
+    const filtered = this.filteredAppointments();
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+
+    return filtered.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredAppointments().length / this.pageSize);
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, index) => index + 1);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) {
+      return;
+    }
+
+    this.currentPage = page;
+  }
+
+  previousPage(): void {
+    if (this.currentPage <= 1) {
+      return;
+    }
+
+    this.currentPage--;
+  }
+
+  nextPage(): void {
+    if (this.currentPage >= this.totalPages) {
+      return;
+    }
+
+    this.currentPage++;
   }
 
   viewRecord(id: number) {

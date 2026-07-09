@@ -3,6 +3,14 @@
   <p class="portal-text">PATIENT PORTAL</p>
   <h1>Profile</h1>
 
+  <div class="success-banner" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <div class="error-banner" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
   <div class="profile-hero">
 
     <div class="avatar-box">
@@ -48,7 +56,9 @@
         <input
           *ngIf="isEditMode"
           type="text"
-          [(ngModel)]="patient.fullName" />
+          [(ngModel)]="patient.fullName"
+          [class.invalid-field]="fullNameError"
+          placeholder="Enter full name" />
 
         <p *ngIf="!isEditMode">{{ patient.fullName }}</p>
 
@@ -63,7 +73,9 @@
         <input
           *ngIf="isEditMode"
           type="email"
-          [(ngModel)]="patient.email" />
+          [(ngModel)]="patient.email"
+          [class.invalid-field]="emailError"
+          placeholder="example@gmail.com" />
 
         <p *ngIf="!isEditMode">{{ patient.email }}</p>
 
@@ -79,7 +91,9 @@
           *ngIf="isEditMode"
           type="text"
           maxlength="10"
-          [(ngModel)]="patient.phoneNumber" />
+          [(ngModel)]="patient.phoneNumber"
+          [class.invalid-field]="phoneError"
+          placeholder="10 digit phone number" />
 
         <p *ngIf="!isEditMode">{{ patient.phoneNumber }}</p>
 
@@ -94,7 +108,10 @@
         <input
           *ngIf="isEditMode"
           type="date"
-          [(ngModel)]="patient.dateOfBirth" />
+          [min]="minDateOfBirth"
+          [max]="todayDate"
+          [(ngModel)]="patient.dateOfBirth"
+          [class.invalid-field]="dobError" />
 
         <p *ngIf="!isEditMode">{{ patient.dateOfBirth }}</p>
 
@@ -106,13 +123,20 @@
       <div class="detail-item">
         <label>Gender</label>
 
-        <select *ngIf="isEditMode" [(ngModel)]="patient.gender">
+        <select
+          *ngIf="isEditMode"
+          [(ngModel)]="patient.gender"
+          [class.invalid-field]="genderError">
           <option [ngValue]="0">Male</option>
           <option [ngValue]="1">Female</option>
           <option [ngValue]="2">Other</option>
         </select>
 
         <p *ngIf="!isEditMode">{{ getGenderName(patient.gender) }}</p>
+
+        <small class="error-text" *ngIf="genderError">
+          {{ genderError }}
+        </small>
       </div>
 
     </div>
@@ -120,7 +144,7 @@
     <div class="action-buttons" *ngIf="isEditMode">
       <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
 
-      <button class="save-btn" (click)="saveProfile()">
+      <button class="save-btn" (click)="saveProfile()" [disabled]="isSaving">
         {{ isSaving ? 'Saving...' : 'Save Changes' }}
       </button>
     </div>
@@ -141,7 +165,9 @@
 
         <input
           type="password"
-          [(ngModel)]="passwordModel.oldPassword" />
+          [(ngModel)]="passwordModel.oldPassword"
+          [class.invalid-field]="oldPasswordError"
+          placeholder="Enter old password" />
 
         <small class="error-text" *ngIf="oldPasswordError">
           {{ oldPasswordError }}
@@ -153,7 +179,9 @@
 
         <input
           type="password"
-          [(ngModel)]="passwordModel.newPassword" />
+          [(ngModel)]="passwordModel.newPassword"
+          [class.invalid-field]="newPasswordError"
+          placeholder="Enter new password" />
 
         <small class="error-text" *ngIf="newPasswordError">
           {{ newPasswordError }}
@@ -165,7 +193,9 @@
 
         <input
           type="password"
-          [(ngModel)]="passwordModel.confirmPassword" />
+          [(ngModel)]="passwordModel.confirmPassword"
+          [class.invalid-field]="confirmPasswordError"
+          placeholder="Confirm new password" />
 
         <small class="error-text" *ngIf="confirmPasswordError">
           {{ confirmPasswordError }}
@@ -177,7 +207,7 @@
     <div class="action-buttons">
       <button class="cancel-btn" (click)="cancelPasswordChange()">Cancel</button>
 
-      <button class="save-btn" (click)="changePassword()">
+      <button class="save-btn" (click)="changePassword()" [disabled]="isChangingPassword">
         {{ isChangingPassword ? 'Updating...' : 'Update Password' }}
       </button>
     </div>
