@@ -118,9 +118,9 @@ namespace HealthApp.Blazor.Components.service.Impl
 
                 var request = new DoctorRegisterDto
                 {
-                    FullName = dto.FullName,
-                    Email = dto.Email,
-                    Specialisation = dto.Specialisation,
+                    FullName = dto.FullName!,
+                    Email = dto.Email!,
+                    Specialisation = dto.Specialisation!,
                     DoctorPhoneNumber = dto.DoctorPhoneNumber,
                     ConsultationFee = dto.ConsultationFee,
                     PracticeStartDate = dto.PracticeStartDate,

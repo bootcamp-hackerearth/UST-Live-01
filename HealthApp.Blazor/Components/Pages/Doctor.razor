@@ -56,34 +56,71 @@
         <div class="card">
             <h3>@(isEdit ? "Edit Doctor" : "Add Doctor")</h3>
 
-            <div class="grid">
-                <input class="input" placeholder="Name" @bind="selectedDoctor.FullName" />
+            <EditForm Model="selectedDoctor" OnValidSubmit="SaveDoctor">
+                <DataAnnotationsValidator />
 
-                <select class="input" @bind="selectedDoctor.Specialisation">
-                    <option value="">Select Specialisation</option>
-                    <option>Endocrinologist</option>
-                    <option>Oncologist</option>
-                    <option>Gynecologist</option>
-                    <option>OrthopedicSurgeon</option>
-                    <option>Psychiatrist</option>
-                    <option>Pediatrician</option>
-                    <option>Neurologist</option>
-                    <option>Dermatologist</option>
-                    <option>Cardiologist</option>
-                    <option>GeneralPractitioner</option>
-                    <option>ENT</option>
-                </select>
+                <div class="grid">
 
-                <input class="input" placeholder="Email" @bind="selectedDoctor.Email" />
-                <input class="input" placeholder="Phone" @bind="selectedDoctor.DoctorPhoneNumber" />
-                <input class="input" type="number" placeholder="Fee" @bind="selectedDoctor.ConsultationFee" />
-                <input class="input" type="date" @bind="selectedDoctor.PracticeStartDate" />
-            </div>
+                    <div class="form-field">
+                        <label>Name</label>
+                        <InputText class="input" placeholder="Name" @bind-Value="selectedDoctor.FullName" />
+                        <ValidationMessage For="@(() => selectedDoctor.FullName)" />
+                    </div>
 
-            <div class="actions">
-                <button class="btn success" @onclick="SaveDoctor">Save</button>
-                <button class="btn light" @onclick="CancelForm">Cancel</button>
-            </div>
+                    <div class="form-field">
+                        <label>Specialisation</label>
+                        <InputSelect class="input" @bind-Value="selectedDoctor.Specialisation">
+                            <option value="">Select Specialisation</option>
+                            <option>Endocrinologist</option>
+                            <option>Oncologist</option>
+                            <option>Gynecologist</option>
+                            <option>OrthopedicSurgeon</option>
+                            <option>Psychiatrist</option>
+                            <option>Pediatrician</option>
+                            <option>Neurologist</option>
+                            <option>Dermatologist</option>
+                            <option>Cardiologist</option>
+                            <option>GeneralPractitioner</option>
+                            <option>ENT</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => selectedDoctor.Specialisation)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Email</label>
+                        <InputText class="input" placeholder="Email" @bind-Value="selectedDoctor.Email" />
+                        <ValidationMessage For="@(() => selectedDoctor.Email)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Phone</label>
+                        <InputText class="input" placeholder="Phone" @bind-Value="selectedDoctor.DoctorPhoneNumber" />
+                        <ValidationMessage For="@(() => selectedDoctor.DoctorPhoneNumber)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Consultation Fee</label>
+                        <InputNumber class="input" placeholder="Fee" @bind-Value="selectedDoctor.ConsultationFee" />
+                        <ValidationMessage For="@(() => selectedDoctor.ConsultationFee)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Practice Start Date</label>
+
+                        <InputDate class="input"
+                                   @bind-Value="selectedDoctor.PracticeStartDate"
+                                   max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+
+                        <ValidationMessage For="@(() => selectedDoctor.PracticeStartDate)" />
+                    </div>
+
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn success">Save</button>
+                    <button type="button" class="btn light" @onclick="CancelForm">Cancel</button>
+                </div>
+            </EditForm>
         </div>
     }
 
@@ -447,6 +484,35 @@
         .grid {
             grid-template-columns: 1fr;
         }
+    }
+
+    .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .form-field label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+    .validation-message {
+        color: #dc2626;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 2px;
+    }
+
+    .input.invalid,
+    .input.input-validation-error {
+        border-color: #dc2626;
+        background: #fff7f7;
+    }
+
+    .input.valid {
+        border-color: #16a34a;
     }
 
 </style>

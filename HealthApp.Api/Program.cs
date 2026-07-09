@@ -1,6 +1,9 @@
+using HealthApp.Api.BackgroundServices;
 using HealthApp.Api.Data;
 using HealthApp.Api.Mappings;
+using HealthApp.Api.Messaging.Publisher;
 using HealthApp.Api.Middleware;
+using HealthApp.Api.Options;
 using HealthApp.Api.Repository.Impl;
 using HealthApp.Api.Repository.Interface;
 using HealthApp.Api.Service.Impl;
@@ -10,10 +13,31 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Serilog;
 using System.Text;
 using System.Text.Json;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
+
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", Serilog.Events.LogEventLevel.Information)
+
+
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File(
+        path: "Logs/healthcare-log-.txt",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 7
+    )
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -48,15 +72,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
+
             ValidIssuer = jwt["Issuer"],
             ValidAudience = jwt["Audience"],
+
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(jwt["key"]!)),
+
             ClockSkew = TimeSpan.Zero
         };
     });
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -70,7 +98,7 @@ builder.Services.AddSwaggerGen(options =>
         Type = SecuritySchemeType.Http,
         Scheme = "bearer",
         BearerFormat = "JWT",
-        Description = "Enter JWT token only. Do not type Bearer."
+        Description = "Enter JWT token only. Do not type Bearer manually."
     });
 
     options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
@@ -83,25 +111,43 @@ var angularUrl = builder.Configuration["AppUrls:AngularUrl"];
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngular",
-        policy => policy
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy
             .WithOrigins(angularUrl!)
             .AllowAnyHeader()
-            .AllowAnyMethod());
+            .AllowAnyMethod();
+    });
 });
-
-
 
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();
 
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
+
+builder.Services.AddScoped<IAppointmentEventPublisher, AppointmentEventPublisher>();
+//builder.Services.AddSingleton<RabbitMQPublisher>();
+
+builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection("Garnet"));
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    var garnetoptions = builder.Configuration.GetSection("Garnet")
+    .Get<GarnetOptions>() ?? new GarnetOptions();
+
+
+    options.Configuration = garnetoptions.ConnectionString;
+    options.InstanceName = garnetoptions.InstanceName;
+});
+
+
+
+builder.Services.AddHostedService<HeartbeatBackgroundService>();
 
 builder.Services.AddAutoMapper(cfg =>
 {
@@ -113,20 +159,20 @@ builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging();
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-
     app.UseSwagger();
-
     app.UseSwaggerUI();
 }
 
-
 app.UseCors("AllowAngular");
+
 app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

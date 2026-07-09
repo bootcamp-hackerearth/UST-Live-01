@@ -1,0 +1,127 @@
+2026-07-09 09:39:05.768 +05:30 [INF] HealthAxis Heartbeat Background Service started.+++++++++++++++
+2026-07-09 09:39:05.946 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:39:05.9432742+05:30"----------------
+2026-07-09 09:39:06.195 +05:30 [INF] Now listening on: http://localhost:5066
+2026-07-09 09:39:06.360 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-09 09:39:06.374 +05:30 [INF] Hosting environment: Development
+2026-07-09 09:39:06.379 +05:30 [INF] Content root path: C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api
+2026-07-09 09:39:15.227 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-07-09 09:39:15.977 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:39:15.9773661+05:30"----------------
+2026-07-09 09:39:16.570 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 1422.4080 ms
+2026-07-09 09:39:17.237 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-09 09:39:17.702 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 1040.6107 ms
+2026-07-09 09:39:17.921 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 142.3047 ms
+2026-07-09 09:39:18.301 +05:30 [INF] HTTP GET /api/appointments/paged responded 200 in 346.7250 ms
+2026-07-09 09:39:22.824 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 20.0532 ms
+2026-07-09 09:39:24.248 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 20.4579 ms
+2026-07-09 09:39:24.294 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 40.1098 ms
+2026-07-09 09:39:25.758 +05:30 [INF] HTTP GET /api/appointments/paged responded 200 in 29.2475 ms
+2026-07-09 09:39:25.995 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:39:25.9953393+05:30"----------------
+2026-07-09 09:39:26.801 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 10.7738 ms
+2026-07-09 09:39:26.818 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 10.5813 ms
+2026-07-09 09:39:27.706 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 17.3754 ms
+2026-07-09 09:39:36.000 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:39:36.0000902+05:30"----------------
+2026-07-09 09:39:46.009 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:39:46.0092292+05:30"----------------
+2026-07-09 09:39:56.029 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:39:56.0291181+05:30"----------------
+2026-07-09 09:40:06.041 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:40:06.0415780+05:30"----------------
+2026-07-09 09:40:16.060 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:40:16.0607623+05:30"----------------
+2026-07-09 09:40:26.063 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:40:26.0633869+05:30"----------------
+2026-07-09 09:40:36.078 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:40:36.0780163+05:30"----------------
+2026-07-09 09:40:46.093 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:40:46.0923629+05:30"----------------
+2026-07-09 09:40:56.104 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:40:56.1040887+05:30"----------------
+2026-07-09 09:41:06.110 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:41:06.1100641+05:30"----------------
+2026-07-09 09:41:16.123 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:41:16.1228205+05:30"----------------
+2026-07-09 09:41:26.142 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:41:26.1422421+05:30"----------------
+2026-07-09 09:41:36.147 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:41:36.1477872+05:30"----------------
+2026-07-09 09:41:46.158 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:41:46.1585420+05:30"----------------
+2026-07-09 09:41:56.167 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:41:56.1664796+05:30"----------------
+2026-07-09 09:42:06.180 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:42:06.1795980+05:30"----------------
+2026-07-09 09:42:16.188 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:42:16.1885949+05:30"----------------
+2026-07-09 09:42:26.197 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:42:26.1968572+05:30"----------------
+2026-07-09 09:42:51.649 +05:30 [INF] HealthAxis Heartbeat Background Service started.+++++++++++++++
+2026-07-09 09:42:51.796 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:42:51.7930604+05:30"----------------
+2026-07-09 09:42:52.035 +05:30 [INF] Now listening on: http://localhost:5066
+2026-07-09 09:42:52.213 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-09 09:42:52.216 +05:30 [INF] Hosting environment: Development
+2026-07-09 09:42:52.220 +05:30 [INF] Content root path: C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api
+2026-07-09 09:43:01.831 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:43:01.8305132+05:30"----------------
+2026-07-09 09:43:03.803 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-07-09 09:43:04.652 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-09 09:43:05.377 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 1619.7314 ms
+2026-07-09 09:43:05.669 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 175.4760 ms
+2026-07-09 09:43:06.116 +05:30 [INF] HTTP GET /api/appointments/paged responded 200 in 411.2639 ms
+2026-07-09 09:43:06.732 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 15.1106 ms
+2026-07-09 09:43:11.844 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:43:11.8440521+05:30"----------------
+2026-07-09 09:43:21.856 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:43:21.8564476+05:30"----------------
+2026-07-09 09:43:31.869 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:43:31.8692395+05:30"----------------
+2026-07-09 09:43:41.878 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:43:41.8781138+05:30"----------------
+2026-07-09 09:43:51.890 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:43:51.8901087+05:30"----------------
+2026-07-09 09:44:01.902 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:44:01.9005769+05:30"----------------
+2026-07-09 09:44:11.905 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:44:11.9056428+05:30"----------------
+2026-07-09 09:44:21.914 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:44:21.9149273+05:30"----------------
+2026-07-09 09:44:31.932 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:44:31.9308636+05:30"----------------
+2026-07-09 09:44:37.439 +05:30 [INF] HTTP POST /api/auth/doctorregister responded 400 in 202.8489 ms
+2026-07-09 09:44:37.522 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 21.2831 ms
+2026-07-09 09:44:39.457 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 31.2665 ms
+2026-07-09 09:44:41.938 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:44:41.9386409+05:30"----------------
+2026-07-09 09:44:51.944 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:44:51.9441797+05:30"----------------
+2026-07-09 09:45:01.960 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:45:01.9605485+05:30"----------------
+2026-07-09 09:45:11.976 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:45:11.9764893+05:30"----------------
+2026-07-09 09:45:17.622 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 15.4286 ms
+2026-07-09 09:45:21.982 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:45:21.9828183+05:30"----------------
+2026-07-09 09:45:22.163 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 13.2727 ms
+2026-07-09 09:45:23.562 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 17.4956 ms
+2026-07-09 09:45:23.602 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 30.7828 ms
+2026-07-09 09:45:25.837 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 8.3495 ms
+2026-07-09 09:45:27.816 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 8.4120 ms
+2026-07-09 09:45:31.995 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:45:31.9951887+05:30"----------------
+2026-07-09 09:45:32.963 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 8.8397 ms
+2026-07-09 09:45:38.025 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 13.0307 ms
+2026-07-09 09:45:38.326 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 7.1231 ms
+2026-07-09 09:45:42.012 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:45:42.0127086+05:30"----------------
+2026-07-09 09:45:52.024 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:45:52.0243641+05:30"----------------
+2026-07-09 09:46:02.044 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:46:02.0441405+05:30"----------------
+2026-07-09 09:46:12.062 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:46:12.0617256+05:30"----------------
+2026-07-09 09:46:22.075 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:46:22.0755728+05:30"----------------
+2026-07-09 09:46:32.090 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:46:32.0891305+05:30"----------------
+2026-07-09 09:46:41.174 +05:30 [INF] HTTP POST /api/auth/doctorregister responded 200 in 1436.4425 ms
+2026-07-09 09:46:41.196 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 11.9450 ms
+2026-07-09 09:46:42.103 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:46:42.1034521+05:30"----------------
+2026-07-09 09:46:43.272 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 11.9601 ms
+2026-07-09 09:46:47.035 +05:30 [INF] HTTP PUT /api/doctors/1014 responded 200 in 116.9655 ms
+2026-07-09 09:46:47.452 +05:30 [INF] HTTP PUT /api/doctors/1014 responded 200 in 12.6071 ms
+2026-07-09 09:46:52.120 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:46:52.1206403+05:30"----------------
+2026-07-09 09:46:55.905 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 6.9971 ms
+2026-07-09 09:47:02.136 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:47:02.1363978+05:30"----------------
+2026-07-09 09:47:06.640 +05:30 [INF] HTTP GET /api/doctors/specialisation/OrthopedicSurgeon responded 200 in 73.3259 ms
+2026-07-09 09:47:09.328 +05:30 [INF] HTTP GET /api/doctors/specialisation/Endocrinologist responded 200 in 17.5818 ms
+2026-07-09 09:47:11.819 +05:30 [INF] HTTP GET /api/doctors/specialisation/Oncologist responded 200 in 18.3241 ms
+2026-07-09 09:47:12.146 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:47:12.1464395+05:30"----------------
+2026-07-09 09:47:14.348 +05:30 [INF] HTTP GET /api/doctors/specialisation/Gynecologist responded 200 in 16.7567 ms
+2026-07-09 09:47:18.919 +05:30 [INF] HTTP GET /api/doctors/specialisation/Gynecologist responded 200 in 8.1026 ms
+2026-07-09 09:47:19.948 +05:30 [INF] HTTP PUT /api/doctors/2 responded 200 in 21.3529 ms
+2026-07-09 09:47:22.155 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:47:22.1559060+05:30"----------------
+2026-07-09 09:47:22.461 +05:30 [INF] HTTP GET /api/doctors/specialisation/OrthopedicSurgeon responded 200 in 6.2679 ms
+2026-07-09 09:47:27.200 +05:30 [INF] HTTP GET /api/doctors/specialisation/Psychiatrist responded 200 in 7.1416 ms
+2026-07-09 09:47:28.602 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 16.6664 ms
+2026-07-09 09:47:28.618 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 8.2664 ms
+2026-07-09 09:47:31.019 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 7.3205 ms
+2026-07-09 09:47:31.034 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 6.9159 ms
+2026-07-09 09:47:32.160 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:47:32.1605420+05:30"----------------
+2026-07-09 09:47:38.753 +05:30 [INF] HTTP GET /api/appointments/paged responded 200 in 25.9640 ms
+2026-07-09 09:47:42.174 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:47:42.1745432+05:30"----------------
+2026-07-09 09:47:44.871 +05:30 [INF] HTTP GET /api/appointments/paged responded 200 in 12.4786 ms
+2026-07-09 09:47:47.702 +05:30 [INF] HTTP GET /api/appointments/paged responded 200 in 6.4735 ms
+2026-07-09 09:47:52.192 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:47:52.1921984+05:30"----------------
+2026-07-09 09:48:02.198 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:48:02.1979880+05:30"----------------
+2026-07-09 09:48:12.217 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:48:12.2172519+05:30"----------------
+2026-07-09 09:48:19.328 +05:30 [INF] HTTP GET /api/appointments/1 responded 200 in 88.4198 ms
+2026-07-09 09:48:22.234 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:48:22.2340220+05:30"----------------
+2026-07-09 09:48:27.935 +05:30 [INF] HTTP GET /api/appointments/6 responded 200 in 10.4325 ms
+2026-07-09 09:48:32.246 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:48:32.2467015+05:30"----------------
+2026-07-09 09:48:34.579 +05:30 [INF] HTTP GET /api/appointments/paged responded 200 in 61.3563 ms
+2026-07-09 09:48:36.994 +05:30 [INF] HTTP GET /api/appointments/paged responded 200 in 25.1930 ms
+2026-07-09 09:48:40.383 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 14.1719 ms
+2026-07-09 09:48:40.410 +05:30 [INF] HTTP GET /api/patientapi/paged responded 200 in 12.6449 ms
+2026-07-09 09:48:41.416 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 7.5473 ms
+2026-07-09 09:48:42.254 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:48:42.2547534+05:30"----------------
+2026-07-09 09:48:52.263 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:48:52.2633879+05:30"----------------
