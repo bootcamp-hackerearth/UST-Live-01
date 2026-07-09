@@ -15,6 +15,7 @@ using HealthAxis.API.BackgroundServices;
 using Serilog;
 using MassTransit;
 using HealthAxis.API.Consumers;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -62,6 +63,12 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy =
             JsonNamingPolicy.CamelCase;
     });
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379";
+    options.InstanceName = "HealthAxis:";
+});
 
 // Global exception handler.
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

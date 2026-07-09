@@ -5,6 +5,7 @@ using HealthAxis.API.Messages;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories;
 using MassTransit;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace HealthAxis.API.Services
 {
@@ -18,6 +19,7 @@ namespace HealthAxis.API.Services
         private readonly IMapper _mapper;
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly ILogger<AppointmentService> _logger;
+        private readonly IDistributedCache _cache;
 
         public AppointmentService(
             IAppointmentRepository appointmentRepository,
@@ -25,7 +27,8 @@ namespace HealthAxis.API.Services
             IPatientRepository patientRepository,
             IMapper mapper,
             IPublishEndpoint publishEndpoint,
-            ILogger<AppointmentService> logger)
+            ILogger<AppointmentService> logger,
+            IDistributedCache cache)
             : base(appointmentRepository, mapper)
         {
             _appointmentRepository = appointmentRepository;
@@ -34,6 +37,7 @@ namespace HealthAxis.API.Services
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
             _logger = logger;
+            _cache = cache;
         }
 
         public new async Task<AppointmentReadDto> CreateAsync(
@@ -139,6 +143,33 @@ namespace HealthAxis.API.Services
                     appointmentToCreate,
                     ct);
 
+            string availabilityCacheKey =
+                $"doctors:{createdAppointment.DoctorId}:availability:{createdAppointment.ScheduledDate:yyyy-MM-dd}";
+
+            await _cache.RemoveAsync(
+                availabilityCacheKey,
+                ct);
+
+            _logger.LogInformation(
+                """
+
+                ====================================
+                GARNET CACHE INVALIDATED
+                ====================================
+
+                Doctor Id     : {DoctorId}
+                AppointmentId : {AppointmentId}
+                Date          : {Date}
+                Cache Key     : {CacheKey}
+
+                ====================================
+
+                """,
+                createdAppointment.DoctorId,
+                createdAppointment.AppointmentId,
+                createdAppointment.ScheduledDate.ToString("yyyy-MM-dd"),
+                availabilityCacheKey);
+
             AppointmentBookedEvent appointmentBookedEvent = new()
             {
                 AppointmentId = createdAppointment.AppointmentId,
@@ -149,17 +180,47 @@ namespace HealthAxis.API.Services
             };
 
             _logger.LogInformation(
-                "Publishing AppointmentBookedEvent for AppointmentId {AppointmentId}, DoctorId {DoctorId}",
+                """
+
+                ====================================
+                PUBLISHING APPOINTMENT EVENT
+                ====================================
+
+                Event Type    : AppointmentBookedEvent
+                AppointmentId : {AppointmentId}
+                Patient       : {PatientName}
+                Doctor Id     : {DoctorId}
+                Date          : {Date}
+                Time Slot     : {TimeSlot}
+
+                ====================================
+
+                """,
                 appointmentBookedEvent.AppointmentId,
-                appointmentBookedEvent.DoctorId);
+                appointmentBookedEvent.PatientName,
+                appointmentBookedEvent.DoctorId,
+                appointmentBookedEvent.ScheduledDate.ToString("yyyy-MM-dd"),
+                appointmentBookedEvent.TimeSlot);
 
             await _publishEndpoint.Publish(
                 appointmentBookedEvent,
                 ct);
 
             _logger.LogInformation(
-                "AppointmentBookedEvent published successfully for AppointmentId {AppointmentId}",
-                appointmentBookedEvent.AppointmentId);
+                """
+
+                ====================================
+                APPOINTMENT EVENT PUBLISHED
+                ====================================
+
+                AppointmentId : {AppointmentId}
+                Doctor Id     : {DoctorId}
+
+                ====================================
+
+                """,
+                appointmentBookedEvent.AppointmentId,
+                appointmentBookedEvent.DoctorId);
 
             return await MapAppointmentWithNamesAsync(
                 createdAppointment,
@@ -378,7 +439,9 @@ namespace HealthAxis.API.Services
             string startTime =
                 timeSlot.Split('-')[0];
 
-            if (!TimeSpan.TryParse(startTime, out TimeSpan slotStartTime))
+            if (!TimeSpan.TryParse(
+                    startTime,
+                    out TimeSpan slotStartTime))
             {
                 return true;
             }
