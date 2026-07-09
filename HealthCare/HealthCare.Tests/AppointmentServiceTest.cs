@@ -11,6 +11,7 @@ using Healthcare.Shared.DTOs.Appointments;
 using HealthCare.Api.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using MassTransit;
 
 namespace HealthCare.Api.Tests
 {
@@ -19,6 +20,7 @@ namespace HealthCare.Api.Tests
         private readonly Mock<IAppointmentRepository> _repoMock;
         private readonly Mock<IDoctorService> _doctorServiceMock;
         private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<IPublishEndpoint> _publishEndpointMock;
         private readonly HealthCareDbContext _context;
         private readonly AppointmentService _service;
 
@@ -27,6 +29,7 @@ namespace HealthCare.Api.Tests
             _repoMock = new Mock<IAppointmentRepository>();
             _doctorServiceMock = new Mock<IDoctorService>();
             _mapperMock = new Mock<IMapper>();
+            _publishEndpointMock = new Mock<IPublishEndpoint>();
 
             var options = new DbContextOptionsBuilder<HealthCareDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -38,7 +41,8 @@ namespace HealthCare.Api.Tests
                 _repoMock.Object,
                 _doctorServiceMock.Object,
                 _context,
-                _mapperMock.Object
+                _mapperMock.Object,
+                _publishEndpointMock.Object
             );
         }
 

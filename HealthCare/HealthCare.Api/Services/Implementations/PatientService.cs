@@ -85,6 +85,13 @@ namespace HealthCare.Api.Services.Implementations
                     query = query.Where(p => p.InsuranceId == null);
             }
 
+
+            // Status Filter
+            if (filter.IsActive.HasValue)
+            {
+                query = query.Where(p => p.IsActive == filter.IsActive.Value);
+            }
+
             //  Filter by Name
             if (!string.IsNullOrWhiteSpace(filter.FullName))
             {

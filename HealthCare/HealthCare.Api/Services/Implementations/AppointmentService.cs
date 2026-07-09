@@ -9,6 +9,7 @@ using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Linq.Expressions;
 
 namespace HealthCare.Api.Services.Implementations
@@ -20,19 +21,21 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IMapper _mapper;
         private readonly HealthCareDbContext _context;
         private readonly IPublishEndpoint _publishEndpoint;
-
+        private readonly IDistributedCache _cache;
         public AppointmentService(
             IAppointmentRepository repository, 
             IDoctorService doctorService, 
             HealthCareDbContext context, 
             IMapper mapper,
-            IPublishEndpoint publishEndpoint)
+            IPublishEndpoint publishEndpoint,
+            IDistributedCache cache)
         {
             _repository = repository;
             _doctorService = doctorService;
             _context = context;
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
+            _cache = cache;
         }
 
         public async Task AddAsync(CreateAppointmentDto dto, int patientId)
@@ -156,6 +159,7 @@ namespace HealthCare.Api.Services.Implementations
 
             await _repository.UpdateAsync(appointment);
             await _context.SaveChangesAsync();
+            await InvalidateAvailabilityCache(appointment.Doctor.Specialisation, appointment.ScheduledDate);
         }
         public async Task<List<string>> AvailableTimeSlots(DateOnly date, int doctorId)
         {
@@ -248,6 +252,11 @@ namespace HealthCare.Api.Services.Implementations
 
                 TotalRevenue = revenue
             };
+        }
+        private async Task InvalidateAvailabilityCache(string specialisation, DateOnly date)
+        {
+            await _cache.RemoveAsync($"doctor-availability:{specialisation}:{date:yyyy-MM-dd}");
+
         }
     }
 }

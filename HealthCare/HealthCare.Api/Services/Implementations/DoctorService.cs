@@ -7,8 +7,11 @@ using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
-using System.Linq.Expressions;
 using  Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
+using System.Linq.Expressions;
+using System.Text.Json;
 
 namespace HealthCare.Api.Services.Implementations
 {
@@ -18,13 +21,14 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly HealthCareDbContext _context;
         private readonly IMapper _mapper;
-
-        public DoctorService(IDoctorRepository repository, HealthCareDbContext context, IMapper mapper, IAppointmentRepository appointmentRepository)
+        private readonly IDistributedCache _cache;
+        public DoctorService(IDoctorRepository repository, HealthCareDbContext context, IMapper mapper, IAppointmentRepository appointmentRepository,IDistributedCache distributedCache)
         {
             _repository = repository;
             _context = context;
             _mapper = mapper;
             _appointmentRepository = appointmentRepository;
+            _cache = distributedCache;
         }
 
         public async Task AddAsync(DoctorRegisterDto dto)
@@ -131,6 +135,11 @@ namespace HealthCare.Api.Services.Implementations
         {
             await _repository.CreateSlots(id, timeslots);
             await _context.SaveChangesAsync();
+
+            var doctor= await _repository.GetProfileAsync(id);
+
+            if (doctor is not null)
+                await InvalidateAvailabilityCache(doctor.Specialisation, DateOnly.FromDateTime(DateTime.Today));
         }
 
         public async Task<List<string>> AvailableTimeSlotsCheck(DateOnly date, int doctorId)
@@ -164,9 +173,7 @@ namespace HealthCare.Api.Services.Implementations
 
                     await _appointmentRepository.CancelAppointmentsByDoctorDate(id, leave.LeaveDate);
                     await _context.SaveChangesAsync();
-
                 }
-
                 leavesToCreate.Add(leave);
             }
 
@@ -174,6 +181,12 @@ namespace HealthCare.Api.Services.Implementations
             {
                 await _repository.CreateLeaves(id, leavesToCreate);
                 await _context.SaveChangesAsync();
+
+                var doctor = await _repository.GetProfileAsync(id);
+                if(doctor != null)
+
+                 foreach (var leave in leavesToCreate)
+                    await InvalidateAvailabilityCache(doctor.Specialisation,leave.LeaveDate);
             }
 
             return result;
@@ -219,9 +232,33 @@ namespace HealthCare.Api.Services.Implementations
             return doctor;
         }
 
-        public async Task<List<DoctorListDto>> AvailableDoctors(string specialisation, DateOnly date) =>
-            await _repository.AvailableDoctors(specialisation, date);
+        public async Task<List<DoctorListDto>> AvailableDoctors(string specialisation, DateOnly date)
+        {
+            var cachedKey = $"doctor-availablity:{specialisation}_{date.ToString("yyyy-MM-dd")}";
+            var cachedData = await _cache.GetStringAsync(cachedKey);
 
+            if (!string.IsNullOrEmpty(cachedData))
+                return JsonSerializer.Deserialize<List<DoctorListDto>>(cachedData)!;
+                
+            var doctors= await _repository.AvailableDoctors(specialisation, date);
+
+            await _cache.SetStringAsync(cachedKey, JsonSerializer.Serialize(doctors), new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            });
+
+            return doctors;
+        }
+
+        private async Task InvalidateAvailabilityCache(string specialisation,DateOnly date)
+        { 
+            await _cache.RemoveAsync($"doctor-availability:{specialisation}:{date:yyyy-MM-dd}");
+
+        }
 
     }
+            
+
+
+    
 }

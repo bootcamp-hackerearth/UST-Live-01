@@ -101,9 +101,10 @@
 
                     <!-- ✅ Insurance Badge -->
                     <td>
-                        <span class="badge @(p.HasInsurance ? "bg-success" : "bg-secondary")">
-                            @(p.HasInsurance ? "Insured" : "No Insurance")
+                       <span class="badge @(p.HasInsurance ? "bg-success" : "bg-secondary")">
+                           @(p.HasInsurance ? "Insured" : "No Insurance")
                         </span>
+
                     </td>
                     
                     @* Status *@
@@ -115,14 +116,7 @@
 
 
                     <!-- ✅ ACTIONS -->
-                    <td class="text-end">
-                        <!-- Toggle Insurance -->
-                        <button class="btn btn-sm btn-outline-primary me-1"
-                                @onclick="() => ToggleInsurance(p)">
-                            🔄
-                        </button>
-
-                        
+                    <td class="text-end">            
                         <!-- Toggle Status -->
                         <button class="btn btn-sm @(p.IsActive ? "btn-outline-success" : "btn-outline-danger") me-1"
                                 @onclick="() => ToggleStatus(p)">
@@ -259,12 +253,6 @@
             _currentPage--;
             await LoadPatients();
         }
-    }
-
-    private async Task ToggleInsurance(PatientListDto patient)
-    {
-        await PatientService.UpdateInsuranceStatus(patient.PatientId, !patient.HasInsurance);
-        await LoadPatients();
     }
     
     private async Task ToggleStatus(PatientListDto patient)

@@ -125,10 +125,11 @@
                                 Delete
                             </button>
 
-                            <button class="btn btn-sm btn-outline-secondary"
+                            <button class="btn btn-sm @(doc.IsActive ? "btn-outline-success" : "btn-outline-danger")"
                                     @onclick="() => ToggleStatus(doc)">
-                                Toggle
+                                Status
                             </button>
+
 
                     </td>
                 </tr>

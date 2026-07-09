@@ -71,7 +71,7 @@ export class BookAppointmentComponent {
 
   if (!spec || !date) return;
 
-  const formatted = new Date(date).toISOString().split('T')[0];
+  const formatted = this.formatDateForApi(date);
 
   this.doctorService
     .getAvailableDoctors(spec, formatted)
@@ -95,23 +95,19 @@ loadSlots() {
 
   if (!doctorId || !date) return;
 
-  const formatted = new Date(date).toISOString().split('T')[0];
-  const today = new Date().toISOString().split('T')[0];
-  const currentTime = this.getCurrentTime();
+  const formatted = this.formatDateForApi(date);
+  const today = this.formatDateForApi(new Date());
+  const currentMinutes = this.getCurrentTimeInMinutes();
 
   this.appointmentService
     .getAvailableSlots(doctorId, formatted)
     .subscribe(res => {
 
-      //  FILTER only if today
+      // Filter only for today so past slots are hidden
       if (formatted === today) {
-
-        this.slots = res.filter(slot => {
-          return slot >= currentTime; 
-        });
-
+        this.slots = res.filter(slot => this.parseSlotToMinutes(slot) >= currentMinutes);
       } else {
-        this.slots = res; 
+        this.slots = res;
       }
 
       this.form.get('timeSlot')?.enable();
@@ -146,9 +142,40 @@ loadSlots() {
     });
 }
 
-getCurrentTime(): string {
-  const now = new Date();
+private formatDateForApi(value: string | Date): string {
+  const date = value instanceof Date ? value : new Date(value);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
 
-  return now.toTimeString().slice(0, 5); // "HH:mm"
+  return `${year}-${month}-${day}`;
+}
+
+private parseSlotToMinutes(slot: string): number {
+  const normalized = slot.trim().toUpperCase();
+  const match = normalized.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/);
+
+  if (!match) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  let hours = Number(match[1]);
+  const minutes = Number(match[2] ?? '0');
+  const suffix = match[3];
+
+  if (suffix === 'PM' && hours < 12) {
+    hours += 12;
+  }
+
+  if (suffix === 'AM' && hours === 12) {
+    hours = 0;
+  }
+
+  return hours * 60 + minutes;
+}
+
+private getCurrentTimeInMinutes(): number {
+  const now = new Date();
+  return now.getHours() * 60 + now.getMinutes();
 }
 }

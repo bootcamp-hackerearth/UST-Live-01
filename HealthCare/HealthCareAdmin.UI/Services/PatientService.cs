@@ -37,10 +37,7 @@ namespace HealthCareAdmin.UI.Services
             await _http.DeleteAsync($"api/admin/patients/{id}");
         }
 
-        public async Task UpdateInsuranceStatus(int id, bool status)
-        {
-            await _http.PatchAsJsonAsync($"api/admin/patients/{id}/insurance", status);
-        }
+ 
 
         public async Task UpdateStatus(int id, bool status)
         {

@@ -2,6 +2,7 @@ using HealthCare.Api.Consumers;
 using HealthCare.Api.Data;
 using HealthCare.Api.Mapping;
 using HealthCare.Api.Middleware;
+using HealthCare.Api.Options;
 using HealthCare.Api.Repositories.Implementations;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services;
@@ -81,8 +82,8 @@ namespace HealthCare.Api
                 });
 
                 //Hosted Servive
-               // builder.Services.AddHostedService<HeartbeatService>();
                 builder.Services.AddHostedService<NotificationCleanupService>();
+           
                 //Exception Handler
                 builder.Services.AddProblemDetails();
                 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -158,6 +159,14 @@ namespace HealthCare.Api
                 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
                 builder.Services.AddEndpointsApiExplorer();
 
+                //cache
+                builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection("Garnet"));
+                builder.Services.AddStackExchangeRedisCache(options =>
+                {
+                    var garnetOptions = builder.Configuration.GetSection("Garnet").Get<GarnetOptions>() ?? new GarnetOptions();
+                    options.Configuration = garnetOptions.ConnectionString;
+                    options.InstanceName = garnetOptions.InstanceName;
+                });
 
                 //swagger
 
