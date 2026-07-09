@@ -5,6 +5,7 @@ using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Impl;
 using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
+using MassTransit;
 using Moq;
 using Xunit;
 
@@ -17,6 +18,7 @@ namespace HealthApp.Api.Tests.Services
         private readonly Mock<IDoctorRepository> _doctorRepo;
         private readonly Mock<IMapper> _mapper;
         private readonly AppointmentService _service;
+        private readonly Mock<IPublishEndpoint> _publishEndpoint;
 
         public AppointmentServiceTests()
         {
@@ -24,12 +26,14 @@ namespace HealthApp.Api.Tests.Services
             _patientRepo = new Mock<IPatientRepository>();
             _doctorRepo = new Mock<IDoctorRepository>();
             _mapper = new Mock<IMapper>();
+            _publishEndpoint = new Mock<IPublishEndpoint>();
 
             _service = new AppointmentService(
                 _appointmentRepo.Object,
                 _patientRepo.Object,
                 _doctorRepo.Object,
-                _mapper.Object
+                _mapper.Object,
+                _publishEndpoint.Object
             );
         }
 

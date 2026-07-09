@@ -133,6 +133,14 @@ namespace HealthApp.Api.Services.Impl
                 throw new EntityNotFoundException("Patient", dto.PatientId);
             }
 
+            var patientUserId = await _patientRepository.GetPatientUserIdAsync(dto.PatientId);
+
+            if (string.IsNullOrWhiteSpace(patientUserId))
+            {
+                throw new BusinessRuleViolationException(
+                    "Patient user account is not linked.");
+            }
+
             var doctor = await _doctorRepository.GetByIdAsync(dto.DoctorId);
 
             if (doctor == null)
@@ -200,6 +208,7 @@ namespace HealthApp.Api.Services.Impl
             var appointmentBookedEvent = new AppointmentBookedEvent(
                 createdAppointment.AppointmentId,
                 createdAppointment.PatientId,
+                patientUserId,
                 patient.FullName ?? string.Empty,
                 createdAppointment.DoctorId,
                 doctor.FullName ?? string.Empty,

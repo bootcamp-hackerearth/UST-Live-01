@@ -71,5 +71,15 @@ namespace HealthApp.Api.Repositories.Impl
                     p.Email == email,
                     ct);
         }
+
+        public async Task<string?> GetPatientUserIdAsync(
+            int patientId,
+            CancellationToken ct = default)
+        {
+            return await _context.Users
+                .Where(user => user.PatientId == patientId)
+                .Select(user => user.Id)
+                .FirstOrDefaultAsync(ct);
+        }
     }
 }

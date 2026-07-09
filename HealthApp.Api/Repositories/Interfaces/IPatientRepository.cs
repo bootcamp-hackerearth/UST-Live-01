@@ -16,5 +16,9 @@ namespace HealthApp.Api.Repositories.Interfaces
             DateTime dob,
             string email,
             CancellationToken ct = default);
+
+        Task<string?> GetPatientUserIdAsync(
+            int patientId,
+            CancellationToken ct = default);
     }
 }

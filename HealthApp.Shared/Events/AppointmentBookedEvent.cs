@@ -3,6 +3,7 @@
     public record AppointmentBookedEvent(
         int AppointmentId,
         int PatientId,
+        string PatientUserId,
         string PatientName,
         int DoctorId,
         string DoctorName,
