@@ -241,14 +241,12 @@ namespace HealthCare.Api.Services.Implementations
 
             if (!string.IsNullOrEmpty(cachedData))
             {
-                _logger.LogInformation("###############################/n");
                 _logger.LogInformation("CACHE HIT: {CacheKey}", cachedKey);
-                _logger.LogInformation("###############################/n");
+                _logger.LogInformation("###############################\n");
                 return JsonSerializer.Deserialize<List<DoctorListDto>>(cachedData)!;
             }
-            _logger.LogInformation("##################################/n");
             _logger.LogInformation("CACHE MISS: {CacheKey}", cachedKey);
-            _logger.LogInformation("##################################/n");
+            _logger.LogInformation("##################################\n");
 
             var doctors= await _repository.AvailableDoctors(specialisation, date);
 
@@ -256,9 +254,8 @@ namespace HealthCare.Api.Services.Implementations
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
             });
-            _logger.LogInformation("#################################/n");
             _logger.LogInformation("CACHE SET: {CacheKey}", cachedKey);
-            _logger.LogInformation("#################################/n");
+            _logger.LogInformation("#################################\n");
 
             return doctors;
         }

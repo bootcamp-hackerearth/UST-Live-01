@@ -53,9 +53,11 @@ namespace HealthCare.Api.Services.Implementations
             await _repository.AddAsync(appointment);
 
             await _context.SaveChangesAsync();
-            _logger.LogInformation("****************** DATABASE *******************/n");
+            await InvalidateAvailabilityCache(appointment.Doctor.Specialisation, appointment.ScheduledDate);
+            _logger.LogInformation("****************** DATABASE *******************\n");
             _logger.LogInformation("Appointment created. AppointmentId={AppointmentId}, PatientId={PatientId}, DoctorId={DoctorId}",appointment.AppointmentId,patientId, appointment.DoctorId);
-            _logger.LogInformation("***********************************************/n");
+            _logger.LogInformation("***********************************************\n");
+
 
 
             // Publish AppointmentBookedEvent
@@ -99,9 +101,9 @@ namespace HealthCare.Api.Services.Implementations
 
             await _repository.UpdateAsync(appointment);
             await _context.SaveChangesAsync();
-            _logger.LogInformation("****************** DATABASE *******************/n");
+            _logger.LogInformation("****************** DATABASE *******************\n");
             _logger.LogInformation("Appointment {AppointmentId} updated", appointment.AppointmentId);
-            _logger.LogInformation("***********************************************/n");
+            _logger.LogInformation("***********************************************\n");
         }
 
         public async Task DeleteAsync(int id)
@@ -112,9 +114,9 @@ namespace HealthCare.Api.Services.Implementations
                 throw new AppointmentNotFoundException(id);
             await _repository.DeleteAsync(id);
             await _context.SaveChangesAsync();
-            _logger.LogInformation("****************** DATABASE *******************/n");
+            _logger.LogInformation("****************** DATABASE *******************\n");
             _logger.LogWarning("Appointment {AppointmentId} cancelled",appointment.AppointmentId);
-            _logger.LogInformation("***********************************************/n");
+            _logger.LogInformation("***********************************************\n");
         }
 
         public async Task<AppointmentListDto?> GetByIdAsync(int id)
