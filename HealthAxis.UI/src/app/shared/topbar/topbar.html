@@ -40,7 +40,6 @@
 
         <div>
           <strong>{{ authService.role() }}</strong>
-          <small>Account</small>
         </div>
 
         <span class="dropdown-arrow">
@@ -69,15 +68,3 @@
     </div>
   </div>
 </header>
-
-@if (statusMessage()) {
-  <div class="doctor-status-message success">
-    {{ statusMessage() }}
-  </div>
-}
-
-@if (statusError()) {
-  <div class="doctor-status-message error">
-    {{ statusError() }}
-  </div>
-}

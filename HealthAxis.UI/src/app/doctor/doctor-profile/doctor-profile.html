@@ -5,14 +5,20 @@
         ← Back to Dashboard
       </a>
 
-      <p>Doctor Account</p>
+      
       <h1>My Profile</h1>
 
       <span>
-        View your doctor information and update your password securely.
+        View your doctor information and manage your availability.
       </span>
     </div>
   </section>
+
+  @if (loading()) {
+    <div class="alert loading">
+      Loading doctor profile...
+    </div>
+  }
 
   @if (errorMessage()) {
     <div class="alert error">{{ errorMessage() }}</div>
@@ -22,41 +28,48 @@
     <div class="alert success">{{ successMessage() }}</div>
   }
 
+  @if (statusErrorMessage()) {
+    <div class="alert error">{{ statusErrorMessage() }}</div>
+  }
+
+  @if (statusSuccessMessage()) {
+    <div class="alert success">{{ statusSuccessMessage() }}</div>
+  }
+
   <section class="profile-grid">
-    <article class="doctor-card">
+    <article class="doctor-summary-card">
       <div class="avatar-circle">
         {{ doctor()?.fullName?.charAt(0) || 'D' }}
       </div>
 
       <h2>Dr. {{ doctor()?.fullName || 'Doctor' }}</h2>
-      <p>{{ doctor()?.specialisation || 'Specialist' }}</p>
 
-      <div class="detail-list">
-        <div>
-          <span>Doctor ID</span>
-          <strong>#{{ doctor()?.doctorId || '-' }}</strong>
-        </div>
+      <p class="doctor-specialisation">
+        {{ doctor()?.specialisation || 'Specialist' }}
+      </p>
 
-        <div>
-          <span>Specialisation</span>
-          <strong>{{ doctor()?.specialisation || '-' }}</strong>
-        </div>
+      
 
-        <div>
-          <span>Experience</span>
-          <strong>{{ doctor()?.yearsOfExperience || 0 }} years</strong>
-        </div>
+      <span
+        class="status-badge"
+        [class.inactive]="!doctor()?.isActive"
+      >
+        {{ doctor()?.isActive ? 'Currently Active' : 'Currently Inactive' }}
+      </span>
 
-        <div>
-          <span>Consultation Fee</span>
-          <strong>₹{{ doctor()?.consultationFee || 0 }}</strong>
-        </div>
-
-        <div>
-          <span>Status</span>
-          <strong>{{ doctor()?.isActive ? 'Active' : 'Inactive' }}</strong>
-        </div>
-      </div>
+      <button
+        type="button"
+        class="status-toggle-button"
+        [class.inactive]="doctor()?.isActive"
+        [disabled]="updatingStatus() || !doctor()"
+        (click)="toggleDoctorStatus()"
+      >
+        @if (updatingStatus()) {
+          Updating...
+        } @else {
+          {{ doctor()?.isActive ? 'Set Inactive' : 'Set Active' }}
+        }
+      </button>
     </article>
 
     <article class="details-card">
@@ -66,6 +79,11 @@
       </div>
 
       <div class="readonly-grid">
+        <div>
+          <span>Doctor ID</span>
+          <strong>#{{ doctor()?.doctorId || '-' }}</strong>
+        </div>
+
         <div>
           <span>Full Name</span>
           <strong>Dr. {{ doctor()?.fullName || '-' }}</strong>
@@ -90,18 +108,17 @@
           <span>Account Status</span>
           <strong>{{ doctor()?.isActive ? 'Active' : 'Inactive' }}</strong>
         </div>
-
-
       </div>
     </article>
   </section>
 
   <section class="password-card" id="change-password">
     <div class="section-title">
-      <span>Security</span>
+      
       <h2>Change Password</h2>
       <p>
-        Use the temporary password given by admin as your current password, then set a strong new password.
+        Use the temporary password given by admin as your current password,
+        then set a strong new password.
       </p>
     </div>
 
@@ -137,7 +154,7 @@
             id="newPassword"
             type="password"
             formControlName="newPassword"
-            placeholder="Enter New Password"
+            placeholder="Enter new password"
           />
 
           @if (newPassword.invalid && newPassword.touched) {
@@ -155,7 +172,7 @@
             id="confirmPassword"
             type="password"
             formControlName="confirmPassword"
-            placeholder="Re-enter New password"
+            placeholder="Re-enter new password"
           />
 
           @if (passwordForm.errors?.['passwordMismatch'] && confirmPassword.touched) {

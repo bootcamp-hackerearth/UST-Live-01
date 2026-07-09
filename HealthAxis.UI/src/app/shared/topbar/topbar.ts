@@ -31,19 +31,35 @@ export class Topbar implements OnDestroy {
 
   readonly isDoctorActive = signal(true);
   readonly statusUpdating = signal(false);
-  readonly statusMessage = signal('');
-  readonly statusError = signal('');
 
   private readonly timerId = window.setInterval(() => {
     this.currentTime.set(new Date());
   }, 1000);
 
+  private readonly doctorStatusChangedHandler = (event: Event): void => {
+    const customEvent = event as CustomEvent<{ isActive: boolean }>;
+
+    if (typeof customEvent.detail?.isActive === 'boolean') {
+      this.isDoctorActive.set(customEvent.detail.isActive);
+    }
+  };
+
   constructor() {
     this.loadDoctorStatus();
+
+    window.addEventListener(
+      'doctor-status-changed',
+      this.doctorStatusChangedHandler
+    );
   }
 
   ngOnDestroy(): void {
     window.clearInterval(this.timerId);
+
+    window.removeEventListener(
+      'doctor-status-changed',
+      this.doctorStatusChangedHandler
+    );
   }
 
   @HostListener('document:click')
@@ -115,28 +131,34 @@ export class Topbar implements OnDestroy {
     const nextStatus = !this.isDoctorActive();
 
     this.statusUpdating.set(true);
-    this.statusMessage.set('');
-    this.statusError.set('');
 
     this.doctorService.updateMyStatus(nextStatus).subscribe({
       next: (response) => {
         this.statusUpdating.set(false);
         this.isDoctorActive.set(response.isActive);
-        this.statusMessage.set(response.message);
 
-        window.setTimeout(() => {
-          this.statusMessage.set('');
-        }, 2500);
+        window.dispatchEvent(
+          new CustomEvent('doctor-status-changed', {
+            detail: {
+              isActive: response.isActive,
+              message: response.message
+            }
+          })
+        );
       },
       error: (error: unknown) => {
         this.statusUpdating.set(false);
-        this.statusError.set(
-          getFriendlyErrorMessage(error, 'Could not update doctor status.')
-        );
 
-        window.setTimeout(() => {
-          this.statusError.set('');
-        }, 3000);
+        window.dispatchEvent(
+          new CustomEvent('doctor-status-update-failed', {
+            detail: {
+              message: getFriendlyErrorMessage(
+                error,
+                'Could not update doctor status.'
+              )
+            }
+          })
+        );
       }
     });
   }

@@ -6,6 +6,8 @@ using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Implementation;
 using HealthAxis.Shared.DTO.DoctorDtos;
 using HealthAxis.Shared.Enums;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace HealthAxis.API.Tests.Services
@@ -15,11 +17,15 @@ namespace HealthAxis.API.Tests.Services
         private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly DoctorService _service;
+        private readonly Mock<IDistributedCache> _distributedCacheMock;
+        private readonly Mock<ILogger<DoctorService>> _loggerMock;
 
         public DoctorServiceTests()
         {
             _doctorRepositoryMock = new Mock<IDoctorRepository>();
             _mapperMock = new Mock<IMapper>();
+            _distributedCacheMock = new Mock<IDistributedCache>();
+            _loggerMock = new Mock<ILogger<DoctorService>>();
 
             _mapperMock
                 .Setup(mapper => mapper.Map<DoctorDto>(It.IsAny<Doctor>()))
@@ -33,9 +39,13 @@ namespace HealthAxis.API.Tests.Services
                     return doctors.Select(MapDoctorDto).ToList();
                 });
 
+           
+
             _service = new DoctorService(
                 _doctorRepositoryMock.Object,
-                _mapperMock.Object);
+                _mapperMock.Object, 
+                _distributedCacheMock.Object,
+                _loggerMock.Object);
         }
 
         [Fact]

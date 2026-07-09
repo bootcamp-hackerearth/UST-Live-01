@@ -225,15 +225,22 @@ namespace HealthAxis.API.Controller
 
         [HttpGet("{id}/availability")]
         [Authorize(Roles = "Patient,Admin")]
-        public async Task<IActionResult> GetDoctorAvailability(int id)
+        public async Task<IActionResult> GetDoctorAvailability(
+    int id,
+    [FromQuery] DateTime? date)
         {
-            var doctor = await _doctorService.GetAvailabilityAsync(id);
+            var availabilityDate = (date ?? DateTime.Today).Date;
+
+            var doctor = await _doctorService.GetAvailabilityAsync(
+                id,
+                availabilityDate);
 
             return Ok(new
             {
                 doctor.DoctorId,
                 doctor.FullName,
                 doctor.IsActive,
+                Date = availabilityDate,
                 Message = doctor.IsActive
                     ? "Doctor is available"
                     : "Doctor is not available"

@@ -1,12 +1,16 @@
 using HealthAxis.API.BackgroundServices;
+using HealthAxis.API.Consumers;
 using HealthAxis.API.Data;
 using HealthAxis.API.Mappings;
+using HealthAxis.API.Messaging;
 using HealthAxis.API.Middlewares;
 using HealthAxis.API.Repositories.Implementations;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services;
 using HealthAxis.API.Services.Implementation;
 using HealthAxis.API.Services.Interfaces;
+using HealthAxis.API.Options;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -168,6 +172,40 @@ try
 
     builder.Services.AddScoped<IAuthService, AuthService>();
 
+    builder.Services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
+
+    builder.Services.AddMassTransit(configuration =>
+    {
+        configuration.AddConsumer<AppointmentBookedConsumer>();
+
+        configuration.UsingRabbitMq((context, rabbitMqConfig) =>
+        {
+            var rabbitMqSection = context
+                .GetRequiredService<IConfiguration>()
+                .GetSection("RabbitMq");
+
+            var hostName = rabbitMqSection["HostName"] ?? "localhost";
+            var virtualHost = rabbitMqSection["VirtualHost"] ?? "/";
+            var userName = rabbitMqSection["UserName"] ?? "guest";
+            var password = rabbitMqSection["Password"] ?? "guest";
+
+            var appointmentBookedQueue =
+                rabbitMqSection["AppointmentBookedQueue"]
+                ?? "healthaxis.appointment.booked.queue";
+
+            rabbitMqConfig.Host(hostName, virtualHost, host =>
+            {
+                host.Username(userName);
+                host.Password(password);
+            });
+
+            rabbitMqConfig.ReceiveEndpoint(appointmentBookedQueue, endpoint =>
+            {
+                endpoint.ConfigureConsumer<AppointmentBookedConsumer>(context);
+            });
+        });
+    });
+
     builder.Services.AddHostedService<HeartbeatService>();
     builder.Services.AddHostedService<NotificationCleanupService>();
 
@@ -198,6 +236,16 @@ try
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
+    });
+
+    builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection("Garnet"));
+
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        var garnetOptions = builder.Configuration.GetSection("Garnet").Get<GarnetOptions>() ?? new GarnetOptions();
+
+        options.Configuration = garnetOptions.ConnectionString;
+        options.InstanceName = garnetOptions.InstanceName;
     });
 
     var app = builder.Build();

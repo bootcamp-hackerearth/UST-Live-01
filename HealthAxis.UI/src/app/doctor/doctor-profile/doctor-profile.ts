@@ -29,9 +29,12 @@ export class DoctorProfile {
   readonly doctor = signal<Doctor | null>(null);
   readonly loading = signal(false);
   readonly changingPassword = signal(false);
+  readonly updatingStatus = signal(false);
 
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
+  readonly statusErrorMessage = signal('');
+  readonly statusSuccessMessage = signal('');
   readonly passwordErrorMessage = signal('');
   readonly passwordSuccessMessage = signal('');
 
@@ -73,6 +76,8 @@ export class DoctorProfile {
     this.loading.set(true);
     this.errorMessage.set('');
     this.successMessage.set('');
+    this.statusErrorMessage.set('');
+    this.statusSuccessMessage.set('');
 
     this.doctorService.getMyDoctorProfile().subscribe({
       next: (doctor) => {
@@ -83,6 +88,40 @@ export class DoctorProfile {
         this.loading.set(false);
         this.errorMessage.set(
           getFriendlyErrorMessage(error, 'Could not load doctor profile.')
+        );
+      }
+    });
+  }
+
+  toggleDoctorStatus(): void {
+    const currentDoctor = this.doctor();
+
+    this.statusErrorMessage.set('');
+    this.statusSuccessMessage.set('');
+
+    if (!currentDoctor) {
+      this.statusErrorMessage.set('Doctor profile is not loaded.');
+      return;
+    }
+
+    const newStatus = !currentDoctor.isActive;
+
+    this.updatingStatus.set(true);
+
+    this.doctorService.updateMyStatus(newStatus).subscribe({
+      next: (response) => {
+        this.doctor.set({
+          ...currentDoctor,
+          isActive: response.isActive
+        });
+
+        this.updatingStatus.set(false);
+        this.statusSuccessMessage.set(response.message);
+      },
+      error: (error: unknown) => {
+        this.updatingStatus.set(false);
+        this.statusErrorMessage.set(
+          getFriendlyErrorMessage(error, 'Could not update availability status.')
         );
       }
     });

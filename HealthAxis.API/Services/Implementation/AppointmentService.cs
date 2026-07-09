@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using HealthAxis.API.Events;
 using HealthAxis.API.Exceptions;
+using HealthAxis.API.Messaging;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
 using HealthAxis.Shared.DTO.AppointmentDtos;
+using Microsoft.Extensions.Caching.Distributed;
 using HealthAxis.Shared.Enums;
 using System.Globalization;
 
@@ -14,7 +17,8 @@ namespace HealthAxis.API.Services.Implementation
         IPatientRepository patientRepository,
         IDoctorRepository doctorRepository,
         IMapper mapper,
-        ILogger<AppointmentService> logger) : IAppointmentService
+        ILogger<AppointmentService> logger,
+        IEventPublisher eventPublisher, IDistributedCache distributedCache) : IAppointmentService
     {
         private static readonly HashSet<string> AllowedTimeSlots =
             new(StringComparer.OrdinalIgnoreCase)
@@ -135,9 +139,17 @@ namespace HealthAxis.API.Services.Implementation
 
             var savedAppointment = await appointmentRepository.AddAsync(
                 appointment);
+            await InvalidateDoctorAvailabilityCacheAsync(savedAppointment);
 
-            LogAppointmentBookedEvent(savedAppointment, patient.FullName,
-    doctor.FullName);
+            var appointmentBookedEvent = CreateAppointmentBookedEvent(
+                savedAppointment,
+                patient.FullName,
+                doctor.FullName);
+
+            LogAppointmentBookedEvent(appointmentBookedEvent);
+
+            await eventPublisher.PublishAppointmentBookedAsync(
+                appointmentBookedEvent);
 
             return await MapAppointmentAsync(savedAppointment);
         }
@@ -212,34 +224,67 @@ namespace HealthAxis.API.Services.Implementation
             return await MapAppointmentAsync(deletedAppointment);
         }
 
+        private static AppointmentBookedEvent CreateAppointmentBookedEvent(
+            Appointment appointment,
+            string patientName,
+            string doctorName)
+        {
+            return new AppointmentBookedEvent
+            {
+                EventType = "AppointmentBooked",
+                PatientId = appointment.PatientId,
+                PatientName = patientName,
+                DoctorName = doctorName,
+                DoctorId = appointment.DoctorId,
+                AppointmentId = appointment.AppointmentId,
+                ScheduledDate = appointment.ScheduledDate,
+                TimeSlot = appointment.TimeSlot,
+                Status = appointment.Status.ToString(),
+                OccurredAt = DateTime.UtcNow
+            };
+        }
+
+        private async Task InvalidateDoctorAvailabilityCacheAsync(
+    Appointment appointment)
+        {
+            var cacheKey =
+                $"doctors:{appointment.DoctorId}:availability:{appointment.ScheduledDate:yyyy-MM-dd}";
+
+            await distributedCache.RemoveAsync(cacheKey);
+
+            logger.LogInformation(
+                "Doctor availability Garnet cache invalidated after appointment booking. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+                appointment.DoctorId,
+                appointment.ScheduledDate.Date,
+                cacheKey);
+        }
+
         private void LogAppointmentBookedEvent(
-     Appointment appointment,
-     string patientName,
-     string doctorName)
+            AppointmentBookedEvent appointmentBookedEvent)
         {
             logger.LogInformation(
                 """
-        ┌──────────────────────────────────────────────────────────────┐
-        │                    HEALTHAXIS EVENT LOG                      │
-        ├──────────────────────────────────────────────────────────────┤
-        │ Event Type      : {EventType}
-        │ Patient Name    : {PatientName}
-        │ Doctor Name     : {DoctorName}
-        │ Doctor ID       : {DoctorId}
-        │ Appointment ID  : {AppointmentId}
-        │ Scheduled Date  : {ScheduledDate:yyyy-MM-dd}
-        │ Time Slot       : {TimeSlot}
-        │ Status          : {Status}
-        └──────────────────────────────────────────────────────────────┘
-        """,
-                "AppointmentBooked",
-                patientName,
-                doctorName,
-                appointment.DoctorId,
-                appointment.AppointmentId,
-                appointment.ScheduledDate,
-                appointment.TimeSlot,
-                appointment.Status);
+                ┌──────────────────────────────────────────────────────────────┐
+                │                    HEALTHAXIS EVENT LOG                      │
+                ├──────────────────────────────────────────────────────────────┤
+                │ Event Type      : {EventType}
+                │ Patient Name    : {PatientName}
+                │ Doctor Name     : {DoctorName}
+                │ Doctor ID       : {DoctorId}
+                │ Appointment ID  : {AppointmentId}
+                │ Scheduled Date  : {ScheduledDate:yyyy-MM-dd}
+                │ Time Slot       : {TimeSlot}
+                │ Status          : {Status}
+                └──────────────────────────────────────────────────────────────┘
+                """,
+                appointmentBookedEvent.EventType,
+                appointmentBookedEvent.PatientName,
+                appointmentBookedEvent.DoctorName,
+                appointmentBookedEvent.DoctorId,
+                appointmentBookedEvent.AppointmentId,
+                appointmentBookedEvent.ScheduledDate,
+                appointmentBookedEvent.TimeSlot,
+                appointmentBookedEvent.Status);
         }
 
         private async Task<List<AppointmentDto>> MapAppointmentListAsync(
