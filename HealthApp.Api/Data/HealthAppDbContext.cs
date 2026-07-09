@@ -20,6 +20,8 @@ namespace HealthApp.Api.Data
 
         public DbSet<HealthRecord> HealthRecords { get; set; }
 
+        public DbSet<Notification> Notifications { get; set; }
+
         protected override void OnModelCreating(
             ModelBuilder builder)
         {
