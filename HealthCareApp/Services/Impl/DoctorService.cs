@@ -2,6 +2,7 @@
 using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
+using HealthCareApp.Services.Interface;
 using HealthCareApp.Shared.Constants;
 using HealthCareApp.Shared.Dtos.Doctors;
 using HealthCareApp.Shared.Dtos.Pagination;
@@ -16,7 +17,9 @@ namespace HealthCareApp.Services
         IAppointmentRepository appointmentRepository,
         IMapper mapper,
         UserManager<IdentityUser> userManager,
-        RoleManager<IdentityRole> roleManager) : IDoctorService
+        RoleManager<IdentityRole> roleManager,
+        ICacheService cacheService,
+        ILogger<DoctorService> logger) : IDoctorService
     {
         private const string DoctorEntityName = "Doctor";
         private const string DoctorRoleName = "Doctor";
@@ -267,7 +270,23 @@ namespace HealthCareApp.Services
         {
             ValidateDoctorId(doctorId);
 
+            var cacheKey = $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
+            var cachedAvailability = await cacheService.GetAsync<List<SlotAvailabilityDto>>(cacheKey);
+
+           
+            if (cachedAvailability != null)
+            {
+                logger.LogInformation(
+                    "Availability Cache Hit for doctor {DoctorId}",
+                    doctorId);
+
+                return cachedAvailability;
+            }
+
+            logger.LogInformation("Availability Cache Miss for doctor {DoctorId}",doctorId);
+
             var doctor = await repository.GetByIdAsync(doctorId);
+
 
             if (doctor is null)
             {
@@ -290,13 +309,17 @@ namespace HealthCareApp.Services
 
             var bookedSlotSet = bookedSlots.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            return TimeSlots.Slots
+            var availability = TimeSlots.Slots
                 .Select(slot => new SlotAvailabilityDto
                 {
                     TimeSlot = slot,
                     IsBooked = bookedSlotSet.Contains(slot)
                 })
                 .ToList();
+
+            await cacheService.SetAsync(cacheKey,availability,TimeSpan.FromMinutes(5));
+            logger.LogInformation("Availability cached for doctor {DoctorId} with key {CacheKey}",doctorId,cacheKey);
+            return availability;
         }
 
         private static void ValidateDoctorId(int doctorId)

@@ -4,12 +4,20 @@ using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Dtos.Patients;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace HealthCareApp.Services
 {
-    public class PatientService(IPatientRepository repository, IMapper mapper) : IPatientService
+    public class PatientService(IPatientRepository repository, IMapper mapper, IDistributedCache cache) : IPatientService
     {
         private const string PatientEntityName = "Patient";
+        private const string PatientCacheKey = "patients:all";
+        private static readonly DistributedCacheEntryOptions cacheOptions = new()
+        {
+            //AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+            SlidingExpiration = TimeSpan.FromMinutes(10)
+        };
 
         private static readonly DateTime MinimumDateOfBirth = new(
             1900,
@@ -29,6 +37,16 @@ namespace HealthCareApp.Services
 
         public async Task<PagedResponse<PatientDto>> GetAllPatientsPagedAsync(PatientPaginationQueryDto query)
         {
+            //var cached = await cache.GetStringAsync(PatientCacheKey);
+            //if (!string.IsNullOrEmpty(cached))
+            //{
+            //    var patientList = JsonSerializer.Deserialize<PagedResponse<PatientDto>>(cached);
+            //    if(patientList != null)
+            //    {
+            //        return patientList;
+            //    }
+
+            //}
             query ??= new PatientPaginationQueryDto();
 
             int pageNumber = query.PageNumber <= 0 ? 1 : query.PageNumber;
@@ -82,6 +100,7 @@ namespace HealthCareApp.Services
                 .ToList();
 
             var mappedPatients = mapper.Map<List<PatientDto>>(pagedPatients);
+
 
             return new PagedResponse<PatientDto>
             {

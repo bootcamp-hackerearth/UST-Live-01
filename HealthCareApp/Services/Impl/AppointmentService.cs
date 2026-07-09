@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
-using HealthCareApp.Shared.Constants;
-using HealthCareApp.Shared.Dtos.Auth;
-using HealthCareApp.Shared.Enums;
 using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
-using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Services.Interface;
+using HealthCareApp.Shared.Constants;
 using HealthCareApp.Shared.Dtos.Appointments;
+using HealthCareApp.Shared.Dtos.Auth;
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Enums;
+using HealthCareApp.Shared.Events;
+using MassTransit;
 
 namespace HealthCareApp.Services.Impl
 {
@@ -15,7 +18,7 @@ namespace HealthCareApp.Services.Impl
         IPatientRepository patientRepository,
         IDoctorRepository doctorRepository,
         IHealthRecordRepository healthRecordRepository,
-        IMapper mapper) : IAppointmentService
+        IMapper mapper, IBus bus,ICacheService cacheService) : IAppointmentService
     {
 
         private const string AppointmentEntityName = "Appointment";
@@ -269,7 +272,7 @@ namespace HealthCareApp.Services.Impl
                 throw new AppointmentRuleException(AppointmentDetailsRequiredMessage);
             }
 
-            await ValidatePatientExistsAsync(dto.PatientId);
+            var patient = await ValidatePatientExistsAsync(dto.PatientId);
 
             var doctor = await ValidateDoctorExistsAsync(dto.DoctorId);
 
@@ -317,6 +320,21 @@ namespace HealthCareApp.Services.Impl
             appointment.CreatedDate = DateTime.Now;
 
             var savedAppointment = await appointmentRepository.CreateAsync(appointment);
+            await cacheService.RemoveAsync($"doctors:{dto.DoctorId}:availability:{dto.ScheduledDate:yyyy-MM-dd}");
+
+            await bus.Publish(
+    new AppointmentBookedEvent
+    {
+        AppointmentId = savedAppointment.AppointmentId,
+
+        PatientName = patient.PatientName,
+
+        DoctorId = doctor.DoctorId,
+
+        ScheduledDate = savedAppointment.ScheduledDate,
+
+        TimeSlot = savedAppointment.TimeSlot
+    });
 
             return mapper.Map<AppointmentDto>(savedAppointment);
         }
@@ -910,7 +928,7 @@ namespace HealthCareApp.Services.Impl
             }
         }
 
-        private async Task ValidatePatientExistsAsync(int patientId)
+        private async Task<Patient> ValidatePatientExistsAsync(int patientId)
         {
             ValidatePatientId(patientId);
 
@@ -920,6 +938,7 @@ namespace HealthCareApp.Services.Impl
             {
                 throw new EntityNotFoundException("Patient", patientId);
             }
+            return patient;
         }
 
         private async Task<Doctor> ValidateDoctorExistsAsync(int doctorId)
