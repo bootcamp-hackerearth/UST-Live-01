@@ -1,0 +1,1023 @@
+2026-07-09 00:37:59.462 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (85ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-07-09 00:37:59.694 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (84ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2026-07-09 00:37:59.917 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (8ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2026-07-09 00:37:59.972 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-07-09 00:37:59.980 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-07-09 00:38:00.012 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-07-09 00:38:00.058 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+2026-07-09 00:38:01.134 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (58ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-09 00:38:01.258 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (2ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-09 00:38:01.267 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-09 00:38:01.297 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (10ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedDate], [a].[Email], [a].[EmailConfirmed], [a].[FullName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[MustChangePassword], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-09 00:38:01.416 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (7ms) [Parameters=[@normalizedRoleName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedRoleName
+2026-07-09 00:38:01.523 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (4ms) [Parameters=[@p='?' (Size = 450), @p1='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[UserId], [a].[RoleId]
+FROM [AspNetUserRoles] AS [a]
+WHERE [a].[UserId] = @p AND [a].[RoleId] = @p1
+2026-07-09 00:38:01.573 +05:30 [INF] Program Database migration and identity seeding completed successfully.
+2026-07-09 00:38:01.672 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService NotificationCleanupService started.
+2026-07-09 00:38:01.672 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService started.
+2026-07-09 00:38:01.678 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:38:01.6778926+05:30"
+2026-07-09 00:38:01.838 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (11ms) [Parameters=[@cutoffDate='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM [n]
+FROM [Notifications] AS [n]
+WHERE [n].[CreatedDate] < @cutoffDate
+2026-07-09 00:38:01.848 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService Notification cleanup completed. Deleted 0 notifications older than "2026-06-09T00:38:01.6930810+05:30".
+2026-07-09 00:38:02.084 +05:30 [INF] HealthApp.API.Messaging.AppointmentBookedConsumer AppointmentBookedConsumer started. Listening on queue: appointment.booked.queue
+2026-07-09 00:38:11.686 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:38:11.6866785+05:30"
+2026-07-09 00:38:33.348 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (40ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-07-09 00:38:33.428 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2026-07-09 00:38:33.490 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2026-07-09 00:38:33.508 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-07-09 00:38:33.512 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-07-09 00:38:33.520 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-07-09 00:38:33.537 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (2ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+2026-07-09 00:38:33.939 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (13ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-09 00:38:33.990 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-09 00:38:33.995 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-09 00:38:34.013 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedDate], [a].[Email], [a].[EmailConfirmed], [a].[FullName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[MustChangePassword], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-09 00:38:34.063 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[@normalizedRoleName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedRoleName
+2026-07-09 00:38:34.108 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[@p='?' (Size = 450), @p1='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[UserId], [a].[RoleId]
+FROM [AspNetUserRoles] AS [a]
+WHERE [a].[UserId] = @p AND [a].[RoleId] = @p1
+2026-07-09 00:38:34.123 +05:30 [INF] Program Database migration and identity seeding completed successfully.
+2026-07-09 00:38:34.158 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService NotificationCleanupService started.
+2026-07-09 00:38:34.158 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService started.
+2026-07-09 00:38:34.161 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:38:34.1609906+05:30"
+2026-07-09 00:38:34.206 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (2ms) [Parameters=[@cutoffDate='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM [n]
+FROM [Notifications] AS [n]
+WHERE [n].[CreatedDate] < @cutoffDate
+2026-07-09 00:38:34.210 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService Notification cleanup completed. Deleted 0 notifications older than "2026-06-09T00:38:34.1659365+05:30".
+2026-07-09 00:38:34.297 +05:30 [INF] HealthApp.API.Messaging.AppointmentBookedConsumer AppointmentBookedConsumer started. Listening on queue: appointment.booked.queue
+2026-07-09 00:38:44.172 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:38:44.1724016+05:30"
+2026-07-09 00:38:54.183 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:38:54.1822851+05:30"
+2026-07-09 00:39:04.192 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:39:04.1921224+05:30"
+2026-07-09 00:39:14.201 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:39:14.2009530+05:30"
+2026-07-09 00:39:24.219 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:39:24.2193230+05:30"
+2026-07-09 00:39:34.223 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:39:34.2238086+05:30"
+2026-07-09 00:39:44.229 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:39:44.2290687+05:30"
+2026-07-09 00:39:54.233 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:39:54.2336740+05:30"
+2026-07-09 00:39:56.923 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (10ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedDate], [a].[Email], [a].[EmailConfirmed], [a].[FullName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[MustChangePassword], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-09 00:39:57.372 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (10ms) [Parameters=[@userId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a0].[Name]
+FROM [AspNetUserRoles] AS [a]
+INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+WHERE [a].[UserId] = @userId
+2026-07-09 00:39:57.392 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[@userId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a0].[Name]
+FROM [AspNetUserRoles] AS [a]
+INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+WHERE [a].[UserId] = @userId
+2026-07-09 00:39:57.901 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (46ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (DbType = DateTime2), @p2='?' (DbType = Boolean), @p3='?' (DbType = Boolean), @p4='?' (Size = 4000), @p5='?' (Size = 4000), @p6='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [RefreshTokens] ([CreatedDate], [ExpiryDate], [IsRevoked], [IsUsed], [JwtId], [Token], [UserId])
+OUTPUT INSERTED.[RefreshTokenId]
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-07-09 00:39:58.004 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (10ms) [Parameters=[@userId='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[Gender], [p].[InsuranceId], [p].[PatientName], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+WHERE [p].[UserId] = @userId
+2026-07-09 00:39:58.101 +05:30 [INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 1610.0335 ms
+2026-07-09 00:40:04.249 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:40:04.2496523+05:30"
+2026-07-09 00:40:14.264 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:40:14.2636666+05:30"
+2026-07-09 00:40:24.275 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:40:24.2751073+05:30"
+2026-07-09 00:40:34.284 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:40:34.2846780+05:30"
+2026-07-09 00:40:44.302 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:40:44.3022384+05:30"
+2026-07-09 00:40:54.311 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:40:54.3114902+05:30"
+2026-07-09 00:41:03.887 +05:30 [WRN] LuckyPennySoftware.AutoMapper.License You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-09 00:41:04.327 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:41:04.3272777+05:30"
+2026-07-09 00:41:04.461 +05:30 [INF] HealthApp.API.Service.Impl.DoctorService Doctor availability cache miss. Reading from SQL Server. DoctorId: 8, Date: "2026-07-09T00:00:00.0000000+05:30", CacheKey: doctors:8:availability:2026-07-09
+2026-07-09 00:41:04.519 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (32ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[DoctorId], [d].[ConsultationFee], [d].[CreatedDate], [d].[DoctorName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Doctors] AS [d]
+WHERE [d].[DoctorId] = @p
+2026-07-09 00:41:04.671 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (18ms) [Parameters=[@doctorId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[CreatedDate], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlots], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[Gender], [p].[InsuranceId], [p].[PatientName], [p].[PhoneNumber], [p].[UserId], [d].[DoctorId], [d].[ConsultationFee], [d].[CreatedDate], [d].[DoctorName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[DoctorId]
+WHERE [a].[DoctorId] = @doctorId
+ORDER BY [a].[ScheduledDate] DESC
+2026-07-09 00:41:04.841 +05:30 [INF] HealthApp.API.Service.Impl.DoctorService Doctor availability cached for 5 minutes. DoctorId: 8, Date: "2026-07-09T00:00:00.0000000+05:30", CacheKey: doctors:8:availability:2026-07-09
+2026-07-09 00:41:04.848 +05:30 [INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/8/availability responded 200 in 1387.6851 ms
+2026-07-09 00:41:14.345 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:41:14.3457092+05:30"
+2026-07-09 00:41:24.358 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:41:24.3580251+05:30"
+2026-07-09 00:41:34.372 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:41:34.3720911+05:30"
+2026-07-09 00:41:44.380 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:41:44.3804306+05:30"
+2026-07-09 00:41:45.125 +05:30 [INF] HealthApp.API.Service.Impl.DoctorService Doctor availability served from Garnet cache. DoctorId: 8, Date: "2026-07-09T00:00:00.0000000+05:30", CacheKey: doctors:8:availability:2026-07-09
+2026-07-09 00:41:45.135 +05:30 [INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/8/availability responded 200 in 53.7573 ms
+2026-07-09 00:41:54.399 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:41:54.3986070+05:30"
+2026-07-09 00:42:04.412 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:42:04.4122400+05:30"
+2026-07-09 00:42:14.428 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:42:14.4280619+05:30"
+2026-07-09 00:42:24.441 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:42:24.4411301+05:30"
+2026-07-09 00:42:34.449 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:42:34.4494691+05:30"
+2026-07-09 00:42:44.460 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:42:44.4599663+05:30"
+2026-07-09 00:42:54.479 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:42:54.4790847+05:30"
+2026-07-09 00:43:04.495 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:43:04.4954242+05:30"
+2026-07-09 00:43:14.502 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:43:14.5024160+05:30"
+2026-07-09 00:43:24.504 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:43:24.5040815+05:30"
+2026-07-09 00:43:34.512 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:43:34.5126695+05:30"
+2026-07-09 00:43:44.533 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:43:44.5332774+05:30"
+2026-07-09 00:43:54.539 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:43:54.5394100+05:30"
+2026-07-09 00:44:04.546 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:44:04.5461517+05:30"
+2026-07-09 00:44:14.555 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:44:14.5552555+05:30"
+2026-07-09 00:44:24.571 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:44:24.5710221+05:30"
+2026-07-09 00:44:34.575 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:44:34.5749617+05:30"
+2026-07-09 00:44:44.590 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:44:44.5905092+05:30"
+2026-07-09 00:44:54.600 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:44:54.6000348+05:30"
+2026-07-09 00:45:04.608 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:45:04.6084155+05:30"
+2026-07-09 00:45:14.626 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:45:14.6267931+05:30"
+2026-07-09 00:45:24.643 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:45:24.6422334+05:30"
+2026-07-09 00:45:34.657 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:45:34.6573106+05:30"
+2026-07-09 00:45:44.672 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:45:44.6720063+05:30"
+2026-07-09 00:45:54.679 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:45:54.6798067+05:30"
+2026-07-09 00:46:04.694 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:46:04.6939966+05:30"
+2026-07-09 00:46:14.703 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:46:14.7035017+05:30"
+2026-07-09 00:46:24.720 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:46:24.7208679+05:30"
+2026-07-09 00:46:34.732 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:46:34.7328945+05:30"
+2026-07-09 00:46:44.742 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:46:44.7413903+05:30"
+2026-07-09 00:46:54.747 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:46:54.7463706+05:30"
+2026-07-09 00:47:04.757 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:47:04.7573305+05:30"
+2026-07-09 00:47:14.769 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:47:14.7694510+05:30"
+2026-07-09 00:47:24.914 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:47:24.9142674+05:30"
+2026-07-09 00:47:34.917 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:47:34.9179169+05:30"
+2026-07-09 00:47:44.925 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:47:44.9247221+05:30"
+2026-07-09 00:47:54.938 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:47:54.9373423+05:30"
+2026-07-09 00:48:04.951 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:48:04.9515975+05:30"
+2026-07-09 00:48:14.965 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:48:14.9659330+05:30"
+2026-07-09 00:48:24.983 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:48:24.9830492+05:30"
+2026-07-09 00:48:34.998 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:48:34.9983834+05:30"
+2026-07-09 00:48:45.014 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:48:45.0142440+05:30"
+2026-07-09 00:48:55.026 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:48:55.0269603+05:30"
+2026-07-09 00:49:05.042 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:49:05.0424250+05:30"
+2026-07-09 00:49:15.054 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:49:15.0547314+05:30"
+2026-07-09 00:49:25.071 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:49:25.0715834+05:30"
+2026-07-09 00:49:35.077 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:49:35.0772563+05:30"
+2026-07-09 00:49:45.093 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:49:45.0936457+05:30"
+2026-07-09 00:49:55.104 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:49:55.1043707+05:30"
+2026-07-09 00:50:05.111 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:50:05.1114476+05:30"
+2026-07-09 00:50:15.123 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:50:15.1238434+05:30"
+2026-07-09 00:50:25.127 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:50:25.1279697+05:30"
+2026-07-09 00:50:35.138 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:50:35.1386332+05:30"
+2026-07-09 00:50:45.152 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:50:45.1521360+05:30"
+2026-07-09 00:50:55.160 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:50:55.1604134+05:30"
+2026-07-09 00:51:05.164 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:51:05.1645410+05:30"
+2026-07-09 00:51:15.178 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:51:15.1786524+05:30"
+2026-07-09 00:51:25.183 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:51:25.1833369+05:30"
+2026-07-09 00:51:35.189 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:51:35.1895655+05:30"
+2026-07-09 00:51:45.204 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:51:45.2046507+05:30"
+2026-07-09 00:51:55.219 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:51:55.2190315+05:30"
+2026-07-09 00:52:05.233 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:52:05.2337903+05:30"
+2026-07-09 00:52:15.247 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:52:15.2475552+05:30"
+2026-07-09 00:52:25.267 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:52:25.2673133+05:30"
+2026-07-09 00:52:35.275 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:52:35.2757235+05:30"
+2026-07-09 00:52:45.285 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:52:45.2855974+05:30"
+2026-07-09 00:52:55.288 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:52:55.2887724+05:30"
+2026-07-09 00:53:05.294 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:53:05.2942442+05:30"
+2026-07-09 00:53:15.307 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:53:15.3070963+05:30"
+2026-07-09 00:53:25.324 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:53:25.3244984+05:30"
+2026-07-09 00:53:35.338 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:53:35.3384808+05:30"
+2026-07-09 00:53:45.353 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:53:45.3538801+05:30"
+2026-07-09 00:53:55.361 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:53:55.3617029+05:30"
+2026-07-09 00:54:05.364 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:54:05.3641990+05:30"
+2026-07-09 00:54:15.374 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:54:15.3743179+05:30"
+2026-07-09 00:54:25.383 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:54:25.3834420+05:30"
+2026-07-09 00:54:35.389 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:54:35.3897008+05:30"
+2026-07-09 00:54:45.396 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:54:45.3965073+05:30"
+2026-07-09 00:54:55.411 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:54:55.4117562+05:30"
+2026-07-09 00:55:05.422 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:55:05.4223952+05:30"
+2026-07-09 00:55:15.431 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:55:15.4313010+05:30"
+2026-07-09 00:55:25.444 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:55:25.4440945+05:30"
+2026-07-09 00:55:35.461 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:55:35.4612730+05:30"
+2026-07-09 00:55:45.465 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:55:45.4656222+05:30"
+2026-07-09 00:55:55.485 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:55:55.4854816+05:30"
+2026-07-09 00:56:05.504 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:56:05.5043408+05:30"
+2026-07-09 00:56:15.518 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:56:15.5181015+05:30"
+2026-07-09 00:56:25.526 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:56:25.5260382+05:30"
+2026-07-09 00:56:35.545 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:56:35.5457391+05:30"
+2026-07-09 00:56:45.558 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:56:45.5582939+05:30"
+2026-07-09 00:56:55.574 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:56:55.5745027+05:30"
+2026-07-09 00:57:05.595 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:57:05.5950944+05:30"
+2026-07-09 00:57:15.601 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:57:15.6009765+05:30"
+2026-07-09 00:57:25.603 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:57:25.6039506+05:30"
+2026-07-09 00:57:35.618 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:57:35.6181185+05:30"
+2026-07-09 00:57:45.624 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:57:45.6240883+05:30"
+2026-07-09 00:57:55.640 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:57:55.6402530+05:30"
+2026-07-09 00:58:05.651 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:58:05.6518822+05:30"
+2026-07-09 00:58:15.661 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:58:15.6614998+05:30"
+2026-07-09 00:58:25.677 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:58:25.6773609+05:30"
+2026-07-09 00:58:35.684 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:58:35.6839936+05:30"
+2026-07-09 00:58:45.686 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:58:45.6868311+05:30"
+2026-07-09 00:58:55.696 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:58:55.6969225+05:30"
+2026-07-09 00:59:05.706 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:59:05.7063004+05:30"
+2026-07-09 00:59:15.721 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:59:15.7212978+05:30"
+2026-07-09 00:59:25.733 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:59:25.7331199+05:30"
+2026-07-09 00:59:35.740 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:59:35.7409013+05:30"
+2026-07-09 00:59:45.748 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:59:45.7484913+05:30"
+2026-07-09 00:59:55.762 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T00:59:55.7627341+05:30"
+2026-07-09 01:00:05.776 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:00:05.7763834+05:30"
+2026-07-09 01:00:15.794 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:00:15.7941724+05:30"
+2026-07-09 01:00:25.813 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:00:25.8130803+05:30"
+2026-07-09 01:00:35.821 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:00:35.8212866+05:30"
+2026-07-09 01:00:45.828 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:00:45.8286520+05:30"
+2026-07-09 01:00:55.842 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:00:55.8429652+05:30"
+2026-07-09 01:01:05.855 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:01:05.8554438+05:30"
+2026-07-09 01:01:15.867 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:01:15.8670759+05:30"
+2026-07-09 01:01:25.874 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:01:25.8745702+05:30"
+2026-07-09 01:01:35.880 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:01:35.8802380+05:30"
+2026-07-09 01:01:45.895 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:01:45.8952190+05:30"
+2026-07-09 01:01:55.898 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:01:55.8986818+05:30"
+2026-07-09 01:02:05.916 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:02:05.9167256+05:30"
+2026-07-09 01:02:15.932 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:02:15.9313163+05:30"
+2026-07-09 01:02:26.054 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:02:26.0548426+05:30"
+2026-07-09 01:02:36.061 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:02:36.0614458+05:30"
+2026-07-09 01:02:46.077 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:02:46.0774092+05:30"
+2026-07-09 01:02:56.088 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:02:56.0881152+05:30"
+2026-07-09 01:03:06.093 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:03:06.0933371+05:30"
+2026-07-09 01:03:16.102 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:03:16.1024870+05:30"
+2026-07-09 01:03:26.115 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:03:26.1159606+05:30"
+2026-07-09 01:03:36.120 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:03:36.1203674+05:30"
+2026-07-09 01:03:46.124 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:03:46.1247570+05:30"
+2026-07-09 01:03:56.141 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:03:56.1411871+05:30"
+2026-07-09 01:04:06.155 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:04:06.1558067+05:30"
+2026-07-09 01:04:16.165 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:04:16.1654619+05:30"
+2026-07-09 01:04:26.170 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:04:26.1701722+05:30"
+2026-07-09 01:04:36.182 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:04:36.1820329+05:30"
+2026-07-09 01:04:46.187 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:04:46.1873869+05:30"
+2026-07-09 01:04:56.203 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:04:56.2031282+05:30"
+2026-07-09 01:05:06.210 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:05:06.2103222+05:30"
+2026-07-09 01:05:16.220 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:05:16.2203533+05:30"
+2026-07-09 01:05:26.228 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:05:26.2281982+05:30"
+2026-07-09 01:05:36.243 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:05:36.2434653+05:30"
+2026-07-09 01:05:46.256 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:05:46.2565118+05:30"
+2026-07-09 01:05:56.262 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:05:56.2620752+05:30"
+2026-07-09 01:06:06.278 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:06:06.2782028+05:30"
+2026-07-09 01:06:16.290 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:06:16.2901109+05:30"
+2026-07-09 01:06:26.307 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:06:26.3078188+05:30"
+2026-07-09 01:06:36.318 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:06:36.3187941+05:30"
+2026-07-09 01:06:46.325 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:06:46.3252651+05:30"
+2026-07-09 01:06:56.338 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:06:56.3389736+05:30"
+2026-07-09 01:07:06.352 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:07:06.3520401+05:30"
+2026-07-09 01:07:16.362 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:07:16.3621366+05:30"
+2026-07-09 01:07:26.372 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:07:26.3728891+05:30"
+2026-07-09 01:07:36.383 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:07:36.3837640+05:30"
+2026-07-09 01:07:46.401 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:07:46.4018334+05:30"
+2026-07-09 01:07:56.414 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:07:56.4146659+05:30"
+2026-07-09 01:08:06.427 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:08:06.4273721+05:30"
+2026-07-09 01:08:16.434 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:08:16.4343405+05:30"
+2026-07-09 01:08:26.447 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:08:26.4476046+05:30"
+2026-07-09 01:08:36.464 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:08:36.4643010+05:30"
+2026-07-09 01:08:46.488 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:08:46.4885337+05:30"
+2026-07-09 01:08:56.495 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:08:56.4955109+05:30"
+2026-07-09 01:09:06.514 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:09:06.5142155+05:30"
+2026-07-09 01:09:16.525 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:09:16.5255516+05:30"
+2026-07-09 01:09:26.531 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:09:26.5311655+05:30"
+2026-07-09 01:09:36.538 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:09:36.5383955+05:30"
+2026-07-09 01:09:46.551 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:09:46.5511685+05:30"
+2026-07-09 01:09:56.562 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:09:56.5627039+05:30"
+2026-07-09 01:10:06.578 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:10:06.5783353+05:30"
+2026-07-09 01:10:16.595 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:10:16.5954336+05:30"
+2026-07-09 01:10:26.612 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:10:26.6125946+05:30"
+2026-07-09 01:10:36.621 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:10:36.6217753+05:30"
+2026-07-09 01:10:46.636 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:10:46.6364331+05:30"
+2026-07-09 01:10:56.655 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:10:56.6550380+05:30"
+2026-07-09 01:11:06.662 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:11:06.6627409+05:30"
+2026-07-09 01:11:16.668 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:11:16.6688853+05:30"
+2026-07-09 01:11:26.687 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:11:26.6877029+05:30"
+2026-07-09 01:11:36.693 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:11:36.6932675+05:30"
+2026-07-09 01:11:46.700 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:11:46.7007090+05:30"
+2026-07-09 01:11:56.706 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:11:56.7063013+05:30"
+2026-07-09 01:12:06.716 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:12:06.7166587+05:30"
+2026-07-09 01:12:16.735 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:12:16.7350345+05:30"
+2026-07-09 01:12:26.977 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:12:26.9773742+05:30"
+2026-07-09 01:12:36.993 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:12:36.9930843+05:30"
+2026-07-09 01:12:47.003 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:12:47.0036288+05:30"
+2026-07-09 01:12:57.020 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:12:57.0200601+05:30"
+2026-07-09 01:13:07.028 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:13:07.0286044+05:30"
+2026-07-09 01:13:17.034 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:13:17.0341576+05:30"
+2026-07-09 01:13:27.043 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:13:27.0432460+05:30"
+2026-07-09 01:13:37.048 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:13:37.0485487+05:30"
+2026-07-09 01:13:47.080 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:13:47.0800399+05:30"
+2026-07-09 01:13:57.093 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:13:57.0937059+05:30"
+2026-07-09 01:14:07.102 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:14:07.1026441+05:30"
+2026-07-09 01:14:17.117 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:14:17.1170363+05:30"
+2026-07-09 01:14:27.125 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:14:27.1257406+05:30"
+2026-07-09 01:14:37.139 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:14:37.1391370+05:30"
+2026-07-09 01:14:47.151 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:14:47.1515181+05:30"
+2026-07-09 01:14:57.162 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:14:57.1629247+05:30"
+2026-07-09 01:15:07.179 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:15:07.1796725+05:30"
+2026-07-09 01:15:17.192 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:15:17.1920284+05:30"
+2026-07-09 01:15:27.202 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:15:27.2020301+05:30"
+2026-07-09 01:15:37.212 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:15:37.2124459+05:30"
+2026-07-09 01:15:47.227 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:15:47.2278892+05:30"
+2026-07-09 01:15:57.232 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:15:57.2324894+05:30"
+2026-07-09 01:16:07.240 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:16:07.2409009+05:30"
+2026-07-09 01:16:17.252 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:16:17.2524904+05:30"
+2026-07-09 01:16:27.260 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:16:27.2605244+05:30"
+2026-07-09 01:16:37.269 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:16:37.2696935+05:30"
+2026-07-09 01:16:47.288 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:16:47.2883308+05:30"
+2026-07-09 01:16:57.296 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:16:57.2963323+05:30"
+2026-07-09 01:17:07.312 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:17:07.3121788+05:30"
+2026-07-09 01:17:17.329 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:17:17.3290912+05:30"
+2026-07-09 01:17:27.347 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:17:27.3478319+05:30"
+2026-07-09 01:17:37.357 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:17:37.3576648+05:30"
+2026-07-09 01:17:47.370 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:17:47.3705298+05:30"
+2026-07-09 01:17:57.382 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:17:57.3823663+05:30"
+2026-07-09 01:18:07.386 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:18:07.3864546+05:30"
+2026-07-09 01:18:17.396 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:18:17.3963239+05:30"
+2026-07-09 01:18:27.410 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:18:27.4108702+05:30"
+2026-07-09 01:18:37.420 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:18:37.4209656+05:30"
+2026-07-09 01:18:47.435 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:18:47.4353145+05:30"
+2026-07-09 01:18:57.438 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:18:57.4389134+05:30"
+2026-07-09 01:19:07.454 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:19:07.4541220+05:30"
+2026-07-09 01:19:17.461 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:19:17.4614531+05:30"
+2026-07-09 01:19:27.476 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:19:27.4765920+05:30"
+2026-07-09 01:19:37.493 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:19:37.4936396+05:30"
+2026-07-09 01:19:47.505 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:19:47.5056328+05:30"
+2026-07-09 01:19:57.511 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:19:57.5114876+05:30"
+2026-07-09 01:20:07.530 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:20:07.5306909+05:30"
+2026-07-09 01:20:17.537 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:20:17.5372063+05:30"
+2026-07-09 01:20:27.542 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:20:27.5426068+05:30"
+2026-07-09 01:20:37.555 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:20:37.5550562+05:30"
+2026-07-09 01:20:47.571 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:20:47.5711003+05:30"
+2026-07-09 01:20:57.578 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:20:57.5787730+05:30"
+2026-07-09 01:21:07.591 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:21:07.5917040+05:30"
+2026-07-09 01:21:17.609 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:21:17.6096328+05:30"
+2026-07-09 01:21:27.612 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:21:27.6129194+05:30"
+2026-07-09 01:21:37.623 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:21:37.6233346+05:30"
+2026-07-09 01:21:47.638 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:21:47.6388760+05:30"
+2026-07-09 01:21:57.643 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:21:57.6439514+05:30"
+2026-07-09 01:22:07.652 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:22:07.6527517+05:30"
+2026-07-09 01:22:17.705 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:22:17.7053783+05:30"
+2026-07-09 01:22:27.760 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:22:27.7601245+05:30"
+2026-07-09 01:22:37.765 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:22:37.7651863+05:30"
+2026-07-09 01:22:47.779 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:22:47.7792074+05:30"
+2026-07-09 01:22:57.786 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:22:57.7865737+05:30"
+2026-07-09 01:23:07.791 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:23:07.7918757+05:30"
+2026-07-09 01:23:17.806 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:23:17.8068747+05:30"
+2026-07-09 01:23:27.812 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:23:27.8121141+05:30"
+2026-07-09 01:23:37.818 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:23:37.8183535+05:30"
+2026-07-09 01:23:47.825 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:23:47.8252434+05:30"
+2026-07-09 01:23:57.828 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:23:57.8285526+05:30"
+2026-07-09 01:24:07.845 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:24:07.8453884+05:30"
+2026-07-09 01:24:17.859 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:24:17.8593984+05:30"
+2026-07-09 01:24:27.868 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:24:27.8688812+05:30"
+2026-07-09 01:24:37.880 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:24:37.8801969+05:30"
+2026-07-09 01:24:47.890 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:24:47.8908534+05:30"
+2026-07-09 01:24:57.910 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:24:57.9105522+05:30"
+2026-07-09 01:25:07.940 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:25:07.9402360+05:30"
+2026-07-09 01:25:17.952 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:25:17.9526771+05:30"
+2026-07-09 01:25:27.957 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:25:27.9578129+05:30"
+2026-07-09 01:25:37.963 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:25:37.9638771+05:30"
+2026-07-09 01:25:47.975 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:25:47.9758116+05:30"
+2026-07-09 01:25:57.986 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:25:57.9867258+05:30"
+2026-07-09 01:26:07.999 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:26:07.9992233+05:30"
+2026-07-09 01:26:18.016 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:26:18.0167318+05:30"
+2026-07-09 01:26:28.029 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:26:28.0298650+05:30"
+2026-07-09 01:26:38.046 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:26:38.0468373+05:30"
+2026-07-09 01:26:48.056 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:26:48.0567632+05:30"
+2026-07-09 01:26:58.064 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:26:58.0643014+05:30"
+2026-07-09 01:27:08.082 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:27:08.0819950+05:30"
+2026-07-09 01:27:18.091 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:27:18.0917428+05:30"
+2026-07-09 01:27:28.107 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:27:28.1079242+05:30"
+2026-07-09 01:27:38.117 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:27:38.1173266+05:30"
+2026-07-09 01:27:48.134 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:27:48.1345788+05:30"
+2026-07-09 01:27:58.140 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:27:58.1405372+05:30"
+2026-07-09 01:28:08.151 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:28:08.1519212+05:30"
+2026-07-09 01:28:18.172 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:28:18.1728050+05:30"
+2026-07-09 01:28:28.186 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:28:28.1861527+05:30"
+2026-07-09 01:28:38.203 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:28:38.2037709+05:30"
+2026-07-09 01:28:48.206 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:28:48.2065996+05:30"
+2026-07-09 01:28:58.218 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:28:58.2184515+05:30"
+2026-07-09 01:29:08.230 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:29:08.2306647+05:30"
+2026-07-09 01:29:18.236 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:29:18.2369357+05:30"
+2026-07-09 01:29:28.238 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:29:28.2387203+05:30"
+2026-07-09 01:29:38.249 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:29:38.2492358+05:30"
+2026-07-09 01:29:48.263 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:29:48.2636817+05:30"
+2026-07-09 01:29:58.271 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:29:58.2712264+05:30"
+2026-07-09 01:30:08.285 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:30:08.2855532+05:30"
+2026-07-09 01:30:18.294 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:30:18.2947208+05:30"
+2026-07-09 01:30:28.301 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:30:28.3018435+05:30"
+2026-07-09 01:30:38.313 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:30:38.3132575+05:30"
+2026-07-09 01:30:48.315 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:30:48.3157035+05:30"
+2026-07-09 01:30:58.327 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:30:58.3271307+05:30"
+2026-07-09 01:31:08.342 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:31:08.3423007+05:30"
+2026-07-09 01:31:18.359 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:31:18.3592669+05:30"
+2026-07-09 01:31:28.373 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:31:28.3736034+05:30"
+2026-07-09 01:31:38.389 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:31:38.3891012+05:30"
+2026-07-09 01:31:48.407 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:31:48.4075926+05:30"
+2026-07-09 01:31:58.418 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:31:58.4183785+05:30"
+2026-07-09 01:32:08.423 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:32:08.4235514+05:30"
+2026-07-09 01:32:18.428 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:32:18.4286432+05:30"
+2026-07-09 01:32:28.670 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:32:28.6708586+05:30"
+2026-07-09 01:32:38.688 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:32:38.6882359+05:30"
+2026-07-09 01:32:48.697 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:32:48.6976426+05:30"
+2026-07-09 01:32:58.712 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:32:58.7126278+05:30"
+2026-07-09 01:33:08.719 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:33:08.7199399+05:30"
+2026-07-09 01:33:18.727 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:33:18.7272755+05:30"
+2026-07-09 01:33:28.732 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:33:28.7320213+05:30"
+2026-07-09 01:33:38.746 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:33:38.7460952+05:30"
+2026-07-09 01:33:48.758 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:33:48.7588133+05:30"
+2026-07-09 01:33:58.763 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:33:58.7631174+05:30"
+2026-07-09 01:34:08.772 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:34:08.7723444+05:30"
+2026-07-09 01:34:18.781 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:34:18.7813287+05:30"
+2026-07-09 01:34:28.797 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:34:28.7975455+05:30"
+2026-07-09 01:34:38.813 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:34:38.8131206+05:30"
+2026-07-09 01:34:48.823 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:34:48.8235402+05:30"
+2026-07-09 01:34:58.830 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:34:58.8306970+05:30"
+2026-07-09 01:35:08.840 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:35:08.8404796+05:30"
+2026-07-09 01:35:18.850 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:35:18.8502071+05:30"
+2026-07-09 01:35:28.854 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:35:28.8548544+05:30"
+2026-07-09 01:35:38.862 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:35:38.8625507+05:30"
+2026-07-09 01:35:48.868 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:35:48.8685895+05:30"
+2026-07-09 01:35:58.885 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:35:58.8854889+05:30"
+2026-07-09 01:36:08.899 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:36:08.8995691+05:30"
+2026-07-09 01:36:18.912 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:36:18.9125629+05:30"
+2026-07-09 01:36:28.922 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:36:28.9228027+05:30"
+2026-07-09 01:36:38.931 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:36:38.9313944+05:30"
+2026-07-09 01:36:48.947 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:36:48.9471562+05:30"
+2026-07-09 01:36:58.957 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:36:58.9570068+05:30"
+2026-07-09 01:37:08.964 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:37:08.9648681+05:30"
+2026-07-09 01:37:18.980 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:37:18.9808616+05:30"
+2026-07-09 01:37:28.985 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:37:28.9856975+05:30"
+2026-07-09 01:37:38.995 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:37:38.9959599+05:30"
+2026-07-09 01:37:49.009 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:37:49.0097114+05:30"
+2026-07-09 01:37:59.023 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:37:59.0239218+05:30"
+2026-07-09 01:38:09.031 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:38:09.0316000+05:30"
+2026-07-09 01:38:19.036 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:38:19.0362895+05:30"
+2026-07-09 01:38:29.054 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:38:29.0547562+05:30"
+2026-07-09 01:38:34.774 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (31ms) [Parameters=[@cutoffDate='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM [n]
+FROM [Notifications] AS [n]
+WHERE [n].[CreatedDate] < @cutoffDate
+2026-07-09 01:38:34.777 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService Notification cleanup completed. Deleted 0 notifications older than "2026-06-09T01:38:34.2231155+05:30".
+2026-07-09 01:38:39.067 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:38:39.0672521+05:30"
+2026-07-09 01:38:49.073 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:38:49.0739027+05:30"
+2026-07-09 01:38:59.090 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:38:59.0907430+05:30"
+2026-07-09 01:39:09.093 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:39:09.0936812+05:30"
+2026-07-09 01:39:19.106 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:39:19.1062235+05:30"
+2026-07-09 01:39:29.124 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:39:29.1241283+05:30"
+2026-07-09 01:39:39.141 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:39:39.1412174+05:30"
+2026-07-09 01:39:49.147 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:39:49.1470432+05:30"
+2026-07-09 01:39:59.156 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:39:59.1561920+05:30"
+2026-07-09 01:40:09.166 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:40:09.1665994+05:30"
+2026-07-09 01:40:19.174 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:40:19.1749094+05:30"
+2026-07-09 01:40:29.191 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:40:29.1918644+05:30"
+2026-07-09 01:40:39.209 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:40:39.2093492+05:30"
+2026-07-09 01:40:49.224 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:40:49.2240142+05:30"
+2026-07-09 01:40:59.232 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:40:59.2326836+05:30"
+2026-07-09 01:41:09.237 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:41:09.2378451+05:30"
+2026-07-09 01:41:19.244 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:41:19.2448651+05:30"
+2026-07-09 01:41:29.249 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:41:29.2494937+05:30"
+2026-07-09 01:41:39.254 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:41:39.2542991+05:30"
+2026-07-09 01:41:49.259 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:41:49.2590762+05:30"
+2026-07-09 01:41:59.278 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:41:59.2782463+05:30"
+2026-07-09 01:42:09.294 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:42:09.2945015+05:30"
+2026-07-09 01:42:19.326 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:42:19.3268661+05:30"
+2026-07-09 01:42:29.446 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:42:29.4460547+05:30"
+2026-07-09 01:42:39.454 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:42:39.4540664+05:30"
+2026-07-09 01:42:49.464 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:42:49.4645103+05:30"
+2026-07-09 01:42:59.477 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:42:59.4771601+05:30"
+2026-07-09 01:43:09.488 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:43:09.4887625+05:30"
+2026-07-09 01:43:19.495 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:43:19.4951909+05:30"
+2026-07-09 01:43:29.512 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:43:29.5124730+05:30"
+2026-07-09 01:43:39.524 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:43:39.5243520+05:30"
+2026-07-09 01:43:49.536 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:43:49.5359753+05:30"
+2026-07-09 01:43:59.551 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:43:59.5512418+05:30"
+2026-07-09 01:44:09.569 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:44:09.5698763+05:30"
+2026-07-09 01:44:19.585 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:44:19.5852221+05:30"
+2026-07-09 01:44:29.589 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:44:29.5899486+05:30"
+2026-07-09 01:44:39.596 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:44:39.5966352+05:30"
+2026-07-09 01:44:49.605 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:44:49.6056319+05:30"
+2026-07-09 01:44:59.616 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:44:59.6162985+05:30"
+2026-07-09 01:45:09.625 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:45:09.6256137+05:30"
+2026-07-09 01:45:19.637 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:45:19.6372592+05:30"
+2026-07-09 01:45:29.673 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:45:29.6731121+05:30"
+2026-07-09 01:45:39.687 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:45:39.6870548+05:30"
+2026-07-09 01:45:49.695 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:45:49.6955215+05:30"
+2026-07-09 01:45:59.709 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:45:59.7097183+05:30"
+2026-07-09 01:46:09.716 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:46:09.7163112+05:30"
+2026-07-09 01:46:19.730 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:46:19.7300463+05:30"
+2026-07-09 01:46:29.735 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:46:29.7357507+05:30"
+2026-07-09 01:46:39.752 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:46:39.7523181+05:30"
+2026-07-09 01:46:49.761 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:46:49.7613541+05:30"
+2026-07-09 01:46:59.766 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:46:59.7666668+05:30"
+2026-07-09 01:47:09.780 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:47:09.7806046+05:30"
+2026-07-09 01:47:19.790 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:47:19.7906158+05:30"
+2026-07-09 01:47:29.808 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:47:29.8082962+05:30"
+2026-07-09 01:47:39.811 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:47:39.8119207+05:30"
+2026-07-09 01:47:49.820 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:47:49.8204078+05:30"
+2026-07-09 01:47:59.824 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:47:59.8248015+05:30"
+2026-07-09 01:48:09.838 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:48:09.8388137+05:30"
+2026-07-09 01:48:19.853 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:48:19.8534632+05:30"
+2026-07-09 01:48:29.857 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:48:29.8578010+05:30"
+2026-07-09 01:48:39.867 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:48:39.8676597+05:30"
+2026-07-09 01:48:49.882 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:48:49.8820464+05:30"
+2026-07-09 01:48:59.898 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:48:59.8983551+05:30"
+2026-07-09 01:49:09.903 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:49:09.9038062+05:30"
+2026-07-09 01:49:19.921 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:49:19.9216100+05:30"
+2026-07-09 01:49:29.924 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:49:29.9247516+05:30"
+2026-07-09 01:49:39.943 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:49:39.9434180+05:30"
+2026-07-09 01:49:49.947 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:49:49.9478328+05:30"
+2026-07-09 01:49:59.952 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:49:59.9526919+05:30"
+2026-07-09 01:50:09.969 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:50:09.9693844+05:30"
+2026-07-09 01:50:19.987 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:50:19.9872118+05:30"
+2026-07-09 01:50:30.002 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:50:30.0028733+05:30"
+2026-07-09 01:50:40.019 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:50:40.0190693+05:30"
+2026-07-09 01:50:50.028 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:50:50.0281442+05:30"
+2026-07-09 01:51:00.045 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:51:00.0457398+05:30"
+2026-07-09 01:51:10.062 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:51:10.0621089+05:30"
+2026-07-09 01:51:20.068 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:51:20.0685558+05:30"
+2026-07-09 01:51:30.078 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:51:30.0783878+05:30"
+2026-07-09 01:51:40.087 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:51:40.0870320+05:30"
+2026-07-09 01:51:50.100 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:51:50.1005107+05:30"
+2026-07-09 01:52:00.105 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:52:00.1051222+05:30"
+2026-07-09 01:52:10.120 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:52:10.1200676+05:30"
+2026-07-09 01:52:20.147 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:52:20.1478686+05:30"
+2026-07-09 01:52:30.296 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:52:30.2969136+05:30"
+2026-07-09 01:52:40.302 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:52:40.3022792+05:30"
+2026-07-09 01:52:50.311 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:52:50.3111343+05:30"
+2026-07-09 01:53:00.321 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:53:00.3211400+05:30"
+2026-07-09 01:53:10.337 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:53:10.3378454+05:30"
+2026-07-09 01:53:20.347 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:53:20.3479623+05:30"
+2026-07-09 01:53:30.362 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:53:30.3625579+05:30"
+2026-07-09 01:53:40.369 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:53:40.3692893+05:30"
+2026-07-09 01:53:50.372 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:53:50.3723685+05:30"
+2026-07-09 01:54:00.388 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:54:00.3889527+05:30"
+2026-07-09 01:54:10.398 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:54:10.3987490+05:30"
+2026-07-09 01:54:20.413 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:54:20.4133072+05:30"
+2026-07-09 01:54:30.427 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:54:30.4272505+05:30"
+2026-07-09 01:54:40.431 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:54:40.4309875+05:30"
+2026-07-09 01:54:50.446 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:54:50.4462363+05:30"
+2026-07-09 01:55:00.464 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:55:00.4639805+05:30"
+2026-07-09 01:55:10.468 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:55:10.4682027+05:30"
+2026-07-09 01:55:20.477 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:55:20.4773968+05:30"
+2026-07-09 01:55:30.492 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:55:30.4929314+05:30"
+2026-07-09 01:55:40.497 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:55:40.4975442+05:30"
+2026-07-09 01:55:50.509 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:55:50.5089485+05:30"
+2026-07-09 01:56:00.520 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:56:00.5203904+05:30"
+2026-07-09 01:56:10.538 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:56:10.5381785+05:30"
+2026-07-09 01:56:20.552 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:56:20.5520995+05:30"
+2026-07-09 01:56:30.560 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:56:30.5603377+05:30"
+2026-07-09 01:56:40.575 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:56:40.5755518+05:30"
+2026-07-09 01:56:50.582 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:56:50.5820549+05:30"
+2026-07-09 01:57:00.591 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:57:00.5917770+05:30"
+2026-07-09 01:57:10.600 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:57:10.6008376+05:30"
+2026-07-09 01:57:20.605 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:57:20.6059060+05:30"
+2026-07-09 01:57:30.616 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:57:30.6166960+05:30"
+2026-07-09 01:57:40.622 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:57:40.6229195+05:30"
+2026-07-09 01:57:50.633 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:57:50.6337254+05:30"
+2026-07-09 01:58:00.640 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:58:00.6403659+05:30"
+2026-07-09 01:58:10.651 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:58:10.6510281+05:30"
+2026-07-09 01:58:20.666 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:58:20.6663098+05:30"
+2026-07-09 01:58:30.672 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:58:30.6723125+05:30"
+2026-07-09 01:58:40.689 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:58:40.6896699+05:30"
+2026-07-09 01:58:50.704 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:58:50.7044462+05:30"
+2026-07-09 01:59:00.714 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:59:00.7143011+05:30"
+2026-07-09 01:59:10.724 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:59:10.7244773+05:30"
+2026-07-09 01:59:20.736 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:59:20.7361805+05:30"
+2026-07-09 01:59:30.745 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:59:30.7451031+05:30"
+2026-07-09 01:59:40.756 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:59:40.7564866+05:30"
+2026-07-09 01:59:50.773 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T01:59:50.7733911+05:30"
+2026-07-09 02:00:00.790 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:00:00.7903856+05:30"
+2026-07-09 02:00:10.805 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:00:10.8057842+05:30"
+2026-07-09 02:00:20.813 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:00:20.8131050+05:30"
+2026-07-09 02:00:30.818 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:00:30.8182884+05:30"
+2026-07-09 02:00:40.827 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:00:40.8270749+05:30"
+2026-07-09 02:00:50.840 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:00:50.8408452+05:30"
+2026-07-09 02:01:00.844 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:01:00.8449617+05:30"
+2026-07-09 02:01:10.854 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:01:10.8544320+05:30"
+2026-07-09 02:01:20.856 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:01:20.8562734+05:30"
+2026-07-09 02:01:30.861 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:01:30.8619578+05:30"
+2026-07-09 02:01:40.873 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:01:40.8732315+05:30"
+2026-07-09 02:01:50.879 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:01:50.8796142+05:30"
+2026-07-09 02:02:00.895 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:02:00.8950201+05:30"
+2026-07-09 02:02:10.906 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:02:10.9059822+05:30"
+2026-07-09 02:02:20.918 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:02:20.9182697+05:30"
+2026-07-09 02:02:30.921 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:02:30.9218338+05:30"
+2026-07-09 02:02:40.935 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:02:40.9350304+05:30"
+2026-07-09 02:02:50.951 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:02:50.9510417+05:30"
+2026-07-09 02:03:00.965 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:03:00.9654879+05:30"
+2026-07-09 02:03:10.970 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:03:10.9701743+05:30"
+2026-07-09 02:03:20.988 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:03:20.9888296+05:30"
+2026-07-09 02:03:30.992 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:03:30.9926511+05:30"
+2026-07-09 02:03:41.013 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:03:41.0133432+05:30"
+2026-07-09 02:03:51.020 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:03:51.0202807+05:30"
+2026-07-09 02:04:01.026 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:04:01.0261648+05:30"
+2026-07-09 02:04:11.032 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:04:11.0321113+05:30"
+2026-07-09 02:04:21.047 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:04:21.0476249+05:30"
+2026-07-09 02:04:31.057 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:04:31.0577438+05:30"
+2026-07-09 02:04:41.065 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:04:41.0651201+05:30"
+2026-07-09 02:04:51.077 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:04:51.0770617+05:30"
+2026-07-09 02:05:01.091 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:05:01.0917539+05:30"
+2026-07-09 02:05:11.103 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:05:11.1032433+05:30"
+2026-07-09 02:05:21.110 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:05:21.1105122+05:30"
+2026-07-09 02:05:31.127 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:05:31.1278904+05:30"
+2026-07-09 02:05:41.146 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:05:41.1466481+05:30"
+2026-07-09 02:05:51.157 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:05:51.1574726+05:30"
+2026-07-09 02:06:01.173 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:06:01.1734460+05:30"
+2026-07-09 02:06:11.177 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:06:11.1772440+05:30"
+2026-07-09 02:06:21.190 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:06:21.1907453+05:30"
+2026-07-09 02:06:31.208 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:06:31.2080105+05:30"
+2026-07-09 02:06:41.222 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:06:41.2226619+05:30"
+2026-07-09 02:06:51.238 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:06:51.2383527+05:30"
+2026-07-09 02:07:01.245 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:07:01.2455921+05:30"
+2026-07-09 02:07:11.250 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:07:11.2508474+05:30"
+2026-07-09 02:07:21.266 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:07:21.2669395+05:30"
+2026-07-09 02:07:31.273 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:07:31.2736717+05:30"
+2026-07-09 02:07:41.290 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:07:41.2909044+05:30"
+2026-07-09 02:07:51.296 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:07:51.2959956+05:30"
+2026-07-09 02:08:01.313 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:08:01.3133054+05:30"
+2026-07-09 02:08:11.328 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:08:11.3286999+05:30"
+2026-07-09 02:08:21.332 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:08:21.3327507+05:30"
+2026-07-09 02:08:31.346 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:08:31.3469329+05:30"
+2026-07-09 02:08:41.366 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:08:41.3664420+05:30"
+2026-07-09 02:08:51.405 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:08:51.4053309+05:30"
+2026-07-09 02:09:01.421 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:09:01.4214401+05:30"
+2026-07-09 02:09:11.428 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:09:11.4289761+05:30"
+2026-07-09 02:09:21.431 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:09:21.4311908+05:30"
+2026-07-09 02:09:31.444 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:09:31.4447597+05:30"
+2026-07-09 02:09:41.460 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:09:41.4603029+05:30"
+2026-07-09 02:09:51.474 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:09:51.4743558+05:30"
+2026-07-09 02:10:01.479 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:10:01.4793525+05:30"
+2026-07-09 02:10:11.493 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:10:11.4939520+05:30"
+2026-07-09 02:10:21.506 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:10:21.5065107+05:30"
+2026-07-09 02:10:31.524 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:10:31.5242739+05:30"
+2026-07-09 02:10:41.537 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:10:41.5378033+05:30"
+2026-07-09 02:10:51.555 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:10:51.5555540+05:30"
+2026-07-09 02:11:01.559 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:11:01.5598453+05:30"
+2026-07-09 02:11:11.573 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:11:11.5736466+05:30"
+2026-07-09 02:11:21.587 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:11:21.5875172+05:30"
+2026-07-09 02:11:31.594 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:11:31.5946306+05:30"
+2026-07-09 02:11:41.604 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:11:41.6047557+05:30"
+2026-07-09 02:11:51.609 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:11:51.6098961+05:30"
+2026-07-09 02:12:01.624 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:12:01.6249498+05:30"
+2026-07-09 02:12:11.637 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:12:11.6372717+05:30"
+2026-07-09 02:12:21.646 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:12:21.6462766+05:30"
+2026-07-09 02:12:31.659 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:12:31.6590366+05:30"
+2026-07-09 02:12:41.666 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:12:41.6661594+05:30"
+2026-07-09 02:12:51.672 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:12:51.6726462+05:30"
+2026-07-09 02:13:01.682 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:13:01.6821211+05:30"
+2026-07-09 02:13:11.689 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T02:13:11.6898629+05:30"
+2026-07-09 08:00:54.989 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T08:00:54.9890464+05:30"
+2026-07-09 08:01:08.021 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T08:01:08.0211034+05:30"
+2026-07-09 08:01:20.044 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T08:01:20.0447863+05:30"
+2026-07-09 08:01:30.070 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T08:01:30.0709182+05:30"
+2026-07-09 08:01:35.420 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService NotificationCleanupService shutdown requested.
+2026-07-09 08:01:35.421 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService NotificationCleanupService stopped.
+2026-07-09 08:01:35.424 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService stopped.
+2026-07-09 08:01:35.431 +05:30 [INF] HealthApp.API.Messaging.AppointmentBookedConsumer AppointmentBookedConsumer shutdown requested.
+2026-07-09 08:01:35.491 +05:30 [INF] HealthApp.API.Messaging.AppointmentBookedConsumer AppointmentBookedConsumer stopped because application shutdown was requested.
+2026-07-09 09:20:55.504 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (89ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-07-09 09:20:55.793 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (101ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2026-07-09 09:20:56.020 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2026-07-09 09:20:56.083 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-07-09 09:20:56.095 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-07-09 09:20:56.149 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (37ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-07-09 09:20:56.212 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (11ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+2026-07-09 09:20:57.316 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (87ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-09 09:20:57.487 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (2ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-09 09:20:57.499 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-09 09:20:57.550 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (13ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedDate], [a].[Email], [a].[EmailConfirmed], [a].[FullName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[MustChangePassword], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-09 09:20:57.702 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (9ms) [Parameters=[@normalizedRoleName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedRoleName
+2026-07-09 09:20:57.827 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (9ms) [Parameters=[@p='?' (Size = 450), @p1='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[UserId], [a].[RoleId]
+FROM [AspNetUserRoles] AS [a]
+WHERE [a].[UserId] = @p AND [a].[RoleId] = @p1
+2026-07-09 09:20:57.885 +05:30 [INF] Program Database migration and identity seeding completed successfully.
+2026-07-09 09:20:58.000 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService started.
+2026-07-09 09:20:58.004 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService NotificationCleanupService started.
+2026-07-09 09:20:58.005 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:20:58.0049437+05:30"
+2026-07-09 09:20:58.179 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (19ms) [Parameters=[@cutoffDate='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM [n]
+FROM [Notifications] AS [n]
+WHERE [n].[CreatedDate] < @cutoffDate
+2026-07-09 09:20:58.187 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService Notification cleanup completed. Deleted 0 notifications older than "2026-06-09T09:20:58.0225923+05:30".
+2026-07-09 09:20:58.486 +05:30 [INF] HealthApp.API.Messaging.AppointmentBookedConsumer AppointmentBookedConsumer started. Listening on queue: appointment.booked.queue
+2026-07-09 09:21:08.012 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:21:08.0123875+05:30"
+2026-07-09 09:21:18.017 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:21:18.0174497+05:30"
+2026-07-09 09:21:28.026 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:21:28.0267436+05:30"
+2026-07-09 09:21:38.042 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:21:38.0429220+05:30"
+2026-07-09 09:21:48.061 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:21:48.0614222+05:30"
+2026-07-09 09:21:58.067 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:21:58.0672556+05:30"
+2026-07-09 09:22:08.084 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:22:08.0842633+05:30"
+2026-07-09 09:22:18.101 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:22:18.1011024+05:30"
+2026-07-09 09:22:28.115 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:22:28.1157229+05:30"
+2026-07-09 09:22:38.124 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:22:38.1239461+05:30"
+2026-07-09 09:22:48.129 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:22:48.1293085+05:30"
+2026-07-09 09:22:58.142 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:22:58.1425853+05:30"
+2026-07-09 09:23:08.157 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:23:08.1573967+05:30"
+2026-07-09 09:23:18.162 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:23:18.1627189+05:30"
+2026-07-09 09:23:28.177 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:23:28.1767557+05:30"
+2026-07-09 09:23:38.182 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:23:38.1825836+05:30"
+2026-07-09 09:23:48.189 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:23:48.1892740+05:30"
+2026-07-09 09:23:50.793 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (12ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedDate], [a].[Email], [a].[EmailConfirmed], [a].[FullName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[MustChangePassword], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-09 09:23:51.275 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (36ms) [Parameters=[@userId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a0].[Name]
+FROM [AspNetUserRoles] AS [a]
+INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+WHERE [a].[UserId] = @userId
+2026-07-09 09:23:51.300 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[@userId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a0].[Name]
+FROM [AspNetUserRoles] AS [a]
+INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+WHERE [a].[UserId] = @userId
+2026-07-09 09:23:51.954 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (24ms) [Parameters=[@p0='?' (DbType = DateTime2), @p1='?' (DbType = DateTime2), @p2='?' (DbType = Boolean), @p3='?' (DbType = Boolean), @p4='?' (Size = 4000), @p5='?' (Size = 4000), @p6='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [RefreshTokens] ([CreatedDate], [ExpiryDate], [IsRevoked], [IsUsed], [JwtId], [Token], [UserId])
+OUTPUT INSERTED.[RefreshTokenId]
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-07-09 09:23:52.113 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (37ms) [Parameters=[@userId='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[Gender], [p].[InsuranceId], [p].[PatientName], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+WHERE [p].[UserId] = @userId
+2026-07-09 09:23:52.269 +05:30 [INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 1952.4761 ms
+2026-07-09 09:23:58.199 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:23:58.1992412+05:30"
+2026-07-09 09:24:08.214 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:24:08.2143952+05:30"
+2026-07-09 09:24:18.225 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:24:18.2247356+05:30"
+2026-07-09 09:24:28.243 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:24:28.2438450+05:30"
+2026-07-09 09:24:38.262 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:24:38.2612865+05:30"
+2026-07-09 09:24:44.907 +05:30 [WRN] LuckyPennySoftware.AutoMapper.License You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-09 09:24:45.625 +05:30 [INF] HealthApp.API.Service.Impl.DoctorService Doctor availability cache miss. Reading from SQL Server. DoctorId: 8, Date: "2026-10-07T00:00:00.0000000", CacheKey: doctors:8:availability:2026-10-07
+2026-07-09 09:24:45.690 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (33ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[DoctorId], [d].[ConsultationFee], [d].[CreatedDate], [d].[DoctorName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Doctors] AS [d]
+WHERE [d].[DoctorId] = @p
+2026-07-09 09:24:45.933 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (34ms) [Parameters=[@doctorId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[CreatedDate], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlots], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[Gender], [p].[InsuranceId], [p].[PatientName], [p].[PhoneNumber], [p].[UserId], [d].[DoctorId], [d].[ConsultationFee], [d].[CreatedDate], [d].[DoctorName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[DoctorId]
+WHERE [a].[DoctorId] = @doctorId
+ORDER BY [a].[ScheduledDate] DESC
+2026-07-09 09:24:46.175 +05:30 [INF] HealthApp.API.Service.Impl.DoctorService Doctor availability cached for 5 minutes. DoctorId: 8, Date: "2026-10-07T00:00:00.0000000", CacheKey: doctors:8:availability:2026-10-07
+2026-07-09 09:24:46.184 +05:30 [INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/8/availability responded 200 in 1840.4307 ms
+2026-07-09 09:24:48.278 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:24:48.2784922+05:30"
+2026-07-09 09:24:58.292 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:24:58.2925341+05:30"
+2026-07-09 09:25:08.311 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:25:08.3114133+05:30"
+2026-07-09 09:25:08.659 +05:30 [INF] HealthApp.API.Service.Impl.DoctorService Doctor availability served from Garnet cache. DoctorId: 8, Date: "2026-10-07T00:00:00.0000000", CacheKey: doctors:8:availability:2026-10-07
+2026-07-09 09:25:08.670 +05:30 [INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/8/availability responded 200 in 60.6483 ms
+2026-07-09 09:25:18.328 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:25:18.3286118+05:30"
+2026-07-09 09:25:28.340 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:25:28.3393510+05:30"
+2026-07-09 09:25:38.344 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:25:38.3446904+05:30"
+2026-07-09 09:25:48.355 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:25:48.3554662+05:30"
+2026-07-09 09:25:58.360 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:25:58.3607530+05:30"
+2026-07-09 09:26:08.372 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:26:08.3725488+05:30"
+2026-07-09 09:26:18.383 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:26:18.3833441+05:30"
+2026-07-09 09:26:28.400 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:26:28.4002321+05:30"
+2026-07-09 09:26:38.410 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:26:38.4103193+05:30"
+2026-07-09 09:26:48.427 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:26:48.4279384+05:30"
+2026-07-09 09:26:58.443 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:26:58.4435257+05:30"
+2026-07-09 09:27:08.462 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:27:08.4610418+05:30"
+2026-07-09 09:27:18.466 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:27:18.4660078+05:30"
+2026-07-09 09:27:28.483 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:27:28.4838401+05:30"
+2026-07-09 09:27:38.498 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:27:38.4986042+05:30"
+2026-07-09 09:27:48.506 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:27:48.5066044+05:30"
+2026-07-09 09:27:58.512 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:27:58.5120859+05:30"
+2026-07-09 09:28:08.516 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:28:08.5167866+05:30"
+2026-07-09 09:28:18.525 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:28:18.5252805+05:30"
+2026-07-09 09:28:28.539 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:28:28.5394368+05:30"
+2026-07-09 09:28:38.550 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:28:38.5507893+05:30"
+2026-07-09 09:28:48.640 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:28:48.6403644+05:30"
+2026-07-09 09:28:58.659 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:28:58.6592184+05:30"
+2026-07-09 09:29:03.170 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (10ms) [Parameters=[@userId='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[Gender], [p].[InsuranceId], [p].[PatientName], [p].[PhoneNumber], [p].[UserId]
+FROM [Patients] AS [p]
+WHERE [p].[UserId] = @userId
+2026-07-09 09:29:03.188 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (6ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[DoctorId], [d].[ConsultationFee], [d].[CreatedDate], [d].[DoctorName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Doctors] AS [d]
+WHERE [d].[DoctorId] = @p
+2026-07-09 09:29:03.313 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (20ms) [Parameters=[@doctorId='?' (DbType = Int32), @date_Date='?' (DbType = DateTime2), @timeSlot='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Appointments] AS [a]
+        WHERE [a].[DoctorId] = @doctorId AND CONVERT(date, [a].[ScheduledDate]) = @date_Date AND [a].[TimeSlots] = @timeSlot AND [a].[Status] <> N'Cancelled' AND [a].[Status] <> N'Completed') THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-07-09 09:29:03.352 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (13ms) [Parameters=[@patientId='?' (DbType = Int32), @date_Date='?' (DbType = DateTime2), @timeSlot='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Appointments] AS [a]
+        WHERE [a].[PatientId] = @patientId AND CONVERT(date, [a].[ScheduledDate]) = @date_Date AND [a].[TimeSlots] = @timeSlot AND [a].[Status] <> N'Cancelled' AND [a].[Status] <> N'Completed') THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-07-09 09:29:03.383 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (14ms) [Parameters=[@patientId='?' (DbType = Int32), @doctorId='?' (DbType = Int32), @date_Date='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [Appointments] AS [a]
+        WHERE [a].[PatientId] = @patientId AND [a].[DoctorId] = @doctorId AND CONVERT(date, [a].[ScheduledDate]) = @date_Date AND [a].[Status] <> N'Cancelled' AND [a].[Status] <> N'Completed') THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END
+2026-07-09 09:29:03.488 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (11ms) [Parameters=[@p0='?' (Size = 200), @p1='?' (DbType = DateTime2), @p2='?' (DbType = Int32), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime2), @p5='?' (Size = 4000), @p6='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Appointments] ([CancellationReason], [CreatedDate], [DoctorId], [PatientId], [ScheduledDate], [Status], [TimeSlots])
+OUTPUT INSERTED.[AppointmentId]
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);
+2026-07-09 09:29:03.540 +05:30 [INF] HealthApp.API.Messaging.RabbitMQPublisher RabbitMQ publisher initialized. Queue: appointment.booked.queue
+2026-07-09 09:29:03.568 +05:30 [INF] HealthApp.API.Messaging.RabbitMQPublisher Message published to RabbitMQ. Queue: appointment.booked.queue, MessageType: AppointmentBookedEvent
+2026-07-09 09:29:03.571 +05:30 [INF] HealthApp.API.Service.Impl.AppointmentService AppointmentBookedEvent published. AppointmentId: 14, DoctorId: 8
+2026-07-09 09:29:03.620 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (13ms) [Parameters=[@appointmentId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[AppointmentId], [a].[CancellationReason], [a].[CreatedDate], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlots], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[Gender], [p].[InsuranceId], [p].[PatientName], [p].[PhoneNumber], [p].[UserId], [d].[DoctorId], [d].[ConsultationFee], [d].[CreatedDate], [d].[DoctorName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[DoctorId]
+WHERE [a].[AppointmentId] = @appointmentId
+2026-07-09 09:29:03.673 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (15ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = DateTime2), @p2='?' (DbType = Int32), @p3='?' (DbType = Boolean), @p4='?' (Size = 4000), @p5='?' (Size = 4000)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+INSERT INTO [Notifications] ([AppointmentId], [CreatedDate], [DoctorId], [IsRead], [Message], [Title])
+OUTPUT INSERTED.[NotificationId]
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5);
+2026-07-09 09:29:03.694 +05:30 [INF] HealthApp.API.Messaging.AppointmentBookedConsumer AppointmentBookedEvent consumed. AppointmentId: 14, DoctorId: 8
+2026-07-09 09:29:03.698 +05:30 [INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/appointments responded 201 in 608.5499 ms
+2026-07-09 09:29:08.673 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:29:08.6734284+05:30"
+2026-07-09 09:29:18.688 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:29:18.6889466+05:30"
+2026-07-09 09:29:28.706 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:29:28.7057194+05:30"
+2026-07-09 09:29:38.722 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:29:38.7229568+05:30"
+2026-07-09 09:29:48.739 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:29:48.7391518+05:30"
+2026-07-09 09:29:58.743 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:29:58.7436520+05:30"
+2026-07-09 09:30:08.746 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:30:08.7469204+05:30"
+2026-07-09 09:30:18.752 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:30:18.7525866+05:30"
+2026-07-09 09:30:28.756 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:30:28.7565608+05:30"
+2026-07-09 09:30:38.760 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:30:38.7609333+05:30"
+2026-07-09 09:30:48.764 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:30:48.7643092+05:30"
+2026-07-09 09:30:58.778 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:30:58.7779944+05:30"
+2026-07-09 09:31:08.789 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:31:08.7894487+05:30"
+2026-07-09 09:31:18.804 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:31:18.8042800+05:30"
+2026-07-09 09:31:28.818 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:31:28.8180311+05:30"
+2026-07-09 09:31:38.834 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:31:38.8347462+05:30"
+2026-07-09 09:31:48.843 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:31:48.8437760+05:30"
+2026-07-09 09:31:57.817 +05:30 [INF] HealthApp.API.Service.Impl.DoctorService Doctor availability cache miss. Reading from SQL Server. DoctorId: 8, Date: "2026-10-07T00:00:00.0000000", CacheKey: doctors:8:availability:2026-10-07
+2026-07-09 09:31:57.857 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (33ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[DoctorId], [d].[ConsultationFee], [d].[CreatedDate], [d].[DoctorName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Doctors] AS [d]
+WHERE [d].[DoctorId] = @p
+2026-07-09 09:31:57.884 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (16ms) [Parameters=[@doctorId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[CreatedDate], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlots], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[Gender], [p].[InsuranceId], [p].[PatientName], [p].[PhoneNumber], [p].[UserId], [d].[DoctorId], [d].[ConsultationFee], [d].[CreatedDate], [d].[DoctorName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[DoctorId]
+WHERE [a].[DoctorId] = @doctorId
+ORDER BY [a].[ScheduledDate] DESC
+2026-07-09 09:31:57.897 +05:30 [INF] HealthApp.API.Service.Impl.DoctorService Doctor availability cached for 5 minutes. DoctorId: 8, Date: "2026-10-07T00:00:00.0000000", CacheKey: doctors:8:availability:2026-10-07
+2026-07-09 09:31:57.903 +05:30 [INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/8/availability responded 200 in 94.5619 ms
+2026-07-09 09:31:58.849 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:31:58.8490987+05:30"
+2026-07-09 09:32:08.868 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:32:08.8688912+05:30"
+2026-07-09 09:32:18.884 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:32:18.8846801+05:30"
+2026-07-09 09:32:28.891 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:32:28.8917776+05:30"
+2026-07-09 09:32:38.901 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:32:38.9018302+05:30"
+2026-07-09 09:32:48.921 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:32:48.9212662+05:30"
+2026-07-09 09:32:58.926 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:32:58.9266788+05:30"
+2026-07-09 09:33:08.944 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:33:08.9447617+05:30"
+2026-07-09 09:33:11.265 +05:30 [INF] HealthApp.API.Service.Impl.DoctorService Doctor availability cache miss. Reading from SQL Server. DoctorId: 9, Date: "2026-10-07T00:00:00.0000000", CacheKey: doctors:9:availability:2026-10-07
+2026-07-09 09:33:11.278 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (7ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[DoctorId], [d].[ConsultationFee], [d].[CreatedDate], [d].[DoctorName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Doctors] AS [d]
+WHERE [d].[DoctorId] = @p
+2026-07-09 09:33:11.302 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (16ms) [Parameters=[@doctorId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[CreatedDate], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlots], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[Gender], [p].[InsuranceId], [p].[PatientName], [p].[PhoneNumber], [p].[UserId], [d].[DoctorId], [d].[ConsultationFee], [d].[CreatedDate], [d].[DoctorName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[DoctorId]
+WHERE [a].[DoctorId] = @doctorId
+ORDER BY [a].[ScheduledDate] DESC
+2026-07-09 09:33:11.312 +05:30 [INF] HealthApp.API.Service.Impl.DoctorService Doctor availability cached for 5 minutes. DoctorId: 9, Date: "2026-10-07T00:00:00.0000000", CacheKey: doctors:9:availability:2026-10-07
+2026-07-09 09:33:11.318 +05:30 [INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/9/availability responded 200 in 59.5712 ms
+2026-07-09 09:33:18.952 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:33:18.9521583+05:30"
+2026-07-09 09:33:24.122 +05:30 [INF] HealthApp.API.Service.Impl.DoctorService Doctor availability served from Garnet cache. DoctorId: 8, Date: "2026-10-07T00:00:00.0000000", CacheKey: doctors:8:availability:2026-10-07
+2026-07-09 09:33:24.127 +05:30 [INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/8/availability responded 200 in 9.6129 ms
+2026-07-09 09:33:28.955 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:33:28.9556996+05:30"
+2026-07-09 09:33:38.963 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:33:38.9634716+05:30"
+2026-07-09 09:33:48.968 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:33:48.9681414+05:30"
+2026-07-09 09:33:55.325 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (14ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [d].[DoctorId], [d].[ConsultationFee], [d].[CreatedDate], [d].[DoctorName], [d].[IsActive], [d].[Specialisation], [d].[UserId], [d].[YearsOfExperience]
+FROM [Doctors] AS [d]
+WHERE [d].[DoctorId] = @p
+2026-07-09 09:33:55.357 +05:30 [INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/6 responded 200 in 62.9173 ms
+2026-07-09 09:33:58.984 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:33:58.9848997+05:30"
+2026-07-09 09:34:09.001 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-09T09:34:09.0017007+05:30"
+2026-07-09 09:34:09.090 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService NotificationCleanupService shutdown requested.
+2026-07-09 09:34:09.092 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService NotificationCleanupService stopped.
+2026-07-09 09:34:09.095 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService stopped.
+2026-07-09 09:34:09.098 +05:30 [INF] HealthApp.API.Messaging.AppointmentBookedConsumer AppointmentBookedConsumer shutdown requested.
+2026-07-09 09:34:09.135 +05:30 [INF] HealthApp.API.Messaging.AppointmentBookedConsumer AppointmentBookedConsumer stopped because application shutdown was requested.

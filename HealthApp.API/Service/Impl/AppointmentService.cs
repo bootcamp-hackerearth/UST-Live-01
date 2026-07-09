@@ -1,14 +1,16 @@
 using AutoMapper;
+using HealthApp.API.Events;
 using HealthApp.API.Exceptions;
+using HealthApp.API.Messaging;
 using HealthApp.API.Models;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
 using HealthApp.Shared.Constants;
 using HealthApp.Shared.DTOs;
 using HealthApp.Shared.Enums;
-using System.Security.Claims;
-using System.Globalization;
 using Microsoft.AspNetCore.Http;
+using System.Globalization;
+using System.Security.Claims;
 
 namespace HealthApp.API.Service.Impl;
 
@@ -17,17 +19,19 @@ public class AppointmentService(
     IPatientRepository patientRepository,
     IDoctorRepository doctorRepository,
     IHttpContextAccessor httpContextAccessor,
-    IMapper mapper) : IAppointmentService
+    IMapper mapper,
+    IRabbitMQPublisher rabbitMQPublisher,
+    ILogger<AppointmentService> logger) : IAppointmentService
 {
     private const string AppointmentAccessDeniedMessage =
-    "You are not allowed to access appointments.";
+        "You are not allowed to access appointments.";
 
-    private const string InvalidStatusTransitionMessage = 
-    "Invalid appointment status transition.";
+    private const string InvalidStatusTransitionMessage =
+        "Invalid appointment status transition.";
 
     public async Task<List<AppointmentDto>> GetAppointmentsAsync(
-    int? patientId = null,
-    int? doctorId = null)
+        int? patientId = null,
+        int? doctorId = null)
     {
         if (IsPatient())
         {
@@ -89,6 +93,7 @@ public class AppointmentService(
 
         throw new ForbiddenAccessException(AppointmentAccessDeniedMessage);
     }
+
     public async Task<List<AppointmentDto>> GetAllAppointmentsAsync()
     {
         if (IsPatient())
@@ -115,6 +120,7 @@ public class AppointmentService(
 
         throw new ForbiddenAccessException(AppointmentAccessDeniedMessage);
     }
+
     public async Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId)
     {
         ValidateAppointmentId(appointmentId);
@@ -229,6 +235,7 @@ public class AppointmentService(
 
         throw new ForbiddenAccessException(AppointmentAccessDeniedMessage);
     }
+
     public async Task<AppointmentDto> BookAppointmentAsync(BookAppointmentDto dto)
     {
         if (dto is null)
@@ -297,6 +304,30 @@ public class AppointmentService(
 
         var savedAppointment = await appointmentRepository.AddAsync(appointment);
 
+        try
+        {
+            await rabbitMQPublisher.PublishAsync(new AppointmentBookedEvent
+            {
+                AppointmentId = savedAppointment.AppointmentId,
+                PatientName = patient.PatientName,
+                DoctorId = savedAppointment.DoctorId,
+                ScheduledDate = savedAppointment.ScheduledDate,
+                TimeSlot = savedAppointment.TimeSlots
+            });
+
+            logger.LogInformation(
+                "AppointmentBookedEvent published. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}",
+                savedAppointment.AppointmentId,
+                savedAppointment.DoctorId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Appointment was saved, but AppointmentBookedEvent publishing failed. AppointmentId: {AppointmentId}",
+                savedAppointment.AppointmentId);
+        }
+
         var appointmentWithDetails = await appointmentRepository
             .GetByIdWithDetailsAsync(savedAppointment.AppointmentId);
 
@@ -321,6 +352,7 @@ public class AppointmentService(
 
         return patient;
     }
+
     private async Task<Doctor> GetLoggedInDoctorAsync()
     {
         var userId = CurrentUser?.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -341,8 +373,8 @@ public class AppointmentService(
     }
 
     public async Task<AppointmentDto> ChangeAppointmentStatusAsync(
-    int appointmentId,
-    UpdateAppointmentStatusDto dto)
+        int appointmentId,
+        UpdateAppointmentStatusDto dto)
     {
         ValidateAppointmentId(appointmentId);
 
@@ -374,8 +406,8 @@ public class AppointmentService(
     }
 
     private void ValidateStatusChange(
-    Appointment appointment,
-    UpdateAppointmentStatusDto dto)
+        Appointment appointment,
+        UpdateAppointmentStatusDto dto)
     {
         var currentStatus = Enum.Parse<AppointmentStatus>(appointment.Status);
 
@@ -403,9 +435,10 @@ public class AppointmentService(
         throw new ForbiddenAccessException(
             "You are not allowed to update appointment status.");
     }
+
     public async Task<AppointmentDto> CancelAppointmentAsync(
-    int appointmentId,
-    string? reason)
+        int appointmentId,
+        string? reason)
     {
         if (string.IsNullOrWhiteSpace(reason))
         {
@@ -422,7 +455,7 @@ public class AppointmentService(
     }
 
     private ClaimsPrincipal? CurrentUser =>
-    httpContextAccessor.HttpContext?.User;
+        httpContextAccessor.HttpContext?.User;
 
     private bool IsPatient()
     {
@@ -478,27 +511,36 @@ public class AppointmentService(
     private static void ValidateAppointmentId(int id)
     {
         if (id <= 0)
+        {
             throw new AppointmentRuleException(
                 "Please provide a valid appointment reference.");
+        }
     }
 
     private async Task ValidatePatientExistsAsync(int id)
     {
         if (id <= 0)
+        {
             throw new AppointmentRuleException("Invalid patient.");
+        }
 
         if (await patientRepository.GetByIdAsync(id) is null)
+        {
             throw new EntityNotFoundException("Patient", id);
+        }
     }
 
     private async Task<Doctor> ValidateDoctorExistsAsync(int id)
     {
         if (id <= 0)
+        {
             throw new AppointmentRuleException("Invalid doctor.");
+        }
 
         return await doctorRepository.GetByIdAsync(id)
             ?? throw new EntityNotFoundException("Doctor", id);
     }
+
     private static bool IsPastTimeSlot(DateTime scheduledDate, string timeSlot)
     {
         if (scheduledDate.Date != DateTime.Today)
@@ -528,8 +570,9 @@ public class AppointmentService(
 
         return parsedStartTime.TimeOfDay;
     }
+
     private static void EnsureAppointmentCanBeUpdated(
-    AppointmentStatus currentStatus)
+        AppointmentStatus currentStatus)
     {
         if (currentStatus == AppointmentStatus.Completed ||
             currentStatus == AppointmentStatus.Cancelled)
@@ -593,5 +636,4 @@ public class AppointmentService(
 
         throw new AppointmentRuleException(InvalidStatusTransitionMessage);
     }
-
 }

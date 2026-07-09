@@ -7,8 +7,10 @@ using HealthApp.Shared.Constants;
 using HealthApp.Shared.DTOs;
 using HealthApp.Shared.Enums;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Globalization;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace HealthApp.API.Service.Impl;
 
@@ -16,9 +18,12 @@ public class DoctorService(
     IDoctorRepository doctorRepository,
     IAppointmentRepository appointmentRepository,
     IHttpContextAccessor httpContextAccessor,
-    IMapper mapper) : IDoctorService
+    IDistributedCache distributedCache,
+    IMapper mapper,
+    ILogger<DoctorService> logger) : IDoctorService
 {
     private const string DoctorEntityName = "Doctor";
+
     public async Task<List<DoctorDto>> GetAllDoctorsAsync()
     {
         if (IsDoctor())
@@ -95,6 +100,14 @@ public class DoctorService(
     {
         ValidateDoctorId(doctorId);
 
+        var availabilityDate = date.Date;
+
+        if (availabilityDate < DateTime.Today)
+        {
+            throw new BusinessRuleException(
+                "Cannot check availability for past dates.");
+        }
+
         if (IsDoctor())
         {
             var loggedInDoctor = await GetLoggedInDoctorAsync();
@@ -106,6 +119,35 @@ public class DoctorService(
             }
         }
 
+        var cacheKey = GetDoctorAvailabilityCacheKey(
+            doctorId,
+            availabilityDate);
+
+        var cachedAvailability = await distributedCache.GetStringAsync(cacheKey);
+
+        if (!string.IsNullOrWhiteSpace(cachedAvailability))
+        {
+            logger.LogInformation(
+                "Doctor availability served from Garnet cache. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+                doctorId,
+                availabilityDate,
+                cacheKey);
+
+            return JsonSerializer.Deserialize<DoctorAvailabilityDto>(cachedAvailability)
+                ?? new DoctorAvailabilityDto
+                {
+                    DoctorId = doctorId,
+                    Date = availabilityDate,
+                    AvailableSlots = new List<string>()
+                };
+        }
+
+        logger.LogInformation(
+            "Doctor availability cache miss. Reading from SQL Server. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+            doctorId,
+            availabilityDate,
+            cacheKey);
+
         var doctor = await doctorRepository.GetByIdAsync(doctorId)
             ?? throw new EntityNotFoundException(DoctorEntityName, doctorId);
 
@@ -114,32 +156,65 @@ public class DoctorService(
             throw new BusinessRuleException("Doctor is inactive.");
         }
 
-        if (date.Date < DateTime.Today)
-        {
-            throw new BusinessRuleException(
-                "Cannot check availability for past dates.");
-        }
-
         var appointments = await appointmentRepository.GetByDoctorIdAsync(doctorId);
 
-        var booked = appointments
-            .Where(a =>
-                a.ScheduledDate.Date == date.Date &&
-                a.Status != AppointmentStatus.Cancelled.ToString())
-            .Select(a => a.TimeSlots)
-            .ToList();
+        var bookedSlots = appointments
+            .Where(appointment =>
+                appointment.ScheduledDate.Date == availabilityDate &&
+                appointment.Status != AppointmentStatus.Cancelled.ToString())
+            .Select(appointment => appointment.TimeSlots)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var availableSlots = TimeSlots.Slots
-            .Where(slot => !booked.Contains(slot))
-            .Where(slot => !IsPastTimeSlot(date.Date, slot))
+            .Where(slot => !bookedSlots.Contains(slot))
+            .Where(slot => !IsPastTimeSlot(availabilityDate, slot))
             .ToList();
 
-        return new DoctorAvailabilityDto
+        var availability = new DoctorAvailabilityDto
         {
             DoctorId = doctorId,
-            Date = date.Date,
+            Date = availabilityDate,
             AvailableSlots = availableSlots
         };
+
+        var serializedAvailability = JsonSerializer.Serialize(availability);
+
+        await distributedCache.SetStringAsync(
+            cacheKey,
+            serializedAvailability,
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            });
+
+        logger.LogInformation(
+            "Doctor availability cached for 5 minutes. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+            doctorId,
+            availabilityDate,
+            cacheKey);
+
+        return availability;
+    }
+
+    public async Task InvalidateDoctorAvailabilityCacheAsync(
+        int doctorId,
+        DateTime date)
+    {
+        ValidateDoctorId(doctorId);
+
+        var availabilityDate = date.Date;
+
+        var cacheKey = GetDoctorAvailabilityCacheKey(
+            doctorId,
+            availabilityDate);
+
+        await distributedCache.RemoveAsync(cacheKey);
+
+        logger.LogInformation(
+            "Doctor availability cache invalidated. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+            doctorId,
+            availabilityDate,
+            cacheKey);
     }
 
     private async Task<Doctor> GetLoggedInDoctorAsync()
@@ -177,6 +252,14 @@ public class DoctorService(
                 "Please provide a valid doctor reference.");
         }
     }
+
+    private static string GetDoctorAvailabilityCacheKey(
+        int doctorId,
+        DateTime date)
+    {
+        return $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
+    }
+
     private static bool IsPastTimeSlot(DateTime scheduledDate, string timeSlot)
     {
         if (scheduledDate.Date != DateTime.Today)
@@ -196,10 +279,10 @@ public class DoctorService(
         var startText = timeSlot.Split('-')[0].Trim();
 
         if (!DateTime.TryParse(
-        startText,
-        CultureInfo.InvariantCulture,
-        DateTimeStyles.None,
-        out var parsedStartTime))
+                startText,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var parsedStartTime))
         {
             throw new BusinessRuleException("Invalid time slot format.");
         }

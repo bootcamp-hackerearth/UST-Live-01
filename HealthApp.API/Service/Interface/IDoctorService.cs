@@ -1,4 +1,3 @@
-
 using HealthApp.Shared.DTOs;
 using HealthApp.Shared.Enums;
 
@@ -16,6 +15,10 @@ public interface IDoctorService
         SpecialisationType specialisation);
 
     Task<DoctorAvailabilityDto> GetDoctorAvailabilityAsync(
+        int doctorId,
+        DateTime date);
+
+    Task InvalidateDoctorAvailabilityCacheAsync(
         int doctorId,
         DateTime date);
 }

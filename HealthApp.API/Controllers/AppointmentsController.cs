@@ -13,9 +13,9 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
 {
     [HttpGet]
     public async Task<ActionResult<List<AppointmentDto>>> Get(
-    [FromQuery] int? patientId,
-    [FromQuery] int? doctorId)
-    => Ok(await appointmentService.GetAppointmentsAsync(patientId, doctorId));
+        [FromQuery] int? patientId,
+        [FromQuery] int? doctorId)
+        => Ok(await appointmentService.GetAppointmentsAsync(patientId, doctorId));
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<AppointmentDto>> GetById(int id)
@@ -24,7 +24,14 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     [HttpPost]
     [Authorize(Roles = Roles.Patient)]
     public async Task<ActionResult<AppointmentDto>> Post(BookAppointmentDto dto)
-        => Ok(await appointmentService.BookAppointmentAsync(dto));
+    {
+        var createdAppointment = await appointmentService.BookAppointmentAsync(dto);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = createdAppointment.AppointmentId },
+            createdAppointment);
+    }
 
     [HttpPut("{id:int}/status")]
     [Authorize(Roles = Roles.Patient + "," + Roles.Doctor)]

@@ -1,0 +1,65 @@
+2026-07-08 09:15:55.232 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (25ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-07-08 09:15:55.308 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (29ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_getapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session', @LockMode = 'Exclusive';
+SELECT @result
+2026-07-08 09:15:55.389 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+2026-07-08 09:15:55.411 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT 1
+2026-07-08 09:15:55.415 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+2026-07-08 09:15:55.429 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT [MigrationId], [ProductVersion]
+FROM [__EFMigrationsHistory]
+ORDER BY [MigrationId];
+2026-07-08 09:15:55.456 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (7ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+DECLARE @result int;
+EXEC @result = sp_releaseapplock @Resource = '__EFMigrationsLock', @LockOwner = 'Session';
+SELECT @result
+2026-07-08 09:15:55.870 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (47ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-08 09:15:56.065 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (2ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-08 09:15:56.075 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (1ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-08 09:15:56.130 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (12ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[CreatedDate], [a].[Email], [a].[EmailConfirmed], [a].[FullName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[MustChangePassword], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-08 09:15:56.292 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (4ms) [Parameters=[@normalizedRoleName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedRoleName
+2026-07-08 09:15:56.401 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (10ms) [Parameters=[@p='?' (Size = 450), @p1='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[UserId], [a].[RoleId]
+FROM [AspNetUserRoles] AS [a]
+WHERE [a].[UserId] = @p AND [a].[RoleId] = @p1
+2026-07-08 09:15:56.453 +05:30 [INF] Program Database migration and identity seeding completed successfully.
+2026-07-08 09:15:56.570 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService started.
+2026-07-08 09:15:56.572 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService NotificationCleanupService started.
+2026-07-08 09:15:56.575 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-08T09:15:56.5744973+05:30"
+2026-07-08 09:15:56.721 +05:30 [INF] Microsoft.EntityFrameworkCore.Database.Command Executed DbCommand (14ms) [Parameters=[@cutoffDate='?' (DbType = DateTime2)], CommandType='"Text"', CommandTimeout='30']
+DELETE FROM [n]
+FROM [Notifications] AS [n]
+WHERE [n].[CreatedDate] < @cutoffDate
+2026-07-08 09:15:56.728 +05:30 [INF] HealthApp.API.BackgroundServices.NotificationCleanupService Notification cleanup completed. Deleted 0 notifications older than "2026-06-08T09:15:56.5956571+05:30".
+2026-07-08 09:15:56.873 +05:30 [INF] HealthApp.API.Messaging.AppointmentBookedConsumer AppointmentBookedConsumer started. Listening on queue: appointment.booked.queue
+2026-07-08 09:16:06.597 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-08T09:16:06.5972205+05:30"
+2026-07-08 09:16:16.614 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-08T09:16:16.6142515+05:30"
+2026-07-08 09:16:26.632 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-08T09:16:26.6320760+05:30"
+2026-07-08 09:16:36.644 +05:30 [INF] HealthApp.API.BackgroundServices.HeartbeatService HeartbeatService running at: "2026-07-08T09:16:36.6443595+05:30"
