@@ -3,6 +3,7 @@ using HealthApp.Api.Data;
 using HealthApp.Api.Handler;
 using HealthApp.Api.Mapping;
 using HealthApp.Api.Models;
+using HealthApp.Api.Options;
 using HealthApp.Api.Repositories.Impl;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Impl;
@@ -170,6 +171,20 @@ builder.Services.AddMassTransit(config =>
 
         rabbitConfig.ConfigureEndpoints(context);
     });
+});
+
+// Garnet / Redis distributed cache
+builder.Services.Configure<GarnetOptions>(
+    builder.Configuration.GetSection("Garnet"));
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    var garnetOptions = builder.Configuration
+        .GetSection("Garnet")
+        .Get<GarnetOptions>() ?? new GarnetOptions();
+
+    options.Configuration = garnetOptions.ConnectionString;
+    options.InstanceName = garnetOptions.InstanceName;
 });
 
 // AutoMapper

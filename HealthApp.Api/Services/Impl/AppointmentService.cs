@@ -8,6 +8,8 @@ using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
 using HealthApp.Shared.Events;
 using MassTransit;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace HealthApp.Api.Services.Impl
 {
@@ -18,19 +20,25 @@ namespace HealthApp.Api.Services.Impl
         private readonly IDoctorRepository _doctorRepository;
         private readonly IMapper _mapper;
         private readonly IPublishEndpoint _publishEndpoint;
+        private readonly IDistributedCache _cache;
+        private readonly ILogger<AppointmentService> _logger;
 
         public AppointmentService(
             IAppointmentRepository appointmentRepository,
             IPatientRepository patientRepository,
             IDoctorRepository doctorRepository,
             IMapper mapper,
-            IPublishEndpoint publishEndpoint)
+            IPublishEndpoint publishEndpoint,
+            IDistributedCache cache,
+            ILogger<AppointmentService> logger)
         {
             _appointmentRepository = appointmentRepository;
             _patientRepository = patientRepository;
             _doctorRepository = doctorRepository;
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
+            _cache = cache;
+            _logger = logger;
         }
 
         public async Task<PagedResultDto<AppointmentDto>> GetAppointmentsAsync(
@@ -205,6 +213,10 @@ namespace HealthApp.Api.Services.Impl
             createdAppointment.Patient = patient;
             createdAppointment.Doctor = doctor;
 
+            await RemoveDoctorSlotsCacheAsync(
+                createdAppointment.DoctorId,
+                createdAppointment.ScheduledDate);
+
             var appointmentBookedEvent = new AppointmentBookedEvent(
                 createdAppointment.AppointmentId,
                 createdAppointment.PatientId,
@@ -257,6 +269,10 @@ namespace HealthApp.Api.Services.Impl
                     : null;
 
             await _appointmentRepository.Update(id, appointment);
+
+            await RemoveDoctorSlotsCacheAsync(
+                appointment.DoctorId,
+                appointment.ScheduledDate);
         }
 
         public async Task<IEnumerable<string>> GetAvailableSlotsAsync(
@@ -285,6 +301,48 @@ namespace HealthApp.Api.Services.Impl
                 throw new BusinessRuleViolationException("Doctor is inactive.");
             }
 
+            var cacheKey = GetDoctorSlotsCacheKey(
+                doctorId,
+                date);
+
+            var cachedSlotsJson = await _cache.GetStringAsync(cacheKey);
+
+            if (!string.IsNullOrWhiteSpace(cachedSlotsJson))
+            {
+                var cachedSlots = JsonSerializer.Deserialize<List<string>>(
+                    cachedSlotsJson);
+
+                if (cachedSlots != null)
+                {
+                    _logger.LogInformation(
+                        "\n" +
+                        "================ DOCTOR SLOTS CACHE HIT ================\n" +
+                        " Doctor Id : {DoctorId}\n" +
+                        " Date      : {Date}\n" +
+                        " Cache Key : {CacheKey}\n" +
+                        " Count     : {Count}\n" +
+                        "========================================================",
+                        doctorId,
+                        date,
+                        cacheKey,
+                        cachedSlots.Count);
+
+                    return cachedSlots;
+                }
+            }
+
+            _logger.LogInformation(
+                "\n" +
+                "================ DOCTOR SLOTS CACHE MISS ===============\n" +
+                " Doctor Id : {DoctorId}\n" +
+                " Date      : {Date}\n" +
+                " Cache Key : {CacheKey}\n" +
+                " Action    : Loading available slots from database\n" +
+                "========================================================",
+                doctorId,
+                date,
+                cacheKey);
+
             var availableSlots = new List<string>();
 
             foreach (var slot in TimeSlots.Slots)
@@ -299,6 +357,32 @@ namespace HealthApp.Api.Services.Impl
                     availableSlots.Add(slot);
                 }
             }
+
+            var cacheOptions = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+                SlidingExpiration = TimeSpan.FromMinutes(2)
+            };
+
+            await _cache.SetStringAsync(
+                cacheKey,
+                JsonSerializer.Serialize(availableSlots),
+                cacheOptions);
+
+            _logger.LogInformation(
+                "\n" +
+                "================ DOCTOR SLOTS CACHE SET ================\n" +
+                " Doctor Id           : {DoctorId}\n" +
+                " Date                : {Date}\n" +
+                " Cache Key           : {CacheKey}\n" +
+                " Available Slot Count: {Count}\n" +
+                " Absolute Expiry     : 5 minute(s)\n" +
+                " Sliding Expiry      : 2 minute(s)\n" +
+                "========================================================",
+                doctorId,
+                date,
+                cacheKey,
+                availableSlots.Count);
 
             return availableSlots;
         }
@@ -330,6 +414,10 @@ namespace HealthApp.Api.Services.Impl
                 throw new BusinessRuleViolationException(
                     "Unable to delete appointment.");
             }
+
+            await RemoveDoctorSlotsCacheAsync(
+                appointment.DoctorId,
+                appointment.ScheduledDate);
         }
 
         private async Task LoadAppointmentNavigationDataAsync(Appointment appointment)
@@ -339,6 +427,36 @@ namespace HealthApp.Api.Services.Impl
 
             appointment.Doctor ??= await _doctorRepository.GetByIdAsync(
                 appointment.DoctorId);
+        }
+
+        private static string GetDoctorSlotsCacheKey(
+            int doctorId,
+            DateOnly date)
+        {
+            return $"doctor:{doctorId}:slots:{date:yyyy-MM-dd}";
+        }
+
+        private async Task RemoveDoctorSlotsCacheAsync(
+            int doctorId,
+            DateOnly date)
+        {
+            var cacheKey = GetDoctorSlotsCacheKey(
+                doctorId,
+                date);
+
+            await _cache.RemoveAsync(cacheKey);
+
+            _logger.LogInformation(
+                "\n" +
+                "================ DOCTOR SLOTS CACHE INVALIDATED ================\n" +
+                " Doctor Id : {DoctorId}\n" +
+                " Date      : {Date}\n" +
+                " Cache Key : {CacheKey}\n" +
+                " Reason    : Appointment data changed\n" +
+                "================================================================",
+                doctorId,
+                date,
+                cacheKey);
         }
     }
 }
