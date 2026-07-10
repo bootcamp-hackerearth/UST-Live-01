@@ -1,4 +1,5 @@
 ﻿using HealthApp.Api.Services.Interfaces;
+using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Events;
 using MassTransit;
 
@@ -37,7 +38,9 @@ namespace HealthApp.Api.Consumers
                     RelatedEntityType = "Appointment"
                 });
 
-            _logger.LogInformation(
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
                 "\n" +
                 "================ NOTIFICATION CREATED FROM EVENT ================\n" +
                 " Event Type      : AppointmentBookedEvent\n" +
@@ -60,6 +63,7 @@ namespace HealthApp.Api.Consumers
                 appointment.ScheduledDate,
                 appointment.TimeSlot,
                 context.MessageId);
+            }
         }
     }
 }

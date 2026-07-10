@@ -27,7 +27,9 @@
                     InitialDelay,
                     stoppingToken);
 
-                _logger.LogInformation(
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
                     "\n" +
                     "==================================================\n" +
                     " HEARTBEAT SERVICE STARTED\n" +
@@ -36,12 +38,14 @@
                     "==================================================",
                     HeartbeatDelay.TotalSeconds,
                     DateTime.UtcNow);
+                }
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     heartbeatCount++;
-
-                    _logger.LogInformation(
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation(
                         "\n" +
                         "-------------------- HEARTBEAT --------------------\n" +
                         " Status          : API is alive\n" +
@@ -50,23 +54,30 @@
                         "---------------------------------------------------",
                         heartbeatCount,
                         DateTime.UtcNow);
+                    }
 
                     await Task.Delay(
                         HeartbeatDelay,
                         stoppingToken);
                 }
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
-                _logger.LogInformation(
-                    "\n" +
-                    "---------------------------------------------------\n" +
-                    " HEARTBEAT SERVICE SHUTDOWN SIGNAL RECEIVED\n" +
-                    "---------------------------------------------------");
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
+                        ex,
+                        "\n" +
+                        "---------------------------------------------------\n" +
+                        " HEARTBEAT SERVICE SHUTDOWN SIGNAL RECEIVED\n" +
+                        "---------------------------------------------------");
+                }
             }
             finally
             {
-                _logger.LogInformation(
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
                     "\n" +
                     "==================================================\n" +
                     " HEARTBEAT SERVICE STOPPED GRACEFULLY\n" +
@@ -75,6 +86,7 @@
                     "==================================================",
                     heartbeatCount,
                     DateTime.UtcNow);
+                }
             }
         }
     }

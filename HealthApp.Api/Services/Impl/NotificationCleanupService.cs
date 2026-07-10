@@ -32,7 +32,9 @@ namespace HealthApp.Api.Services.Impl
                     InitialDelay,
                     stoppingToken);
 
-                _logger.LogInformation(
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
                     "\n" +
                     "==================================================\n" +
                     " NOTIFICATION CLEANUP SERVICE STARTED\n" +
@@ -43,6 +45,7 @@ namespace HealthApp.Api.Services.Impl
                     CleanupInterval.TotalMinutes,
                     RetentionDays,
                     DateTime.UtcNow);
+                }
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
@@ -53,23 +56,30 @@ namespace HealthApp.Api.Services.Impl
                         stoppingToken);
                 }
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
-                _logger.LogInformation(
-                    "\n" +
-                    "---------------------------------------------------\n" +
-                    " NOTIFICATION CLEANUP SHUTDOWN SIGNAL RECEIVED\n" +
-                    "---------------------------------------------------");
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
+                        ex,
+                        "\n" +
+                        "---------------------------------------------------\n" +
+                        " HEARTBEAT SERVICE SHUTDOWN SIGNAL RECEIVED\n" +
+                        "---------------------------------------------------");
+                }
             }
             finally
             {
-                _logger.LogInformation(
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
                     "\n" +
                     "==================================================\n" +
                     " NOTIFICATION CLEANUP SERVICE STOPPED GRACEFULLY\n" +
                     " Stopped At UTC : {StoppedAtUtc}\n" +
                     "==================================================",
                     DateTime.UtcNow);
+                }
             }
         }
 
@@ -89,7 +99,9 @@ namespace HealthApp.Api.Services.Impl
 
             if (oldNotifications.Count == 0)
             {
-                _logger.LogInformation(
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
                     "\n" +
                     "---------------- NOTIFICATION CLEANUP ----------------\n" +
                     " Status         : No old notifications found\n" +
@@ -98,6 +110,7 @@ namespace HealthApp.Api.Services.Impl
                     "------------------------------------------------------",
                     cutoffDate,
                     DateTime.UtcNow);
+                }
 
                 return;
             }
@@ -106,7 +119,9 @@ namespace HealthApp.Api.Services.Impl
 
             await dbContext.SaveChangesAsync(stoppingToken);
 
-            _logger.LogInformation(
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
                 "\n" +
                 "---------------- NOTIFICATION CLEANUP ----------------\n" +
                 " Status         : Old notifications deleted\n" +
@@ -117,6 +132,7 @@ namespace HealthApp.Api.Services.Impl
                 oldNotifications.Count,
                 cutoffDate,
                 DateTime.UtcNow);
+            }
         }
     }
 }

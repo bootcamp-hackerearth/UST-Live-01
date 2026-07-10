@@ -7,7 +7,7 @@ using HealthApp.Shared.Dtos;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using OptionsHelper = Microsoft.Extensions.Options.Options;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -65,7 +65,7 @@ namespace HealthApp.Api.Tests.Services
         private static Mock<UserManager<ApplicationUser>> GetUserManagerMock()
         {
             var store = new Mock<IUserStore<ApplicationUser>>();
-            var options = Options.Create(new IdentityOptions());
+            var options = OptionsHelper.Create(new IdentityOptions());
             var passwordHasher = new Mock<IPasswordHasher<ApplicationUser>>();
             var userValidators = new List<IUserValidator<ApplicationUser>>();
             var passwordValidators = new List<IPasswordValidator<ApplicationUser>>();

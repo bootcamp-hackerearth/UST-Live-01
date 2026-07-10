@@ -1,4 +1,6 @@
-﻿namespace HealthApp.Api.Services.Interfaces
+﻿using HealthApp.Shared.Dtos;
+
+namespace HealthApp.Api.Services.Interfaces
 {
     public interface INotificationService
     {

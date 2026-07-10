@@ -314,7 +314,11 @@ namespace HealthApp.Api.Services.Impl
 
                 if (cachedSlots != null)
                 {
-                    _logger.LogInformation(
+
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+
+                        _logger.LogInformation(
                         "\n" +
                         "================ DOCTOR SLOTS CACHE HIT ================\n" +
                         " Doctor Id : {DoctorId}\n" +
@@ -326,22 +330,28 @@ namespace HealthApp.Api.Services.Impl
                         date,
                         cacheKey,
                         cachedSlots.Count);
+                    }
 
                     return cachedSlots;
                 }
             }
 
-            _logger.LogInformation(
-                "\n" +
-                "================ DOCTOR SLOTS CACHE MISS ===============\n" +
-                " Doctor Id : {DoctorId}\n" +
-                " Date      : {Date}\n" +
-                " Cache Key : {CacheKey}\n" +
-                " Action    : Loading available slots from database\n" +
-                "========================================================",
-                doctorId,
-                date,
-                cacheKey);
+
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    "\n" +
+                    "================ DOCTOR SLOTS CACHE MISS ===============\n" +
+                    " Doctor Id : {DoctorId}\n" +
+                    " Date      : {Date}\n" +
+                    " Cache Key : {CacheKey}\n" +
+                    " Action    : Loading available slots from database\n" +
+                    "========================================================",
+                    doctorId,
+                    date,
+                    cacheKey);
+            }
+
 
             var availableSlots = new List<string>();
 
@@ -369,7 +379,9 @@ namespace HealthApp.Api.Services.Impl
                 JsonSerializer.Serialize(availableSlots),
                 cacheOptions);
 
-            _logger.LogInformation(
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
                 "\n" +
                 "================ DOCTOR SLOTS CACHE SET ================\n" +
                 " Doctor Id           : {DoctorId}\n" +
@@ -383,7 +395,7 @@ namespace HealthApp.Api.Services.Impl
                 date,
                 cacheKey,
                 availableSlots.Count);
-
+            }
             return availableSlots;
         }
 
@@ -446,7 +458,9 @@ namespace HealthApp.Api.Services.Impl
 
             await _cache.RemoveAsync(cacheKey);
 
-            _logger.LogInformation(
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
                 "\n" +
                 "================ DOCTOR SLOTS CACHE INVALIDATED ================\n" +
                 " Doctor Id : {DoctorId}\n" +
@@ -457,6 +471,7 @@ namespace HealthApp.Api.Services.Impl
                 doctorId,
                 date,
                 cacheKey);
+            }
         }
     }
 }

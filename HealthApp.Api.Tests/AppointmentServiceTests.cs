@@ -5,7 +5,10 @@ using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Impl;
 using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
+using HealthApp.Shared.Events;
 using MassTransit;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -17,8 +20,10 @@ namespace HealthApp.Api.Tests.Services
         private readonly Mock<IPatientRepository> _patientRepo;
         private readonly Mock<IDoctorRepository> _doctorRepo;
         private readonly Mock<IMapper> _mapper;
-        private readonly AppointmentService _service;
         private readonly Mock<IPublishEndpoint> _publishEndpoint;
+        private readonly Mock<IDistributedCache> _cache;
+        private readonly Mock<ILogger<AppointmentService>> _logger;
+        private readonly AppointmentService _service;
 
         public AppointmentServiceTests()
         {
@@ -27,14 +32,43 @@ namespace HealthApp.Api.Tests.Services
             _doctorRepo = new Mock<IDoctorRepository>();
             _mapper = new Mock<IMapper>();
             _publishEndpoint = new Mock<IPublishEndpoint>();
+            _cache = new Mock<IDistributedCache>();
+            _logger = new Mock<ILogger<AppointmentService>>();
+
+            _cache
+                .Setup(cache => cache.GetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((byte[]?)null);
+
+            _cache
+                .Setup(cache => cache.SetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<DistributedCacheEntryOptions>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            _cache
+                .Setup(cache => cache.RemoveAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            _publishEndpoint
+                .Setup(publisher => publisher.Publish(
+                    It.IsAny<AppointmentBookedEvent>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
 
             _service = new AppointmentService(
                 _appointmentRepo.Object,
                 _patientRepo.Object,
                 _doctorRepo.Object,
                 _mapper.Object,
-                _publishEndpoint.Object
-            );
+                _publishEndpoint.Object,
+                _cache.Object,
+                _logger.Object);
         }
 
         private static AppointmentCreateDto ValidDto() => new()
@@ -59,6 +93,15 @@ namespace HealthApp.Api.Tests.Services
             Specialisation = SpecialisationType.Cardiologist
         };
 
+        private void SetupPatientUserId()
+        {
+            _patientRepo
+                .Setup(repo => repo.GetPatientUserIdAsync(
+                    1,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync("patient-user-id-1");
+        }
+
         [Fact]
         public async Task GetAppointmentById_InvalidId_ShouldThrow()
         {
@@ -79,11 +122,21 @@ namespace HealthApp.Api.Tests.Services
         [Fact]
         public async Task GetAppointmentById_Valid_ShouldReturnDto()
         {
-            var appt = new Appointment { AppointmentId = 1, PatientId = 1, DoctorId = 1 };
+            var appt = new Appointment
+            {
+                AppointmentId = 1,
+                PatientId = 1,
+                DoctorId = 1
+            };
 
-            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(appt);
-            _patientRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(Patient());
-            _doctorRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(Doctor());
+            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(appt);
+
+            _patientRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Patient());
+
+            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Doctor());
 
             _mapper.Setup(x => x.Map<AppointmentDto>(appt))
                 .Returns(new AppointmentDto { AppointmentId = 1 });
@@ -127,8 +180,13 @@ namespace HealthApp.Api.Tests.Services
         {
             var dto = ValidDto();
 
-            _patientRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(Patient());
-            _doctorRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(Doctor(false));
+            _patientRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Patient());
+
+            SetupPatientUserId();
+
+            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Doctor(false));
 
             await Assert.ThrowsAsync<BusinessRuleViolationException>(
                 () => _service.BookAppointmentAsync(dto));
@@ -139,11 +197,19 @@ namespace HealthApp.Api.Tests.Services
         {
             var dto = ValidDto();
 
-            _patientRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(Patient());
-            _doctorRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(Doctor());
+            _patientRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Patient());
+
+            SetupPatientUserId();
+
+            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Doctor());
 
             _appointmentRepo.Setup(x => x.IsDoctorSlotBookedAsync(
-                It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<string>(), default))
+                    It.IsAny<int>(),
+                    It.IsAny<DateOnly>(),
+                    It.IsAny<string>(),
+                    default))
                 .ReturnsAsync(true);
 
             await Assert.ThrowsAsync<BusinessRuleViolationException>(
@@ -155,26 +221,53 @@ namespace HealthApp.Api.Tests.Services
         {
             var dto = ValidDto();
 
-            var entity = new Appointment { AppointmentId = 100 };
+            var entity = new Appointment
+            {
+                AppointmentId = 100,
+                PatientId = 1,
+                DoctorId = 1,
+                ScheduledDate = DateOnly.FromDateTime(dto.ScheduledDate),
+                TimeSlot = dto.TimeSlot
+            };
 
-            _patientRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(Patient());
-            _doctorRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(Doctor());
+            _patientRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Patient());
+
+            SetupPatientUserId();
+
+            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Doctor());
 
             _appointmentRepo.Setup(x =>
-                x.HasAppointmentWithDoctorOnSameDayAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateOnly>(), default))
+                    x.HasAppointmentWithDoctorOnSameDayAsync(
+                        It.IsAny<int>(),
+                        It.IsAny<int>(),
+                        It.IsAny<DateOnly>(),
+                        default))
                 .ReturnsAsync(false);
 
             _appointmentRepo.Setup(x =>
-                x.HasPatientSlotConflictAsync(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<string>(), default))
+                    x.HasPatientSlotConflictAsync(
+                        It.IsAny<int>(),
+                        It.IsAny<DateOnly>(),
+                        It.IsAny<string>(),
+                        default))
                 .ReturnsAsync(false);
 
             _appointmentRepo.Setup(x =>
-                x.IsDoctorSlotBookedAsync(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<string>(), default))
+                    x.IsDoctorSlotBookedAsync(
+                        It.IsAny<int>(),
+                        It.IsAny<DateOnly>(),
+                        It.IsAny<string>(),
+                        default))
                 .ReturnsAsync(false);
 
-            _mapper.Setup(x => x.Map<Appointment>(dto)).Returns(new Appointment());
+            _mapper.Setup(x => x.Map<Appointment>(dto))
+                .Returns(new Appointment());
 
-            _appointmentRepo.Setup(x => x.Add(It.IsAny<Appointment>(), default))
+            _appointmentRepo.Setup(x => x.Add(
+                    It.IsAny<Appointment>(),
+                    default))
                 .ReturnsAsync(entity);
 
             _mapper.Setup(x => x.Map<AppointmentDto>(entity))
@@ -183,6 +276,16 @@ namespace HealthApp.Api.Tests.Services
             var result = await _service.BookAppointmentAsync(dto);
 
             Assert.Equal(100, result.AppointmentId);
+
+            _cache.Verify(cache => cache.RemoveAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            _publishEndpoint.Verify(publisher => publisher.Publish(
+                    It.IsAny<AppointmentBookedEvent>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
@@ -195,9 +298,16 @@ namespace HealthApp.Api.Tests.Services
         [Fact]
         public async Task UpdateStatus_Completed_ShouldThrow()
         {
-            var appt = new Appointment { AppointmentId = 1, Status = AppointmentStatus.Completed };
+            var appt = new Appointment
+            {
+                AppointmentId = 1,
+                DoctorId = 1,
+                ScheduledDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
+                Status = AppointmentStatus.Completed
+            };
 
-            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(appt);
+            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(appt);
 
             await Assert.ThrowsAsync<BusinessRuleViolationException>(
                 () => _service.UpdateAppointmentStatusAsync(1, AppointmentStatus.Cancelled));
@@ -206,9 +316,16 @@ namespace HealthApp.Api.Tests.Services
         [Fact]
         public async Task UpdateStatus_CancelWithoutReason_ShouldThrow()
         {
-            var appt = new Appointment { AppointmentId = 1, Status = AppointmentStatus.Pending };
+            var appt = new Appointment
+            {
+                AppointmentId = 1,
+                DoctorId = 1,
+                ScheduledDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
+                Status = AppointmentStatus.Pending
+            };
 
-            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(appt);
+            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(appt);
 
             await Assert.ThrowsAsync<InvalidRequestException>(
                 () => _service.UpdateAppointmentStatusAsync(1, AppointmentStatus.Cancelled, null));
@@ -217,21 +334,44 @@ namespace HealthApp.Api.Tests.Services
         [Fact]
         public async Task UpdateStatus_Valid_ShouldUpdate()
         {
-            var appt = new Appointment { AppointmentId = 1, Status = AppointmentStatus.Pending };
+            var appt = new Appointment
+            {
+                AppointmentId = 1,
+                DoctorId = 1,
+                ScheduledDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
+                Status = AppointmentStatus.Pending
+            };
 
-            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(appt);
+            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(appt);
 
             await _service.UpdateAppointmentStatusAsync(1, AppointmentStatus.Confirmed);
 
-            _appointmentRepo.Verify(x => x.Update(1, It.IsAny<Appointment>(), default), Times.Once);
+            _appointmentRepo.Verify(x => x.Update(
+                    1,
+                    It.IsAny<Appointment>(),
+                    default),
+                Times.Once);
+
+            _cache.Verify(cache => cache.RemoveAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
         public async Task Delete_NotCancelled_ShouldThrow()
         {
-            var appt = new Appointment { AppointmentId = 1, Status = AppointmentStatus.Pending };
+            var appt = new Appointment
+            {
+                AppointmentId = 1,
+                DoctorId = 1,
+                ScheduledDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
+                Status = AppointmentStatus.Pending
+            };
 
-            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(appt);
+            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(appt);
 
             await Assert.ThrowsAsync<BusinessRuleViolationException>(
                 () => _service.DeleteAppointmentAsync(1));
@@ -240,32 +380,53 @@ namespace HealthApp.Api.Tests.Services
         [Fact]
         public async Task Delete_Valid_ShouldDelete()
         {
-            var appt = new Appointment { AppointmentId = 1, Status = AppointmentStatus.Cancelled };
+            var appt = new Appointment
+            {
+                AppointmentId = 1,
+                DoctorId = 1,
+                ScheduledDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
+                Status = AppointmentStatus.Cancelled
+            };
 
-            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(appt);
-            _appointmentRepo.Setup(x => x.DeleteAsync(1)).ReturnsAsync(true);
+            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(appt);
+
+            _appointmentRepo.Setup(x => x.DeleteAsync(1))
+                .ReturnsAsync(true);
 
             await _service.DeleteAppointmentAsync(1);
 
             _appointmentRepo.Verify(x => x.DeleteAsync(1), Times.Once);
+
+            _cache.Verify(cache => cache.RemoveAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
         public async Task GetAvailableSlots_DoctorInactive_ShouldThrow()
         {
-            _doctorRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(Doctor(false));
+            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Doctor(false));
 
             await Assert.ThrowsAsync<BusinessRuleViolationException>(
-                () => _service.GetAvailableSlotsAsync(1, DateOnly.FromDateTime(DateTime.Today.AddDays(1))));
+                () => _service.GetAvailableSlotsAsync(
+                    1,
+                    DateOnly.FromDateTime(DateTime.Today.AddDays(1))));
         }
 
         [Fact]
         public async Task GetAvailableSlots_ShouldReturnSlots()
         {
-            _doctorRepo.Setup(x => x.GetByIdAsync(1, default)).ReturnsAsync(Doctor());
+            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Doctor());
 
             _appointmentRepo.Setup(x => x.IsDoctorSlotBookedAsync(
-                It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<string>(), default))
+                    It.IsAny<int>(),
+                    It.IsAny<DateOnly>(),
+                    It.IsAny<string>(),
+                    default))
                 .ReturnsAsync(false);
 
             var result = await _service.GetAvailableSlotsAsync(
@@ -273,12 +434,23 @@ namespace HealthApp.Api.Tests.Services
                 DateOnly.FromDateTime(DateTime.Today.AddDays(1)));
 
             Assert.NotEmpty(result);
+
+            _cache.Verify(cache => cache.GetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            _cache.Verify(cache => cache.SetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<DistributedCacheEntryOptions>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
         public async Task GetAppointments_ShouldReturnAppointments()
         {
-            // Arrange
             var filter = new AppointmentFilterDto
             {
                 DoctorId = null,
@@ -293,24 +465,24 @@ namespace HealthApp.Api.Tests.Services
             };
 
             var appointments = new List<Appointment>
-    {
-        new Appointment
-        {
-            AppointmentId = 1,
-            PatientId = 1,
-            DoctorId = 1
-        }
-    };
+            {
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    PatientId = 1,
+                    DoctorId = 1
+                }
+            };
 
             var appointmentDtos = new List<AppointmentDto>
-    {
-        new AppointmentDto
-        {
-            AppointmentId = 1,
-            PatientId = 1,
-            DoctorId = 1
-        }
-    };
+            {
+                new AppointmentDto
+                {
+                    AppointmentId = 1,
+                    PatientId = 1,
+                    DoctorId = 1
+                }
+            };
 
             (IEnumerable<Appointment> Items, int TotalCount) repositoryResult =
                 (appointments, appointments.Count);
@@ -347,13 +519,10 @@ namespace HealthApp.Api.Tests.Services
                     It.IsAny<IEnumerable<Appointment>>()))
                 .Returns(appointmentDtos);
 
-            // Act
             var result = await _service.GetAppointmentsAsync(filter);
 
-            // Assert
             Assert.NotNull(result);
             Assert.NotNull(result.Items);
-
             Assert.Single(result.Items);
             Assert.Equal(1, result.TotalCount);
             Assert.Equal(1, result.PageNumber);
@@ -391,11 +560,20 @@ namespace HealthApp.Api.Tests.Services
         {
             var dto = ValidDto();
 
-            _patientRepo.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(Patient());
-            _doctorRepo.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(Doctor());
+            _patientRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Patient());
+
+            SetupPatientUserId();
+
+            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Doctor());
 
             _appointmentRepo.Setup(x =>
-                x.HasAppointmentWithDoctorOnSameDayAsync(1, 1, It.IsAny<DateOnly>()))
+                    x.HasAppointmentWithDoctorOnSameDayAsync(
+                        1,
+                        1,
+                        It.IsAny<DateOnly>(),
+                        default))
                 .ReturnsAsync(true);
 
             await Assert.ThrowsAsync<BusinessRuleViolationException>(() =>
@@ -407,13 +585,28 @@ namespace HealthApp.Api.Tests.Services
         {
             var dto = ValidDto();
 
-            _patientRepo.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(Patient());
-            _doctorRepo.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(Doctor());
+            _patientRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Patient());
 
-            _appointmentRepo.Setup(x => x.HasAppointmentWithDoctorOnSameDayAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<DateOnly>()))
+            SetupPatientUserId();
+
+            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Doctor());
+
+            _appointmentRepo.Setup(x =>
+                    x.HasAppointmentWithDoctorOnSameDayAsync(
+                        It.IsAny<int>(),
+                        It.IsAny<int>(),
+                        It.IsAny<DateOnly>(),
+                        default))
                 .ReturnsAsync(false);
 
-            _appointmentRepo.Setup(x => x.HasPatientSlotConflictAsync(It.IsAny<int>(), It.IsAny<DateOnly>(), It.IsAny<string>()))
+            _appointmentRepo.Setup(x =>
+                    x.HasPatientSlotConflictAsync(
+                        It.IsAny<int>(),
+                        It.IsAny<DateOnly>(),
+                        It.IsAny<string>(),
+                        default))
                 .ReturnsAsync(true);
 
             await Assert.ThrowsAsync<BusinessRuleViolationException>(() =>
@@ -423,7 +616,7 @@ namespace HealthApp.Api.Tests.Services
         [Fact]
         public async Task UpdateStatus_NotFound_ShouldThrow()
         {
-            _appointmentRepo.Setup(x => x.GetByIdAsync(1))
+            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default))
                 .ReturnsAsync((Appointment?)null);
 
             await Assert.ThrowsAsync<EntityNotFoundException>(() =>
@@ -434,17 +627,21 @@ namespace HealthApp.Api.Tests.Services
         public async Task GetAvailableSlots_InvalidDoctor_ShouldThrow()
         {
             await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _service.GetAvailableSlotsAsync(0, DateOnly.FromDateTime(DateTime.Today)));
+                _service.GetAvailableSlotsAsync(
+                    0,
+                    DateOnly.FromDateTime(DateTime.Today)));
         }
 
         [Fact]
         public async Task GetAvailableSlots_DoctorNotFound_ShouldThrow()
         {
-            _doctorRepo.Setup(x => x.GetByIdAsync(1))
+            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
                 .ReturnsAsync((Doctor?)null);
 
             await Assert.ThrowsAsync<EntityNotFoundException>(() =>
-                _service.GetAvailableSlotsAsync(1, DateOnly.FromDateTime(DateTime.Today)));
+                _service.GetAvailableSlotsAsync(
+                    1,
+                    DateOnly.FromDateTime(DateTime.Today)));
         }
 
         [Fact]
@@ -457,10 +654,19 @@ namespace HealthApp.Api.Tests.Services
         [Fact]
         public async Task Delete_Failure_ShouldThrow()
         {
-            var appt = new Appointment { AppointmentId = 1, Status = AppointmentStatus.Cancelled };
+            var appt = new Appointment
+            {
+                AppointmentId = 1,
+                DoctorId = 1,
+                ScheduledDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
+                Status = AppointmentStatus.Cancelled
+            };
 
-            _appointmentRepo.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(appt);
-            _appointmentRepo.Setup(x => x.DeleteAsync(1)).ReturnsAsync(false);
+            _appointmentRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(appt);
+
+            _appointmentRepo.Setup(x => x.DeleteAsync(1))
+                .ReturnsAsync(false);
 
             await Assert.ThrowsAsync<BusinessRuleViolationException>(() =>
                 _service.DeleteAppointmentAsync(1));
