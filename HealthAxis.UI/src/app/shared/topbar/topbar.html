@@ -9,14 +9,14 @@
       <button
         type="button"
         class="doctor-status-toggle"
-        [class.inactive]="!isDoctorActive()"
-        [disabled]="statusUpdating()"
+        [class.inactive]="doctorStatusState.isActive() === false"
+        [disabled]="statusUpdating() || doctorStatusState.isActive() === null"
         (click)="toggleDoctorStatus()"
       >
         @if (statusUpdating()) {
           Updating...
         } @else {
-          {{ isDoctorActive() ? 'Active' : 'Inactive' }}
+          {{ getDoctorStatusText() }}
         }
       </button>
     }
@@ -68,3 +68,9 @@
     </div>
   </div>
 </header>
+
+@if (statusError()) {
+  <div class="doctor-status-message error">
+    {{ statusError() }}
+  </div>
+}

@@ -3,17 +3,37 @@ using HealthAxis.API.Exceptions;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
 using HealthAxis.Shared.DTO.DoctorDtos;
+using HealthAxis.Shared.Enums;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 
 namespace HealthAxis.API.Services.Implementation
 {
     public class DoctorService(
-        IDoctorRepository repository,
+        IDoctorRepository doctorRepository,
+        IAppointmentRepository appointmentRepository,
         IMapper mapper,
         IDistributedCache distributedCache,
         ILogger<DoctorService> logger) : IDoctorService
     {
+        private const int CacheExpiryMinutes = 5;
+
+        private static readonly string[] HospitalTimeSlots =
+        [
+            "09:00 AM - 10:00 AM",
+            "10:00 AM - 11:00 AM",
+            "11:00 AM - 12:00 PM",
+            "12:00 PM - 01:00 PM",
+            "02:00 PM - 03:00 PM",
+            "03:00 PM - 04:00 PM",
+            "04:00 PM - 05:00 PM",
+            "05:00 PM - 06:00 PM",
+            "06:00 PM - 07:00 PM",
+            "07:00 PM - 08:00 PM",
+            "08:00 PM - 09:00 PM",
+            "09:00 PM - 10:00 PM"
+        ];
+
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
             PropertyNameCaseInsensitive = true
@@ -21,13 +41,14 @@ namespace HealthAxis.API.Services.Implementation
 
         public async Task<List<DoctorDto>> GetAllAsync()
         {
-            return mapper.Map<List<DoctorDto>>(
-                await repository.GetAllAsync());
+            var doctors = await doctorRepository.GetAllAsync();
+
+            return mapper.Map<List<DoctorDto>>(doctors);
         }
 
         public async Task<DoctorDto> GetByIdAsync(int id)
         {
-            var doctor = await repository.GetByIdAsync(id);
+            var doctor = await doctorRepository.GetByIdAsync(id);
 
             if (doctor == null)
             {
@@ -39,7 +60,7 @@ namespace HealthAxis.API.Services.Implementation
 
         public async Task<DoctorDto?> GetByUserIdAsync(string userId)
         {
-            var doctors = await repository.GetAllAsync();
+            var doctors = await doctorRepository.GetAllAsync();
 
             var doctor = doctors.FirstOrDefault(item => item.UserId == userId);
 
@@ -51,7 +72,7 @@ namespace HealthAxis.API.Services.Implementation
             return mapper.Map<DoctorDto>(doctor);
         }
 
-        public async Task<DoctorDto> GetAvailabilityAsync(
+        public async Task<DoctorAvailabilityDto> GetAvailabilityAsync(
             int id,
             DateTime? date = null)
         {
@@ -71,57 +92,109 @@ namespace HealthAxis.API.Services.Implementation
 
             if (!string.IsNullOrWhiteSpace(cachedValue))
             {
-                var cachedDoctor = JsonSerializer.Deserialize<DoctorDto>(
-                    cachedValue,
-                    JsonOptions);
+                var cachedAvailability =
+                    JsonSerializer.Deserialize<DoctorAvailabilityDto>(
+                        cachedValue,
+                        JsonOptions);
 
-                logger.LogInformation(
-                    "Garnet cache HIT for doctor availability. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
-                    id,
-                    availabilityDate,
-                    cacheKey);
-
-                if (cachedDoctor != null)
+                if (cachedAvailability != null)
                 {
-                    return cachedDoctor;
+                    LogCacheHit(
+                        id,
+                        availabilityDate,
+                        cacheKey,
+                        cachedAvailability.AvailableSlots.Count);
+
+                    return cachedAvailability;
                 }
             }
 
-            logger.LogInformation(
-                "Garnet cache MISS for doctor availability. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+            LogCacheMiss(
                 id,
                 availabilityDate,
                 cacheKey);
 
-            var doctor = await repository.GetByIdAsync(id);
+            var doctor = await doctorRepository.GetByIdAsync(id);
 
             if (doctor == null)
             {
                 throw new NotFoundException("Doctor not found");
             }
 
-            var doctorDto = mapper.Map<DoctorDto>(doctor);
+            var availableSlots = await GetAvailableSlotsAsync(
+                id,
+                availabilityDate,
+                doctor.IsActive);
 
-            var serializedDoctor = JsonSerializer.Serialize(
-                doctorDto,
+            var availability = new DoctorAvailabilityDto
+            {
+                DoctorId = doctor.DoctorId,
+                FullName = doctor.FullName,
+                IsActive = doctor.IsActive,
+                Date = availabilityDate,
+                Message = doctor.IsActive
+                    ? "Doctor is available"
+                    : "Doctor is not available",
+                AvailableSlots = availableSlots
+            };
+
+            var serializedAvailability = JsonSerializer.Serialize(
+                availability,
                 JsonOptions);
 
             await distributedCache.SetStringAsync(
                 cacheKey,
-                serializedDoctor,
+                serializedAvailability,
                 new DistributedCacheEntryOptions
                 {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                    AbsoluteExpirationRelativeToNow =
+                        TimeSpan.FromMinutes(CacheExpiryMinutes)
                 });
 
-            logger.LogInformation(
-                "Doctor availability stored in Garnet cache. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}, TtlMinutes: {TtlMinutes}",
+            LogCacheStored(
                 id,
                 availabilityDate,
                 cacheKey,
-                5);
+                availableSlots.Count);
 
-            return doctorDto;
+            return availability;
+        }
+
+        private async Task<List<string>> GetAvailableSlotsAsync(
+            int doctorId,
+            DateTime availabilityDate,
+            bool isDoctorActive)
+        {
+            if (!isDoctorActive)
+            {
+                return new List<string>();
+            }
+
+            var appointments = await appointmentRepository.GetAllAsync();
+
+            var bookedSlots = appointments
+                .Where(appointment =>
+                    appointment.DoctorId == doctorId &&
+                    appointment.ScheduledDate.Date == availabilityDate &&
+                    IsActiveAppointmentStatus(appointment.Status))
+                .Select(appointment => NormalizeTimeSlot(appointment.TimeSlot))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            return HospitalTimeSlots
+                .Where(slot => !bookedSlots.Contains(NormalizeTimeSlot(slot)))
+                .ToList();
+        }
+
+        private static bool IsActiveAppointmentStatus(
+            AppointmentStatus status)
+        {
+            return status == AppointmentStatus.Pending ||
+                   status == AppointmentStatus.Confirmed;
+        }
+
+        private static string NormalizeTimeSlot(string timeSlot)
+        {
+            return timeSlot.Trim();
         }
 
         private static string BuildDoctorAvailabilityCacheKey(
@@ -129,6 +202,76 @@ namespace HealthAxis.API.Services.Implementation
             DateTime date)
         {
             return $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
+        }
+
+        private void LogCacheMiss(
+            int doctorId,
+            DateTime date,
+            string cacheKey)
+        {
+            logger.LogInformation(
+                """
+                ========================================
+                CACHE MISS - LOADING FROM DATABASE
+                ========================================
+                Doctor Id : {DoctorId}
+                Date      : {Date:yyyy-MM-dd}
+                Key       : {CacheKey}
+                Source    : SQL Server
+                ========================================
+                """,
+                doctorId,
+                date,
+                cacheKey);
+        }
+
+        private void LogCacheStored(
+            int doctorId,
+            DateTime date,
+            string cacheKey,
+            int availableSlotCount)
+        {
+            logger.LogInformation(
+                """
+                ========================================
+                CACHE STORED IN GARNET
+                ========================================
+                Doctor Id       : {DoctorId}
+                Date            : {Date:yyyy-MM-dd}
+                Key             : {CacheKey}
+                TTL             : {CacheExpiryMinutes} Minutes
+                Available Slots : {AvailableSlotCount}
+                ========================================
+                """,
+                doctorId,
+                date,
+                cacheKey,
+                CacheExpiryMinutes,
+                availableSlotCount);
+        }
+
+        private void LogCacheHit(
+            int doctorId,
+            DateTime date,
+            string cacheKey,
+            int availableSlotCount)
+        {
+            logger.LogInformation(
+                """
+                ========================================
+                CACHE HIT - LOADING FROM GARNET
+                ========================================
+                Doctor Id       : {DoctorId}
+                Date            : {Date:yyyy-MM-dd}
+                Key             : {CacheKey}
+                Source          : Garnet
+                Available Slots : {AvailableSlotCount}
+                ========================================
+                """,
+                doctorId,
+                date,
+                cacheKey,
+                availableSlotCount);
         }
     }
 }

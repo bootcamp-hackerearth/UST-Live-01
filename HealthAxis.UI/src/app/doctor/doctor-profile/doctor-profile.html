@@ -5,7 +5,6 @@
         ← Back to Dashboard
       </a>
 
-      
       <h1>My Profile</h1>
 
       <span>
@@ -21,19 +20,21 @@
   }
 
   @if (errorMessage()) {
-    <div class="alert error">{{ errorMessage() }}</div>
+    <div class="alert error">
+      {{ errorMessage() }}
+    </div>
   }
 
   @if (successMessage()) {
-    <div class="alert success">{{ successMessage() }}</div>
+    <div class="alert success">
+      {{ successMessage() }}
+    </div>
   }
 
   @if (statusErrorMessage()) {
-    <div class="alert error">{{ statusErrorMessage() }}</div>
-  }
-
-  @if (statusSuccessMessage()) {
-    <div class="alert success">{{ statusSuccessMessage() }}</div>
+    <div class="alert error">
+      {{ statusErrorMessage() }}
+    </div>
   }
 
   <section class="profile-grid">
@@ -48,26 +49,24 @@
         {{ doctor()?.specialisation || 'Specialist' }}
       </p>
 
-      
-
       <span
         class="status-badge"
-        [class.inactive]="!doctor()?.isActive"
+        [class.inactive]="doctorStatusState.isActive() === false"
       >
-        {{ doctor()?.isActive ? 'Currently Active' : 'Currently Inactive' }}
+        {{ getDoctorStatusText() }}
       </span>
 
       <button
         type="button"
         class="status-toggle-button"
-        [class.inactive]="doctor()?.isActive"
-        [disabled]="updatingStatus() || !doctor()"
+        [class.inactive]="doctorStatusState.isActive() === true"
+        [disabled]="updatingStatus() || doctorStatusState.isActive() === null"
         (click)="toggleDoctorStatus()"
       >
         @if (updatingStatus()) {
           Updating...
         } @else {
-          {{ doctor()?.isActive ? 'Set Inactive' : 'Set Active' }}
+          {{ getStatusButtonText() }}
         }
       </button>
     </article>
@@ -106,7 +105,14 @@
 
         <div>
           <span>Account Status</span>
-          <strong>{{ doctor()?.isActive ? 'Active' : 'Inactive' }}</strong>
+
+          <strong>
+            @if (doctorStatusState.isActive() === null) {
+              Loading
+            } @else {
+              {{ doctorStatusState.isActive() ? 'Active' : 'Inactive' }}
+            }
+          </strong>
         </div>
       </div>
     </article>
@@ -114,8 +120,8 @@
 
   <section class="password-card" id="change-password">
     <div class="section-title">
-      
       <h2>Change Password</h2>
+
       <p>
         Use the temporary password given by admin as your current password,
         then set a strong new password.
@@ -123,11 +129,15 @@
     </div>
 
     @if (passwordErrorMessage()) {
-      <div class="alert error">{{ passwordErrorMessage() }}</div>
+      <div class="alert error">
+        {{ passwordErrorMessage() }}
+      </div>
     }
 
     @if (passwordSuccessMessage()) {
-      <div class="alert success">{{ passwordSuccessMessage() }}</div>
+      <div class="alert success">
+        {{ passwordSuccessMessage() }}
+      </div>
     }
 
     <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">

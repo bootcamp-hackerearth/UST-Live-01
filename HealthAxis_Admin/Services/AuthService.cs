@@ -103,7 +103,33 @@ namespace HealthAxis_Admin.Services
                 return (false, "Invalid response received from API.");
             }
         }
+        public async Task<(bool Success, string Message)> CompleteExternalLoginAsync(
+    string accessToken,
+    string? refreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(accessToken))
+            {
+                return (false, "Access token not found.");
+            }
 
+            if (!ApiAuthenticationStateProvider.IsAdminToken(accessToken))
+            {
+                return (false, "Only admin users can access this portal.");
+            }
+
+            await _tokenService.SaveTokensAsync(
+                accessToken,
+                refreshToken ?? string.Empty);
+
+            AddAuthorizationHeader(accessToken);
+
+            IsLoggedIn = true;
+            AdminName = GetAdminName(accessToken);
+
+            _authenticationStateProvider.NotifyUserAuthenticated();
+
+            return (true, "Admin login completed successfully.");
+        }
         public async Task LogoutAsync()
         {
             await _tokenService.ClearTokensAsync();

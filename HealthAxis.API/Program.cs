@@ -174,11 +174,11 @@ try
 
     builder.Services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
 
-    builder.Services.AddMassTransit(configuration =>
+    builder.Services.AddMassTransit(x =>
     {
-        configuration.AddConsumer<AppointmentBookedConsumer>();
+        x.AddConsumer<AppointmentBookedConsumer>();
 
-        configuration.UsingRabbitMq((context, rabbitMqConfig) =>
+        x.UsingRabbitMq((context, rabbitMqConfig) =>
         {
             var rabbitMqSection = context
                 .GetRequiredService<IConfiguration>()

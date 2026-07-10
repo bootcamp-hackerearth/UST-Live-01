@@ -2,35 +2,172 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HealthAxis_Admin</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>HealthAxis Admin</title>
+
     <base href="/" />
 
-    <!--<link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link href="css/app.css?v=1001" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link href="HealthAxis_Admin.styles.css" rel="stylesheet" />-->
-    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
-    <link href="HealthAxis_Admin.styles.css" rel="stylesheet" />
-    <link href="css/app.css?v=2002" rel="stylesheet" />
+    <script>
+        (function () {
+            "use strict";
 
-    <link rel="icon" type="image/png" href="favicon.png" />
+            const externalLoginPath = "/external-login";
+            const dashboardPath = "/dashboard";
+            const loginPath = "/login";
+
+            const accessTokenKey = "healthaxis_admin_access_token";
+            const refreshTokenKey = "healthaxis_admin_refresh_token";
+            const roleKey = "healthaxis_admin_role";
+            const expiresAtKey = "healthaxis_admin_expires_at";
+            const expiresInMinutesKey = "healthaxis_admin_expires_in_minutes";
+
+            const currentPath = normalizePath(window.location.pathname);
+
+            if (currentPath !== externalLoginPath) {
+                return;
+            }
+
+            const hashValue = window.location.hash;
+
+            if (!hashValue || hashValue.length <= 1) {
+                window.location.replace(loginPath);
+                return;
+            }
+
+            const parameters = new URLSearchParams(hashValue.substring(1));
+            const accessToken = parameters.get("accessToken");
+
+            if (!accessToken) {
+                window.location.replace(loginPath);
+                return;
+            }
+
+            if (!isAdminToken(accessToken)) {
+                window.location.replace(loginPath);
+                return;
+            }
+
+            localStorage.setItem(accessTokenKey, accessToken);
+
+            saveOptionalValue(
+                refreshTokenKey,
+                parameters.get("refreshToken"));
+
+            localStorage.setItem(roleKey, "Admin");
+
+            saveOptionalValue(
+                expiresAtKey,
+                parameters.get("expiresAt"));
+
+            saveOptionalValue(
+                expiresInMinutesKey,
+                parameters.get("expiresInMinutes"));
+
+            window.history.replaceState(
+                {},
+                document.title,
+                dashboardPath);
+
+            window.location.replace(dashboardPath);
+
+            function normalizePath(path) {
+                const lowerPath = path.toLowerCase();
+
+                if (lowerPath.length > 1 && lowerPath.endsWith("/")) {
+                    return lowerPath.slice(0, -1);
+                }
+
+                return lowerPath;
+            }
+
+            function saveOptionalValue(key, value) {
+                if (value) {
+                    localStorage.setItem(key, value);
+                }
+            }
+
+            function isAdminToken(token) {
+                const payload = readJwtPayload(token);
+
+                if (!payload) {
+                    return false;
+                }
+
+                const role =
+                    payload.role ||
+                    payload.Role ||
+                    payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+                if (Array.isArray(role)) {
+                    return role.some(function (item) {
+                        return String(item).toLowerCase() === "admin";
+                    });
+                }
+
+                return String(role).toLowerCase() === "admin";
+            }
+
+            function readJwtPayload(token) {
+                const parts = token.split(".");
+
+                if (parts.length < 2) {
+                    return null;
+                }
+
+                try {
+                    const base64Payload = parts[1]
+                        .replace(/-/g, "+")
+                        .replace(/_/g, "/");
+
+                    const paddedPayload = base64Payload.padEnd(
+                        base64Payload.length + ((4 - base64Payload.length % 4) % 4),
+                        "=");
+
+                    return JSON.parse(atob(paddedPayload));
+                } catch {
+                    return null;
+                }
+            }
+        })();
+
+        window.healthAxisAdminLogin = {
+            getHash: function () {
+                return window.location.hash || "";
+            }
+        };
+    </script>
+
+    <link rel="stylesheet"
+          href="css/bootstrap/bootstrap.min.css" />
+
+    <link href="HealthAxis_Admin.styles.css"
+          rel="stylesheet" />
+
+    <link href="css/app.css?v=2003"
+          rel="stylesheet" />
+
+    <link rel="icon"
+          type="image/png"
+          href="favicon.png" />
 </head>
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
-    </div>
+        <section class="admin-startup-page">
+            <div class="admin-startup-card">
+                <div class="admin-startup-loader"></div>
 
-    <!--<div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="." class="reload">Reload</a>
-        <span class="dismiss">🗙</span>
-    </div>-->
+                <h1>Opening HealthAxis Admin</h1>
+
+                <p>
+                    Please wait while the admin portal is prepared.
+                </p>
+            </div>
+        </section>
+    </div>
 
     <script src="_framework/blazor.webassembly.js"></script>
 </body>

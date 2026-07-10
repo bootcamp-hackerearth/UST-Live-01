@@ -1,133 +1,103 @@
 ﻿@page "/external-login"
 @layout EmptyLayout
+
+@inject AuthService AuthService
 @inject NavigationManager NavigationManager
-@inject TokenService TokenService
+
+<PageTitle>Signing In | HealthAxis Admin</PageTitle>
 
 <section class="external-login-page">
     <div class="external-login-card">
-        <div class="loader"></div>
-
-        <h2>Opening Admin Dashboard</h2>
-
-        <p>
-            Please wait while we securely connect your admin session.
-        </p>
-
-        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        @if (string.IsNullOrWhiteSpace(errorMessage))
         {
-            <div class="error-box">
+            <div class="external-login-loader"></div>
+
+            <h1>Signing you in</h1>
+
+            <p>
+                Please wait while we open the HealthAxis Admin dashboard.
+            </p>
+        }
+        else
+        {
+            <h1>Login failed</h1>
+
+            <p class="external-login-error">
                 @errorMessage
-            </div>
+            </p>
+
+            <button type="button"
+                    class="primary-btn"
+                    @onclick="GoToLogin">
+                Back to Login
+            </button>
         }
     </div>
 </section>
 
-<style>
-    .external-login-page {
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        padding: 24px;
-        background: radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 32%), radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.2), transparent 34%), #020617;
-        font-family: "Segoe UI", sans-serif;
-    }
-
-    .external-login-card {
-        width: min(440px, 100%);
-        border-radius: 30px;
-        padding: 34px;
-        text-align: center;
-        color: white;
-        background: rgba(15, 23, 42, 0.82);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
-    }
-
-    .loader {
-        width: 68px;
-        height: 68px;
-        margin: 0 auto 20px;
-        border-radius: 50%;
-        border: 6px solid rgba(255, 255, 255, 0.18);
-        border-top-color: #22d3ee;
-        animation: spin 0.8s linear infinite;
-    }
-
-    .external-login-card h2 {
-        margin: 0;
-        font-size: 28px;
-    }
-
-    .external-login-card p {
-        margin: 12px 0 0;
-        color: #cbd5e1;
-        line-height: 1.6;
-        font-weight: 700;
-    }
-
-    .error-box {
-        margin-top: 18px;
-        border-radius: 16px;
-        padding: 13px 15px;
-        color: #fecaca;
-        background: rgba(239, 68, 68, 0.16);
-        font-weight: 800;
-    }
-
-    @@keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-</style>
-
 @code {
+    private const string DashboardRoute = "/dashboard";
+    private const string LoginRoute = "/login";
+
+    private bool hasProcessedLogin;
     private string errorMessage = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var parameters = ReadFragmentParameters();
-
-        if (!parameters.TryGetValue("accessToken", out var accessToken) ||
-            !parameters.TryGetValue("refreshToken", out var refreshToken) ||
-            !parameters.TryGetValue("expiresIn", out var expiresIn) ||
-            !parameters.TryGetValue("expiresAt", out var expiresAt))
+        if (!firstRender || hasProcessedLogin)
         {
-            errorMessage = "Admin login details were not received.";
             return;
         }
 
-        parameters.TryGetValue("role", out var role);
-        parameters.TryGetValue("email", out var email);
+        hasProcessedLogin = true;
 
-        if (string.IsNullOrWhiteSpace(accessToken) ||
-            string.IsNullOrWhiteSpace(refreshToken))
+        var tokenData = ReadTokenDataFromUrl();
+
+        if (string.IsNullOrWhiteSpace(tokenData.AccessToken))
         {
-            errorMessage = "Invalid admin login details.";
+            errorMessage = "Login token was not found.";
+            StateHasChanged();
             return;
         }
 
-        await TokenService.SaveAdminSessionAsync(
-            accessToken,
-            refreshToken,
-            string.IsNullOrWhiteSpace(role) ? "Admin" : role,
-            email ?? string.Empty,
-            expiresAt,
-            expiresIn);
+        var result = await AuthService.CompleteExternalLoginAsync(
+            tokenData.AccessToken,
+            tokenData.RefreshToken);
 
-        NavigationManager.NavigateTo("/dashboard", replace: true);
+        if (!result.Success)
+        {
+            errorMessage = result.Message;
+            StateHasChanged();
+            return;
+        }
+
+        NavigationManager.NavigateTo(
+            DashboardRoute,
+            replace: true);
     }
 
-    private Dictionary<string, string> ReadFragmentParameters()
+    private ExternalLoginTokenData ReadTokenDataFromUrl()
     {
-        var uri = new Uri(NavigationManager.Uri);
-        var fragment = uri.Fragment;
+        var currentUri = new Uri(NavigationManager.Uri);
+        var fragment = currentUri.Fragment;
 
         if (string.IsNullOrWhiteSpace(fragment))
         {
-            return new Dictionary<string, string>();
+            return new ExternalLoginTokenData();
         }
 
+        var values = ParseFragment(fragment);
+
+        return new ExternalLoginTokenData
+        {
+            AccessToken = GetValue(values, "accessToken"),
+            RefreshToken = GetValue(values, "refreshToken")
+        };
+    }
+
+    private static Dictionary<string, string> ParseFragment(
+        string fragment)
+    {
         var cleanFragment = fragment.TrimStart('#');
 
         return cleanFragment
@@ -135,7 +105,38 @@
             .Select(part => part.Split('=', 2))
             .Where(parts => parts.Length == 2)
             .ToDictionary(
-                parts => Uri.UnescapeDataString(parts[0]),
-                parts => Uri.UnescapeDataString(parts[1]));
+                parts => DecodeUrlValue(parts[0]),
+                parts => DecodeUrlValue(parts[1]),
+                StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static string? GetValue(
+        Dictionary<string, string> values,
+        string key)
+    {
+        return values.TryGetValue(key, out var value)
+            ? value
+            : null;
+    }
+
+    private static string DecodeUrlValue(
+        string value)
+    {
+        return Uri.UnescapeDataString(
+            value.Replace("+", " ", StringComparison.Ordinal));
+    }
+
+    private void GoToLogin()
+    {
+        NavigationManager.NavigateTo(
+            LoginRoute,
+            forceLoad: true);
+    }
+
+    private sealed class ExternalLoginTokenData
+    {
+        public string? AccessToken { get; set; }
+
+        public string? RefreshToken { get; set; }
     }
 }

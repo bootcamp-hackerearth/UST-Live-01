@@ -39,7 +39,7 @@
     <section class="stats-grid">
 
         <div class="stat-card">
-            <div class="stat-icon blue">👨‍⚕️</div>
+            <div class="stat-icon blue">👨‍⚕</div>
 
             <div>
                 <p>Total Doctors</p>
@@ -168,9 +168,14 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await AuthService.InitializeAsync();
+
         if (!AuthService.IsLoggedIn)
         {
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo(
+                "/login",
+                forceLoad: true);
+
             return;
         }
 

@@ -3278,3 +3278,122 @@ body {
     width: 100%;
     overflow-x: auto;
 }
+
+/* =====================================================
+   EXTERNAL ADMIN LOGIN REDIRECT PAGE
+   ===================================================== */
+
+.external-login-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: radial-gradient(circle at 18% 16%, rgba(34, 211, 238, 0.22), transparent 30%), radial-gradient(circle at 85% 18%, rgba(124, 58, 237, 0.20), transparent 34%), linear-gradient(135deg, #020617 0%, #07111f 48%, #0d1b3d 100%);
+}
+
+.external-login-card {
+    width: min(430px, 100%);
+    padding: 38px;
+    border-radius: 28px;
+    text-align: center;
+    color: #ffffff;
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.76));
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 35px 100px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(24px);
+}
+
+    .external-login-card h1 {
+        margin: 20px 0 8px;
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: 900;
+    }
+
+    .external-login-card p {
+        margin: 0;
+        color: #b6c7dc;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+.external-login-error {
+    color: #fecaca !important;
+    margin-bottom: 22px !important;
+}
+
+.external-login-loader {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.14);
+    border-top-color: #22d3ee;
+    animation: externalLoginSpin 0.8s linear infinite;
+}
+
+.stat-icon {
+    font-size: 15px !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.08em;
+}
+
+@keyframes externalLoginSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =====================================================
+   ADMIN STARTUP LOADING PAGE
+   ===================================================== */
+
+.admin-startup-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: radial-gradient(circle at 18% 16%, rgba(34, 211, 238, 0.22), transparent 30%), radial-gradient(circle at 85% 18%, rgba(124, 58, 237, 0.20), transparent 34%), linear-gradient(135deg, #020617 0%, #07111f 48%, #0d1b3d 100%);
+}
+
+.admin-startup-card {
+    width: min(430px, 100%);
+    padding: 38px;
+    border-radius: 28px;
+    text-align: center;
+    color: #ffffff;
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.76));
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 35px 100px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(24px);
+}
+
+    .admin-startup-card h1 {
+        margin: 20px 0 8px;
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: 900;
+    }
+
+    .admin-startup-card p {
+        margin: 0;
+        color: #b6c7dc;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+.admin-startup-loader {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.14);
+    border-top-color: #22d3ee;
+    animation: adminStartupSpin 0.8s linear infinite;
+}
+
+@keyframes adminStartupSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}

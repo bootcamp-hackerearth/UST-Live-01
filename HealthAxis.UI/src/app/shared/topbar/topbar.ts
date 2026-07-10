@@ -11,6 +11,7 @@ import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
 import { DoctorService } from '../../core/services/doctor.service';
+import { DoctorStatusStateService } from '../../core/services/doctor-status-state.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
 @Component({
@@ -22,44 +23,26 @@ import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 })
 export class Topbar implements OnDestroy {
   readonly authService = inject(AuthService);
+  readonly doctorStatusState = inject(DoctorStatusStateService);
 
   private readonly router = inject(Router);
   private readonly doctorService = inject(DoctorService);
 
   readonly currentTime = signal(new Date());
   readonly isProfileMenuOpen = signal(false);
-
-  readonly isDoctorActive = signal(true);
   readonly statusUpdating = signal(false);
+  readonly statusError = signal('');
 
   private readonly timerId = window.setInterval(() => {
     this.currentTime.set(new Date());
   }, 1000);
 
-  private readonly doctorStatusChangedHandler = (event: Event): void => {
-    const customEvent = event as CustomEvent<{ isActive: boolean }>;
-
-    if (typeof customEvent.detail?.isActive === 'boolean') {
-      this.isDoctorActive.set(customEvent.detail.isActive);
-    }
-  };
-
   constructor() {
     this.loadDoctorStatus();
-
-    window.addEventListener(
-      'doctor-status-changed',
-      this.doctorStatusChangedHandler
-    );
   }
 
   ngOnDestroy(): void {
     window.clearInterval(this.timerId);
-
-    window.removeEventListener(
-      'doctor-status-changed',
-      this.doctorStatusChangedHandler
-    );
   }
 
   @HostListener('document:click')
@@ -83,6 +66,16 @@ export class Topbar implements OnDestroy {
     }
 
     return 'Good Evening';
+  }
+
+  getDoctorStatusText(): string {
+    const status = this.doctorStatusState.isActive();
+
+    if (status === null) {
+      return 'Loading...';
+    }
+
+    return status ? 'Active' : 'Inactive';
   }
 
   profileRoute(): string {
@@ -120,6 +113,7 @@ export class Topbar implements OnDestroy {
   logout(): void {
     this.isProfileMenuOpen.set(false);
     this.authService.logout();
+    this.doctorStatusState.clearStatus();
     this.router.navigate(['/login']);
   }
 
@@ -128,37 +122,32 @@ export class Topbar implements OnDestroy {
       return;
     }
 
-    const nextStatus = !this.isDoctorActive();
+    const currentStatus = this.doctorStatusState.isActive();
+
+    if (currentStatus === null) {
+      this.statusError.set('Doctor status is still loading.');
+      return;
+    }
+
+    const nextStatus = !currentStatus;
 
     this.statusUpdating.set(true);
+    this.statusError.set('');
 
     this.doctorService.updateMyStatus(nextStatus).subscribe({
       next: (response) => {
         this.statusUpdating.set(false);
-        this.isDoctorActive.set(response.isActive);
-
-        window.dispatchEvent(
-          new CustomEvent('doctor-status-changed', {
-            detail: {
-              isActive: response.isActive,
-              message: response.message
-            }
-          })
-        );
+        this.doctorStatusState.setStatus(response.isActive);
       },
       error: (error: unknown) => {
         this.statusUpdating.set(false);
-
-        window.dispatchEvent(
-          new CustomEvent('doctor-status-update-failed', {
-            detail: {
-              message: getFriendlyErrorMessage(
-                error,
-                'Could not update doctor status.'
-              )
-            }
-          })
+        this.statusError.set(
+          getFriendlyErrorMessage(error, 'Could not update doctor status.')
         );
+
+        window.setTimeout(() => {
+          this.statusError.set('');
+        }, 3000);
       }
     });
   }
@@ -170,10 +159,10 @@ export class Topbar implements OnDestroy {
 
     this.doctorService.getMyDoctorProfile().subscribe({
       next: (doctor) => {
-        this.isDoctorActive.set(Boolean(doctor.isActive));
+        this.doctorStatusState.setStatus(Boolean(doctor.isActive));
       },
       error: () => {
-        this.isDoctorActive.set(true);
+        this.doctorStatusState.clearStatus();
       }
     });
   }

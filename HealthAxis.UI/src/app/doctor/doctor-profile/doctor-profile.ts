@@ -12,6 +12,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { ChangePasswordRequest } from '../../core/models/auth.model';
 import { Doctor } from '../../core/models/doctor.model';
 import { DoctorService } from '../../core/services/doctor.service';
+import { DoctorStatusStateService } from '../../core/services/doctor-status-state.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
 @Component({
@@ -22,6 +23,8 @@ import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DoctorProfile {
+  readonly doctorStatusState = inject(DoctorStatusStateService);
+
   private readonly formBuilder = inject(FormBuilder);
   private readonly doctorService = inject(DoctorService);
   private readonly authService = inject(AuthService);
@@ -34,7 +37,6 @@ export class DoctorProfile {
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
   readonly statusErrorMessage = signal('');
-  readonly statusSuccessMessage = signal('');
   readonly passwordErrorMessage = signal('');
   readonly passwordSuccessMessage = signal('');
 
@@ -72,16 +74,36 @@ export class DoctorProfile {
     return this.passwordForm.controls.confirmPassword;
   }
 
+  getDoctorStatusText(): string {
+    const status = this.doctorStatusState.isActive();
+
+    if (status === null) {
+      return 'Loading Status';
+    }
+
+    return status ? 'Currently Active' : 'Currently Inactive';
+  }
+
+  getStatusButtonText(): string {
+    const status = this.doctorStatusState.isActive();
+
+    if (status === null) {
+      return 'Loading...';
+    }
+
+    return status ? 'Set Inactive' : 'Set Active';
+  }
+
   loadProfile(): void {
     this.loading.set(true);
     this.errorMessage.set('');
     this.successMessage.set('');
     this.statusErrorMessage.set('');
-    this.statusSuccessMessage.set('');
 
     this.doctorService.getMyDoctorProfile().subscribe({
       next: (doctor) => {
         this.doctor.set(doctor);
+        this.doctorStatusState.setStatus(Boolean(doctor.isActive));
         this.loading.set(false);
       },
       error: (error: unknown) => {
@@ -95,28 +117,35 @@ export class DoctorProfile {
 
   toggleDoctorStatus(): void {
     const currentDoctor = this.doctor();
+    const currentStatus = this.doctorStatusState.isActive();
 
     this.statusErrorMessage.set('');
-    this.statusSuccessMessage.set('');
+    this.successMessage.set('');
 
     if (!currentDoctor) {
       this.statusErrorMessage.set('Doctor profile is not loaded.');
       return;
     }
 
-    const newStatus = !currentDoctor.isActive;
+    if (currentStatus === null) {
+      this.statusErrorMessage.set('Doctor status is still loading.');
+      return;
+    }
+
+    const nextStatus = !currentStatus;
 
     this.updatingStatus.set(true);
 
-    this.doctorService.updateMyStatus(newStatus).subscribe({
+    this.doctorService.updateMyStatus(nextStatus).subscribe({
       next: (response) => {
         this.doctor.set({
           ...currentDoctor,
           isActive: response.isActive
         });
 
+        this.doctorStatusState.setStatus(response.isActive);
         this.updatingStatus.set(false);
-        this.statusSuccessMessage.set(response.message);
+        this.successMessage.set(response.message);
       },
       error: (error: unknown) => {
         this.updatingStatus.set(false);

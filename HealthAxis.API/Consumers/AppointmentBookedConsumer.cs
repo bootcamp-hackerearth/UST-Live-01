@@ -19,8 +19,7 @@ namespace HealthAxis.API.Consumers
             _logger = logger;
         }
 
-        public async Task Consume(
-            ConsumeContext<AppointmentBookedEvent> context)
+        public async Task Consume(ConsumeContext<AppointmentBookedEvent> context)
         {
             var appointmentBookedEvent = context.Message;
 

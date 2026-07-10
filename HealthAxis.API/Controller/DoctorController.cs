@@ -229,22 +229,11 @@ namespace HealthAxis.API.Controller
     int id,
     [FromQuery] DateTime? date)
         {
-            var availabilityDate = (date ?? DateTime.Today).Date;
-
-            var doctor = await _doctorService.GetAvailabilityAsync(
+            var availability = await _doctorService.GetAvailabilityAsync(
                 id,
-                availabilityDate);
+                date);
 
-            return Ok(new
-            {
-                doctor.DoctorId,
-                doctor.FullName,
-                doctor.IsActive,
-                Date = availabilityDate,
-                Message = doctor.IsActive
-                    ? "Doctor is available"
-                    : "Doctor is not available"
-            });
+            return Ok(availability);
         }
     }
 }
