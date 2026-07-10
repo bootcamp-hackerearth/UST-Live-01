@@ -20,6 +20,8 @@ namespace HealthApp.Api.Data
 
         public DbSet<HealthRecord> HealthRecords { get; set; }
 
+        public DbSet<DoctorLeave> DoctorLeaves { get; set; }
+
         public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(
@@ -37,6 +39,12 @@ namespace HealthApp.Api.Data
                 .HasOne(user => user.Doctor)
                 .WithOne(doctor => doctor.User)
                 .HasForeignKey<ApplicationUser>(user => user.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<DoctorLeave>()
+                .HasOne(x => x.Doctor)
+                .WithMany(x => x.DoctorLeaves)
+                .HasForeignKey(x => x.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.SeedData();
