@@ -10,6 +10,7 @@ import { AppointmentService } from '../../../core/services/appointment.service';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { HealthRecordService } from '../../../core/services/health-record.service';
 import { PatientService } from '../../../core/services/patient.service';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner';
 
 interface DashboardStat {
   label: string;
@@ -21,9 +22,9 @@ interface DashboardStat {
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, LoadingSpinnerComponent],
   templateUrl: './patient-dashboard.html',
-  styleUrl: './patient-dashboard.css'
+  styleUrl: './patient-dashboard.css',
 })
 export class PatientDashboard implements OnInit {
   patientName = 'Patient';
@@ -42,7 +43,7 @@ export class PatientDashboard implements OnInit {
     private readonly appointmentService: AppointmentService,
     private readonly healthRecordService: HealthRecordService,
     private readonly doctorService: DoctorService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -57,16 +58,16 @@ export class PatientDashboard implements OnInit {
       profile: this.patientService.getMyProfile(),
       appointments: this.appointmentService.getMyAppointments(false),
       healthRecords: this.healthRecordService.getMyHealthRecords(),
-      doctors: this.doctorService.getDoctors(undefined, undefined, true)
+      doctors: this.doctorService.getDoctors(undefined, undefined, true),
     })
       .pipe(
         finalize(() => {
           this.isLoading = false;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe({
-        next: result => {
+        next: (result) => {
           this.patientName = result.profile?.fullName || 'Patient';
           this.appointments = result.appointments ?? [];
           this.healthRecords = result.healthRecords ?? [];
@@ -83,28 +84,25 @@ export class PatientDashboard implements OnInit {
 
           this.buildDashboardStats();
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
   get upcomingAppointments(): AppointmentDto[] {
     return this.appointments
-      .filter(appointment =>
-        appointment.status === 'Pending' ||
-        appointment.status === 'Confirmed'
+      .filter(
+        (appointment) => appointment.status === 'Pending' || appointment.status === 'Confirmed',
       )
-      .sort((a, b) =>
-        this.getAppointmentDateTime(a).getTime() -
-        this.getAppointmentDateTime(b).getTime()
+      .sort(
+        (a, b) =>
+          this.getAppointmentDateTime(a).getTime() - this.getAppointmentDateTime(b).getTime(),
       )
       .slice(0, 3);
   }
 
   get recentHealthRecords(): HealthRecordDto[] {
     return [...this.healthRecords]
-      .sort((a, b) =>
-        new Date(b.visitDate).getTime() - new Date(a.visitDate).getTime()
-      )
+      .sort((a, b) => new Date(b.visitDate).getTime() - new Date(a.visitDate).getTime())
       .slice(0, 3);
   }
 
@@ -136,12 +134,12 @@ export class PatientDashboard implements OnInit {
   }
 
   private buildDashboardStats(): void {
-    const upcomingCount = this.appointments.filter(appointment =>
-      appointment.status === 'Pending' || appointment.status === 'Confirmed'
+    const upcomingCount = this.appointments.filter(
+      (appointment) => appointment.status === 'Pending' || appointment.status === 'Confirmed',
     ).length;
 
-    const completedCount = this.appointments.filter(appointment =>
-      appointment.status === 'Completed'
+    const completedCount = this.appointments.filter(
+      (appointment) => appointment.status === 'Completed',
     ).length;
 
     this.dashboardStats = [
@@ -149,26 +147,26 @@ export class PatientDashboard implements OnInit {
         label: 'Upcoming Appointments',
         value: upcomingCount,
         icon: 'bi bi-calendar-event',
-        cardClass: 'metric-teal'
+        cardClass: 'metric-teal',
       },
       {
         label: 'Completed Appointments',
         value: completedCount,
         icon: 'bi bi-calendar-check',
-        cardClass: 'metric-blue'
+        cardClass: 'metric-blue',
       },
       {
         label: 'Doctors Available',
         value: this.activeDoctorCount,
         icon: 'bi bi-person-badge',
-        cardClass: 'metric-cyan'
+        cardClass: 'metric-cyan',
       },
       {
         label: 'Health Records',
         value: this.healthRecords.length,
         icon: 'bi bi-clipboard-pulse',
-        cardClass: 'metric-amber'
-      }
+        cardClass: 'metric-amber',
+      },
     ];
   }
 

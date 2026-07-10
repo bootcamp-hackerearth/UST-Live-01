@@ -1,487 +1,418 @@
 <div class="patient-profile-page">
+  <app-loading-spinner
+    *ngIf="isLoadingProfile()"
+    message="Loading your profile..."
+  ></app-loading-spinner>
 
-  <!-- Header -->
-  <section class="profile-header-card mb-4">
-    <div class="row align-items-center g-4">
+  <ng-container *ngIf="!isLoadingProfile()">
+    <!-- Header -->
+    <section class="profile-header-card mb-4">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+          <div class="header-badge mb-3">
+            <i class="bi bi-person-circle"></i>
+            My Profile
+          </div>
 
-      <div class="col-lg-8">
-        <div class="header-badge mb-3">
-          <i class="bi bi-person-circle"></i>
-          My Profile
+          <h1 class="page-title mb-2">Manage your patient profile</h1>
+
+          <p class="page-subtitle mb-0">
+            View and update your personal information, contact details, and account password.
+          </p>
         </div>
 
-        <h1 class="page-title mb-2">
-          Manage your patient profile
-        </h1>
-
-        <p class="page-subtitle mb-0">
-          View and update your personal information, contact details, and account password.
-        </p>
-      </div>
-
-      <div class="col-lg-4 text-lg-end">
-        <button
-          type="button"
-          class="btn btn-health btn-lg profile-action-btn"
-          *ngIf="profile && !isEditing()"
-          (click)="enableEdit()"
-          [disabled]="isLoadingProfile() || isSavingProfile()"
-        >
-          <i class="bi bi-pencil-square me-2"></i>
-          Edit Profile
-        </button>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Loading State -->
-  <section class="empty-state-card" *ngIf="isLoadingProfile()">
-    <div class="empty-state-icon">
-      <i class="bi bi-hourglass-split"></i>
-    </div>
-
-    <h5>Loading profile...</h5>
-
-    <p>
-      Please wait while we fetch your patient profile.
-    </p>
-  </section>
-
-  <!-- Empty State -->
-  <section class="empty-state-card" *ngIf="!isLoadingProfile() && !profile">
-    <div class="empty-state-icon">
-      <i class="bi bi-person-x"></i>
-    </div>
-
-    <h5>Profile not available</h5>
-
-    <p>
-      We could not load your patient profile. Please try again later.
-    </p>
-  </section>
-
-  <!-- Profile Content -->
-  <div
-    class="row g-4 align-items-stretch patient-profile-layout"
-    *ngIf="!isLoadingProfile() && profile"
-  >
-
-    <!-- Profile Summary -->
-    <div class="col-xl-4">
-      <section class="profile-summary-card patient-profile-summary-card">
-
-        <div class="profile-avatar">
-          {{ getInitials() }}
-        </div>
-
-        <h4 class="profile-name">
-          {{ profile.fullName }}
-        </h4>
-
-        <div class="profile-role-badge-wrapper">
-          <div class="profile-role-badge" *ngIf="profile">
-            <i class="bi bi-person-heart"></i>
-            <span>Patient</span>
-          </div>
-        </div>
-
-        <div class="profile-mini-list mt-4">
-
-          <div class="profile-mini-item">
-            <i class="bi bi-envelope"></i>
-
-            <div>
-              <span>Email</span>
-              <strong>{{ profile.email }}</strong>
-            </div>
-          </div>
-
-          <div class="profile-mini-item">
-            <i class="bi bi-telephone"></i>
-
-            <div>
-              <span>Phone</span>
-              <strong>{{ profile.phoneNumber }}</strong>
-            </div>
-          </div>
-
-          <div class="profile-mini-item">
-            <i class="bi bi-shield-check"></i>
-
-            <div>
-              <span>Insurance ID</span>
-              <strong>{{ profile.insuranceId || 'Not provided' }}</strong>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="profile-summary-note mt-4">
-          <i class="bi bi-info-circle"></i>
-
-          <span>
-            Keep your contact details updated so appointments and health record communication stay accurate.
-          </span>
-        </div>
-
-      </section>
-    </div>
-
-    <!-- Right Column -->
-    <div class="col-xl-8 patient-profile-right-column">
-
-      <!-- Profile Details / Edit Form -->
-      <section class="profile-details-card">
-
-        <div class="section-header">
-          <div>
-            <h5 class="section-title mb-1">
-              Personal Information
-            </h5>
-
-            <p class="section-subtitle mb-0">
-              {{ isEditing() ? 'Update your profile information' : 'Your current profile details' }}
-            </p>
-          </div>
-        </div>
-
-        <!-- View Mode -->
-        <div class="profile-info-grid" *ngIf="!isEditing()">
-
-          <div class="profile-info-box">
-            <div class="profile-info-icon">
-              <i class="bi bi-person"></i>
-            </div>
-
-            <div>
-              <div class="profile-info-label">
-                Full Name
-              </div>
-
-              <div class="profile-info-value">
-                {{ profile.fullName }}
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-info-box">
-            <div class="profile-info-icon">
-              <i class="bi bi-calendar3"></i>
-            </div>
-
-            <div>
-              <div class="profile-info-label">
-                Date of Birth
-              </div>
-
-              <div class="profile-info-value">
-                {{ profile.dateOfBirth | date: 'mediumDate' }}
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-info-box">
-            <div class="profile-info-icon">
-              <i class="bi bi-gender-ambiguous"></i>
-            </div>
-
-            <div>
-              <div class="profile-info-label">
-                Gender
-              </div>
-
-              <div class="profile-info-value">
-                {{ profile.gender }}
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-info-box">
-            <div class="profile-info-icon">
-              <i class="bi bi-envelope"></i>
-            </div>
-
-            <div>
-              <div class="profile-info-label">
-                Email
-              </div>
-
-              <div class="profile-info-value">
-                {{ profile.email }}
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-info-box">
-            <div class="profile-info-icon">
-              <i class="bi bi-telephone"></i>
-            </div>
-
-            <div>
-              <div class="profile-info-label">
-                Phone Number
-              </div>
-
-              <div class="profile-info-value">
-                {{ profile.phoneNumber }}
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-info-box">
-            <div class="profile-info-icon">
-              <i class="bi bi-shield-check"></i>
-            </div>
-
-            <div>
-              <div class="profile-info-label">
-                Insurance ID
-              </div>
-
-              <div class="profile-info-value">
-                {{ profile.insuranceId || 'Not provided' }}
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Edit Mode -->
-        <div class="profile-form" *ngIf="isEditing()">
-
-          <div class="row g-3">
-
-            <div class="col-md-6">
-              <label for="patientFullName" class="form-label fw-bold">
-                Full Name
-              </label>
-
-              <input
-                id="patientFullName"
-                type="text"
-                class="form-control"
-                [(ngModel)]="editableProfile.fullName"
-                [disabled]="isSavingProfile()"
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label for="patientDateOfBirth" class="form-label fw-bold">
-                Date of Birth
-              </label>
-
-              <input
-                id="patientDateOfBirth"
-                type="date"
-                class="form-control"
-                [(ngModel)]="editableProfile.dateOfBirth"
-                [disabled]="isSavingProfile()"
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label for="patientGender" class="form-label fw-bold">
-                Gender
-              </label>
-
-              <select
-                id="patientGender"
-                class="form-select"
-                [(ngModel)]="editableProfile.gender"
-                [disabled]="isSavingProfile()"
-              >
-                <option value="">
-                  Select gender
-                </option>
-
-                <option *ngFor="let gender of genderOptions" [value]="gender">
-                  {{ gender }}
-                </option>
-              </select>
-            </div>
-
-            <div class="col-md-6">
-              <label for="patientEmail" class="form-label fw-bold">
-                Email
-              </label>
-
-              <input
-                id="patientEmail"
-                type="email"
-                class="form-control"
-                [(ngModel)]="editableProfile.email"
-                [disabled]="isSavingProfile()"
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label for="patientPhoneNumber" class="form-label fw-bold">
-                Phone Number
-              </label>
-
-              <input
-                id="patientPhoneNumber"
-                type="text"
-                class="form-control"
-                maxlength="10"
-                [(ngModel)]="editableProfile.phoneNumber"
-                [disabled]="isSavingProfile()"
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label for="patientInsuranceId" class="form-label fw-bold">
-                Insurance ID
-              </label>
-
-              <input
-                id="patientInsuranceId"
-                type="text"
-                class="form-control"
-                placeholder="Optional"
-                [(ngModel)]="editableProfile.insuranceId"
-                [disabled]="isSavingProfile()"
-              />
-            </div>
-
-            <div class="col-12 d-flex flex-wrap justify-content-end gap-2 mt-3">
-              <button
-                type="button"
-                class="btn btn-outline-secondary px-4"
-                (click)="cancelEdit()"
-                [disabled]="isSavingProfile()"
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                class="btn btn-health px-4"
-                (click)="saveProfile()"
-                [disabled]="isSavingProfile()"
-              >
-                @if (isSavingProfile()) {
-                  <i class="bi bi-hourglass-split me-2"></i>
-                  Saving...
-                } @else {
-                  <i class="bi bi-check-circle me-2"></i>
-                  Save Changes
-                }
-              </button>
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      <!-- Change Password -->
-      <section class="change-password-card mt-4">
-
-        <div class="section-header">
-          <div>
-            <h5 class="section-title mb-1">
-              Account Security
-            </h5>
-
-            <p class="section-subtitle mb-0">
-              Change your account password securely.
-            </p>
-          </div>
-
+        <div class="col-lg-4 text-lg-end">
           <button
             type="button"
-            class="btn btn-outline-health"
-            (click)="toggleChangePassword()"
-            [disabled]="isChangingPassword()"
+            class="btn btn-health btn-lg profile-action-btn"
+            *ngIf="profile && !isEditing()"
+            (click)="enableEdit()"
+            [disabled]="isLoadingProfile() || isSavingProfile()"
           >
-            <i class="bi bi-key me-2"></i>
-            {{ showChangePassword() ? 'Hide' : 'Change Password' }}
+            <i class="bi bi-pencil-square me-2"></i>
+            Edit Profile
           </button>
         </div>
+      </div>
+    </section>
 
-        <div class="password-form mt-3" *ngIf="showChangePassword()">
+    <!-- Empty State -->
+    <section class="empty-state-card" *ngIf="!isLoadingProfile() && !profile">
+      <div class="empty-state-icon">
+        <i class="bi bi-person-x"></i>
+      </div>
 
-          <div class="row g-3">
+      <h5>Profile not available</h5>
 
-            <div class="col-md-4">
-              <label for="currentPassword" class="form-label fw-bold">
-                Current Password
-              </label>
+      <p>We could not load your patient profile. Please try again later.</p>
+    </section>
 
-              <input
-                id="currentPassword"
-                type="password"
-                class="form-control"
-                [(ngModel)]="passwordForm.currentPassword"
-                [disabled]="isChangingPassword()"
-              />
-            </div>
-
-            <div class="col-md-4">
-              <label for="newPassword" class="form-label fw-bold">
-                New Password
-              </label>
-
-              <input
-                id="newPassword"
-                type="password"
-                class="form-control"
-                [(ngModel)]="passwordForm.newPassword"
-                [disabled]="isChangingPassword()"
-              />
-            </div>
-
-            <div class="col-md-4">
-              <label for="confirmNewPassword" class="form-label fw-bold">
-                Confirm Password
-              </label>
-
-              <input
-                id="confirmNewPassword"
-                type="password"
-                class="form-control"
-                [(ngModel)]="passwordForm.confirmNewPassword"
-                [disabled]="isChangingPassword()"
-              />
-            </div>
-
-            <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-              <button
-                type="button"
-                class="btn btn-outline-secondary px-4"
-                (click)="toggleChangePassword()"
-                [disabled]="isChangingPassword()"
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                class="btn btn-health px-4"
-                (click)="changePassword()"
-                [disabled]="isChangingPassword()"
-              >
-                @if (isChangingPassword()) {
-                  <i class="bi bi-hourglass-split me-2"></i>
-                  Updating...
-                } @else {
-                  <i class="bi bi-shield-check me-2"></i>
-                  Update Password
-                }
-              </button>
-            </div>
-
+    <!-- Profile Content -->
+    <div
+      class="row g-4 align-items-stretch patient-profile-layout"
+      *ngIf="!isLoadingProfile() && profile"
+    >
+      <!-- Profile Summary -->
+      <div class="col-xl-4">
+        <section class="profile-summary-card patient-profile-summary-card">
+          <div class="profile-avatar">
+            {{ getInitials() }}
           </div>
 
-        </div>
+          <h4 class="profile-name">
+            {{ profile.fullName }}
+          </h4>
 
-      </section>
+          <div class="profile-role-badge-wrapper">
+            <div class="profile-role-badge" *ngIf="profile">
+              <i class="bi bi-person-heart"></i>
+              <span>Patient</span>
+            </div>
+          </div>
 
+          <div class="profile-mini-list mt-4">
+            <div class="profile-mini-item">
+              <i class="bi bi-envelope"></i>
+
+              <div>
+                <span>Email</span>
+                <strong>{{ profile.email }}</strong>
+              </div>
+            </div>
+
+            <div class="profile-mini-item">
+              <i class="bi bi-telephone"></i>
+
+              <div>
+                <span>Phone</span>
+                <strong>{{ profile.phoneNumber }}</strong>
+              </div>
+            </div>
+
+            <div class="profile-mini-item">
+              <i class="bi bi-shield-check"></i>
+
+              <div>
+                <span>Insurance ID</span>
+                <strong>{{ profile.insuranceId || 'Not provided' }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-summary-note mt-4">
+            <i class="bi bi-info-circle"></i>
+
+            <span>
+              Keep your contact details updated so appointments and health record communication stay
+              accurate.
+            </span>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column -->
+      <div class="col-xl-8 patient-profile-right-column">
+        <!-- Profile Details / Edit Form -->
+        <section class="profile-details-card">
+          <div class="section-header">
+            <div>
+              <h5 class="section-title mb-1">Personal Information</h5>
+
+              <p class="section-subtitle mb-0">
+                {{
+                  isEditing() ? 'Update your profile information' : 'Your current profile details'
+                }}
+              </p>
+            </div>
+          </div>
+
+          <!-- View Mode -->
+          <div class="profile-info-grid" *ngIf="!isEditing()">
+            <div class="profile-info-box">
+              <div class="profile-info-icon">
+                <i class="bi bi-person"></i>
+              </div>
+
+              <div>
+                <div class="profile-info-label">Full Name</div>
+
+                <div class="profile-info-value">
+                  {{ profile.fullName }}
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-info-box">
+              <div class="profile-info-icon">
+                <i class="bi bi-calendar3"></i>
+              </div>
+
+              <div>
+                <div class="profile-info-label">Date of Birth</div>
+
+                <div class="profile-info-value">
+                  {{ profile.dateOfBirth | date: 'mediumDate' }}
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-info-box">
+              <div class="profile-info-icon">
+                <i class="bi bi-gender-ambiguous"></i>
+              </div>
+
+              <div>
+                <div class="profile-info-label">Gender</div>
+
+                <div class="profile-info-value">
+                  {{ profile.gender }}
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-info-box">
+              <div class="profile-info-icon">
+                <i class="bi bi-envelope"></i>
+              </div>
+
+              <div>
+                <div class="profile-info-label">Email</div>
+
+                <div class="profile-info-value">
+                  {{ profile.email }}
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-info-box">
+              <div class="profile-info-icon">
+                <i class="bi bi-telephone"></i>
+              </div>
+
+              <div>
+                <div class="profile-info-label">Phone Number</div>
+
+                <div class="profile-info-value">
+                  {{ profile.phoneNumber }}
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-info-box">
+              <div class="profile-info-icon">
+                <i class="bi bi-shield-check"></i>
+              </div>
+
+              <div>
+                <div class="profile-info-label">Insurance ID</div>
+
+                <div class="profile-info-value">
+                  {{ profile.insuranceId || 'Not provided' }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Mode -->
+          <div class="profile-form" *ngIf="isEditing()">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="patientFullName" class="form-label fw-bold"> Full Name </label>
+
+                <input
+                  id="patientFullName"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="editableProfile.fullName"
+                  [disabled]="isSavingProfile()"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label for="patientDateOfBirth" class="form-label fw-bold"> Date of Birth </label>
+
+                <input
+                  id="patientDateOfBirth"
+                  type="date"
+                  class="form-control"
+                  [(ngModel)]="editableProfile.dateOfBirth"
+                  [disabled]="isSavingProfile()"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label for="patientGender" class="form-label fw-bold"> Gender </label>
+
+                <select
+                  id="patientGender"
+                  class="form-select"
+                  [(ngModel)]="editableProfile.gender"
+                  [disabled]="isSavingProfile()"
+                >
+                  <option value="">Select gender</option>
+
+                  <option *ngFor="let gender of genderOptions" [value]="gender">
+                    {{ gender }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label for="patientEmail" class="form-label fw-bold"> Email </label>
+
+                <input
+                  id="patientEmail"
+                  type="email"
+                  class="form-control"
+                  [(ngModel)]="editableProfile.email"
+                  [disabled]="isSavingProfile()"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label for="patientPhoneNumber" class="form-label fw-bold"> Phone Number </label>
+
+                <input
+                  id="patientPhoneNumber"
+                  type="text"
+                  class="form-control"
+                  maxlength="10"
+                  [(ngModel)]="editableProfile.phoneNumber"
+                  [disabled]="isSavingProfile()"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label for="patientInsuranceId" class="form-label fw-bold"> Insurance ID </label>
+
+                <input
+                  id="patientInsuranceId"
+                  type="text"
+                  class="form-control"
+                  placeholder="Optional"
+                  [(ngModel)]="editableProfile.insuranceId"
+                  [disabled]="isSavingProfile()"
+                />
+              </div>
+
+              <div class="col-12 d-flex flex-wrap justify-content-end gap-2 mt-3">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary px-4"
+                  (click)="cancelEdit()"
+                  [disabled]="isSavingProfile()"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-health px-4"
+                  (click)="saveProfile()"
+                  [disabled]="isSavingProfile()"
+                >
+                  @if (isSavingProfile()) {
+                    <i class="bi bi-hourglass-split me-2"></i>
+                    Saving...
+                  } @else {
+                    <i class="bi bi-check-circle me-2"></i>
+                    Save Changes
+                  }
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Change Password -->
+        <section class="change-password-card mt-4">
+          <div class="section-header">
+            <div>
+              <h5 class="section-title mb-1">Account Security</h5>
+
+              <p class="section-subtitle mb-0">Change your account password securely.</p>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-outline-health"
+              (click)="toggleChangePassword()"
+              [disabled]="isChangingPassword()"
+            >
+              <i class="bi bi-key me-2"></i>
+              {{ showChangePassword() ? 'Hide' : 'Change Password' }}
+            </button>
+          </div>
+
+          <div class="password-form mt-3" *ngIf="showChangePassword()">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label for="currentPassword" class="form-label fw-bold"> Current Password </label>
+
+                <input
+                  id="currentPassword"
+                  type="password"
+                  class="form-control"
+                  [(ngModel)]="passwordForm.currentPassword"
+                  [disabled]="isChangingPassword()"
+                />
+              </div>
+
+              <div class="col-md-4">
+                <label for="newPassword" class="form-label fw-bold"> New Password </label>
+
+                <input
+                  id="newPassword"
+                  type="password"
+                  class="form-control"
+                  [(ngModel)]="passwordForm.newPassword"
+                  [disabled]="isChangingPassword()"
+                />
+              </div>
+
+              <div class="col-md-4">
+                <label for="confirmNewPassword" class="form-label fw-bold">
+                  Confirm Password
+                </label>
+
+                <input
+                  id="confirmNewPassword"
+                  type="password"
+                  class="form-control"
+                  [(ngModel)]="passwordForm.confirmNewPassword"
+                  [disabled]="isChangingPassword()"
+                />
+              </div>
+
+              <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary px-4"
+                  (click)="toggleChangePassword()"
+                  [disabled]="isChangingPassword()"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-health px-4"
+                  (click)="changePassword()"
+                  [disabled]="isChangingPassword()"
+                >
+                  @if (isChangingPassword()) {
+                    <i class="bi bi-hourglass-split me-2"></i>
+                    Updating...
+                  } @else {
+                    <i class="bi bi-shield-check me-2"></i>
+                    Update Password
+                  }
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
-
-  </div>
-
+  </ng-container>
 </div>

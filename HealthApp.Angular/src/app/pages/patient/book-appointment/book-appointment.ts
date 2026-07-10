@@ -10,6 +10,7 @@ import { DoctorDto } from '../../../dtos/doctor.dto';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { AppointmentService } from '../../../core/services/appointment.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner';
 
 interface SpecialisationOption {
   label: string;
@@ -19,7 +20,11 @@ interface SpecialisationOption {
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    LoadingSpinnerComponent
+  ],
   templateUrl: './book-appointment.html',
   styleUrl: './book-appointment.css'
 })

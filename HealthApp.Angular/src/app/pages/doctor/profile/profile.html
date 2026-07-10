@@ -1,427 +1,366 @@
 <div class="doctor-profile-page">
+  <app-loading-spinner
+    *ngIf="isLoadingProfile()"
+    message="Loading your profile..."
+  ></app-loading-spinner>
 
-  <!-- Loading State -->
-  <section class="empty-state-card" *ngIf="isLoadingProfile()">
-    <div class="empty-state-icon">
-      <i class="bi bi-hourglass-split"></i>
-    </div>
-
-    <h5>Loading profile...</h5>
-
-    <p>
-      Please wait while we fetch your doctor profile.
-    </p>
-  </section>
-
-  <!-- Empty State -->
-  <section class="empty-state-card" *ngIf="!isLoadingProfile() && !doctorProfile">
-    <div class="empty-state-icon">
-      <i class="bi bi-person-badge"></i>
-    </div>
-
-    <h5>Doctor profile not available</h5>
-
-    <p>
-      We could not load your doctor profile. Please try again later.
-    </p>
-  </section>
-
-  <!-- Profile Content -->
-  <div class="doctor-profile-grid" *ngIf="!isLoadingProfile() && doctorProfile">
-
-    <!-- Left Summary Card -->
-    <section class="profile-summary-card doctor-profile-equal-card">
-
-      <div class="profile-avatar profile-avatar-icon">
-        <i class="bi bi-person-fill"></i>
+  <ng-container *ngIf="!isLoadingProfile()">
+    <!-- Empty State -->
+    <section class="empty-state-card" *ngIf="!isLoadingProfile() && !doctorProfile">
+      <div class="empty-state-icon">
+        <i class="bi bi-person-badge"></i>
       </div>
 
-      <h4 class="profile-name">
-        {{ doctorProfile.fullName }}
-      </h4>
+      <h5>Doctor profile not available</h5>
 
-      <div class="profile-badge-row">
-
-        <div class="profile-role-badge">
-          <i class="bi bi-person-badge"></i>
-          Doctor
-        </div>
-
-        <div
-          class="doctor-status-pill"
-          [class.available]="doctorProfile.isActive"
-          [class.unavailable]="!doctorProfile.isActive"
-        >
-          <i
-            class="bi"
-            [class.bi-check-circle-fill]="doctorProfile.isActive"
-            [class.bi-pause-circle-fill]="!doctorProfile.isActive"
-          ></i>
-
-          {{ doctorProfile.isActive ? 'Available' : 'Unavailable' }}
-        </div>
-
-      </div>
-
-      <div class="profile-summary-note">
-        <i class="bi bi-info-circle"></i>
-
-        <span>
-          Your professional details are managed by the admin. You can update your availability and account password here.
-        </span>
-      </div>
-
+      <p>We could not load your doctor profile. Please try again later.</p>
     </section>
 
-    <!-- Right Content -->
-    <div class="doctor-profile-right-stack">
+    <!-- Profile Content -->
+    <div class="doctor-profile-grid" *ngIf="!isLoadingProfile() && doctorProfile">
+      <!-- Left Summary Card -->
+      <section class="profile-summary-card doctor-profile-equal-card">
+        <div class="profile-avatar profile-avatar-icon">
+          <i class="bi bi-person-fill"></i>
+        </div>
 
-      <!-- Professional Information -->
-      <section class="profile-details-card">
+        <h4 class="profile-name">
+          {{ doctorProfile.fullName }}
+        </h4>
 
-        <div class="section-header">
-          <div>
-            <h5 class="section-title mb-1">
-              Professional Information
-            </h5>
+        <div class="profile-badge-row">
+          <div class="profile-role-badge">
+            <i class="bi bi-person-badge"></i>
+            Doctor
+          </div>
 
-            <p class="section-subtitle mb-0">
-              Your current profile details. Profile changes are managed by the admin.
-            </p>
+          <div
+            class="doctor-status-pill"
+            [class.available]="doctorProfile.isActive"
+            [class.unavailable]="!doctorProfile.isActive"
+          >
+            <i
+              class="bi"
+              [class.bi-check-circle-fill]="doctorProfile.isActive"
+              [class.bi-pause-circle-fill]="!doctorProfile.isActive"
+            ></i>
+
+            {{ doctorProfile.isActive ? 'Available' : 'Unavailable' }}
           </div>
         </div>
 
-        <div class="profile-info-grid mt-3">
+        <div class="profile-summary-note">
+          <i class="bi bi-info-circle"></i>
 
-          <div class="profile-info-box">
-            <div class="profile-info-icon">
-              <i class="bi bi-person"></i>
-            </div>
-
-            <div>
-              <div class="profile-info-label">
-                Full Name
-              </div>
-
-              <div class="profile-info-value">
-                {{ doctorProfile.fullName }}
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-info-box">
-            <div class="profile-info-icon">
-              <i class="bi bi-award"></i>
-            </div>
-
-            <div>
-              <div class="profile-info-label">
-                Specialisation
-              </div>
-
-              <div class="profile-info-value">
-                {{ doctorProfile.specialisation }}
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-info-box">
-            <div class="profile-info-icon">
-              <i class="bi bi-briefcase"></i>
-            </div>
-
-            <div>
-              <div class="profile-info-label">
-                Experience
-              </div>
-
-              <div class="profile-info-value">
-                {{ doctorProfile.yearsOfExperience }} Years
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-info-box">
-            <div class="profile-info-icon">
-              <i class="bi bi-currency-rupee"></i>
-            </div>
-
-            <div>
-              <div class="profile-info-label">
-                Consultation Fee
-              </div>
-
-              <div class="profile-info-value">
-                ₹{{ doctorProfile.consultationFee }}
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-info-box">
-            <div class="profile-info-icon">
-              <i class="bi bi-envelope"></i>
-            </div>
-
-            <div>
-              <div class="profile-info-label">
-                Email
-              </div>
-
-              <div class="profile-info-value">
-                {{ doctorProfile.doctorEmail }}
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-info-box">
-            <div class="profile-info-icon">
-              <i class="bi bi-telephone"></i>
-            </div>
-
-            <div>
-              <div class="profile-info-label">
-                Phone
-              </div>
-
-              <div class="profile-info-value">
-                {{ doctorProfile.doctorPhoneNo }}
-              </div>
-            </div>
-          </div>
-
+          <span>
+            Your professional details are managed by the admin. You can update your availability and
+            account password here.
+          </span>
         </div>
-
       </section>
 
-      <!-- Bottom Grid -->
-      <div class="doctor-profile-bottom-grid">
-
-        <!-- Availability Status -->
-        <section class="availability-status-card">
-
-          <div class="section-header d-flex justify-content-between align-items-start gap-3">
+      <!-- Right Content -->
+      <div class="doctor-profile-right-stack">
+        <!-- Professional Information -->
+        <section class="profile-details-card">
+          <div class="section-header">
             <div>
-              <h5 class="section-title mb-1">
-                Availability Status
-              </h5>
+              <h5 class="section-title mb-1">Professional Information</h5>
 
               <p class="section-subtitle mb-0">
-                Control whether patients can book new appointments with you.
+                Your current profile details. Profile changes are managed by the admin.
               </p>
             </div>
-
-            <span
-              class="status-badge"
-              [class.available]="doctorProfile.isActive"
-              [class.unavailable]="!doctorProfile.isActive"
-            >
-              {{ doctorProfile.isActive ? 'Available' : 'Unavailable' }}
-            </span>
           </div>
 
-          <div class="availability-toggle-box mt-4">
-
-            <div class="availability-toggle-text">
-              <div class="availability-toggle-title">
-                {{ doctorProfile.isActive ? 'Currently available' : 'Currently unavailable' }}
+          <div class="profile-info-grid mt-3">
+            <div class="profile-info-box">
+              <div class="profile-info-icon">
+                <i class="bi bi-person"></i>
               </div>
 
-              <div class="availability-toggle-subtitle">
-                {{ doctorProfile.isActive ? 'Patients can currently book appointments with you.' : 'Patients cannot currently book new appointments with you.' }}
+              <div>
+                <div class="profile-info-label">Full Name</div>
+
+                <div class="profile-info-value">
+                  {{ doctorProfile.fullName }}
+                </div>
               </div>
             </div>
 
-            <div class="form-check form-switch availability-switch">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                id="doctorAvailabilitySwitch"
-                [checked]="doctorProfile.isActive"
-                [disabled]="isUpdatingStatus()"
-                (click)="onStatusToggleClick($event)"
-                (keydown.enter)="onStatusToggleClick($event)"
-              />
+            <div class="profile-info-box">
+              <div class="profile-info-icon">
+                <i class="bi bi-award"></i>
+              </div>
 
-              <label class="form-check-label" for="doctorAvailabilitySwitch">
-                {{ doctorProfile.isActive ? 'On' : 'Off' }}
-              </label>
+              <div>
+                <div class="profile-info-label">Specialisation</div>
+
+                <div class="profile-info-value">
+                  {{ doctorProfile.specialisation }}
+                </div>
+              </div>
             </div>
 
-          </div>
+            <div class="profile-info-box">
+              <div class="profile-info-icon">
+                <i class="bi bi-briefcase"></i>
+              </div>
 
+              <div>
+                <div class="profile-info-label">Experience</div>
+
+                <div class="profile-info-value">{{ doctorProfile.yearsOfExperience }} Years</div>
+              </div>
+            </div>
+
+            <div class="profile-info-box">
+              <div class="profile-info-icon">
+                <i class="bi bi-currency-rupee"></i>
+              </div>
+
+              <div>
+                <div class="profile-info-label">Consultation Fee</div>
+
+                <div class="profile-info-value">₹{{ doctorProfile.consultationFee }}</div>
+              </div>
+            </div>
+
+            <div class="profile-info-box">
+              <div class="profile-info-icon">
+                <i class="bi bi-envelope"></i>
+              </div>
+
+              <div>
+                <div class="profile-info-label">Email</div>
+
+                <div class="profile-info-value">
+                  {{ doctorProfile.doctorEmail }}
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-info-box">
+              <div class="profile-info-icon">
+                <i class="bi bi-telephone"></i>
+              </div>
+
+              <div>
+                <div class="profile-info-label">Phone</div>
+
+                <div class="profile-info-value">
+                  {{ doctorProfile.doctorPhoneNo }}
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
-        <!-- Change Password -->
-        <section class="change-password-card">
+        <!-- Bottom Grid -->
+        <div class="doctor-profile-bottom-grid">
+          <!-- Availability Status -->
+          <section class="availability-status-card">
+            <div class="section-header d-flex justify-content-between align-items-start gap-3">
+              <div>
+                <h5 class="section-title mb-1">Availability Status</h5>
 
-          <div class="section-header d-flex justify-content-between align-items-start gap-3">
-            <div>
-              <h5 class="section-title mb-1">
-                Account Security
-              </h5>
+                <p class="section-subtitle mb-0">
+                  Control whether patients can book new appointments with you.
+                </p>
+              </div>
 
-              <p class="section-subtitle mb-0">
-                Change your account password securely.
-              </p>
+              <span
+                class="status-badge"
+                [class.available]="doctorProfile.isActive"
+                [class.unavailable]="!doctorProfile.isActive"
+              >
+                {{ doctorProfile.isActive ? 'Available' : 'Unavailable' }}
+              </span>
             </div>
 
-            <button
-              type="button"
-              class="btn btn-outline-health"
-              (click)="toggleChangePassword()"
-              [disabled]="isChangingPassword()"
-            >
-              <i class="bi bi-key me-2"></i>
-              {{ showChangePassword() ? 'Hide' : 'Change Password' }}
-            </button>
-          </div>
+            <div class="availability-toggle-box mt-4">
+              <div class="availability-toggle-text">
+                <div class="availability-toggle-title">
+                  {{ doctorProfile.isActive ? 'Currently available' : 'Currently unavailable' }}
+                </div>
 
-          <div class="password-form mt-4" *ngIf="showChangePassword()">
+                <div class="availability-toggle-subtitle">
+                  {{
+                    doctorProfile.isActive
+                      ? 'Patients can currently book appointments with you.'
+                      : 'Patients cannot currently book new appointments with you.'
+                  }}
+                </div>
+              </div>
 
-            <div class="row g-3">
-
-              <div class="col-12">
-                <label for="currentPassword" class="form-label fw-bold">
-                  Current Password
-                </label>
-
+              <div class="form-check form-switch availability-switch">
                 <input
-                  id="currentPassword"
-                  type="password"
-                  class="form-control"
-                  [(ngModel)]="passwordForm.currentPassword"
-                  [disabled]="isChangingPassword()"
+                  class="form-check-input"
+                  type="checkbox"
+                  id="doctorAvailabilitySwitch"
+                  [checked]="doctorProfile.isActive"
+                  [disabled]="isUpdatingStatus()"
+                  (click)="onStatusToggleClick($event)"
+                  (keydown.enter)="onStatusToggleClick($event)"
                 />
-              </div>
 
-              <div class="col-md-6">
-                <label for="newPassword" class="form-label fw-bold">
-                  New Password
+                <label class="form-check-label" for="doctorAvailabilitySwitch">
+                  {{ doctorProfile.isActive ? 'On' : 'Off' }}
                 </label>
+              </div>
+            </div>
+          </section>
 
-                <input
-                  id="newPassword"
-                  type="password"
-                  class="form-control"
-                  [(ngModel)]="passwordForm.newPassword"
-                  [disabled]="isChangingPassword()"
-                />
+          <!-- Change Password -->
+          <section class="change-password-card">
+            <div class="section-header d-flex justify-content-between align-items-start gap-3">
+              <div>
+                <h5 class="section-title mb-1">Account Security</h5>
+
+                <p class="section-subtitle mb-0">Change your account password securely.</p>
               </div>
 
-              <div class="col-md-6">
-                <label for="confirmNewPassword" class="form-label fw-bold">
-                  Confirm Password
-                </label>
-
-                <input
-                  id="confirmNewPassword"
-                  type="password"
-                  class="form-control"
-                  [(ngModel)]="passwordForm.confirmNewPassword"
-                  [disabled]="isChangingPassword()"
-                />
-              </div>
-
-              <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-                <button
-                  type="button"
-                  class="btn btn-outline-secondary px-4"
-                  (click)="toggleChangePassword()"
-                  [disabled]="isChangingPassword()"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="button"
-                  class="btn btn-health px-4"
-                  (click)="changePassword()"
-                  [disabled]="isChangingPassword()"
-                >
-                  @if (isChangingPassword()) {
-                    <i class="bi bi-hourglass-split me-2"></i>
-                    Updating...
-                  } @else {
-                    <i class="bi bi-shield-check me-2"></i>
-                    Update Password
-                  }
-                </button>
-              </div>
-
+              <button
+                type="button"
+                class="btn btn-outline-health"
+                (click)="toggleChangePassword()"
+                [disabled]="isChangingPassword()"
+              >
+                <i class="bi bi-key me-2"></i>
+                {{ showChangePassword() ? 'Hide' : 'Change Password' }}
+              </button>
             </div>
 
-          </div>
+            <div class="password-form mt-4" *ngIf="showChangePassword()">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label for="currentPassword" class="form-label fw-bold"> Current Password </label>
 
-        </section>
+                  <input
+                    id="currentPassword"
+                    type="password"
+                    class="form-control"
+                    [(ngModel)]="passwordForm.currentPassword"
+                    [disabled]="isChangingPassword()"
+                  />
+                </div>
 
+                <div class="col-md-6">
+                  <label for="newPassword" class="form-label fw-bold"> New Password </label>
+
+                  <input
+                    id="newPassword"
+                    type="password"
+                    class="form-control"
+                    [(ngModel)]="passwordForm.newPassword"
+                    [disabled]="isChangingPassword()"
+                  />
+                </div>
+
+                <div class="col-md-6">
+                  <label for="confirmNewPassword" class="form-label fw-bold">
+                    Confirm Password
+                  </label>
+
+                  <input
+                    id="confirmNewPassword"
+                    type="password"
+                    class="form-control"
+                    [(ngModel)]="passwordForm.confirmNewPassword"
+                    [disabled]="isChangingPassword()"
+                  />
+                </div>
+
+                <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary px-4"
+                    (click)="toggleChangePassword()"
+                    [disabled]="isChangingPassword()"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn btn-health px-4"
+                    (click)="changePassword()"
+                    [disabled]="isChangingPassword()"
+                  >
+                    @if (isChangingPassword()) {
+                      <i class="bi bi-hourglass-split me-2"></i>
+                      Updating...
+                    } @else {
+                      <i class="bi bi-shield-check me-2"></i>
+                      Update Password
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
-
     </div>
 
-  </div>
+    <!-- Availability Confirmation Backdrop -->
 
-  <!-- Availability Confirmation Backdrop -->
-  
-<button
-  type="button"
-  class="custom-modal-backdrop"
-  *ngIf="showStatusConfirmModal()"
-  aria-label="Close availability confirmation modal"
-  (click)="closeStatusConfirmModal()"
-></button>
+    <button
+      type="button"
+      class="custom-modal-backdrop"
+      *ngIf="showStatusConfirmModal()"
+      aria-label="Close availability confirmation modal"
+      (click)="closeStatusConfirmModal()"
+    ></button>
 
+    <!-- Availability Confirmation Modal -->
+    <div class="custom-confirm-modal" *ngIf="showStatusConfirmModal()">
+      <div class="custom-confirm-card">
+        <div class="custom-confirm-icon">
+          <i class="bi bi-exclamation-triangle"></i>
+        </div>
 
-  <!-- Availability Confirmation Modal -->
-  <div class="custom-confirm-modal" *ngIf="showStatusConfirmModal()">
-    <div class="custom-confirm-card">
+        <h5>Confirm Availability Change</h5>
 
-      <div class="custom-confirm-icon">
-        <i class="bi bi-exclamation-triangle"></i>
+        <p>
+          Are you sure you want to mark yourself as
+          <strong>{{ pendingStatus ? 'available' : 'unavailable' }}</strong
+          >?
+        </p>
+
+        <p class="text-muted small mb-0" *ngIf="pendingStatus === false">
+          Patients may not be able to book new appointments with you while you are unavailable.
+        </p>
+
+        <p class="text-muted small mb-0" *ngIf="pendingStatus === true">
+          Patients may be able to book new appointments with you once you are available.
+        </p>
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="closeStatusConfirmModal()"
+            [disabled]="isUpdatingStatus()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-health"
+            (click)="confirmStatusChange()"
+            [disabled]="isUpdatingStatus()"
+          >
+            @if (isUpdatingStatus()) {
+              <i class="bi bi-hourglass-split me-2"></i>
+              Updating...
+            } @else {
+              Confirm
+            }
+          </button>
+        </div>
       </div>
-
-      <h5>
-        Confirm Availability Change
-      </h5>
-
-      <p>
-        Are you sure you want to mark yourself as
-        <strong>{{ pendingStatus ? 'available' : 'unavailable' }}</strong>?
-      </p>
-
-      <p class="text-muted small mb-0" *ngIf="pendingStatus === false">
-        Patients may not be able to book new appointments with you while you are unavailable.
-      </p>
-
-      <p class="text-muted small mb-0" *ngIf="pendingStatus === true">
-        Patients may be able to book new appointments with you once you are available.
-      </p>
-
-      <div class="d-flex justify-content-end gap-2 mt-4">
-        <button
-          type="button"
-          class="btn btn-outline-secondary"
-          (click)="closeStatusConfirmModal()"
-          [disabled]="isUpdatingStatus()"
-        >
-          Cancel
-        </button>
-
-        <button
-          type="button"
-          class="btn btn-health"
-          (click)="confirmStatusChange()"
-          [disabled]="isUpdatingStatus()"
-        >
-          @if (isUpdatingStatus()) {
-            <i class="bi bi-hourglass-split me-2"></i>
-            Updating...
-          } @else {
-            Confirm
-          }
-        </button>
-      </div>
-
     </div>
-  </div>
-
+  </ng-container>
 </div>

@@ -8,6 +8,7 @@ import { DoctorDto } from '../../../dtos/doctor.dto';
 
 import { AppointmentService } from '../../../core/services/appointment.service';
 import { DoctorService } from '../../../core/services/doctor.service';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner';
 
 interface DoctorDashboardStat {
   label: string;
@@ -26,7 +27,11 @@ interface RecentPatientPreview {
 @Component({
   selector: 'app-doctor-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [
+    CommonModule,
+    RouterLink,
+    LoadingSpinnerComponent
+  ],
   templateUrl: './doctor-dashboard.html',
   styleUrl: './doctor-dashboard.css'
 })

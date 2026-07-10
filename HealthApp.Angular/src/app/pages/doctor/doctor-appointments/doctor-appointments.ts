@@ -15,11 +15,12 @@ import {
 } from '../../../dtos/appointment.dto';
 
 import { HealthRecordCreateDto } from '../../../dtos/health-record.dto';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-doctor-appointments',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
   templateUrl: './doctor-appointments.html',
   styleUrl: './doctor-appointments.css',
 })

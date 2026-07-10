@@ -5,13 +5,14 @@ import { finalize } from 'rxjs';
 
 import { HealthRecordDto } from '../../../dtos/health-record.dto';
 import { HealthRecordService } from '../../../core/services/health-record.service';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-health-records',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
   templateUrl: './health-records.html',
-  styleUrl: './health-records.css'
+  styleUrl: './health-records.css',
 })
 export class HealthRecords implements OnInit {
   searchText = '';
@@ -25,7 +26,7 @@ export class HealthRecords implements OnInit {
 
   constructor(
     private readonly healthRecordService: HealthRecordService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -42,10 +43,10 @@ export class HealthRecords implements OnInit {
         finalize(() => {
           this.isLoading = false;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe({
-        next: records => {
+        next: (records) => {
           this.healthRecords = records ?? [];
           this.expandedRecordId = null;
           this.cdr.markForCheck();
@@ -54,14 +55,14 @@ export class HealthRecords implements OnInit {
           this.healthRecords = [];
           this.expandedRecordId = null;
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
   get filteredRecords(): HealthRecordDto[] {
     const search = this.searchText.trim().toLowerCase();
 
-    return this.healthRecords.filter(record => {
+    return this.healthRecords.filter((record) => {
       const matchesSearch =
         !search ||
         record.recordId.toString().includes(search) ||
@@ -71,8 +72,7 @@ export class HealthRecords implements OnInit {
         record.prescription.toLowerCase().includes(search);
 
       const matchesDate =
-        !this.selectedDate ||
-        this.formatDateOnly(record.visitDate) === this.selectedDate;
+        !this.selectedDate || this.formatDateOnly(record.visitDate) === this.selectedDate;
 
       return matchesSearch && matchesDate;
     });
@@ -83,8 +83,7 @@ export class HealthRecords implements OnInit {
   }
 
   toggleRecord(recordId: number): void {
-    this.expandedRecordId =
-      this.expandedRecordId === recordId ? null : recordId;
+    this.expandedRecordId = this.expandedRecordId === recordId ? null : recordId;
 
     this.cdr.markForCheck();
   }

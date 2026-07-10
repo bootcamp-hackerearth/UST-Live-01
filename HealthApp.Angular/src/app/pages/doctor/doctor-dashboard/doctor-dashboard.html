@@ -1,17 +1,10 @@
 <div class="doctor-dashboard-page">
 
   <!-- Loading State -->
-  <section class="empty-state-card" *ngIf="isLoading">
-    <div class="empty-state-icon">
-      <i class="bi bi-hourglass-split"></i>
-    </div>
-
-    <h5>Loading dashboard...</h5>
-
-    <p>
-      Please wait while we load your appointments and profile.
-    </p>
-  </section>
+  <app-loading-spinner
+    *ngIf="isLoading"
+    message="Loading your dashboard..."
+  ></app-loading-spinner>
 
   <ng-container *ngIf="!isLoading">
 

@@ -1,36 +1,21 @@
 <div class="patient-dashboard">
-
-  <!-- Loading State -->
-  <section class="empty-state-card" *ngIf="isLoading">
-    <div class="empty-state-icon">
-      <i class="bi bi-hourglass-split"></i>
-    </div>
-
-    <h5>Loading dashboard...</h5>
-
-    <p>
-      Please wait while we load your appointments and health records.
-    </p>
-  </section>
+  <app-loading-spinner *ngIf="isLoading" message="Loading your dashboard..."></app-loading-spinner>
 
   <ng-container *ngIf="!isLoading">
-
     <!-- Welcome Header -->
     <section class="patient-welcome-card mb-4">
       <div class="row align-items-center g-4">
-
         <div class="col-lg-8">
           <div class="welcome-badge mb-3">
             <i class="bi bi-heart-pulse"></i>
             Patient Healthcare Dashboard
           </div>
 
-          <h1 class="welcome-title">
-            Welcome back, {{ patientName }}
-          </h1>
+          <h1 class="welcome-title">Welcome back, {{ patientName }}</h1>
 
           <p class="welcome-subtitle mb-0">
-            Manage your appointments, view health records, and keep your profile up to date from one secure place.
+            Manage your appointments, view health records, and keep your profile up to date from one
+            secure place.
           </p>
         </div>
 
@@ -45,13 +30,15 @@
               Refresh
             </button>
 
-            <a routerLink="/patient/book-appointment" class="btn btn-health btn-lg welcome-action-btn">
+            <a
+              routerLink="/patient/book-appointment"
+              class="btn btn-health btn-lg welcome-action-btn"
+            >
               <i class="bi bi-calendar-plus me-2"></i>
               Book Appointment
             </a>
           </div>
         </div>
-
       </div>
     </section>
 
@@ -78,11 +65,9 @@
 
     <!-- Main Dashboard Sections -->
     <section class="row g-4 dashboard-equal-row">
-
       <!-- Quick Actions -->
       <div class="col-xl-4">
         <div class="patient-section-card h-100">
-
           <div class="section-header">
             <div>
               <h5 class="section-title mb-1">Quick Actions</h5>
@@ -91,7 +76,6 @@
           </div>
 
           <div class="quick-action-list">
-
             <a routerLink="/patient/book-appointment" class="quick-action-card">
               <div class="quick-action-icon action-teal">
                 <i class="bi bi-calendar-plus"></i>
@@ -135,29 +119,23 @@
                 <div class="quick-action-subtitle">Manage personal information</div>
               </div>
             </a>
-
           </div>
-
         </div>
       </div>
 
       <!-- Upcoming Appointments -->
       <div class="col-xl-4">
         <div class="patient-section-card h-100">
-
           <div class="section-header">
             <div>
               <h5 class="section-title mb-1">Upcoming Appointments</h5>
               <p class="section-subtitle mb-0">Your next doctor visits</p>
             </div>
 
-            <a routerLink="/patient/appointments" class="section-link">
-              View All
-            </a>
+            <a routerLink="/patient/appointments" class="section-link"> View All </a>
           </div>
 
           <div class="appointment-preview-list" *ngIf="upcomingAppointments.length > 0">
-
             <div class="appointment-preview-card" *ngFor="let appointment of upcomingAppointments">
               <div class="appointment-preview-icon">
                 <i class="bi bi-person-badge"></i>
@@ -185,14 +163,10 @@
                 </div>
               </div>
 
-              <span
-                class="appointment-status"
-                [ngClass]="getStatusClass(appointment.status)"
-              >
+              <span class="appointment-status" [ngClass]="getStatusClass(appointment.status)">
                 {{ appointment.status }}
               </span>
             </div>
-
           </div>
 
           <div class="dashboard-empty-mini" *ngIf="upcomingAppointments.length === 0">
@@ -200,27 +174,22 @@
             <p>No upcoming appointments.</p>
             <a routerLink="/patient/book-appointment" class="section-link">Book now</a>
           </div>
-
         </div>
       </div>
 
       <!-- Recent Health Records -->
       <div class="col-xl-4">
         <div class="patient-section-card h-100">
-
           <div class="section-header">
             <div>
               <h5 class="section-title mb-1">Recent Health Records</h5>
               <p class="section-subtitle mb-0">Latest medical updates</p>
             </div>
 
-            <a routerLink="/patient/health-records" class="section-link">
-              View All
-            </a>
+            <a routerLink="/patient/health-records" class="section-link"> View All </a>
           </div>
 
           <div class="record-preview-list" *ngIf="recentHealthRecords.length > 0">
-
             <div class="record-preview-card" *ngFor="let record of recentHealthRecords">
               <div class="record-preview-icon">
                 <i class="bi bi-file-earmark-medical"></i>
@@ -236,7 +205,6 @@
                 </div>
               </div>
             </div>
-
           </div>
 
           <div class="dashboard-empty-mini" *ngIf="recentHealthRecords.length === 0">
@@ -252,17 +220,11 @@
 
             <div>
               <strong>Secure Access</strong>
-              <p class="mb-0">
-                Your health information is shown only inside your patient portal.
-              </p>
+              <p class="mb-0">Your health information is shown only inside your patient portal.</p>
             </div>
           </div>
-
         </div>
       </div>
-
     </section>
-
   </ng-container>
-
 </div>

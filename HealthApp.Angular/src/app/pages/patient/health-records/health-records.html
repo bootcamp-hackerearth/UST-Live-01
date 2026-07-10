@@ -1,259 +1,222 @@
 <div class="health-records-page">
+  <app-loading-spinner *ngIf="isLoading" message="Loading health records..."></app-loading-spinner>
 
-  <!-- Header -->
-  <section class="records-header-card mb-4">
-    <div class="row align-items-center g-4">
+  <ng-container *ngIf="!isLoading">
+    <!-- Header -->
+    <section class="records-header-card mb-4">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+          <div class="header-badge mb-3">
+            <i class="bi bi-clipboard-pulse"></i>
+            My Health Records
+          </div>
 
-      <div class="col-lg-8">
-        <div class="header-badge mb-3">
-          <i class="bi bi-clipboard-pulse"></i>
-          My Health Records
+          <h1 class="page-title mb-2">View your medical history securely</h1>
+
+          <p class="page-subtitle mb-0">
+            Access your visit history, diagnosis, prescriptions, and doctor notes from one secure
+            place.
+          </p>
         </div>
 
-        <h1 class="page-title mb-2">
-          View your medical history securely
-        </h1>
+        <div class="col-lg-4 text-lg-end">
+          <div class="secure-record-card">
+            <i class="bi bi-shield-lock"></i>
 
-        <p class="page-subtitle mb-0">
-          Access your visit history, diagnosis, prescriptions, and doctor notes from one secure place.
-        </p>
-      </div>
-
-      <div class="col-lg-4 text-lg-end">
-        <div class="secure-record-card">
-          <i class="bi bi-shield-lock"></i>
-
-          <div>
-            <strong>Private Records</strong>
-            <span>Your health records are protected and private.</span>
+            <div>
+              <strong>Private Records</strong>
+              <span>Your health records are protected and private.</span>
+            </div>
           </div>
         </div>
       </div>
+    </section>
 
-    </div>
-  </section>
+    <!-- Filters -->
+    <section class="filter-card mb-4">
+      <div class="row g-3 align-items-end">
+        <div class="col-lg-7">
+          <label for="healthRecordSearch" class="form-label fw-bold"> Search Records </label>
 
-  <!-- Filters -->
-  <section class="filter-card mb-4">
-    <div class="row g-3 align-items-end">
+          <div class="input-icon-wrapper">
+            <i class="bi bi-search"></i>
 
-      <div class="col-lg-7">
-        <label for="healthRecordSearch" class="form-label fw-bold">
-          Search Records
-        </label>
+            <input
+              id="healthRecordSearch"
+              type="text"
+              class="form-control"
+              placeholder="Search record ID, doctor, diagnosis, or prescription"
+              [(ngModel)]="searchText"
+              [disabled]="isLoading"
+            />
+          </div>
+        </div>
 
-        <div class="input-icon-wrapper">
-          <i class="bi bi-search"></i>
+        <div class="col-lg-3">
+          <label for="visitDateFilter" class="form-label fw-bold"> Visit Date </label>
 
           <input
-            id="healthRecordSearch"
-            type="text"
+            id="visitDateFilter"
+            type="date"
             class="form-control"
-            placeholder="Search record ID, doctor, diagnosis, or prescription"
-            [(ngModel)]="searchText"
+            [(ngModel)]="selectedDate"
             [disabled]="isLoading"
           />
         </div>
+
+        <div class="col-lg-2">
+          <button
+            type="button"
+            class="btn btn-outline-secondary w-100 clear-btn"
+            (click)="clearFilters()"
+            [disabled]="isLoading"
+          >
+            <i class="bi bi-x-circle me-2"></i>
+            Clear
+          </button>
+        </div>
       </div>
+    </section>
 
-      <div class="col-lg-3">
-        <label for="visitDateFilter" class="form-label fw-bold">
-          Visit Date
-        </label>
+    <!-- Loading -->
+    <app-loading-spinner
+      *ngIf="isLoading"
+      message="Loading health records..."
+    ></app-loading-spinner>
 
-        <input
-          id="visitDateFilter"
-          type="date"
-          class="form-control"
-          [(ngModel)]="selectedDate"
-          [disabled]="isLoading"
-        />
-      </div>
+    <!-- Records List -->
+    <section class="records-list" *ngIf="!isLoading && filteredRecords.length > 0">
+      <div class="records-list-header mb-4">
+        <div>
+          <h5 class="fw-bold mb-1">Health Record List</h5>
 
-      <div class="col-lg-2">
+          <p class="text-muted small fw-semibold mb-0">
+            Showing {{ filteredRecords.length }} of {{ totalRecords }} record(s)
+          </p>
+        </div>
+
         <button
           type="button"
-          class="btn btn-outline-secondary w-100 clear-btn"
-          (click)="clearFilters()"
+          class="btn btn-outline-health"
+          (click)="refreshRecords()"
           [disabled]="isLoading"
         >
-          <i class="bi bi-x-circle me-2"></i>
-          Clear
+          <i class="bi bi-arrow-clockwise me-2"></i>
+          Refresh
         </button>
       </div>
 
-    </div>
-  </section>
+      <div class="record-card" *ngFor="let record of filteredRecords">
+        <!-- Main Info -->
+        <div class="record-main">
+          <div class="record-icon">
+            <i class="bi bi-file-earmark-medical"></i>
+          </div>
 
-  <!-- Loading -->
-  <section class="empty-state-card" *ngIf="isLoading">
-    <div class="empty-state-icon">
-      <i class="bi bi-hourglass-split"></i>
-    </div>
+          <div class="record-info">
+            <div class="record-id">Record #{{ record.recordId }}</div>
 
-    <h5>Loading health records...</h5>
+            <h5 class="record-title">Health Record</h5>
 
-    <p>
-      Please wait while we fetch your health records.
-    </p>
-  </section>
+            <div class="record-doctor">
+              {{ record.doctorName }}
+            </div>
+          </div>
+        </div>
 
-  <!-- Records List -->
-  <section
-    class="records-list"
-    *ngIf="!isLoading && filteredRecords.length > 0"
-  >
+        <!-- Visit Date -->
+        <div class="record-meta-grid single-meta">
+          <div class="record-meta-box">
+            <i class="bi bi-calendar3"></i>
 
-    <div class="records-list-header mb-4">
-      <div>
-        <h5 class="fw-bold mb-1">
-          Health Record List
-        </h5>
+            <div>
+              <span>Visit Date</span>
+              <strong>{{ record.visitDate | date: 'mediumDate' }}</strong>
+            </div>
+          </div>
+        </div>
 
-        <p class="text-muted small fw-semibold mb-0">
-          Showing {{ filteredRecords.length }} of {{ totalRecords }} record(s)
-        </p>
+        <!-- Actions -->
+        <div class="record-actions">
+          <button
+            type="button"
+            class="btn btn-outline-health view-record-btn"
+            (click)="toggleRecord(record.recordId)"
+          >
+            <i class="bi bi-eye me-2"></i>
+            {{ expandedRecordId === record.recordId ? 'Hide Details' : 'View Details' }}
+          </button>
+        </div>
+
+        <!-- Expanded Details -->
+        <div class="record-details-panel" *ngIf="expandedRecordId === record.recordId">
+          <div class="record-detail-box">
+            <div class="detail-icon diagnosis-icon">
+              <i class="bi bi-activity"></i>
+            </div>
+
+            <div>
+              <div class="detail-label">Diagnosis</div>
+
+              <div class="detail-value">
+                {{ record.diagnosis }}
+              </div>
+            </div>
+          </div>
+
+          <div class="record-detail-box">
+            <div class="detail-icon prescription-icon">
+              <i class="bi bi-capsule"></i>
+            </div>
+
+            <div>
+              <div class="detail-label">Prescription</div>
+
+              <div class="detail-value">
+                {{ record.prescription }}
+              </div>
+            </div>
+          </div>
+
+          <div class="record-detail-box full-width">
+            <div class="detail-icon notes-icon">
+              <i class="bi bi-journal-medical"></i>
+            </div>
+
+            <div>
+              <div class="detail-label">Doctor Notes</div>
+
+              <div class="detail-value">
+                {{ record.notes || 'No additional notes added.' }}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </section>
+
+    <!-- Empty State -->
+    <section class="empty-state-card" *ngIf="!isLoading && filteredRecords.length === 0">
+      <div class="empty-state-icon">
+        <i class="bi bi-folder-x"></i>
+      </div>
+
+      <h5>No health records found</h5>
+
+      <p *ngIf="healthRecords.length === 0">
+        Health records will appear here after completed appointments.
+      </p>
+
+      <p *ngIf="healthRecords.length > 0">Try changing your search text or visit date filter.</p>
 
       <button
         type="button"
-        class="btn btn-outline-health"
-        (click)="refreshRecords()"
-        [disabled]="isLoading"
+        class="btn btn-health"
+        (click)="clearFilters()"
+        *ngIf="healthRecords.length > 0"
       >
-        <i class="bi bi-arrow-clockwise me-2"></i>
-        Refresh
+        Clear Filters
       </button>
-    </div>
-
-    <div class="record-card" *ngFor="let record of filteredRecords">
-
-      <!-- Main Info -->
-      <div class="record-main">
-        <div class="record-icon">
-          <i class="bi bi-file-earmark-medical"></i>
-        </div>
-
-        <div class="record-info">
-          <div class="record-id">
-            Record #{{ record.recordId }}
-          </div>
-
-          <h5 class="record-title">
-            Health Record
-          </h5>
-
-          <div class="record-doctor">
-            {{ record.doctorName }}
-          </div>
-        </div>
-      </div>
-
-      <!-- Visit Date -->
-      <div class="record-meta-grid single-meta">
-        <div class="record-meta-box">
-          <i class="bi bi-calendar3"></i>
-
-          <div>
-            <span>Visit Date</span>
-            <strong>{{ record.visitDate | date: 'mediumDate' }}</strong>
-          </div>
-        </div>
-      </div>
-
-      <!-- Actions -->
-      <div class="record-actions">
-        <button
-          type="button"
-          class="btn btn-outline-health view-record-btn"
-          (click)="toggleRecord(record.recordId)"
-        >
-          <i class="bi bi-eye me-2"></i>
-          {{ expandedRecordId === record.recordId ? 'Hide Details' : 'View Details' }}
-        </button>
-      </div>
-
-      <!-- Expanded Details -->
-      <div
-        class="record-details-panel"
-        *ngIf="expandedRecordId === record.recordId"
-      >
-
-        <div class="record-detail-box">
-          <div class="detail-icon diagnosis-icon">
-            <i class="bi bi-activity"></i>
-          </div>
-
-          <div>
-            <div class="detail-label">Diagnosis</div>
-
-            <div class="detail-value">
-              {{ record.diagnosis }}
-            </div>
-          </div>
-        </div>
-
-        <div class="record-detail-box">
-          <div class="detail-icon prescription-icon">
-            <i class="bi bi-capsule"></i>
-          </div>
-
-          <div>
-            <div class="detail-label">Prescription</div>
-
-            <div class="detail-value">
-              {{ record.prescription }}
-            </div>
-          </div>
-        </div>
-
-        <div class="record-detail-box full-width">
-          <div class="detail-icon notes-icon">
-            <i class="bi bi-journal-medical"></i>
-          </div>
-
-          <div>
-            <div class="detail-label">Doctor Notes</div>
-
-            <div class="detail-value">
-              {{ record.notes || 'No additional notes added.' }}
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- Empty State -->
-  <section
-    class="empty-state-card"
-    *ngIf="!isLoading && filteredRecords.length === 0"
-  >
-    <div class="empty-state-icon">
-      <i class="bi bi-folder-x"></i>
-    </div>
-
-    <h5>No health records found</h5>
-
-    <p *ngIf="healthRecords.length === 0">
-      Health records will appear here after completed appointments.
-    </p>
-
-    <p *ngIf="healthRecords.length > 0">
-      Try changing your search text or visit date filter.
-    </p>
-
-    <button
-      type="button"
-      class="btn btn-health"
-      (click)="clearFilters()"
-      *ngIf="healthRecords.length > 0"
-    >
-      Clear Filters
-    </button>
-  </section>
-
+    </section>
+  </ng-container>
 </div>

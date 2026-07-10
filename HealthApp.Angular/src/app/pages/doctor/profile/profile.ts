@@ -9,13 +9,14 @@ import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { DoctorDto } from '../../../dtos/doctor.dto';
 import { ChangePasswordDto } from '../../../dtos/auth.dto';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-doctor-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
   templateUrl: './profile.html',
-  styleUrl: './profile.css'
+  styleUrl: './profile.css',
 })
 export class DoctorProfile implements OnInit {
   // Services
@@ -37,7 +38,7 @@ export class DoctorProfile implements OnInit {
   passwordForm: ChangePasswordDto = {
     currentPassword: '',
     newPassword: '',
-    confirmNewPassword: ''
+    confirmNewPassword: '',
   };
 
   ngOnInit(): void {
@@ -50,7 +51,7 @@ export class DoctorProfile implements OnInit {
       .getMyProfile()
       .pipe(finalize(() => this.isLoadingProfile.set(false)))
       .subscribe({
-        next: profile => this.doctorProfile = profile
+        next: (profile) => (this.doctorProfile = profile),
       });
   }
 
@@ -82,18 +83,18 @@ export class DoctorProfile implements OnInit {
       .changeMyStatus(nextStatus)
       .pipe(finalize(() => this.isUpdatingStatus.set(false)))
       .subscribe({
-        next: response => {
+        next: (response) => {
           this.doctorProfile = { ...this.doctorProfile!, isActive: nextStatus };
           this.notificationService.success(response.message || 'Status updated successfully.');
           this.pendingStatus = null;
           this.showStatusConfirmModal.set(false);
-        }
+        },
       });
   }
 
   // --- Password Methods ---
   toggleChangePassword(): void {
-    this.showChangePassword.update(value => !value);
+    this.showChangePassword.update((value) => !value);
     if (!this.showChangePassword()) this.resetPasswordForm();
   }
 
@@ -105,11 +106,11 @@ export class DoctorProfile implements OnInit {
       .changePassword(this.passwordForm)
       .pipe(finalize(() => this.isChangingPassword.set(false)))
       .subscribe({
-        next: response => {
+        next: (response) => {
           this.notificationService.success(response.message || 'Password changed successfully.');
           this.resetPasswordForm();
           this.showChangePassword.set(false);
-        }
+        },
       });
   }
 

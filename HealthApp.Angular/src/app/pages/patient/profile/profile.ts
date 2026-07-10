@@ -7,19 +7,17 @@ import { NotificationService } from '../../../core/services/notification.service
 import { PatientService } from '../../../core/services/patient.service';
 import { AuthService } from '../../../core/services/auth.service';
 
-import {
-  PatientCreateDto,
-  PatientDto
-} from '../../../dtos/patient.dto';
+import { PatientCreateDto, PatientDto } from '../../../dtos/patient.dto';
 
 import { ChangePasswordDto } from '../../../dtos/auth.dto';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-patient-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
   templateUrl: './profile.html',
-  styleUrl: './profile.css'
+  styleUrl: './profile.css',
 })
 export class PatientProfile implements OnInit {
   private readonly notificationService = inject(NotificationService);
@@ -39,7 +37,7 @@ export class PatientProfile implements OnInit {
   passwordForm: ChangePasswordDto = {
     currentPassword: '',
     newPassword: '',
-    confirmNewPassword: ''
+    confirmNewPassword: '',
   };
 
   genderOptions = ['Male', 'Female', 'Other'];
@@ -56,16 +54,16 @@ export class PatientProfile implements OnInit {
       .pipe(
         finalize(() => {
           this.isLoadingProfile.set(false);
-        })
+        }),
       )
       .subscribe({
-        next: profile => {
+        next: (profile) => {
           this.profile = profile;
           this.editableProfile = this.mapProfileToEditable(profile);
         },
         error: () => {
           // Error toast is handled globally by errorInterceptor.
-        }
+        },
       });
   }
 
@@ -98,7 +96,7 @@ export class PatientProfile implements OnInit {
       gender: this.editableProfile.gender,
       email: this.editableProfile.email.trim(),
       phoneNumber: this.editableProfile.phoneNumber.trim(),
-      insuranceId: this.editableProfile.insuranceId?.trim() || null
+      insuranceId: this.editableProfile.insuranceId?.trim() || null,
     };
 
     this.isSavingProfile.set(true);
@@ -108,25 +106,23 @@ export class PatientProfile implements OnInit {
       .pipe(
         finalize(() => {
           this.isSavingProfile.set(false);
-        })
+        }),
       )
       .subscribe({
-        next: response => {
-          this.notificationService.success(
-            response.message || 'Profile updated successfully.'
-          );
+        next: (response) => {
+          this.notificationService.success(response.message || 'Profile updated successfully.');
 
           this.isEditing.set(false);
           this.loadProfile();
         },
         error: () => {
           // Error toast is handled globally by errorInterceptor.
-        }
+        },
       });
   }
 
   toggleChangePassword(): void {
-    this.showChangePassword.update(value => !value);
+    this.showChangePassword.update((value) => !value);
 
     if (!this.showChangePassword()) {
       this.resetPasswordForm();
@@ -145,20 +141,18 @@ export class PatientProfile implements OnInit {
       .pipe(
         finalize(() => {
           this.isChangingPassword.set(false);
-        })
+        }),
       )
       .subscribe({
-        next: response => {
-          this.notificationService.success(
-            response.message || 'Password changed successfully.'
-          );
+        next: (response) => {
+          this.notificationService.success(response.message || 'Password changed successfully.');
 
           this.resetPasswordForm();
           this.showChangePassword.set(false);
         },
         error: () => {
           // Error toast is handled globally by errorInterceptor.
-        }
+        },
       });
   }
 
@@ -166,7 +160,7 @@ export class PatientProfile implements OnInit {
     this.passwordForm = {
       currentPassword: '',
       newPassword: '',
-      confirmNewPassword: ''
+      confirmNewPassword: '',
     };
   }
 
@@ -264,7 +258,7 @@ export class PatientProfile implements OnInit {
       gender: profile.gender,
       email: profile.email,
       phoneNumber: profile.phoneNumber,
-      insuranceId: profile.insuranceId ?? null
+      insuranceId: profile.insuranceId ?? null,
     };
   }
 
@@ -275,7 +269,7 @@ export class PatientProfile implements OnInit {
       gender: '',
       email: '',
       phoneNumber: '',
-      insuranceId: ''
+      insuranceId: '',
     };
   }
 

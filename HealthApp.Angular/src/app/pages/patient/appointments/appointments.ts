@@ -11,17 +11,18 @@ import { HealthRecordService } from '../../../core/services/health-record.servic
 import {
   AppointmentDto,
   AppointmentStatus,
-  CancelAppointmentDto
+  CancelAppointmentDto,
 } from '../../../dtos/appointment.dto';
 
 import { HealthRecordDto } from '../../../dtos/health-record.dto';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-my-appointments',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, LoadingSpinnerComponent],
   templateUrl: './appointments.html',
-  styleUrl: './appointments.css'
+  styleUrl: './appointments.css',
 })
 export class MyAppointments implements OnInit {
   searchText = '';
@@ -41,19 +42,13 @@ export class MyAppointments implements OnInit {
 
   cancellationReason = '';
 
-  statusOptions = [
-    'All',
-    'Pending',
-    'Confirmed',
-    'Cancelled',
-    'Completed'
-  ];
+  statusOptions = ['All', 'Pending', 'Confirmed', 'Cancelled', 'Completed'];
 
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly healthRecordService: HealthRecordService,
     private readonly notificationService: NotificationService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -70,24 +65,24 @@ export class MyAppointments implements OnInit {
         finalize(() => {
           this.isLoading = false;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe({
-        next: appointments => {
+        next: (appointments) => {
           this.appointments = appointments ?? [];
           this.cdr.markForCheck();
         },
         error: () => {
           this.appointments = [];
           this.cdr.markForCheck();
-        }
+        },
       });
   }
 
   get filteredAppointments(): AppointmentDto[] {
     const search = this.searchText.trim().toLowerCase();
 
-    return this.appointments.filter(appointment => {
+    return this.appointments.filter((appointment) => {
       const matchesSearch =
         !search ||
         appointment.appointmentId.toString().includes(search) ||
@@ -95,12 +90,10 @@ export class MyAppointments implements OnInit {
         appointment.patientName.toLowerCase().includes(search);
 
       const matchesStatus =
-        this.selectedStatus === 'All' ||
-        appointment.status === this.selectedStatus;
+        this.selectedStatus === 'All' || appointment.status === this.selectedStatus;
 
       const matchesDate =
-        !this.selectedDate ||
-        appointment.scheduledDate.substring(0, 10) === this.selectedDate;
+        !this.selectedDate || appointment.scheduledDate.substring(0, 10) === this.selectedDate;
 
       return matchesSearch && matchesStatus && matchesDate;
     });
@@ -111,15 +104,15 @@ export class MyAppointments implements OnInit {
   }
 
   get pendingCount(): number {
-    return this.appointments.filter(appointment => appointment.status === 'Pending').length;
+    return this.appointments.filter((appointment) => appointment.status === 'Pending').length;
   }
 
   get confirmedCount(): number {
-    return this.appointments.filter(appointment => appointment.status === 'Confirmed').length;
+    return this.appointments.filter((appointment) => appointment.status === 'Confirmed').length;
   }
 
   get completedCount(): number {
-    return this.appointments.filter(appointment => appointment.status === 'Completed').length;
+    return this.appointments.filter((appointment) => appointment.status === 'Completed').length;
   }
 
   clearFilters(): void {
@@ -143,9 +136,7 @@ export class MyAppointments implements OnInit {
 
   openCancelModal(appointment: AppointmentDto): void {
     if (!this.canCancel(appointment.status)) {
-      this.notificationService.warning(
-        'Only pending or confirmed appointments can be cancelled.'
-      );
+      this.notificationService.warning('Only pending or confirmed appointments can be cancelled.');
       return;
     }
 
@@ -178,16 +169,14 @@ export class MyAppointments implements OnInit {
     }
 
     if (reason.length > 250) {
-      this.notificationService.warning(
-        'Cancellation reason cannot exceed 250 characters.'
-      );
+      this.notificationService.warning('Cancellation reason cannot exceed 250 characters.');
       return;
     }
 
     const appointment = this.selectedAppointmentForCancel;
 
     const payload: CancelAppointmentDto = {
-      cancellationReason: reason
+      cancellationReason: reason,
     };
 
     this.isCancelling = true;
@@ -199,16 +188,16 @@ export class MyAppointments implements OnInit {
         finalize(() => {
           this.isCancelling = false;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe({
-        next: response => {
+        next: (response) => {
           appointment.status = 'Cancelled';
           appointment.cancellationReason = reason;
 
           this.notificationService.success(
             response.message ||
-              `Appointment #APT-${appointment.appointmentId} cancelled successfully.`
+              `Appointment #APT-${appointment.appointmentId} cancelled successfully.`,
           );
 
           this.selectedAppointmentForCancel = null;
@@ -217,14 +206,14 @@ export class MyAppointments implements OnInit {
         },
         error: () => {
           // Error toast is handled globally by errorInterceptor.
-        }
+        },
       });
   }
 
   openViewHealthRecordModal(appointment: AppointmentDto): void {
     if (appointment.status !== 'Completed') {
       this.notificationService.warning(
-        'Health record is available only for completed appointments.'
+        'Health record is available only for completed appointments.',
       );
       return;
     }
@@ -247,18 +236,16 @@ export class MyAppointments implements OnInit {
         finalize(() => {
           this.isLoadingHealthRecord = false;
           this.cdr.markForCheck();
-        })
+        }),
       )
       .subscribe({
-        next: records => {
+        next: (records) => {
           this.healthRecords = records ?? [];
 
           const record = this.findHealthRecordForAppointment(appointment.appointmentId);
 
           if (!record) {
-            this.notificationService.warning(
-              'No health record found for this appointment yet.'
-            );
+            this.notificationService.warning('No health record found for this appointment yet.');
             return;
           }
 
@@ -268,7 +255,7 @@ export class MyAppointments implements OnInit {
         },
         error: () => {
           // Error toast is handled globally by errorInterceptor.
-        }
+        },
       });
   }
 
@@ -317,6 +304,6 @@ export class MyAppointments implements OnInit {
   }
 
   private findHealthRecordForAppointment(appointmentId: number): HealthRecordDto | null {
-    return this.healthRecords.find(record => record.appointmentId === appointmentId) ?? null;
+    return this.healthRecords.find((record) => record.appointmentId === appointmentId) ?? null;
   }
 }
