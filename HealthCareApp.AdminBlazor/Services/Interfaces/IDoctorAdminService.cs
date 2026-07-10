@@ -1,4 +1,5 @@
-﻿using HealthCareApp.Shared.Dtos.Doctors;
+﻿using HealthCareApp.Shared.Dtos.DoctorLeaves;
+using HealthCareApp.Shared.Dtos.Doctors;
 using HealthCareApp.Shared.Dtos.Pagination;
 
 namespace HealthCareApp.AdminBlazor.Services.Interfaces
@@ -17,5 +18,6 @@ namespace HealthCareApp.AdminBlazor.Services.Interfaces
 
         Task<DoctorDto?> ToggleDoctorStatusAsync(int doctorId);
 
+        Task<List<DoctorLeaveDto>> GetDoctorLeavesAsync(int doctorId);
     }
 }

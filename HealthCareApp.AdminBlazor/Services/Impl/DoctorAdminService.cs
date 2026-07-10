@@ -1,4 +1,5 @@
 ﻿using HealthCareApp.AdminBlazor.Services.Interfaces;
+using HealthCareApp.Shared.Dtos.DoctorLeaves;
 using HealthCareApp.Shared.Dtos.Doctors;
 using HealthCareApp.Shared.Dtos.Pagination;
 using Microsoft.AspNetCore.Components;
@@ -10,6 +11,8 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
     {
         private const string AdminDoctorsEndpoint = "api/Admin/doctors";
         private const string DoctorsEndpoint = "api/Doctors";
+        private const string DoctorLeavesEndpoint = "api/DoctorLeaves";
+
 
         public DoctorAdminService(
       HttpClient httpClient,
@@ -29,6 +32,17 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
             var response = await GetDoctorsPagedAsync(query);
 
             return response.Items;
+        }
+        public async Task<List<DoctorLeaveDto>> GetDoctorLeavesAsync(int doctorId)
+        {
+            if (doctorId <= 0)
+            {
+                return new List<DoctorLeaveDto>();
+            }
+
+            return await GetAuthorizedAsync<List<DoctorLeaveDto>>(
+                $"{DoctorLeavesEndpoint}/doctor/{doctorId}",
+                "Your admin session is not authorized to load doctor leave history.");
         }
 
         public async Task<PagedResponse<DoctorDto>> GetDoctorsPagedAsync(DoctorPaginationQueryDto query)

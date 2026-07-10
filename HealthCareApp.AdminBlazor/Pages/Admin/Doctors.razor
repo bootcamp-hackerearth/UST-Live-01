@@ -3,6 +3,7 @@
 @implements IAsyncDisposable
 
 @using HealthCareApp.Shared.Dtos.Doctors
+@using HealthCareApp.Shared.Dtos.DoctorLeaves
 @using HealthCareApp.Shared.Dtos.Pagination
 @using HealthCareApp.Shared.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
@@ -219,6 +220,11 @@ else
                                             Edit
                                         </button>
 
+                                        <button class="hc-action-btn edit"
+                                                @onclick="() => ShowDoctorLeavesAsync(doctor.DoctorId, doctor.FullName)">
+                                            Leaves
+                                        </button>
+
                                         <button class="@GetToggleButtonClass(doctor.IsActive)"
                                                 @onclick="() => ShowStatusConfirmation(doctor.DoctorId, doctor.FullName, doctor.IsActive)">
                                             @(doctor.IsActive ? "Deactivate" : "Activate")
@@ -287,6 +293,97 @@ else
             </div>
         </div>
     }
+
+    @if (showDoctorLeavesModal)
+    {
+        <div class="ha-modal-backdrop">
+            <div class="ha-logout-modal" style="width: min(760px, calc(100vw - 32px));">
+                <div class="ha-logout-icon">
+                    HA
+                </div>
+
+                <h3>
+                    Doctor Leave History
+                </h3>
+
+                <p>
+                    Leave records for <strong>@selectedDoctorNameForLeaves</strong>.
+                </p>
+
+                @if (isLoadingDoctorLeaves)
+                {
+                    <div class="hc-empty-state" style="margin-top: 18px;">
+                        Loading leave history...
+                    </div>
+                }
+                else if (!string.IsNullOrWhiteSpace(doctorLeavesErrorMessage))
+                {
+                    <div class="hc-alert-error" style="margin-top: 18px;">
+                        @doctorLeavesErrorMessage
+                    </div>
+                }
+                else if (!selectedDoctorLeaves.Any())
+                {
+                    <div class="hc-empty-state" style="margin-top: 18px;">
+                        <div class="hc-empty-icon">⛔</div>
+
+                        <h3>No leave records found</h3>
+
+                        <p>This doctor has not added any leave or unavailable dates yet.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="hc-table-wrapper" style="margin-top: 18px; max-height: 360px; overflow-y: auto;">
+                        <table class="hc-admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Start Date</th>
+
+                                    <th>End Date</th>
+
+                                    <th>Reason</th>
+
+                                    <th>Created Date</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var doctorLeave in selectedDoctorLeaves)
+                                {
+                                    <tr>
+                                        <td>
+                                            @FormatDisplayDate(doctorLeave.StartDate)
+                                        </td>
+
+                                        <td>
+                                            @FormatDisplayDate(doctorLeave.EndDate)
+                                        </td>
+
+                                        <td>
+                                            @doctorLeave.Reason
+                                        </td>
+
+                                        <td>
+                                            @FormatDisplayDate(doctorLeave.CreatedDate)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                <div class="ha-logout-actions">
+                    <button class="ha-modal-secondary-btn"
+                            disabled="@isLoadingDoctorLeaves"
+                            @onclick="HideDoctorLeavesModal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 @code {
@@ -303,6 +400,16 @@ else
     private string selectedDoctorNameForStatusChange = string.Empty;
 
     private bool selectedDoctorCurrentStatus;
+
+    private bool showDoctorLeavesModal;
+
+    private bool isLoadingDoctorLeaves;
+
+    private string selectedDoctorNameForLeaves = string.Empty;
+
+    private string doctorLeavesErrorMessage = string.Empty;
+
+    private List<DoctorLeaveDto> selectedDoctorLeaves = new();
 
     private string searchTerm = string.Empty;
 
@@ -664,6 +771,83 @@ else
         {
             isUpdatingDoctorStatus = false;
         }
+    }
+
+    private async Task ShowDoctorLeavesAsync(
+        int doctorId,
+        string doctorName)
+    {
+        selectedDoctorNameForLeaves = doctorName;
+
+        selectedDoctorLeaves = new List<DoctorLeaveDto>();
+
+        doctorLeavesErrorMessage = string.Empty;
+
+        showDoctorLeavesModal = true;
+
+        isLoadingDoctorLeaves = true;
+
+        try
+        {
+            selectedDoctorLeaves = await DoctorService.GetDoctorLeavesAsync(doctorId);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            doctorLeavesErrorMessage = ex.Message;
+
+            ToastService.ShowError(
+                "Authorization Error",
+                ex.Message);
+        }
+        catch (System.Net.Http.HttpRequestException)
+        {
+            doctorLeavesErrorMessage = "Unable to load doctor leave history. Please check whether the API is running.";
+
+            ToastService.ShowError(
+                "Unable to Load Doctor Leaves",
+                "Please check whether the API is running.");
+        }
+        finally
+        {
+            isLoadingDoctorLeaves = false;
+        }
+    }
+
+    private void HideDoctorLeavesModal()
+    {
+        if (isLoadingDoctorLeaves)
+        {
+            return;
+        }
+
+        showDoctorLeavesModal = false;
+
+        selectedDoctorNameForLeaves = string.Empty;
+
+        doctorLeavesErrorMessage = string.Empty;
+
+        selectedDoctorLeaves = new List<DoctorLeaveDto>();
+    }
+
+    private static string FormatDisplayDate(string dateValue)
+    {
+        if (string.IsNullOrWhiteSpace(dateValue))
+        {
+            return "Not Available";
+        }
+
+        if (!DateTime.TryParse(
+                dateValue,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var parsedDate))
+        {
+            return dateValue;
+        }
+
+        return parsedDate.ToString(
+            "dd MMM yyyy",
+            CultureInfo.InvariantCulture);
     }
 
     private static string GetToggleButtonClass(bool isActive)

@@ -1,9 +1,12 @@
-﻿using HealthCareApp.Exceptions;
+﻿using HealthCareApp.Data;
+using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Services.Interface;
 using HealthCareApp.Shared.Dtos.DoctorLeaves;
 using HealthCareApp.Shared.Dtos.Notifications;
+using HealthCareApp.Shared.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthCareApp.Services.Impl
 {
@@ -11,11 +14,16 @@ namespace HealthCareApp.Services.Impl
     {
         private const string DoctorEntityName = "Doctor";
 
+        private const string DoctorLeaveCancellationReason =
+            "Doctor is unavailable due to leave. Please rebook another appointment. Sorry for the inconvenience.";
+
         private readonly IDoctorLeaveRepository doctorLeaveRepository;
 
         private readonly IDoctorRepository doctorRepository;
 
         private readonly ICacheService cacheService;
+
+        private readonly HealthAxisDbContext dbContext;
 
         private readonly ILogger<DoctorLeaveService> logger;
 
@@ -23,11 +31,13 @@ namespace HealthCareApp.Services.Impl
             IDoctorLeaveRepository doctorLeaveRepository,
             IDoctorRepository doctorRepository,
             ICacheService cacheService,
+            HealthAxisDbContext dbContext,
             ILogger<DoctorLeaveService> logger)
         {
             this.doctorLeaveRepository = doctorLeaveRepository;
             this.doctorRepository = doctorRepository;
             this.cacheService = cacheService;
+            this.dbContext = dbContext;
             this.logger = logger;
         }
 
@@ -61,31 +71,60 @@ namespace HealthCareApp.Services.Impl
                     "You already have leave scheduled during the selected date range.");
             }
 
-            var doctorLeave = new DoctorLeave
+            await using var transaction = await dbContext.Database.BeginTransactionAsync();
+
+            try
             {
-                DoctorId = doctor.DoctorId,
-                StartDate = startDate,
-                EndDate = endDate,
-                Reason = dto.Reason.Trim(),
-                CreatedDate = DateTime.Now
-            };
+                var doctorLeave = new DoctorLeave
+                {
+                    DoctorId = doctor.DoctorId,
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    Reason = dto.Reason.Trim(),
+                    CreatedDate = DateTime.Now
+                };
 
-            var savedDoctorLeave = await doctorLeaveRepository.CreateAsync(doctorLeave);
+                await dbContext.DoctorLeaves.AddAsync(doctorLeave);
 
-            await TryRemoveAvailabilityCacheForLeaveDatesAsync(
-                savedDoctorLeave.DoctorId,
-                savedDoctorLeave.StartDate,
-                savedDoctorLeave.EndDate);
+                int affectedAppointmentCount =
+                    await CancelAffectedAppointmentsAndCreatePatientNotificationsAsync(
+                        doctor,
+                        startDate,
+                        endDate);
 
-            logger.LogInformation(
-                "Doctor leave created successfully. DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}",
-                savedDoctorLeave.DoctorId,
-                savedDoctorLeave.StartDate.ToString("yyyy-MM-dd"),
-                savedDoctorLeave.EndDate.ToString("yyyy-MM-dd"));
+                await dbContext.SaveChangesAsync();
 
-            return MapToDto(
-                savedDoctorLeave,
-                doctor.DoctorName);
+                await transaction.CommitAsync();
+
+                await TryRemoveAvailabilityCacheForLeaveDatesAsync(
+                    doctor.DoctorId,
+                    startDate,
+                    endDate);
+
+                logger.LogInformation(
+                    "Doctor leave created successfully. DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}, AffectedAppointments: {AffectedAppointments}",
+                    doctor.DoctorId,
+                    startDate.ToString("yyyy-MM-dd"),
+                    endDate.ToString("yyyy-MM-dd"),
+                    affectedAppointmentCount);
+
+                return MapToDto(
+                    doctorLeave,
+                    doctor.DoctorName);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+
+                logger.LogError(
+                    ex,
+                    "Doctor leave creation failed. Transaction rolled back. DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}",
+                    doctor.DoctorId,
+                    startDate.ToString("yyyy-MM-dd"),
+                    endDate.ToString("yyyy-MM-dd"));
+
+                throw;
+            }
         }
 
         public async Task<List<DoctorLeaveDto>> GetMyDoctorLeavesAsync(
@@ -138,6 +177,79 @@ namespace HealthCareApp.Services.Impl
             return await doctorLeaveRepository.IsDoctorOnLeaveAsync(
                 doctorId,
                 date.Date);
+        }
+
+        private async Task<int> CancelAffectedAppointmentsAndCreatePatientNotificationsAsync(
+            Doctor doctor,
+            DateTime leaveStartDate,
+            DateTime leaveEndDate)
+        {
+            var nextDateAfterLeaveEnd = leaveEndDate.Date.AddDays(1);
+
+            var affectedAppointments = await dbContext.Appointments
+                .Where(appointment =>
+                    appointment.DoctorId == doctor.DoctorId &&
+                    appointment.ScheduledDate >= leaveStartDate.Date &&
+                    appointment.ScheduledDate < nextDateAfterLeaveEnd &&
+                    (
+                        appointment.Status == AppointmentStatus.Pending ||
+                        appointment.Status == AppointmentStatus.Confirmed
+                    ))
+                .ToListAsync();
+
+            if (affectedAppointments.Count == 0)
+            {
+                logger.LogInformation(
+                    "No pending or confirmed appointments affected by doctor leave. DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}",
+                    doctor.DoctorId,
+                    leaveStartDate.ToString("yyyy-MM-dd"),
+                    leaveEndDate.ToString("yyyy-MM-dd"));
+
+                return 0;
+            }
+
+            var notifications = new List<Notification>();
+
+            foreach (var appointment in affectedAppointments)
+            {
+                appointment.Status = AppointmentStatus.Cancelled;
+                appointment.CancellationReason = DoctorLeaveCancellationReason;
+
+                string notificationMessage =
+                    $"Your appointment with Dr. {doctor.DoctorName} on " +
+                    $"{appointment.ScheduledDate:yyyy-MM-dd} at {appointment.TimeSlot} " +
+                    "was cancelled because the doctor is unavailable due to leave. " +
+                    "Sorry for the inconvenience. Please rebook with another doctor or choose another date.";
+
+                notifications.Add(new Notification
+                {
+                    PatientId = appointment.PatientId,
+                    DoctorId = appointment.DoctorId,
+                    AppointmentId = appointment.AppointmentId,
+                    Title = "Appointment cancelled - doctor unavailable",
+                    Message = notificationMessage,
+                    NotificationType = NotificationType.DoctorLeaveRebook,
+                    IsRead = false,
+                    CreatedDate = DateTime.Now
+                });
+
+                logger.LogInformation(
+                    "Appointment cancelled due to doctor leave. AppointmentId: {AppointmentId}, PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
+                    appointment.AppointmentId,
+                    appointment.PatientId,
+                    appointment.DoctorId,
+                    appointment.ScheduledDate.ToString("yyyy-MM-dd"),
+                    appointment.TimeSlot);
+            }
+
+            await dbContext.Notifications.AddRangeAsync(notifications);
+
+            logger.LogInformation(
+                "Patient notifications prepared for doctor leave. DoctorId: {DoctorId}, NotificationCount: {NotificationCount}",
+                doctor.DoctorId,
+                notifications.Count);
+
+            return affectedAppointments.Count;
         }
 
         private async Task<Doctor> GetLoggedInDoctorAsync(string identityUserId)
