@@ -1,8 +1,6 @@
 <section class="login-page">
   <div class="login-shell">
-
     <aside class="login-showcase">
-
       <div class="brand-card">
         <div class="brand-logo">H</div>
 
@@ -17,13 +15,14 @@
 
         <h2>Welcome to HealthAxis</h2>
 
-        
+        <p>
+          Access your healthcare workspace securely based on your role.
+        </p>
       </div>
 
       <div class="role-preview">
-
         <article>
-          <span class="role-icon patient-icon">P</span>
+          <div class="role-icon patient-icon">P</div>
 
           <div>
             <strong>Patient Portal</strong>
@@ -32,7 +31,7 @@
         </article>
 
         <article>
-          <span class="role-icon doctor-icon">D</span>
+          <div class="role-icon doctor-icon">D</div>
 
           <div>
             <strong>Doctor Portal</strong>
@@ -41,26 +40,26 @@
         </article>
 
         <article>
-          <span class="role-icon admin-icon">A</span>
+          <div class="role-icon admin-icon">A</div>
 
           <div>
             <strong>Admin Console</strong>
             <small>Manage users, doctors, and reports</small>
           </div>
         </article>
-
       </div>
-
     </aside>
 
     <main class="login-form-panel">
-
       <div class="form-card">
-
         <div class="form-header">
           <span>Login</span>
+
           <h2>Access your healthcare portal</h2>
-          <p>Use your registered email and password to continue.</p>
+
+          <p>
+            Use your registered email and password to continue.
+          </p>
         </div>
 
         @if (errorMessage()) {
@@ -70,22 +69,18 @@
         }
 
         <form [formGroup]="loginForm" (ngSubmit)="login()">
-
           <div class="form-group">
             <label for="email">Email Address</label>
 
-            <div class="input-wrapper" [class.input-error]="email.invalid && email.touched">
-              <span class="input-icon">&#64;</span>
-
-              <input
-                id="email"
-                type="email"
-                formControlName="email"
-                placeholder="Enter your registered email"
-                autocomplete="email"
-                (input)="clearError()"
-              />
-            </div>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="Enter your registered email"
+              autocomplete="email"
+              [class.input-error]="email.invalid && email.touched"
+              (input)="clearError()"
+            />
 
             <small class="field-error">
               @if (email.invalid && email.touched) {
@@ -97,18 +92,15 @@
           <div class="form-group">
             <label for="password">Password</label>
 
-            <div class="input-wrapper" [class.input-error]="password.invalid && password.touched">
-              <span class="input-icon">●</span>
-
-              <input
-                id="password"
-                type="password"
-                formControlName="password"
-                placeholder="Enter password"
-                autocomplete="current-password"
-                (input)="clearError()"
-              />
-            </div>
+            <input
+              id="password"
+              type="password"
+              formControlName="password"
+              placeholder="Enter password"
+              autocomplete="current-password"
+              [class.input-error]="password.invalid && password.touched"
+              (input)="clearError()"
+            />
 
             <small class="field-error">
               @if (password.invalid && password.touched) {
@@ -118,19 +110,19 @@
           </div>
 
           <button type="submit" [disabled]="loading()">
-            {{ loading() ? 'Checking credentials...' : 'Login' }}
+            @if (loading()) {
+              Checking credentials...
+            } @else {
+              Login
+            }
           </button>
-
         </form>
 
         <p class="bottom-text">
           New patient?
           <a routerLink="/register">Create patient account</a>
         </p>
-
       </div>
-
     </main>
-
   </div>
 </section>

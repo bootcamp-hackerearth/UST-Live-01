@@ -1,94 +1,99 @@
 <section class="register-page">
   <div class="register-shell">
+
     <aside class="register-showcase">
-      <div class="showcase-badge">
-        <span>👤</span>
-        New Patient Registration
+
+      <div class="brand-card">
+        <div class="brand-logo">H</div>
+
+        <div>
+          <h1>HealthAxis</h1>
+          <p>Patient Registration Portal</p>
+        </div>
       </div>
 
-      <h1>Create your digital patient profile</h1>
+      <div class="showcase-content">
+        <span class="showcase-label">Patient Registration</span>
 
-      <p>
-        Register once, then login to book hospital appointments, track visits,
-        and access your health records securely.
-      </p>
+        <h2>Create your patient account</h2>
 
-      <div class="patient-benefits">
+        <p>
+          Register once to book appointments, manage visits, and access your
+          medical records securely.
+        </p>
+      </div>
+
+      <div class="role-preview">
+
         <article>
-          <span>📅</span>
           <div>
-            <strong>Online Booking</strong>
-            <small>Choose doctors, dates, and time slots</small>
+            <strong>Online Appointment Booking</strong>
+            <small>Choose doctors, dates, and available time slots</small>
           </div>
         </article>
 
         <article>
-          <span>🧾</span>
           <div>
-            <strong>Appointment Tracking</strong>
-            <small>View pending, confirmed, and completed visits</small>
+            <strong>Visit Status Tracking</strong>
+            <small>Track pending, confirmed, and completed visits</small>
           </div>
         </article>
 
         <article>
-          <span>📋</span>
           <div>
-            <strong>Health Records</strong>
-            <small>Access prescriptions and diagnosis history</small>
+            <strong>Secure Medical Records</strong>
+            <small>View prescriptions, diagnosis notes, and visit history</small>
           </div>
         </article>
+
       </div>
 
-      <div class="registration-flow">
-        <div class="flow-step active">1</div>
-        <div class="flow-line"></div>
-        <div class="flow-step">2</div>
-        <div class="flow-line"></div>
-        <div class="flow-step">3</div>
-      </div>
-
-      <div class="flow-labels">
-        <span>Register</span>
-        <span>Login</span>
-        <span>Book</span>
-      </div>
     </aside>
 
     <main class="register-form-panel">
+
       <div class="form-card">
+
         <div class="form-header">
           <span>Patient Details</span>
+
           <h2>Register as Patient</h2>
+
           <p>
-            Fill all required details carefully. Your account will be secured using Identity login.
+            Fill in the required details carefully. Your account will be secured
+            using Identity authentication.
           </p>
         </div>
 
         @if (errorMessage()) {
-          <div class="alert error">{{ errorMessage() }}</div>
+          <div class="alert error">
+            {{ errorMessage() }}
+          </div>
         }
 
         @if (successMessage()) {
-          <div class="alert success">{{ successMessage() }}</div>
+          <div class="alert success">
+            {{ successMessage() }}
+          </div>
         }
 
         <form [formGroup]="registerForm" (ngSubmit)="registerPatient()">
+
           <div class="form-grid">
+
             <div class="form-group full-width">
               <label for="fullName">Full Name</label>
 
-              <div class="input-wrapper">
-                <span>👤</span>
-                <input
-                  id="fullName"
-                  type="text"
-                  formControlName="fullName"
-                  placeholder="Enter full name"
-                />
-              </div>
+              <input
+                id="fullName"
+                type="text"
+                formControlName="fullName"
+                placeholder="Enter Full Name"
+                autocomplete="name"
+              />
 
-              @if (fullName.invalid && fullName.touched) {
-                <small>
+              <small class="field-error">
+                @if (fullName.invalid && fullName.touched) {
                   @if (fullName.errors?.['required']) {
                     Name is required.
                   }
@@ -100,24 +105,21 @@
                   @if (fullName.errors?.['minlength']) {
                     Minimum 3 characters required.
                   }
-                </small>
-              }
+                }
+              </small>
             </div>
 
             <div class="form-group">
               <label for="dateOfBirth">Date of Birth</label>
 
-              <div class="input-wrapper">
-                
-                <input
-                  id="dateOfBirth"
-                  type="date"
-                  formControlName="dateOfBirth"
-                />
-              </div>
+              <input
+                id="dateOfBirth"
+                type="date"
+                formControlName="dateOfBirth"
+              />
 
-              @if (dateOfBirth.invalid && dateOfBirth.touched) {
-                <small>
+              <small class="field-error">
+                @if (dateOfBirth.invalid && dateOfBirth.touched) {
                   @if (dateOfBirth.errors?.['required']) {
                     Date of birth is required.
                   }
@@ -125,128 +127,123 @@
                   @if (dateOfBirth.errors?.['futureDate']) {
                     Date of birth cannot be in the future.
                   }
-                </small>
-              }
+                }
+              </small>
             </div>
 
             <div class="form-group">
               <label for="gender">Gender</label>
 
-              <div class="input-wrapper">
-                <span>⚕️</span>
-                <select id="gender" formControlName="gender">
-                  <option value="">Select gender</option>
+              <select id="gender" formControlName="gender">
+                <option value="">Select Gender</option>
 
-                  @for (genderOption of genderOptions; track genderOption.value) {
-                    <option [value]="genderOption.value">
-                      {{ genderOption.label }}
-                    </option>
-                  }
-                </select>
-              </div>
+                @for (genderOption of genderOptions; track genderOption.value) {
+                  <option [value]="genderOption.value">
+                    {{ genderOption.label }}
+                  </option>
+                }
+              </select>
 
-              @if (gender.invalid && gender.touched) {
-                <small>Gender is required.</small>
-              }
+              <small class="field-error">
+                @if (gender.invalid && gender.touched) {
+                  Gender is required.
+                }
+              </small>
             </div>
 
             <div class="form-group">
               <label for="phoneNumber">Phone Number</label>
 
-              <div class="input-wrapper">
-                <span>📞</span>
-                <input
-                  id="phoneNumber"
-                  type="text"
-                  formControlName="phoneNumber"
-                  placeholder="10 digit mobile number"
-                />
-              </div>
+              <input
+                id="phoneNumber"
+                type="text"
+                formControlName="phoneNumber"
+                placeholder="Enter 10 digit Mobile Number"
+                autocomplete="tel"
+              />
 
-              @if (phoneNumber.invalid && phoneNumber.touched) {
-                <small>Enter a valid 10 digit mobile number.</small>
-              }
+              <small class="field-error">
+                @if (phoneNumber.invalid && phoneNumber.touched) {
+                  Enter a valid 10 digit mobile number.
+                }
+              </small>
             </div>
 
             <div class="form-group">
               <label for="email">Email Address</label>
 
-              <div class="input-wrapper">
-                <!-- <span>✉️</span> -->
-                <input
-                  id="email"
-                  type="email"
-                  formControlName="email"
-                  placeholder="Enter email address"
-                />
-              </div>
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                placeholder="Enter Email Address"
+                autocomplete="email"
+              />
 
-              @if (email.invalid && email.touched) {
-                <small>Enter a valid email address.</small>
-              }
+              <small class="field-error">
+                @if (email.invalid && email.touched) {
+                  Enter a valid email address.
+                }
+              </small>
             </div>
 
             <div class="form-group">
               <label for="password">Password</label>
 
-              <div class="input-wrapper">
-                <!-- <span>🔑</span> -->
-                <input
-                  id="password"
-                  type="password"
-                  formControlName="password"
-                  placeholder="Enter password"
-                />
-              </div>
+              <input
+                id="password"
+                type="password"
+                formControlName="password"
+                placeholder="Enter Password"
+                autocomplete="new-password"
+              />
 
-              @if (password.invalid && password.touched) {
-                <small>
+              <small class="field-error">
+                @if (password.invalid && password.touched) {
                   Password must contain uppercase, lowercase, number, special character,
                   and at least 8 characters.
-                </small>
-              }
+                }
+              </small>
             </div>
 
             <div class="form-group">
               <label for="confirmPassword">Confirm Password</label>
 
-              <div class="input-wrapper">
-                <!-- <span>✅</span> -->
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  formControlName="confirmPassword"
-                  placeholder="Re-enter password"
-                />
-              </div>
+              <input
+                id="confirmPassword"
+                type="password"
+                formControlName="confirmPassword"
+                placeholder="Re-Enter Password"
+                autocomplete="new-password"
+              />
 
-              @if (confirmPassword.invalid && confirmPassword.touched) {
-                <small>Confirm password is required.</small>
-              }
+              <small class="field-error">
+                @if (confirmPassword.invalid && confirmPassword.touched) {
+                  Confirm password is required.
+                }
 
-              @if (registerForm.errors?.['passwordMismatch'] && confirmPassword.touched) {
-                <small>Password and confirm password do not match.</small>
-              }
+                @if (registerForm.errors?.['passwordMismatch'] && confirmPassword.touched) {
+                  Password and confirm password do not match.
+                }
+              </small>
             </div>
-          </div>
 
-          <div class="password-note">
-            <span>🔐</span>
-            <p>
-              Use at least 8 characters with uppercase, lowercase, number, and special character.
-            </p>
           </div>
 
           <button type="submit" [disabled]="loading()">
             {{ loading() ? 'Creating Patient Account...' : 'Create Patient Account' }}
           </button>
+
         </form>
 
         <p class="bottom-text">
           Already registered?
           <a routerLink="/login">Login here</a>
         </p>
+
       </div>
+
     </main>
+
   </div>
 </section>
