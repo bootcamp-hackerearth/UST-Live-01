@@ -1,14 +1,12 @@
 ﻿using HealthAxis.Shared.Enums;
 using HealthAxis.Shared.Utilities;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.VisualBasic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 namespace HealthAxis.API.Models
 {
     public class Appointment
     {
-
         [Key]
         public int AppointmentId { get; set; }
 
@@ -24,7 +22,9 @@ namespace HealthAxis.API.Models
         public DateTime ScheduledDate { get; set; }
 
         [Required(ErrorMessage = ValidationMessages.TimeSlotRequired)]
-        [StringLength(ValidationLimits.TimeSlotLength, ErrorMessage = ValidationMessages.InvalidTimeSlot)]
+        [StringLength(
+            ValidationLimits.TimeSlotLength,
+            ErrorMessage = ValidationMessages.InvalidTimeSlot)]
         public string TimeSlot { get; set; } = string.Empty;
 
         [Required(ErrorMessage = ValidationMessages.AppointmentStatusRequired)]
@@ -33,7 +33,6 @@ namespace HealthAxis.API.Models
         [StringLength(ValidationLimits.CancellationReasonLength)]
         public string? CancellationReason { get; set; }
 
-        // Navigation Properties
         [ForeignKey(nameof(PatientId))]
         public virtual Patient Patient { get; set; } = null!;
 
@@ -42,59 +41,51 @@ namespace HealthAxis.API.Models
 
         public virtual HealthRecord? HealthRecord { get; set; }
 
-
-        // Methods
         public void Confirm()
         {
-
             Status = AppointmentStatus.Confirmed;
+            CancellationReason = null;
         }
 
         public void Cancel(string reason)
         {
-
             Status = AppointmentStatus.Cancelled;
-
             CancellationReason = reason;
         }
 
         public void Complete()
         {
-
             Status = AppointmentStatus.Completed;
+            CancellationReason = null;
         }
 
         public bool IsUpcoming()
         {
-
-            return ScheduledDate.Date >= DateTime.Today && Status != AppointmentStatus.Cancelled;
+            return ScheduledDate.Date >= DateTime.Today &&
+                   Status != AppointmentStatus.Cancelled;
         }
 
         public bool IsCancelled()
         {
-
             return Status == AppointmentStatus.Cancelled;
         }
 
         public bool IsCompleted()
         {
-
             return Status == AppointmentStatus.Completed;
         }
 
-
-        // Custom Validations
-        public static ValidationResult? ValidateScheduledDate(DateTime scheduledDate,ValidationContext validationContext)
+        public static ValidationResult? ValidateScheduledDate(
+            DateTime scheduledDate,
+            ValidationContext validationContext)
         {
-
             if (scheduledDate.Date < DateTime.Today)
             {
-
-                return new ValidationResult(ValidationMessages.ScheduledDateCannotBePast);
+                return new ValidationResult(
+                    ValidationMessages.ScheduledDateCannotBePast);
             }
 
             return ValidationResult.Success;
         }
-
     }
 }

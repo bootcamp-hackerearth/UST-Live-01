@@ -16,6 +16,8 @@ namespace HealthAxis.Shared.DTO.AppointmentDtos
 
         public AppointmentStatus Status { get; set; }
 
+        public string? CancellationReason { get; set; }
+
         public string PatientName { get; set; } = string.Empty;
 
         public string DoctorName { get; set; } = string.Empty;

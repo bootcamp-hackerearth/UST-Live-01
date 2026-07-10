@@ -3,6 +3,7 @@ using HealthAxis.API.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using HealthAxis.Shared.Utilities;
 
 namespace HealthAxis.API.Data
 {
@@ -61,6 +62,10 @@ namespace HealthAxis.API.Data
                 .Property(appointment => appointment.Status)
                 .HasConversion<string>()
                 .HasMaxLength(20);
+
+            builder.Entity<Appointment>()
+                    .Property(appointment => appointment.CancellationReason)
+                    .HasMaxLength(ValidationLimits.CancellationReasonLength);
 
             builder.Entity<Doctor>()
                 .HasOne(doctor => doctor.User)

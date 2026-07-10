@@ -6,8 +6,9 @@ using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
 using HealthAxis.Shared.DTO.AppointmentDtos;
-using Microsoft.Extensions.Caching.Distributed;
 using HealthAxis.Shared.Enums;
+using HealthAxis.Shared.Utilities;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Globalization;
 
 namespace HealthAxis.API.Services.Implementation
@@ -18,8 +19,16 @@ namespace HealthAxis.API.Services.Implementation
         IDoctorRepository doctorRepository,
         IMapper mapper,
         ILogger<AppointmentService> logger,
-        IEventPublisher eventPublisher, IDistributedCache distributedCache) : IAppointmentService
+        IEventPublisher eventPublisher,
+        IDistributedCache distributedCache) : IAppointmentService
     {
+        private const int ConfirmedCancellationCutoffHours = 2;
+
+        private const string AppointmentNotFound = "Appointment not found.";
+
+        private const string ConfirmedCancellationCutoffMessage =
+            "Confirmed appointments cannot be cancelled within 2 hours of the scheduled time. Please contact the patient or admin.";
+
         private static readonly HashSet<string> AllowedTimeSlots =
             new(StringComparer.OrdinalIgnoreCase)
             {
@@ -139,6 +148,7 @@ namespace HealthAxis.API.Services.Implementation
 
             var savedAppointment = await appointmentRepository.AddAsync(
                 appointment);
+
             await InvalidateDoctorAvailabilityCacheAsync(savedAppointment);
 
             var appointmentBookedEvent = CreateAppointmentBookedEvent(
@@ -164,28 +174,14 @@ namespace HealthAxis.API.Services.Implementation
 
             if (appointment == null)
             {
-                throw new NotFoundException("Appointment not found.");
+                throw new NotFoundException(AppointmentNotFound);
             }
 
             ValidateAppointmentStatus(statusDto.Status);
 
-            ValidateStatusTransition(
-                appointment.Status,
-                statusDto.Status);
+            ValidateStatusTransition(appointment, statusDto.Status);
 
-            appointment.Status = statusDto.Status;
-
-            if (statusDto.Status == AppointmentStatus.Cancelled)
-            {
-                appointment.CancellationReason =
-                    string.IsNullOrWhiteSpace(statusDto.CancellationReason)
-                        ? null
-                        : statusDto.CancellationReason.Trim();
-            }
-            else
-            {
-                appointment.CancellationReason = null;
-            }
+            ApplyAppointmentStatus(appointment, statusDto);
 
             var updatedAppointment = await appointmentRepository.UpdateAsync(
                 id,
@@ -193,8 +189,10 @@ namespace HealthAxis.API.Services.Implementation
 
             if (updatedAppointment == null)
             {
-                throw new NotFoundException("Appointment not found.");
+                throw new NotFoundException(AppointmentNotFound);
             }
+
+            await InvalidateDoctorAvailabilityCacheAsync(updatedAppointment);
 
             return await MapAppointmentAsync(updatedAppointment);
         }
@@ -205,7 +203,7 @@ namespace HealthAxis.API.Services.Implementation
 
             if (appointment == null)
             {
-                throw new NotFoundException("Appointment not found.");
+                throw new NotFoundException(AppointmentNotFound);
             }
 
             if (appointment.Status != AppointmentStatus.Pending)
@@ -220,6 +218,8 @@ namespace HealthAxis.API.Services.Implementation
             {
                 return null;
             }
+
+            await InvalidateDoctorAvailabilityCacheAsync(deletedAppointment);
 
             return await MapAppointmentAsync(deletedAppointment);
         }
@@ -245,7 +245,7 @@ namespace HealthAxis.API.Services.Implementation
         }
 
         private async Task InvalidateDoctorAvailabilityCacheAsync(
-    Appointment appointment)
+            Appointment appointment)
         {
             var cacheKey =
                 $"doctors:{appointment.DoctorId}:availability:{appointment.ScheduledDate:yyyy-MM-dd}";
@@ -253,7 +253,7 @@ namespace HealthAxis.API.Services.Implementation
             await distributedCache.RemoveAsync(cacheKey);
 
             logger.LogInformation(
-                "Doctor availability Garnet cache invalidated after appointment booking. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+                "Doctor availability Garnet cache invalidated. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
                 appointment.DoctorId,
                 appointment.ScheduledDate.Date,
                 cacheKey);
@@ -324,8 +324,8 @@ namespace HealthAxis.API.Services.Implementation
 
         private AppointmentDto MapAppointment(
             Appointment appointment,
-            IReadOnlyDictionary<int, Patient> patients,
-            IReadOnlyDictionary<int, Doctor> doctors)
+            Dictionary<int, Patient> patients,
+            Dictionary<int, Doctor> doctors)
         {
             var appointmentDto = mapper.Map<AppointmentDto>(appointment);
 
@@ -349,6 +349,48 @@ namespace HealthAxis.API.Services.Implementation
             }
 
             return appointmentDto;
+        }
+
+        private static void ApplyAppointmentStatus(
+            Appointment appointment,
+            UpdateAppointmentStatusDto statusDto)
+        {
+            if (statusDto.Status == AppointmentStatus.Confirmed)
+            {
+                appointment.Confirm();
+                return;
+            }
+
+            if (statusDto.Status == AppointmentStatus.Cancelled)
+            {
+                appointment.Cancel(GetCancellationReason(statusDto));
+                return;
+            }
+
+            if (statusDto.Status == AppointmentStatus.Completed)
+            {
+                appointment.Complete();
+            }
+        }
+
+        private static string GetCancellationReason(
+            UpdateAppointmentStatusDto statusDto)
+        {
+            if (string.IsNullOrWhiteSpace(statusDto.CancellationReason))
+            {
+                throw new ValidationExceptions(
+                    "Cancellation reason is required.");
+            }
+
+            var reason = statusDto.CancellationReason.Trim();
+
+            if (reason.Length > ValidationLimits.CancellationReasonLength)
+            {
+                throw new ValidationExceptions(
+                    $"Cancellation reason cannot exceed {ValidationLimits.CancellationReasonLength} characters.");
+            }
+
+            return reason;
         }
 
         private static void ValidateAppointmentRequest(
@@ -464,29 +506,36 @@ namespace HealthAxis.API.Services.Implementation
         }
 
         private static void ValidateStatusTransition(
-            AppointmentStatus currentStatus,
+            Appointment appointment,
             AppointmentStatus newStatus)
         {
-            if (currentStatus == AppointmentStatus.Completed ||
-                currentStatus == AppointmentStatus.Cancelled)
+            if (appointment.Status == newStatus)
+            {
+                throw new BusinessRuleException(
+                    $"Appointment is already {newStatus}.");
+            }
+
+            if (appointment.Status == AppointmentStatus.Completed ||
+                appointment.Status == AppointmentStatus.Cancelled)
             {
                 throw new BusinessRuleException(
                     "Completed or cancelled appointment cannot be changed.");
             }
 
-            if (currentStatus == AppointmentStatus.Pending)
+            if (appointment.Status == AppointmentStatus.Pending)
             {
-                ValidatePendingStatusTransition(newStatus);
+                ValidatePendingStatusTransition(appointment, newStatus);
                 return;
             }
 
-            if (currentStatus == AppointmentStatus.Confirmed)
+            if (appointment.Status == AppointmentStatus.Confirmed)
             {
-                ValidateConfirmedStatusTransition(newStatus);
+                ValidateConfirmedStatusTransition(appointment, newStatus);
             }
         }
 
         private static void ValidatePendingStatusTransition(
+            Appointment appointment,
             AppointmentStatus newStatus)
         {
             if (newStatus != AppointmentStatus.Confirmed &&
@@ -495,9 +544,17 @@ namespace HealthAxis.API.Services.Implementation
                 throw new BusinessRuleException(
                     "Pending appointment can only be confirmed or cancelled.");
             }
+
+            if (newStatus == AppointmentStatus.Confirmed &&
+                HasAppointmentStarted(appointment))
+            {
+                throw new BusinessRuleException(
+                    "Pending appointment cannot be confirmed because the scheduled time has already passed.");
+            }
         }
 
         private static void ValidateConfirmedStatusTransition(
+            Appointment appointment,
             AppointmentStatus newStatus)
         {
             if (newStatus != AppointmentStatus.Completed &&
@@ -506,6 +563,57 @@ namespace HealthAxis.API.Services.Implementation
                 throw new BusinessRuleException(
                     "Confirmed appointment can only be completed or cancelled.");
             }
+
+            if (newStatus == AppointmentStatus.Cancelled &&
+                IsWithinConfirmedCancellationCutoff(appointment))
+            {
+                throw new BusinessRuleException(
+                    ConfirmedCancellationCutoffMessage);
+            }
+
+            if (newStatus == AppointmentStatus.Completed &&
+                !HasAppointmentStarted(appointment))
+            {
+                throw new BusinessRuleException(
+                    "Confirmed appointment can be completed only after the scheduled time starts.");
+            }
+        }
+
+        private static bool IsWithinConfirmedCancellationCutoff(
+            Appointment appointment)
+        {
+            var appointmentStart = GetAppointmentStartDateTime(appointment);
+
+            return appointmentStart <= DateTime.Now.AddHours(
+                ConfirmedCancellationCutoffHours);
+        }
+
+        private static bool HasAppointmentStarted(Appointment appointment)
+        {
+            var appointmentStart = GetAppointmentStartDateTime(appointment);
+
+            return appointmentStart <= DateTime.Now;
+        }
+
+        private static DateTime GetAppointmentStartDateTime(
+            Appointment appointment)
+        {
+            var startTimeText = appointment.TimeSlot.Split('-')[0].Trim();
+
+            var parsed = DateTime.TryParseExact(
+                startTimeText,
+                "hh:mm tt",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var startTime);
+
+            if (!parsed)
+            {
+                throw new ValidationExceptions(
+                    "Invalid appointment time slot.");
+            }
+
+            return appointment.ScheduledDate.Date.Add(startTime.TimeOfDay);
         }
 
         private static bool IsActiveAppointmentStatus(

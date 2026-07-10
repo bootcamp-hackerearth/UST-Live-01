@@ -2,13 +2,16 @@
   <section class="page-header">
     <div>
       <a routerLink="/doctor/dashboard" class="back-link">
-        ← Back to Dashboard
+        Back to Dashboard
       </a>
+
+      <p>Doctor Workspace</p>
 
       <h1>Upcoming Appointments</h1>
 
       <span>
-        View assigned patient appointments, confirm pending visits, and cancel appointments when required.
+        View assigned patient appointments, confirm pending visits, and cancel
+        appointments only when cancellation rules allow.
       </span>
     </div>
 
@@ -27,8 +30,6 @@
 
   <section class="stats-grid">
     <article class="stat-card today">
-      <span>📅</span>
-
       <div>
         <strong>{{ todayCount() }}</strong>
         <p>Today</p>
@@ -36,8 +37,6 @@
     </article>
 
     <article class="stat-card pending">
-      <span>⏳</span>
-
       <div>
         <strong>{{ pendingCount() }}</strong>
         <p>Pending</p>
@@ -45,8 +44,6 @@
     </article>
 
     <article class="stat-card confirmed">
-      <span>✅</span>
-
       <div>
         <strong>{{ confirmedCount() }}</strong>
         <p>Confirmed</p>
@@ -56,8 +53,6 @@
 
   <section class="toolbar-card">
     <div class="search-box">
-      <span>🔍</span>
-
       <input
         type="search"
         maxlength="80"
@@ -104,7 +99,6 @@
 
     @if (!loading() && upcomingAppointments().length === 0) {
       <div class="empty-state">
-        <span>🩺</span>
         <h3>No upcoming appointments</h3>
         <p>Pending and confirmed appointments assigned to you will appear here.</p>
       </div>
@@ -134,8 +128,6 @@
               <tr>
                 <td>
                   <div class="patient-cell">
-                    <span>👤</span>
-
                     <div>
                       <strong>{{ getPatientName(appointment) }}</strong>
                       <small>Appointment #{{ appointment.appointmentId }}</small>
@@ -170,22 +162,27 @@
                         [disabled]="isProcessing(appointment)"
                         (click)="confirmAppointment(appointment)"
                       >
-                        {{ isProcessing(appointment) ? 'Confirming...' : 'Confirm' }}
+                        @if (isProcessing(appointment)) {
+                          Confirming...
+                        } @else {
+                          Confirm
+                        }
                       </button>
                     }
 
-                    @if (canCancel(appointment)) {
+                    @if (shouldShowCancelButton(appointment)) {
                       <button
                         type="button"
                         class="cancel-action-button"
-                        [disabled]="isProcessing(appointment)"
+                        [disabled]="isProcessing(appointment) || !canCancel(appointment)"
+                        [title]="canCancel(appointment) ? 'Cancel appointment' : getCancelRestrictionMessage(appointment)"
                         (click)="openCancelDialog(appointment)"
                       >
                         Cancel
                       </button>
                     }
 
-                    @if (!canConfirm(appointment) && !canCancel(appointment)) {
+                    @if (!canConfirm(appointment) && !shouldShowCancelButton(appointment)) {
                       <span class="no-action">No action</span>
                     }
                   </div>
@@ -289,6 +286,12 @@
           </div>
         </div>
 
+        @if (!canConfirm(appointment) && !canCancel(appointment) && shouldShowCancelButton(appointment)) {
+          <div class="rule-note">
+            {{ getCancelRestrictionMessage(appointment) }}
+          </div>
+        }
+
         <div class="modal-actions">
           @if (canConfirm(appointment)) {
             <button
@@ -301,11 +304,11 @@
             </button>
           }
 
-          @if (canCancel(appointment)) {
+          @if (shouldShowCancelButton(appointment)) {
             <button
               type="button"
               class="danger-modal-button"
-              [disabled]="isProcessing(appointment)"
+              [disabled]="isProcessing(appointment) || !canCancel(appointment)"
               (click)="openCancelDialog(appointment)"
             >
               Cancel Appointment
@@ -368,27 +371,44 @@
           </div>
         </div>
 
+        <div class="warning-box">
+          A confirmed appointment cannot be cancelled within 2 hours of the
+          scheduled time. Please provide a clear reason so the patient can
+          understand why the appointment was cancelled.
+        </div>
+
         <label for="cancelReason">
-          Cancellation Reason <span>(Optional)</span>
+          Cancellation Reason <span>Required</span>
         </label>
 
         <textarea
           id="cancelReason"
           rows="4"
           maxlength="200"
-          placeholder="Reason is optional."
+          
           [value]="cancellationReason()"
           (input)="onCancellationReasonInput($event)"
+          (blur)="cancellationReasonTouched.set(true)"
         ></textarea>
+
+        @if (getCancellationReasonErrorMessage()) {
+          <small class="field-error">
+            {{ getCancellationReasonErrorMessage() }}
+          </small>
+        }
 
         <div class="modal-actions">
           <button
             type="button"
             class="danger-modal-button"
-            [disabled]="isProcessing(appointment)"
+            [disabled]="isProcessing(appointment) || !canSubmitCancellation()"
             (click)="confirmCancelAppointment()"
           >
-            {{ isProcessing(appointment) ? 'Cancelling...' : 'Cancel Appointment' }}
+            @if (isProcessing(appointment)) {
+              Cancelling...
+            } @else {
+              Cancel Appointment
+            }
           </button>
 
           <button

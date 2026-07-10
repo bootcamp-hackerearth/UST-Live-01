@@ -1,5 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import {
@@ -28,6 +34,7 @@ type AppointmentFilter = typeof FILTERS[number];
 export class UpcomingAppointments {
   private readonly appointmentService = inject(AppointmentService);
   private readonly pageSize = 8;
+  private readonly cancellationCutoffHours = 2;
 
   readonly appointments = signal<Appointment[]>([]);
   readonly loading = signal(false);
@@ -36,6 +43,7 @@ export class UpcomingAppointments {
   readonly selectedAppointment = signal<Appointment | null>(null);
   readonly cancelTarget = signal<Appointment | null>(null);
   readonly cancellationReason = signal('');
+  readonly cancellationReasonTouched = signal(false);
 
   readonly selectedFilter = signal<AppointmentFilter>('All');
   readonly searchText = signal('');
@@ -50,8 +58,8 @@ export class UpcomingAppointments {
     this.appointments()
       .filter((appointment) => this.isUpcomingStatus(appointment.status))
       .sort((first, second) =>
-        new Date(first.scheduledDate).getTime() -
-        new Date(second.scheduledDate).getTime()
+        this.getAppointmentStartDateTime(first).getTime() -
+        this.getAppointmentStartDateTime(second).getTime()
       )
   );
 
@@ -85,12 +93,12 @@ export class UpcomingAppointments {
     ).length
   );
 
-  readonly pendingCount = computed(() =>
-    this.countByStatus('pending')
-  );
+  readonly pendingCount = computed(() => this.countByStatus('pending'));
 
-  readonly confirmedCount = computed(() =>
-    this.countByStatus('confirmed')
+  readonly confirmedCount = computed(() => this.countByStatus('confirmed'));
+
+  readonly canSubmitCancellation = computed(() =>
+    this.cancellationReason().trim().length > 0
   );
 
   constructor() {
@@ -119,13 +127,16 @@ export class UpcomingAppointments {
 
   onSearchInput(event: Event): void {
     const input = event.target as HTMLInputElement;
+
     this.searchText.set(input.value);
     this.currentPage.set(1);
   }
 
   onCancellationReasonInput(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
+
     this.cancellationReason.set(textarea.value);
+    this.cancellationReasonTouched.set(true);
   }
 
   selectFilter(filter: AppointmentFilter): void {
@@ -161,7 +172,7 @@ export class UpcomingAppointments {
 
   confirmAppointment(appointment: Appointment): void {
     if (!this.canConfirm(appointment)) {
-      this.errorMessage.set('Only pending appointments can be confirmed.');
+      this.errorMessage.set(this.getConfirmRestrictionMessage(appointment));
       return;
     }
 
@@ -175,14 +186,16 @@ export class UpcomingAppointments {
 
   openCancelDialog(appointment: Appointment): void {
     if (!this.canCancel(appointment)) {
-      this.errorMessage.set('Only pending or confirmed appointments can be cancelled.');
+      this.errorMessage.set(this.getCancelRestrictionMessage(appointment));
       return;
     }
 
     this.errorMessage.set('');
     this.successMessage.set('');
+    this.selectedAppointment.set(null);
     this.cancelTarget.set(appointment);
     this.cancellationReason.set('');
+    this.cancellationReasonTouched.set(false);
   }
 
   closeCancelDialog(): void {
@@ -192,6 +205,7 @@ export class UpcomingAppointments {
 
     this.cancelTarget.set(null);
     this.cancellationReason.set('');
+    this.cancellationReasonTouched.set(false);
   }
 
   confirmCancelAppointment(): void {
@@ -203,7 +217,12 @@ export class UpcomingAppointments {
     }
 
     if (!this.canCancel(appointment)) {
-      this.errorMessage.set('Only pending or confirmed appointments can be cancelled.');
+      this.errorMessage.set(this.getCancelRestrictionMessage(appointment));
+      return;
+    }
+
+    if (!this.canSubmitCancellation()) {
+      this.cancellationReasonTouched.set(true);
       return;
     }
 
@@ -212,22 +231,75 @@ export class UpcomingAppointments {
       AppointmentStatusCode.Cancelled,
       'Appointment cancelled successfully.',
       'Could not cancel appointment.',
-      this.getOptionalCancellationReason()
+      this.getCancellationReason()
     );
   }
 
   canConfirm(appointment: Appointment): boolean {
-    return this.getStatusText(appointment.status) === 'pending';
+    return this.getStatusText(appointment.status) === 'pending' &&
+      !this.hasAppointmentStarted(appointment);
   }
 
   canCancel(appointment: Appointment): boolean {
     const status = this.getStatusText(appointment.status);
 
-    return status === 'pending' || status === 'confirmed';
+    if (status === 'pending') {
+      return true;
+    }
+
+    if (status === 'confirmed') {
+      return !this.isWithinCancellationCutoff(appointment);
+    }
+
+    return false;
   }
 
   isProcessing(appointment: Appointment): boolean {
     return this.processingAppointmentId() === appointment.appointmentId;
+  }
+
+  shouldShowCancelButton(appointment: Appointment): boolean {
+    const status = this.getStatusText(appointment.status);
+
+    return status === 'pending' || status === 'confirmed';
+  }
+
+  getCancelRestrictionMessage(appointment: Appointment): string {
+    const status = this.getStatusText(appointment.status);
+
+    if (status === 'confirmed' && this.isWithinCancellationCutoff(appointment)) {
+      return 'Confirmed appointments cannot be cancelled within 2 hours of the scheduled time. Please contact the patient or admin.';
+    }
+
+    if (status === 'completed') {
+      return 'Completed appointment cannot be cancelled.';
+    }
+
+    if (status === 'cancelled') {
+      return 'Appointment is already cancelled.';
+    }
+
+    return 'Only pending or confirmed appointments can be cancelled.';
+  }
+
+  getConfirmRestrictionMessage(appointment: Appointment): string {
+    if (this.hasAppointmentStarted(appointment)) {
+      return 'Pending appointment cannot be confirmed because the scheduled time has already passed.';
+    }
+
+    return 'Only pending appointments can be confirmed.';
+  }
+
+  getCancellationReasonErrorMessage(): string {
+    if (!this.cancellationReasonTouched()) {
+      return '';
+    }
+
+    if (this.cancellationReason().trim().length === 0) {
+      return 'Cancellation reason is required.';
+    }
+
+    return '';
   }
 
   getStatusLabel(status: string | number): string {
@@ -288,6 +360,7 @@ export class UpcomingAppointments {
         this.processingAppointmentId.set(null);
         this.cancelTarget.set(null);
         this.cancellationReason.set('');
+        this.cancellationReasonTouched.set(false);
         this.successMessage.set(successMessage);
         this.loadAppointments();
       },
@@ -317,12 +390,14 @@ export class UpcomingAppointments {
       appointment.scheduledDate,
       appointment.timeSlot,
       this.getStatusLabel(appointment.status),
-      appointment.appointmentId.toString()
+      appointment.appointmentId.toString(),
+      appointment.cancellationReason
     ]
       .join(' ')
       .toLowerCase();
 
-    return matchesFilter && (!searchValue || searchableText.includes(searchValue));
+    return matchesFilter &&
+      (!searchValue || searchableText.includes(searchValue));
   }
 
   private countByStatus(status: string): number {
@@ -347,10 +422,55 @@ export class UpcomingAppointments {
       appointmentDate.getDate() === today.getDate();
   }
 
-  private getOptionalCancellationReason(): string | null {
-    const reason = this.cancellationReason().trim();
+  private getCancellationReason(): string {
+    return this.cancellationReason().trim();
+  }
 
-    return reason || null;
+  private hasAppointmentStarted(appointment: Appointment): boolean {
+    return this.getAppointmentStartDateTime(appointment).getTime() <=
+      new Date().getTime();
+  }
+
+  private isWithinCancellationCutoff(appointment: Appointment): boolean {
+    const appointmentStart = this.getAppointmentStartDateTime(appointment);
+    const cutoffTime = new Date();
+
+    cutoffTime.setHours(cutoffTime.getHours() + this.cancellationCutoffHours);
+
+    return appointmentStart.getTime() <= cutoffTime.getTime();
+  }
+
+  private getAppointmentStartDateTime(appointment: Appointment): Date {
+    const appointmentDate = new Date(appointment.scheduledDate);
+    const startTimeText = appointment.timeSlot.split('-')[0]?.trim();
+
+    if (!startTimeText) {
+      return appointmentDate;
+    }
+
+    const timeMatch = /^(\d{1,2}):(\d{2})\s?(AM|PM)$/i.exec(startTimeText);
+
+    if (!timeMatch) {
+      return appointmentDate;
+    }
+
+    const hourValue = Number(timeMatch[1]);
+    const minuteValue = Number(timeMatch[2]);
+    const meridian = timeMatch[3].toUpperCase();
+
+    let hour = hourValue;
+
+    if (meridian === 'PM' && hour !== 12) {
+      hour += 12;
+    }
+
+    if (meridian === 'AM' && hour === 12) {
+      hour = 0;
+    }
+
+    appointmentDate.setHours(hour, minuteValue, 0, 0);
+
+    return appointmentDate;
   }
 
   private getStatusText(status: string | number): string {

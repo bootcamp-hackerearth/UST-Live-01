@@ -87,13 +87,13 @@
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
 }
 
-.stat-card > span {
+/* .stat-card > span {
   width: 48px;
   height: 48px;
   border-radius: 17px;
   display: grid;
   place-items: center;
-}
+} */
 
 .stat-card strong {
   display: block;
@@ -231,9 +231,9 @@
   text-align: center;
 }
 
-.empty-state span {
+/* .empty-state span {
   font-size: 36px;
-}
+} */
 
 .empty-state h3 {
   margin: 8px 0;
@@ -288,14 +288,14 @@
   gap: 11px;
 }
 
-.patient-cell > span {
+/* .patient-cell > span {
   width: 42px;
   height: 42px;
   border-radius: 15px;
   display: grid;
   place-items: center;
   background: #eff6ff;
-}
+} */
 
 .patient-cell strong,
 .patient-cell small {
@@ -606,4 +606,61 @@ textarea:focus {
   .action-column {
     text-align: left;
   }
+}
+
+.warning-box,
+.rule-note {
+  padding: 14px 16px;
+  border-radius: 16px;
+  margin: 14px 0 18px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.field-error {
+  display: block;
+  margin-top: 8px;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: "";
+  width: 5px;
+  height: 42px;
+  border-radius: 999px;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.today::before {
+  background: #0ea5e9;
+}
+
+.pending::before {
+  background: #f59e0b;
+}
+
+.confirmed::before {
+  background: #22c55e;
+}
+
+.search-box {
+  padding: 0 16px;
+}
+
+.patient-cell {
+  padding-left: 0;
 }

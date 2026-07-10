@@ -12,12 +12,23 @@ namespace HealthAxis.API.Controller
     [ApiController]
     public class AppointmentController : ControllerBase
     {
+        private const string InvalidToken = "Invalid token";
+
+        private const string PatientProfileNotFound =
+            "Patient profile not found";
+
+        private const string DoctorProfileNotFound =
+            "Doctor profile not found";
+
+        private const string AppointmentNotFound =
+            "Appointment not found";
+
         private readonly IAppointmentService _appointmentService;
+
         private readonly IPatientService _patientService;
+
         private readonly IDoctorService _doctorService;
 
-        private const string InvalidToken = "Invalid token";
-        private const string PatientProfileNotFound = "Patient profile not found";
         public AppointmentController(
             IAppointmentService appointmentService,
             IPatientService patientService,
@@ -26,11 +37,6 @@ namespace HealthAxis.API.Controller
             _appointmentService = appointmentService;
             _patientService = patientService;
             _doctorService = doctorService;
-        }
-
-        private string? GetLoggedInUserId()
-        {
-            return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
         [HttpGet]
@@ -92,7 +98,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = PatientProfileNotFound
+                    message = DoctorProfileNotFound
                 });
             }
 
@@ -112,60 +118,16 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Appointment not found"
+                    message = AppointmentNotFound
                 });
             }
 
-            var userId = GetLoggedInUserId();
+            var accessResult = await ValidateAppointmentAccessAsync(
+                appointment);
 
-            if (string.IsNullOrWhiteSpace(userId))
+            if (accessResult != null)
             {
-                return Unauthorized(new
-                {
-                    message = InvalidToken
-                });
-            }
-
-            if (User.IsInRole("Patient"))
-            {
-                var patient = await _patientService.GetByUserIdAsync(userId);
-
-                if (patient == null)
-                {
-                    return NotFound(new
-                    {
-                        message = PatientProfileNotFound
-                    });
-                }
-
-                if (appointment.PatientId != patient.PatientId)
-                {
-                    return StatusCode(403, new
-                    {
-                        message = "You are not allowed to access another patient's appointment"
-                    });
-                }
-            }
-
-            if (User.IsInRole("Doctor"))
-            {
-                var doctor = await _doctorService.GetByUserIdAsync(userId);
-
-                if (doctor == null)
-                {
-                    return NotFound(new
-                    {
-                        message = "Doctor profile not found"
-                    });
-                }
-
-                if (appointment.DoctorId != doctor.DoctorId)
-                {
-                    return StatusCode(403, new
-                    {
-                        message = "You are not allowed to access another doctor's appointment"
-                    });
-                }
+                return accessResult;
             }
 
             return Ok(appointment);
@@ -203,7 +165,8 @@ namespace HealthAxis.API.Controller
 
             appointmentDto.PatientId = patient.PatientId;
 
-            var appointment = await _appointmentService.AddAsync(appointmentDto);
+            var appointment = await _appointmentService.AddAsync(
+                appointmentDto);
 
             return Ok(appointment);
         }
@@ -211,8 +174,8 @@ namespace HealthAxis.API.Controller
         [HttpPut("{id}/status")]
         [Authorize(Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> UpdateAppointmentStatus(
-           int id,
-           [FromBody] UpdateAppointmentStatusDto statusDto)
+            int id,
+            [FromBody] UpdateAppointmentStatusDto statusDto)
         {
             if (!ModelState.IsValid)
             {
@@ -221,37 +184,25 @@ namespace HealthAxis.API.Controller
 
             var appointment = await _appointmentService.GetByIdAsync(id);
 
-            var appointmentValidationResult = ValidateAppointmentForStatusUpdate(appointment);
+            var appointmentValidationResult =
+                ValidateAppointmentForStatusUpdate(appointment);
 
             if (appointmentValidationResult != null)
             {
                 return appointmentValidationResult;
             }
 
-            var userId = GetLoggedInUserId();
-
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return Unauthorized(new
-                {
-                    message = InvalidToken
-                });
-            }
-
-            var permissionResult = await ValidateStatusUpdatePermissionAsync(
-                appointment!,
-                statusDto,
-                userId);
+            var permissionResult =
+                await ValidateStatusUpdatePermissionAsync(
+                    appointment!,
+                    statusDto);
 
             if (permissionResult != null)
             {
                 return permissionResult;
             }
 
-            statusDto.CancellationReason =
-                string.IsNullOrWhiteSpace(statusDto.CancellationReason)
-                    ? null
-                    : statusDto.CancellationReason.Trim();
+            NormalizeCancellationReason(statusDto);
 
             var updatedAppointment = await _appointmentService.UpdateStatusAsync(
                 id,
@@ -269,15 +220,99 @@ namespace HealthAxis.API.Controller
             return Ok(appointment);
         }
 
+        private string? GetLoggedInUserId()
+        {
+            return User.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+
+        private async Task<IActionResult?> ValidateAppointmentAccessAsync(
+            AppointmentDto appointment)
+        {
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = InvalidToken
+                });
+            }
+
+            if (User.IsInRole("Patient"))
+            {
+                return await ValidatePatientAppointmentAccessAsync(
+                    appointment,
+                    userId);
+            }
+
+            if (User.IsInRole("Doctor"))
+            {
+                return await ValidateDoctorAppointmentAccessAsync(
+                    appointment,
+                    userId);
+            }
+
+            return null;
+        }
+
+        private async Task<IActionResult?> ValidatePatientAppointmentAccessAsync(
+            AppointmentDto appointment,
+            string userId)
+        {
+            var patient = await _patientService.GetByUserIdAsync(userId);
+
+            if (patient == null)
+            {
+                return NotFound(new
+                {
+                    message = PatientProfileNotFound
+                });
+            }
+
+            if (appointment.PatientId != patient.PatientId)
+            {
+                return StatusCode(403, new
+                {
+                    message = "You are not allowed to access another patient's appointment"
+                });
+            }
+
+            return null;
+        }
+
+        private async Task<IActionResult?> ValidateDoctorAppointmentAccessAsync(
+            AppointmentDto appointment,
+            string userId)
+        {
+            var doctor = await _doctorService.GetByUserIdAsync(userId);
+
+            if (doctor == null)
+            {
+                return NotFound(new
+                {
+                    message = DoctorProfileNotFound
+                });
+            }
+
+            if (appointment.DoctorId != doctor.DoctorId)
+            {
+                return StatusCode(403, new
+                {
+                    message = "You are not allowed to access another doctor's appointment"
+                });
+            }
+
+            return null;
+        }
 
         private IActionResult? ValidateAppointmentForStatusUpdate(
-    AppointmentDto? appointment)
+            AppointmentDto? appointment)
         {
             if (appointment == null)
             {
                 return NotFound(new
                 {
-                    message = "Appointment not found"
+                    message = AppointmentNotFound
                 });
             }
 
@@ -295,9 +330,18 @@ namespace HealthAxis.API.Controller
 
         private async Task<IActionResult?> ValidateStatusUpdatePermissionAsync(
             AppointmentDto appointment,
-            UpdateAppointmentStatusDto statusDto,
-            string userId)
+            UpdateAppointmentStatusDto statusDto)
         {
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = InvalidToken
+                });
+            }
+
             if (User.IsInRole("Patient"))
             {
                 return await ValidatePatientStatusUpdateAsync(
@@ -362,7 +406,7 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Doctor profile not found"
+                    message = DoctorProfileNotFound
                 });
             }
 
@@ -374,15 +418,64 @@ namespace HealthAxis.API.Controller
                 });
             }
 
-            if (statusDto.Status != AppointmentStatus.Confirmed)
+            if (statusDto.Status == AppointmentStatus.Confirmed ||
+                statusDto.Status == AppointmentStatus.Cancelled)
             {
-                return StatusCode(403, new
+                return ValidateDoctorCancellationReason(statusDto);
+            }
+
+            return StatusCode(403, new
+            {
+                message = "Doctor can only confirm or cancel appointment here. Completion happens after adding health record"
+            });
+        }
+
+        private IActionResult? ValidateDoctorCancellationReason(
+            UpdateAppointmentStatusDto statusDto)
+        {
+            if (statusDto.Status != AppointmentStatus.Cancelled)
+            {
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(statusDto.CancellationReason))
+            {
+                return BadRequest(new
                 {
-                    message = "Doctor can only confirm appointment here. Completion happens after adding health record"
+                    message = "Cancellation reason is required."
                 });
             }
 
             return null;
+        }
+
+        private void NormalizeCancellationReason(
+            UpdateAppointmentStatusDto statusDto)
+        {
+            if (statusDto.Status != AppointmentStatus.Cancelled)
+            {
+                statusDto.CancellationReason = null;
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(statusDto.CancellationReason))
+            {
+                statusDto.CancellationReason =
+                    statusDto.CancellationReason.Trim();
+
+                return;
+            }
+
+            if (User.IsInRole("Patient"))
+            {
+                statusDto.CancellationReason = "Cancelled by patient.";
+                return;
+            }
+
+            if (User.IsInRole("Admin"))
+            {
+                statusDto.CancellationReason = "Cancelled by admin.";
+            }
         }
     }
 }
