@@ -2,6 +2,7 @@
 using HealthCareApp.Helpers;
 using HealthCareApp.Messaging.Events;
 using HealthCareApp.Models;
+using HealthCareApp.Shared.Enums;
 using MassTransit;
 
 namespace HealthCareApp.Messaging.Consumers
@@ -24,16 +25,19 @@ namespace HealthCareApp.Messaging.Consumers
         {
             var appointmentBookedEvent = context.Message;
 
-            var notificationMessage =
+            string notificationMessage =
                 $"New appointment booked by {appointmentBookedEvent.PatientName} " +
                 $"on {appointmentBookedEvent.ScheduledDate:yyyy-MM-dd} " +
                 $"at {appointmentBookedEvent.TimeSlot}.";
 
             var notification = new Notification
             {
+                PatientId = null,
                 DoctorId = appointmentBookedEvent.DoctorId,
                 AppointmentId = appointmentBookedEvent.AppointmentId,
+                Title = "New appointment booked",
                 Message = notificationMessage,
+                NotificationType = NotificationType.AppointmentBooked,
                 IsRead = false,
                 CreatedDate = DateTime.Now
             };
@@ -48,9 +52,9 @@ namespace HealthCareApp.Messaging.Consumers
                 notificationMessage);
 
             logger.LogInformation(
-                "AppointmentBookedEvent consumed. Notification created. DoctorId: {DoctorId}, AppointmentId: {AppointmentId}",
-                appointmentBookedEvent.DoctorId,
-                appointmentBookedEvent.AppointmentId);
+                "AppointmentBookedEvent consumed and notification created. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}",
+                appointmentBookedEvent.AppointmentId,
+                appointmentBookedEvent.DoctorId);
         }
     }
 }

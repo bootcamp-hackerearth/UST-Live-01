@@ -20,6 +20,7 @@ namespace HealthCareApp.Services
         UserManager<IdentityUser> userManager,
         RoleManager<IdentityRole> roleManager,
         ICacheService cacheService,
+        IDoctorLeaveService doctorLeaveService,
         ILogger<DoctorService> logger) : IDoctorService
     {
         private const string DoctorEntityName = "Doctor";
@@ -268,7 +269,7 @@ namespace HealthCareApp.Services
             return mapper.Map<DoctorDto>(doctor);
         }
 
-        public async Task<List<SlotAvailabilityDto>> GetDoctorAvailabilityAsync(
+        public async Task<DoctorAvailabilityResponseDto> GetDoctorAvailabilityAsync(
             int doctorId,
             DateTime? date)
         {
@@ -282,7 +283,44 @@ namespace HealthCareApp.Services
                     doctorId,
                     selectedDate);
 
-                var cachedAvailability = await cacheService.GetAsync<List<SlotAvailabilityDto>>(
+                var isDoctorOnLeave = await doctorLeaveService.IsDoctorOnLeaveAsync(
+                    doctorId,
+                    selectedDate);
+
+                if (isDoctorOnLeave)
+                {
+                    logger.LogInformation(
+                        "Doctor availability blocked because doctor is on leave. CacheKey: {CacheKey}, DoctorId: {DoctorId}, Date: {Date}",
+                        cacheKey,
+                        doctorId,
+                        selectedDate.ToString("yyyy-MM-dd"));
+
+                    ConsoleHighlightHelper.WriteCacheBox(
+                        "DOCTOR ON LEAVE - ALL SLOTS DISABLED",
+                        cacheKey,
+                        "LEAVE",
+                        ConsoleColor.DarkMagenta);
+
+                    var leaveSlots = await BuildDoctorLeaveAvailabilityAsync(doctorId);
+
+                    var leaveResponse = new DoctorAvailabilityResponseDto
+                    {
+                        DoctorId = doctorId,
+                        Date = selectedDate.ToString("yyyy-MM-dd"),
+                        IsDoctorOnLeave = true,
+                        Message = "Doctor is on leave on this date. Please choose another date or another doctor.",
+                        Slots = leaveSlots
+                    };
+
+                    await cacheService.SetAsync(
+                        cacheKey,
+                        leaveResponse,
+                        DoctorAvailabilityCacheDuration);
+
+                    return leaveResponse;
+                }
+
+                var cachedAvailability = await cacheService.GetAsync<DoctorAvailabilityResponseDto>(
                     cacheKey);
 
                 if (cachedAvailability is not null)
@@ -314,13 +352,22 @@ namespace HealthCareApp.Services
                     "MISS",
                     ConsoleColor.DarkRed);
 
-                var availability = await BuildDoctorAvailabilityFromDatabaseAsync(
+                var slots = await BuildDoctorAvailabilityFromDatabaseAsync(
                     doctorId,
                     selectedDate);
 
+                var availabilityResponse = new DoctorAvailabilityResponseDto
+                {
+                    DoctorId = doctorId,
+                    Date = selectedDate.ToString("yyyy-MM-dd"),
+                    IsDoctorOnLeave = false,
+                    Message = string.Empty,
+                    Slots = slots
+                };
+
                 await cacheService.SetAsync(
                     cacheKey,
-                    availability,
+                    availabilityResponse,
                     DoctorAvailabilityCacheDuration);
 
                 logger.LogInformation(
@@ -336,16 +383,25 @@ namespace HealthCareApp.Services
                     "SET",
                     ConsoleColor.DarkBlue);
 
-                return availability;
+                return availabilityResponse;
             }
 
             logger.LogInformation(
                 "Doctor availability requested without date. Cache skipped. DoctorId: {DoctorId}",
                 doctorId);
 
-            return await BuildDoctorAvailabilityFromDatabaseAsync(
+            var fallbackSlots = await BuildDoctorAvailabilityFromDatabaseAsync(
                 doctorId,
                 null);
+
+            return new DoctorAvailabilityResponseDto
+            {
+                DoctorId = doctorId,
+                Date = string.Empty,
+                IsDoctorOnLeave = false,
+                Message = string.Empty,
+                Slots = fallbackSlots
+            };
         }
 
         private async Task<List<SlotAvailabilityDto>> BuildDoctorAvailabilityFromDatabaseAsync(
@@ -380,6 +436,30 @@ namespace HealthCareApp.Services
                 {
                     TimeSlot = slot,
                     IsBooked = bookedSlotSet.Contains(slot)
+                })
+                .ToList();
+        }
+
+        private async Task<List<SlotAvailabilityDto>> BuildDoctorLeaveAvailabilityAsync(
+            int doctorId)
+        {
+            var doctor = await repository.GetByIdAsync(doctorId);
+
+            if (doctor is null)
+            {
+                throw new EntityNotFoundException(DoctorEntityName, doctorId);
+            }
+
+            if (!doctor.IsActive)
+            {
+                throw new BusinessRuleException("Doctor is inactive and not available for appointments.");
+            }
+
+            return TimeSlots.Slots
+                .Select(slot => new SlotAvailabilityDto
+                {
+                    TimeSlot = slot,
+                    IsBooked = true
                 })
                 .ToList();
         }

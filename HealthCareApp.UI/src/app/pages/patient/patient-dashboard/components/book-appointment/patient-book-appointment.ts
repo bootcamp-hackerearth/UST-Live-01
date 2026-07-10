@@ -16,6 +16,7 @@ import { PatientApiService } from '../../../../../core/services/patient-api.serv
 
 import {
   DoctorApiService,
+  DoctorAvailabilityResponseDto,
   SlotAvailabilityDto
 } from '../../../../../core/services/doctor-api.service';
 
@@ -51,6 +52,10 @@ export class PatientBookAppointment implements OnInit {
   maxBookingDate = '';
 
   message = '';
+  doctorLeaveMessage = '';
+
+  isDoctorOnLeave = false;
+
   isLoadingPatient = false;
   isLoadingDoctors = false;
   isLoadingSlots = false;
@@ -110,7 +115,8 @@ export class PatientBookAppointment implements OnInit {
       this.isSubmitting ||
       this.isLoadingPatient ||
       this.isLoadingDoctors ||
-      this.isLoadingSlots
+      this.isLoadingSlots ||
+      this.isDoctorOnLeave
     );
   }
 
@@ -233,6 +239,8 @@ export class PatientBookAppointment implements OnInit {
     this.timeSlots = [];
     this.message = '';
 
+    this.clearDoctorLeaveState();
+
     this.scrollToSection('doctor-section');
     this.cdr.detectChanges();
   }
@@ -249,6 +257,8 @@ export class PatientBookAppointment implements OnInit {
     this.timeSlots = [];
     this.message = '';
 
+    this.clearDoctorLeaveState();
+
     this.cdr.detectChanges();
   }
 
@@ -258,6 +268,8 @@ export class PatientBookAppointment implements OnInit {
     this.form.timeSlot = '';
     this.timeSlots = [];
     this.message = '';
+
+    this.clearDoctorLeaveState();
 
     this.scrollToSection('date-section');
     this.cdr.detectChanges();
@@ -274,15 +286,27 @@ export class PatientBookAppointment implements OnInit {
       this.message = '';
     }
 
+    this.clearDoctorLeaveState();
+
     this.cdr.detectChanges();
 
     this.doctorApiService.getDoctorAvailability(doctorId, date).pipe(
       timeout(15000)
     ).subscribe({
-      next: (slots: SlotAvailabilityDto[]) => {
-        this.timeSlots = slots ?? [];
+      next: (availabilityResponse: DoctorAvailabilityResponseDto) => {
+        this.timeSlots = availabilityResponse?.slots ?? [];
+        this.isDoctorOnLeave = availabilityResponse?.isDoctorOnLeave ?? false;
+        this.doctorLeaveMessage = availabilityResponse?.message ?? '';
 
-        if (this.timeSlots.length === 0 && shouldClearMessage) {
+        if (this.isDoctorOnLeave) {
+          this.form.timeSlot = '';
+
+          if (shouldClearMessage) {
+            this.message =
+              this.doctorLeaveMessage ||
+              'Doctor is on leave on this date. Please choose another date or another doctor.';
+          }
+        } else if (this.timeSlots.length === 0 && shouldClearMessage) {
           this.message = 'No time slots are available for the selected doctor.';
         }
 
@@ -294,6 +318,8 @@ export class PatientBookAppointment implements OnInit {
 
         this.timeSlots = [];
         this.isLoadingSlots = false;
+
+        this.clearDoctorLeaveState();
 
         if (shouldClearMessage) {
           this.message = this.getErrorMessage(error);
@@ -313,6 +339,8 @@ export class PatientBookAppointment implements OnInit {
     this.form.timeSlot = '';
     this.timeSlots = [];
     this.message = '';
+
+    this.clearDoctorLeaveState();
 
     if (this.form.doctorId && this.form.scheduledDate) {
       this.loadDoctorAvailability(this.form.doctorId, this.form.scheduledDate);
@@ -388,6 +416,7 @@ export class PatientBookAppointment implements OnInit {
       !this.form.scheduledDate ||
       this.isSubmitting ||
       this.isLoadingSlots ||
+      this.isDoctorOnLeave ||
       this.isTimeSlotBooked(slot) ||
       this.isPastTimeSlot(slot) ||
       this.isFutureBeyondBookingWindow()
@@ -395,6 +424,10 @@ export class PatientBookAppointment implements OnInit {
   }
 
   getSlotClass(slot: SlotAvailabilityDto): string {
+    if (this.isDoctorOnLeave) {
+      return 'ba-slot booked leave';
+    }
+
     if (
       this.isTimeSlotBooked(slot) ||
       this.isPastTimeSlot(slot) ||
@@ -419,6 +452,10 @@ export class PatientBookAppointment implements OnInit {
   }
 
   getSlotStatus(slot: SlotAvailabilityDto): string {
+    if (this.isDoctorOnLeave) {
+      return 'Doctor On Leave';
+    }
+
     if (this.isTimeSlotBooked(slot)) {
       return 'Booked';
     }
@@ -586,6 +623,13 @@ export class PatientBookAppointment implements OnInit {
       return false;
     }
 
+    if (this.isDoctorOnLeave) {
+      this.message =
+        this.doctorLeaveMessage ||
+        'Doctor is on leave on this date. Please choose another date or another doctor.';
+      return false;
+    }
+
     if (this.isLoadingSlots) {
       this.message = 'Please wait while available slots are loading.';
       return false;
@@ -630,12 +674,19 @@ export class PatientBookAppointment implements OnInit {
     this.filteredDoctors = [];
     this.timeSlots = [];
 
+    this.clearDoctorLeaveState();
+
     this.form = {
       patientId: this.currentPatientId,
       doctorId: null!,
       scheduledDate: '',
       timeSlot: ''
     };
+  }
+
+  private clearDoctorLeaveState(): void {
+    this.isDoctorOnLeave = false;
+    this.doctorLeaveMessage = '';
   }
 
   private scrollDownForSpecialisationSearch(): void {

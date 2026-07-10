@@ -4,12 +4,14 @@ import { forkJoin } from 'rxjs';
 
 import { AppointmentDto } from '../../../shared/models/appointment.models';
 import { HealthRecordDto } from '../../../shared/models/health-record.models';
+import { NotificationDto } from '../../../shared/models/notification.models';
 import { PatientDto } from '../../../shared/models/patient.models';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { PatientApiService } from '../../../core/services/patient-api.service';
 import { AppointmentApiService } from '../../../core/services/appointment-api.service';
 import { HealthRecordApiService } from '../../../core/services/health-record-api.service';
+import { NotificationApiService } from '../../../core/services/notification-api.service';
 
 import { PatientBookAppointment } from './components/book-appointment/patient-book-appointment';
 import { PatientAppointmentList } from './components/appointment-list/patient-appointment-list';
@@ -59,8 +61,14 @@ export class PatientDashboard implements OnInit, OnDestroy {
   upcomingAppointments: AppointmentDto[] = [];
   healthRecords: HealthRecordDto[] = [];
 
+  unreadNotifications: NotificationDto[] = [];
+  activeNotification: NotificationDto | null = null;
+
   isDashboardLoading = false;
   dashboardErrorMessage = '';
+
+  isNotificationModalOpen = false;
+  isNotificationActionLoading = false;
 
   toastMessage = '';
   toastType: ToastType = 'info';
@@ -75,12 +83,14 @@ export class PatientDashboard implements OnInit, OnDestroy {
     private readonly patientApiService: PatientApiService,
     private readonly appointmentApiService: AppointmentApiService,
     private readonly healthRecordApiService: HealthRecordApiService,
+    private readonly notificationApiService: NotificationApiService,
     private readonly router: Router
   ) {
   }
 
   ngOnInit(): void {
     this.loadDashboardData();
+    this.loadUnreadNotifications();
     this.showToast('Welcome to your HealthAxis patient portal.', 'success');
   }
 
@@ -150,6 +160,21 @@ export class PatientDashboard implements OnInit, OnDestroy {
     `;
   }
 
+  get activeNotificationTitle(): string {
+    return this.activeNotification?.title || 'Appointment Update';
+  }
+
+  get activeNotificationMessage(): string {
+    return (
+      this.activeNotification?.message ||
+      'You have an important appointment update.'
+    );
+  }
+
+  get isDoctorLeaveRebookNotification(): boolean {
+    return this.activeNotification?.notificationType === 'DoctorLeaveRebook';
+  }
+
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
@@ -165,6 +190,7 @@ export class PatientDashboard implements OnInit, OnDestroy {
 
   handleBookingSuccess(): void {
     this.loadDashboardData();
+    this.loadUnreadNotifications();
     this.activeSection = 'dashboard';
     this.showToast('Appointment booked successfully ', 'success');
   }
@@ -240,6 +266,125 @@ export class PatientDashboard implements OnInit, OnDestroy {
 
   retryDashboardLoad(): void {
     this.loadDashboardData();
+  }
+
+  closeNotificationModal(): void {
+    if (this.isNotificationActionLoading) {
+      return;
+    }
+
+    this.isNotificationModalOpen = false;
+    this.activeNotification = null;
+  }
+
+  markActiveNotificationAsRead(): void {
+    if (!this.activeNotification) {
+      return;
+    }
+
+    this.isNotificationActionLoading = true;
+
+    this.notificationApiService
+      .markNotificationAsRead(this.activeNotification.notificationId)
+      .subscribe({
+        next: (updatedNotification: NotificationDto) => {
+          this.handleNotificationReadSuccess(updatedNotification);
+          this.showToast('Notification marked as read.', 'success');
+        },
+        error: (error: unknown) => {
+          console.log('Mark notification read API error:', error);
+
+          this.isNotificationActionLoading = false;
+
+          this.showToast(
+            'Unable to update notification. Please try again.',
+            'warning'
+          );
+        }
+      });
+  }
+
+  rebookFromNotification(): void {
+    if (!this.activeNotification) {
+      this.activeSection = 'book';
+      this.closeNotificationModal();
+      return;
+    }
+
+    this.isNotificationActionLoading = true;
+
+    this.notificationApiService
+      .markNotificationAsRead(this.activeNotification.notificationId)
+      .subscribe({
+        next: (updatedNotification: NotificationDto) => {
+          this.handleNotificationReadSuccess(updatedNotification);
+
+          this.activeSection = 'book';
+          this.closeSidebar();
+
+          this.showToast(
+            'Please choose another doctor or a different date to rebook.',
+            'info'
+          );
+        },
+        error: (error: unknown) => {
+          console.log('Rebook notification read API error:', error);
+
+          this.isNotificationActionLoading = false;
+
+          this.showToast(
+            'Unable to update notification, but you can still rebook now.',
+            'warning'
+          );
+
+          this.activeSection = 'book';
+          this.closeNotificationModal();
+        }
+      });
+  }
+
+  private loadUnreadNotifications(): void {
+    this.notificationApiService.getMyUnreadNotifications().subscribe({
+      next: (notifications: NotificationDto[]) => {
+        this.unreadNotifications = notifications ?? [];
+
+        const rebookNotification = this.unreadNotifications.find(
+          (notification: NotificationDto) =>
+            notification.notificationType === 'DoctorLeaveRebook'
+        );
+
+        if (rebookNotification) {
+          this.openNotificationModal(rebookNotification);
+          return;
+        }
+
+        if (this.unreadNotifications.length > 0) {
+          this.openNotificationModal(this.unreadNotifications[0]);
+        }
+      },
+      error: (error: unknown) => {
+        console.log('Unread notifications API error:', error);
+      }
+    });
+  }
+
+  private openNotificationModal(notification: NotificationDto): void {
+    this.activeNotification = notification;
+    this.isNotificationModalOpen = true;
+    this.isNotificationActionLoading = false;
+  }
+
+  private handleNotificationReadSuccess(
+    updatedNotification: NotificationDto
+  ): void {
+    this.unreadNotifications = this.unreadNotifications.filter(
+      (notification: NotificationDto) =>
+        notification.notificationId !== updatedNotification.notificationId
+    );
+
+    this.isNotificationActionLoading = false;
+    this.isNotificationModalOpen = false;
+    this.activeNotification = null;
   }
 
   private calculatePercentage(value: number): number {

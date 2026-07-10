@@ -9,6 +9,14 @@ export interface SlotAvailabilityDto {
   isBooked: boolean;
 }
 
+export interface DoctorAvailabilityResponseDto {
+  doctorId: number;
+  date: string;
+  isDoctorOnLeave: boolean;
+  message: string;
+  slots: SlotAvailabilityDto[];
+}
+
 interface ApiDoctorDto {
   doctorId: number;
   fullName?: string;
@@ -25,6 +33,19 @@ interface ApiSlotAvailabilityDto {
   TimeSlot?: string;
   isBooked?: boolean;
   IsBooked?: boolean;
+}
+
+interface ApiDoctorAvailabilityResponseDto {
+  doctorId?: number;
+  DoctorId?: number;
+  date?: string;
+  Date?: string;
+  isDoctorOnLeave?: boolean;
+  IsDoctorOnLeave?: boolean;
+  message?: string;
+  Message?: string;
+  slots?: ApiSlotAvailabilityDto[];
+  Slots?: ApiSlotAvailabilityDto[];
 }
 
 @Injectable({
@@ -65,21 +86,43 @@ export class DoctorApiService {
   getDoctorAvailability(
     doctorId: number,
     date?: string
-  ): Observable<SlotAvailabilityDto[]> {
+  ): Observable<DoctorAvailabilityResponseDto> {
     const url = date
       ? `${this.apiUrl}/${doctorId}/availability?date=${date}`
       : `${this.apiUrl}/${doctorId}/availability`;
 
     return this.http
-      .get<ApiSlotAvailabilityDto[]>(url)
+      .get<ApiDoctorAvailabilityResponseDto>(url)
       .pipe(
-        map((slots: ApiSlotAvailabilityDto[]) =>
-          (slots ?? []).map((slot: ApiSlotAvailabilityDto) => ({
-            timeSlot: slot.timeSlot ?? slot.TimeSlot ?? '',
-            isBooked: slot.isBooked ?? slot.IsBooked ?? false
-          }))
+        map((response: ApiDoctorAvailabilityResponseDto) =>
+          this.mapDoctorAvailabilityResponse(response, doctorId)
         )
       );
+  }
+
+  private mapDoctorAvailabilityResponse(
+    response: ApiDoctorAvailabilityResponseDto,
+    fallbackDoctorId: number
+  ): DoctorAvailabilityResponseDto {
+    const apiSlots = response.slots ?? response.Slots ?? [];
+
+    return {
+      doctorId: response.doctorId ?? response.DoctorId ?? fallbackDoctorId,
+      date: response.date ?? response.Date ?? '',
+      isDoctorOnLeave:
+        response.isDoctorOnLeave ?? response.IsDoctorOnLeave ?? false,
+      message: response.message ?? response.Message ?? '',
+      slots: apiSlots.map((slot: ApiSlotAvailabilityDto) =>
+        this.mapSlotAvailability(slot)
+      )
+    };
+  }
+
+  private mapSlotAvailability(slot: ApiSlotAvailabilityDto): SlotAvailabilityDto {
+    return {
+      timeSlot: slot.timeSlot ?? slot.TimeSlot ?? '',
+      isBooked: slot.isBooked ?? slot.IsBooked ?? false
+    };
   }
 
   private mapDoctor(doctor: ApiDoctorDto): DoctorDto {

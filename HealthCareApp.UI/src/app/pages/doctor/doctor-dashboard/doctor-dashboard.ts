@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { forkJoin, timeout } from 'rxjs';
 
 import { AppointmentDto } from '../../../shared/models/appointment.models';
+import { DoctorLeaveDto } from '../../../shared/models/doctor-leave.models';
 import { DoctorDto } from '../../../shared/models/doctor.models';
 import { HealthRecordDto } from '../../../shared/models/health-record.models';
 
@@ -11,6 +12,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { DoctorApiService } from '../../../core/services/doctor-api.service';
 import { AppointmentApiService } from '../../../core/services/appointment-api.service';
 import { HealthRecordApiService } from '../../../core/services/health-record-api.service';
+import { DoctorLeaveApiService } from '../../../core/services/doctor-leave-api.service';
 
 import { DoctorAppointmentList } from './components/appointment-list/doctor-appointment-list';
 import { DoctorHealthRecords } from './components/health-records/doctor-health-records';
@@ -20,6 +22,7 @@ type DoctorDashboardSection =
   | 'dashboard'
   | 'appointments'
   | 'records'
+  | 'leave'
   | 'profile';
 
 type ToastType = 'success' | 'info' | 'warning';
@@ -36,6 +39,12 @@ interface DoctorPasswordForm {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
+}
+
+interface DoctorLeaveForm {
+  startDate: string;
+  endDate: string;
+  reason: string;
 }
 
 interface DoctorToastEvent {
@@ -70,9 +79,17 @@ export class DoctorDashboard implements OnInit, OnDestroy {
 
   upcomingAppointments: AppointmentDto[] = [];
   recentHealthRecords: HealthRecordDto[] = [];
+  doctorLeaves: DoctorLeaveDto[] = [];
+
+  todayDate = '';
 
   isDashboardLoading = false;
   dashboardErrorMessage = '';
+
+  isLoadingLeaves = false;
+  isSubmittingLeave = false;
+  isLeaveConfirmOpen = false;
+  leaveMessage = '';
 
   isSidebarOpen = false;
   isLogoutModalOpen = false;
@@ -89,6 +106,12 @@ export class DoctorDashboard implements OnInit, OnDestroy {
     confirmPassword: ''
   };
 
+  leaveForm: DoctorLeaveForm = {
+    startDate: '',
+    endDate: '',
+    reason: ''
+  };
+
   toastMessage = '';
   toastType: ToastType = 'info';
 
@@ -99,14 +122,20 @@ export class DoctorDashboard implements OnInit, OnDestroy {
     private readonly doctorApiService: DoctorApiService,
     private readonly appointmentApiService: AppointmentApiService,
     private readonly healthRecordApiService: HealthRecordApiService,
+    private readonly doctorLeaveApiService: DoctorLeaveApiService,
     private readonly router: Router
   ) {
+    this.todayDate = this.formatDateForInput(new Date());
   }
 
   ngOnInit(): void {
     this.mustChangeTemporaryPassword = this.authService.getMustChangePassword();
 
     this.loadDashboardData();
+
+    if (!this.mustChangeTemporaryPassword) {
+      this.loadDoctorLeaves();
+    }
 
     if (this.mustChangeTemporaryPassword) {
       this.showToast('Please change your temporary password to continue.', 'warning');
@@ -136,6 +165,10 @@ export class DoctorDashboard implements OnInit, OnDestroy {
 
   get latestHealthRecord(): HealthRecordDto | undefined {
     return this.recentHealthRecords[0];
+  }
+
+  get latestDoctorLeave(): DoctorLeaveDto | undefined {
+    return this.doctorLeaves[0];
   }
 
   get totalOverviewCount(): number {
@@ -228,6 +261,53 @@ export class DoctorDashboard implements OnInit, OnDestroy {
     );
   }
 
+  get isLeaveDateRangeInvalid(): boolean {
+    if (!this.leaveForm.startDate || !this.leaveForm.endDate) {
+      return false;
+    }
+
+    const startDate = this.parseInputDate(this.leaveForm.startDate);
+    const endDate = this.parseInputDate(this.leaveForm.endDate);
+
+    if (!startDate || !endDate) {
+      return true;
+    }
+
+    return endDate.getTime() < startDate.getTime();
+  }
+
+  get isLeaveStartDatePast(): boolean {
+    if (!this.leaveForm.startDate) {
+      return false;
+    }
+
+    const startDate = this.parseInputDate(this.leaveForm.startDate);
+    const today = this.parseInputDate(this.todayDate);
+
+    if (!startDate || !today) {
+      return true;
+    }
+
+    return startDate.getTime() < today.getTime();
+  }
+
+  get isLeaveReasonInvalid(): boolean {
+    return (
+      this.leaveForm.reason.trim().length === 0 ||
+      this.leaveForm.reason.trim().length > 300
+    );
+  }
+
+  get isLeaveFormInvalid(): boolean {
+    return (
+      !this.leaveForm.startDate ||
+      !this.leaveForm.endDate ||
+      this.isLeaveStartDatePast ||
+      this.isLeaveDateRangeInvalid ||
+      this.isLeaveReasonInvalid
+    );
+  }
+
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
@@ -244,6 +324,10 @@ export class DoctorDashboard implements OnInit, OnDestroy {
 
     this.activeSection = section;
     this.closeSidebar();
+
+    if (section === 'leave') {
+      this.loadDoctorLeaves();
+    }
   }
 
   submitTemporaryPasswordChange(): void {
@@ -286,6 +370,7 @@ export class DoctorDashboard implements OnInit, OnDestroy {
         this.authService.markPasswordChangeCompleted();
         this.resetPasswordForm();
         this.loadDashboardData();
+        this.loadDoctorLeaves();
 
         this.showToast('Password changed successfully. Dashboard unlocked ', 'success');
       },
@@ -299,8 +384,73 @@ export class DoctorDashboard implements OnInit, OnDestroy {
     });
   }
 
+  submitDoctorLeave(): void {
+    this.leaveMessage = '';
+
+    if (this.isLeaveFormInvalid) {
+      this.leaveMessage = this.getLeaveValidationMessage();
+      this.showToast(this.leaveMessage, 'warning');
+      return;
+    }
+
+    this.isLeaveConfirmOpen = true;
+  }
+
+  closeLeaveConfirmModal(): void {
+    if (this.isSubmittingLeave) {
+      return;
+    }
+
+    this.isLeaveConfirmOpen = false;
+  }
+
+  confirmDoctorLeave(): void {
+    this.leaveMessage = '';
+
+    if (this.isLeaveFormInvalid) {
+      this.isLeaveConfirmOpen = false;
+      this.leaveMessage = this.getLeaveValidationMessage();
+      this.showToast(this.leaveMessage, 'warning');
+      return;
+    }
+
+    this.isSubmittingLeave = true;
+
+    this.doctorLeaveApiService.createMyDoctorLeave({
+      startDate: this.leaveForm.startDate,
+      endDate: this.leaveForm.endDate,
+      reason: this.leaveForm.reason.trim()
+    }).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: () => {
+        this.isSubmittingLeave = false;
+        this.isLeaveConfirmOpen = false;
+
+        this.leaveMessage = 'Leave submitted successfully. Your availability has been updated.';
+
+        this.showToast(this.leaveMessage, 'success');
+
+        this.resetLeaveForm();
+        this.loadDoctorLeaves();
+        this.loadDashboardData();
+      },
+      error: (error: unknown) => {
+        console.log('Doctor leave create API error:', error);
+
+        this.isSubmittingLeave = false;
+        this.isLeaveConfirmOpen = false;
+
+        this.leaveMessage = this.getErrorMessage(error);
+
+        this.showToast(this.leaveMessage, 'warning');
+      }
+    });
+  }
+
   handleDoctorDataChanged(): void {
     this.loadDashboardData();
+    this.loadDoctorLeaves();
   }
 
   handleDoctorToast(event: DoctorToastEvent): void {
@@ -311,6 +461,7 @@ export class DoctorDashboard implements OnInit, OnDestroy {
     this.closeSidebar();
 
     this.isTempPasswordConfirmOpen = false;
+    this.isLeaveConfirmOpen = false;
 
     setTimeout(() => {
       this.isLogoutModalOpen = true;
@@ -442,6 +593,34 @@ export class DoctorDashboard implements OnInit, OnDestroy {
     });
   }
 
+  private loadDoctorLeaves(): void {
+    if (this.mustChangeTemporaryPassword) {
+      return;
+    }
+
+    this.isLoadingLeaves = true;
+
+    this.doctorLeaveApiService.getMyDoctorLeaves().pipe(
+      timeout(15000)
+    ).subscribe({
+      next: (doctorLeaves: DoctorLeaveDto[]) => {
+        this.doctorLeaves = doctorLeaves ?? [];
+        this.isLoadingLeaves = false;
+      },
+      error: (error: unknown) => {
+        console.log('Doctor leaves API error:', error);
+
+        this.doctorLeaves = [];
+        this.isLoadingLeaves = false;
+
+        this.showToast(
+          'Unable to load leave history. Please try again.',
+          'warning'
+        );
+      }
+    });
+  }
+
   private calculatePercentage(value: number): number {
     return Math.round((value / this.chartTotalCount) * 100);
   }
@@ -452,6 +631,68 @@ export class DoctorDashboard implements OnInit, OnDestroy {
       newPassword: '',
       confirmPassword: ''
     };
+  }
+
+  private resetLeaveForm(): void {
+    this.leaveForm = {
+      startDate: '',
+      endDate: '',
+      reason: ''
+    };
+  }
+
+  private getLeaveValidationMessage(): string {
+    if (!this.leaveForm.startDate) {
+      return 'Please select leave start date.';
+    }
+
+    if (!this.leaveForm.endDate) {
+      return 'Please select leave end date.';
+    }
+
+    if (this.isLeaveStartDatePast) {
+      return 'Leave start date cannot be in the past.';
+    }
+
+    if (this.isLeaveDateRangeInvalid) {
+      return 'Leave end date cannot be before start date.';
+    }
+
+    if (!this.leaveForm.reason.trim()) {
+      return 'Please enter leave reason.';
+    }
+
+    if (this.leaveForm.reason.trim().length > 300) {
+      return 'Leave reason cannot exceed 300 characters.';
+    }
+
+    return 'Please correct the leave details.';
+  }
+
+  private parseInputDate(dateValue: string): Date | null {
+    const parts = dateValue.split('-');
+
+    if (parts.length !== 3) {
+      return null;
+    }
+
+    const year = Number(parts[0]);
+    const month = Number(parts[1]);
+    const day = Number(parts[2]);
+
+    if (!year || !month || !day) {
+      return null;
+    }
+
+    return new Date(year, month - 1, day);
+  }
+
+  private formatDateForInput(date: Date): string {
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getDate()}`.padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
   private getErrorMessage(error: unknown): string {
@@ -465,7 +706,8 @@ export class DoctorDashboard implements OnInit, OnDestroy {
           message?: string;
           Message?: string;
           errors?: Record<string, string[]>;
-        };
+          title?: string;
+        } | string;
         name?: string;
       };
 
@@ -473,19 +715,29 @@ export class DoctorDashboard implements OnInit, OnDestroy {
         return 'The server is taking too long to respond. Please try again.';
       }
 
-      if (apiError.error?.message) {
-        return apiError.error.message;
+      if (typeof apiError.error === 'string' && apiError.error.trim()) {
+        return apiError.error;
       }
 
-      if (apiError.error?.Message) {
-        return apiError.error.Message;
-      }
+      if (typeof apiError.error === 'object' && apiError.error !== null) {
+        if (apiError.error.message) {
+          return apiError.error.message;
+        }
 
-      if (apiError.error?.errors) {
-        const firstError = Object.values(apiError.error.errors)[0]?.[0];
+        if (apiError.error.Message) {
+          return apiError.error.Message;
+        }
 
-        if (firstError) {
-          return firstError;
+        if (apiError.error.title) {
+          return apiError.error.title;
+        }
+
+        if (apiError.error.errors) {
+          const firstError = Object.values(apiError.error.errors)[0]?.[0];
+
+          if (firstError) {
+            return firstError;
+          }
         }
       }
     }

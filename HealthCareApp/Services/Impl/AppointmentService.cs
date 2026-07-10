@@ -1,15 +1,16 @@
 ﻿using AutoMapper;
 using HealthCareApp.Exceptions;
+using HealthCareApp.Helpers;
 using HealthCareApp.Messaging.Events;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
+using HealthCareApp.Services;
 using HealthCareApp.Services.Interface;
 using HealthCareApp.Shared.Constants;
 using HealthCareApp.Shared.Dtos.Appointments;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
 using MassTransit;
-using HealthCareApp.Helpers;
 
 namespace HealthCareApp.Services.Impl
 {
@@ -18,6 +19,7 @@ namespace HealthCareApp.Services.Impl
         IPatientRepository patientRepository,
         IDoctorRepository doctorRepository,
         IHealthRecordRepository healthRecordRepository,
+        IDoctorLeaveService doctorLeaveService,
         IMapper mapper,
         IPublishEndpoint publishEndpoint,
         ILogger<AppointmentService> logger) : IAppointmentService
@@ -281,6 +283,10 @@ namespace HealthCareApp.Services.Impl
 
             ValidateTimeSlot(dto.TimeSlot);
 
+            await ValidateDoctorLeaveAvailabilityAsync(
+                dto.DoctorId,
+                dto.ScheduledDate.Date);
+
             var isSlotBooked = await appointmentRepository.IsSlotBookedAsync(
                 dto.DoctorId,
                 dto.ScheduledDate.Date,
@@ -347,6 +353,7 @@ namespace HealthCareApp.Services.Impl
 
             return mapper.Map<AppointmentDto>(savedAppointment);
         }
+
         public async Task<AppointmentDto> UpdateAppointmentAsync(int appointmentId, UpdateAppointmentDto dto)
         {
             ValidateAppointmentId(appointmentId);
@@ -372,6 +379,10 @@ namespace HealthCareApp.Services.Impl
             ValidateAppointmentDate(dto.ScheduledDate);
 
             ValidateTimeSlot(dto.TimeSlot);
+
+            await ValidateDoctorLeaveAvailabilityAsync(
+                dto.DoctorId,
+                dto.ScheduledDate.Date);
 
             bool slotTaken = await appointmentRepository.IsSlotBookedAsync(
                 dto.DoctorId,
@@ -973,6 +984,21 @@ namespace HealthCareApp.Services.Impl
             if (!doctor.IsActive)
             {
                 throw new AppointmentRuleException("Doctor is inactive. Appointment cannot be booked.");
+            }
+        }
+
+        private async Task ValidateDoctorLeaveAvailabilityAsync(
+            int doctorId,
+            DateTime scheduledDate)
+        {
+            var doctorOnLeave = await doctorLeaveService.IsDoctorOnLeaveAsync(
+                doctorId,
+                scheduledDate.Date);
+
+            if (doctorOnLeave)
+            {
+                throw new AppointmentRuleException(
+                    "Doctor is on leave on the selected date. Appointment cannot be booked.");
             }
         }
 

@@ -38,11 +38,15 @@ builder.Services.AddControllers()
             System.Text.Json.JsonNamingPolicy.CamelCase;
     });
 
+// Register embedded Garnet server for local development.
+// This starts Garnet automatically when the backend API starts.
+builder.Services.AddHostedService<GarnetHostedService>();
+
 // Register Garnet/Redis options.
 builder.Services.Configure<GarnetOptions>(
     builder.Configuration.GetSection("Garnet"));
 
-// Register distributed cache using Garnet/Redis.
+// Register distributed cache using embedded Garnet.
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     var garnetOptions = builder.Configuration
@@ -139,6 +143,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 
 // Register services.
@@ -148,6 +153,8 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // Register background services.
 builder.Services.AddHostedService<HeartbeatBackgroundService>();

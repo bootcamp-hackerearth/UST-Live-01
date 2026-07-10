@@ -22,7 +22,7 @@ namespace HealthCareApp.Services
 
         Task<DoctorDto> DeleteDoctorAsync(int doctorId);
 
-        Task<List<SlotAvailabilityDto>> GetDoctorAvailabilityAsync(int doctorId, DateTime? date);
+        Task<DoctorAvailabilityResponseDto> GetDoctorAvailabilityAsync(int doctorId, DateTime? date);
 
         Task<DoctorDto> GetMyProfileAsync(string identityUserId);
 

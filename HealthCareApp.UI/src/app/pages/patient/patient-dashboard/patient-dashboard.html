@@ -375,6 +375,81 @@
 
   </main>
 
+  @if (isNotificationModalOpen && activeNotification) {
+    <div
+      class="pd-notification-backdrop"
+      (click)="closeNotificationModal()"
+      (keydown.escape)="closeNotificationModal()">
+
+      <dialog
+        open
+        class="pd-notification-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeNotificationModal(); $event.stopPropagation()">
+
+        <div class="pd-notification-icon">
+          !
+        </div>
+
+        <span class="pd-notification-kicker">
+          Appointment Update
+        </span>
+
+        <h3>
+          {{ activeNotificationTitle }}
+        </h3>
+
+        <p>
+          {{ activeNotificationMessage }}
+        </p>
+
+        @if (isDoctorLeaveRebookNotification) {
+          <div class="pd-notification-rebook-card">
+            <strong>Sorry for the inconvenience.</strong>
+
+            <span>
+              You can rebook with another doctor or select a different available date.
+            </span>
+          </div>
+        }
+
+        <div class="pd-notification-meta">
+          <div>
+            <span>Notification Type</span>
+            <strong>{{ activeNotification.notificationType }}</strong>
+          </div>
+
+          <div>
+            <span>Created</span>
+            <strong>{{ activeNotification.createdDate }}</strong>
+          </div>
+        </div>
+
+        <div class="pd-notification-actions">
+          @if (isDoctorLeaveRebookNotification) {
+            <button
+              type="button"
+              class="pd-notification-rebook"
+              [disabled]="isNotificationActionLoading"
+              (click)="rebookFromNotification()">
+              {{ isNotificationActionLoading ? 'Opening...' : 'Rebook Now' }}
+            </button>
+          }
+
+          <button
+            type="button"
+            class="pd-notification-read"
+            [disabled]="isNotificationActionLoading"
+            (click)="markActiveNotificationAsRead()">
+            {{ isNotificationActionLoading ? 'Updating...' : 'Mark as Read' }}
+          </button>
+        </div>
+
+      </dialog>
+
+    </div>
+  }
+
   @if (isLogoutModalOpen) {
     <div
       class="pd-confirm-backdrop"

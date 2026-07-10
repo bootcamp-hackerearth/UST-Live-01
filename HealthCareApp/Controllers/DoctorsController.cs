@@ -1,5 +1,5 @@
-﻿using HealthCareApp.Shared.Enums;
-using HealthCareApp.Services;
+﻿using HealthCareApp.Services;
+using HealthCareApp.Shared.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +11,8 @@ namespace HealthCareApp.Controllers
     [ApiController]
     public class DoctorsController(IDoctorService service) : ControllerBase
     {
+        private const string InvalidUserTokenMessage = "Invalid user token.";
+
         [HttpGet("me")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -23,7 +25,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -74,7 +76,9 @@ namespace HealthCareApp.Controllers
             [FromRoute] int doctorId,
             [FromQuery] DateTime? date)
         {
-            var result = await service.GetDoctorAvailabilityAsync(doctorId, date);
+            var result = await service.GetDoctorAvailabilityAsync(
+                doctorId,
+                date);
 
             return Ok(result);
         }

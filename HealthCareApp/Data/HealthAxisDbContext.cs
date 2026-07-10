@@ -23,6 +23,8 @@ namespace HealthCareApp.Data
 
         public DbSet<Notification> Notifications { get; set; }
 
+        public DbSet<DoctorLeave> DoctorLeaves { get; set; }
+
         private static DateTime UtcDate(int year, int month, int day)
         {
             return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
@@ -73,6 +75,12 @@ namespace HealthCareApp.Data
 
             // Notification relationships.
             builder.Entity<Notification>()
+                .HasOne(notification => notification.Patient)
+                .WithMany()
+                .HasForeignKey(notification => notification.PatientId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Notification>()
                 .HasOne(notification => notification.Doctor)
                 .WithMany()
                 .HasForeignKey(notification => notification.DoctorId)
@@ -82,6 +90,18 @@ namespace HealthCareApp.Data
                 .HasOne(notification => notification.Appointment)
                 .WithMany()
                 .HasForeignKey(notification => notification.AppointmentId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Notification>()
+                .Property(notification => notification.NotificationType)
+                .HasConversion<string>()
+                .HasMaxLength(100);
+
+            // DoctorLeave relationship.
+            builder.Entity<DoctorLeave>()
+                .HasOne(doctorLeave => doctorLeave.Doctor)
+                .WithMany()
+                .HasForeignKey(doctorLeave => doctorLeave.DoctorId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             // Patient seed data.

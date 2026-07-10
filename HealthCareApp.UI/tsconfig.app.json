@@ -3,5 +3,5 @@
   "compilerOptions": {
     "outDir": "./out-tsc/app"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/app/shared/models/notification.models.ts"]
 }

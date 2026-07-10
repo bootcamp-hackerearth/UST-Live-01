@@ -51,6 +51,14 @@
 
       <button
         type="button"
+        [class.active]="activeSection === 'leave'"
+        (click)="setActiveSection('leave')">
+        <span>⛔</span>
+        <strong>Leave</strong>
+      </button>
+
+      <button
+        type="button"
         [class.active]="activeSection === 'profile'"
         (click)="setActiveSection('profile')">
         <span>👤</span>
@@ -398,6 +406,12 @@
                   <small>View added health records</small>
                 </button>
 
+                <button type="button" (click)="setActiveSection('leave')">
+                  <span>⛔</span>
+                  <strong>Leave</strong>
+                  <small>Mark unavailable dates</small>
+                </button>
+
                 <button type="button" (click)="setActiveSection('profile')">
                   <span>👤</span>
                   <strong>Profile</strong>
@@ -466,6 +480,183 @@
         <app-doctor-health-records></app-doctor-health-records>
       }
 
+      @if (activeSection === 'leave') {
+        <section class="dd-leave-shell">
+
+          <section class="dd-leave-hero">
+            <div>
+              <span class="dd-panel-eyebrow">Doctor Availability</span>
+
+              <h2>Manage Leave / Unavailability</h2>
+
+              <p>
+                Add leave dates when you are unavailable. Patients will not be able to book
+                appointments during your leave period.
+              </p>
+            </div>
+
+            @if (latestDoctorLeave) {
+              <div class="dd-leave-latest-card">
+                <span>Latest Leave</span>
+
+                <strong>
+                  {{ formatDate(latestDoctorLeave.startDate) }}
+                  -
+                  {{ formatDate(latestDoctorLeave.endDate) }}
+                </strong>
+
+                <p>{{ latestDoctorLeave.reason }}</p>
+              </div>
+            }
+          </section>
+
+          <section class="dd-leave-grid">
+
+            <article class="dd-panel dd-leave-form-card">
+              <div class="dd-panel-header">
+                <div>
+                  <span class="dd-panel-eyebrow">Create Leave</span>
+
+                  <h3>Add Unavailable Dates</h3>
+
+                  <p>
+                    Select the date range and reason for your leave.
+                  </p>
+                </div>
+              </div>
+
+              <form class="dd-leave-form" (ngSubmit)="submitDoctorLeave()">
+
+                <div class="dd-leave-date-grid">
+                  <label>
+                    Start Date
+
+                    <input
+                      type="date"
+                      name="leaveStartDate"
+                      [min]="todayDate"
+                      [(ngModel)]="leaveForm.startDate">
+                  </label>
+
+                  <label>
+                    End Date
+
+                    <input
+                      type="date"
+                      name="leaveEndDate"
+                      [min]="leaveForm.startDate || todayDate"
+                      [(ngModel)]="leaveForm.endDate">
+                  </label>
+                </div>
+
+                @if (isLeaveStartDatePast) {
+                  <div class="dd-field-error">
+                    Leave start date cannot be in the past.
+                  </div>
+                }
+
+                @if (isLeaveDateRangeInvalid) {
+                  <div class="dd-field-error">
+                    Leave end date cannot be before start date.
+                  </div>
+                }
+
+                <label>
+                  Reason
+
+                  <textarea
+                    name="leaveReason"
+                    rows="4"
+                    maxlength="300"
+                    placeholder="Example: Personal leave, conference, emergency leave"
+                    [(ngModel)]="leaveForm.reason">
+                  </textarea>
+                </label>
+
+                @if (leaveForm.reason.trim().length > 300) {
+                  <div class="dd-field-error">
+                    Leave reason cannot exceed 300 characters.
+                  </div>
+                }
+
+                @if (leaveMessage) {
+                  <div class="dd-form-message">
+                    {{ leaveMessage }}
+                  </div>
+                }
+
+                <button
+                  type="submit"
+                  class="dd-primary-btn"
+                  [disabled]="isSubmittingLeave">
+                  {{ isSubmittingLeave ? 'Submitting...' : 'Submit Leave' }}
+                </button>
+
+              </form>
+            </article>
+
+            <article class="dd-panel dd-leave-history-card">
+              <div class="dd-panel-header">
+                <div>
+                  <span class="dd-panel-eyebrow">Leave History</span>
+
+                  <h3>My Leaves</h3>
+
+                  <p>
+                    Recently added unavailable dates.
+                  </p>
+                </div>
+
+                <button type="button" (click)="setActiveSection('leave')">
+                  Refresh
+                </button>
+              </div>
+
+              @if (isLoadingLeaves) {
+                <div class="dd-empty-card">
+                  Loading leave history...
+                </div>
+              }
+
+              @if (!isLoadingLeaves && doctorLeaves.length === 0) {
+                <div class="dd-empty-card">
+                  No leave records added yet.
+                </div>
+              }
+
+              @if (!isLoadingLeaves && doctorLeaves.length > 0) {
+                <div class="dd-leave-list">
+                  @for (doctorLeave of doctorLeaves; track doctorLeave.doctorLeaveId) {
+                    <article class="dd-leave-item">
+                      <div class="dd-leave-date-badge">
+                        <strong>{{ formatDate(doctorLeave.startDate).split(' ')[0] }}</strong>
+                        <span>{{ formatDate(doctorLeave.startDate).split(' ')[1] }}</span>
+                      </div>
+
+                      <div class="dd-leave-item-info">
+                        <h4>
+                          {{ formatDate(doctorLeave.startDate) }}
+                          -
+                          {{ formatDate(doctorLeave.endDate) }}
+                        </h4>
+
+                        <p>{{ doctorLeave.reason }}</p>
+
+                        <small>
+                          Created on {{ formatDate(doctorLeave.createdDate) }}
+                        </small>
+                      </div>
+                    </article>
+                  }
+                </div>
+              }
+            </article>
+
+          </section>
+
+        </section>
+      }
+
       @if (activeSection === 'profile') {
         <app-doctor-profile
           (doctorToast)="handleDoctorToast($event)">
@@ -517,6 +708,72 @@
           [disabled]="isChangingTemporaryPassword"
           (click)="confirmTemporaryPasswordChange()">
           {{ isChangingTemporaryPassword ? 'Changing...' : 'Yes, Change Password' }}
+        </button>
+      </div>
+
+    </dialog>
+  }
+
+  @if (isLeaveConfirmOpen) {
+    <button
+      type="button"
+      class="dd-confirm-backdrop"
+      aria-label="Close leave confirmation"
+      (click)="closeLeaveConfirmModal()">
+    </button>
+
+    <dialog
+      open
+      class="dd-confirm-modal"
+      (click)="$event.stopPropagation()"
+      (keydown.escape)="closeLeaveConfirmModal(); $event.stopPropagation()">
+
+      <div class="dd-confirm-icon warning">
+        ⛔
+      </div>
+
+      <span class="dd-confirm-kicker">
+        Confirm Leave
+      </span>
+
+      <h3>Submit leave request?</h3>
+
+      <p>
+        Patients will not be able to book appointments with you during this date range.
+      </p>
+
+      <div class="dd-leave-confirm-details">
+        <div>
+          <span>Start Date</span>
+          <strong>{{ leaveForm.startDate }}</strong>
+        </div>
+
+        <div>
+          <span>End Date</span>
+          <strong>{{ leaveForm.endDate }}</strong>
+        </div>
+
+        <div class="full">
+          <span>Reason</span>
+          <strong>{{ leaveForm.reason }}</strong>
+        </div>
+      </div>
+
+      <div class="dd-confirm-actions">
+        <button
+          type="button"
+          class="dd-confirm-cancel"
+          [disabled]="isSubmittingLeave"
+          (click)="closeLeaveConfirmModal()">
+          Review Again
+        </button>
+
+        <button
+          type="button"
+          class="dd-confirm-primary"
+          [disabled]="isSubmittingLeave"
+          (click)="confirmDoctorLeave()">
+          {{ isSubmittingLeave ? 'Submitting...' : 'Yes, Submit Leave' }}
         </button>
       </div>
 
