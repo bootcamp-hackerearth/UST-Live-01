@@ -254,13 +254,22 @@
           <label>
             Password
 
-            <input
-              type="password"
-              name="loginPassword"
-              placeholder="Enter password"
-              required
-              [(ngModel)]="loginForm.password"
-              #loginPassword="ngModel" />
+            <div class="ha-password-field">
+              <input
+                [type]="showLoginPassword ? 'text' : 'password'"
+                name="loginPassword"
+                placeholder="Enter password"
+                required
+                [(ngModel)]="loginForm.password"
+                #loginPassword="ngModel" />
+
+              <button
+                type="button"
+                class="ha-password-eye"
+                (click)="showLoginPassword = !showLoginPassword">
+                {{ showLoginPassword ? '🙈' : '👁' }}
+              </button>
+            </div>
           </label>
 
           @if (loginPassword.invalid && loginPassword.touched) {
@@ -475,15 +484,25 @@
             <div>
               <label>
                 Password
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Create password"
-                  required
-                  minlength="8"
-                  [pattern]="passwordPattern"
-                  [(ngModel)]="patientRegisterForm.password"
-                  #password="ngModel" />
+
+                <div class="ha-password-field">
+                  <input
+                    [type]="showSignupPassword ? 'text' : 'password'"
+                    name="password"
+                    placeholder="Create password"
+                    required
+                    minlength="8"
+                    [pattern]="passwordPattern"
+                    [(ngModel)]="patientRegisterForm.password"
+                    #password="ngModel" />
+
+                  <button
+                    type="button"
+                    class="ha-password-eye"
+                    (click)="showSignupPassword = !showSignupPassword">
+                    {{ showSignupPassword ? '🙈' : '👁' }}
+                  </button>
+                </div>
               </label>
 
               @if (password.invalid && (password.dirty || password.touched)) {
@@ -497,13 +516,23 @@
             <div>
               <label>
                 Confirm Password
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Confirm password"
-                  required
-                  [(ngModel)]="patientRegisterForm.confirmPassword"
-                  #confirmPassword="ngModel" />
+
+                <div class="ha-password-field">
+                  <input
+                    [type]="showSignupConfirmPassword ? 'text' : 'password'"
+                    name="confirmPassword"
+                    placeholder="Confirm password"
+                    required
+                    [(ngModel)]="patientRegisterForm.confirmPassword"
+                    #confirmPassword="ngModel" />
+
+                  <button
+                    type="button"
+                    class="ha-password-eye"
+                    (click)="showSignupConfirmPassword = !showSignupConfirmPassword">
+                    {{ showSignupConfirmPassword ? '🙈' : '👁' }}
+                  </button>
+                </div>
               </label>
 
               @if (confirmPassword.invalid && confirmPassword.touched) {

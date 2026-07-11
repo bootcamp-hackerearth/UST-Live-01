@@ -198,36 +198,10 @@
 
           <h4>Select Time Slot</h4>
 
-          @if (isDoctorOnLeave) {
-            <p>
-              This doctor is unavailable on the selected date. Please choose another date or another doctor.
-            </p>
-          } @else {
-            <p>
-              Booked and past time slots are shown in red and cannot be selected.
-            </p>
-          }
+          <p>
+            Booked and past time slots are shown in red and cannot be selected.
+          </p>
         </div>
-
-        @if (isDoctorOnLeave) {
-          <div class="ba-leave-alert">
-            <div class="ba-leave-alert-icon">
-              !
-            </div>
-
-            <div>
-              <span>Doctor On Leave</span>
-
-              <strong>
-                {{ doctorLeaveMessage || 'Doctor is on leave on this date. Please choose another date or another doctor.' }}
-              </strong>
-
-              <p>
-                All slots are disabled for {{ form.scheduledDate }}. You can select another date after the leave period or choose a different doctor.
-              </p>
-            </div>
-          </div>
-        }
 
         @if (isLoadingSlots) {
           <div class="ba-empty-state">
@@ -260,9 +234,7 @@
     }
 
     @if (message) {
-      <div
-        class="ba-form-message"
-        [class.leave-message]="isDoctorOnLeave">
+      <div class="ba-form-message">
         {{ message }}
       </div>
     }
@@ -270,12 +242,7 @@
     <div class="ba-submit-row" id="submit-section">
       <div class="ba-submit-note">
         <strong>Note:</strong>
-
-        @if (isDoctorOnLeave) {
-          This doctor is on leave for the selected date. Please choose another date or another doctor.
-        } @else {
-          Your appointment will be created as Pending until confirmed by the doctor.
-        }
+        Your appointment will be created as Pending until confirmed by the doctor.
       </div>
 
       <button

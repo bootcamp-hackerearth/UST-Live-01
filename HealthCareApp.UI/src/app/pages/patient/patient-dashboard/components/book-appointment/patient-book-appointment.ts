@@ -116,7 +116,10 @@ export class PatientBookAppointment implements OnInit {
       this.isLoadingPatient ||
       this.isLoadingDoctors ||
       this.isLoadingSlots ||
-      this.isDoctorOnLeave
+      this.isDoctorOnLeave ||
+      !this.form.doctorId ||
+      !this.form.scheduledDate ||
+      !this.form.timeSlot
     );
   }
 
@@ -300,14 +303,11 @@ export class PatientBookAppointment implements OnInit {
 
         if (this.isDoctorOnLeave) {
           this.form.timeSlot = '';
-
-          if (shouldClearMessage) {
-            this.message =
-              this.doctorLeaveMessage ||
-              'Doctor is on leave on this date. Please choose another date or another doctor.';
-          }
+          this.message = '';
         } else if (this.timeSlots.length === 0 && shouldClearMessage) {
           this.message = 'No time slots are available for the selected doctor.';
+        } else if (shouldClearMessage) {
+          this.message = '';
         }
 
         this.isLoadingSlots = false;
@@ -424,11 +424,8 @@ export class PatientBookAppointment implements OnInit {
   }
 
   getSlotClass(slot: SlotAvailabilityDto): string {
-    if (this.isDoctorOnLeave) {
-      return 'ba-slot booked leave';
-    }
-
     if (
+      this.isDoctorOnLeave ||
       this.isTimeSlotBooked(slot) ||
       this.isPastTimeSlot(slot) ||
       this.isFutureBeyondBookingWindow()
@@ -453,7 +450,7 @@ export class PatientBookAppointment implements OnInit {
 
   getSlotStatus(slot: SlotAvailabilityDto): string {
     if (this.isDoctorOnLeave) {
-      return 'Doctor On Leave';
+      return 'Doctor is in leave';
     }
 
     if (this.isTimeSlotBooked(slot)) {
@@ -477,6 +474,20 @@ export class PatientBookAppointment implements OnInit {
 
   submit(): void {
     this.message = '';
+
+    if (this.isDoctorOnLeave) {
+      this.message =
+        this.doctorLeaveMessage ||
+        'Doctor is unavailable on the selected date. Please choose another date.';
+
+      this.patientToast.emit({
+        message: this.message,
+        type: 'warning'
+      });
+
+      this.cdr.detectChanges();
+      return;
+    }
 
     if (!this.isBookingFormValid()) {
       this.patientToast.emit({
@@ -503,6 +514,22 @@ export class PatientBookAppointment implements OnInit {
 
   confirmBooking(): void {
     this.message = '';
+
+    if (this.isDoctorOnLeave) {
+      this.isBookingConfirmOpen = false;
+
+      this.message =
+        this.doctorLeaveMessage ||
+        'Doctor is unavailable on the selected date. Please choose another date.';
+
+      this.patientToast.emit({
+        message: this.message,
+        type: 'warning'
+      });
+
+      this.cdr.detectChanges();
+      return;
+    }
 
     if (!this.isBookingFormValid()) {
       this.isBookingConfirmOpen = false;
@@ -626,7 +653,7 @@ export class PatientBookAppointment implements OnInit {
     if (this.isDoctorOnLeave) {
       this.message =
         this.doctorLeaveMessage ||
-        'Doctor is on leave on this date. Please choose another date or another doctor.';
+        'Doctor is unavailable on the selected date. Please choose another date.';
       return false;
     }
 

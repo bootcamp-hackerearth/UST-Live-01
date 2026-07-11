@@ -95,6 +95,37 @@
 
   </section>
 
+  @if (hasPendingAppointmentReminders) {
+    <section class="da-reminder-card">
+      <div class="da-reminder-icon">
+        !
+      </div>
+
+      <div class="da-reminder-content">
+        <span>Pending Action Reminder</span>
+
+        <h3>{{ pendingReminderTitle }}</h3>
+
+        <p>
+          {{ pendingReminderMessage }}
+        </p>
+
+        <div class="da-reminder-list">
+          @for (reminder of pendingReminderAppointments; track reminder.appointment.appointmentId) {
+            <div class="da-reminder-chip">
+              <strong>{{ reminder.appointment.patientName }}</strong>
+              <span>
+                {{ formatDate(reminder.appointment.scheduledDate) }}
+                •
+                {{ reminder.appointment.timeSlot }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
   @if (isLoading) {
     <div class="da-empty-card">
       <div class="da-empty-icon">↻</div>
@@ -221,6 +252,15 @@
                   </button>
                 }
 
+                @if (canCancelAppointment(appt)) {
+                  <button
+                    type="button"
+                    class="da-cancel-btn"
+                    (click)="openCancelModal(appt)">
+                    Cancel
+                  </button>
+                }
+
                 @if (canAddHealthRecord(appt)) {
                   <button
                     type="button"
@@ -344,6 +384,94 @@
             [disabled]="isConfirming"
             (click)="confirmAppointment()">
             {{ isConfirming ? 'Confirming...' : 'Yes, Confirm' }}
+          </button>
+        </div>
+
+      </dialog>
+
+    </div>
+  }
+
+  @if (isCancelModalOpen && selectedAppointment) {
+    <div
+      class="da-modal-backdrop"
+      (click)="closeCancelModal()"
+      (keydown.escape)="closeCancelModal()">
+
+      <dialog
+        open
+        class="da-action-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeCancelModal(); $event.stopPropagation()">
+
+        <div class="da-modal-accent danger"></div>
+
+        <div class="da-modal-header">
+          <div>
+            <span>Appointment Action</span>
+
+            <h3>Cancel appointment?</h3>
+
+            <p>
+              {{ selectedAppointment.patientName }}
+              •
+              {{ formatDate(selectedAppointment.scheduledDate) }}
+              •
+              {{ selectedAppointment.timeSlot }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="da-modal-close"
+            (click)="closeCancelModal()">
+            ×
+          </button>
+        </div>
+
+        <div class="da-action-summary danger">
+          <strong>
+            Appointment #{{ selectedAppointment.appointmentId }} will be cancelled.
+          </strong>
+
+          <p>
+            The patient will see this appointment as cancelled.
+          </p>
+        </div>
+
+        <label class="da-record-field">
+          Cancellation Reason
+
+          <textarea
+            name="doctorCancelReason"
+            rows="3"
+            maxlength="500"
+            placeholder="Enter cancellation reason"
+            [(ngModel)]="cancelReason">
+          </textarea>
+        </label>
+
+        @if (cancelMessage) {
+          <div class="da-modal-message">
+            {{ cancelMessage }}
+          </div>
+        }
+
+        <div class="da-modal-actions">
+          <button
+            type="button"
+            class="da-keep-btn"
+            [disabled]="isCancelling"
+            (click)="closeCancelModal()">
+            Review Again
+          </button>
+
+          <button
+            type="button"
+            class="da-confirm-action-btn danger"
+            [disabled]="isCancelling"
+            (click)="confirmCancelAppointment()">
+            {{ isCancelling ? 'Cancelling...' : 'Yes, Cancel' }}
           </button>
         </div>
 

@@ -68,14 +68,18 @@ export class Home implements OnInit {
   isSubmittingLogin = false;
   isSubmittingSignup = false;
 
+  showLoginPassword = false;
+  showSignupPassword = false;
+  showSignupConfirmPassword = false;
+
   loginMessage = '';
   signupMessage = '';
 
   todayDate = '';
 
-namePattern = String.raw`^[A-Za-z][A-Za-z\s]{1,99}$`;
-phonePattern = '^[0-9]{10}$';
-passwordPattern = String.raw`^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$`;
+  namePattern = String.raw`^[A-Za-z][A-Za-z\s]{1,99}$`;
+  phonePattern = '^[0-9]{10}$';
+  passwordPattern = String.raw`^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$`;
 
   genderOptions: string[] = [
     'Male',
@@ -127,11 +131,11 @@ passwordPattern = String.raw`^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$`;
     confirmPassword: ''
   };
 
- constructor(
-  private readonly router: Router,
-  private readonly authService: AuthService
-) {
-}
+  constructor(
+    private readonly router: Router,
+    private readonly authService: AuthService
+  ) {
+  }
 
   ngOnInit(): void {
     this.todayDate = new Date().toISOString().split('T')[0];
@@ -268,6 +272,9 @@ passwordPattern = String.raw`^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$`;
           confirmPassword: ''
         });
 
+        this.showSignupPassword = false;
+        this.showSignupConfirmPassword = false;
+
         setTimeout(() => {
           this.isSignupModalOpen = false;
           this.openLoginModal();
@@ -324,8 +331,8 @@ passwordPattern = String.raw`^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$`;
     if (role === 'Admin') {
       const token = this.authService.getToken();
 
-    globalThis.location.href =
-  `https://localhost:7075/admin-login-bridge?token=${encodeURIComponent(token)}`;
+      globalThis.location.href =
+        `https://localhost:7075/admin-login-bridge?token=${encodeURIComponent(token)}`;
       return;
     }
 
@@ -339,6 +346,7 @@ passwordPattern = String.raw`^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$`;
       password: ''
     };
 
+    this.showLoginPassword = false;
     this.loginMessage = '';
     this.isSubmittingLogin = false;
   }
@@ -356,6 +364,8 @@ passwordPattern = String.raw`^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$`;
       confirmPassword: ''
     };
 
+    this.showSignupPassword = false;
+    this.showSignupConfirmPassword = false;
     this.signupMessage = '';
     this.isSubmittingSignup = false;
   }

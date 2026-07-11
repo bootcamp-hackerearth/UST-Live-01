@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { timeout } from 'rxjs';
 
@@ -13,6 +13,12 @@ import { HealthRecordApiService } from '../../../../../core/services/health-reco
 
 type ToastType = 'success' | 'info' | 'warning';
 
+type ReminderLevel =
+  | 'six-hour'
+  | 'three-hour'
+  | 'one-hour'
+  | 'overdue';
+
 interface DoctorToastEvent {
   message: string;
   type: ToastType;
@@ -24,6 +30,12 @@ interface HealthRecordForm {
   notes: string;
 }
 
+interface PendingAppointmentReminder {
+  appointment: AppointmentDto;
+  minutesUntilStart: number;
+  reminderLevel: ReminderLevel;
+}
+
 @Component({
   selector: 'app-doctor-appointment-list',
   standalone: true,
@@ -31,8 +43,10 @@ interface HealthRecordForm {
   templateUrl: './doctor-appointment-list.html',
   styleUrl: './doctor-appointment-list.css'
 })
-export class DoctorAppointmentList implements OnInit {
+export class DoctorAppointmentList implements OnInit, OnDestroy {
   appointments: AppointmentDto[] = [];
+
+  pendingReminderAppointments: PendingAppointmentReminder[] = [];
 
   searchTerm = '';
   selectedStatus: AppointmentStatusText | '' = '';
@@ -63,6 +77,11 @@ export class DoctorAppointmentList implements OnInit {
   isConfirming = false;
   confirmMessage = '';
 
+  isCancelModalOpen = false;
+  isCancelling = false;
+  cancelMessage = '';
+  cancelReason = 'Doctor cancelled the appointment.';
+
   isHealthRecordModalOpen = false;
   isHealthRecordSaveConfirmOpen = false;
   isDiscardHealthRecordModalOpen = false;
@@ -77,6 +96,10 @@ export class DoctorAppointmentList implements OnInit {
     notes: ''
   };
 
+  private remindedAppointmentKeys = new Set<string>();
+
+  private reminderPollingTimer?: ReturnType<typeof setInterval>;
+
   @Output() refreshDashboard = new EventEmitter<void>();
   @Output() doctorToast = new EventEmitter<DoctorToastEvent>();
 
@@ -88,6 +111,14 @@ export class DoctorAppointmentList implements OnInit {
 
   ngOnInit(): void {
     this.loadAppointments();
+    this.loadPendingAppointmentReminders();
+    this.startReminderPolling();
+  }
+
+  ngOnDestroy(): void {
+    if (this.reminderPollingTimer) {
+      clearInterval(this.reminderPollingTimer);
+    }
   }
 
   get hasActiveFilters(): boolean {
@@ -118,6 +149,36 @@ export class DoctorAppointmentList implements OnInit {
     return this.isDiagnosisInvalid || this.isPrescriptionInvalid;
   }
 
+  get hasPendingAppointmentReminders(): boolean {
+    return this.pendingReminderAppointments.length > 0;
+  }
+
+  get pendingReminderTitle(): string {
+    const urgentReminder = this.pendingReminderAppointments.find(
+      (reminder: PendingAppointmentReminder) =>
+        reminder.reminderLevel === 'one-hour' ||
+        reminder.reminderLevel === 'overdue'
+    );
+
+    if (urgentReminder) {
+      return 'Urgent pending appointment action required';
+    }
+
+    return 'Pending appointment reminder';
+  }
+
+  get pendingReminderMessage(): string {
+    const reminderCount = this.pendingReminderAppointments.length;
+
+    if (reminderCount === 1) {
+      const reminder = this.pendingReminderAppointments[0];
+
+      return `${reminder.appointment.patientName} has a pending appointment at ${reminder.appointment.timeSlot}. Please confirm or cancel.`;
+    }
+
+    return `${reminderCount} pending appointments need your action. Please confirm or cancel them.`;
+  }
+
   loadAppointments(): void {
     this.isLoading = true;
     this.errorMessage = '';
@@ -141,6 +202,7 @@ export class DoctorAppointmentList implements OnInit {
       },
       error: (error: unknown) => {
         console.log('Doctor appointments API error:', error);
+
         this.appointments = [];
         this.totalRecords = 0;
         this.totalPages = 0;
@@ -200,6 +262,10 @@ export class DoctorAppointmentList implements OnInit {
     );
   }
 
+  canCancelAppointment(appointment: AppointmentDto): boolean {
+    return appointment.status === 'Pending';
+  }
+
   openConfirmModal(appointment: AppointmentDto): void {
     this.selectedAppointment = appointment;
     this.confirmMessage = '';
@@ -235,13 +301,90 @@ export class DoctorAppointmentList implements OnInit {
         this.isConfirming = false;
         this.closeConfirmModal();
         this.loadAppointments();
+        this.loadPendingAppointmentReminders();
         this.refreshDashboard.emit();
-        this.emitToast('Appointment confirmed successfully ', 'success');
+
+        this.emitToast(
+          'Appointment confirmed successfully ',
+          'success'
+        );
       },
       error: (error: unknown) => {
         console.log('Doctor confirm appointment API error:', error);
+
         this.isConfirming = false;
         this.confirmMessage = this.getErrorMessage(error);
+      }
+    });
+  }
+
+  openCancelModal(appointment: AppointmentDto): void {
+    if (!this.canCancelAppointment(appointment)) {
+      this.emitToast(
+        'Only pending appointments can be cancelled.',
+        'warning'
+      );
+
+      return;
+    }
+
+    this.selectedAppointment = appointment;
+    this.cancelMessage = '';
+    this.cancelReason = 'Doctor cancelled the appointment.';
+    this.isCancelModalOpen = true;
+  }
+
+  closeCancelModal(): void {
+    if (this.isCancelling) {
+      return;
+    }
+
+    this.selectedAppointment = undefined;
+    this.cancelMessage = '';
+    this.cancelReason = 'Doctor cancelled the appointment.';
+    this.isCancelModalOpen = false;
+  }
+
+  confirmCancelAppointment(): void {
+    this.cancelMessage = '';
+
+    if (!this.selectedAppointment) {
+      this.cancelMessage = 'Please select an appointment to cancel.';
+      return;
+    }
+
+    const reason = this.cancelReason.trim();
+
+    if (!reason) {
+      this.cancelMessage = 'Please enter a cancellation reason.';
+      return;
+    }
+
+    this.isCancelling = true;
+
+    this.appointmentApiService.cancelAppointment({
+      appointmentId: this.selectedAppointment.appointmentId,
+      reason
+    }).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: () => {
+        this.isCancelling = false;
+        this.closeCancelModal();
+        this.loadAppointments();
+        this.loadPendingAppointmentReminders();
+        this.refreshDashboard.emit();
+
+        this.emitToast(
+          'Appointment cancelled successfully.',
+          'warning'
+        );
+      },
+      error: (error: unknown) => {
+        console.log('Doctor cancel appointment API error:', error);
+
+        this.isCancelling = false;
+        this.cancelMessage = this.getErrorMessage(error);
       }
     });
   }
@@ -252,6 +395,7 @@ export class DoctorAppointmentList implements OnInit {
         'Health record can be added only on or after the appointment date.',
         'warning'
       );
+
       return;
     }
 
@@ -338,6 +482,7 @@ export class DoctorAppointmentList implements OnInit {
         this.isSavingHealthRecord = false;
         this.closeHealthRecordModal();
         this.loadAppointments();
+        this.loadPendingAppointmentReminders();
         this.refreshDashboard.emit();
 
         this.emitToast(
@@ -347,6 +492,7 @@ export class DoctorAppointmentList implements OnInit {
       },
       error: (error: unknown) => {
         console.log('Doctor add health record API error:', error);
+
         this.isSavingHealthRecord = false;
         this.isHealthRecordSaveConfirmOpen = false;
         this.recordMessage = this.getErrorMessage(error);
@@ -370,6 +516,212 @@ export class DoctorAppointmentList implements OnInit {
       month: 'short',
       year: 'numeric'
     });
+  }
+
+  private loadPendingAppointmentReminders(): void {
+    this.appointmentApiService.getMyAppointments({
+      pageNumber: 1,
+      pageSize: 50,
+      status: 'Pending'
+    }).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: (response) => {
+        const pendingAppointments = response.items ?? [];
+
+        this.pendingReminderAppointments =
+          this.buildPendingAppointmentReminders(pendingAppointments);
+
+        this.emitPendingReminderToastIfNeeded();
+      },
+      error: (error: unknown) => {
+        console.log('Pending appointment reminder API error:', error);
+
+        this.pendingReminderAppointments = [];
+      }
+    });
+  }
+
+  private buildPendingAppointmentReminders(
+    pendingAppointments: AppointmentDto[]
+  ): PendingAppointmentReminder[] {
+    const now = new Date();
+
+    return pendingAppointments
+      .map((appointment: AppointmentDto) => {
+        const appointmentStart = this.getAppointmentStartDateTime(appointment);
+
+        if (!appointmentStart) {
+          return null;
+        }
+
+        const minutesUntilStart = Math.round(
+          (appointmentStart.getTime() - now.getTime()) / 60000
+        );
+
+        const reminderLevel = this.getReminderLevel(minutesUntilStart);
+
+        if (!reminderLevel) {
+          return null;
+        }
+
+        return {
+          appointment,
+          minutesUntilStart,
+          reminderLevel
+        };
+      })
+      .filter(
+        (reminder): reminder is PendingAppointmentReminder =>
+          reminder !== null
+      )
+      .sort(
+        (
+          firstReminder: PendingAppointmentReminder,
+          secondReminder: PendingAppointmentReminder
+        ) =>
+          firstReminder.minutesUntilStart -
+          secondReminder.minutesUntilStart
+      );
+  }
+
+  private getReminderLevel(minutesUntilStart: number): ReminderLevel | null {
+    if (minutesUntilStart < 0 && minutesUntilStart >= -1440) {
+      return 'overdue';
+    }
+
+    if (minutesUntilStart >= 0 && minutesUntilStart <= 60) {
+      return 'one-hour';
+    }
+
+    if (minutesUntilStart > 60 && minutesUntilStart <= 180) {
+      return 'three-hour';
+    }
+
+    if (minutesUntilStart > 180 && minutesUntilStart <= 360) {
+      return 'six-hour';
+    }
+
+    return null;
+  }
+
+  private emitPendingReminderToastIfNeeded(): void {
+    const newReminders = this.pendingReminderAppointments.filter(
+      (reminder: PendingAppointmentReminder) => {
+        const key = this.buildReminderKey(reminder);
+
+        return !this.remindedAppointmentKeys.has(key);
+      }
+    );
+
+    if (newReminders.length === 0) {
+      return;
+    }
+
+    newReminders.forEach((reminder: PendingAppointmentReminder) => {
+      this.remindedAppointmentKeys.add(this.buildReminderKey(reminder));
+    });
+
+    const urgentReminder = newReminders.find(
+      (reminder: PendingAppointmentReminder) =>
+        reminder.reminderLevel === 'one-hour' ||
+        reminder.reminderLevel === 'overdue'
+    );
+
+    if (newReminders.length === 1) {
+      const reminder = newReminders[0];
+
+      this.emitToast(
+        this.buildSingleReminderToastMessage(reminder),
+        'warning'
+      );
+
+      return;
+    }
+
+    this.emitToast(
+      urgentReminder
+        ? `${newReminders.length} pending appointments need urgent action. Please confirm or cancel.`
+        : `${newReminders.length} pending appointments start within the next 6 hours. Please confirm or cancel.`,
+      'warning'
+    );
+  }
+
+  private buildSingleReminderToastMessage(
+    reminder: PendingAppointmentReminder
+  ): string {
+    const appointment = reminder.appointment;
+
+    if (reminder.reminderLevel === 'overdue') {
+      return `Overdue: Pending appointment with ${appointment.patientName} needs review. Please confirm or cancel.`;
+    }
+
+    if (reminder.reminderLevel === 'one-hour') {
+      return `Urgent: Pending appointment with ${appointment.patientName} starts within 1 hour. Please confirm or cancel.`;
+    }
+
+    if (reminder.reminderLevel === 'three-hour') {
+      return `Reminder: Pending appointment with ${appointment.patientName} starts within 3 hours. Please confirm or cancel.`;
+    }
+
+    return `Reminder: Pending appointment with ${appointment.patientName} starts within 6 hours. Please confirm or cancel.`;
+  }
+
+  private buildReminderKey(reminder: PendingAppointmentReminder): string {
+    return `${reminder.appointment.appointmentId}-${reminder.reminderLevel}`;
+  }
+
+  private startReminderPolling(): void {
+    this.reminderPollingTimer = setInterval(() => {
+      this.loadPendingAppointmentReminders();
+    }, 300000);
+  }
+
+  private getAppointmentStartDateTime(appointment: AppointmentDto): Date | null {
+    if (!appointment.scheduledDate || !appointment.timeSlot) {
+      return null;
+    }
+
+    const datePart = appointment.scheduledDate.split('T')[0];
+    const dateParts = datePart.split('-');
+
+    if (dateParts.length !== 3) {
+      return null;
+    }
+
+    const year = Number(dateParts[0]);
+    const month = Number(dateParts[1]);
+    const day = Number(dateParts[2]);
+
+    if (!year || !month || !day) {
+      return null;
+    }
+
+    const startTime = appointment.timeSlot.split('-')[0]?.trim();
+
+    if (!startTime) {
+      return null;
+    }
+
+    const timeMatch = /^(\d{1,2}):(\d{2})\s?(AM|PM)$/i.exec(startTime);
+
+    if (!timeMatch) {
+      return null;
+    }
+
+    let hours = Number(timeMatch[1]);
+    const minutes = Number(timeMatch[2]);
+    const meridiem = timeMatch[3].toUpperCase();
+
+    if (meridiem === 'PM' && hours !== 12) {
+      hours += 12;
+    }
+
+    if (meridiem === 'AM' && hours === 12) {
+      hours = 0;
+    }
+
+    return new Date(year, month - 1, day, hours, minutes, 0, 0);
   }
 
   private hasHealthRecordChanges(): boolean {
