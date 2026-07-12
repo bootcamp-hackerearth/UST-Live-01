@@ -1,13 +1,13 @@
 using AutoMapper;
 using HealthApp.API.Events;
 using HealthApp.API.Exceptions;
-using HealthApp.API.Messaging;
 using HealthApp.API.Models;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
 using HealthApp.Shared.Constants;
 using HealthApp.Shared.DTOs;
 using HealthApp.Shared.Enums;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
 using System.Security.Claims;
@@ -20,7 +20,7 @@ public class AppointmentService(
     IDoctorRepository doctorRepository,
     IHttpContextAccessor httpContextAccessor,
     IMapper mapper,
-    IRabbitMQPublisher rabbitMQPublisher,
+    IPublishEndpoint publishEndPoint,
     ILogger<AppointmentService> logger) : IAppointmentService
 {
     private const string AppointmentAccessDeniedMessage =
@@ -306,7 +306,7 @@ public class AppointmentService(
 
         try
         {
-            await rabbitMQPublisher.PublishAsync(new AppointmentBookedEvent
+            await publishEndPoint.Publish(new AppointmentBookedEvent
             {
                 AppointmentId = savedAppointment.AppointmentId,
                 PatientName = patient.PatientName,

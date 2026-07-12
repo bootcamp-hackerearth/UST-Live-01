@@ -9,6 +9,7 @@ using HealthApp.API.Repository.Impl;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Impl;
 using HealthApp.API.Service.Interface;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -166,8 +167,26 @@ try
     builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
     builder.Services.AddScoped<IAdminService, AdminService>();
 
-    builder.Services.AddSingleton<IRabbitMQPublisher, RabbitMQPublisher>();
-    builder.Services.AddHostedService<AppointmentBookedConsumer>();
+    var rabbitmqConfig = builder.Configuration.GetSection("RabbitMq");
+
+    builder.Services.AddMassTransit(x =>
+    {
+        x.AddConsumer<AppointmentBookedConsumer>();
+
+        x.UsingRabbitMq((context, cfg) =>
+        {
+            cfg.Host(rabbitmqConfig["HostName"], rabbitmqConfig["VirtualHost"], h =>
+            {
+                h.Username(rabbitmqConfig["UserName"]!);
+                h.Password(rabbitmqConfig["Password"]!);
+            });
+
+            cfg.ReceiveEndpoint(rabbitmqConfig["AppointmentQueue"]!, e =>
+            {
+                e.ConfigureConsumer<AppointmentBookedConsumer>(context);
+            });
+        });
+    });
 
     builder.Services.AddAutoMapper(cfg =>
     {
