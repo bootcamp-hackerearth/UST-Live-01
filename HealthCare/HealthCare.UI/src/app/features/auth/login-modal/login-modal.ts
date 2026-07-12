@@ -14,7 +14,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class LoginModal {
 
-  @Output('modalClosed') modalClosed = new EventEmitter<void>();
+  @Output() modalClosed = new EventEmitter<void>();
 
   loginForm: FormGroup;
 
