@@ -1,16 +1,17 @@
 ﻿using AutoMapper;
-using HealthCare.Api.Data;
-using Healthcare.Shared.DTOs;
 using Healthcare.Shared.DTOs.Authentication;
 using Healthcare.Shared.DTOs.Doctor;
+using HealthCare.Api.Data;
 using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Implementations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Moq;
-using System.Linq.Expressions;
-using Xunit;
+using System.Text.Json;
 
 namespace HealthCare.Api.Tests
 {
@@ -21,12 +22,16 @@ namespace HealthCare.Api.Tests
         private readonly Mock<IMapper> _mapperMock;
         private readonly HealthCareDbContext _context;
         private readonly DoctorService _service;
+        private readonly Mock<IDistributedCache> _cacheMock;
+        private readonly Mock<ILogger<DoctorService>> _loggerMock;
 
         public DoctorServiceTests()
         {
             _repoMock = new Mock<IDoctorRepository>();
             _appointmentRepoMock = new Mock<IAppointmentRepository>();
             _mapperMock = new Mock<IMapper>();
+            _cacheMock = new Mock<IDistributedCache>();
+           _loggerMock = new Mock<ILogger<DoctorService>>();
 
             var options = new DbContextOptionsBuilder<HealthCareDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -38,7 +43,9 @@ namespace HealthCare.Api.Tests
                 _repoMock.Object,
                 _context,
                 _mapperMock.Object,
-                _appointmentRepoMock.Object
+                _appointmentRepoMock.Object,
+                 _cacheMock.Object, 
+                 _loggerMock.Object
             );
         }
 
@@ -232,6 +239,7 @@ namespace HealthCare.Api.Tests
             Assert.Single(result);
         }
 
+        //create leave with duplicate dates
         [Fact]
         public async Task CreateLeave_ShouldSkipDuplicateDates()
         {
@@ -299,14 +307,103 @@ namespace HealthCare.Api.Tests
                 .ReturnsAsync(new List<string> { "10" });
 
             var leaves = new List<CreateLeaveDto>
-    {
-        new CreateLeaveDto { LeaveDate = date }
-    };
+           {
+            new CreateLeaveDto { LeaveDate = date }
+           };
 
             await _service.CreateLeave(doctorId, leaves);
 
             _repoMock.Verify(r =>
                 r.CreateLeaves(doctorId, It.IsAny<List<CreateLeaveDto>>()), Times.Once);
         }
+
+        //Get Doctor by leave
+        [Fact]
+        public async Task GetLeavesByDoctorIdAsync_ShouldReturnOrderedLeaves()
+        {
+            var leaves = new List<DoctorLeaves>
+            {
+                new() { LeaveDate = new DateOnly(2025,12,10) },
+                new() { LeaveDate = new DateOnly(2025,12,01) }
+            };
+
+            _repoMock.Setup(r => r.GetLeavesByDoctorId(1)).ReturnsAsync(leaves);
+            var result = await _service.GetLeavesByDoctorIdAsync(1);
+
+            Assert.Equal(2, result.Count);
+            Assert.True(result[0].LeaveDate < result[1].LeaveDate);
+        }
+
+        //Profile
+        [Fact]
+        public async Task GetMyProfileAsync_ShouldReturnDoctor()
+        {
+            var user = new IdentityUser{Id = "u1",Email = "doctor@test.com"}; 
+
+            var doctor = new Doctor
+            {
+                DoctorId = 1,
+                UserId = "u1",
+                FullName = "Doctor",
+                Specialisation = "Cardiology"
+            };
+
+            _context.Users.Add(user);
+            _context.Doctors.Add(doctor);
+            await _context.SaveChangesAsync();
+
+            var result = await _service.GetMyProfileAsync(1);
+
+            Assert.NotNull(result);
+            Assert.Equal("doctor@test.com", result.Email);
+        }
+
+        //Profile Not Found
+        [Fact]
+        public async Task GetMyProfileAsync_ShouldThrow_WhenDoctorNotFound()
+        {
+            await Assert.ThrowsAsync<DoctorNotFoundException>(
+                () => _service.GetMyProfileAsync(999));
+        }
+
+        //Available Doctors with Cache
+        [Fact]
+        public async Task AvailableDoctors_ShouldReturnFromCache_WhenCacheExists()
+        {
+            var doctors = new List<DoctorListDto>
+            {
+                new DoctorListDto { FullName = "Dr. A" }
+            };
+
+            var cachedData = JsonSerializer.Serialize(doctors);
+            _cacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(System.Text.Encoding.UTF8.GetBytes(cachedData));
+
+            var result = await _service.AvailableDoctors("Cardiology",DateOnly.FromDateTime(DateTime.Today));
+            Assert.Single(result);
+
+            _repoMock.Verify(r =>r.AvailableDoctors(It.IsAny<string>(), It.IsAny<DateOnly>()),Times.Never);
+        }
+
+
+        //Available Doctors with Cache Miss
+        [Fact]
+        public async Task AvailableDoctors_ShouldLoadFromRepository_WhenCacheMiss()
+        {
+            var doctors = new List<DoctorListDto>
+            {
+                new DoctorListDto { FullName = "Dr. A" }
+            };
+
+            _cacheMock.Setup(c => c.GetAsync(It.IsAny<string>(),default)).ReturnsAsync((byte[]?)null);
+
+            _repoMock.Setup(r =>r.AvailableDoctors("Cardiology", It.IsAny<DateOnly>())).ReturnsAsync(doctors);
+
+            var result = await _service.AvailableDoctors("Cardiology",DateOnly.FromDateTime(DateTime.Today));
+
+            Assert.Single(result);
+
+            _repoMock.Verify(r =>r.AvailableDoctors("Cardiology", It.IsAny<DateOnly>()),Times.Once);
+        }
+
     }
 }

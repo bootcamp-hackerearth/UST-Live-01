@@ -153,7 +153,9 @@ private formatDateForApi(value: string | Date): string {
 
 private parseSlotToMinutes(slot: string): number {
   const normalized = slot.trim().toUpperCase();
-  const match = normalized.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/);
+
+  const regex = /^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/;
+  const match = regex.exec(normalized);
 
   if (!match) {
     return Number.MAX_SAFE_INTEGER;
@@ -165,9 +167,7 @@ private parseSlotToMinutes(slot: string): number {
 
   if (suffix === 'PM' && hours < 12) {
     hours += 12;
-  }
-
-  if (suffix === 'AM' && hours === 12) {
+  } else if (suffix === 'AM' && hours === 12) {
     hours = 0;
   }
 

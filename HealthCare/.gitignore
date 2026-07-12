@@ -4,12 +4,15 @@
 # Build folders
 bin/
 obj/
+target/
+build/
+dist/
 
 # Sonar
 .sonarqube/
-sonar-project.properties
-.coverage
-coverage.xml
+run-sonar.bat
+TestResults/
+
 
 # User-specific files
 *.user

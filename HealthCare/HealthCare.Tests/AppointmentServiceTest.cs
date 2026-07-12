@@ -1,17 +1,19 @@
-﻿using Xunit;
-using Moq;
-using AutoMapper;
-using HealthCare.Api.Models;
-using HealthCare.Api.Data;
-using HealthCare.Api.Services.Implementations;
-using HealthCare.Api.Repositories.Interfaces;
-using HealthCare.Api.Services.Interfaces;
+﻿using AutoMapper;
 using Healthcare.Shared.DTOs;
 using Healthcare.Shared.DTOs.Appointments;
+using Healthcare.Shared.Events;
+using HealthCare.Api.Data;
 using HealthCare.Api.Exceptions;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+using HealthCare.Api.Models;
+using HealthCare.Api.Repositories.Interfaces;
+using HealthCare.Api.Services.Implementations;
+using HealthCare.Api.Services.Interfaces;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
+using Moq;
+using System.Linq.Expressions;
 
 namespace HealthCare.Api.Tests
 {
@@ -23,6 +25,8 @@ namespace HealthCare.Api.Tests
         private readonly Mock<IPublishEndpoint> _publishEndpointMock;
         private readonly HealthCareDbContext _context;
         private readonly AppointmentService _service;
+        private readonly Mock<ILogger<AppointmentService>> _loggerMock;
+        private readonly Mock<IDistributedCache> _cacheMock;
 
         public AppointmentServiceTests()
         {
@@ -30,6 +34,8 @@ namespace HealthCare.Api.Tests
             _doctorServiceMock = new Mock<IDoctorService>();
             _mapperMock = new Mock<IMapper>();
             _publishEndpointMock = new Mock<IPublishEndpoint>();
+            _loggerMock = new Mock<ILogger<AppointmentService>>();
+            _cacheMock = new Mock<IDistributedCache>();
 
             var options = new DbContextOptionsBuilder<HealthCareDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -42,7 +48,9 @@ namespace HealthCare.Api.Tests
                 _doctorServiceMock.Object,
                 _context,
                 _mapperMock.Object,
-                _publishEndpointMock.Object
+                _publishEndpointMock.Object,
+                _loggerMock.Object,
+                _cacheMock.Object
             );
         }
 
@@ -50,14 +58,28 @@ namespace HealthCare.Api.Tests
         [Fact]
         public async Task AddAsync_ShouldAddAppointment()
         {
+            var patient = new Patient{ UserId="1",PatientId = 1,FullName = "Test Patient", Gender = "Male" };
+            var doctor = new Doctor{ UserId="as", DoctorId = 1, FullName = "Test Doctor",Specialisation = "Cardiology"};
+            _context.Patients.Add(patient);
+            _context.Doctors.Add(doctor);
+            await _context.SaveChangesAsync();
+
             var dto = new CreateAppointmentDto();
-            var appointment = new Appointment();
+            var appointment = new Appointment
+            {
+                DoctorId = 1,
+                Doctor = doctor,
+                ScheduledDate = DateOnly.FromDateTime(DateTime.Today),
+                TimeSlot = "10:00"
+            };
 
             _mapperMock.Setup(m => m.Map<Appointment>(dto)).Returns(appointment);
-
             await _service.AddAsync(dto, 1);
 
             _repoMock.Verify(r => r.AddAsync(appointment), Times.Once);
+            _publishEndpointMock.Verify( p => p.Publish(It.IsAny<AppointmentBookedEvent>(),default),Times.Once);
+
+            _cacheMock.Verify(c => c.RemoveAsync(It.IsAny<string>(),default),Times.Once);
         }
 
         //  Update
@@ -77,11 +99,8 @@ namespace HealthCare.Api.Tests
         [Fact]
         public async Task UpdateAsync_ShouldThrow_WhenNotFound()
         {
-            _repoMock.Setup(r => r.GetProfileAsync(1))
-                .ReturnsAsync((Appointment?)null);
-
-            await Assert.ThrowsAsync<AppointmentNotFoundException>(() =>
-                _service.UpdateAsync(1, new UpdateAppointmentDto()));
+            _repoMock.Setup(r => r.GetProfileAsync(1)).ReturnsAsync((Appointment?)null);
+            await Assert.ThrowsAsync<AppointmentNotFoundException>(() =>_service.UpdateAsync(1, new UpdateAppointmentDto()));
         }
 
         //  Delete
@@ -123,6 +142,16 @@ namespace HealthCare.Api.Tests
             Assert.NotNull(result);
         }
 
+        [Fact]
+        public async Task GetByIdAsync_ShouldReturnNull_WhenNotFound()
+        {
+            _repoMock.Setup(r => r.GetProfileAsync(1)).ReturnsAsync((Appointment?)null);
+
+            var result = await _service.GetByIdAsync(1);
+
+            Assert.Null(result);
+        }
+
         //  GetAll
         [Fact]
         public async Task GetAllAsync_ShouldReturnPagedAppointments()
@@ -157,7 +186,11 @@ namespace HealthCare.Api.Tests
         [Fact]
         public async Task UpdateStatusAsync_ShouldUpdateStatus()
         {
-            var appointment = new Appointment();
+            var appointment = new Appointment
+            {
+                ScheduledDate = DateOnly.FromDateTime(DateTime.Today),
+                Doctor = new Doctor { Specialisation = "Cardiology" }
+            };
 
             _repoMock.Setup(r => r.GetProfileAsync(1)).ReturnsAsync(appointment);
 
@@ -222,17 +255,20 @@ namespace HealthCare.Api.Tests
                 _service.IsAvailable(DateOnly.FromDateTime(DateTime.Today), 1, "10"));
         }
 
-        //  GetDailyReport
-        //[Fact]
-        //public async Task GetDailyReport_ShouldReturnEmpty_WhenNoData()
-        //{
-        //    _repoMock.Setup(r => r.GetDailyReport())
-        //        .ReturnsAsync(new List<AppointmentReportDto>());
+        //Daily Report
+        [Fact]
+        public async Task GetDailyReport_ShouldReturnData()
+        {
+            var report = new List<AppointmentReportDto>
+            {
+                new AppointmentReportDto()
+            };
 
-        //    var result = await _service.GetDailyReport();
+            _repoMock.Setup(r =>r.GetDailyReport(It.IsAny<DateOnly>(), It.IsAny<DateOnly>())).ReturnsAsync(report);
 
-        //    Assert.Empty(result);
-        //}
+            var result = await _service.GetDailyReport(DateOnly.FromDateTime(DateTime.Today),DateOnly.FromDateTime(DateTime.Today));
+            Assert.Single(result);
+        }
 
         //Get Doctor Schedule
         [Fact]

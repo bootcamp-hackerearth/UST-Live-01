@@ -38,6 +38,7 @@ namespace HealthCare.Api.Services.Implementations
             var doctor = _mapper.Map<Doctor>(dto);
             await _repository.AddAsync(doctor);
             await _context.SaveChangesAsync();
+            await InvalidateAvailabilityCache(doctor.Specialisation, DateOnly.FromDateTime(DateTime.Today));
         }
 
         public async Task UpdateAsync(int id, UpdateDoctorDto dto)
@@ -49,6 +50,7 @@ namespace HealthCare.Api.Services.Implementations
 
             await _repository.UpdateAsync(doctor);
             await _context.SaveChangesAsync();
+
         }
 
         public async Task DeleteAsync(int id)
@@ -121,6 +123,7 @@ namespace HealthCare.Api.Services.Implementations
 
             await _repository.UpdateAsync(doctor);
             await _context.SaveChangesAsync();
+            await InvalidateAvailabilityCache(doctor.Specialisation, DateOnly.FromDateTime(DateTime.Today));
         }
 
         public async Task<List<string>> GetSlots(int doctorId)
@@ -236,17 +239,18 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task<List<DoctorListDto>> AvailableDoctors(string specialisation, DateOnly date)
         {
-            var cachedKey = $"doctor-availablity:{specialisation}_{date.ToString("yyyy-MM-dd")}";
+            var cachedKey = $"doctor-availability:{specialisation}:{date.ToString("yyyy-MM-dd")}";
             var cachedData = await _cache.GetStringAsync(cachedKey);
 
             if (!string.IsNullOrEmpty(cachedData))
             {
-                _logger.LogInformation("CACHE HIT: {CacheKey}", cachedKey);
-                _logger.LogInformation("###############################\n");
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("CACHE HIT: {CacheKey}", cachedKey);
+
                 return JsonSerializer.Deserialize<List<DoctorListDto>>(cachedData)!;
             }
-            _logger.LogInformation("CACHE MISS: {CacheKey}", cachedKey);
-            _logger.LogInformation("##################################\n");
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("CACHE MISS: {CacheKey}", cachedKey);
 
             var doctors= await _repository.AvailableDoctors(specialisation, date);
 
@@ -254,8 +258,8 @@ namespace HealthCare.Api.Services.Implementations
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
             });
-            _logger.LogInformation("CACHE SET: {CacheKey}", cachedKey);
-            _logger.LogInformation("#################################\n");
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("CACHE SET: {CacheKey}", cachedKey);
 
             return doctors;
         }

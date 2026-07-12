@@ -5,7 +5,6 @@ using HealthCare.Api.Middleware;
 using HealthCare.Api.Options;
 using HealthCare.Api.Repositories.Implementations;
 using HealthCare.Api.Repositories.Interfaces;
-using HealthCare.Api.Services;
 using HealthCare.Api.Services.Implementations;
 using HealthCare.Api.Services.Interfaces;
 using MassTransit;
@@ -43,7 +42,7 @@ namespace HealthCare.Api
             {
                 Log.Information("Starting HealthCare API");
 
-                // Configure MassTransit
+                // Configure MassTransit reg using IBus
                 builder.Services.AddMassTransit(x =>
                 {
                     // Register the AppointmentBookedConsumer
@@ -80,9 +79,6 @@ namespace HealthCare.Api
                 {
                     cfg.AddProfile<MappingProfile>();
                 });
-
-                //Hosted Servive
-                builder.Services.AddHostedService<NotificationCleanupService>();
            
                 //Exception Handler
                 builder.Services.AddProblemDetails();
@@ -231,7 +227,7 @@ namespace HealthCare.Api
             }
             finally
             {
-                Log.CloseAndFlush();
+                await Log.CloseAndFlushAsync();
             }
         }
     }

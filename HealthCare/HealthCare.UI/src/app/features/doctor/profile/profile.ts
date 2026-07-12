@@ -22,7 +22,7 @@ export class DoctorProfileComponent implements OnInit {
   loading = signal(true);
 
   constructor(
-    private doctorService: DoctorService
+    private readonly doctorService: DoctorService
   ) {}
 
   ngOnInit(): void {

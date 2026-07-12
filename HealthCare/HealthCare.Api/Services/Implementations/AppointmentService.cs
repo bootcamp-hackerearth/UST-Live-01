@@ -54,11 +54,8 @@ namespace HealthCare.Api.Services.Implementations
 
             await _context.SaveChangesAsync();
             await InvalidateAvailabilityCache(appointment.Doctor.Specialisation, appointment.ScheduledDate);
-            _logger.LogInformation("****************** DATABASE *******************\n");
-            _logger.LogInformation("Appointment created. AppointmentId={AppointmentId}, PatientId={PatientId}, DoctorId={DoctorId}",appointment.AppointmentId,patientId, appointment.DoctorId);
-            _logger.LogInformation("***********************************************\n");
-
-
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Appointment created. AppointmentId={AppointmentId}, PatientId={PatientId}, DoctorId={DoctorId}",appointment.AppointmentId,patientId, appointment.DoctorId);
 
             // Publish AppointmentBookedEvent
             try
@@ -101,9 +98,8 @@ namespace HealthCare.Api.Services.Implementations
 
             await _repository.UpdateAsync(appointment);
             await _context.SaveChangesAsync();
-            _logger.LogInformation("****************** DATABASE *******************\n");
-            _logger.LogInformation("Appointment {AppointmentId} updated", appointment.AppointmentId);
-            _logger.LogInformation("***********************************************\n");
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Appointment {AppointmentId} updated", appointment.AppointmentId);
         }
 
         public async Task DeleteAsync(int id)
@@ -114,9 +110,7 @@ namespace HealthCare.Api.Services.Implementations
                 throw new AppointmentNotFoundException(id);
             await _repository.DeleteAsync(id);
             await _context.SaveChangesAsync();
-            _logger.LogInformation("****************** DATABASE *******************\n");
             _logger.LogWarning("Appointment {AppointmentId} cancelled",appointment.AppointmentId);
-            _logger.LogInformation("***********************************************\n");
         }
 
         public async Task<AppointmentListDto?> GetByIdAsync(int id)
@@ -124,7 +118,6 @@ namespace HealthCare.Api.Services.Implementations
             var appointment = await _repository.GetProfileAsync(id);
             return appointment == null ? null : _mapper.Map<AppointmentListDto?>(appointment);
         }
-
         public async Task<PagedResult<AppointmentListDto>> GetAllAsync(AppointmentFilter filter)
         {
             // Build predicate (filtering)
@@ -241,6 +234,8 @@ namespace HealthCare.Api.Services.Implementations
         {
             await _repository.CancelAppointmentsByDoctorDate(doctorId, date);
             await _context.SaveChangesAsync();
+
+
         }
 
         public async Task<AppointmentSummaryDto> GetSummaryAsync()
@@ -250,7 +245,7 @@ namespace HealthCare.Api.Services.Implementations
 
             var totalAppointments = await _context.Appointments.CountAsync();
 
-            var pending = await _context.Appointments.CountAsync(a => a.Status == "Pending");
+            var pending   = await _context.Appointments.CountAsync(a => a.Status == "Pending");
             var confirmed = await _context.Appointments.CountAsync(a => a.Status == "Confirmed");
             var completed = await _context.Appointments.CountAsync(a => a.Status == "Completed");
             var cancelled = await _context.Appointments.CountAsync(a => a.Status == "Cancelled");
