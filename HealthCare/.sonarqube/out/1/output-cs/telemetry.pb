@@ -1,1 +1,0 @@
-wR`C:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\HealthCareAdmin.UI.csproj¢net10.0òCSharp14

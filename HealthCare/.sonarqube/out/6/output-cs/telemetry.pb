@@ -1,1 +1,0 @@
-sR\C:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCare.Tests\HealthCare.Tests.csproj¢net10.0òCSharp14
