@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup,ReactiveFormsModule,Validators} from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { AppointmentService } from '../../../core/services/appointment.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-book-appointment',
@@ -11,11 +12,11 @@ import { AppointmentService } from '../../../core/services/appointment.service';
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './book-appointment.html'
 })
-export class BookAppointmentComponent {
+export class BookAppointmentComponent implements OnInit,OnDestroy {
 
-  
+  private readonly destroy$ = new Subject<void>();
   ngOnInit() {
-    this.form.get('doctorId')?.valueChanges.subscribe(value => {
+    this.form.get('doctorId')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(value => {
 
     if (value) {
       this.loadSlots();
@@ -24,13 +25,10 @@ export class BookAppointmentComponent {
 
   }
 
-  @Output() close = new EventEmitter<void>();
-
+  @Output() appointmentClosed = new EventEmitter<void>();
   form: FormGroup;
-
   doctors: any[] = [];
   slots: string[] = [];
-
   showSuccessPopup = false;
   isLoading = false;
 
@@ -62,6 +60,10 @@ export class BookAppointmentComponent {
   this.form.get('doctorId')?.disable();
   this.form.get('timeSlot')?.disable();
 
+  }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
  loadDoctors() {
@@ -131,7 +133,7 @@ loadSlots() {
     this.isLoading = false;
     this.toastr.success('Appointment booked successfully','Success');
      setTimeout(() => {
-     this.close.emit(); 
+     this.appointmentClosed.emit(); 
       }, 2000);
     },
 

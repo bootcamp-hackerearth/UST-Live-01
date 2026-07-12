@@ -14,7 +14,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class LoginModal {
 
-  @Output() close = new EventEmitter<void>();
+  @Output('modalClosed') modalClosed = new EventEmitter<void>();
 
   loginForm: FormGroup;
 
@@ -59,7 +59,7 @@ export class LoginModal {
 
           const role = this.authService.getRole();
 
-          this.close.emit();
+          this.modalClosed.emit();
 
           if (role === 'Patient') {
 
@@ -110,7 +110,7 @@ export class LoginModal {
   }
 
   closeModal(): void {
-    this.close.emit();
+    this.modalClosed.emit();
   }
 
   get email() {

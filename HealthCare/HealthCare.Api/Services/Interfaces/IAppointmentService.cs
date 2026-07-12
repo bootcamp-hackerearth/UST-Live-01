@@ -5,7 +5,7 @@ namespace HealthCare.Api.Services.Interfaces
 {
     public interface IAppointmentService
     {
-        Task AddAsync(CreateAppointmentDto dto,int id);
+        Task AddAsync(CreateAppointmentDto dto,int patientId);
 
         Task DeleteAsync(int id);
         Task UpdateAsync(int id,UpdateAppointmentDto dto);

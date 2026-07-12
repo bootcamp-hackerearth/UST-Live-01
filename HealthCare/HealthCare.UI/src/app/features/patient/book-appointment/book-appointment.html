@@ -11,7 +11,7 @@
       </h2>
 
       <button
-        (click)="close.emit()"
+        (click)="appointmentClosed.emit()"
         class="text-gray-400 hover:text-red-500 text-xl">
         ✕
       </button>
@@ -111,7 +111,7 @@
 
           <button
             type="button"
-            (click)="close.emit()"
+            (click)="appointmentClosed.emit()"
             class="px-4 py-2 rounded-lg border text-gray-600 hover:bg-gray-100">
             Cancel
           </button>

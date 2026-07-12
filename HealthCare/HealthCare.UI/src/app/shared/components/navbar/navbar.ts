@@ -1,15 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
-  standalone: true,
-  imports: [RouterLink], 
+  standalone: true, 
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
 
   showLogoutConfirm = false;
   role: string | null = null;
@@ -19,7 +18,7 @@ export class NavbarComponent {
     private router: Router
   ) {}
 
-  ngOnInit() {
+  ngOnInit():void {
     this.role = this.authService.getRole();
   }
 

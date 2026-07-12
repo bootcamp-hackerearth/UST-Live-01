@@ -5,6 +5,7 @@ import { NavbarComponent } from '../../components/navbar/navbar';
 import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 
+
 @Component({
   selector: 'app-patient-layout',
   standalone: true,

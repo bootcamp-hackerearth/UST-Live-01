@@ -13,7 +13,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class RegisterModal {
 
-  @Output() close = new EventEmitter<void>();
+  @Output() registerModalClosed = new EventEmitter<void>();
 
   registerForm: FormGroup;
 
@@ -97,7 +97,7 @@ export class RegisterModal {
 
         this.isLoading = false; //  stop loading
         this.toastr.success('Patient registered successfully','Success ');
-        this.close.emit();
+        this.registerModalClosed.emit();
 
       
       },
@@ -137,7 +137,7 @@ export class RegisterModal {
 }
 
   closeModal() {
-    this.close.emit();
+    this.registerModalClosed.emit();
   }
 
   get f() {

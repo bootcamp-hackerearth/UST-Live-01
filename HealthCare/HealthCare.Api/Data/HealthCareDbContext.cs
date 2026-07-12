@@ -20,77 +20,76 @@ namespace HealthCare.Api.Data
         public DbSet<AvailableSlots> AvailableSlots => Set<AvailableSlots>();
         public DbSet<Notification> Notifications { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder.Entity<Appointment>()
+            builder.Entity<Appointment>()
             .HasIndex(a => new { a.DoctorId, a.ScheduledDate, a.TimeSlot })
                 .IsUnique()
                 .HasFilter("[Status] != 'Cancelled'")
                 .HasDatabaseName("UQ_Appointments_Doctor_Date_Slot");
 
 
-            modelBuilder.Entity<Appointment>()
+            builder.Entity<Appointment>()
                 .HasIndex(a => new { a.DoctorId, a.ScheduledDate })
                 .HasDatabaseName("IX_Appointments_Doctor_Date");
 
-            modelBuilder.Entity<Appointment>()
+            builder.Entity<Appointment>()
                 .HasIndex(a => new { a.PatientId, a.ScheduledDate })
                 .HasDatabaseName("IX_Appointments_Patient_Date");
 
-            modelBuilder.Entity<HealthRecord>()
+            builder.Entity<HealthRecord>()
                  .HasIndex(hr => new { hr.PatientId, hr.VisitDate })
                  .HasDatabaseName("IX_HealthRecords_Patient_VisitDate");
 
 
-            modelBuilder.Entity<Doctor>()
+            builder.Entity<Doctor>()
                 .HasIndex(d => new { d.Specialisation, d.IsActive })
                 .HasDatabaseName("IX_Doctors_Specialisation_IsActive");
 
-            modelBuilder.Entity<DoctorLeaves>()
+            builder.Entity<DoctorLeaves>()
                 .HasIndex(l => new { l.DoctorId, l.LeaveDate })
                 .HasDatabaseName("IX_Leaves_Doctor_Date");
 
-
-            modelBuilder.Entity<Patient>()
+            builder.Entity<Patient>()
                 .HasOne(p => p.User)
                 .WithOne(u => u.Patient)
                 .HasForeignKey<Patient>(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
-            modelBuilder.Entity<Doctor>()
+            builder.Entity<Doctor>()
                .HasOne(d => d.User)
                .WithOne()
                .HasForeignKey<Doctor>(d => d.UserId)
                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Appointment>()
+            builder.Entity<Appointment>()
                 .HasOne(a => a.Patient)
                 .WithMany(p => p.Appointments)
                 .HasForeignKey(a => a.PatientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Appointment>()
+            builder.Entity<Appointment>()
                 .HasOne(a => a.Doctor)
                 .WithMany(d => d.Appointments)
                 .HasForeignKey(a => a.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<HealthRecord>()
+            builder.Entity<HealthRecord>()
                 .HasOne(hr => hr.Appointment)
                 .WithOne(a => a.HealthRecord)
                 .HasForeignKey<HealthRecord>(hr => hr.AppointmentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<HealthRecord>()
+            builder.Entity<HealthRecord>()
                 .HasOne(hr => hr.Patient)
                 .WithMany(p => p.HealthRecords)
                 .HasForeignKey(hr => hr.PatientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<HealthRecord>()
+            builder.Entity<HealthRecord>()
                 .HasOne(hr => hr.Doctor)
                 .WithMany(d => d.HealthRecords)
                 .HasForeignKey(hr => hr.DoctorId)
