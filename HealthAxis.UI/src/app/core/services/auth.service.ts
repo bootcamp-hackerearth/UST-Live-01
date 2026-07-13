@@ -1,7 +1,15 @@
 import { computed, Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, Observable, tap, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  map,
+  Observable,
+  of,
+  tap,
+  throwError
+} from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
@@ -56,7 +64,7 @@ export class AuthService {
   readonly role$: Observable<UserRole> = this.roleSubject.asObservable();
 
   readonly isLoggedIn$: Observable<boolean> = this.token$.pipe(
-    map((token) => Boolean(token) && !this.isTokenExpired(token ?? ''))
+    map((token) => Boolean(token) && this.hasRefreshToken())
   );
 
   private readonly tokenSignal = signal<string | null>(
@@ -67,15 +75,9 @@ export class AuthService {
     this.normalizeRole(localStorage.getItem(this.roleKey) ?? '')
   );
 
-  readonly isLoggedIn = computed(() => {
-    const token = this.tokenSignal();
-
-    if (!token) {
-      return false;
-    }
-
-    return !this.isTokenExpired(token);
-  });
+  readonly isLoggedIn = computed(() =>
+    Boolean(this.tokenSignal()) && this.hasRefreshToken()
+  );
 
   login(data: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.authUrl}/login`, data).pipe(
@@ -93,31 +95,59 @@ export class AuthService {
     return this.http.post<object>(`${this.authUrl}/register`, data);
   }
 
-refreshToken(): Observable<RefreshTokenResponse> {
-  const accessToken = localStorage.getItem(this.accessTokenKey);
-  const refreshToken = localStorage.getItem(this.refreshTokenKey);
+  refreshToken(): Observable<RefreshTokenResponse> {
+    const accessToken = localStorage.getItem(this.accessTokenKey);
+    const refreshToken = localStorage.getItem(this.refreshTokenKey);
 
-  if (!accessToken || !refreshToken) {
-    return throwError(() => new Error('Refresh token details not available.'));
+    if (!accessToken || !refreshToken) {
+      return throwError(
+        () => new Error('Refresh token details not available.')
+      );
+    }
+
+    const request: RefreshTokenRequest = {
+      accessToken,
+      refreshToken
+    };
+
+    return this.http
+      .post<RefreshTokenResponse>(`${this.authUrl}/refresh-token`, request)
+      .pipe(
+        tap((response) => {
+          this.storeAuthData(
+            response.accessToken,
+            response.refreshToken,
+            response.expiresIn
+          );
+        })
+      );
   }
 
-  const request: RefreshTokenRequest = {
-    accessToken,
-    refreshToken
-  };
+  ensureAuthenticated(): Observable<boolean> {
+    const accessToken = localStorage.getItem(this.accessTokenKey);
 
-  return this.http
-    .post<RefreshTokenResponse>(`${this.authUrl}/refresh-token`, request)
-    .pipe(
-      tap((response) => {
-        this.storeAuthData(
-          response.accessToken,
-          response.refreshToken,
-          response.expiresIn
-        );
+    if (!accessToken) {
+      this.clearSession();
+      return of(false);
+    }
+
+    if (!this.isTokenExpired(accessToken)) {
+      return of(true);
+    }
+
+    if (!this.hasRefreshToken()) {
+      this.clearSession();
+      return of(false);
+    }
+
+    return this.refreshToken().pipe(
+      map(() => true),
+      catchError(() => {
+        this.clearSession();
+        return of(false);
       })
     );
-}
+  }
 
   changePassword(data: ChangePasswordRequest): Observable<object> {
     return this.http.post<object>(`${this.authUrl}/change-password`, data);
@@ -127,15 +157,23 @@ refreshToken(): Observable<RefreshTokenResponse> {
     this.clearAuthData();
     void this.router.navigate(['/login']);
   }
+
   clearSession(): void {
-  this.clearAuthData();
-}
+    this.clearAuthData();
+  }
+
   getToken(): string | null {
     return this.tokenSignal();
   }
 
   getRole(): UserRole {
     return this.role();
+  }
+
+  hasValidAccessToken(): boolean {
+    const accessToken = localStorage.getItem(this.accessTokenKey);
+
+    return Boolean(accessToken) && !this.isTokenExpired(accessToken ?? '');
   }
 
   redirectByRole(): void {
@@ -183,7 +221,8 @@ refreshToken(): Observable<RefreshTokenResponse> {
       email
     });
 
-    globalThis.location.href = `${adminBaseUrl}/external-login#${fragment.toString()}`;
+    globalThis.location.href =
+      `${adminBaseUrl}/external-login#${fragment.toString()}`;
   }
 
   private storeAuthData(
@@ -202,7 +241,10 @@ refreshToken(): Observable<RefreshTokenResponse> {
     localStorage.setItem(this.refreshTokenKey, refreshToken);
     localStorage.setItem(this.roleKey, userRole);
     localStorage.setItem(this.expiresAtKey, expiresAt);
-    localStorage.setItem(this.expiresInMinutesKey, expiresInMinutes.toString());
+    localStorage.setItem(
+      this.expiresInMinutesKey,
+      expiresInMinutes.toString()
+    );
 
     this.tokenSignal.set(accessToken);
     this.role.set(userRole);
@@ -226,6 +268,10 @@ refreshToken(): Observable<RefreshTokenResponse> {
 
     this.tokenSubject.next(null);
     this.roleSubject.next('');
+  }
+
+  private hasRefreshToken(): boolean {
+    return Boolean(localStorage.getItem(this.refreshTokenKey));
   }
 
   private getExpiryDateTime(expiresInMinutes: number): string {

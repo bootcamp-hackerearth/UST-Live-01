@@ -450,7 +450,7 @@ namespace HealthAxis.API.Controller
         }
 
         private void NormalizeCancellationReason(
-            UpdateAppointmentStatusDto statusDto)
+      UpdateAppointmentStatusDto statusDto)
         {
             if (statusDto.Status != AppointmentStatus.Cancelled)
             {
@@ -458,23 +458,33 @@ namespace HealthAxis.API.Controller
                 return;
             }
 
-            if (!string.IsNullOrWhiteSpace(statusDto.CancellationReason))
+            var reason = string.IsNullOrWhiteSpace(statusDto.CancellationReason)
+                ? string.Empty
+                : statusDto.CancellationReason.Trim();
+
+            if (User.IsInRole("Patient"))
             {
-                statusDto.CancellationReason =
-                    statusDto.CancellationReason.Trim();
+                statusDto.CancellationReason = string.IsNullOrWhiteSpace(reason)
+                    ? "Cancelled by patient."
+                    : $"Cancelled by patient. Reason: {reason}";
 
                 return;
             }
 
-            if (User.IsInRole("Patient"))
+            if (User.IsInRole("Doctor"))
             {
-                statusDto.CancellationReason = "Cancelled by patient.";
+                statusDto.CancellationReason = string.IsNullOrWhiteSpace(reason)
+                    ? "Cancelled by doctor."
+                    : $"Cancelled by doctor. Reason: {reason}";
+
                 return;
             }
 
             if (User.IsInRole("Admin"))
             {
-                statusDto.CancellationReason = "Cancelled by admin.";
+                statusDto.CancellationReason = string.IsNullOrWhiteSpace(reason)
+                    ? "Cancelled by admin."
+                    : $"Cancelled by admin. Reason: {reason}";
             }
         }
     }

@@ -5,8 +5,8 @@
 
   <section class="hero-card">
     <div>
-     
       <h1>Welcome back, {{ patient()?.fullName || 'Patient' }}</h1>
+
       <span>
         Book appointments, view health records, and track your hospital visits.
       </span>
@@ -23,7 +23,7 @@
     </div>
 
     <div class="care-card">
-      <span>💙</span>
+      <span class="care-status-icon">HA</span>
       <strong>Care Status</strong>
       <p>Profile active and ready for appointment booking.</p>
     </div>
@@ -31,7 +31,8 @@
 
   <section class="stats-grid">
     <article class="stat-card pending">
-      <span>⏳</span>
+      <span class="stat-label">PE</span>
+
       <div>
         <strong>{{ pendingCount() }}</strong>
         <p>Pending</p>
@@ -39,7 +40,8 @@
     </article>
 
     <article class="stat-card confirmed">
-      <span>📅</span>
+      <span class="stat-label">CO</span>
+
       <div>
         <strong>{{ confirmedCount() }}</strong>
         <p>Confirmed</p>
@@ -47,7 +49,8 @@
     </article>
 
     <article class="stat-card completed">
-      <span>✅</span>
+      <span class="stat-label">CP</span>
+
       <div>
         <strong>{{ completedCount() }}</strong>
         <p>Completed</p>
@@ -55,7 +58,8 @@
     </article>
 
     <article class="stat-card cancelled">
-      <span>❌</span>
+      <span class="stat-label">CA</span>
+
       <div>
         <strong>{{ cancelledCount() }}</strong>
         <p>Cancelled</p>
@@ -94,7 +98,7 @@
         </div>
       } @else {
         <div class="empty-state">
-          <span>📅</span>
+          <span class="empty-state-icon">NA</span>
           <h3>No upcoming appointment</h3>
           <p>Book an appointment with an available doctor.</p>
         </div>
@@ -109,34 +113,34 @@
 
       <div class="quick-actions">
         <a routerLink="/patient/book-appointment">
-          <span>📅</span>
+          <span class="quick-action-code">BA</span>
+
           <div>
             <strong>Book Appointment</strong>
-            
           </div>
         </a>
 
         <a routerLink="/patient/my-appointments">
-          <span>📋</span>
+          <span class="quick-action-code">MA</span>
+
           <div>
             <strong>My Appointments</strong>
-            
           </div>
         </a>
 
         <a routerLink="/patient/health-records">
-          <span>🧾</span>
+          <span class="quick-action-code">HR</span>
+
           <div>
             <strong>Health Records</strong>
-            
           </div>
         </a>
 
         <a routerLink="/patient/profile">
-          <span>👤</span>
+          <span class="quick-action-code">PR</span>
+
           <div>
             <strong>My Profile</strong>
-            
           </div>
         </a>
       </div>

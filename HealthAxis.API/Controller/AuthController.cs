@@ -1,7 +1,7 @@
-﻿using HealthAxis.Shared.DTO.AuthDtos;
-using HealthAxis.Shared.DTO.DoctorDtos;
-using HealthAxis.API.Models;
+﻿using HealthAxis.API.Models;
 using HealthAxis.API.Services.Interfaces;
+using HealthAxis.Shared.DTO.AuthDtos;
+using HealthAxis.Shared.DTO.DoctorDtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,6 +12,8 @@ namespace HealthAxis.API.Controller
     [ApiController]
     public class AuthController(IAuthService service) : ControllerBase
     {
+        private const string InvalidToken = "Invalid token";
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto request)
         {
@@ -109,11 +111,37 @@ namespace HealthAxis.API.Controller
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid token"
+                    message = InvalidToken
                 });
             }
 
             var result = await service.ChangePassword(userId, request);
+
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, new
+                {
+                    message = result.Message
+                });
+            }
+
+            return Ok(new
+            {
+                message = result.Message
+            });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("admin/reset-password")]
+        public async Task<IActionResult> AdminResetPassword(
+            [FromBody] AdminResetPasswordDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await service.AdminResetPassword(request);
 
             if (!result.Success)
             {

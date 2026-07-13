@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HealthAxis.Shared.Utilities;
+using System.ComponentModel.DataAnnotations;
 
 namespace HealthAxis.Shared.DTO.AdminDtos
 {
@@ -6,5 +7,8 @@ namespace HealthAxis.Shared.DTO.AdminDtos
     {
         [Required(ErrorMessage = "Appointment status is required.")]
         public string Status { get; set; } = string.Empty;
+
+        [StringLength(ValidationLimits.CancellationReasonLength)]
+        public string? CancellationReason { get; set; }
     }
 }

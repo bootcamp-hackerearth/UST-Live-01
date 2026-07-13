@@ -13,46 +13,6 @@
     View patient appointments, assigned doctors, appointment date, time and current status.
 </p>
 
-<section class="stats-grid">
-
-    <div class="stat-card">
-        <div class="stat-icon orange">P</div>
-        <div>
-            <p>Pending</p>
-            <h2>@CountByStatus(PendingStatus)</h2>
-            <span>Waiting for confirmation</span>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon blue">C</div>
-        <div>
-            <p>Confirmed</p>
-            <h2>@CountByStatus(ConfirmedStatus)</h2>
-            <span>Scheduled visits</span>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon green">D</div>
-        <div>
-            <p>Completed</p>
-            <h2>@CountByStatus(CompletedStatus)</h2>
-            <span>Finished appointments</span>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon purple">X</div>
-        <div>
-            <p>Cancelled</p>
-            <h2>@CountByStatus(CancelledStatus)</h2>
-            <span>Cancelled bookings</span>
-        </div>
-    </div>
-
-</section>
-
 <section class="doctor-list-card">
 
     <div class="doctor-list-header">
@@ -76,17 +36,17 @@
         </div>
     }
 
-    <div class="user-toolbar">
+    <div class="user-toolbar report-toolbar">
         <div class="doctor-search-box">
             <input type="text"
+                   maxlength="80"
                    placeholder="Search patient, doctor, status..."
                    @bind="searchText"
                    @bind:event="oninput" />
         </div>
 
         <div class="doctor-filter-box">
-            <select class="form-control"
-                    @bind="selectedStatus">
+            <select class="form-control" @bind="selectedStatus">
                 <option value="@AllStatusOption">All Status</option>
                 <option value="@PendingStatus">Pending</option>
                 <option value="@ConfirmedStatus">Confirmed</option>
@@ -116,8 +76,8 @@
     }
     else
     {
-        <div class="table-wrapper">
-            <table class="modern-table">
+        <div class="table-wrapper report-table-wrapper">
+            <table class="modern-table report-table">
                 <thead>
                     <tr>
                         <th>Patient</th>
@@ -315,8 +275,8 @@
     <div class="modal-backdrop-custom">
         <div class="result-dialog">
 
-            <div class="result-icon @(isResultSuccess ? "success-icon" : "error-icon")">
-                @(isResultSuccess ? "✓" : "!")
+            <div class="result-label @(isResultSuccess ? "success-label" : "error-label")">
+                @(isResultSuccess ? "SUCCESS" : "ERROR")
             </div>
 
             <h3>@resultTitle</h3>
@@ -334,12 +294,67 @@
 }
 
 <style>
-    .report-actions {
-        display: flex;
-        justify-content: flex-end;
+    .report-toolbar {
+        display: grid;
+        grid-template-columns: minmax(300px, 1fr) 220px 90px;
+        gap: 16px;
         align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
+    }
+
+    .report-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .report-table {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+        .report-table th:nth-child(1),
+        .report-table td:nth-child(1) {
+            width: 22%;
+        }
+
+        .report-table th:nth-child(2),
+        .report-table td:nth-child(2) {
+            width: 16%;
+        }
+
+        .report-table th:nth-child(3),
+        .report-table td:nth-child(3) {
+            width: 15%;
+        }
+
+        .report-table th:nth-child(4),
+        .report-table td:nth-child(4) {
+            width: 12%;
+        }
+
+        .report-table th:nth-child(5),
+        .report-table td:nth-child(5) {
+            width: 14%;
+        }
+
+        .report-table th:nth-child(6),
+        .report-table td:nth-child(6) {
+            width: 10%;
+        }
+
+        .report-table th:nth-child(7),
+        .report-table td:nth-child(7) {
+            width: 11%;
+        }
+
+        .report-table td {
+            vertical-align: middle;
+        }
+
+    .report-actions {
+        display: grid;
+        gap: 6px;
+        justify-items: stretch;
+        max-width: 96px;
+        margin-left: auto;
     }
 
     .small-view-btn,
@@ -349,8 +364,8 @@
     .small-clear-btn {
         border: none;
         border-radius: 999px;
-        padding: 8px 13px;
-        font-size: 13px;
+        padding: 7px 10px;
+        font-size: 12px;
         font-weight: 900;
         cursor: pointer;
         white-space: nowrap;
@@ -380,26 +395,13 @@
     }
 
     .small-clear-btn {
+        width: 90px !important;
+        height: 46px;
+        padding: 0 14px !important;
         background: rgba(148, 163, 184, 0.18);
         color: #e2e8f0;
         border: 1px solid rgba(148, 163, 184, 0.3);
-    }
-
-    .small-view-btn:hover,
-    .small-confirm-btn:hover,
-    .small-cancel-btn:hover,
-    .small-refresh-btn:hover,
-    .small-clear-btn:hover {
-        transform: translateY(-1px);
-    }
-
-    .small-view-btn:disabled,
-    .small-confirm-btn:disabled,
-    .small-cancel-btn:disabled,
-    .small-refresh-btn:disabled {
-        opacity: 0.65;
-        cursor: not-allowed;
-        transform: none;
+        justify-self: start;
     }
 
     .action-column {
@@ -425,24 +427,23 @@
         box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
     }
 
-    .result-icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
+    .result-label {
+        width: fit-content;
         margin: 0 auto 16px;
-        font-size: 34px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 12px;
         font-weight: 900;
+        letter-spacing: 0.06em;
     }
 
-    .success-icon {
+    .success-label {
         background: rgba(34, 197, 94, 0.18);
         color: #86efac;
         border: 1px solid rgba(34, 197, 94, 0.35);
     }
 
-    .error-icon {
+    .error-label {
         background: rgba(239, 68, 68, 0.18);
         color: #fecaca;
         border: 1px solid rgba(239, 68, 68, 0.35);
@@ -471,16 +472,30 @@
         cursor: pointer;
     }
 
+    @@media (max-width: 1100px) {
+        .report-table {
+            min-width: 980px;
+        }
+    }
+
     @@media (max-width: 900px) {
+        .report-toolbar {
+            grid-template-columns: 1fr;
+        }
+
+        .small-clear-btn {
+            width: 100% !important;
+        }
+
         .report-actions {
-            justify-content: flex-start;
+            max-width: none;
+            margin-left: 0;
         }
 
         .small-view-btn,
         .small-confirm-btn,
         .small-cancel-btn,
-        .small-refresh-btn,
-        .small-clear-btn {
+        .small-refresh-btn {
             width: 100%;
         }
 
@@ -501,8 +516,6 @@
     private const string ConfirmedStatus = "Confirmed";
     private const string CompletedStatus = "Completed";
     private const string CancelledStatus = "Cancelled";
-
-    private readonly List<string> loadErrors = new();
 
     private List<AdminAppointmentDetailDto> reports = new();
 
@@ -538,7 +551,9 @@
                     ContainsIgnoreCase(report.DoctorName, searchText) ||
                     ContainsIgnoreCase(report.Status, searchText) ||
                     ContainsIgnoreCase(report.Specialisation, searchText) ||
-                    report.AppointmentId.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase));
+                    report.AppointmentId.ToString().Contains(
+                        searchText,
+                        StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.Equals(
@@ -582,13 +597,19 @@
     private async Task LoadReportsAsync()
     {
         isLoading = true;
-        loadErrors.Clear();
         message = string.Empty;
 
         try
         {
             reports = await ReportService.GetAppointmentDetailsAsync();
             currentPage = FirstPageNumber;
+        }
+        catch (TaskCanceledException)
+        {
+            reports = new List<AdminAppointmentDetailDto>();
+            ShowInlineMessage(
+                "Appointment reports loading timed out. Please check if HealthAxis.API is running.",
+                false);
         }
         catch (HttpRequestException)
         {
@@ -723,15 +744,6 @@
         }
     }
 
-    private int CountByStatus(string status)
-    {
-        return reports.Count(report =>
-            string.Equals(
-                report.Status,
-                status,
-                StringComparison.OrdinalIgnoreCase));
-    }
-
     private bool IsProcessing(int appointmentId)
     {
         return processingAppointmentId == appointmentId;
@@ -755,7 +767,9 @@
         return name.Trim()[..1].ToUpperInvariant();
     }
 
-    private static string GetSafeText(string? value, string fallback)
+    private static string GetSafeText(
+        string? value,
+        string fallback)
     {
         return string.IsNullOrWhiteSpace(value)
             ? fallback

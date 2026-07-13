@@ -6,6 +6,8 @@ namespace HealthAxis_Admin.Services
 {
     public sealed class AppointmentReportAdminService
     {
+        private const int RequestTimeoutSeconds = 20;
+
         private const string AppointmentDetailsEndpoint =
             "api/admin/reports/appointments/details";
 
@@ -22,8 +24,11 @@ namespace HealthAxis_Admin.Services
 
         public async Task<List<AdminAppointmentDetailDto>> GetAppointmentDetailsAsync()
         {
+            using var cancellationTokenSource = CreateTimeoutToken();
+
             var reports = await _httpClient.GetFromJsonAsync<List<AdminAppointmentDetailDto>>(
-                AppointmentDetailsEndpoint);
+                AppointmentDetailsEndpoint,
+                cancellationTokenSource.Token);
 
             return reports ?? new List<AdminAppointmentDetailDto>();
         }
@@ -34,6 +39,7 @@ namespace HealthAxis_Admin.Services
             return UpdateAppointmentStatusAsync(
                 appointmentId,
                 "Confirmed",
+                null,
                 "Appointment confirmed successfully.");
         }
 
@@ -43,12 +49,14 @@ namespace HealthAxis_Admin.Services
             return UpdateAppointmentStatusAsync(
                 appointmentId,
                 "Cancelled",
+                null,
                 "Appointment cancelled successfully.");
         }
 
         private async Task<(bool Success, string Message)> UpdateAppointmentStatusAsync(
             int appointmentId,
             string status,
+            string? cancellationReason,
             string successMessage)
         {
             if (appointmentId <= 0)
@@ -58,12 +66,16 @@ namespace HealthAxis_Admin.Services
 
             var statusDto = new AdminUpdateAppointmentStatusDto
             {
-                Status = status
+                Status = status,
+                CancellationReason = cancellationReason
             };
+
+            using var cancellationTokenSource = CreateTimeoutToken();
 
             using var response = await _httpClient.PutAsJsonAsync(
                 $"{AppointmentStatusEndpoint}/{appointmentId}/status",
-                statusDto);
+                statusDto,
+                cancellationTokenSource.Token);
 
             if (response.IsSuccessStatusCode)
             {
@@ -73,6 +85,12 @@ namespace HealthAxis_Admin.Services
             var errorMessage = await ReadErrorMessageAsync(response);
 
             return (false, errorMessage);
+        }
+
+        private static CancellationTokenSource CreateTimeoutToken()
+        {
+            return new CancellationTokenSource(
+                TimeSpan.FromSeconds(RequestTimeoutSeconds));
         }
 
         private static async Task<string> ReadErrorMessageAsync(
@@ -89,14 +107,25 @@ namespace HealthAxis_Admin.Services
             {
                 using var document = JsonDocument.Parse(content);
 
-                if (document.RootElement.TryGetProperty("message", out var messageElement))
+                if (document.RootElement.TryGetProperty(
+                        "message",
+                        out var messageElement))
                 {
                     return messageElement.GetString() ?? "Request failed.";
                 }
 
-                if (document.RootElement.TryGetProperty("title", out var titleElement))
+                if (document.RootElement.TryGetProperty(
+                        "title",
+                        out var titleElement))
                 {
                     return titleElement.GetString() ?? "Request failed.";
+                }
+
+                if (document.RootElement.TryGetProperty(
+                        "errors",
+                        out var errorsElement))
+                {
+                    return ReadValidationErrors(errorsElement);
                 }
             }
             catch (JsonException)
@@ -105,6 +134,33 @@ namespace HealthAxis_Admin.Services
             }
 
             return "Request failed.";
+        }
+
+        private static string ReadValidationErrors(JsonElement errorsElement)
+        {
+            var errors = new List<string>();
+
+            foreach (var property in errorsElement.EnumerateObject())
+            {
+                if (property.Value.ValueKind != JsonValueKind.Array)
+                {
+                    continue;
+                }
+
+                foreach (var error in property.Value.EnumerateArray())
+                {
+                    var errorMessage = error.GetString();
+
+                    if (!string.IsNullOrWhiteSpace(errorMessage))
+                    {
+                        errors.Add(errorMessage);
+                    }
+                }
+            }
+
+            return errors.Count == 0
+                ? "Validation failed."
+                : string.Join(" ", errors);
         }
     }
 }

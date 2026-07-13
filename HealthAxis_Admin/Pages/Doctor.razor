@@ -1,12 +1,14 @@
 ﻿@page "/doctors"
 @using Microsoft.AspNetCore.Authorization
+@using HealthAxis.Shared.DTO.AdminDtos
+@using HealthAxis.Shared.DTO.AuthDtos
 @using HealthAxis.Shared.DTO.CommonDtos
 @using HealthAxis.Shared.DTO.DoctorDtos
 @using HealthAxis.Shared.Enums
+@using System.Text.Json
 @attribute [Authorize(Roles = "Admin")]
 @inject DoctorAdminService DoctorService
 @inject NavigationManager NavigationManager
-
 
 <section class="doctor-list-card">
 
@@ -19,7 +21,7 @@
         <button type="button"
                 class="primary-btn register-doctor-main-btn"
                 @onclick="GoToRegisterDoctor">
-            + Register Doctor
+            Register Doctor
         </button>
     </div>
 
@@ -34,6 +36,7 @@
 
         <div class="doctor-search-box">
             <input type="text"
+                   maxlength="80"
                    placeholder="Search by name, email, or specialisation..."
                    @bind="searchText"
                    @bind:event="oninput" />
@@ -64,16 +67,16 @@
 
     @if (isLoading)
     {
-        <p>Loading doctors from database...</p>
+        <div class="empty-box">Loading doctors from database...</div>
     }
     else if (!doctors.Any())
     {
-        <p>No doctors found in database.</p>
+        <div class="empty-box">No doctors found in database.</div>
     }
     else
     {
-        <div class="table-wrapper">
-            <table class="modern-table">
+        <div class="table-wrapper doctors-table-wrapper">
+            <table class="modern-table doctors-table">
                 <thead>
                     <tr>
                         <th>Doctor</th>
@@ -97,13 +100,13 @@
                                     </div>
 
                                     <div>
-                                        <h4>@doctor.FullName</h4>
+                                        <h4>@DisplayValue(doctor.FullName)</h4>
                                         <span>ID: @doctor.DoctorId</span>
                                     </div>
                                 </div>
                             </td>
 
-                            <td>@doctor.Email</td>
+                            <td>@DisplayValue(doctor.Email)</td>
 
                             <td>
                                 <span class="specialisation-pill">
@@ -118,37 +121,27 @@
                             <td>
                                 @if (doctor.IsActive)
                                 {
-                                    <span class="status-badge active-status">
-                                        Active
-                                    </span>
+                                    <span class="status-badge active-status">Active</span>
                                 }
                                 else
                                 {
-                                    <span class="status-badge inactive-status">
-                                        Inactive
-                                    </span>
+                                    <span class="status-badge inactive-status">Inactive</span>
                                 }
                             </td>
 
-                            <td>
-                                <div class="doctor-action-group">
-
+                            <td class="action-column">
+                                <div class="doctor-action-row">
                                     <button type="button"
-                                            class="doctor-action-button doctor-edit-button"
-                                            title="Edit doctor details"
-                                            @onclick="() => OpenEditDialog(doctor)">
-                                        <span class="doctor-action-icon">✎</span>
-                                        <span>Edit Details</span>
+                                            class="table-action-btn view-table-action"
+                                            @onclick="() => OpenViewDialog(doctor)">
+                                        View
                                     </button>
 
                                     <button type="button"
-                                            class="doctor-action-button doctor-status-button"
-                                            title="Change doctor active status"
-                                            @onclick="() => OpenStatusDialog(doctor)">
-                                        <span class="doctor-action-icon">↻</span>
-                                        <span>Change Status</span>
+                                            class="table-action-btn appointments-table-action"
+                                            @onclick="() => OpenAppointmentsDialogAsync(doctor)">
+                                        Appointments
                                     </button>
-
                                 </div>
                             </td>
                         </tr>
@@ -193,6 +186,196 @@
 
 </section>
 
+@if (showViewDialog && selectedDoctor is not null)
+{
+    <div class="modal-backdrop-custom">
+        <div class="doctor-dialog view-doctor-dialog">
+
+            <div class="dialog-header">
+                <div>
+                    <h3>Doctor Details</h3>
+                    <p>View complete doctor information and manage account actions.</p>
+                </div>
+
+                <button type="button"
+                        class="dialog-close-btn"
+                        @onclick="CloseDialogs">
+                    ×
+                </button>
+            </div>
+
+            <div class="doctor-detail-card">
+
+                <div class="doctor-detail-head">
+                    <div class="doctor-avatar large-avatar">
+                        @GetDoctorInitial(selectedDoctor.FullName)
+                    </div>
+
+                    <div>
+                        <h4>@DisplayValue(selectedDoctor.FullName)</h4>
+                        <p>@DisplayValue(selectedDoctor.Email)</p>
+                    </div>
+                </div>
+
+                <div class="doctor-detail-grid">
+                    <div>
+                        <span>Doctor ID</span>
+                        <strong>#@selectedDoctor.DoctorId</strong>
+                    </div>
+
+                    <div>
+                        <span>Full Name</span>
+                        <strong>@DisplayValue(selectedDoctor.FullName)</strong>
+                    </div>
+
+                    <div>
+                        <span>Email</span>
+                        <strong>@DisplayValue(selectedDoctor.Email)</strong>
+                    </div>
+
+                    <div>
+                        <span>Specialisation</span>
+                        <strong>@selectedDoctor.Specialisation</strong>
+                    </div>
+
+                    <div>
+                        <span>Experience</span>
+                        <strong>@selectedDoctor.YearsOfExperience years</strong>
+                    </div>
+
+                    <div>
+                        <span>Consultation Fee</span>
+                        <strong>₹@selectedDoctor.ConsultationFee</strong>
+                    </div>
+
+                    <div>
+                        <span>Status</span>
+                        <strong>@(selectedDoctor.IsActive ? "Active" : "Inactive")</strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="view-dialog-actions">
+                <button type="button"
+                        class="view-action-btn edit-view-action"
+                        @onclick="OpenSelectedDoctorEditDialog">
+                    Edit Details
+                </button>
+
+                <button type="button"
+                        class="view-action-btn appointments-view-action"
+                        @onclick="OpenSelectedDoctorAppointmentsDialogAsync">
+                    Appointments
+                </button>
+
+                <button type="button"
+                        class="view-action-btn status-view-action"
+                        @onclick="OpenSelectedDoctorStatusDialog">
+                    Change Status
+                </button>
+
+                <button type="button"
+                        class="view-action-btn reset-view-action"
+                        @onclick="OpenSelectedDoctorResetPasswordDialog">
+                    Reset Password
+                </button>
+
+                <button type="button"
+                        class="view-action-btn close-view-action"
+                        @onclick="CloseDialogs">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
+@if (showAppointmentsDialog && selectedDoctor is not null)
+{
+    <div class="modal-backdrop-custom">
+        <div class="doctor-dialog doctor-appointments-dialog">
+
+            <div class="dialog-header">
+                <div>
+                    <h3>@selectedDoctor.FullName - Appointments</h3>
+                    <p>Appointments assigned to this doctor.</p>
+                </div>
+
+                <button type="button"
+                        class="dialog-close-btn"
+                        @onclick="CloseDialogs">
+                    ×
+                </button>
+            </div>
+
+            <div class="appointment-filter-row">
+                <label for="doctorAppointmentStatus">Status</label>
+
+                <select id="doctorAppointmentStatus"
+                        class="form-control"
+                        @bind="selectedDoctorAppointmentStatus">
+                    <option value="@AllAppointmentStatusOption">All Status</option>
+                    <option value="@PendingStatusOption">Pending</option>
+                    <option value="@ConfirmedStatusOption">Confirmed</option>
+                    <option value="@CompletedStatusOption">Completed</option>
+                    <option value="@CancelledStatusOption">Cancelled</option>
+                </select>
+            </div>
+
+            @if (isLoadingAppointments)
+            {
+                <div class="empty-box">Loading appointments...</div>
+            }
+            else if (!FilteredDoctorAppointments.Any())
+            {
+                <div class="empty-box">No appointments found for this status.</div>
+            }
+            else
+            {
+                <div class="table-wrapper appointments-table-wrapper">
+                    <table class="modern-table appointments-table">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var appointment in FilteredDoctorAppointments)
+                            {
+                                <tr>
+                                    <td>@GetSafeText(appointment.PatientName, "Patient")</td>
+                                    <td>@appointment.ScheduledDate.ToString("dd MMM yyyy")</td>
+                                    <td>@GetSafeText(appointment.TimeSlot, "Not assigned")</td>
+                                    <td>
+                                        <span class="@GetStatusBadgeClass(appointment.Status)">
+                                            @appointment.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            <div class="dialog-actions">
+                <button type="button"
+                        class="secondary-btn"
+                        @onclick="CloseDialogs">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
 @if (showEditDialog)
 {
     <div class="modal-backdrop-custom">
@@ -204,7 +387,9 @@
                     <p>Update doctor details and save changes.</p>
                 </div>
 
-                <button type="button" class="dialog-close-btn" @onclick="CloseDialogs">
+                <button type="button"
+                        class="dialog-close-btn"
+                        @onclick="CloseDialogs">
                     ×
                 </button>
             </div>
@@ -217,25 +402,20 @@
 
                     <div class="form-group">
                         <label>Doctor Name</label>
-
                         <InputText class="form-control"
                                    @bind-Value="editForm.FullName" />
-
                         <ValidationMessage For="@(() => editForm.FullName)" />
                     </div>
 
                     <div class="form-group">
                         <label>Email</label>
-
                         <InputText class="form-control"
                                    @bind-Value="editForm.Email" />
-
                         <ValidationMessage For="@(() => editForm.Email)" />
                     </div>
 
                     <div class="form-group">
                         <label>Specialisation</label>
-
                         <InputSelect class="form-control"
                                      @bind-Value="editForm.Specialisation">
                             @foreach (var specialisation in Enum.GetValues<Specialisation>())
@@ -245,25 +425,20 @@
                                 </option>
                             }
                         </InputSelect>
-
                         <ValidationMessage For="@(() => editForm.Specialisation)" />
                     </div>
 
                     <div class="form-group">
                         <label>Years of Experience</label>
-
                         <InputNumber class="form-control"
                                      @bind-Value="editForm.YearsOfExperience" />
-
                         <ValidationMessage For="@(() => editForm.YearsOfExperience)" />
                     </div>
 
                     <div class="form-group">
                         <label>Consultation Fee</label>
-
                         <InputNumber class="form-control"
                                      @bind-Value="editForm.ConsultationFee" />
-
                         <ValidationMessage For="@(() => editForm.ConsultationFee)" />
                     </div>
 
@@ -276,10 +451,7 @@
                                    @bind="editForm.IsActive" />
 
                             <span class="hx-toggle-slider"></span>
-
-                            <span class="hx-toggle-text">
-                                Active Doctor
-                            </span>
+                            <span class="hx-toggle-text">Active Doctor</span>
                         </label>
                     </div>
 
@@ -290,7 +462,9 @@
                         Save Changes
                     </button>
 
-                    <button type="button" class="secondary-btn" @onclick="CloseDialogs">
+                    <button type="button"
+                            class="secondary-btn"
+                            @onclick="CloseDialogs">
                         Cancel
                     </button>
                 </div>
@@ -312,7 +486,9 @@
                     <p>Confirm status update.</p>
                 </div>
 
-                <button type="button" class="dialog-close-btn" @onclick="CloseDialogs">
+                <button type="button"
+                        class="dialog-close-btn"
+                        @onclick="CloseDialogs">
                     ×
                 </button>
             </div>
@@ -323,11 +499,15 @@
             </p>
 
             <div class="dialog-actions">
-                <button type="button" class="primary-btn" @onclick="ConfirmStatusChange">
+                <button type="button"
+                        class="primary-btn"
+                        @onclick="ConfirmStatusChange">
                     Yes, Change Status
                 </button>
 
-                <button type="button" class="secondary-btn" @onclick="CloseDialogs">
+                <button type="button"
+                        class="secondary-btn"
+                        @onclick="CloseDialogs">
                     Cancel
                 </button>
             </div>
@@ -335,6 +515,414 @@
         </div>
     </div>
 }
+
+@if (showResetPasswordDialog && resetPasswordDoctor is not null)
+{
+    <div class="modal-backdrop-custom">
+        <div class="doctor-dialog reset-password-dialog">
+
+            <div class="dialog-header">
+                <div>
+                    <h3>Reset Doctor Password</h3>
+                    <p>Set a new password for @resetPasswordDoctor.FullName.</p>
+                </div>
+
+                <button type="button"
+                        class="dialog-close-btn"
+                        disabled="@isResettingPassword"
+                        @onclick="CloseDialogs">
+                    ×
+                </button>
+            </div>
+
+            <div class="reset-user-summary">
+                <div class="doctor-avatar">
+                    @GetDoctorInitial(resetPasswordDoctor.FullName)
+                </div>
+
+                <div>
+                    <h4>@DisplayValue(resetPasswordDoctor.FullName)</h4>
+                    <p>@DisplayValue(resetPasswordDoctor.Email)</p>
+                    <span>Doctor account</span>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(resetPasswordError))
+            {
+                <div class="error-box">
+                    @resetPasswordError
+                </div>
+            }
+
+            <EditForm Model="@resetPasswordForm" OnValidSubmit="ResetDoctorPassword">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-grid reset-password-grid">
+                    <div class="form-group full-width">
+                        <label>New Password</label>
+                        <InputText type="password"
+                                   class="form-control reset-password-input"
+                                   @bind-Value="resetPasswordForm.NewPassword" />
+                        <ValidationMessage For="@(() => resetPasswordForm.NewPassword)" />
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Confirm Password</label>
+                        <InputText type="password"
+                                   class="form-control reset-password-input"
+                                   @bind-Value="resetPasswordForm.ConfirmPassword" />
+                        <ValidationMessage For="@(() => resetPasswordForm.ConfirmPassword)" />
+                    </div>
+                </div>
+
+                <p class="password-help-text">
+                    Use a strong password with uppercase, lowercase, number, special character, and at least 8 characters.
+                </p>
+
+                <div class="dialog-actions">
+                    <button type="submit"
+                            class="primary-btn"
+                            disabled="@isResettingPassword">
+                        @(isResettingPassword ? "Resetting..." : "Reset Password")
+                    </button>
+
+                    <button type="button"
+                            class="secondary-btn"
+                            disabled="@isResettingPassword"
+                            @onclick="CloseDialogs">
+                        Cancel
+                    </button>
+                </div>
+            </EditForm>
+
+        </div>
+    </div>
+}
+
+<style>
+    .doctors-table-wrapper,
+    .appointments-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .doctors-table {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+        .doctors-table th:nth-child(1),
+        .doctors-table td:nth-child(1) {
+            width: 19%;
+        }
+
+        .doctors-table th:nth-child(2),
+        .doctors-table td:nth-child(2) {
+            width: 22%;
+        }
+
+        .doctors-table th:nth-child(3),
+        .doctors-table td:nth-child(3) {
+            width: 14%;
+        }
+
+        .doctors-table th:nth-child(4),
+        .doctors-table td:nth-child(4) {
+            width: 11%;
+        }
+
+        .doctors-table th:nth-child(5),
+        .doctors-table td:nth-child(5) {
+            width: 8%;
+        }
+
+        .doctors-table th:nth-child(6),
+        .doctors-table td:nth-child(6) {
+            width: 10%;
+        }
+
+        .doctors-table th:nth-child(7),
+        .doctors-table td:nth-child(7) {
+            width: 16%;
+        }
+
+        .doctors-table td {
+            vertical-align: middle;
+        }
+
+            .doctors-table td:nth-child(2) {
+                overflow-wrap: anywhere;
+            }
+
+    .action-column {
+        text-align: center !important;
+    }
+
+    .doctor-action-row {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 6px !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .table-action-btn {
+        border: none;
+        border-radius: 999px;
+        min-height: 30px;
+        padding: 6px 10px;
+        font-size: 11px;
+        font-weight: 900;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .view-table-action {
+        min-width: 54px;
+        background: rgba(14, 165, 233, 0.16);
+        color: #7dd3fc;
+        border: 1px solid rgba(56, 189, 248, 0.32);
+    }
+
+    .appointments-table-action {
+        min-width: 92px;
+        background: rgba(34, 197, 94, 0.16);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.32);
+    }
+
+    .empty-box {
+        padding: 18px;
+        border-radius: 18px;
+        background: rgba(148, 163, 184, 0.12);
+        color: #cbd5e1;
+        font-weight: 800;
+    }
+
+    .view-doctor-dialog {
+        width: min(760px, 94vw);
+    }
+
+    .doctor-appointments-dialog {
+        width: min(920px, 94vw);
+    }
+
+    .doctor-detail-card {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(148, 163, 184, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .doctor-detail-head {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding-bottom: 16px;
+        margin-bottom: 16px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+        .doctor-detail-head h4 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .doctor-detail-head p {
+            margin: 5px 0 0;
+            color: #cbd5e1;
+            font-weight: 800;
+        }
+
+    .large-avatar {
+        width: 58px !important;
+        height: 58px !important;
+        min-width: 58px !important;
+        font-size: 22px !important;
+    }
+
+    .doctor-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+        .doctor-detail-grid div {
+            padding: 14px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+        }
+
+        .doctor-detail-grid span {
+            display: block;
+            margin-bottom: 7px;
+            color: #93c5fd;
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .doctor-detail-grid strong {
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 900;
+            overflow-wrap: anywhere;
+        }
+
+    .view-dialog-actions {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+    }
+
+    .view-action-btn {
+        border: none;
+        border-radius: 999px;
+        min-height: 38px;
+        padding: 9px 15px;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .edit-view-action,
+    .appointments-view-action {
+        background: rgba(14, 165, 233, 0.16);
+        color: #7dd3fc;
+        border: 1px solid rgba(56, 189, 248, 0.32);
+    }
+
+    .status-view-action {
+        background: rgba(34, 197, 94, 0.16);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.32);
+    }
+
+    .reset-view-action {
+        background: rgba(124, 58, 237, 0.18);
+        color: #c4b5fd;
+        border: 1px solid rgba(167, 139, 250, 0.35);
+    }
+
+    .close-view-action {
+        background: rgba(148, 163, 184, 0.18);
+        color: #e2e8f0;
+        border: 1px solid rgba(148, 163, 184, 0.28);
+    }
+
+    .appointment-filter-row {
+        display: grid;
+        grid-template-columns: 120px minmax(220px, 320px);
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+        .appointment-filter-row label {
+            color: #cbd5e1;
+            font-weight: 900;
+        }
+
+    .reset-password-dialog {
+        width: min(620px, 94vw);
+    }
+
+    .reset-user-summary {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px;
+        border-radius: 18px;
+        background: rgba(148, 163, 184, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        margin-bottom: 18px;
+    }
+
+        .reset-user-summary h4 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .reset-user-summary p {
+            margin: 4px 0;
+            color: #cbd5e1;
+            font-weight: 800;
+        }
+
+        .reset-user-summary span {
+            color: #93c5fd;
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+    .reset-password-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .password-help-text {
+        margin: 12px 0 0;
+        color: #cbd5e1;
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.5;
+    }
+
+    .reset-password-input {
+        color: #ffffff;
+        background: rgba(15, 23, 42, 0.65);
+    }
+
+        .reset-password-input::-ms-reveal,
+        .reset-password-input::-ms-clear {
+            filter: invert(1) brightness(2);
+        }
+
+    input[type="password"]::-ms-reveal,
+    input[type="password"]::-ms-clear {
+        filter: invert(1) brightness(2);
+    }
+
+    @@media (max-width: 1100px) {
+        .doctors-table {
+            min-width: 1080px;
+        }
+    }
+
+    @@media (max-width: 800px) {
+        .doctor-detail-grid,
+        .appointment-filter-row {
+            grid-template-columns: 1fr;
+        }
+
+        .view-dialog-actions {
+            justify-content: stretch;
+        }
+
+        .view-action-btn {
+            width: 100%;
+        }
+
+        .doctor-action-row {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+
+        .table-action-btn {
+            width: 100%;
+        }
+    }
+</style>
 
 @code {
     private const int FirstPageNumber = 1;
@@ -346,23 +934,39 @@
     private const string ActiveStatusOption = "Active";
     private const string InactiveStatusOption = "Inactive";
 
+    private const string AllAppointmentStatusOption = "All";
+    private const string PendingStatusOption = "Pending";
+    private const string ConfirmedStatusOption = "Confirmed";
+    private const string CompletedStatusOption = "Completed";
+    private const string CancelledStatusOption = "Cancelled";
+
     private List<DoctorDto> doctors = new();
+    private List<AdminAppointmentDetailDto> doctorAppointments = new();
 
     private PagedResponseDto<DoctorDto> doctorPage = new();
 
     private CreateDoctorDto editForm = new();
+    private AdminResetPasswordDto resetPasswordForm = new();
 
     private DoctorDto? selectedDoctor;
+    private DoctorDto? resetPasswordDoctor;
 
     private string message = string.Empty;
     private string messageClass = "success-box";
     private string searchText = string.Empty;
     private string selectedSpecialisation = AllSpecialisationsOption;
     private string selectedStatus = AllStatusOption;
+    private string selectedDoctorAppointmentStatus = AllAppointmentStatusOption;
+    private string resetPasswordError = string.Empty;
 
     private bool isLoading;
+    private bool isLoadingAppointments;
+    private bool showViewDialog;
+    private bool showAppointmentsDialog;
     private bool showEditDialog;
     private bool showStatusDialog;
+    private bool showResetPasswordDialog;
+    private bool isResettingPassword;
 
     private int currentPage = FirstPageNumber;
     private int editingDoctorId;
@@ -412,15 +1016,42 @@
         }
     }
 
+    private List<AdminAppointmentDetailDto> FilteredDoctorAppointments
+    {
+        get
+        {
+            if (string.Equals(
+                    selectedDoctorAppointmentStatus,
+                    AllAppointmentStatusOption,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return doctorAppointments;
+            }
+
+            return doctorAppointments
+                .Where(appointment => string.Equals(
+                    appointment.Status,
+                    selectedDoctorAppointmentStatus,
+                    StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await LoadDoctors();
     }
 
-    private async Task LoadDoctors(int pageNumber = FirstPageNumber)
+    private async Task LoadDoctors(
+        int pageNumber = FirstPageNumber,
+        bool clearCurrentMessage = true)
     {
         isLoading = true;
-        message = string.Empty;
+
+        if (clearCurrentMessage)
+        {
+            message = string.Empty;
+        }
 
         try
         {
@@ -428,11 +1059,26 @@
             doctors = doctorPage.Items ?? new List<DoctorDto>();
             currentPage = doctorPage.PageNumber;
         }
-        catch (Exception ex)
+        catch (TaskCanceledException)
         {
             doctors = new List<DoctorDto>();
-            message = $"Doctors loading failed: {ex.Message}";
-            messageClass = "error-box";
+            ShowMessage(
+                "Doctors loading timed out. Please check if HealthAxis.API is running.",
+                false);
+        }
+        catch (HttpRequestException)
+        {
+            doctors = new List<DoctorDto>();
+            ShowMessage(
+                "Unable to connect to API. Please run HealthAxis.API and try again.",
+                false);
+        }
+        catch (JsonException)
+        {
+            doctors = new List<DoctorDto>();
+            ShowMessage(
+                "Doctors loading failed because response format is invalid.",
+                false);
         }
         finally
         {
@@ -443,6 +1089,81 @@
     private void GoToRegisterDoctor()
     {
         NavigationManager.NavigateTo("/doctors/register");
+    }
+
+    private void OpenViewDialog(DoctorDto doctor)
+    {
+        selectedDoctor = doctor;
+        showViewDialog = true;
+        message = string.Empty;
+    }
+
+    private async Task OpenAppointmentsDialogAsync(DoctorDto doctor)
+    {
+        selectedDoctor = doctor;
+        doctorAppointments = new List<AdminAppointmentDetailDto>();
+        selectedDoctorAppointmentStatus = AllAppointmentStatusOption;
+
+        showViewDialog = false;
+        showAppointmentsDialog = true;
+        isLoadingAppointments = true;
+        message = string.Empty;
+
+        try
+        {
+            doctorAppointments = await DoctorService.GetDoctorAppointmentsAsync(
+                doctor.DoctorId);
+        }
+        catch (TaskCanceledException)
+        {
+            ShowMessage(
+                "Appointments loading timed out. Please check if HealthAxis.API is running.",
+                false);
+        }
+        catch (HttpRequestException)
+        {
+            ShowMessage("Could not load doctor appointments.", false);
+        }
+        catch (JsonException)
+        {
+            ShowMessage("Appointment data format is invalid.", false);
+        }
+        finally
+        {
+            isLoadingAppointments = false;
+        }
+    }
+
+    private void OpenSelectedDoctorEditDialog()
+    {
+        if (selectedDoctor is not null)
+        {
+            OpenEditDialog(selectedDoctor);
+        }
+    }
+
+    private void OpenSelectedDoctorStatusDialog()
+    {
+        if (selectedDoctor is not null)
+        {
+            OpenStatusDialog(selectedDoctor);
+        }
+    }
+
+    private void OpenSelectedDoctorResetPasswordDialog()
+    {
+        if (selectedDoctor is not null)
+        {
+            OpenResetPasswordDialog(selectedDoctor);
+        }
+    }
+
+    private async Task OpenSelectedDoctorAppointmentsDialogAsync()
+    {
+        if (selectedDoctor is not null)
+        {
+            await OpenAppointmentsDialogAsync(selectedDoctor);
+        }
     }
 
     private void OpenEditDialog(DoctorDto doctor)
@@ -460,6 +1181,7 @@
             IsActive = doctor.IsActive
         };
 
+        showViewDialog = false;
         showEditDialog = true;
         message = string.Empty;
     }
@@ -470,18 +1192,19 @@
             editingDoctorId,
             editForm);
 
-        ShowMessage(result.Message, result.Success);
-
         if (result.Success)
         {
             CloseDialogs();
-            await LoadDoctors(currentPage);
+            await LoadDoctors(currentPage, clearCurrentMessage: false);
         }
+
+        ShowMessage(result.Message, result.Success);
     }
 
     private void OpenStatusDialog(DoctorDto doctor)
     {
         selectedDoctor = doctor;
+        showViewDialog = false;
         showStatusDialog = true;
         message = string.Empty;
     }
@@ -495,13 +1218,70 @@
 
         var result = await DoctorService.ToggleDoctorStatusAsync(selectedDoctor);
 
-        ShowMessage(result.Message, result.Success);
-
         if (result.Success)
         {
             CloseDialogs();
-            await LoadDoctors(currentPage);
+            await LoadDoctors(currentPage, clearCurrentMessage: false);
         }
+
+        ShowMessage(result.Message, result.Success);
+    }
+
+    private void OpenResetPasswordDialog(DoctorDto doctor)
+    {
+        resetPasswordDoctor = doctor;
+
+        resetPasswordForm = new AdminResetPasswordDto
+        {
+            Email = doctor.Email
+        };
+
+        resetPasswordError = string.Empty;
+        message = string.Empty;
+
+        showViewDialog = false;
+        showEditDialog = false;
+        showStatusDialog = false;
+        showAppointmentsDialog = false;
+        showResetPasswordDialog = true;
+    }
+
+    private async Task ResetDoctorPassword()
+    {
+        if (resetPasswordDoctor is null)
+        {
+            resetPasswordError = "Please select a doctor.";
+            return;
+        }
+
+        if (resetPasswordForm.NewPassword != resetPasswordForm.ConfirmPassword)
+        {
+            resetPasswordError =
+                "New password and confirm password do not match.";
+            return;
+        }
+
+        isResettingPassword = true;
+        resetPasswordError = string.Empty;
+
+        resetPasswordForm.Email = resetPasswordDoctor.Email;
+
+        var doctorName = resetPasswordDoctor.FullName;
+        var result = await DoctorService.ResetPasswordAsync(resetPasswordForm);
+
+        isResettingPassword = false;
+
+        if (!result.Success)
+        {
+            resetPasswordError = result.Message;
+            return;
+        }
+
+        CloseDialogs();
+
+        ShowMessage(
+            $"Password reset successfully for {doctorName}.",
+            true);
     }
 
     private async Task GoToPreviousPage()
@@ -524,11 +1304,29 @@
 
     private void CloseDialogs()
     {
+        if (isResettingPassword)
+        {
+            return;
+        }
+
+        showViewDialog = false;
+        showAppointmentsDialog = false;
         showEditDialog = false;
         showStatusDialog = false;
+        showResetPasswordDialog = false;
+
         selectedDoctor = null;
+        resetPasswordDoctor = null;
+
         editingDoctorId = 0;
+
         editForm = new CreateDoctorDto();
+        resetPasswordForm = new AdminResetPasswordDto();
+
+        doctorAppointments = new List<AdminAppointmentDetailDto>();
+        selectedDoctorAppointmentStatus = AllAppointmentStatusOption;
+
+        resetPasswordError = string.Empty;
     }
 
     private void ClearSearchAndFilter()
@@ -584,5 +1382,33 @@
         }
 
         return cleanName[..1].ToUpperInvariant();
+    }
+
+    private static string DisplayValue(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? "Not available"
+            : value.Trim();
+    }
+
+    private static string GetSafeText(
+        string? value,
+        string fallback)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? fallback
+            : value.Trim();
+    }
+
+    private static string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            PendingStatusOption => "status-badge pending-badge",
+            ConfirmedStatusOption => "status-badge confirmed-badge",
+            CompletedStatusOption => "status-badge active-status",
+            CancelledStatusOption => "status-badge inactive-status",
+            _ => "status-badge"
+        };
     }
 }

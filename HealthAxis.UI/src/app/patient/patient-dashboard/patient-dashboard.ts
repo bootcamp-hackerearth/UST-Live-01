@@ -28,14 +28,12 @@ export class PatientDashboard {
   readonly cancelledCount = computed(() => this.countByStatus('Cancelled'));
 
   readonly upcomingAppointment = computed<Appointment | null>(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = this.getTodayDateOnly();
 
     const appointment = this.appointments()
       .filter((item) => this.isUpcomingAppointment(item, today))
       .sort((first, second) =>
-        new Date(first.scheduledDate).getTime() -
-        new Date(second.scheduledDate).getTime()
+        this.getAppointmentDateValue(first) - this.getAppointmentDateValue(second)
       )[0];
 
     return appointment ?? null;
@@ -71,7 +69,8 @@ export class PatientDashboard {
 
   private countByStatus(status: string): number {
     return this.appointments().filter(
-      (appointment) => appointment.status.toLowerCase() === status.toLowerCase()
+      (appointment) =>
+        appointment.status.toLowerCase() === status.toLowerCase()
     ).length;
   }
 
@@ -80,6 +79,7 @@ export class PatientDashboard {
     today: Date
   ): boolean {
     const appointmentDate = new Date(appointment.scheduledDate);
+
     appointmentDate.setHours(0, 0, 0, 0);
 
     const status = appointment.status.toLowerCase();
@@ -87,5 +87,17 @@ export class PatientDashboard {
     return appointmentDate >= today &&
       status !== 'cancelled' &&
       status !== 'completed';
+  }
+
+  private getAppointmentDateValue(appointment: Appointment): number {
+    return new Date(appointment.scheduledDate).getTime();
+  }
+
+  private getTodayDateOnly(): Date {
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    return today;
   }
 }

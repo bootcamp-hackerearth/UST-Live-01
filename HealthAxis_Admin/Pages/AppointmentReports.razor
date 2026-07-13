@@ -7,18 +7,12 @@
 @inject AppointmentReportAdminService ReportService
 @inject NavigationManager NavigationManager
 
-@* <h1>Appointment Reports</h1>
-
-<p class="page-subtitle">
-    View patient appointments, assigned doctors, appointment date, time and current status.
-</p> *@
-
 <section class="doctor-list-card">
 
     <div class="doctor-list-header">
         <div>
             <h3>Appointment Details</h3>
-            <p>All appointments with patient and doctor information.</p>
+            <p>All appointments with patient, doctor, status and appointment details.</p>
         </div>
 
         <button type="button"
@@ -36,10 +30,11 @@
         </div>
     }
 
-    <div class="user-toolbar">
+    <div class="user-toolbar report-toolbar">
         <div class="doctor-search-box">
             <input type="text"
-                   placeholder="Search patient, doctor, status..."
+                   maxlength="80"
+                   placeholder="Search patient, doctor, status, cancellation..."
                    @bind="searchText"
                    @bind:event="oninput" />
         </div>
@@ -75,8 +70,8 @@
     }
     else
     {
-        <div class="table-wrapper">
-            <table class="modern-table">
+        <div class="table-wrapper report-table-wrapper">
+            <table class="modern-table report-table">
                 <thead>
                     <tr>
                         <th>Patient</th>
@@ -85,7 +80,7 @@
                         <th>Date</th>
                         <th>Time</th>
                         <th>Status</th>
-                        <th class="action-column">Actions</th>
+                        <th class="action-column">Action</th>
                     </tr>
                 </thead>
 
@@ -126,7 +121,6 @@
 
                             <td class="action-column">
                                 <div class="report-actions">
-
                                     <button type="button"
                                             class="small-view-btn"
                                             @onclick="() => OpenReportDialog(report)">
@@ -152,7 +146,6 @@
                                             @(IsProcessing(report.AppointmentId) ? "..." : "Cancel")
                                         </button>
                                     }
-
                                 </div>
                             </td>
                         </tr>
@@ -191,12 +184,12 @@
 @if (showReportDialog && selectedReport is not null)
 {
     <div class="modal-backdrop-custom">
-        <div class="doctor-dialog user-detail-dialog">
+        <div class="doctor-dialog user-detail-dialog report-detail-dialog">
 
             <div class="dialog-header">
                 <div>
                     <h3>Appointment Report</h3>
-                    <p>Detailed appointment date and time report.</p>
+                    <p>Detailed appointment and cancellation information.</p>
                 </div>
 
                 <button type="button"
@@ -216,12 +209,12 @@
 
                     <div>
                         <span>Status</span>
-                        <strong>@selectedReport.Status</strong>
+                        <strong>@GetSafeText(selectedReport.Status, "Pending")</strong>
                     </div>
 
                     <div>
                         <span>Patient Name</span>
-                        <strong>@selectedReport.PatientName</strong>
+                        <strong>@GetSafeText(selectedReport.PatientName, "Patient")</strong>
                     </div>
 
                     <div>
@@ -231,7 +224,7 @@
 
                     <div>
                         <span>Doctor Name</span>
-                        <strong>@selectedReport.DoctorName</strong>
+                        <strong>@GetSafeText(selectedReport.DoctorName, "Doctor")</strong>
                     </div>
 
                     <div>
@@ -241,7 +234,7 @@
 
                     <div>
                         <span>Specialisation</span>
-                        <strong>@selectedReport.Specialisation</strong>
+                        <strong>@GetSafeText(selectedReport.Specialisation, "N/A")</strong>
                     </div>
 
                     <div>
@@ -251,7 +244,17 @@
 
                     <div>
                         <span>Time</span>
-                        <strong>@selectedReport.TimeSlot</strong>
+                        <strong>@GetSafeText(selectedReport.TimeSlot, "Not assigned")</strong>
+                    </div>
+
+                    <div>
+                        <span>Cancelled By</span>
+                        <strong>@GetCancelledByDisplay(selectedReport)</strong>
+                    </div>
+
+                    <div class="full-width">
+                        <span>Cancellation Reason</span>
+                        <strong>@GetCancellationReasonDisplay(selectedReport)</strong>
                     </div>
 
                 </div>
@@ -274,8 +277,8 @@
     <div class="modal-backdrop-custom">
         <div class="result-dialog">
 
-            <div class="result-icon @(isResultSuccess ? "success-icon" : "error-icon")">
-                @(isResultSuccess ? "✓" : "!")
+            <div class="result-label @(isResultSuccess ? "success-label" : "error-label")">
+                @(isResultSuccess ? "SUCCESS" : "ERROR")
             </div>
 
             <h3>@resultTitle</h3>
@@ -293,12 +296,67 @@
 }
 
 <style>
-    .report-actions {
-        display: flex;
-        justify-content: flex-end;
+    .report-toolbar {
+        display: grid;
+        grid-template-columns: minmax(300px, 1fr) 220px 90px;
+        gap: 16px;
         align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
+    }
+
+    .report-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .report-table {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+        .report-table th:nth-child(1),
+        .report-table td:nth-child(1) {
+            width: 22%;
+        }
+
+        .report-table th:nth-child(2),
+        .report-table td:nth-child(2) {
+            width: 16%;
+        }
+
+        .report-table th:nth-child(3),
+        .report-table td:nth-child(3) {
+            width: 15%;
+        }
+
+        .report-table th:nth-child(4),
+        .report-table td:nth-child(4) {
+            width: 12%;
+        }
+
+        .report-table th:nth-child(5),
+        .report-table td:nth-child(5) {
+            width: 14%;
+        }
+
+        .report-table th:nth-child(6),
+        .report-table td:nth-child(6) {
+            width: 10%;
+        }
+
+        .report-table th:nth-child(7),
+        .report-table td:nth-child(7) {
+            width: 11%;
+        }
+
+        .report-table td {
+            vertical-align: middle;
+        }
+
+    .report-actions {
+        display: grid;
+        gap: 6px;
+        justify-items: stretch;
+        max-width: 96px;
+        margin-left: auto;
     }
 
     .small-view-btn,
@@ -308,8 +366,8 @@
     .small-clear-btn {
         border: none;
         border-radius: 999px;
-        padding: 8px 13px;
-        font-size: 13px;
+        padding: 7px 10px;
+        font-size: 12px;
         font-weight: 900;
         cursor: pointer;
         white-space: nowrap;
@@ -339,18 +397,14 @@
     }
 
     .small-clear-btn {
+        width: 90px !important;
+        height: 46px;
+        padding: 0 14px !important;
         background: rgba(148, 163, 184, 0.18);
         color: #e2e8f0;
         border: 1px solid rgba(148, 163, 184, 0.3);
+        justify-self: start;
     }
-
-        .small-view-btn:hover,
-        .small-confirm-btn:hover,
-        .small-cancel-btn:hover,
-        .small-refresh-btn:hover,
-        .small-clear-btn:hover {
-            transform: translateY(-1px);
-        }
 
     .small-view-btn:disabled,
     .small-confirm-btn:disabled,
@@ -358,7 +412,6 @@
     .small-refresh-btn:disabled {
         opacity: 0.65;
         cursor: not-allowed;
-        transform: none;
     }
 
     .action-column {
@@ -373,6 +426,14 @@
         font-weight: 800;
     }
 
+    .report-detail-dialog {
+        width: min(900px, 94vw);
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
     .result-dialog {
         width: min(420px, 92vw);
         background: #0f172a;
@@ -384,24 +445,23 @@
         box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
     }
 
-    .result-icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
+    .result-label {
+        width: fit-content;
         margin: 0 auto 16px;
-        font-size: 34px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 12px;
         font-weight: 900;
+        letter-spacing: 0.06em;
     }
 
-    .success-icon {
+    .success-label {
         background: rgba(34, 197, 94, 0.18);
         color: #86efac;
         border: 1px solid rgba(34, 197, 94, 0.35);
     }
 
-    .error-icon {
+    .error-label {
         background: rgba(239, 68, 68, 0.18);
         color: #fecaca;
         border: 1px solid rgba(239, 68, 68, 0.35);
@@ -430,16 +490,30 @@
         cursor: pointer;
     }
 
+    @@media (max-width: 1100px) {
+        .report-table {
+            min-width: 980px;
+        }
+    }
+
     @@media (max-width: 900px) {
+        .report-toolbar {
+            grid-template-columns: 1fr;
+        }
+
+        .small-clear-btn {
+            width: 100% !important;
+        }
+
         .report-actions {
-            justify-content: flex-start;
+            max-width: none;
+            margin-left: 0;
         }
 
         .small-view-btn,
         .small-confirm-btn,
         .small-cancel-btn,
-        .small-refresh-btn,
-        .small-clear-btn {
+        .small-refresh-btn {
             width: 100%;
         }
 
@@ -447,38 +521,6 @@
             text-align: left;
         }
     }
-    .user-toolbar {
-    display: grid;
-    grid-template-columns: minmax(300px, 1fr) 220px 90px;
-    gap: 16px;
-    align-items: center;
-}
-
-.doctor-search-box {
-    width: 100%;
-}
-
-.doctor-filter-box {
-    width: 100%;
-}
-
-.small-clear-btn {
-    width: 90px !important;
-    height: 46px;
-    padding: 0 14px !important;
-    justify-self: start;
-}
-
-@@media (max-width: 900px) {
-    .user-toolbar {
-        grid-template-columns: 1fr;
-    }
-
-    .small-clear-btn {
-        width: 100% !important;
-    }
-}
-    
 </style>
 
 @code {
@@ -527,7 +569,11 @@
                     ContainsIgnoreCase(report.DoctorName, searchText) ||
                     ContainsIgnoreCase(report.Status, searchText) ||
                     ContainsIgnoreCase(report.Specialisation, searchText) ||
-                    report.AppointmentId.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase));
+                    ContainsIgnoreCase(report.CancelledBy, searchText) ||
+                    ContainsIgnoreCase(report.CancellationReason, searchText) ||
+                    report.AppointmentId.ToString().Contains(
+                        searchText,
+                        StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.Equals(
@@ -577,6 +623,13 @@
         {
             reports = await ReportService.GetAppointmentDetailsAsync();
             currentPage = FirstPageNumber;
+        }
+        catch (TaskCanceledException)
+        {
+            reports = new List<AdminAppointmentDetailDto>();
+            ShowInlineMessage(
+                "Appointment reports loading timed out. Please check if HealthAxis.API is running.",
+                false);
         }
         catch (HttpRequestException)
         {
@@ -716,6 +769,32 @@
         return processingAppointmentId == appointmentId;
     }
 
+    private static string GetCancelledByDisplay(
+        AdminAppointmentDetailDto report)
+    {
+        if (!IsCancelled(report.Status))
+        {
+            return "Not applicable";
+        }
+
+        return string.IsNullOrWhiteSpace(report.CancelledBy)
+            ? "Not specified"
+            : report.CancelledBy.Trim();
+    }
+
+    private static string GetCancellationReasonDisplay(
+        AdminAppointmentDetailDto report)
+    {
+        if (!IsCancelled(report.Status))
+        {
+            return "Not applicable";
+        }
+
+        return string.IsNullOrWhiteSpace(report.CancellationReason)
+            ? "No cancellation reason available."
+            : report.CancellationReason.Trim();
+    }
+
     private static bool ContainsIgnoreCase(
         string? value,
         string searchValue)
@@ -734,7 +813,9 @@
         return name.Trim()[..1].ToUpperInvariant();
     }
 
-    private static string GetSafeText(string? value, string fallback)
+    private static string GetSafeText(
+        string? value,
+        string fallback)
     {
         return string.IsNullOrWhiteSpace(value)
             ? fallback
@@ -746,6 +827,14 @@
         return string.Equals(
             status,
             PendingStatus,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsCancelled(string status)
+    {
+        return string.Equals(
+            status,
+            CancelledStatus,
             StringComparison.OrdinalIgnoreCase);
     }
 
@@ -772,4 +861,4 @@
             _ => "status-badge"
         };
     }
-}s
+}

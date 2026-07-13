@@ -19,7 +19,8 @@ const FILTERS = [
   'All',
   'Today',
   'Pending',
-  'Confirmed'
+  'Confirmed',
+  'Cancelled'
 ] as const;
 
 type AppointmentFilter = typeof FILTERS[number];
@@ -54,9 +55,9 @@ export class UpcomingAppointments {
 
   readonly filters = FILTERS;
 
-  readonly upcomingAppointments = computed(() =>
+  readonly doctorAppointments = computed(() =>
     this.appointments()
-      .filter((appointment) => this.isUpcomingStatus(appointment.status))
+      .filter((appointment) => this.isDoctorVisibleStatus(appointment.status))
       .sort((first, second) =>
         this.getAppointmentStartDateTime(first).getTime() -
         this.getAppointmentStartDateTime(second).getTime()
@@ -67,7 +68,7 @@ export class UpcomingAppointments {
     const filter = this.selectedFilter();
     const searchValue = this.searchText().trim().toLowerCase();
 
-    return this.upcomingAppointments().filter((appointment) =>
+    return this.doctorAppointments().filter((appointment) =>
       this.matchesFilter(appointment, filter, searchValue)
     );
   });
@@ -88,7 +89,7 @@ export class UpcomingAppointments {
   });
 
   readonly todayCount = computed(() =>
-    this.upcomingAppointments().filter((appointment) =>
+    this.doctorAppointments().filter((appointment) =>
       this.isToday(appointment.scheduledDate)
     ).length
   );
@@ -96,6 +97,8 @@ export class UpcomingAppointments {
   readonly pendingCount = computed(() => this.countByStatus('pending'));
 
   readonly confirmedCount = computed(() => this.countByStatus('confirmed'));
+
+  readonly cancelledCount = computed(() => this.countByStatus('cancelled'));
 
   readonly canSubmitCancellation = computed(() =>
     this.cancellationReason().trim().length > 0
@@ -254,6 +257,10 @@ export class UpcomingAppointments {
     return false;
   }
 
+  canAddHealthRecord(appointment: Appointment): boolean {
+    return this.getStatusText(appointment.status) === 'confirmed';
+  }
+
   isProcessing(appointment: Appointment): boolean {
     return this.processingAppointmentId() === appointment.appointmentId;
   }
@@ -302,7 +309,7 @@ export class UpcomingAppointments {
     return '';
   }
 
-  getStatusLabel(status: string | number): string {
+  getStatusLabel(status: string): string {
     const normalizedStatus = this.getStatusText(status);
 
     if (normalizedStatus === 'pending') {
@@ -321,10 +328,10 @@ export class UpcomingAppointments {
       return 'Cancelled';
     }
 
-    return String(status);
+    return status;
   }
 
-  getStatusClass(status: string | number): string {
+  getStatusClass(status: string): string {
     return `${this.getStatusText(status)}-badge`;
   }
 
@@ -401,16 +408,17 @@ export class UpcomingAppointments {
   }
 
   private countByStatus(status: string): number {
-    return this.upcomingAppointments().filter(
+    return this.doctorAppointments().filter(
       (appointment) => this.getStatusText(appointment.status) === status
     ).length;
   }
 
-  private isUpcomingStatus(status: string | number): boolean {
+  private isDoctorVisibleStatus(status: string): boolean {
     const normalizedStatus = this.getStatusText(status);
 
     return normalizedStatus === 'pending' ||
-      normalizedStatus === 'confirmed';
+      normalizedStatus === 'confirmed' ||
+      normalizedStatus === 'cancelled';
   }
 
   private isToday(dateValue: string): boolean {
@@ -473,8 +481,8 @@ export class UpcomingAppointments {
     return appointmentDate;
   }
 
-  private getStatusText(status: string | number): string {
-    const value = String(status).trim().toLowerCase();
+  private getStatusText(status: string): string {
+    const value = status.trim().toLowerCase();
 
     if (value === '1') {
       return 'pending';

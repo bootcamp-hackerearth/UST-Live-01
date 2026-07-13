@@ -1,8 +1,8 @@
-﻿using HealthAxis.Shared.DTO.AuthDtos;
-using HealthAxis.Shared.DTO.DoctorDtos;
-using HealthAxis.API.Models;
+﻿using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
+using HealthAxis.Shared.DTO.AuthDtos;
+using HealthAxis.Shared.DTO.DoctorDtos;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
@@ -22,6 +22,15 @@ namespace HealthAxis.API.Services.Implementation
         private const string RefreshTokenName = "RefreshToken";
         private const string RefreshTokenExpiryName = "RefreshTokenExpiry";
 
+        private const string InvalidCredentials = "Invalid credentials";
+        private const string UserNotFound = "User not found";
+
+        private static readonly string[] AdminResetAllowedRoles =
+        [
+            "Patient",
+            "Doctor"
+        ];
+
         public async Task<(bool Success, string Message, string AccessToken, string RefreshToken, int ExpiresIn)> Login(
             LoginDto request)
         {
@@ -29,7 +38,7 @@ namespace HealthAxis.API.Services.Implementation
 
             if (user is null)
             {
-                return (false, "Invalid credentials", string.Empty, string.Empty, 0);
+                return (false, InvalidCredentials, string.Empty, string.Empty, 0);
             }
 
             var isPasswordValid =
@@ -37,7 +46,7 @@ namespace HealthAxis.API.Services.Implementation
 
             if (!isPasswordValid)
             {
-                return (false, "Invalid credentials", string.Empty, string.Empty, 0);
+                return (false, InvalidCredentials, string.Empty, string.Empty, 0);
             }
 
             var accessToken = await GenerateToken(user);
@@ -96,7 +105,7 @@ namespace HealthAxis.API.Services.Implementation
             {
                 return (
                     false,
-                    "User not found",
+                    UserNotFound,
                     string.Empty,
                     string.Empty,
                     0,
@@ -137,11 +146,11 @@ namespace HealthAxis.API.Services.Implementation
                     401);
             }
 
-var isValidDate = DateTime.TryParse(
-    savedExpiry,
-    CultureInfo.InvariantCulture,
-    DateTimeStyles.RoundtripKind,
-    out var refreshTokenExpiry);
+            var isValidDate = DateTime.TryParse(
+                savedExpiry,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.RoundtripKind,
+                out var refreshTokenExpiry);
 
             if (!isValidDate || refreshTokenExpiry < DateTime.UtcNow)
             {
@@ -178,7 +187,9 @@ var isValidDate = DateTime.TryParse(
             var patients = await patientRepository.GetAllAsync();
 
             var emailExists = patients
-                .Any(p => p.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
+                .Any(patient => patient.Email.Equals(
+                    request.Email,
+                    StringComparison.OrdinalIgnoreCase));
 
             if (emailExists)
             {
@@ -186,7 +197,7 @@ var isValidDate = DateTime.TryParse(
             }
 
             var phoneExists = patients
-                .Any(p => p.PhoneNumber == request.PhoneNumber);
+                .Any(patient => patient.PhoneNumber == request.PhoneNumber);
 
             if (phoneExists)
             {
@@ -204,11 +215,13 @@ var isValidDate = DateTime.TryParse(
                 Email = request.Email
             };
 
-            var result = await userManager.CreateAsync(identityUser, request.Password);
+            var result = await userManager.CreateAsync(
+                identityUser,
+                request.Password);
 
             if (!result.Succeeded)
             {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                var errors = BuildIdentityErrorMessage(result);
 
                 return (false, errors, string.Empty, 400);
             }
@@ -249,7 +262,7 @@ var isValidDate = DateTime.TryParse(
 
             if (user is null)
             {
-                return (false, "User not found", 404);
+                return (false, UserNotFound, 404);
             }
 
             var result = await userManager.ChangePasswordAsync(
@@ -259,12 +272,122 @@ var isValidDate = DateTime.TryParse(
 
             if (!result.Succeeded)
             {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                var errors = BuildIdentityErrorMessage(result);
 
                 return (false, errors, 400);
             }
 
             return (true, "Password changed successfully", 200);
+        }
+
+        public async Task<(bool Success, string Message, int StatusCode)> AdminResetPassword(
+            AdminResetPasswordDto request)
+        {
+            var validationResult = ValidateAdminResetPasswordRequest(request);
+
+            if (!validationResult.Success)
+            {
+                return validationResult;
+            }
+
+            var user = await FindUserForPasswordResetAsync(request);
+
+            if (user is null)
+            {
+                return (false, UserNotFound, 404);
+            }
+
+            var roleValidationResult = await ValidateAdminResetTargetRoleAsync(user);
+
+            if (!roleValidationResult.Success)
+            {
+                return roleValidationResult;
+            }
+
+            var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
+
+            var resetResult = await userManager.ResetPasswordAsync(
+                user,
+                resetToken,
+                request.NewPassword);
+
+            if (!resetResult.Succeeded)
+            {
+                var errors = BuildIdentityErrorMessage(resetResult);
+
+                return (false, errors, 400);
+            }
+
+            await ClearRefreshTokenAsync(user);
+
+            return (true, "Password reset successfully by admin.", 200);
+        }
+
+        private static (bool Success, string Message, int StatusCode) ValidateAdminResetPasswordRequest(
+            AdminResetPasswordDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.UserId) &&
+                string.IsNullOrWhiteSpace(request.Email))
+            {
+                return (false, "User id or email is required.", 400);
+            }
+
+            if (request.NewPassword != request.ConfirmPassword)
+            {
+                return (false, "New password and confirm password do not match.", 400);
+            }
+
+            return (true, string.Empty, 200);
+        }
+
+        private async Task<IdentityUser?> FindUserForPasswordResetAsync(
+            AdminResetPasswordDto request)
+        {
+            if (!string.IsNullOrWhiteSpace(request.UserId))
+            {
+                return await userManager.FindByIdAsync(request.UserId.Trim());
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Email))
+            {
+                return await userManager.FindByEmailAsync(request.Email.Trim());
+            }
+
+            return null;
+        }
+
+        private async Task<(bool Success, string Message, int StatusCode)> ValidateAdminResetTargetRoleAsync(
+            IdentityUser user)
+        {
+            var roles = await userManager.GetRolesAsync(user);
+
+            var isAllowedTarget = roles.Any(role =>
+                AdminResetAllowedRoles.Contains(
+                    role,
+                    StringComparer.OrdinalIgnoreCase));
+
+            if (!isAllowedTarget)
+            {
+                return (
+                    false,
+                    "Admin can reset password only for patient or doctor users.",
+                    403);
+            }
+
+            return (true, string.Empty, 200);
+        }
+
+        private async Task ClearRefreshTokenAsync(IdentityUser user)
+        {
+            await userManager.RemoveAuthenticationTokenAsync(
+                user,
+                LoginProvider,
+                RefreshTokenName);
+
+            await userManager.RemoveAuthenticationTokenAsync(
+                user,
+                LoginProvider,
+                RefreshTokenExpiryName);
         }
 
         private async Task<string> GenerateToken(IdentityUser user)
@@ -376,6 +499,14 @@ var isValidDate = DateTime.TryParse(
             }
 
             return principal;
+        }
+
+        private static string BuildIdentityErrorMessage(
+            IdentityResult result)
+        {
+            return string.Join(
+                ", ",
+                result.Errors.Select(error => error.Description));
         }
     }
 }

@@ -72,7 +72,7 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
 }
 
@@ -279,7 +279,7 @@
 }
 
 .action-column {
-  text-align: right;
+  text-align: center;
 }
 
 .patient-cell {
@@ -338,7 +338,7 @@
 
 .action-buttons {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
@@ -663,4 +663,120 @@ textarea:focus {
 
 .patient-cell {
   padding-left: 0;
+}
+
+.complete-button,
+.complete-modal-button {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 13px;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #dcfce7;
+  color: #166534;
+}
+
+.complete-button:hover,
+.complete-modal-button:hover {
+  background: #bbf7d0;
+  color: #14532d;
+}
+
+.complete-modal-button {
+  min-height: 46px;
+  border-radius: 16px;
+  padding: 0 18px;
+}
+
+.cancelled > span {
+  background: #fee2e2;
+}
+
+.cancelled::before {
+  background: #dc2626;
+}
+
+.warning-box,
+.rule-note {
+  padding: 14px 16px;
+  border-radius: 16px;
+  margin: 14px 0 18px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.field-error {
+  display: block;
+  margin-top: 8px;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@media (max-width: 1000px) {
+  .complete-button,
+  .complete-modal-button {
+    width: 100%;
+  }
+}
+
+.appointment-table {
+  table-layout: fixed;
+}
+
+.appointment-table th:nth-child(1),
+.appointment-table td:nth-child(1) {
+  width: 18%;
+}
+
+.appointment-table th:nth-child(2),
+.appointment-table td:nth-child(2) {
+  width: 15%;
+}
+
+.appointment-table th:nth-child(3),
+.appointment-table td:nth-child(3) {
+  width: 22%;
+}
+
+.appointment-table th:nth-child(4),
+.appointment-table td:nth-child(4) {
+  width: 15%;
+  text-align: center;
+}
+
+.appointment-table th:nth-child(5),
+.appointment-table td:nth-child(5) {
+  width: 30%;
+  text-align: center;
+}
+
+.action-column {
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.view-button,
+.confirm-button,
+.cancel-action-button,
+.complete-button {
+  min-width: 74px;
+  text-align: center;
 }

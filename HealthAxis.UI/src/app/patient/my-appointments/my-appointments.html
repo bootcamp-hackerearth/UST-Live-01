@@ -166,7 +166,6 @@
               <th>Date</th>
               <th>Time Slot</th>
               <th>Status</th>
-              <th>Cancellation Reason</th>
               <th class="action-column">Action</th>
             </tr>
           </thead>
@@ -190,10 +189,6 @@
                   <span [class]="'status-badge ' + getStatusClass(appointment.status)">
                     {{ appointment.status }}
                   </span>
-                </td>
-
-                <td>
-                  {{ appointment.cancellationReason || '-' }}
                 </td>
 
                 <td class="action-column">

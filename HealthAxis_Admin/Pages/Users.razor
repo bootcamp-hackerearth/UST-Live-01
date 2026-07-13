@@ -1,98 +1,77 @@
 ﻿@page "/users"
 @attribute [Authorize(Roles = "Admin")]
+
 @using HealthAxis.Shared.DTO.AdminDtos
-@inject AuthService AuthService
+
 @inject UserAdminService UserService
-@inject NavigationManager NavigationManager
 
-<h1>User Management</h1>
-
-<p class="page-subtitle">
-    View system users by role, search records, and check account status.
-</p>
-
-<section class="stats-grid">
-
-    <div class="stat-card">
-        <div class="stat-icon user-admin-icon">A</div>
-        <div>
-            <p>Admins</p>
-            <h2>@allUsers.Count(user => user.Role == AdminRole)</h2>
-            <span>System managers</span>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon user-doctor-icon">D</div>
-        <div>
-            <p>Doctors</p>
-            <h2>@allUsers.Count(user => user.Role == DoctorRole)</h2>
-            <span>Medical staff</span>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon user-patient-icon">P</div>
-        <div>
-            <p>Patients</p>
-            <h2>@allUsers.Count(user => user.Role == PatientRole)</h2>
-            <span>Registered patients</span>
-        </div>
-    </div>
-
-</section>
-
-<section class="doctor-list-card">
+<section class="doctor-list-card user-admin-card">
 
     <div class="doctor-list-header">
         <div>
             <h3>Users List</h3>
             <p>All system users from database.</p>
         </div>
+
+        <button type="button"
+                class="small-refresh-btn"
+                disabled="@isLoading"
+                @onclick="LoadUsersAsync">
+            @(isLoading ? "Loading..." : "Refresh")
+        </button>
     </div>
 
-    <div class="user-toolbar">
+    @if (!string.IsNullOrWhiteSpace(message))
+    {
+        <div class="@messageClass">
+            @message
+        </div>
+    }
 
+    <div class="users-toolbar">
         <div class="doctor-search-box">
             <input type="text"
-                   placeholder="Search all users..."
-                   value="@searchText"
-                   @oninput="OnSearchInput" />
+                   maxlength="80"
+                   placeholder="Search name, email, role, phone, or specialisation..."
+                   @bind="searchText"
+                   @bind:event="oninput" />
         </div>
 
         <div class="doctor-filter-box">
-            <select class="form-control"
-                    value="@selectedRole"
-                    @onchange="OnRoleChanged">
+            <select class="form-control" @bind="selectedRole">
                 <option value="@AllRolesOption">All Roles</option>
                 <option value="@AdminRole">Admin</option>
                 <option value="@DoctorRole">Doctor</option>
                 <option value="@PatientRole">Patient</option>
             </select>
         </div>
-
     </div>
 
     @if (isLoading)
     {
-        <p>Loading users from database...</p>
+        <div class="empty-box">
+            Loading users from database...
+        </div>
     }
-    else if (!FilteredUsers.Any())
+    else if (FilteredUsers.Count == 0)
     {
-        <p>No users found.</p>
+        <div class="empty-box">
+            No users found.
+        </div>
     }
     else
     {
-        <div class="table-wrapper">
-            <table class="modern-table">
+        <div class="users-table-wrapper">
+            <table class="modern-table users-table">
                 <thead>
                     <tr>
                         <th>User</th>
                         <th>Email</th>
                         <th>Phone</th>
+                        <th>Specialisation</th>
                         <th>Role</th>
                         <th>Status</th>
-                        <th class="action-column">Actions</th>
+                        <th class="action-column">Action</th>
                     </tr>
                 </thead>
 
@@ -101,25 +80,44 @@
                     {
                         <tr>
                             <td>
-                                <div class="doctor-profile-cell">
-                                    <div class="@GetUserAvatarClass(user.Role)">
+                                <div class="user-profile-cell">
+                                    <div class="doctor-avatar @GetAvatarClass(user.Role)">
                                         @GetInitial(user.FullName)
                                     </div>
 
-                                    <div>
-                                        <h4>@user.FullName</h4>
-                                        <span>ID: @ShortUserId(user.UserId)</span>
+                                    <div class="user-name-block">
+                                        <h4>@DisplayValue(user.FullName)</h4>
+                                        <span>ID: @GetShortId(user.UserId)</span>
                                     </div>
                                 </div>
                             </td>
 
-                            <td>@user.Email</td>
+                            <td class="wrap-text">
+                                @DisplayValue(user.Email)
+                            </td>
 
-                            <td>@DisplayValue(user.PhoneNumber)</td>
+                            <td class="wrap-text">
+                                @DisplayValue(user.PhoneNumber)
+                            </td>
+
+                            <td>
+                                @if (IsDoctor(user.Role))
+                                {
+                                    <span class="specialisation-pill">
+                                        @DisplayValue(user.Specialisation)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="not-applicable-text">
+                                        Not applicable
+                                    </span>
+                                }
+                            </td>
 
                             <td>
                                 <span class="@GetRoleBadgeClass(user.Role)">
-                                    @user.Role
+                                    @DisplayValue(user.Role)
                                 </span>
                             </td>
 
@@ -138,11 +136,11 @@
                                 }
                             </td>
 
-                            <td>
+                            <td class="action-column">
                                 <button type="button"
-                                        class="view-user-btn"
+                                        class="user-view-btn"
                                         @onclick="() => OpenViewDialog(user)">
-                                    View Details
+                                    View
                                 </button>
                             </td>
                         </tr>
@@ -153,8 +151,7 @@
 
         @if (TotalPages > MinimumPaginationPages)
         {
-            <div class="pagination-bar">
-
+            <div class="pagination-bar users-pagination">
                 <button type="button"
                         class="secondary-btn"
                         disabled="@(currentPage == FirstPageNumber)"
@@ -173,7 +170,6 @@
                         @onclick="GoToNextPage">
                     Next
                 </button>
-
             </div>
         }
     }
@@ -188,7 +184,7 @@
             <div class="dialog-header">
                 <div>
                     <h3>User Details</h3>
-                    <p>Complete information of selected system user.</p>
+                    <p>Complete account information for this user.</p>
                 </div>
 
                 <button type="button"
@@ -199,38 +195,31 @@
             </div>
 
             <div class="user-detail-card">
-
-                <div class="user-detail-head">
-                    <div class="@GetUserAvatarClass(selectedUser.Role)">
-                        @GetInitial(selectedUser.FullName)
-                    </div>
-
-                    <div>
-                        <h4>@selectedUser.FullName</h4>
-                        <p>@selectedUser.Email</p>
-                    </div>
-                </div>
-
                 <div class="user-detail-grid">
 
                     <div>
+                        <span>User ID</span>
+                        <strong>@selectedUser.UserId</strong>
+                    </div>
+
+                    <div>
                         <span>Full Name</span>
-                        <strong>@selectedUser.FullName</strong>
+                        <strong>@DisplayValue(selectedUser.FullName)</strong>
                     </div>
 
                     <div>
                         <span>Email</span>
-                        <strong>@selectedUser.Email</strong>
+                        <strong>@DisplayValue(selectedUser.Email)</strong>
                     </div>
 
                     <div>
-                        <span>Phone Number</span>
+                        <span>Phone</span>
                         <strong>@DisplayValue(selectedUser.PhoneNumber)</strong>
                     </div>
 
                     <div>
                         <span>Role</span>
-                        <strong>@selectedUser.Role</strong>
+                        <strong>@DisplayValue(selectedUser.Role)</strong>
                     </div>
 
                     <div>
@@ -239,14 +228,16 @@
                     </div>
 
                     <div>
+                        <span>Specialisation</span>
+                        <strong>@GetSpecialisationDisplay(selectedUser)</strong>
+                    </div>
+
+                    <div>
                         <span>Created Date</span>
                         <strong>@FormatDate(selectedUser.CreatedDate)</strong>
                     </div>
 
-                   
-
                 </div>
-
             </div>
 
             <div class="dialog-actions">
@@ -261,33 +252,304 @@
     </div>
 }
 
+<style>
+    .user-admin-card {
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .users-toolbar {
+        display: grid;
+        grid-template-columns: minmax(260px, 1fr) 260px;
+        gap: 16px;
+        align-items: center;
+        margin: 20px 0;
+    }
+
+    .users-table-wrapper {
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .users-table {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+        .users-table th:nth-child(1),
+        .users-table td:nth-child(1) {
+            width: 22%;
+        }
+
+        .users-table th:nth-child(2),
+        .users-table td:nth-child(2) {
+            width: 21%;
+        }
+
+        .users-table th:nth-child(3),
+        .users-table td:nth-child(3) {
+            width: 13%;
+        }
+
+        .users-table th:nth-child(4),
+        .users-table td:nth-child(4) {
+            width: 15%;
+        }
+
+        .users-table th:nth-child(5),
+        .users-table td:nth-child(5) {
+            width: 9%;
+        }
+
+        .users-table th:nth-child(6),
+        .users-table td:nth-child(6) {
+            width: 9%;
+        }
+
+        .users-table th:nth-child(7),
+        .users-table td:nth-child(7) {
+            width: 11%;
+        }
+
+        .users-table th,
+        .users-table td {
+            vertical-align: middle;
+        }
+
+    .wrap-text {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .user-profile-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .user-name-block {
+        min-width: 0;
+    }
+
+        .user-name-block h4 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 900;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-name-block span {
+            display: block;
+            margin-top: 4px;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+    .action-column {
+        text-align: center !important;
+    }
+
+    .user-view-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 74px;
+        height: 34px;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.18);
+        color: #7dd3fc;
+        font-size: 12px;
+        font-weight: 900;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+        .user-view-btn:hover {
+            background: rgba(14, 165, 233, 0.28);
+        }
+
+    .small-refresh-btn {
+        border: none;
+        border-radius: 999px;
+        padding: 9px 16px;
+        background: linear-gradient(135deg, #0ea5e9, #7c3aed);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+        .small-refresh-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+    .empty-box {
+        padding: 22px;
+        border-radius: 18px;
+        background: rgba(148, 163, 184, 0.12);
+        color: #cbd5e1;
+        font-weight: 800;
+    }
+
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 5px 11px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .admin-role {
+        background: rgba(245, 158, 11, 0.16);
+        color: #fcd34d;
+        border: 1px solid rgba(245, 158, 11, 0.34);
+    }
+
+    .doctor-role {
+        background: rgba(59, 130, 246, 0.16);
+        color: #bfdbfe;
+        border: 1px solid rgba(59, 130, 246, 0.34);
+    }
+
+    .patient-role {
+        background: rgba(34, 197, 94, 0.16);
+        color: #bbf7d0;
+        border: 1px solid rgba(34, 197, 94, 0.34);
+    }
+
+    .default-role {
+        background: rgba(148, 163, 184, 0.18);
+        color: #e2e8f0;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .not-applicable-text {
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .user-avatar-admin {
+        background: linear-gradient(135deg, #f97316, #f59e0b) !important;
+    }
+
+    .user-avatar-doctor {
+        background: linear-gradient(135deg, #0ea5e9, #2563eb) !important;
+    }
+
+    .user-avatar-patient {
+        background: linear-gradient(135deg, #10b981, #22c55e) !important;
+    }
+
+    .user-detail-dialog {
+        width: min(880px, 94vw);
+    }
+
+    .user-detail-card {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(148, 163, 184, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .user-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+        .user-detail-grid div {
+            padding: 14px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+        }
+
+        .user-detail-grid span {
+            display: block;
+            margin-bottom: 7px;
+            color: #93c5fd;
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .user-detail-grid strong {
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 900;
+            overflow-wrap: anywhere;
+        }
+
+    .users-pagination {
+        margin-top: 22px;
+    }
+
+    @@media (max-width: 1200px) {
+        .users-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .users-table {
+            min-width: 1020px;
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .users-toolbar {
+            grid-template-columns: 1fr;
+        }
+
+        .user-detail-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
 @code {
     private const int FirstPageNumber = 1;
     private const int MinimumPaginationPages = 1;
     private const int PageSize = 6;
+    private const int MessageAutoHideMilliseconds = 3000;
 
     private const string AllRolesOption = "All";
     private const string AdminRole = "Admin";
     private const string DoctorRole = "Doctor";
     private const string PatientRole = "Patient";
 
-    private List<AdminUserDto> allUsers = new();
+    private List<AdminUserDto> users = new();
 
     private AdminUserDto? selectedUser;
 
     private string searchText = string.Empty;
     private string selectedRole = AllRolesOption;
+    private string message = string.Empty;
+    private string messageClass = "success-box";
 
     private bool isLoading;
     private bool showViewDialog;
 
     private int currentPage = FirstPageNumber;
+    private int messageVersion;
 
     private List<AdminUserDto> FilteredUsers
     {
         get
         {
-            var filteredUsers = allUsers.AsEnumerable();
+            var filteredUsers = users.AsEnumerable();
 
             if (!string.IsNullOrWhiteSpace(searchText))
             {
@@ -295,7 +557,9 @@
                     ContainsIgnoreCase(user.FullName, searchText) ||
                     ContainsIgnoreCase(user.Email, searchText) ||
                     ContainsIgnoreCase(user.Role, searchText) ||
-                    ContainsIgnoreCase(user.PhoneNumber, searchText));
+                    ContainsIgnoreCase(user.PhoneNumber, searchText) ||
+                    ContainsIgnoreCase(user.Specialisation, searchText) ||
+                    ContainsIgnoreCase(user.UserId, searchText));
             }
 
             if (!string.Equals(
@@ -304,7 +568,10 @@
                     StringComparison.OrdinalIgnoreCase))
             {
                 filteredUsers = filteredUsers.Where(user =>
-                    string.Equals(user.Role, selectedRole, StringComparison.OrdinalIgnoreCase));
+                    string.Equals(
+                        user.Role,
+                        selectedRole,
+                        StringComparison.OrdinalIgnoreCase));
             }
 
             return filteredUsers.ToList();
@@ -317,38 +584,42 @@
             .Take(PageSize)
             .ToList();
 
-    private int TotalPages
-    {
-        get
-        {
-            if (!FilteredUsers.Any())
-            {
-                return FirstPageNumber;
-            }
-
-            return (int)Math.Ceiling((double)FilteredUsers.Count / PageSize);
-        }
-    }
+    private int TotalPages =>
+        FilteredUsers.Count == 0
+            ? FirstPageNumber
+            : (int)Math.Ceiling((double)FilteredUsers.Count / PageSize);
 
     protected override async Task OnInitializedAsync()
     {
-        // if (!AuthService.IsLoggedIn)
-        // {
-        //     NavigationManager.NavigateTo("/");
-        //     return;
-        // }
-
-        await LoadUsers();
+        await LoadUsersAsync();
     }
 
-    private async Task LoadUsers()
+    private async Task LoadUsersAsync()
     {
         isLoading = true;
+        message = string.Empty;
 
         try
         {
-            allUsers = await UserService.GetAllUsersAsync();
+            users = await UserService.GetAllUsersAsync();
             currentPage = FirstPageNumber;
+        }
+        catch (TaskCanceledException)
+        {
+            users = new List<AdminUserDto>();
+            ShowMessage(
+                "Users loading timed out. Please check if HealthAxis.API is running.",
+                false);
+        }
+        catch (HttpRequestException)
+        {
+            users = new List<AdminUserDto>();
+            ShowMessage("Could not load users.", false);
+        }
+        catch (InvalidOperationException)
+        {
+            users = new List<AdminUserDto>();
+            ShowMessage("User service is not available.", false);
         }
         finally
         {
@@ -356,16 +627,16 @@
         }
     }
 
-    private void OnSearchInput(ChangeEventArgs args)
+    private void OpenViewDialog(AdminUserDto user)
     {
-        searchText = args.Value?.ToString() ?? string.Empty;
-        currentPage = FirstPageNumber;
+        selectedUser = user;
+        showViewDialog = true;
     }
 
-    private void OnRoleChanged(ChangeEventArgs args)
+    private void CloseViewDialog()
     {
-        selectedRole = args.Value?.ToString() ?? AllRolesOption;
-        currentPage = FirstPageNumber;
+        selectedUser = null;
+        showViewDialog = false;
     }
 
     private void GoToPreviousPage()
@@ -384,16 +655,24 @@
         }
     }
 
-    private void OpenViewDialog(AdminUserDto user)
+    private void ShowMessage(string text, bool isSuccess)
     {
-        selectedUser = user;
-        showViewDialog = true;
+        message = text;
+        messageClass = isSuccess ? "success-box" : "error-box";
+
+        messageVersion++;
+        _ = ClearMessageAfterDelayAsync(messageVersion);
     }
 
-    private void CloseViewDialog()
+    private async Task ClearMessageAfterDelayAsync(int version)
     {
-        selectedUser = null;
-        showViewDialog = false;
+        await Task.Delay(MessageAutoHideMilliseconds);
+
+        if (version == messageVersion)
+        {
+            message = string.Empty;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private static bool ContainsIgnoreCase(
@@ -404,7 +683,29 @@
             value.Contains(searchValue, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static string GetInitial(string name)
+    private static bool IsDoctor(string role)
+    {
+        return string.Equals(
+            role,
+            DoctorRole,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string DisplayValue(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? "Not available"
+            : value.Trim();
+    }
+
+    private static string GetSpecialisationDisplay(AdminUserDto user)
+    {
+        return IsDoctor(user.Role)
+            ? DisplayValue(user.Specialisation)
+            : "Not applicable";
+    }
+
+    private static string GetInitial(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -414,11 +715,11 @@
         return name.Trim()[..1].ToUpperInvariant();
     }
 
-    private static string ShortUserId(string userId)
+    private static string GetShortId(string? userId)
     {
         if (string.IsNullOrWhiteSpace(userId))
         {
-            return "-";
+            return "Not available";
         }
 
         return userId.Length <= 8
@@ -426,39 +727,50 @@
             : userId[..8];
     }
 
-    private static string DisplayValue(string value)
+    private static string FormatDate(DateTime? date)
     {
-        return string.IsNullOrWhiteSpace(value)
-            ? "Not available"
-            : value;
-    }
-
-    private static string FormatDate(DateTime? createdDate)
-    {
-        return createdDate.HasValue
-            ? createdDate.Value.ToString("dd MMM yyyy")
+        return date.HasValue
+            ? date.Value.ToString("dd MMM yyyy")
             : "Not available";
     }
 
-    private static string GetUserAvatarClass(string role)
+    private static string GetAvatarClass(string role)
     {
-        return role switch
+        if (string.Equals(role, AdminRole, StringComparison.OrdinalIgnoreCase))
         {
-            AdminRole => "doctor-avatar user-avatar-admin",
-            DoctorRole => "doctor-avatar user-avatar-doctor",
-            PatientRole => "doctor-avatar user-avatar-patient",
-            _ => "doctor-avatar user-avatar-default"
-        };
+            return "user-avatar-admin";
+        }
+
+        if (string.Equals(role, DoctorRole, StringComparison.OrdinalIgnoreCase))
+        {
+            return "user-avatar-doctor";
+        }
+
+        if (string.Equals(role, PatientRole, StringComparison.OrdinalIgnoreCase))
+        {
+            return "user-avatar-patient";
+        }
+
+        return string.Empty;
     }
 
     private static string GetRoleBadgeClass(string role)
     {
-        return role switch
+        if (string.Equals(role, AdminRole, StringComparison.OrdinalIgnoreCase))
         {
-            AdminRole => "role-badge role-admin-badge",
-            DoctorRole => "role-badge role-doctor-badge",
-            PatientRole => "role-badge role-patient-badge",
-            _ => "role-badge role-default-badge"
-        };
+            return "role-badge admin-role";
+        }
+
+        if (string.Equals(role, DoctorRole, StringComparison.OrdinalIgnoreCase))
+        {
+            return "role-badge doctor-role";
+        }
+
+        if (string.Equals(role, PatientRole, StringComparison.OrdinalIgnoreCase))
+        {
+            return "role-badge patient-role";
+        }
+
+        return "role-badge default-role";
     }
 }

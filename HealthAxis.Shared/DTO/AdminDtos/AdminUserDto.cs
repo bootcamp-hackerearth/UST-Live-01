@@ -15,5 +15,7 @@
         public string PhoneNumber { get; set; } = string.Empty;
 
         public DateTime? CreatedDate { get; set; }
+
+        public string Specialisation { get; set; } = string.Empty;
     }
 }

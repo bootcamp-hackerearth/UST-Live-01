@@ -1,4 +1,6 @@
-﻿using HealthAxis.Shared.DTO.CommonDtos;
+﻿using HealthAxis.Shared.DTO.AdminDtos;
+using HealthAxis.Shared.DTO.AuthDtos;
+using HealthAxis.Shared.DTO.CommonDtos;
 using HealthAxis.Shared.DTO.DoctorDtos;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -13,6 +15,8 @@ namespace HealthAxis_Admin.Services
 
         private const string DoctorEndpoint = "api/admin/doctors";
         private const string DoctorPagedEndpoint = "api/admin/doctors/paged";
+        private const string ResetPasswordEndpoint = "api/Auth/admin/reset-password";
+        private const string AppointmentDetailsEndpoint = "api/admin/reports/appointments/details";
 
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
@@ -62,6 +66,28 @@ namespace HealthAxis_Admin.Services
                 PageSize = DoctorPageSize,
                 TotalRecords = 0
             };
+        }
+
+        public async Task<List<AdminAppointmentDetailDto>> GetDoctorAppointmentsAsync(
+            int doctorId)
+        {
+            if (doctorId <= 0)
+            {
+                return new List<AdminAppointmentDetailDto>();
+            }
+
+            using var cancellationTokenSource = CreateTimeoutToken();
+
+            var appointments = await _httpClient.GetFromJsonAsync<List<AdminAppointmentDetailDto>>(
+                AppointmentDetailsEndpoint,
+                JsonOptions,
+                cancellationTokenSource.Token);
+
+            return appointments?
+                .Where(appointment => appointment.DoctorId == doctorId)
+                .OrderByDescending(appointment => appointment.ScheduledDate)
+                .ThenBy(appointment => appointment.TimeSlot)
+                .ToList() ?? new List<AdminAppointmentDetailDto>();
         }
 
         public async Task<(bool Success, string Message, DoctorCreatedDto? Doctor)> RegisterDoctorAsync(
@@ -152,25 +178,6 @@ namespace HealthAxis_Admin.Services
             return (false, errorMessage);
         }
 
-        public async Task<(bool Success, string Message)> DeleteDoctorAsync(
-            int doctorId)
-        {
-            using var cancellationTokenSource = CreateTimeoutToken();
-
-            using var response = await _httpClient.DeleteAsync(
-                $"{DoctorEndpoint}/{doctorId}",
-                cancellationTokenSource.Token);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return (true, "Doctor deleted successfully.");
-            }
-
-            var errorMessage = await ReadErrorMessageAsync(response);
-
-            return (false, errorMessage);
-        }
-
         public async Task<(bool Success, string Message)> ToggleDoctorStatusAsync(
             DoctorDto doctor)
         {
@@ -204,6 +211,48 @@ namespace HealthAxis_Admin.Services
             return (false, errorMessage);
         }
 
+        public async Task<(bool Success, string Message)> ResetPasswordAsync(
+            AdminResetPasswordDto request)
+        {
+            ArgumentNullException.ThrowIfNull(request);
+
+            using var cancellationTokenSource = CreateTimeoutToken();
+
+            try
+            {
+                using var response = await _httpClient.PostAsJsonAsync(
+                    ResetPasswordEndpoint,
+                    request,
+                    JsonOptions,
+                    cancellationTokenSource.Token);
+
+                var message = await ReadErrorMessageAsync(response);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return (
+                        true,
+                        string.IsNullOrWhiteSpace(message)
+                            ? "Password reset successfully."
+                            : message);
+                }
+
+                return (false, message);
+            }
+            catch (TaskCanceledException)
+            {
+                return (
+                    false,
+                    "API request timed out. Please check if HealthAxis.API is running.");
+            }
+            catch (HttpRequestException)
+            {
+                return (
+                    false,
+                    "Unable to connect to API. Please run HealthAxis.API and try again.");
+            }
+        }
+
         private static CancellationTokenSource CreateTimeoutToken()
         {
             return new CancellationTokenSource(
@@ -217,7 +266,9 @@ namespace HealthAxis_Admin.Services
 
             if (string.IsNullOrWhiteSpace(content))
             {
-                return "Request failed.";
+                return response.IsSuccessStatusCode
+                    ? string.Empty
+                    : "Request failed.";
             }
 
             try
@@ -230,13 +281,56 @@ namespace HealthAxis_Admin.Services
                 {
                     return messageElement.GetString() ?? "Request failed.";
                 }
+
+                if (document.RootElement.TryGetProperty(
+                        "title",
+                        out var titleElement))
+                {
+                    return titleElement.GetString() ?? "Request failed.";
+                }
+
+                if (document.RootElement.TryGetProperty(
+                        "errors",
+                        out var errorsElement))
+                {
+                    return ReadValidationErrors(errorsElement);
+                }
             }
             catch (JsonException)
             {
                 return content;
             }
 
-            return "Request failed.";
+            return response.IsSuccessStatusCode
+                ? string.Empty
+                : "Request failed.";
+        }
+
+        private static string ReadValidationErrors(JsonElement errorsElement)
+        {
+            var errors = new List<string>();
+
+            foreach (var property in errorsElement.EnumerateObject())
+            {
+                if (property.Value.ValueKind != JsonValueKind.Array)
+                {
+                    continue;
+                }
+
+                foreach (var error in property.Value.EnumerateArray())
+                {
+                    var errorMessage = error.GetString();
+
+                    if (!string.IsNullOrWhiteSpace(errorMessage))
+                    {
+                        errors.Add(errorMessage);
+                    }
+                }
+            }
+
+            return errors.Count == 0
+                ? "Validation failed."
+                : string.Join(" ", errors);
         }
     }
 }

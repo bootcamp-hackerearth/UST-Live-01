@@ -7,11 +7,11 @@
 
       <p>Doctor Workspace</p>
 
-      <h1>Upcoming Appointments</h1>
+      <h1>Patient Appointments</h1>
 
       <span>
-        View assigned patient appointments, confirm pending visits, and cancel
-        appointments only when cancellation rules allow.
+        View assigned patient appointments, confirm pending visits, complete
+        confirmed visits by adding health records, and review cancelled appointments.
       </span>
     </div>
 
@@ -47,6 +47,13 @@
       <div>
         <strong>{{ confirmedCount() }}</strong>
         <p>Confirmed</p>
+      </div>
+    </article>
+
+    <article class="stat-card cancelled">
+      <div>
+        <strong>{{ cancelledCount() }}</strong>
+        <p>Cancelled</p>
       </div>
     </article>
   </section>
@@ -97,14 +104,14 @@
       </div>
     }
 
-    @if (!loading() && upcomingAppointments().length === 0) {
+    @if (!loading() && doctorAppointments().length === 0) {
       <div class="empty-state">
-        <h3>No upcoming appointments</h3>
-        <p>Pending and confirmed appointments assigned to you will appear here.</p>
+        <h3>No appointments available</h3>
+        <p>Pending, confirmed, and cancelled appointments assigned to you will appear here.</p>
       </div>
     }
 
-    @if (!loading() && upcomingAppointments().length > 0 && filteredAppointments().length === 0) {
+    @if (!loading() && doctorAppointments().length > 0 && filteredAppointments().length === 0) {
       <div class="empty-box">
         No appointments found for the selected filter.
       </div>
@@ -146,47 +153,54 @@
                 </td>
 
                 <td class="action-column">
-                  <div class="action-buttons">
-                    <button
-                      type="button"
-                      class="view-button"
-                      (click)="openAppointmentDetails(appointment)"
-                    >
-                      View
-                    </button>
+  <div class="action-buttons">
+    <button
+      type="button"
+      class="view-button"
+      (click)="openAppointmentDetails(appointment)"
+    >
+      View
+    </button>
 
-                    @if (canConfirm(appointment)) {
-                      <button
-                        type="button"
-                        class="confirm-button"
-                        [disabled]="isProcessing(appointment)"
-                        (click)="confirmAppointment(appointment)"
-                      >
-                        @if (isProcessing(appointment)) {
-                          Confirming...
-                        } @else {
-                          Confirm
-                        }
-                      </button>
-                    }
+    @if (canConfirm(appointment)) {
+      <button
+        type="button"
+        class="confirm-button"
+        [disabled]="isProcessing(appointment)"
+        (click)="confirmAppointment(appointment)"
+      >
+        @if (isProcessing(appointment)) {
+          Confirming...
+        } @else {
+          Confirm
+        }
+      </button>
+    }
 
-                    @if (shouldShowCancelButton(appointment)) {
-                      <button
-                        type="button"
-                        class="cancel-action-button"
-                        [disabled]="isProcessing(appointment) || !canCancel(appointment)"
-                        [title]="canCancel(appointment) ? 'Cancel appointment' : getCancelRestrictionMessage(appointment)"
-                        (click)="openCancelDialog(appointment)"
-                      >
-                        Cancel
-                      </button>
-                    }
+    @if (canAddHealthRecord(appointment)) {
+      <a
+        class="complete-button"
+        [routerLink]="['/doctor/completed-appointments']"
+        [queryParams]="{ appointmentId: appointment.appointmentId }"
+        title="Add health record to complete this appointment"
+      >
+        Complete
+      </a>
+    }
 
-                    @if (!canConfirm(appointment) && !shouldShowCancelButton(appointment)) {
-                      <span class="no-action">No action</span>
-                    }
-                  </div>
-                </td>
+    @if (shouldShowCancelButton(appointment)) {
+      <button
+        type="button"
+        class="cancel-action-button"
+        [disabled]="isProcessing(appointment) || !canCancel(appointment)"
+        [title]="canCancel(appointment) ? 'Cancel appointment' : getCancelRestrictionMessage(appointment)"
+        (click)="openCancelDialog(appointment)"
+      >
+        Cancel
+      </button>
+    }
+  </div>
+</td>
               </tr>
             }
           </tbody>
@@ -304,6 +318,16 @@
             </button>
           }
 
+          @if (canAddHealthRecord(appointment)) {
+            <a
+              class="complete-modal-button"
+              [routerLink]="['/doctor/completed-appointments']"
+              [queryParams]="{ appointmentId: appointment.appointmentId }"
+            >
+              Complete by Adding Record
+            </a>
+          }
+
           @if (shouldShowCancelButton(appointment)) {
             <button
               type="button"
@@ -385,7 +409,7 @@
           id="cancelReason"
           rows="4"
           maxlength="200"
-          
+          placeholder="Example: Doctor emergency, schedule conflict, or hospital emergency."
           [value]="cancellationReason()"
           (input)="onCancellationReasonInput($event)"
           (blur)="cancellationReasonTouched.set(true)"

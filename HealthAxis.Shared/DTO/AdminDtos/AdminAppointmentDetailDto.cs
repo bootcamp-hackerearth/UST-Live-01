@@ -19,5 +19,9 @@
         public string TimeSlot { get; set; } = string.Empty;
 
         public string Status { get; set; } = string.Empty;
+
+        public string CancelledBy { get; set; } = string.Empty;
+
+        public string CancellationReason { get; set; } = string.Empty;
     }
 }

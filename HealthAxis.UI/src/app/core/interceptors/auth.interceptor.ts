@@ -135,7 +135,7 @@ function waitForRefreshAndRetry(
   next: HttpHandlerFn
 ) {
   return refreshedTokenSubject.pipe(
-    filter(Boolean),
+    filter((token): token is string => Boolean(token)),
     take(1),
     switchMap((newAccessToken) => {
       const retryRequest = request.clone({
@@ -153,9 +153,7 @@ function waitForRefreshAndRetry(
 function isAuthEndpoint(url: string): boolean {
   const lowerUrl = url.toLowerCase();
 
-  return (
-    lowerUrl.includes('/auth/login') ||
+  return lowerUrl.includes('/auth/login') ||
     lowerUrl.includes('/auth/register') ||
-    lowerUrl.includes('/auth/refresh-token')
-  );
+    lowerUrl.includes('/auth/refresh-token');
 }
