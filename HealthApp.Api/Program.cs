@@ -144,6 +144,7 @@ builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
 
 // Service registrations
 builder.Services.AddScoped<IDoctorService, DoctorService>();
@@ -152,6 +153,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddHostedService<NotificationCleanupService>();
 builder.Services.AddHostedService<HeartbeatService>();
