@@ -36,3 +36,22 @@ export interface SpecialisationOption {
 export interface DoctorStatusUpdateResponse {
   message: string;
 }
+
+export type DoctorAvailabilitySlotStatus =
+  | 'Available'
+  | 'Booked'
+  | 'DoctorOnLeave';
+
+export interface DoctorAvailabilitySlotDto {
+  timeSlot: string;
+  isAvailable: boolean;
+  status: DoctorAvailabilitySlotStatus;
+}
+
+export interface DoctorAvailabilityDto {
+  doctorId: number;
+  date: string;
+  isDoctorOnLeave: boolean;
+  message: string;
+  slots: DoctorAvailabilitySlotDto[];
+}

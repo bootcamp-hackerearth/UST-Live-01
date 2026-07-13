@@ -5,10 +5,14 @@ import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AppointmentBookingDto } from '../../../dtos/appointment.dto';
-import { DoctorDto } from '../../../dtos/doctor.dto';
+import {
+  DoctorAvailabilityDto,
+  DoctorAvailabilitySlotDto,
+  DoctorDto
+} from '../../../dtos/doctor.dto';
 
-import { DoctorService } from '../../../core/services/doctor.service';
 import { AppointmentService } from '../../../core/services/appointment.service';
+import { DoctorService } from '../../../core/services/doctor.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner';
 
@@ -20,11 +24,7 @@ interface SpecialisationOption {
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    LoadingSpinnerComponent
-  ],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
   templateUrl: './book-appointment.html',
   styleUrl: './book-appointment.css'
 })
@@ -35,24 +35,21 @@ export class BookAppointment implements OnInit {
   sortBy = 'nameAsc';
 
   doctors: DoctorDto[] = [];
-
   isLoadingDoctors = false;
 
   expandedDetailsDoctorId: number | null = null;
   expandedSlotsDoctorId: number | null = null;
-
   loadingSlotsDoctorId: number | null = null;
   bookingDoctorId: number | null = null;
 
-  doctorSlots: Record<number, string[]> = {};
+  doctorAvailability: Record<number, DoctorAvailabilityDto> = {};
   selectedSlots: Record<number, string> = {};
   slotPageIndexes: Record<number, number> = {};
 
   readonly slotPageSize = 4;
+  readonly minDate = this.getTodayDate();
 
-  minDate = this.getTodayDate();
-
-  specialisations: SpecialisationOption[] = [
+  readonly specialisations: SpecialisationOption[] = [
     { label: 'All Specialisations', value: 'All' },
     { label: 'General Physician', value: 'GeneralPhysician' },
     { label: 'Cardiologist', value: 'Cardiologist' },
@@ -65,7 +62,7 @@ export class BookAppointment implements OnInit {
     { label: 'Gynecologist', value: 'Gynecologist' }
   ];
 
-  sortOptions = [
+  readonly sortOptions = [
     { label: 'Name: A to Z', value: 'nameAsc' },
     { label: 'Fee: Low to High', value: 'feeAsc' },
     { label: 'Fee: High to Low', value: 'feeDesc' },
@@ -86,34 +83,20 @@ export class BookAppointment implements OnInit {
   }
 
   get sortedDoctors(): DoctorDto[] {
-    const doctorsCopy = [...this.doctors];
+    const doctors = [...this.doctors];
 
     switch (this.sortBy) {
       case 'feeAsc':
-        return doctorsCopy.sort(
-          (a, b) => a.consultationFee - b.consultationFee
-        );
-
+        return doctors.sort((a, b) => a.consultationFee - b.consultationFee);
       case 'feeDesc':
-        return doctorsCopy.sort(
-          (a, b) => b.consultationFee - a.consultationFee
-        );
-
+        return doctors.sort((a, b) => b.consultationFee - a.consultationFee);
       case 'experienceDesc':
-        return doctorsCopy.sort(
-          (a, b) => b.yearsOfExperience - a.yearsOfExperience
-        );
-
+        return doctors.sort((a, b) => b.yearsOfExperience - a.yearsOfExperience);
       case 'experienceAsc':
-        return doctorsCopy.sort(
-          (a, b) => a.yearsOfExperience - b.yearsOfExperience
-        );
-
+        return doctors.sort((a, b) => a.yearsOfExperience - b.yearsOfExperience);
       case 'nameAsc':
       default:
-        return doctorsCopy.sort((a, b) =>
-          a.fullName.localeCompare(b.fullName)
-        );
+        return doctors.sort((a, b) => a.fullName.localeCompare(b.fullName));
     }
   }
 
@@ -137,18 +120,12 @@ export class BookAppointment implements OnInit {
       .subscribe({
         next: doctors => {
           this.doctors = doctors ?? [];
-
-          this.expandedDetailsDoctorId = null;
-          this.expandedSlotsDoctorId = null;
-
-          this.doctorSlots = {};
-          this.selectedSlots = {};
-          this.slotPageIndexes = {};
-
+          this.resetDoctorPanels();
           this.cdr.markForCheck();
         },
         error: () => {
           this.doctors = [];
+          this.resetDoctorPanels();
           this.cdr.markForCheck();
         }
       });
@@ -161,39 +138,21 @@ export class BookAppointment implements OnInit {
   clearFilters(): void {
     this.searchText = '';
     this.selectedSpecialisation = 'All';
-    this.selectedDate = '';
     this.sortBy = 'nameAsc';
-
-    this.expandedDetailsDoctorId = null;
-    this.expandedSlotsDoctorId = null;
-
-    this.doctorSlots = {};
-    this.selectedSlots = {};
-    this.slotPageIndexes = {};
-
     this.loadDoctors();
   }
 
   onDateChanged(): void {
     this.expandedSlotsDoctorId = null;
-
-    this.doctorSlots = {};
+    this.doctorAvailability = {};
     this.selectedSlots = {};
     this.slotPageIndexes = {};
-
     this.cdr.markForCheck();
-
-    if (this.selectedDate) {
-      this.notificationService.info(
-        'Select a doctor and click View Slots to check availability.'
-      );
-    }
   }
 
   toggleDetails(doctorId: number): void {
     this.expandedDetailsDoctorId =
       this.expandedDetailsDoctorId === doctorId ? null : doctorId;
-
     this.cdr.markForCheck();
   }
 
@@ -217,11 +176,9 @@ export class BookAppointment implements OnInit {
     this.expandedSlotsDoctorId = doctor.doctorId;
     this.cdr.markForCheck();
 
-    if (this.areSlotsLoaded(doctor.doctorId)) {
-      return;
+    if (!this.areSlotsLoaded(doctor.doctorId)) {
+      this.loadAvailability(doctor.doctorId);
     }
-
-    this.loadAvailability(doctor.doctorId);
   }
 
   loadAvailability(doctorId: number): void {
@@ -231,10 +188,9 @@ export class BookAppointment implements OnInit {
     }
 
     this.loadingSlotsDoctorId = doctorId;
-    this.doctorSlots[doctorId] = [];
+    delete this.doctorAvailability[doctorId];
     this.selectedSlots[doctorId] = '';
     this.slotPageIndexes[doctorId] = 0;
-
     this.cdr.markForCheck();
 
     this.doctorService
@@ -246,39 +202,62 @@ export class BookAppointment implements OnInit {
         })
       )
       .subscribe({
-        next: slots => {
-          this.doctorSlots[doctorId] = slots ?? [];
+        next: availability => {
+          this.doctorAvailability[doctorId] = availability;
 
-          if (!slots || slots.length === 0) {
-            this.notificationService.info(
-              'No slots available for the selected date.'
-            );
+          if (availability.isDoctorOnLeave) {
+            this.selectedSlots[doctorId] = '';
+          } else if (!availability.slots.some(slot => slot.isAvailable)) {
+            this.notificationService.info('No slots are available for the selected date.');
           }
 
           this.cdr.markForCheck();
         },
         error: () => {
-          this.doctorSlots[doctorId] = [];
+          delete this.doctorAvailability[doctorId];
+          this.selectedSlots[doctorId] = '';
           this.cdr.markForCheck();
         }
       });
   }
 
-  selectSlot(doctorId: number, slot: string): void {
-    this.selectedSlots[doctorId] = slot;
+  selectSlot(doctorId: number, slot: DoctorAvailabilitySlotDto): void {
+    if (!slot.isAvailable || this.isDoctorOnLeave(doctorId)) {
+      return;
+    }
+
+    this.selectedSlots[doctorId] = slot.timeSlot;
     this.cdr.markForCheck();
   }
 
-  getSlots(doctorId: number): string[] {
-    return this.doctorSlots[doctorId] ?? [];
+  getAvailability(doctorId: number): DoctorAvailabilityDto | null {
+    return this.doctorAvailability[doctorId] ?? null;
+  }
+
+  getAllSlots(doctorId: number): DoctorAvailabilitySlotDto[] {
+    return this.getAvailability(doctorId)?.slots ?? [];
+  }
+
+  getPagedSlots(doctorId: number): DoctorAvailabilitySlotDto[] {
+    const slots = this.getAllSlots(doctorId);
+    const startIndex = this.getCurrentSlotPage(doctorId) * this.slotPageSize;
+    return slots.slice(startIndex, startIndex + this.slotPageSize);
+  }
+
+  getAvailableSlotCount(doctorId: number): number {
+    return this.getAllSlots(doctorId).filter(slot => slot.isAvailable).length;
+  }
+
+  isDoctorOnLeave(doctorId: number): boolean {
+    return this.getAvailability(doctorId)?.isDoctorOnLeave ?? false;
+  }
+
+  getAvailabilityMessage(doctorId: number): string {
+    return this.getAvailability(doctorId)?.message ?? '';
   }
 
   areSlotsLoaded(doctorId: number): boolean {
-    return Object.hasOwn(this.doctorSlots, doctorId);
-  }
-
-  getSlotCount(doctorId: number): number {
-    return this.getSlots(doctorId).length;
+    return Object.hasOwn(this.doctorAvailability, doctorId);
   }
 
   getCurrentSlotPage(doctorId: number): number {
@@ -286,46 +265,46 @@ export class BookAppointment implements OnInit {
   }
 
   getTotalSlotPages(doctorId: number): number {
-    const slotCount = this.getSlotCount(doctorId);
-
-    if (slotCount === 0) {
-      return 1;
-    }
-
-    return Math.ceil(slotCount / this.slotPageSize);
-  }
-
-  getPagedSlots(doctorId: number): string[] {
-    const slots = this.getSlots(doctorId);
-    const currentPage = this.getCurrentSlotPage(doctorId);
-
-    const startIndex = currentPage * this.slotPageSize;
-    const endIndex = startIndex + this.slotPageSize;
-
-    return slots.slice(startIndex, endIndex);
+    const count = this.getAllSlots(doctorId).length;
+    return Math.max(1, Math.ceil(count / this.slotPageSize));
   }
 
   goToPreviousSlotPage(doctorId: number): void {
     const currentPage = this.getCurrentSlotPage(doctorId);
-
-    if (currentPage <= 0) {
-      return;
+    if (currentPage > 0) {
+      this.slotPageIndexes[doctorId] = currentPage - 1;
+      this.cdr.markForCheck();
     }
-
-    this.slotPageIndexes[doctorId] = currentPage - 1;
-    this.cdr.markForCheck();
   }
 
   goToNextSlotPage(doctorId: number): void {
     const currentPage = this.getCurrentSlotPage(doctorId);
     const totalPages = this.getTotalSlotPages(doctorId);
 
-    if (currentPage >= totalPages - 1) {
-      return;
+    if (currentPage < totalPages - 1) {
+      this.slotPageIndexes[doctorId] = currentPage + 1;
+      this.cdr.markForCheck();
+    }
+  }
+
+  getSlotClass(slot: DoctorAvailabilitySlotDto): string {
+    if (slot.status === 'DoctorOnLeave') {
+      return 'slot-on-leave';
     }
 
-    this.slotPageIndexes[doctorId] = currentPage + 1;
-    this.cdr.markForCheck();
+    if (slot.status === 'Booked' || !slot.isAvailable) {
+      return 'slot-booked';
+    }
+
+    return 'slot-available';
+  }
+
+  getSlotLabel(slot: DoctorAvailabilitySlotDto): string {
+    if (slot.status === 'DoctorOnLeave') {
+      return 'Doctor On Leave';
+    }
+
+    return slot.isAvailable ? 'Available' : 'Booked';
   }
 
   bookAppointment(doctor: DoctorDto): void {
@@ -341,8 +320,25 @@ export class BookAppointment implements OnInit {
       return;
     }
 
+    if (this.isDoctorOnLeave(doctor.doctorId)) {
+      this.notificationService.warning(
+        this.getAvailabilityMessage(doctor.doctorId) ||
+          'This doctor is on leave for the selected date.'
+      );
+      return;
+    }
+
     if (!selectedSlot) {
-      this.notificationService.warning('Please select a time slot.');
+      this.notificationService.warning('Please select an available time slot.');
+      return;
+    }
+
+    const selectedAvailabilitySlot = this.getAllSlots(doctor.doctorId)
+      .find(slot => slot.timeSlot === selectedSlot);
+
+    if (!selectedAvailabilitySlot?.isAvailable) {
+      this.selectedSlots[doctor.doctorId] = '';
+      this.notificationService.warning('The selected slot is no longer available.');
       return;
     }
 
@@ -381,13 +377,19 @@ export class BookAppointment implements OnInit {
       });
   }
 
+  private resetDoctorPanels(): void {
+    this.expandedDetailsDoctorId = null;
+    this.expandedSlotsDoctorId = null;
+    this.doctorAvailability = {};
+    this.selectedSlots = {};
+    this.slotPageIndexes = {};
+  }
+
   private getTodayDate(): string {
     const today = new Date();
-
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
-
     return `${year}-${month}-${day}`;
   }
 }

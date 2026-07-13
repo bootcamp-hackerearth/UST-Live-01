@@ -6,18 +6,21 @@
   width: 100%;
 }
 
-/* =========================
-   Header
-========================= */
+.book-header-card,
+.filter-card,
+.appointment-date-card,
+.doctor-card,
+.empty-state-card {
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+}
 
 .book-header-card {
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 1.6rem;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-  border: 1px solid #eef2f7;
   position: relative;
   overflow: hidden;
+  padding: 1.6rem;
+  border-radius: 24px;
 }
 
 .book-header-card::after {
@@ -64,9 +67,9 @@
   align-items: center;
   gap: 0.9rem;
   padding: 1rem;
+  border: 1px solid #a7f3d0;
   border-radius: 20px;
   background: #ecfdf5;
-  border: 1px solid #a7f3d0;
   color: #047857;
   text-align: left;
 }
@@ -75,35 +78,87 @@
   width: 48px;
   height: 48px;
   min-width: 48px;
+  display: grid;
+  place-items: center;
   border-radius: 16px;
   background: #10b981;
   color: #ffffff;
-  display: grid;
-  place-items: center;
   font-size: 1.35rem;
 }
 
-.header-help-card strong {
+.header-help-card strong,
+.header-help-card span {
   display: block;
+}
+
+.header-help-card strong {
   font-weight: 800;
 }
 
 .header-help-card span {
-  display: block;
   font-size: 0.86rem;
   font-weight: 600;
 }
 
-/* =========================
-   Filters
-========================= */
+/* Required appointment date */
+.appointment-date-card {
+  padding: 1.35rem;
+  border-color: #fed7aa;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #fff7ed, #ffffff);
+  box-shadow: 0 12px 30px rgba(154, 52, 18, 0.08);
+}
+
+.appointment-date-content {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(240px, 320px);
+  align-items: center;
+  gap: 1rem;
+}
+
+.appointment-date-icon {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  border-radius: 19px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #f97316, #dc2626);
+  font-size: 1.5rem;
+  box-shadow: 0 12px 24px rgba(234, 88, 12, 0.22);
+}
+
+.appointment-date-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.appointment-date-copy h5 {
+  color: #7c2d12;
+  font-weight: 850;
+}
+
+.appointment-date-copy p {
+  color: #9a3412;
+  font-weight: 600;
+}
+
+.required-step-badge {
+  padding: 0.34rem 0.65rem;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
 
 .filter-card {
-  background: #ffffff;
-  border-radius: 20px;
   padding: 1.25rem;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-  border: 1px solid #eef2f7;
+  border-radius: 20px;
 }
 
 .form-control,
@@ -117,6 +172,17 @@
 .form-select:focus {
   border-color: #0d9488;
   box-shadow: 0 0 0 0.2rem rgba(13, 148, 136, 0.15);
+}
+
+.appointment-date-input .form-control {
+  border-color: #fb923c;
+  background: #ffffff;
+  font-weight: 700;
+}
+
+.appointment-date-input .form-control:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.14);
 }
 
 .input-icon-wrapper {
@@ -142,16 +208,39 @@
   font-weight: 700;
 }
 
-/* =========================
-   Buttons
-========================= */
+.date-reminder-card {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid #bae6fd;
+  border-radius: 18px;
+  color: #075985;
+  background: #f0f9ff;
+}
+
+.date-reminder-card i {
+  font-size: 1.25rem;
+}
+
+.date-reminder-card strong,
+.date-reminder-card span {
+  display: block;
+}
+
+.date-reminder-card span {
+  margin-top: 0.1rem;
+  color: #0369a1;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
 
 .btn-health {
-  background: linear-gradient(135deg, #0f766e, #06b6d4);
-  color: #ffffff;
   border: none;
-  font-weight: 700;
   border-radius: 14px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0f766e, #06b6d4);
+  font-weight: 700;
 }
 
 .btn-health:hover,
@@ -161,38 +250,30 @@
 }
 
 .btn-outline-health {
+  padding: 0.6rem 1rem;
   border: 1px solid #99f6e4;
+  border-radius: 14px;
   color: #0f766e;
   background: #ffffff;
   font-weight: 700;
-  border-radius: 14px;
-  padding: 0.6rem 1rem;
-  cursor: pointer;
 }
 
 .btn-outline-health:hover,
 .btn-outline-health:focus {
-  background: #ecfeff;
   border-color: #0d9488;
   color: #0f766e;
+  background: #ecfeff;
 }
 
 .btn:disabled {
-  opacity: 0.65;
   cursor: not-allowed;
+  opacity: 0.65;
 }
-
-/* =========================
-   Doctor Cards
-========================= */
 
 .doctor-card {
   height: 100%;
-  background: #ffffff;
-  border-radius: 24px;
   padding: 1.3rem;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-  border: 1px solid #eef2f7;
+  border-radius: 24px;
   transition: all 0.2s ease;
 }
 
@@ -212,11 +293,11 @@
 .doctor-avatar {
   width: 64px;
   height: 64px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, #0d9488, #0f766e);
-  color: #ffffff;
   display: grid;
   place-items: center;
+  border-radius: 22px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0d9488, #0f766e);
   font-size: 1.8rem;
   box-shadow: 0 12px 24px rgba(13, 148, 136, 0.22);
 }
@@ -226,6 +307,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.45rem 0.75rem;
+  border: 1px solid transparent;
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 800;
@@ -236,13 +318,19 @@
 }
 
 .status-available {
-  background: #dcfce7;
   color: #166534;
+  background: #dcfce7;
 }
 
 .status-busy {
-  background: #fef3c7;
   color: #92400e;
+  background: #fef3c7;
+}
+
+.doctor-status.status-on-leave {
+  color: #b91c1c;
+  background: #fee2e2;
+  border-color: #fecaca;
 }
 
 .doctor-info {
@@ -250,21 +338,16 @@
 }
 
 .doctor-name {
+  margin-bottom: 0.25rem;
   color: #0f172a;
   font-weight: 800;
-  margin-bottom: 0.25rem;
 }
 
-.doctor-specialisation,
-.doctor-specialization {
+.doctor-specialisation {
   color: #0f766e;
-  font-weight: 800;
   font-size: 0.92rem;
+  font-weight: 800;
 }
-
-/* =========================
-   Doctor Summary Section
-========================= */
 
 .doctor-summary-grid {
   display: grid;
@@ -274,48 +357,43 @@
 }
 
 .doctor-summary-box {
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 0.7rem;
   padding: 0.85rem;
+  border: 1px solid #eef2f7;
   border-radius: 18px;
   background: #f8fafc;
-  border: 1px solid #eef2f7;
-  min-width: 0;
 }
 
 .doctor-summary-box i {
   width: 34px;
   height: 34px;
   min-width: 34px;
-  border-radius: 12px;
   display: grid;
   place-items: center;
-  background: #ccfbf1;
+  border-radius: 12px;
   color: #0f766e;
+  background: #ccfbf1;
 }
 
-.doctor-summary-box div {
-  min-width: 0;
+.doctor-summary-box span,
+.doctor-summary-box strong {
+  display: block;
 }
 
 .doctor-summary-box span {
-  display: block;
   color: #64748b;
   font-size: 0.76rem;
   font-weight: 700;
 }
 
 .doctor-summary-box strong {
-  display: block;
   color: #0f172a;
   font-size: 0.88rem;
   font-weight: 800;
 }
-
-/* =========================
-   Card Actions
-========================= */
 
 .doctor-card-actions {
   display: grid;
@@ -323,17 +401,17 @@
   gap: 0.75rem;
 }
 
-/* =========================
-   Details Panel
-========================= */
+.doctor-details-panel,
+.slots-panel {
+  margin-top: 1rem;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  animation: expandFade 0.18s ease-out;
+}
 
 .doctor-details-panel {
-  margin-top: 1rem;
   padding: 1rem;
   border-radius: 20px;
-  background: #f8fafc;
-  border: 1px solid #eef2f7;
-  animation: expandFade 0.18s ease-out;
 }
 
 .details-row {
@@ -349,12 +427,12 @@
 }
 
 .details-row span {
-  color: #64748b;
-  font-size: 0.85rem;
-  font-weight: 800;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 800;
 }
 
 .details-row strong {
@@ -364,17 +442,9 @@
   text-align: right;
 }
 
-/* =========================
-   Slots Panel - Final Clean Version
-========================= */
-
 .slots-panel {
-  margin-top: 1rem;
   padding: 1.1rem;
   border-radius: 22px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  animation: expandFade 0.18s ease-out;
 }
 
 .slots-panel-header {
@@ -386,9 +456,9 @@
 }
 
 .slots-panel-header h6 {
+  margin-bottom: 0.25rem;
   color: #0f172a;
   font-weight: 900;
-  margin-bottom: 0.25rem;
 }
 
 .slots-panel-header p {
@@ -397,26 +467,69 @@
   font-weight: 700;
 }
 
-.slots-panel-header .btn {
-  border-radius: 10px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
 .slots-loading,
 .slots-empty {
   min-height: 84px;
-  border-radius: 18px;
-  background: #ffffff;
-  border: 1px dashed #cbd5e1;
-  color: #64748b;
-  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
-  text-align: center;
   padding: 1rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 18px;
+  color: #64748b;
+  background: #ffffff;
+  font-weight: 800;
+  text-align: center;
+}
+
+.doctor-leave-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #fecaca;
+  border-radius: 18px;
+  color: #991b1b;
+  background: #fef2f2;
+}
+
+.doctor-leave-warning > i {
+  margin-top: 0.1rem;
+  color: #dc2626;
+  font-size: 1.2rem;
+}
+
+.doctor-leave-warning strong,
+.doctor-leave-warning span {
+  display: block;
+}
+
+.doctor-leave-warning span {
+  margin-top: 0.2rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.availability-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.availability-summary span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  color: #0f766e;
+  background: #ecfeff;
+  font-size: 0.78rem;
+  font-weight: 800;
 }
 
 .slot-list-compact {
@@ -427,87 +540,145 @@
 
 .slot-chip {
   width: 100%;
-  min-height: 48px;
-  border: 1px solid #d7e3ea;
-  background: #ffffff;
-  color: #334155;
-  border-radius: 18px;
-  padding: 0.65rem 0.75rem;
-  display: inline-flex;
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "icon time"
+    "icon status";
   align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
+  column-gap: 0.55rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #d7e3ea;
+  border-radius: 17px;
+  color: #334155;
+  background: #ffffff;
   font-size: 0.86rem;
-  font-weight: 850;
-  line-height: 1.15;
-  white-space: nowrap;
-  text-align: center;
+  font-weight: 800;
+  text-align: left;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.045);
   transition: all 0.18s ease;
 }
 
 .slot-chip i {
-  color: #0d9488;
-  font-size: 0.92rem;
-  flex: 0 0 auto;
+  grid-area: icon;
+  font-size: 1rem;
 }
 
 .slot-chip span {
+  grid-area: time;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.slot-chip:hover:not(:disabled) {
+.slot-chip small {
+  grid-area: status;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.slot-chip.slot-available {
+  color: #0f766e;
+  border-color: #99f6e4;
+  background: #f0fdfa;
+}
+
+.slot-chip.slot-available i,
+.slot-chip.slot-available small {
+  color: #0d9488;
+}
+
+.slot-chip.slot-available:hover:not(:disabled) {
   transform: translateY(-1px);
   border-color: #14b8a6;
-  color: #0f766e;
   background: #ecfeff;
   box-shadow: 0 12px 24px rgba(13, 148, 136, 0.12);
 }
 
-.slot-chip.active {
+.slot-chip.slot-booked,
+.slot-chip.slot-booked:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+  color: #991b1b;
+  border-color: #fca5a5;
+  background: #fee2e2;
+  box-shadow: none;
+}
+
+.slot-chip.slot-booked i,
+.slot-chip.slot-booked small {
+  color: #b91c1c;
+}
+
+.slot-chip.slot-on-leave,
+.slot-chip.slot-on-leave:disabled {
+  cursor: not-allowed;
+  opacity: 1;
+  color: #991b1b;
+  border-color: #fca5a5;
+  background: #fee2e2;
+  box-shadow: none;
+}
+
+.slot-chip.slot-on-leave i,
+.slot-chip.slot-on-leave small {
+  color: #b91c1c;
+}
+
+.slot-chip.active,
+.slot-chip.slot-available.active {
+  color: #ffffff;
   border-color: #0d9488;
   background: linear-gradient(135deg, #0d9488, #14b8a6);
-  color: #ffffff;
   box-shadow: 0 14px 28px rgba(13, 148, 136, 0.24);
 }
 
-.slot-chip.active i {
+.slot-chip.active i,
+.slot-chip.active small {
   color: #ffffff;
 }
 
-.slot-chip:disabled {
-  opacity: 0.62;
-  cursor: not-allowed;
-  transform: none;
+.slot-chip.slot-available.active:hover:not(:disabled),
+.slot-chip.active:hover:not(:disabled) {
+  color: #ffffff;
+  border-color: #0f766e;
+  background: linear-gradient(135deg, #0f766e, #0d9488);
+  box-shadow: 0 14px 28px rgba(13, 148, 136, 0.28);
+}
+
+.slot-chip.slot-available.active:hover:not(:disabled) i,
+.slot-chip.slot-available.active:hover:not(:disabled) small,
+.slot-chip.active:hover:not(:disabled) i,
+.slot-chip.active:hover:not(:disabled) small {
+  color: #ffffff;
 }
 
 .slot-pagination {
-  margin-top: 1rem;
-  padding: 0.85rem;
-  border-radius: 20px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.85rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: #ffffff;
 }
 
 .slot-page-btn {
   min-height: 40px;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #334155;
-  border-radius: 999px;
-  padding: 0.48rem 0.95rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  font-weight: 900;
+  padding: 0.48rem 0.95rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  color: #334155;
+  background: #ffffff;
   font-size: 0.86rem;
-  transition: all 0.18s ease;
+  font-weight: 900;
 }
 
 .slot-page-btn:first-child {
@@ -518,25 +689,17 @@
   justify-self: end;
 }
 
-.slot-page-btn:hover:not(:disabled) {
-  border-color: #0d9488;
-  color: #0f766e;
-  background: #ecfeff;
-  box-shadow: 0 10px 20px rgba(13, 148, 136, 0.12);
-}
-
 .slot-page-btn:disabled {
-  opacity: 0.45;
   cursor: not-allowed;
-  box-shadow: none;
+  opacity: 0.45;
 }
 
 .slot-page-info {
   min-width: 104px;
-  border-radius: 999px;
   padding: 0.5rem 0.85rem;
-  background: #eef2f7;
+  border-radius: 999px;
   color: #475569;
+  background: #eef2f7;
   font-size: 0.86rem;
   font-weight: 900;
   text-align: center;
@@ -544,60 +707,56 @@
 }
 
 .booking-mini-summary {
-  margin-top: 1rem;
-  padding: 1rem;
-  border-radius: 20px;
-  background: #f0fdfa;
-  border: 1px solid #99f6e4;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #99f6e4;
+  border-radius: 20px;
+  background: #f0fdfa;
+}
+
+.booking-mini-summary span,
+.booking-mini-summary strong {
+  display: block;
 }
 
 .booking-mini-summary span {
-  display: block;
+  margin-bottom: 0.15rem;
   color: #0f766e;
   font-size: 0.8rem;
   font-weight: 900;
-  margin-bottom: 0.15rem;
 }
 
 .booking-mini-summary strong {
-  display: block;
   color: #0f172a;
-  font-weight: 950;
   font-size: 1rem;
+  font-weight: 900;
 }
 
-/* =========================
-   Loading / Empty State
-========================= */
-
 .empty-state-card {
-  background: #ffffff;
-  border-radius: 24px;
   padding: 2.5rem 1.5rem;
+  border-radius: 24px;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
-  border: 1px solid #eef2f7;
 }
 
 .empty-state-icon {
   width: 78px;
   height: 78px;
   margin: 0 auto 1rem;
-  border-radius: 24px;
-  background: #f1f5f9;
-  color: #64748b;
   display: grid;
   place-items: center;
+  border-radius: 24px;
+  color: #64748b;
+  background: #f1f5f9;
   font-size: 2rem;
 }
 
 .empty-state-card h5 {
-  font-weight: 800;
   color: #0f172a;
+  font-weight: 800;
 }
 
 .empty-state-card p {
@@ -605,29 +764,28 @@
   font-weight: 600;
 }
 
-/* =========================
-   Animation
-========================= */
-
 @keyframes expandFade {
   from {
     opacity: 0;
     transform: translateY(8px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* =========================
-   Responsive
-========================= */
-
 @media (max-width: 991px) {
   .page-title {
     font-size: 1.75rem;
+  }
+
+  .appointment-date-content {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .appointment-date-input {
+    grid-column: 1 / -1;
   }
 }
 
@@ -640,19 +798,21 @@
     padding: 1.25rem;
   }
 
+  .appointment-date-content,
   .doctor-summary-grid,
   .doctor-card-actions {
     grid-template-columns: 1fr;
   }
 
-  .details-row {
-    flex-direction: column;
+  .appointment-date-input {
+    grid-column: auto;
   }
 
   .header-help-card {
     width: 100%;
   }
 
+  .details-row,
   .booking-mini-summary {
     align-items: stretch;
     flex-direction: column;
@@ -677,10 +837,7 @@
     width: 100%;
   }
 
-  .slot-list-compact {
-    grid-template-columns: 1fr;
-  }
-
+  .slot-list-compact,
   .slot-pagination {
     grid-template-columns: 1fr;
   }

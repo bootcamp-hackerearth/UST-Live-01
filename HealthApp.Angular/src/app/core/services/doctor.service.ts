@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { API_CONFIG } from '../../config/api.config';
 import {
+  DoctorAvailabilityDto,
   DoctorDto,
   DoctorStatusUpdateResponse
 } from '../../dtos/doctor.dto';
@@ -42,7 +43,9 @@ export class DoctorService {
     return this.http.get<DoctorDto>(`${this.apiUrl}/${id}`);
   }
 
-  getDoctorsBySpecialisation(specialisation: string): Observable<DoctorDto[]> {
+  getDoctorsBySpecialisation(
+    specialisation: string
+  ): Observable<DoctorDto[]> {
     return this.http.get<DoctorDto[]>(
       `${this.apiUrl}/specialisation/${specialisation}`
     );
@@ -52,30 +55,35 @@ export class DoctorService {
     return this.http.get<DoctorDto>(`${this.apiUrl}/profile`);
   }
 
-  getMyAvailability(date: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/profile/availability`, {
-      params: {
-        date
+  getMyAvailability(date: string): Observable<DoctorAvailabilityDto> {
+    return this.http.get<DoctorAvailabilityDto>(
+      `${this.apiUrl}/profile/availability`,
+      {
+        params: { date }
       }
-    });
+    );
   }
 
-  getDoctorAvailability(doctorId: number, date: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/${doctorId}/availability`, {
-      params: {
-        date
+  getDoctorAvailability(
+    doctorId: number,
+    date: string
+  ): Observable<DoctorAvailabilityDto> {
+    return this.http.get<DoctorAvailabilityDto>(
+      `${this.apiUrl}/${doctorId}/availability`,
+      {
+        params: { date }
       }
-    });
+    );
   }
 
-  changeMyStatus(isActive: boolean): Observable<DoctorStatusUpdateResponse> {
+  changeMyStatus(
+    isActive: boolean
+  ): Observable<DoctorStatusUpdateResponse> {
     return this.http.patch<DoctorStatusUpdateResponse>(
       `${this.apiUrl}/profile/status`,
       null,
       {
-        params: {
-          isActive
-        }
+        params: { isActive }
       }
     );
   }

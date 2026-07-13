@@ -5,7 +5,6 @@
   ></app-loading-spinner>
 
   <ng-container *ngIf="!isLoadingDoctors">
-    <!-- Header -->
     <section class="book-header-card mb-4">
       <div class="row align-items-center g-4">
         <div class="col-lg-8">
@@ -14,17 +13,18 @@
             Book Doctor Appointment
           </div>
 
-          <h1 class="page-title mb-2">Find a doctor and choose an available slot</h1>
+          <h1 class="page-title mb-2">
+            Find a doctor and choose an available slot
+          </h1>
 
           <p class="page-subtitle mb-0">
-            Search doctors, filter by specialisation, select a date, and book from available slots.
+            Choose the appointment date first, then search doctors and review every slot status.
           </p>
         </div>
 
         <div class="col-lg-4 text-lg-end">
           <div class="header-help-card">
             <i class="bi bi-shield-check"></i>
-
             <div>
               <strong>Secure Booking</strong>
               <span>Your booking is linked to your patient profile.</span>
@@ -34,15 +34,46 @@
       </div>
     </section>
 
-    <!-- Filters -->
+    <section class="appointment-date-card mb-4">
+      <div class="appointment-date-content">
+        <div class="appointment-date-icon">
+          <i class="bi bi-calendar-event"></i>
+        </div>
+
+        <div class="appointment-date-copy">
+          <div class="appointment-date-heading">
+            <span class="required-step-badge">Required</span>
+            <h5 class="mb-1">Choose Appointment Date</h5>
+          </div>
+          <p class="mb-0">
+            A date is required before the application can check doctor leave and slot availability.
+          </p>
+        </div>
+
+        <div class="appointment-date-input">
+          <label for="appointmentDate" class="form-label fw-bold">
+            Appointment Date
+          </label>
+          <input
+            id="appointmentDate"
+            type="date"
+            class="form-control"
+            [(ngModel)]="selectedDate"
+            [min]="minDate"
+            (change)="onDateChanged()"
+          />
+        </div>
+      </div>
+    </section>
+
     <section class="filter-card mb-4">
       <div class="row g-3 align-items-end">
-        <div class="col-xl-3 col-lg-6">
-          <label for="doctorSearch" class="form-label fw-bold"> Search Doctor </label>
-
+        <div class="col-xl-4 col-lg-6">
+          <label for="doctorSearch" class="form-label fw-bold">
+            Search Doctor
+          </label>
           <div class="input-icon-wrapper">
             <i class="bi bi-search"></i>
-
             <input
               id="doctorSearch"
               type="text"
@@ -50,7 +81,6 @@
               placeholder="Doctor name"
               [(ngModel)]="searchText"
               (keyup.enter)="searchDoctors()"
-              [disabled]="isLoadingDoctors"
             />
           </div>
         </div>
@@ -59,55 +89,37 @@
           <label for="doctorSpecialisationFilter" class="form-label fw-bold">
             Specialisation
           </label>
-
           <select
             id="doctorSpecialisationFilter"
             class="form-select"
             [(ngModel)]="selectedSpecialisation"
             (change)="searchDoctors()"
-            [disabled]="isLoadingDoctors"
           >
-            <option *ngFor="let specialisation of specialisations" [value]="specialisation.value">
+            <option
+              *ngFor="let specialisation of specialisations"
+              [value]="specialisation.value"
+            >
               {{ specialisation.label }}
             </option>
           </select>
         </div>
 
-        <div class="col-xl-2 col-lg-6">
-          <label for="doctorSortBy" class="form-label fw-bold"> Sort By </label>
-
-          <select
-            id="doctorSortBy"
-            class="form-select"
-            [(ngModel)]="sortBy"
-            [disabled]="isLoadingDoctors"
-          >
+        <div class="col-xl-3 col-lg-6">
+          <label for="doctorSortBy" class="form-label fw-bold">
+            Sort By
+          </label>
+          <select id="doctorSortBy" class="form-select" [(ngModel)]="sortBy">
             <option *ngFor="let option of sortOptions" [value]="option.value">
               {{ option.label }}
             </option>
           </select>
         </div>
 
-        <div class="col-xl-2 col-lg-6">
-          <label for="appointmentDate" class="form-label fw-bold"> Appointment Date </label>
-
-          <input
-            id="appointmentDate"
-            type="date"
-            class="form-control"
-            [(ngModel)]="selectedDate"
-            [min]="minDate"
-            (change)="onDateChanged()"
-            [disabled]="isLoadingDoctors"
-          />
-        </div>
-
-        <div class="col-xl-2 col-lg-12 d-flex gap-2">
+        <div class="col-xl-2 col-lg-6 d-flex gap-2">
           <button
             type="button"
             class="btn btn-health flex-fill"
             (click)="searchDoctors()"
-            [disabled]="isLoadingDoctors"
           >
             <i class="bi bi-search me-2"></i>
             Search
@@ -117,8 +129,7 @@
             type="button"
             class="btn btn-outline-secondary clear-icon-btn"
             (click)="clearFilters()"
-            [disabled]="isLoadingDoctors"
-            title="Clear filters"
+            title="Clear search filters"
           >
             <i class="bi bi-x-circle"></i>
           </button>
@@ -126,18 +137,17 @@
       </div>
     </section>
 
-    <!-- Loading -->
+    <section class="date-reminder-card mb-4" *ngIf="!selectedDate">
+      <i class="bi bi-info-circle-fill"></i>
+      <div>
+        <strong>Select an appointment date</strong>
+        <span>View Slots is disabled until an appointment date is selected.</span>
+      </div>
+    </section>
 
-    <app-loading-spinner
-      *ngIf="isLoadingDoctors"
-      message="Loading available doctors..."
-    ></app-loading-spinner>
-
-    <!-- Doctor Cards -->
-    <section class="row g-4" *ngIf="!isLoadingDoctors && sortedDoctors.length > 0">
+    <section class="row g-4" *ngIf="sortedDoctors.length > 0">
       <div class="col-xl-6 col-lg-6" *ngFor="let doctor of sortedDoctors">
-        <div class="doctor-card">
-          <!-- Card Top -->
+        <article class="doctor-card">
           <div class="doctor-card-top">
             <div class="doctor-avatar">
               <i class="bi bi-person-badge"></i>
@@ -146,31 +156,30 @@
             <div
               class="doctor-status"
               [ngClass]="{
-                'status-available': doctor.isActive,
+                'status-available': doctor.isActive && !isDoctorOnLeave(doctor.doctorId),
                 'status-busy': !doctor.isActive,
+                'status-on-leave': isDoctorOnLeave(doctor.doctorId)
               }"
             >
               <i class="bi bi-circle-fill"></i>
-              {{ doctor.isActive ? 'Available' : 'Unavailable' }}
+              {{
+                isDoctorOnLeave(doctor.doctorId)
+                  ? 'Doctor On Leave'
+                  : doctor.isActive
+                    ? 'Available'
+                    : 'Unavailable'
+              }}
             </div>
           </div>
 
-          <!-- Doctor Info -->
           <div class="doctor-info">
-            <h5 class="doctor-name">
-              {{ doctor.fullName }}
-            </h5>
-
-            <div class="doctor-specialisation">
-              {{ doctor.specialisation }}
-            </div>
+            <h5 class="doctor-name">{{ doctor.fullName }}</h5>
+            <div class="doctor-specialisation">{{ doctor.specialisation }}</div>
           </div>
 
-          <!-- Summary -->
           <div class="doctor-summary-grid">
             <div class="doctor-summary-box">
               <i class="bi bi-briefcase"></i>
-
               <div>
                 <span>Experience</span>
                 <strong>{{ doctor.yearsOfExperience }} Years</strong>
@@ -179,7 +188,6 @@
 
             <div class="doctor-summary-box">
               <i class="bi bi-currency-rupee"></i>
-
               <div>
                 <span>Fee</span>
                 <strong>₹{{ doctor.consultationFee }}</strong>
@@ -187,7 +195,6 @@
             </div>
           </div>
 
-          <!-- Actions -->
           <div class="doctor-card-actions">
             <button
               type="button"
@@ -202,12 +209,14 @@
               type="button"
               class="btn btn-health"
               [disabled]="
-                bookingDoctorId === doctor.doctorId || loadingSlotsDoctorId === doctor.doctorId
+                !selectedDate ||
+                !doctor.isActive ||
+                bookingDoctorId === doctor.doctorId ||
+                loadingSlotsDoctorId === doctor.doctorId
               "
               (click)="toggleSlots(doctor)"
             >
               <i class="bi bi-calendar2-week me-1"></i>
-
               @if (loadingSlotsDoctorId === doctor.doctorId) {
                 Loading...
               } @else {
@@ -216,43 +225,32 @@
             </button>
           </div>
 
-          <!-- Details Panel -->
-          <div class="doctor-details-panel" *ngIf="expandedDetailsDoctorId === doctor.doctorId">
+          <div
+            class="doctor-details-panel"
+            *ngIf="expandedDetailsDoctorId === doctor.doctorId"
+          >
             <div class="details-row">
-              <span>
-                <i class="bi bi-envelope"></i>
-                Email
-              </span>
-
+              <span><i class="bi bi-envelope"></i>Email</span>
               <strong>{{ doctor.doctorEmail }}</strong>
             </div>
-
             <div class="details-row">
-              <span>
-                <i class="bi bi-telephone"></i>
-                Phone
-              </span>
-
+              <span><i class="bi bi-telephone"></i>Phone</span>
               <strong>{{ doctor.doctorPhoneNo }}</strong>
             </div>
-
             <div class="details-row">
-              <span>
-                <i class="bi bi-award"></i>
-                Specialisation
-              </span>
-
+              <span><i class="bi bi-award"></i>Specialisation</span>
               <strong>{{ doctor.specialisation }}</strong>
             </div>
           </div>
 
-          <!-- Slots Panel -->
-          <div class="slots-panel" *ngIf="expandedSlotsDoctorId === doctor.doctorId">
+          <div
+            class="slots-panel"
+            *ngIf="expandedSlotsDoctorId === doctor.doctorId"
+          >
             <div class="slots-panel-header">
               <div>
-                <h6 class="mb-1">Available Slots</h6>
-
-                <p class="mb-0" *ngIf="selectedDate">For {{ selectedDate }}</p>
+                <h6 class="mb-1">Doctor Availability</h6>
+                <p class="mb-0">For {{ selectedDate }}</p>
               </div>
 
               <button
@@ -266,124 +264,158 @@
               </button>
             </div>
 
-            <div class="slots-loading" *ngIf="loadingSlotsDoctorId === doctor.doctorId">
+            <div
+              class="slots-loading"
+              *ngIf="loadingSlotsDoctorId === doctor.doctorId"
+            >
               <i class="bi bi-hourglass-split"></i>
-              Loading available slots...
+              Loading availability...
             </div>
 
-            <div
-              class="slots-empty"
-              *ngIf="
-                selectedDate &&
-                loadingSlotsDoctorId !== doctor.doctorId &&
-                areSlotsLoaded(doctor.doctorId) &&
-                getSlotCount(doctor.doctorId) === 0
-              "
-            >
-              <i class="bi bi-calendar-x"></i>
-              No slots available for this date.
-            </div>
-
-            <div
-              class="slot-list-compact"
-              *ngIf="
-                selectedDate &&
-                loadingSlotsDoctorId !== doctor.doctorId &&
-                getSlotCount(doctor.doctorId) > 0
-              "
-            >
-              <button
-                type="button"
-                class="slot-chip"
-                *ngFor="let slot of getPagedSlots(doctor.doctorId)"
-                [class.active]="selectedSlots[doctor.doctorId] === slot"
-                (click)="selectSlot(doctor.doctorId, slot)"
-                [disabled]="bookingDoctorId === doctor.doctorId"
+            <ng-container *ngIf="loadingSlotsDoctorId !== doctor.doctorId">
+              <div
+                class="doctor-leave-warning"
+                *ngIf="isDoctorOnLeave(doctor.doctorId)"
               >
-                <i class="bi bi-clock"></i>
-                <span>{{ slot }}</span>
-              </button>
-            </div>
-
-            <div
-              class="slot-pagination"
-              *ngIf="
-                selectedDate &&
-                loadingSlotsDoctorId !== doctor.doctorId &&
-                getSlotCount(doctor.doctorId) > 0
-              "
-            >
-              <button
-                type="button"
-                class="slot-page-btn"
-                (click)="goToPreviousSlotPage(doctor.doctorId)"
-                [disabled]="
-                  getCurrentSlotPage(doctor.doctorId) === 0 || bookingDoctorId === doctor.doctorId
-                "
-              >
-                <i class="bi bi-chevron-left"></i>
-                Prev
-              </button>
-
-              <span class="slot-page-info">
-                Page {{ getCurrentSlotPage(doctor.doctorId) + 1 }} of
-                {{ getTotalSlotPages(doctor.doctorId) }}
-              </span>
-
-              <button
-                type="button"
-                class="slot-page-btn"
-                (click)="goToNextSlotPage(doctor.doctorId)"
-                [disabled]="
-                  getCurrentSlotPage(doctor.doctorId) >= getTotalSlotPages(doctor.doctorId) - 1 ||
-                  bookingDoctorId === doctor.doctorId
-                "
-              >
-                Next
-                <i class="bi bi-chevron-right"></i>
-              </button>
-            </div>
-
-            <div class="booking-mini-summary" *ngIf="selectedSlots[doctor.doctorId]">
-              <div>
-                <span>Selected Slot</span>
-                <strong>{{ selectedSlots[doctor.doctorId] }}</strong>
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div>
+                  <strong>Doctor On Leave</strong>
+                  <span>{{ getAvailabilityMessage(doctor.doctorId) }}</span>
+                </div>
               </div>
 
-              <button
-                type="button"
-                class="btn btn-health"
-                (click)="bookAppointment(doctor)"
-                [disabled]="bookingDoctorId === doctor.doctorId"
+              <div
+                class="availability-summary"
+                *ngIf="areSlotsLoaded(doctor.doctorId) && !isDoctorOnLeave(doctor.doctorId)"
               >
-                @if (bookingDoctorId === doctor.doctorId) {
-                  <i class="bi bi-hourglass-split me-2"></i>
-                  Booking...
-                } @else {
-                  <i class="bi bi-send-check me-2"></i>
-                  Confirm Booking
-                }
-              </button>
-            </div>
+                <span>
+                  <i class="bi bi-check-circle-fill"></i>
+                  {{ getAvailableSlotCount(doctor.doctorId) }} available
+                </span>
+                <span>
+                  <i class="bi bi-calendar2-week"></i>
+                  {{ getAllSlots(doctor.doctorId).length }} total slots
+                </span>
+              </div>
+
+              <div
+                class="slots-empty"
+                *ngIf="
+                  areSlotsLoaded(doctor.doctorId) &&
+                  getAllSlots(doctor.doctorId).length === 0
+                "
+              >
+                <i class="bi bi-calendar-x"></i>
+                No slots are configured for this date.
+              </div>
+
+              <div
+                class="slot-list-compact"
+                *ngIf="
+                  !isDoctorOnLeave(doctor.doctorId) &&
+                  getAllSlots(doctor.doctorId).length > 0
+                "
+              >
+                <button
+                  type="button"
+                  class="slot-chip"
+                  *ngFor="let slot of getPagedSlots(doctor.doctorId)"
+                  [ngClass]="getSlotClass(slot)"
+                  [class.active]="selectedSlots[doctor.doctorId] === slot.timeSlot"
+                  (click)="selectSlot(doctor.doctorId, slot)"
+                  [disabled]="!slot.isAvailable || bookingDoctorId === doctor.doctorId"
+                >
+                  <i
+                    class="bi"
+                    [ngClass]="{
+                      'bi-clock': slot.isAvailable,
+                      'bi-calendar-x': slot.status === 'Booked',
+                      'bi-x-circle': slot.status === 'DoctorOnLeave'
+                    }"
+                  ></i>
+                  <span>{{ slot.timeSlot }}</span>
+                  <small>{{ getSlotLabel(slot) }}</small>
+                </button>
+              </div>
+
+              <div
+                class="slot-pagination"
+                *ngIf="
+                  !isDoctorOnLeave(doctor.doctorId) &&
+                  getAllSlots(doctor.doctorId).length > slotPageSize
+                "
+              >
+                <button
+                  type="button"
+                  class="slot-page-btn"
+                  (click)="goToPreviousSlotPage(doctor.doctorId)"
+                  [disabled]="getCurrentSlotPage(doctor.doctorId) === 0"
+                >
+                  <i class="bi bi-chevron-left"></i>
+                  Prev
+                </button>
+
+                <span class="slot-page-info">
+                  Page {{ getCurrentSlotPage(doctor.doctorId) + 1 }} of
+                  {{ getTotalSlotPages(doctor.doctorId) }}
+                </span>
+
+                <button
+                  type="button"
+                  class="slot-page-btn"
+                  (click)="goToNextSlotPage(doctor.doctorId)"
+                  [disabled]="
+                    getCurrentSlotPage(doctor.doctorId) >=
+                    getTotalSlotPages(doctor.doctorId) - 1
+                  "
+                >
+                  Next
+                  <i class="bi bi-chevron-right"></i>
+                </button>
+              </div>
+
+              <div
+                class="booking-mini-summary"
+                *ngIf="
+                  selectedSlots[doctor.doctorId] &&
+                  !isDoctorOnLeave(doctor.doctorId)
+                "
+              >
+                <div>
+                  <span>Selected Slot</span>
+                  <strong>{{ selectedSlots[doctor.doctorId] }}</strong>
+                </div>
+
+                <button
+                  type="button"
+                  class="btn btn-health"
+                  (click)="bookAppointment(doctor)"
+                  [disabled]="bookingDoctorId === doctor.doctorId"
+                >
+                  @if (bookingDoctorId === doctor.doctorId) {
+                    <i class="bi bi-hourglass-split me-2"></i>
+                    Booking...
+                  } @else {
+                    <i class="bi bi-send-check me-2"></i>
+                    Confirm Booking
+                  }
+                </button>
+              </div>
+            </ng-container>
           </div>
-        </div>
+        </article>
       </div>
     </section>
 
-    <!-- Empty State -->
-    <section class="empty-state-card" *ngIf="!isLoadingDoctors && sortedDoctors.length === 0">
+    <section class="empty-state-card" *ngIf="sortedDoctors.length === 0">
       <div class="empty-state-icon">
         <i class="bi bi-search"></i>
       </div>
-
       <h5>No doctors found</h5>
-
-      <p>
-        Try changing your search text or specialisation filter. Also make sure at least one doctor
-        is available.
-      </p>
-
-      <button type="button" class="btn btn-health" (click)="clearFilters()">Clear Filters</button>
+      <p>Try changing your search text or specialisation filter.</p>
+      <button type="button" class="btn btn-health" (click)="clearFilters()">
+        Clear Filters
+      </button>
     </section>
   </ng-container>
 </div>
