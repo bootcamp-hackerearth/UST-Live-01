@@ -1,26 +1,26 @@
 ﻿using HealthApp.Shared.Dtos;
 
-namespace HealthApp.Api.Services.Interfaces 
-{ 
-    public interface IDoctorLeaveService 
-    { 
-        Task<DoctorLeaveDto> CreateLeaveAsync(
-            int doctorId, 
-            DoctorLeaveCreateDto dto, 
-            CancellationToken ct = default
-            ); 
+namespace HealthApp.Api.Services.Interfaces
+{
+    public interface IDoctorLeaveService
+    {
+        Task<DoctorLeaveCreationResultDto> CreateLeaveAsync(
+            int doctorId,
+            DoctorLeaveCreateDto dto,
+            CancellationToken ct = default);
+
         Task<IEnumerable<DoctorLeaveDto>> GetDoctorLeavesAsync(
-            int doctorId, 
-            CancellationToken ct = default
-            ); 
+            int doctorId,
+            CancellationToken ct = default);
+
         Task<DoctorLeaveDto?> GetLeaveForDateAsync(
-            int doctorId, 
-            DateOnly date, 
-            CancellationToken ct = default); 
+            int doctorId,
+            DateOnly date,
+            CancellationToken ct = default);
+
         Task<bool> IsDoctorOnLeaveAsync(
-            int doctorId, 
-            DateOnly date, 
-            CancellationToken ct = default
-            ); 
-    } 
+            int doctorId,
+            DateOnly date,
+            CancellationToken ct = default);
+    }
 }

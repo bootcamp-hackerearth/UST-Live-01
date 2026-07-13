@@ -43,4 +43,13 @@ namespace HealthApp.Shared.Dtos
         [Required]
         public DateTime CreatedAtUtc { get; set; }
     }
+
+    public class DoctorLeaveCreationResultDto
+    {
+        public DoctorLeaveDto Leave { get; set; } = new();
+
+        public int CancelledAppointmentCount { get; set; }
+
+        public List<int> CancelledAppointmentIds { get; set; } = new();
+    }
 }

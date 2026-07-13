@@ -18,23 +18,26 @@ namespace HealthApp.Api.Services.Impl
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IPatientRepository _patientRepository;
         private readonly IDoctorRepository _doctorRepository;
+        private readonly IDoctorLeaveRepository _doctorLeaveRepository;
         private readonly IMapper _mapper;
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly IDistributedCache _cache;
         private readonly ILogger<AppointmentService> _logger;
 
         public AppointmentService(
-            IAppointmentRepository appointmentRepository,
-            IPatientRepository patientRepository,
-            IDoctorRepository doctorRepository,
-            IMapper mapper,
-            IPublishEndpoint publishEndpoint,
-            IDistributedCache cache,
-            ILogger<AppointmentService> logger)
+    IAppointmentRepository appointmentRepository,
+    IPatientRepository patientRepository,
+    IDoctorRepository doctorRepository,
+    IDoctorLeaveRepository doctorLeaveRepository,
+    IMapper mapper,
+    IPublishEndpoint publishEndpoint,
+    IDistributedCache cache,
+    ILogger<AppointmentService> logger)
         {
             _appointmentRepository = appointmentRepository;
             _patientRepository = patientRepository;
             _doctorRepository = doctorRepository;
+            _doctorLeaveRepository = doctorLeaveRepository;
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
             _cache = cache;
@@ -159,6 +162,19 @@ namespace HealthApp.Api.Services.Impl
             if (!doctor.IsActive)
             {
                 throw new BusinessRuleViolationException("Selected doctor is inactive.");
+            }
+
+            var doctorLeave = await _doctorLeaveRepository.GetLeaveForDateAsync(
+                dto.DoctorId,
+                scheduledDate);
+
+            if (doctorLeave != null)
+            {
+                throw new BusinessRuleViolationException(
+                    $"The selected doctor is on leave from " +
+                    $"{doctorLeave.StartDate:dd MMM yyyy} to " +
+                    $"{doctorLeave.EndDate:dd MMM yyyy}. " +
+                    "Please select another appointment date.");
             }
 
             string slot = dto.TimeSlot.Trim();

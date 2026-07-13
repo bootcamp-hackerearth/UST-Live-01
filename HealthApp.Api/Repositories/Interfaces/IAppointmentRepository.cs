@@ -26,5 +26,16 @@ namespace HealthApp.Api.Repositories.Interfaces
         Task<(IEnumerable<Appointment> Items, int TotalCount)> GetAppointmentsAsync(
             AppointmentFilterDto filter,
             CancellationToken ct = default);
+
+        Task<List<Appointment>> GetActiveAppointmentsForDoctorDateRangeAsync(
+            int doctorId,
+            DateOnly startDate,
+            DateOnly endDate,
+            CancellationToken ct = default);
+
+        Task CancelAppointmentsAsync(
+            IEnumerable<Appointment> appointments,
+            string cancellationReason,
+            CancellationToken ct = default);
     }
 }

@@ -56,7 +56,6 @@ namespace HealthApp.Api.Repositories.Impl
             if (filter.OnlyUpcoming)
             {
                 var today = DateOnly.FromDateTime(DateTime.Today);
-
                 query = query.Where(a => a.ScheduledDate >= today);
             }
 
@@ -78,13 +77,12 @@ namespace HealthApp.Api.Repositories.Impl
             DateOnly date,
             CancellationToken ct = default)
         {
-            return await context.Appointments
-                .AnyAsync(a =>
-                    a.PatientId == patientId &&
-                    a.DoctorId == doctorId &&
-                    a.ScheduledDate == date &&
-                    a.Status != AppointmentStatus.Cancelled,
-                    ct);
+            return await context.Appointments.AnyAsync(a =>
+                a.PatientId == patientId &&
+                a.DoctorId == doctorId &&
+                a.ScheduledDate == date &&
+                a.Status != AppointmentStatus.Cancelled,
+                ct);
         }
 
         public async Task<bool> HasPatientSlotConflictAsync(
@@ -93,13 +91,12 @@ namespace HealthApp.Api.Repositories.Impl
             string slot,
             CancellationToken ct = default)
         {
-            return await context.Appointments
-                .AnyAsync(a =>
-                    a.PatientId == patientId &&
-                    a.ScheduledDate == date &&
-                    a.TimeSlot == slot &&
-                    a.Status != AppointmentStatus.Cancelled,
-                    ct);
+            return await context.Appointments.AnyAsync(a =>
+                a.PatientId == patientId &&
+                a.ScheduledDate == date &&
+                a.TimeSlot == slot &&
+                a.Status != AppointmentStatus.Cancelled,
+                ct);
         }
 
         public async Task<bool> IsDoctorSlotBookedAsync(
@@ -108,13 +105,54 @@ namespace HealthApp.Api.Repositories.Impl
             string slot,
             CancellationToken ct = default)
         {
+            return await context.Appointments.AnyAsync(a =>
+                a.DoctorId == doctorId &&
+                a.ScheduledDate == date &&
+                a.TimeSlot == slot &&
+                a.Status != AppointmentStatus.Cancelled,
+                ct);
+        }
+
+        public async Task<List<Appointment>> GetActiveAppointmentsForDoctorDateRangeAsync(
+            int doctorId,
+            DateOnly startDate,
+            DateOnly endDate,
+            CancellationToken ct = default)
+        {
             return await context.Appointments
-                .AnyAsync(a =>
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .Where(a =>
                     a.DoctorId == doctorId &&
-                    a.ScheduledDate == date &&
-                    a.TimeSlot == slot &&
-                    a.Status != AppointmentStatus.Cancelled,
-                    ct);
+                    a.ScheduledDate >= startDate &&
+                    a.ScheduledDate <= endDate &&
+                    (a.Status == AppointmentStatus.Pending ||
+                     a.Status == AppointmentStatus.Confirmed))
+                .OrderBy(a => a.ScheduledDate)
+                .ThenBy(a => a.TimeSlot)
+                .ToListAsync(ct);
+        }
+
+        public async Task CancelAppointmentsAsync(
+            IEnumerable<Appointment> appointments,
+            string cancellationReason,
+            CancellationToken ct = default)
+        {
+            var appointmentList = appointments.ToList();
+
+            foreach (var appointment in appointmentList)
+            {
+                appointment.Status = AppointmentStatus.Cancelled;
+                appointment.CancellationReason = cancellationReason;
+            }
+
+            if (appointmentList.Count == 0)
+            {
+                return;
+            }
+
+            context.Appointments.UpdateRange(appointmentList);
+            await context.SaveChangesAsync(ct);
         }
     }
 }

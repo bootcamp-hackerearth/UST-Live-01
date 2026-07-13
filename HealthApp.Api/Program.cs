@@ -163,6 +163,8 @@ builder.Services.AddMassTransit(config =>
 {
     config.AddConsumer<AppointmentBookedConsumer>();
 
+    config.AddConsumer<AppointmentCancelledByDoctorLeaveConsumer>();
+
     config.UsingRabbitMq((context, rabbitConfig) =>
     {
         rabbitConfig.Host("localhost", "/", host =>

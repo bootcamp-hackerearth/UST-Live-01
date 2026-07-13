@@ -1,29 +1,52 @@
 ﻿using AutoMapper;
+using HealthApp.Api.Data;
 using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Interfaces;
 using HealthApp.Shared.Dtos;
+using HealthApp.Shared.Events;
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace HealthApp.Api.Services.Impl
 {
     public class DoctorLeaveService : IDoctorLeaveService
     {
+        private readonly HealthAppDbContext _context;
         private readonly IDoctorLeaveRepository _doctorLeaveRepository;
         private readonly IDoctorRepository _doctorRepository;
+        private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IPatientRepository _patientRepository;
         private readonly IMapper _mapper;
+        private readonly IPublishEndpoint _publishEndpoint;
+        private readonly IDistributedCache _cache;
+        private readonly ILogger<DoctorLeaveService> _logger;
 
         public DoctorLeaveService(
+            HealthAppDbContext context,
             IDoctorLeaveRepository doctorLeaveRepository,
             IDoctorRepository doctorRepository,
-            IMapper mapper)
+            IAppointmentRepository appointmentRepository,
+            IPatientRepository patientRepository,
+            IMapper mapper,
+            IPublishEndpoint publishEndpoint,
+            IDistributedCache cache,
+            ILogger<DoctorLeaveService> logger)
         {
+            _context = context;
             _doctorLeaveRepository = doctorLeaveRepository;
             _doctorRepository = doctorRepository;
+            _appointmentRepository = appointmentRepository;
+            _patientRepository = patientRepository;
             _mapper = mapper;
+            _publishEndpoint = publishEndpoint;
+            _cache = cache;
+            _logger = logger;
         }
 
-        public async Task<DoctorLeaveDto> CreateLeaveAsync(
+        public async Task<DoctorLeaveCreationResultDto> CreateLeaveAsync(
             int doctorId,
             DoctorLeaveCreateDto dto,
             CancellationToken ct = default)
@@ -53,18 +76,68 @@ namespace HealthApp.Api.Services.Impl
                     "The selected leave dates overlap with an existing leave record.");
             }
 
-            var doctorLeave = _mapper.Map<DoctorLeave>(dto);
+            var affectedAppointments = await _appointmentRepository
+                .GetActiveAppointmentsForDoctorDateRangeAsync(
+                    doctorId,
+                    dto.StartDate,
+                    dto.EndDate,
+                    ct);
 
+            var cancellationReason =
+                $"Appointment cancelled because {doctor.FullName ?? "the doctor"} " +
+                $"is unavailable from {dto.StartDate:dd MMM yyyy} " +
+                $"to {dto.EndDate:dd MMM yyyy}.";
+
+            var doctorLeave = _mapper.Map<DoctorLeave>(dto);
             doctorLeave.DoctorId = doctorId;
             doctorLeave.Doctor = doctor;
             doctorLeave.Reason = dto.Reason.Trim();
             doctorLeave.CreatedAtUtc = DateTime.UtcNow;
 
-            var createdLeave = await _doctorLeaveRepository.Add(
-                doctorLeave,
-                ct);
+            await using var transaction = await _context.Database
+                .BeginTransactionAsync(ct);
 
-            return _mapper.Map<DoctorLeaveDto>(createdLeave);
+            try
+            {
+                var createdLeave = await _doctorLeaveRepository.Add(
+                    doctorLeave,
+                    ct);
+
+                await _appointmentRepository.CancelAppointmentsAsync(
+                    affectedAppointments,
+                    cancellationReason,
+                    ct);
+
+                await transaction.CommitAsync(ct);
+
+                var result = new DoctorLeaveCreationResultDto
+                {
+                    Leave = _mapper.Map<DoctorLeaveDto>(createdLeave),
+                    CancelledAppointmentCount = affectedAppointments.Count,
+                    CancelledAppointmentIds = affectedAppointments
+                        .Select(appointment => appointment.AppointmentId)
+                        .ToList()
+                };
+
+                await InvalidateLeaveDateCachesAsync(
+                    doctorId,
+                    dto.StartDate,
+                    dto.EndDate,
+                    ct);
+
+                await PublishCancellationEventsAsync(
+                    affectedAppointments,
+                    doctor,
+                    createdLeave,
+                    ct);
+
+                return result;
+            }
+            catch
+            {
+                await transaction.RollbackAsync(ct);
+                throw;
+            }
         }
 
         public async Task<IEnumerable<DoctorLeaveDto>> GetDoctorLeavesAsync(
@@ -72,7 +145,6 @@ namespace HealthApp.Api.Services.Impl
             CancellationToken ct = default)
         {
             ValidateDoctorId(doctorId);
-
             await GetDoctorAsync(doctorId, ct);
 
             var leaves = await _doctorLeaveRepository.GetByDoctorIdAsync(
@@ -88,7 +160,6 @@ namespace HealthApp.Api.Services.Impl
             CancellationToken ct = default)
         {
             ValidateDoctorId(doctorId);
-
             await GetDoctorAsync(doctorId, ct);
 
             var leave = await _doctorLeaveRepository.GetLeaveForDateAsync(
@@ -107,13 +178,96 @@ namespace HealthApp.Api.Services.Impl
             CancellationToken ct = default)
         {
             ValidateDoctorId(doctorId);
-
             await GetDoctorAsync(doctorId, ct);
 
             return await _doctorLeaveRepository.IsDoctorOnLeaveAsync(
                 doctorId,
                 date,
                 ct);
+        }
+
+        private async Task PublishCancellationEventsAsync(
+            IEnumerable<Appointment> appointments,
+            Doctor doctor,
+            DoctorLeave leave,
+            CancellationToken ct)
+        {
+            foreach (var appointment in appointments)
+            {
+                try
+                {
+                    var patientUserId = await _patientRepository
+                        .GetPatientUserIdAsync(appointment.PatientId);
+
+                    if (string.IsNullOrWhiteSpace(patientUserId))
+                    {
+                        _logger.LogWarning(
+                            "Patient user account is not linked for patient {PatientId}. " +
+                            "Doctor-leave notification was not published for appointment {AppointmentId}.",
+                            appointment.PatientId,
+                            appointment.AppointmentId);
+
+                        continue;
+                    }
+
+                    await _publishEndpoint.Publish(
+                        new AppointmentCancelledByDoctorLeaveEvent(
+                            appointment.AppointmentId,
+                            appointment.PatientId,
+                            patientUserId,
+                            appointment.Patient?.FullName ?? string.Empty,
+                            appointment.DoctorId,
+                            doctor.FullName ?? string.Empty,
+                            appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue),
+                            appointment.TimeSlot ?? string.Empty,
+                            leave.StartDate.ToDateTime(TimeOnly.MinValue),
+                            leave.EndDate.ToDateTime(TimeOnly.MinValue),
+                            leave.Reason),
+                        ct);
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(
+                        exception,
+                        "Doctor leave was created, but the cancellation notification event " +
+                        "could not be published for appointment {AppointmentId}.",
+                        appointment.AppointmentId);
+                }
+            }
+        }
+
+        private async Task InvalidateLeaveDateCachesAsync(
+            int doctorId,
+            DateOnly startDate,
+            DateOnly endDate,
+            CancellationToken ct)
+        {
+            for (var date = startDate; date <= endDate; date = date.AddDays(1))
+            {
+                var cacheKey = GetDoctorSlotsCacheKey(doctorId, date);
+
+                try
+                {
+                    await _cache.RemoveAsync(cacheKey, ct);
+
+                    _logger.LogInformation(
+                        "Doctor availability cache invalidated for doctor {DoctorId} " +
+                        "on {Date}. Cache key: {CacheKey}",
+                        doctorId,
+                        date,
+                        cacheKey);
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogWarning(
+                        exception,
+                        "Doctor leave was created, but availability cache invalidation " +
+                        "failed for doctor {DoctorId} on {Date}. Cache key: {CacheKey}",
+                        doctorId,
+                        date,
+                        cacheKey);
+                }
+            }
         }
 
         private async Task<Doctor> GetDoctorAsync(
@@ -143,7 +297,7 @@ namespace HealthApp.Api.Services.Impl
 
         private static void ValidateLeave(DoctorLeaveCreateDto dto)
         {
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var today = DateOnly.FromDateTime(DateTime.Today);
 
             if (dto.StartDate < today)
             {
@@ -176,6 +330,13 @@ namespace HealthApp.Api.Services.Impl
                 throw new InvalidRequestException(
                     "Leave reason cannot exceed 500 characters.");
             }
+        }
+
+        private static string GetDoctorSlotsCacheKey(
+            int doctorId,
+            DateOnly date)
+        {
+            return $"doctor:{doctorId}:slots:{date:yyyy-MM-dd}";
         }
     }
 }
