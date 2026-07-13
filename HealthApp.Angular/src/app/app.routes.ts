@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
 
-import { PatientLayout } from './pages/patient/patient-layout/patient-layout';
-import { PatientDashboard } from './pages/patient/patient-dashboard/patient-dashboard';
-import { BookAppointment } from './pages/patient/book-appointment/book-appointment';
 import { Home } from './pages/home/home';
 import { Login } from './pages/auth/login/login';
 import { PatientRegister } from './pages/auth/patient-register/patient-register';
+
+import { PatientLayout } from './pages/patient/patient-layout/patient-layout';
+import { PatientDashboard } from './pages/patient/patient-dashboard/patient-dashboard';
+import { BookAppointment } from './pages/patient/book-appointment/book-appointment';
 import { MyAppointments } from './pages/patient/appointments/appointments';
 import { HealthRecords } from './pages/patient/health-records/health-records';
 import { PatientProfile } from './pages/patient/profile/profile';
@@ -15,9 +16,11 @@ import { DoctorDashboard } from './pages/doctor/doctor-dashboard/doctor-dashboar
 import { DoctorAppointments } from './pages/doctor/doctor-appointments/doctor-appointments';
 import { DoctorHealthRecords } from './pages/doctor/doctor-health-records/doctor-health-records';
 import { DoctorProfile } from './pages/doctor/profile/profile';
+import { DoctorLeave } from './pages/doctor/leave/leave';
 
 import { authGuard } from './core/guards/auth.guard';
 import { doctorGuard, patientGuard } from './core/guards/role.guard';
+
 
 export const routes: Routes = [
   {
@@ -88,6 +91,10 @@ export const routes: Routes = [
       {
         path: 'profile',
         component: DoctorProfile
+      },
+      {
+        path: 'leave',
+          component: DoctorLeave
       },
       {
         path: '',

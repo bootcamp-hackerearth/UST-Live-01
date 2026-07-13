@@ -21,4 +21,21 @@
 
         public string Status { get; set; } = string.Empty;
     }
+
+    public class DoctorLeavePreviewDto
+    {
+        public int DoctorId { get; set; }
+
+        public DateOnly StartDate { get; set; }
+
+        public DateOnly EndDate { get; set; }
+
+        public int PendingAppointmentCount { get; set; }
+
+        public int ConfirmedAppointmentCount { get; set; }
+
+        public int TotalAffectedAppointmentCount { get; set; }
+
+        public string Message { get; set; } = string.Empty;
+    }
 }

@@ -4,6 +4,11 @@ namespace HealthApp.Api.Services.Interfaces
 {
     public interface IDoctorLeaveService
     {
+        Task<DoctorLeavePreviewDto> PreviewLeaveAsync(
+            int doctorId,
+            DoctorLeaveCreateDto dto,
+            CancellationToken ct = default);
+
         Task<DoctorLeaveCreationResultDto> CreateLeaveAsync(
             int doctorId,
             DoctorLeaveCreateDto dto,

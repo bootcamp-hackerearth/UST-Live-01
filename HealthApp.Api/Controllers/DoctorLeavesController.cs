@@ -23,21 +23,30 @@ namespace HealthApp.Api.Controllers
             _doctorLeaveService = doctorLeaveService;
         }
 
+        [HttpPost("preview")]
+        public async Task<IActionResult> PreviewMyLeave(
+            [FromBody] DoctorLeaveCreateDto dto,
+            CancellationToken ct)
+        {
+            var doctorId = GetRequiredDoctorId();
+
+            var preview = await _doctorLeaveService.PreviewLeaveAsync(
+                doctorId,
+                dto,
+                ct);
+
+            return Ok(preview);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateMyLeave(
             [FromBody] DoctorLeaveCreateDto dto,
             CancellationToken ct)
         {
-            var doctorId = User.GetDoctorId();
-
-            if (doctorId == null)
-            {
-                throw new ForbiddenAccessException(
-                    "Doctor profile is not linked to this user.");
-            }
+            var doctorId = GetRequiredDoctorId();
 
             var result = await _doctorLeaveService.CreateLeaveAsync(
-                doctorId.Value,
+                doctorId,
                 dto,
                 ct);
 
@@ -57,6 +66,17 @@ namespace HealthApp.Api.Controllers
         public async Task<IActionResult> GetMyLeaves(
             CancellationToken ct)
         {
+            var doctorId = GetRequiredDoctorId();
+
+            var leaves = await _doctorLeaveService.GetDoctorLeavesAsync(
+                doctorId,
+                ct);
+
+            return Ok(leaves);
+        }
+
+        private int GetRequiredDoctorId()
+        {
             var doctorId = User.GetDoctorId();
 
             if (doctorId == null)
@@ -65,11 +85,7 @@ namespace HealthApp.Api.Controllers
                     "Doctor profile is not linked to this user.");
             }
 
-            var leaves = await _doctorLeaveService.GetDoctorLeavesAsync(
-                doctorId.Value,
-                ct);
-
-            return Ok(leaves);
+            return doctorId.Value;
         }
     }
 }

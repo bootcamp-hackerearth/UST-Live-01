@@ -1,0 +1,253 @@
+<div class="doctor-leave-page">
+  <app-loading-spinner
+    *ngIf="isLoading"
+    message="Loading leave history..."
+  ></app-loading-spinner>
+
+  <ng-container *ngIf="!isLoading">
+    <section class="leave-header-card mb-4">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+          <div class="leave-header-badge mb-3">
+            <i class="bi bi-calendar2-x"></i>
+            Leave / Unavailability
+          </div>
+          <h1 class="leave-page-title mb-2">Manage your unavailable dates</h1>
+          <p class="leave-page-subtitle mb-0">
+            Preview affected appointments before confirming leave. Pending and confirmed
+            appointments in the selected period will be cancelled automatically.
+          </p>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="leave-warning-card">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>
+              <strong>Review Before Confirming</strong>
+              <span>The confirmation preview shows every affected appointment count.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="row g-4">
+      <div class="col-12">
+        <div class="leave-form-card">
+          <div class="section-heading">
+            <div class="section-heading-icon">
+              <i class="bi bi-calendar-plus"></i>
+            </div>
+            <div>
+              <h5 class="mb-1">Create Leave</h5>
+              <p class="mb-0">End date is optional for a single-day leave.</p>
+            </div>
+          </div>
+
+          <div class="row g-3 mt-1">
+            <div class="col-md-6">
+              <label for="leaveStartDate" class="form-label fw-bold">Start Date</label>
+              <input
+                id="leaveStartDate"
+                type="date"
+                class="form-control"
+                [(ngModel)]="leaveForm.startDate"
+                [min]="minDate"
+                [disabled]="isSubmitting || isLoadingPreview"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label for="leaveEndDate" class="form-label fw-bold">
+                End Date <span class="optional-label">Optional</span>
+              </label>
+              <input
+                id="leaveEndDate"
+                type="date"
+                class="form-control"
+                [(ngModel)]="leaveForm.endDate"
+                [min]="leaveForm.startDate || minDate"
+                [disabled]="isSubmitting || isLoadingPreview"
+              />
+              <small class="form-help">Leave blank to use the start date as a one-day leave.</small>
+            </div>
+
+            <div class="col-12">
+              <label for="leaveReason" class="form-label fw-bold">Reason</label>
+              <textarea
+                id="leaveReason"
+                rows="5"
+                class="form-control"
+                maxlength="500"
+                placeholder="Explain why you will be unavailable"
+                [(ngModel)]="leaveForm.reason"
+                [disabled]="isSubmitting || isLoadingPreview"
+              ></textarea>
+              <div class="reason-counter">{{ reasonLength }}/{{ maxReasonLength }}</div>
+            </div>
+          </div>
+
+          <div class="leave-impact-note mt-3">
+            <i class="bi bi-info-circle-fill"></i>
+            <span>
+              Submit Leave first loads a safe preview. No appointment is cancelled until
+              Confirm Leave is selected in the confirmation modal.
+            </span>
+          </div>
+
+          <div class="leave-form-actions mt-4">
+            <button
+              type="button"
+              class="btn btn-outline-secondary px-4"
+              (click)="resetForm()"
+              [disabled]="isSubmitting || isLoadingPreview"
+            >
+              Clear
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-leave px-4"
+              (click)="openConfirmation()"
+              [disabled]="isSubmitting || isLoadingPreview"
+            >
+              @if (isLoadingPreview) {
+                <i class="bi bi-hourglass-split me-2"></i>
+                Checking Appointments...
+              } @else {
+                <i class="bi bi-calendar2-x me-2"></i>
+                Submit Leave
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="leave-history-card mt-4">
+      <div class="history-header">
+        <div>
+          <h5 class="mb-1">Leave History</h5>
+          <p class="mb-0">All leave and unavailability records.</p>
+        </div>
+        <button
+          type="button"
+          class="btn btn-outline-leave"
+          (click)="loadLeaves()"
+          [disabled]="isLoading || isSubmitting || isLoadingPreview"
+        >
+          <i class="bi bi-arrow-clockwise me-2"></i>
+          Refresh
+        </button>
+      </div>
+
+      <div class="leave-history-list" *ngIf="sortedLeaves.length > 0">
+        <article class="leave-history-item" *ngFor="let leave of sortedLeaves">
+          <div class="history-date-icon"><i class="bi bi-calendar-range"></i></div>
+          <div class="history-content">
+            <div class="history-date-range">
+              {{ leave.startDate | date: 'mediumDate' }} –
+              {{ leave.endDate | date: 'mediumDate' }}
+            </div>
+            <div class="history-reason">{{ leave.reason }}</div>
+            <div class="history-created">Created {{ leave.createdAtUtc | date: 'medium' }}</div>
+          </div>
+          <span class="history-id">#LV-{{ leave.doctorLeaveId }}</span>
+        </article>
+      </div>
+
+      <div class="leave-empty-state" *ngIf="sortedLeaves.length === 0">
+        <div class="leave-empty-icon"><i class="bi bi-calendar2-check"></i></div>
+        <h5>No leave history</h5>
+        <p>Create the first leave using the form above.</p>
+      </div>
+    </section>
+  </ng-container>
+
+  <button
+    type="button"
+    class="leave-modal-backdrop"
+    *ngIf="showConfirmModal"
+    aria-label="Close leave confirmation"
+    (click)="closeConfirmation()"
+  ></button>
+
+  <div class="leave-confirm-modal" *ngIf="showConfirmModal && leavePreview as preview">
+    <div class="leave-confirm-card">
+      <div class="confirm-warning-icon">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+
+      <h4>Confirm Doctor Leave</h4>
+      <p>
+        Confirm leave from
+        <strong>{{ leaveForm.startDate | date: 'mediumDate' }}</strong>
+        to
+        <strong>{{ effectiveEndDate | date: 'mediumDate' }}</strong>.
+      </p>
+
+      <div class="affected-appointment-summary">
+        <div class="affected-stat pending-stat">
+          <span>Pending</span>
+          <strong>{{ preview.pendingAppointmentCount }}</strong>
+        </div>
+        <div class="affected-stat confirmed-stat">
+          <span>Confirmed</span>
+          <strong>{{ preview.confirmedAppointmentCount }}</strong>
+        </div>
+        <div class="affected-stat total-stat">
+          <span>Total Affected</span>
+          <strong>{{ preview.totalAffectedAppointmentCount }}</strong>
+        </div>
+      </div>
+
+      <div class="preview-message" [class.no-impact]="preview.totalAffectedAppointmentCount === 0">
+        <i
+          class="bi"
+          [class.bi-exclamation-circle-fill]="preview.totalAffectedAppointmentCount > 0"
+          [class.bi-check-circle-fill]="preview.totalAffectedAppointmentCount === 0"
+        ></i>
+        <span>{{ preview.message }}</span>
+      </div>
+
+      <div class="confirm-reason-box">
+        <span>Reason</span>
+        <strong>{{ leaveForm.reason }}</strong>
+      </div>
+
+      <div class="confirm-impact-message" *ngIf="preview.totalAffectedAppointmentCount > 0">
+        <i class="bi bi-bell-fill"></i>
+        <span>
+          These appointments will be cancelled and affected patients will be notified.
+          The backend rechecks the final count when leave is confirmed.
+        </span>
+      </div>
+
+      <div class="confirm-actions">
+        <button
+          type="button"
+          class="btn btn-outline-secondary px-4"
+          (click)="closeConfirmation()"
+          [disabled]="isSubmitting"
+        >
+          Go Back
+        </button>
+        <button
+          type="button"
+          class="btn btn-leave px-4"
+          (click)="confirmLeave()"
+          [disabled]="isSubmitting"
+        >
+          @if (isSubmitting) {
+            <i class="bi bi-hourglass-split me-2"></i>
+            Creating Leave...
+          } @else {
+            <i class="bi bi-check-circle me-2"></i>
+            Confirm Leave
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

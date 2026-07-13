@@ -5,9 +5,9 @@ using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Interfaces;
 using HealthApp.Shared.Dtos;
+using HealthApp.Shared.Enums;
 using HealthApp.Shared.Events;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace HealthApp.Api.Services.Impl
@@ -46,6 +46,54 @@ namespace HealthApp.Api.Services.Impl
             _logger = logger;
         }
 
+        public async Task<DoctorLeavePreviewDto> PreviewLeaveAsync(
+            int doctorId,
+            DoctorLeaveCreateDto dto,
+            CancellationToken ct = default)
+        {
+            ValidateDoctorId(doctorId);
+
+            if (dto == null)
+            {
+                throw new InvalidRequestException(
+                    "Doctor leave data is required.");
+            }
+
+            ValidateLeave(dto);
+            await GetDoctorAsync(doctorId, ct);
+            await EnsureLeaveDoesNotOverlapAsync(doctorId, dto, ct);
+
+            var affectedAppointments = await _appointmentRepository
+                .GetActiveAppointmentsForDoctorDateRangeAsync(
+                    doctorId,
+                    dto.StartDate,
+                    dto.EndDate,
+                    ct);
+
+            var pendingCount = affectedAppointments.Count(appointment =>
+                appointment.Status == AppointmentStatus.Pending);
+
+            var confirmedCount = affectedAppointments.Count(appointment =>
+                appointment.Status == AppointmentStatus.Confirmed);
+
+            var totalCount = pendingCount + confirmedCount;
+
+            var message = totalCount > 0
+                ? $"{totalCount} active appointment(s) will be cancelled if this leave is confirmed."
+                : "No active appointments will be affected by this leave.";
+
+            return new DoctorLeavePreviewDto
+            {
+                DoctorId = doctorId,
+                StartDate = dto.StartDate,
+                EndDate = dto.EndDate,
+                PendingAppointmentCount = pendingCount,
+                ConfirmedAppointmentCount = confirmedCount,
+                TotalAffectedAppointmentCount = totalCount,
+                Message = message
+            };
+        }
+
         public async Task<DoctorLeaveCreationResultDto> CreateLeaveAsync(
             int doctorId,
             DoctorLeaveCreateDto dto,
@@ -62,19 +110,7 @@ namespace HealthApp.Api.Services.Impl
             ValidateLeave(dto);
 
             var doctor = await GetDoctorAsync(doctorId, ct);
-
-            var hasOverlap = await _doctorLeaveRepository
-                .HasOverlappingLeaveAsync(
-                    doctorId,
-                    dto.StartDate,
-                    dto.EndDate,
-                    ct);
-
-            if (hasOverlap)
-            {
-                throw new BusinessRuleViolationException(
-                    "The selected leave dates overlap with an existing leave record.");
-            }
+            await EnsureLeaveDoesNotOverlapAsync(doctorId, dto, ct);
 
             var affectedAppointments = await _appointmentRepository
                 .GetActiveAppointmentsForDoctorDateRangeAsync(
@@ -184,6 +220,25 @@ namespace HealthApp.Api.Services.Impl
                 doctorId,
                 date,
                 ct);
+        }
+
+        private async Task EnsureLeaveDoesNotOverlapAsync(
+            int doctorId,
+            DoctorLeaveCreateDto dto,
+            CancellationToken ct)
+        {
+            var hasOverlap = await _doctorLeaveRepository
+                .HasOverlappingLeaveAsync(
+                    doctorId,
+                    dto.StartDate,
+                    dto.EndDate,
+                    ct);
+
+            if (hasOverlap)
+            {
+                throw new BusinessRuleViolationException(
+                    "The selected leave dates overlap with an existing leave record.");
+            }
         }
 
         private async Task PublishCancellationEventsAsync(
