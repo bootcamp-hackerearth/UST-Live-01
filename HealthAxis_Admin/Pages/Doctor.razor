@@ -1,5 +1,6 @@
 ﻿@page "/doctors"
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.JSInterop
 @using HealthAxis.Shared.DTO.AdminDtos
 @using HealthAxis.Shared.DTO.AuthDtos
 @using HealthAxis.Shared.DTO.CommonDtos
@@ -7,8 +8,10 @@
 @using HealthAxis.Shared.Enums
 @using System.Text.Json
 @attribute [Authorize(Roles = "Admin")]
+
 @inject DoctorAdminService DoctorService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <section class="doctor-list-card">
 
@@ -18,11 +21,20 @@
             <p>All registered doctors from database.</p>
         </div>
 
-        <button type="button"
-                class="primary-btn register-doctor-main-btn"
-                @onclick="GoToRegisterDoctor">
-            Register Doctor
-        </button>
+        <div class="doctor-header-actions">
+            <button type="button"
+                    class="export-pdf-btn"
+                    disabled="@(isLoading || isExportingPdf)"
+                    @onclick="PrintAllDoctorsAsync">
+                @(isExportingPdf ? "Preparing PDF..." : "Export PDF")
+            </button>
+
+            <button type="button"
+                    class="primary-btn register-doctor-main-btn"
+                    @onclick="GoToRegisterDoctor">
+                Register Doctor
+            </button>
+        </div>
     </div>
 
     @if (!string.IsNullOrWhiteSpace(message))
@@ -184,6 +196,43 @@
         }
     }
 
+</section>
+
+<section class="doctor-print-area">
+    <div class="print-header">
+        <h1>HealthAxis Doctors Report</h1>
+        <p>Generated on @DateTime.Now.ToString("dd MMM yyyy hh:mm tt")</p>
+        <p>Total Doctors: @pdfDoctors.Count</p>
+    </div>
+
+    <table class="print-table">
+        <thead>
+            <tr>
+                <th>Doctor ID</th>
+                <th>Doctor Name</th>
+                <th>Email</th>
+                <th>Specialisation</th>
+                <th>Experience</th>
+                <th>Consultation Fee</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var doctor in pdfDoctors.OrderBy(doctor => doctor.DoctorId))
+            {
+                <tr>
+                    <td>@doctor.DoctorId</td>
+                    <td>@DisplayValue(doctor.FullName)</td>
+                    <td>@DisplayValue(doctor.Email)</td>
+                    <td>@doctor.Specialisation</td>
+                    <td>@doctor.YearsOfExperience years</td>
+                    <td>₹@doctor.ConsultationFee</td>
+                    <td>@(doctor.IsActive ? "Active" : "Inactive")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </section>
 
 @if (showViewDialog && selectedDoctor is not null)
@@ -601,6 +650,32 @@
 }
 
 <style>
+    .doctor-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .export-pdf-btn {
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        border-radius: 999px;
+        min-height: 38px;
+        padding: 9px 16px;
+        background: rgba(34, 197, 94, 0.18);
+        color: #86efac;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+        .export-pdf-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
     .doctors-table-wrapper,
     .appointments-table-wrapper {
         overflow-x: auto;
@@ -893,6 +968,10 @@
         filter: invert(1) brightness(2);
     }
 
+    .doctor-print-area {
+        display: none;
+    }
+
     @@media (max-width: 1100px) {
         .doctors-table {
             min-width: 1080px;
@@ -900,6 +979,16 @@
     }
 
     @@media (max-width: 800px) {
+        .doctor-header-actions {
+            width: 100%;
+            justify-content: stretch;
+        }
+
+        .export-pdf-btn,
+        .register-doctor-main-btn {
+            width: 100%;
+        }
+
         .doctor-detail-grid,
         .appointment-filter-row {
             grid-template-columns: 1fr;
@@ -922,12 +1011,107 @@
             width: 100%;
         }
     }
+
+    @@media print {
+        html,
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            color: #111827 !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+
+            body * {
+                visibility: hidden !important;
+            }
+
+        .doctor-print-area,
+        .doctor-print-area * {
+            visibility: visible !important;
+        }
+
+        .doctor-print-area {
+            display: block !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: #ffffff !important;
+            color: #111827 !important;
+            font-family: Arial, sans-serif !important;
+        }
+
+        .print-header {
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #111827;
+        }
+
+            .print-header h1 {
+                margin: 0 0 8px;
+                font-size: 22px;
+                color: #111827;
+            }
+
+            .print-header p {
+                margin: 3px 0;
+                font-size: 12px;
+                color: #374151;
+            }
+
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            page-break-inside: auto;
+        }
+
+            .print-table thead {
+                display: table-header-group;
+            }
+
+            .print-table tbody {
+                display: table-row-group;
+            }
+
+            .print-table tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+
+            .print-table th,
+            .print-table td {
+                border: 1px solid #d1d5db;
+                padding: 7px;
+                text-align: left;
+                vertical-align: top;
+                color: #111827;
+                word-break: break-word;
+            }
+
+            .print-table th {
+                background: #e5e7eb !important;
+                font-weight: 700;
+            }
+
+        @@page {
+            size: landscape;
+            margin: 12mm;
+        }
+    }
 </style>
 
 @code {
     private const int FirstPageNumber = 1;
     private const int MinimumPaginationPages = 1;
     private const int MessageAutoHideMilliseconds = 3000;
+    private const int PrintDelayMilliseconds = 200;
 
     private const string AllSpecialisationsOption = "All";
     private const string AllStatusOption = "All";
@@ -941,6 +1125,7 @@
     private const string CancelledStatusOption = "Cancelled";
 
     private List<DoctorDto> doctors = new();
+    private List<DoctorDto> pdfDoctors = new();
     private List<AdminAppointmentDetailDto> doctorAppointments = new();
 
     private PagedResponseDto<DoctorDto> doctorPage = new();
@@ -967,6 +1152,7 @@
     private bool showStatusDialog;
     private bool showResetPasswordDialog;
     private bool isResettingPassword;
+    private bool isExportingPdf;
 
     private int currentPage = FirstPageNumber;
     private int editingDoctorId;
@@ -1084,6 +1270,87 @@
         {
             isLoading = false;
         }
+    }
+
+    private async Task PrintAllDoctorsAsync()
+    {
+        if (isExportingPdf)
+        {
+            return;
+        }
+
+        isExportingPdf = true;
+        message = string.Empty;
+
+        try
+        {
+            pdfDoctors = await LoadAllDoctorsForPdfAsync();
+
+            if (pdfDoctors.Count == 0)
+            {
+                ShowMessage("No doctors available to export.", false);
+                return;
+            }
+
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(PrintDelayMilliseconds);
+            await JSRuntime.InvokeVoidAsync("print");
+        }
+        catch (TaskCanceledException)
+        {
+            ShowMessage(
+                "Doctor PDF export timed out. Please check if HealthAxis.API is running.",
+                false);
+        }
+        catch (HttpRequestException)
+        {
+            ShowMessage(
+                "Unable to load all doctors for PDF export.",
+                false);
+        }
+        catch (JsonException)
+        {
+            ShowMessage(
+                "Doctor PDF export failed because response format is invalid.",
+                false);
+        }
+        finally
+        {
+            isExportingPdf = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task<List<DoctorDto>> LoadAllDoctorsForPdfAsync()
+    {
+        var allDoctors = new List<DoctorDto>();
+
+        var firstPage = await DoctorService.GetDoctorsPageAsync(FirstPageNumber);
+
+        if (firstPage.Items is not null)
+        {
+            allDoctors.AddRange(firstPage.Items);
+        }
+
+        var totalPages = Math.Max(firstPage.TotalPages, FirstPageNumber);
+
+        for (var pageNumber = FirstPageNumber + 1;
+             pageNumber <= totalPages;
+             pageNumber++)
+        {
+            var page = await DoctorService.GetDoctorsPageAsync(pageNumber);
+
+            if (page.Items is not null)
+            {
+                allDoctors.AddRange(page.Items);
+            }
+        }
+
+        return allDoctors
+            .GroupBy(doctor => doctor.DoctorId)
+            .Select(group => group.First())
+            .OrderBy(doctor => doctor.DoctorId)
+            .ToList();
     }
 
     private void GoToRegisterDoctor()

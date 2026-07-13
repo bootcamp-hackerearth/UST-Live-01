@@ -2,10 +2,12 @@
 @attribute [Authorize(Roles = "Admin")]
 
 @using HealthAxis.Shared.DTO.AdminDtos
+@using Microsoft.JSInterop
 
 @inject AuthService AuthService
 @inject AppointmentReportAdminService ReportService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <section class="doctor-list-card">
 
@@ -15,12 +17,21 @@
             <p>All appointments with patient, doctor, status and appointment details.</p>
         </div>
 
-        <button type="button"
-                class="small-refresh-btn"
-                disabled="@isLoading"
-                @onclick="LoadReportsAsync">
-            @(isLoading ? "Loading..." : "Refresh")
-        </button>
+        <div class="header-actions">
+            <button type="button"
+                    class="export-pdf-btn"
+                    disabled="@(isLoading || isExportingPdf)"
+                    @onclick="PrintReportsAsync">
+                @(isExportingPdf ? "Preparing PDF..." : "Export PDF")
+            </button>
+
+            <button type="button"
+                    class="small-refresh-btn"
+                    disabled="@isLoading"
+                    @onclick="LoadReportsAsync">
+                @(isLoading ? "Loading..." : "Refresh")
+            </button>
+        </div>
     </div>
 
     @if (!string.IsNullOrWhiteSpace(message))
@@ -62,7 +73,7 @@
             Loading appointment reports...
         </div>
     }
-    else if (FilteredReports.Count == 0)
+    else if (reports.Count == 0)
     {
         <div class="empty-box">
             No appointment reports found.
@@ -154,6 +165,13 @@
             </table>
         </div>
 
+        @if (!FilteredReports.Any())
+        {
+            <p class="not-found">
+                No appointments matched your search/filter.
+            </p>
+        }
+
         @if (TotalPages > MinimumPaginationPages)
         {
             <div class="pagination-bar">
@@ -165,8 +183,7 @@
                 </button>
 
                 <span>
-                    Page @currentPage of @TotalPages
-                    • Total @FilteredReports.Count reports
+                    Page @currentPage of @TotalPages - Total @FilteredReports.Count reports
                 </span>
 
                 <button type="button"
@@ -179,6 +196,54 @@
         }
     }
 
+</section>
+
+<section class="print-area">
+    <div class="print-header">
+        <h1>HealthAxis Appointment Report</h1>
+        <p>Generated on @DateTime.Now.ToString("dd MMM yyyy hh:mm tt")</p>
+        <p>Total Appointments: @reports.Count</p>
+    </div>
+
+    <table class="print-table">
+        <thead>
+            <tr>
+                <th>Appointment ID</th>
+                <th>Patient</th>
+                <th>Patient ID</th>
+                <th>Doctor</th>
+                <th>Doctor ID</th>
+                <th>Specialisation</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Cancelled By</th>
+                <th>Cancellation Reason</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var report in reports
+                .OrderByDescending(report => report.ScheduledDate)
+                .ThenBy(report => report.TimeSlot)
+                .ThenBy(report => report.AppointmentId))
+            {
+                <tr>
+                    <td>@report.AppointmentId</td>
+                    <td>@GetSafeText(report.PatientName, "Patient")</td>
+                    <td>@report.PatientId</td>
+                    <td>@GetSafeText(report.DoctorName, "Doctor")</td>
+                    <td>@report.DoctorId</td>
+                    <td>@GetSafeText(report.Specialisation, "N/A")</td>
+                    <td>@report.ScheduledDate.ToString("dd MMM yyyy")</td>
+                    <td>@GetSafeText(report.TimeSlot, "Not assigned")</td>
+                    <td>@GetSafeText(report.Status, "Pending")</td>
+                    <td>@GetCancelledByDisplay(report)</td>
+                    <td>@GetCancellationReasonDisplay(report)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </section>
 
 @if (showReportDialog && selectedReport is not null)
@@ -296,6 +361,14 @@
 }
 
 <style>
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
     .report-toolbar {
         display: grid;
         grid-template-columns: minmax(300px, 1fr) 220px 90px;
@@ -363,7 +436,8 @@
     .small-confirm-btn,
     .small-cancel-btn,
     .small-refresh-btn,
-    .small-clear-btn {
+    .small-clear-btn,
+    .export-pdf-btn {
         border: none;
         border-radius: 999px;
         padding: 7px 10px;
@@ -396,6 +470,14 @@
         color: #ffffff;
     }
 
+    .export-pdf-btn {
+        background: rgba(34, 197, 94, 0.18);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        min-height: 36px;
+        padding: 8px 14px;
+    }
+
     .small-clear-btn {
         width: 90px !important;
         height: 46px;
@@ -409,7 +491,8 @@
     .small-view-btn:disabled,
     .small-confirm-btn:disabled,
     .small-cancel-btn:disabled,
-    .small-refresh-btn:disabled {
+    .small-refresh-btn:disabled,
+    .export-pdf-btn:disabled {
         opacity: 0.65;
         cursor: not-allowed;
     }
@@ -423,6 +506,12 @@
         border-radius: 18px;
         background: rgba(148, 163, 184, 0.12);
         color: #cbd5e1;
+        font-weight: 800;
+    }
+
+    .not-found {
+        margin-top: 16px;
+        color: #fca5a5;
         font-weight: 800;
     }
 
@@ -490,6 +579,10 @@
         cursor: pointer;
     }
 
+    .print-area {
+        display: none;
+    }
+
     @@media (max-width: 1100px) {
         .report-table {
             min-width: 980px;
@@ -497,11 +590,18 @@
     }
 
     @@media (max-width: 900px) {
+        .header-actions {
+            width: 100%;
+            justify-content: stretch;
+        }
+
         .report-toolbar {
             grid-template-columns: 1fr;
         }
 
-        .small-clear-btn {
+        .small-clear-btn,
+        .export-pdf-btn,
+        .small-refresh-btn {
             width: 100% !important;
         }
 
@@ -512,13 +612,105 @@
 
         .small-view-btn,
         .small-confirm-btn,
-        .small-cancel-btn,
-        .small-refresh-btn {
+        .small-cancel-btn {
             width: 100%;
         }
 
         .action-column {
             text-align: left;
+        }
+    }
+
+    @@media print {
+        html,
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            color: #111827 !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+
+            body * {
+                visibility: hidden !important;
+            }
+
+        .print-area,
+        .print-area * {
+            visibility: visible !important;
+        }
+
+        .print-area {
+            display: block !important;
+            position: static !important;
+            width: 100% !important;
+            min-height: auto !important;
+            height: auto !important;
+            overflow: visible !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: #ffffff !important;
+            color: #111827 !important;
+            font-family: Arial, sans-serif !important;
+        }
+
+        .print-header {
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #111827;
+        }
+
+            .print-header h1 {
+                margin: 0 0 8px;
+                font-size: 22px;
+                color: #111827;
+            }
+
+            .print-header p {
+                margin: 3px 0;
+                font-size: 12px;
+                color: #374151;
+            }
+
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            page-break-inside: auto;
+        }
+
+            .print-table thead {
+                display: table-header-group;
+            }
+
+            .print-table tbody {
+                display: table-row-group;
+            }
+
+            .print-table tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+
+            .print-table th,
+            .print-table td {
+                border: 1px solid #d1d5db;
+                padding: 6px;
+                text-align: left;
+                vertical-align: top;
+                color: #111827;
+                word-break: break-word;
+            }
+
+            .print-table th {
+                background: #e5e7eb !important;
+                font-weight: 700;
+            }
+
+        @@page {
+            size: landscape;
+            margin: 10mm;
         }
     }
 </style>
@@ -528,6 +720,7 @@
     private const int MinimumPaginationPages = 1;
     private const int PageSize = 6;
     private const int MessageAutoHideMilliseconds = 3000;
+    private const int PrintDelayMilliseconds = 200;
 
     private const string AllStatusOption = "All";
     private const string PendingStatus = "Pending";
@@ -548,6 +741,7 @@
     private string resultMessage = string.Empty;
 
     private bool isLoading;
+    private bool isExportingPdf;
     private bool showReportDialog;
     private bool showResultDialog;
     private bool isResultSuccess;
@@ -688,6 +882,38 @@
         if (result.Success)
         {
             await LoadReportsAsync();
+        }
+    }
+
+    private async Task PrintReportsAsync()
+    {
+        if (isExportingPdf)
+        {
+            return;
+        }
+
+        if (reports.Count == 0)
+        {
+            ShowResult(
+                "No Records",
+                "There are no appointment reports available to export.",
+                false);
+
+            return;
+        }
+
+        isExportingPdf = true;
+
+        try
+        {
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(PrintDelayMilliseconds);
+            await JSRuntime.InvokeVoidAsync("print");
+        }
+        finally
+        {
+            isExportingPdf = false;
+            await InvokeAsync(StateHasChanged);
         }
     }
 

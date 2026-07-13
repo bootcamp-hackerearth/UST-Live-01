@@ -2,8 +2,10 @@
 @attribute [Authorize(Roles = "Admin")]
 
 @using HealthAxis.Shared.DTO.AdminDtos
+@using Microsoft.JSInterop
 
 @inject UserAdminService UserService
+@inject IJSRuntime JSRuntime
 
 <section class="doctor-list-card user-admin-card">
 
@@ -13,12 +15,21 @@
             <p>All system users from database.</p>
         </div>
 
-        <button type="button"
-                class="small-refresh-btn"
-                disabled="@isLoading"
-                @onclick="LoadUsersAsync">
-            @(isLoading ? "Loading..." : "Refresh")
-        </button>
+        <div class="user-header-actions">
+            <button type="button"
+                    class="export-pdf-btn"
+                    disabled="@(isLoading || isExportingPdf)"
+                    @onclick="PrintUsersAsync">
+                @(isExportingPdf ? "Preparing PDF..." : "Export PDF")
+            </button>
+
+            <button type="button"
+                    class="small-refresh-btn"
+                    disabled="@isLoading"
+                    @onclick="LoadUsersAsync">
+                @(isLoading ? "Loading..." : "Refresh")
+            </button>
+        </div>
     </div>
 
     @if (!string.IsNullOrWhiteSpace(message))
@@ -176,6 +187,47 @@
 
 </section>
 
+<section class="user-print-area">
+    <div class="print-header">
+        <h1>HealthAxis Users Report</h1>
+        <p>Generated on @DateTime.Now.ToString("dd MMM yyyy hh:mm tt")</p>
+        <p>Total Users: @users.Count</p>
+    </div>
+
+    <table class="print-table">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Role</th>
+                <th>Specialisation</th>
+                <th>Status</th>
+                <th>Created Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var user in users
+                .OrderBy(user => user.Role)
+                .ThenBy(user => user.FullName))
+            {
+                <tr>
+                    <td>@DisplayValue(user.UserId)</td>
+                    <td>@DisplayValue(user.FullName)</td>
+                    <td>@DisplayValue(user.Email)</td>
+                    <td>@DisplayValue(user.PhoneNumber)</td>
+                    <td>@DisplayValue(user.Role)</td>
+                    <td>@GetSpecialisationDisplay(user)</td>
+                    <td>@(user.IsActive ? "Active" : "Inactive")</td>
+                    <td>@FormatDate(user.CreatedDate)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
+
 @if (showViewDialog && selectedUser is not null)
 {
     <div class="modal-backdrop-custom">
@@ -256,6 +308,14 @@
     .user-admin-card {
         max-width: 100%;
         overflow: hidden;
+    }
+
+    .user-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
     }
 
     .users-toolbar {
@@ -375,19 +435,31 @@
             background: rgba(14, 165, 233, 0.28);
         }
 
-    .small-refresh-btn {
+    .small-refresh-btn,
+    .export-pdf-btn {
         border: none;
         border-radius: 999px;
         padding: 9px 16px;
-        background: linear-gradient(135deg, #0ea5e9, #7c3aed);
-        color: #ffffff;
         font-size: 13px;
         font-weight: 900;
         cursor: pointer;
         white-space: nowrap;
     }
 
-        .small-refresh-btn:disabled {
+    .small-refresh-btn {
+        background: linear-gradient(135deg, #0ea5e9, #7c3aed);
+        color: #ffffff;
+    }
+
+    .export-pdf-btn {
+        background: rgba(34, 197, 94, 0.18);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        min-height: 38px;
+    }
+
+        .small-refresh-btn:disabled,
+        .export-pdf-btn:disabled {
             opacity: 0.7;
             cursor: not-allowed;
         }
@@ -498,6 +570,10 @@
         margin-top: 22px;
     }
 
+    .user-print-area {
+        display: none;
+    }
+
     @@media (max-width: 1200px) {
         .users-table-wrapper {
             overflow-x: auto;
@@ -509,12 +585,114 @@
     }
 
     @@media (max-width: 900px) {
+        .user-header-actions {
+            width: 100%;
+            justify-content: stretch;
+        }
+
+        .export-pdf-btn,
+        .small-refresh-btn {
+            width: 100%;
+        }
+
         .users-toolbar {
             grid-template-columns: 1fr;
         }
 
         .user-detail-grid {
             grid-template-columns: 1fr;
+        }
+    }
+
+    @@media print {
+        html,
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            color: #111827 !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+
+            body * {
+                visibility: hidden !important;
+            }
+
+        .user-print-area,
+        .user-print-area * {
+            visibility: visible !important;
+        }
+
+        .user-print-area {
+            display: block !important;
+            position: static !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: #ffffff !important;
+            color: #111827 !important;
+            font-family: Arial, sans-serif !important;
+        }
+
+        .print-header {
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #111827;
+        }
+
+            .print-header h1 {
+                margin: 0 0 8px;
+                font-size: 22px;
+                color: #111827;
+            }
+
+            .print-header p {
+                margin: 3px 0;
+                font-size: 12px;
+                color: #374151;
+            }
+
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            page-break-inside: auto;
+        }
+
+            .print-table thead {
+                display: table-header-group;
+            }
+
+            .print-table tbody {
+                display: table-row-group;
+            }
+
+            .print-table tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+
+            .print-table th,
+            .print-table td {
+                border: 1px solid #d1d5db;
+                padding: 6px;
+                text-align: left;
+                vertical-align: top;
+                color: #111827;
+                word-break: break-word;
+            }
+
+            .print-table th {
+                background: #e5e7eb !important;
+                font-weight: 700;
+            }
+
+        @@page {
+            size: landscape;
+            margin: 10mm;
         }
     }
 </style>
@@ -524,6 +702,7 @@
     private const int MinimumPaginationPages = 1;
     private const int PageSize = 6;
     private const int MessageAutoHideMilliseconds = 3000;
+    private const int PrintDelayMilliseconds = 200;
 
     private const string AllRolesOption = "All";
     private const string AdminRole = "Admin";
@@ -540,6 +719,7 @@
     private string messageClass = "success-box";
 
     private bool isLoading;
+    private bool isExportingPdf;
     private bool showViewDialog;
 
     private int currentPage = FirstPageNumber;
@@ -624,6 +804,34 @@
         finally
         {
             isLoading = false;
+        }
+    }
+
+    private async Task PrintUsersAsync()
+    {
+        if (isExportingPdf)
+        {
+            return;
+        }
+
+        if (users.Count == 0)
+        {
+            ShowMessage("No users available to export.", false);
+            return;
+        }
+
+        isExportingPdf = true;
+
+        try
+        {
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(PrintDelayMilliseconds);
+            await JSRuntime.InvokeVoidAsync("print");
+        }
+        finally
+        {
+            isExportingPdf = false;
+            await InvokeAsync(StateHasChanged);
         }
     }
 
