@@ -54,6 +54,24 @@ namespace HealthCareApp.Data
                 .HasForeignKey(appointment => appointment.DoctorId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            // Appointment race-condition protection.
+            // This unique filtered index prevents two active appointments
+            // for the same doctor, same date, and same time slot.
+            // Only Pending and Confirmed appointments are treated as active.
+            var activeAppointmentStatusFilter =
+                $"[Status] IN ({(int)AppointmentStatus.Pending}, {(int)AppointmentStatus.Confirmed})";
+
+            builder.Entity<Appointment>()
+                .HasIndex(appointment => new
+                {
+                    appointment.DoctorId,
+                    appointment.ScheduledDate,
+                    appointment.TimeSlot
+                })
+                .IsUnique()
+                .HasDatabaseName("UX_Appointments_Doctor_Date_TimeSlot_Active")
+                .HasFilter(activeAppointmentStatusFilter);
+
             // HealthRecord relationships.
             builder.Entity<HealthRecord>()
                 .HasOne(healthRecord => healthRecord.Patient)

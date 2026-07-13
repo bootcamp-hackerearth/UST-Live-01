@@ -11,6 +11,8 @@ using HealthCareApp.Shared.Dtos.Appointments;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
 using MassTransit;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthCareApp.Services.Impl
 {
@@ -27,6 +29,9 @@ namespace HealthCareApp.Services.Impl
         private const string AppointmentEntityName = "Appointment";
         private const string AppointmentDetailsRequiredMessage = "Appointment details are required.";
         private const string CancellationDetailsRequiredMessage = "Cancellation details are required.";
+
+        private const string ConcurrentSlotBookedMessage =
+            "This slot was just booked by another patient. Please choose another available slot.";
 
         public async Task<AppointmentDailyStatusSummaryDto> GetDailyStatusSummaryAsync(DateTime date)
         {
@@ -324,7 +329,24 @@ namespace HealthCareApp.Services.Impl
             appointment.CancellationReason = null;
             appointment.CreatedDate = DateTime.Now;
 
-            var savedAppointment = await appointmentRepository.CreateAsync(appointment);
+            Appointment savedAppointment;
+
+            try
+            {
+                savedAppointment = await appointmentRepository.CreateAsync(appointment);
+            }
+            catch (DbUpdateException ex) when (IsUniqueAppointmentSlotViolation(ex))
+            {
+                logger.LogWarning(
+                    ex,
+                    "Concurrent appointment booking blocked by unique active slot index. DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}, PatientId: {PatientId}",
+                    dto.DoctorId,
+                    dto.ScheduledDate.Date,
+                    dto.TimeSlot,
+                    dto.PatientId);
+
+                throw new ConflictException(ConcurrentSlotBookedMessage);
+            }
 
             await publishEndpoint.Publish(new AppointmentBookedEvent
             {
@@ -404,9 +426,26 @@ namespace HealthCareApp.Services.Impl
             existingAppointment.AppointmentId = appointmentId;
             existingAppointment.ScheduledDate = dto.ScheduledDate.Date;
 
-            var updatedAppointment = await appointmentRepository.UpdateAsync(
-                appointmentId,
-                existingAppointment);
+            Appointment? updatedAppointment;
+
+            try
+            {
+                updatedAppointment = await appointmentRepository.UpdateAsync(
+                    appointmentId,
+                    existingAppointment);
+            }
+            catch (DbUpdateException ex) when (IsUniqueAppointmentSlotViolation(ex))
+            {
+                logger.LogWarning(
+                    ex,
+                    "Appointment update blocked by unique active slot index. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
+                    appointmentId,
+                    dto.DoctorId,
+                    dto.ScheduledDate.Date,
+                    dto.TimeSlot);
+
+                throw new ConflictException(ConcurrentSlotBookedMessage);
+            }
 
             if (updatedAppointment is null)
             {
@@ -925,6 +964,24 @@ namespace HealthCareApp.Services.Impl
             }
 
             return patient;
+        }
+
+        private static bool IsUniqueAppointmentSlotViolation(DbUpdateException exception)
+        {
+            Exception? currentException = exception;
+
+            while (currentException is not null)
+            {
+                if (currentException is SqlException sqlException)
+                {
+                    return sqlException.Number == 2601 ||
+                           sqlException.Number == 2627;
+                }
+
+                currentException = currentException.InnerException;
+            }
+
+            return false;
         }
 
         private static void ValidateAppointmentId(int appointmentId)
