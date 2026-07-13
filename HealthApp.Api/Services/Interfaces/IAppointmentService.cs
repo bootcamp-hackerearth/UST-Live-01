@@ -5,18 +5,20 @@ namespace HealthApp.Api.Services.Interfaces
 {
     public interface IAppointmentService
     {
-        Task<PagedResultDto<AppointmentDto>> GetAppointmentsAsync(AppointmentFilterDto filter);
+        Task<PagedResultDto<AppointmentDto>> GetAppointmentsAsync(
+            AppointmentFilterDto filter);
 
         Task<AppointmentDto> GetAppointmentByIdAsync(int id);
 
-        Task<AppointmentDto> BookAppointmentAsync(AppointmentCreateDto dto);
+        Task<AppointmentDto> BookAppointmentAsync(
+            AppointmentCreateDto dto);
 
         Task UpdateAppointmentStatusAsync(
             int id,
             AppointmentStatus status,
             string? cancellationReason = null);
 
-        Task<IEnumerable<string>> GetAvailableSlotsAsync(
+        Task<DoctorAvailabilityDto> GetDoctorAvailabilityAsync(
             int doctorId,
             DateOnly date);
 

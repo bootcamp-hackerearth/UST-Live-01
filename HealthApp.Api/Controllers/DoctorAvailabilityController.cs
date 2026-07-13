@@ -26,11 +26,12 @@ namespace HealthApp.Api.Controllers
             int id,
             [FromQuery] DateOnly date)
         {
-            var slots = await _appointmentService.GetAvailableSlotsAsync(
-                id,
-                date);
+            var availability =
+                await _appointmentService.GetDoctorAvailabilityAsync(
+                    id,
+                    date);
 
-            return Ok(slots);
+            return Ok(availability);
         }
 
         [HttpGet("profile/availability")]
@@ -38,7 +39,7 @@ namespace HealthApp.Api.Controllers
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Doctor")]
         public async Task<IActionResult> GetMyAvailability(
-            [FromQuery] DateOnly date)
+    [FromQuery] DateOnly date)
         {
             var doctorId = User.GetDoctorId();
 
@@ -48,11 +49,12 @@ namespace HealthApp.Api.Controllers
                     "Doctor profile is not linked to this user.");
             }
 
-            var slots = await _appointmentService.GetAvailableSlotsAsync(
-                doctorId.Value,
-                date);
+            var availability =
+                await _appointmentService.GetDoctorAvailabilityAsync(
+                    doctorId.Value,
+                    date);
 
-            return Ok(slots);
+            return Ok(availability);
         }
     }
 }

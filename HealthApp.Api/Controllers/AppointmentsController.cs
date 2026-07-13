@@ -328,7 +328,7 @@ namespace HealthApp.Api.Controllers
             [FromQuery] int doctorId,
             [FromQuery] DateOnly date)
         {
-            var slots = await _appointmentService.GetAvailableSlotsAsync(
+            var slots = await _appointmentService.GetDoctorAvailabilityAsync(
                 doctorId,
                 date);
 

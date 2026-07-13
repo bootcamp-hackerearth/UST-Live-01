@@ -25,14 +25,14 @@ namespace HealthApp.Api.Services.Impl
         private readonly ILogger<AppointmentService> _logger;
 
         public AppointmentService(
-    IAppointmentRepository appointmentRepository,
-    IPatientRepository patientRepository,
-    IDoctorRepository doctorRepository,
-    IDoctorLeaveRepository doctorLeaveRepository,
-    IMapper mapper,
-    IPublishEndpoint publishEndpoint,
-    IDistributedCache cache,
-    ILogger<AppointmentService> logger)
+            IAppointmentRepository appointmentRepository,
+            IPatientRepository patientRepository,
+            IDoctorRepository doctorRepository,
+            IDoctorLeaveRepository doctorLeaveRepository,
+            IMapper mapper,
+            IPublishEndpoint publishEndpoint,
+            IDistributedCache cache,
+            ILogger<AppointmentService> logger)
         {
             _appointmentRepository = appointmentRepository;
             _patientRepository = patientRepository;
@@ -88,7 +88,8 @@ namespace HealthApp.Api.Services.Impl
         {
             if (id <= 0)
             {
-                throw new InvalidRequestException("Valid appointment id is required.");
+                throw new InvalidRequestException(
+                    "Valid appointment id is required.");
             }
 
             var appointment = await _appointmentRepository.GetByIdAsync(id);
@@ -103,38 +104,45 @@ namespace HealthApp.Api.Services.Impl
             return _mapper.Map<AppointmentDto>(appointment);
         }
 
-        public async Task<AppointmentDto> BookAppointmentAsync(AppointmentCreateDto dto)
+        public async Task<AppointmentDto> BookAppointmentAsync(
+            AppointmentCreateDto dto)
         {
             if (dto == null)
             {
-                throw new InvalidRequestException("Appointment data is required.");
+                throw new InvalidRequestException(
+                    "Appointment data is required.");
             }
 
             if (dto.PatientId <= 0)
             {
-                throw new InvalidRequestException("Valid patient is required.");
+                throw new InvalidRequestException(
+                    "Valid patient is required.");
             }
 
             if (dto.DoctorId <= 0)
             {
-                throw new InvalidRequestException("Valid doctor is required.");
+                throw new InvalidRequestException(
+                    "Valid doctor is required.");
             }
 
             if (dto.ScheduledDate == default)
             {
-                throw new InvalidRequestException("Scheduled date is required.");
+                throw new InvalidRequestException(
+                    "Scheduled date is required.");
             }
 
             if (string.IsNullOrWhiteSpace(dto.TimeSlot))
             {
-                throw new InvalidRequestException("Time slot is required.");
+                throw new InvalidRequestException(
+                    "Time slot is required.");
             }
 
-            DateOnly scheduledDate = DateOnly.FromDateTime(dto.ScheduledDate);
+            var scheduledDate = DateOnly.FromDateTime(dto.ScheduledDate);
 
             if (scheduledDate < DateOnly.FromDateTime(DateTime.Today))
             {
-                throw new BusinessRuleViolationException("Past date is not allowed.");
+                throw new BusinessRuleViolationException(
+                    "Past date is not allowed.");
             }
 
             var patient = await _patientRepository.GetByIdAsync(dto.PatientId);
@@ -144,7 +152,8 @@ namespace HealthApp.Api.Services.Impl
                 throw new EntityNotFoundException("Patient", dto.PatientId);
             }
 
-            var patientUserId = await _patientRepository.GetPatientUserIdAsync(dto.PatientId);
+            var patientUserId = await _patientRepository
+                .GetPatientUserIdAsync(dto.PatientId);
 
             if (string.IsNullOrWhiteSpace(patientUserId))
             {
@@ -161,12 +170,12 @@ namespace HealthApp.Api.Services.Impl
 
             if (!doctor.IsActive)
             {
-                throw new BusinessRuleViolationException("Selected doctor is inactive.");
+                throw new BusinessRuleViolationException(
+                    "Selected doctor is inactive.");
             }
 
-            var doctorLeave = await _doctorLeaveRepository.GetLeaveForDateAsync(
-                dto.DoctorId,
-                scheduledDate);
+            var doctorLeave = await _doctorLeaveRepository
+                .GetLeaveForDateAsync(dto.DoctorId, scheduledDate);
 
             if (doctorLeave != null)
             {
@@ -177,9 +186,9 @@ namespace HealthApp.Api.Services.Impl
                     "Please select another appointment date.");
             }
 
-            string slot = dto.TimeSlot.Trim();
+            var slot = dto.TimeSlot.Trim();
 
-            bool sameDoctorSameDay = await _appointmentRepository
+            var sameDoctorSameDay = await _appointmentRepository
                 .HasAppointmentWithDoctorOnSameDayAsync(
                     dto.PatientId,
                     dto.DoctorId,
@@ -191,7 +200,7 @@ namespace HealthApp.Api.Services.Impl
                     "Patient already has an appointment with this doctor on the same day.");
             }
 
-            bool patientSlotConflict = await _appointmentRepository
+            var patientSlotConflict = await _appointmentRepository
                 .HasPatientSlotConflictAsync(
                     dto.PatientId,
                     scheduledDate,
@@ -203,7 +212,7 @@ namespace HealthApp.Api.Services.Impl
                     "Patient already has an appointment in this time slot.");
             }
 
-            bool doctorSlotBooked = await _appointmentRepository
+            var doctorSlotBooked = await _appointmentRepository
                 .IsDoctorSlotBookedAsync(
                     dto.DoctorId,
                     scheduledDate,
@@ -224,7 +233,8 @@ namespace HealthApp.Api.Services.Impl
             appointment.Status = AppointmentStatus.Pending;
             appointment.CancellationReason = null;
 
-            var createdAppointment = await _appointmentRepository.Add(appointment);
+            var createdAppointment = await _appointmentRepository.Add(
+                appointment);
 
             createdAppointment.Patient = patient;
             createdAppointment.Doctor = doctor;
@@ -255,7 +265,8 @@ namespace HealthApp.Api.Services.Impl
         {
             if (id <= 0)
             {
-                throw new InvalidRequestException("Valid appointment id is required.");
+                throw new InvalidRequestException(
+                    "Valid appointment id is required.");
             }
 
             var appointment = await _appointmentRepository.GetByIdAsync(id);
@@ -274,11 +285,11 @@ namespace HealthApp.Api.Services.Impl
             if (status == AppointmentStatus.Cancelled &&
                 string.IsNullOrWhiteSpace(cancellationReason))
             {
-                throw new InvalidRequestException("Cancellation reason is required.");
+                throw new InvalidRequestException(
+                    "Cancellation reason is required.");
             }
 
             appointment.Status = status;
-
             appointment.CancellationReason =
                 status == AppointmentStatus.Cancelled
                     ? cancellationReason?.Trim()
@@ -291,18 +302,20 @@ namespace HealthApp.Api.Services.Impl
                 appointment.ScheduledDate);
         }
 
-        public async Task<IEnumerable<string>> GetAvailableSlotsAsync(
+        public async Task<DoctorAvailabilityDto> GetDoctorAvailabilityAsync(
             int doctorId,
             DateOnly date)
         {
             if (doctorId <= 0)
             {
-                throw new InvalidRequestException("Valid doctor id is required.");
+                throw new InvalidRequestException(
+                    "Valid doctor id is required.");
             }
 
             if (date < DateOnly.FromDateTime(DateTime.Today))
             {
-                throw new BusinessRuleViolationException("Past date is not allowed.");
+                throw new BusinessRuleViolationException(
+                    "Past date is not allowed.");
             }
 
             var doctor = await _doctorRepository.GetByIdAsync(doctorId);
@@ -314,74 +327,102 @@ namespace HealthApp.Api.Services.Impl
 
             if (!doctor.IsActive)
             {
-                throw new BusinessRuleViolationException("Doctor is inactive.");
+                throw new BusinessRuleViolationException(
+                    "Doctor is inactive.");
             }
 
-            var cacheKey = GetDoctorSlotsCacheKey(
+            var cacheKey = GetDoctorSlotsCacheKey(doctorId, date);
+            var cachedAvailabilityJson = await _cache.GetStringAsync(cacheKey);
+
+            if (!string.IsNullOrWhiteSpace(cachedAvailabilityJson))
+            {
+                try
+                {
+                    var cachedAvailability =
+                        JsonSerializer.Deserialize<DoctorAvailabilityDto>(
+                            cachedAvailabilityJson);
+
+                    if (cachedAvailability != null)
+                    {
+                        _logger.LogInformation(
+                            "Doctor availability cache hit for doctor {DoctorId} " +
+                            "on {Date}. Cache key: {CacheKey}",
+                            doctorId,
+                            date,
+                            cacheKey);
+
+                        return cachedAvailability;
+                    }
+                }
+                catch (JsonException exception)
+                {
+                    _logger.LogWarning(
+                        exception,
+                        "Invalid cached doctor availability was removed. " +
+                        "Doctor: {DoctorId}, Date: {Date}, Cache key: {CacheKey}",
+                        doctorId,
+                        date,
+                        cacheKey);
+
+                    await _cache.RemoveAsync(cacheKey);
+                }
+            }
+
+            var leave = await _doctorLeaveRepository.GetLeaveForDateAsync(
                 doctorId,
                 date);
 
-            var cachedSlotsJson = await _cache.GetStringAsync(cacheKey);
+            DoctorAvailabilityDto availability;
 
-            if (!string.IsNullOrWhiteSpace(cachedSlotsJson))
+            if (leave != null)
             {
-                var cachedSlots = JsonSerializer.Deserialize<List<string>>(
-                    cachedSlotsJson);
-
-                if (cachedSlots != null)
+                availability = new DoctorAvailabilityDto
                 {
+                    DoctorId = doctorId,
+                    Date = date,
+                    IsDoctorOnLeave = true,
+                    Message =
+                        $"Doctor is on leave from " +
+                        $"{leave.StartDate:dd MMM yyyy} to " +
+                        $"{leave.EndDate:dd MMM yyyy}.",
+                    Slots = TimeSlots.Slots
+                        .Select(slot => new DoctorAvailabilitySlotDto
+                        {
+                            TimeSlot = slot,
+                            IsAvailable = false,
+                            Status = "DoctorOnLeave"
+                        })
+                        .ToList()
+                };
+            }
+            else
+            {
+                var slots = new List<DoctorAvailabilitySlotDto>();
 
-                    if (_logger.IsEnabled(LogLevel.Information))
+                foreach (var slot in TimeSlots.Slots)
+                {
+                    var isBooked = await _appointmentRepository
+                        .IsDoctorSlotBookedAsync(
+                            doctorId,
+                            date,
+                            slot);
+
+                    slots.Add(new DoctorAvailabilitySlotDto
                     {
-
-                        _logger.LogInformation(
-                        "\n" +
-                        "================ DOCTOR SLOTS CACHE HIT ================\n" +
-                        " Doctor Id : {DoctorId}\n" +
-                        " Date      : {Date}\n" +
-                        " Cache Key : {CacheKey}\n" +
-                        " Count     : {Count}\n" +
-                        "========================================================",
-                        doctorId,
-                        date,
-                        cacheKey,
-                        cachedSlots.Count);
-                    }
-
-                    return cachedSlots;
+                        TimeSlot = slot,
+                        IsAvailable = !isBooked,
+                        Status = isBooked ? "Booked" : "Available"
+                    });
                 }
-            }
 
-
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation(
-                    "\n" +
-                    "================ DOCTOR SLOTS CACHE MISS ===============\n" +
-                    " Doctor Id : {DoctorId}\n" +
-                    " Date      : {Date}\n" +
-                    " Cache Key : {CacheKey}\n" +
-                    " Action    : Loading available slots from database\n" +
-                    "========================================================",
-                    doctorId,
-                    date,
-                    cacheKey);
-            }
-
-
-            var availableSlots = new List<string>();
-
-            foreach (var slot in TimeSlots.Slots)
-            {
-                bool isBooked = await _appointmentRepository.IsDoctorSlotBookedAsync(
-                    doctorId,
-                    date,
-                    slot);
-
-                if (!isBooked)
+                availability = new DoctorAvailabilityDto
                 {
-                    availableSlots.Add(slot);
-                }
+                    DoctorId = doctorId,
+                    Date = date,
+                    IsDoctorOnLeave = false,
+                    Message = "Doctor is available on the selected date.",
+                    Slots = slots
+                };
             }
 
             var cacheOptions = new DistributedCacheEntryOptions
@@ -392,34 +433,26 @@ namespace HealthApp.Api.Services.Impl
 
             await _cache.SetStringAsync(
                 cacheKey,
-                JsonSerializer.Serialize(availableSlots),
+                JsonSerializer.Serialize(availability),
                 cacheOptions);
 
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation(
-                "\n" +
-                "================ DOCTOR SLOTS CACHE SET ================\n" +
-                " Doctor Id           : {DoctorId}\n" +
-                " Date                : {Date}\n" +
-                " Cache Key           : {CacheKey}\n" +
-                " Available Slot Count: {Count}\n" +
-                " Absolute Expiry     : 5 minute(s)\n" +
-                " Sliding Expiry      : 2 minute(s)\n" +
-                "========================================================",
+            _logger.LogInformation(
+                "Doctor availability cached for doctor {DoctorId} on {Date}. " +
+                "On leave: {IsDoctorOnLeave}. Cache key: {CacheKey}",
                 doctorId,
                 date,
-                cacheKey,
-                availableSlots.Count);
-            }
-            return availableSlots;
+                availability.IsDoctorOnLeave,
+                cacheKey);
+
+            return availability;
         }
 
         public async Task DeleteAppointmentAsync(int id)
         {
             if (id <= 0)
             {
-                throw new InvalidRequestException("Valid appointment id is required.");
+                throw new InvalidRequestException(
+                    "Valid appointment id is required.");
             }
 
             var appointment = await _appointmentRepository.GetByIdAsync(id);
@@ -435,7 +468,7 @@ namespace HealthApp.Api.Services.Impl
                     "Only cancelled appointments can be deleted.");
             }
 
-            bool deleted = await _appointmentRepository.DeleteAsync(id);
+            var deleted = await _appointmentRepository.DeleteAsync(id);
 
             if (!deleted)
             {
@@ -448,7 +481,8 @@ namespace HealthApp.Api.Services.Impl
                 appointment.ScheduledDate);
         }
 
-        private async Task LoadAppointmentNavigationDataAsync(Appointment appointment)
+        private async Task LoadAppointmentNavigationDataAsync(
+            Appointment appointment)
         {
             appointment.Patient ??= await _patientRepository.GetByIdAsync(
                 appointment.PatientId);
@@ -468,25 +502,18 @@ namespace HealthApp.Api.Services.Impl
             int doctorId,
             DateOnly date)
         {
-            var cacheKey = GetDoctorSlotsCacheKey(
-                doctorId,
-                date);
+            var cacheKey = GetDoctorSlotsCacheKey(doctorId, date);
 
             await _cache.RemoveAsync(cacheKey);
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation(
-                "\n" +
-                "================ DOCTOR SLOTS CACHE INVALIDATED ================\n" +
-                " Doctor Id : {DoctorId}\n" +
-                " Date      : {Date}\n" +
-                " Cache Key : {CacheKey}\n" +
-                " Reason    : Appointment data changed\n" +
-                "================================================================",
-                doctorId,
-                date,
-                cacheKey);
+                    "Doctor availability cache invalidated for doctor {DoctorId} " +
+                    "on {Date}. Cache key: {CacheKey}",
+                    doctorId,
+                    date,
+                    cacheKey);
             }
         }
     }
