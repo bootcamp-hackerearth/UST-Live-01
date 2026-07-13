@@ -23,25 +23,26 @@ namespace HealthCare.Api
     {
         private static async Task Main(string[] args)
         {
-            //appconfig
-            var builder = WebApplication.CreateBuilder(args);
-
             // Configure Serilog
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.Console()
-                .WriteTo.File("logs/healthcare-api-.txt", 
-                    rollingInterval: RollingInterval.Day,
-                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
-                .ReadFrom.Configuration(builder.Configuration)
-                .CreateLogger();
+                .CreateBootstrapLogger();
 
-            builder.Host.UseSerilog();
+            //builder.Host.UseSerilog();
 
             try
             {
                 Log.Information("Starting HealthCare API");
 
+                //appconfig
+                var builder = WebApplication.CreateBuilder(args);
+
+                builder.Services.AddSerilog((services, configuration) =>
+                    configuration.ReadFrom.Configuration(builder.Configuration)
+                                 .ReadFrom.Services(services)
+                                 .Enrich.FromLogContext());
+                                 
                 // Configure MassTransit reg using IBus
                 builder.Services.AddMassTransit(x =>
                 {
@@ -133,7 +134,6 @@ namespace HealthCare.Api
                     {
                         OnAuthenticationFailed = context =>
                         {
-                            // Set a breakpoint here in Visual Studio
                             Console.WriteLine($"JWT Error: {context.Exception.Message}");
                             return Task.CompletedTask;
                         }
@@ -188,7 +188,10 @@ namespace HealthCare.Api
                     });
                 });
 
+                //APP BUILD
                 var app = builder.Build();
+
+                app.UseSerilogRequestLogging();
                 app.UseExceptionHandler();
 
                 using (var scope = app.Services.CreateScope())
@@ -211,6 +214,7 @@ namespace HealthCare.Api
                 app.UseCors("AllowAll");
 
                 app.UseHttpsRedirection();
+
                 app.UseRouting();
 
                 app.UseAuthentication();
