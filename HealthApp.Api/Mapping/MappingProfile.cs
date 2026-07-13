@@ -34,11 +34,21 @@ namespace HealthApp.Api.Mapping
 
             CreateMap<DoctorCreateDto, Doctor>()
                 .ForMember(dest => dest.DoctorId, opt => opt.Ignore())
-                .ForMember(dest => dest.IsActive,
+                .ForMember(
+                    dest => dest.IsActive,
                     opt => opt.MapFrom(src => true))
-                .ForMember(dest => dest.Appointments, opt => opt.Ignore())
-                .ForMember(dest => dest.HealthRecords, opt => opt.Ignore())
-                .ForMember(dest => dest.User, opt => opt.Ignore());
+                .ForMember(
+                    dest => dest.Appointments,
+                    opt => opt.Ignore())
+                .ForMember(
+                    dest => dest.HealthRecords,
+                    opt => opt.Ignore())
+                .ForMember(
+                    dest => dest.DoctorLeaves,
+                    opt => opt.Ignore())
+                .ForMember(
+                    dest => dest.User,
+                opt => opt.Ignore());
 
             // Appointment mappings
 
@@ -67,9 +77,6 @@ namespace HealthApp.Api.Mapping
                 .ForMember(dest => dest.Doctor, opt => opt.Ignore());
 
             // HealthRecord mappings
-
-
-
             CreateMap<HealthRecord, HealthRecordDto>()
                 .ForMember(dest => dest.PatientId,
                     opt => opt.MapFrom(src => src.PatientId ?? 0))
@@ -92,6 +99,28 @@ namespace HealthApp.Api.Mapping
                 .ForMember(dest => dest.Patient, opt => opt.Ignore())
                 .ForMember(dest => dest.Doctor, opt => opt.Ignore())
                 .ForMember(dest => dest.Appointment, opt => opt.Ignore());
+
+            CreateMap<DoctorLeave, DoctorLeaveDto>()
+                .ForMember(
+                    destination => destination.DoctorName,
+                    options => options.MapFrom(source =>
+                        source.Doctor != null
+                            ? source.Doctor.FullName
+                            : string.Empty));
+
+            CreateMap<DoctorLeaveCreateDto, DoctorLeave>()
+                .ForMember(
+                    destination => destination.DoctorLeaveId,
+                    options => options.Ignore())
+                .ForMember(
+                    destination => destination.DoctorId,
+                    options => options.Ignore())
+                .ForMember(
+                    destination => destination.Doctor,
+                    options => options.Ignore())
+                .ForMember(
+                    destination => destination.CreatedAtUtc,
+                    options => options.Ignore());
         }
     }
 }
