@@ -11,7 +11,8 @@ import { API_ENDPOINTS } from '../config/api-endpoints';
 })
 export class DoctorService {
 
-  constructor(private http:HttpClient){}
+  constructor(private http:HttpClient,
+  ){}
 
 
 getAvailableDoctors(specialization: string, date: string) {

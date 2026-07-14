@@ -53,16 +53,24 @@ export class DoctorProfileComponent implements OnInit {
 
   loadLeaves() {
 
-    this.doctorService.getMyLeaves()
-      .subscribe({
+  const today = new Date().toISOString().split('T')[0];
 
-        next: res => this.leaves.set(res),
+  this.doctorService.getMyLeaves()
+    .subscribe({
 
-        error: () => {}
+      next: res => {
 
-      });
+        this.leaves.set(
+          res.filter(leave => leave.leaveDate >= today)
+        );
 
-  }
+      },
+
+      error: () => {}
+
+    });
+
+}
 
   getDay(dateString: string): string {
 
@@ -79,7 +87,6 @@ export class DoctorProfileComponent implements OnInit {
     const names = fullName.split(' ');
 
     if (names.length >= 2) {
-
       return names[0].charAt(0) + names[1].charAt(0);
 
     }

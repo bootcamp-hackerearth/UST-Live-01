@@ -15,6 +15,8 @@ import {
 
 import { DoctorService }
 from '../../../core/services/doctor.service';
+import { ToastrService } from 'ngx-toastr';
+import { AppointmentService } from '../../../core/services/appointment.service';
 
 @Component({
   selector: 'app-health-record',
@@ -36,13 +38,15 @@ implements OnInit {
   patientId = 0;
 
   loading = false;
-  toastr: any;
+  
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private doctorService: DoctorService
+    private doctorService: DoctorService,
+    private appointmentService:AppointmentService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -96,34 +100,66 @@ implements OnInit {
 
     this.loading = true;
 
-    this.doctorService
-      .createHealthRecord(payload)
-      .subscribe({
+   this.doctorService
+  .createHealthRecord(payload)
+  .subscribe({
 
-        next: () => {
+    next: () => {
 
-         this.loading = false; 
-         this.toastr.success(
-        'Health Record Added Successfully',
-        'Success'
-         );
-          this.router.navigate(['/doctor/schedule' ]);
-        },
+      this.appointmentService
+        .updateAppointmentStatus(
+          this.appointmentId,
+          'Completed',
+          ''
+        )
+        .subscribe({
 
-        error: err => {
+          next: () => {
 
-          console.log(err);
+            this.loading = false;
 
-          this.loading = false;
+            this.toastr.success(
+              'Health Record Added Successfully',
+              'Success'
+            );
 
-          alert(
-            'Unable to save record'
-          );
+            this.router.navigate([
+              '/doctor/schedule'
+            ]);
 
-        }
+          },
 
-      });
+          error: (err) => {
 
+            console.log(err);
+
+            this.loading = false;
+
+            this.toastr.error(
+              'Health record saved, but appointment could not be updated.',
+              'Error'
+            );
+
+          }
+
+        });
+
+    },
+
+    error: err => {
+
+      console.log(err);
+
+      this.loading = false;
+
+      this.toastr.error(
+        'Unable to save Health Record',
+        'Error'
+      );
+
+    }
+
+  });
   }
 
 }

@@ -1,10 +1,10 @@
-<!-- ✅ MODAL WRAPPER -->
+<!--  MODAL WRAPPER -->
 <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-6">
 
-  <!-- ✅ MODAL CARD -->
+  <!--  MODAL CARD -->
   <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden">
 
-    <!-- ✅ HEADER -->
+    <!--  HEADER -->
     <div class="flex justify-between items-center px-6 py-4 border-b">
       <h2 class="text-2xl font-bold text-[#0B5ED7]">
         Book Appointment
@@ -17,12 +17,12 @@
       </button>
     </div>
 
-    <!-- ✅ BODY -->
+    <!--  BODY -->
     <div class="p-6 space-y-4">
 
       <form [formGroup]="form" (ngSubmit)="bookAppointment()" class="space-y-5">
 
-        <!-- ✅ DATE -->
+        <!--  DATE -->
         <div>
           <label class="block text-sm font-medium text-gray-600 mb-1">
             Appointment Date
@@ -36,7 +36,7 @@
                    focus:ring-2 focus:ring-[#0B5ED7] outline-none">
         </div>
 
-        <!-- ✅ SPECIALIZATION -->
+        <!--  SPECIALIZATION -->
         <div>
           <label class="block text-sm font-medium text-gray-600 mb-1">
             Specialization
@@ -55,7 +55,7 @@
           </select>
         </div>
 
-        <!-- ✅ DOCTOR -->
+        <!--  DOCTOR -->
         <div>
           <label class="block text-sm font-medium text-gray-600 mb-1">
             Select Doctor
@@ -81,7 +81,7 @@
           }
         </div>
 
-        <!-- ✅ SLOT -->
+        <!--  SLOT -->
         <div>
           <label class="block text-sm font-medium text-gray-600 mb-1">
             Available Time Slots
@@ -111,7 +111,7 @@
           }
         </div>
 
-        <!-- ✅ FOOTER BUTTON INSIDE FORM -->
+        <!--  FOOTER BUTTON INSIDE FORM -->
         <div class="flex justify-end gap-3 pt-2">
 
           <button

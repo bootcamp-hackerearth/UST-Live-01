@@ -39,31 +39,39 @@
 
        @for(app of appointments(); track app.appointmentId) {
 
-            <div class="bg-white rounded-3xl shadow p-6">
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 px-6 py-4 hover:shadow-lg transition">
 
-                <div class="flex justify-between">
+               <div class="flex justify-between items-start">
 
-                    <div>
+    <div>
 
-                        <h3 class="text-xl font-bold">
-                            {{ app.patientName }}
-                        </h3>
+        <h3 class="text-xl font-semibold text-slate-800">
+            {{ app.patientName }}
+        </h3>
 
-                        <p class="text-slate-500">
-                            {{ app.timeSlot }}
-                        </p>
+        <div class="mt-2 space-y-1">
 
-                    </div>
+            <p class="text-slate-500 text-sm">
+                🕒 {{ app.timeSlot }}
+            </p>
 
-                    <span
-                        class="px-4 py-2 rounded-full"
-                        [ngClass]="badgeClass(app.status)">
+            <p class="text-slate-500 text-sm">
+                Appointment #{{ app.appointmentId }}
+            </p>
 
-                        {{ app.status }}
+        </div>
 
-                    </span>
+    </div>
 
-                </div>
+    <span
+        class="px-4 py-2 rounded-full text-sm font-semibold"
+        [ngClass]="badgeClass(app.status)">
+
+        {{ app.status }}
+
+    </span>
+
+</div>
 
                 <div class="mt-6 flex gap-3 flex-wrap">
 
@@ -87,17 +95,14 @@
 
                     }
 
-                    @if(app.status === 'Confirmed') {
-
-                        <button
-                            (click)="updateStatus(app.appointmentId,'Completed')"
-                            class="px-4 py-2 bg-green-600 text-white rounded-xl">
-
-                            Mark Completed
-
-                        </button>
-
-                    }
+                   @if(app.status === 'Confirmed') {
+                    <a [routerLink]="['/doctor/health-record']"
+                    [queryParams]="{
+                        appointmentId: app.appointmentId,patientId: app.patientId }"
+                        class="px-4 py-2 bg-purple-600 text-white rounded-xl">
+                        Complete Visit
+                    </a>
+                }
                
                     @if(app.healthRecordId) {
 
@@ -108,21 +113,6 @@
                       Health Record Added
 
                      </button>
-
-                    }
-                    @else if(app.status === 'Completed') {
-
-                    <a
-                     [routerLink]="['/doctor/health-record']"
-                     [queryParams]="{
-                     appointmentId: app.appointmentId,
-                      patientId: app.patientId
-                     }"
-                     class="px-4 py-2 bg-purple-600 text-white rounded-xl">
-
-                     Add Health Record
-
-                    </a>
 
                     }
 
