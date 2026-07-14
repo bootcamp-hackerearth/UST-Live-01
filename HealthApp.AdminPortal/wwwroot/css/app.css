@@ -207,3 +207,267 @@ code {
 .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+/*
+ * Admin sidebar compact layout and hidden-scrollbar fix.
+ *
+ * Add this file after the existing global admin stylesheet, or append the
+ * complete block to the bottom of that stylesheet. Because these rules load
+ * last, they override the older duplicated sidebar declarations.
+ */
+
+.sidebar {
+    width: 270px;
+    height: 100vh;
+    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    color: #ffffff;
+    background: linear-gradient( 180deg, #0d9488 0%, #0f766e 36%, #10233f 100% );
+    border-radius: 0 32px 32px 0;
+    box-shadow: 12px 0 34px rgba(15, 23, 42, 0.14);
+    /* Prevent the entire sidebar from getting a separate visible scrollbar. */
+    overflow: hidden;
+}
+
+    .sidebar::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 4px;
+        height: 100%;
+        pointer-events: none;
+        background: linear-gradient( 180deg, rgba(204, 251, 241, 0.95), rgba(45, 212, 191, 0.6), rgba(15, 23, 42, 0.25) );
+    }
+
+.sidebar-brand {
+    min-height: 96px;
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    flex-shrink: 0;
+}
+
+.sidebar-brand-icon {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    border-radius: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.22);
+    font-size: 1.55rem;
+}
+
+    .sidebar-brand-icon i {
+        line-height: 1;
+    }
+
+.sidebar-brand-title {
+    color: #ffffff;
+    font-size: 1.32rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.sidebar-brand-subtitle {
+    margin-top: 0.25rem;
+    color: #ecfeff;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.sidebar-menu {
+    flex: 1;
+    min-height: 0;
+    padding: 0.75rem 1rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    /* Short screens can still scroll, without displaying an extra bar. */
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+    .sidebar-menu::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+        display: none;
+    }
+
+    .sidebar-menu a,
+    .sidebar-menu .nav-link {
+        min-height: 44px;
+        margin-bottom: 0.25rem;
+        padding: 0.65rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        flex-shrink: 0;
+        color: #f8fafc;
+        border-radius: 15px;
+        font-weight: 700;
+        line-height: 1;
+        transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .sidebar-menu a i,
+        .sidebar-menu .nav-link i {
+            width: 22px;
+            min-width: 22px;
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #ccfbf1;
+            font-size: 1.05rem;
+            line-height: 1;
+        }
+
+        .sidebar-menu a span,
+        .sidebar-menu .nav-link span {
+            display: inline-flex;
+            align-items: center;
+            line-height: 1.15;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu .nav-link:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+            .sidebar-menu a:hover i,
+            .sidebar-menu .nav-link:hover i {
+                color: #ffffff;
+            }
+
+        .sidebar-menu a.active,
+        .sidebar-menu .nav-link.active {
+            color: #0f766e;
+            background: #ffffff;
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.18);
+        }
+
+            .sidebar-menu a.active i,
+            .sidebar-menu .nav-link.active i {
+                color: #0f766e;
+            }
+
+.menu-title {
+    width: fit-content;
+    margin: 0.7rem 0 0.35rem 0.7rem;
+    padding: 0.28rem 0.7rem;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+    font-size: 0.66rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.sidebar-logout {
+    margin-top: auto;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    flex-shrink: 0;
+}
+
+.sidebar-logout-button {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sidebar-logout a,
+.sidebar-logout .nav-link {
+    color: #fecaca;
+}
+
+    .sidebar-logout a i,
+    .sidebar-logout .nav-link i {
+        color: #fecaca;
+    }
+
+    .sidebar-logout a:hover,
+    .sidebar-logout .nav-link:hover {
+        color: #ffffff;
+        background: rgba(239, 68, 68, 0.22);
+    }
+
+        .sidebar-logout a:hover i,
+        .sidebar-logout .nav-link:hover i {
+            color: #ffffff;
+        }
+
+/* Keep the content aligned with the unchanged 270px sidebar width. */
+.content-area {
+    margin-left: calc(270px + 0.75rem);
+}
+
+@media (max-height: 760px) and (min-width: 992px) {
+    .sidebar-brand {
+        min-height: 82px;
+        padding-top: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+
+    .sidebar-brand-icon {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        border-radius: 16px;
+        font-size: 1.35rem;
+    }
+
+    .sidebar-menu {
+        padding-top: 0.55rem;
+        padding-bottom: 0.65rem;
+    }
+
+        .sidebar-menu a,
+        .sidebar-menu .nav-link {
+            min-height: 40px;
+            margin-bottom: 0.18rem;
+            padding-top: 0.55rem;
+            padding-bottom: 0.55rem;
+        }
+
+    .menu-title {
+        margin-top: 0.48rem;
+        margin-bottom: 0.25rem;
+    }
+}
+
+@media (max-width: 991px) {
+    .sidebar {
+        display: none;
+    }
+
+    .content-area {
+        margin-left: 0;
+    }
+}
