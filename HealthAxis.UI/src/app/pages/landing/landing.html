@@ -1,158 +1,194 @@
-<section class="hero">
-  <div class="hero-left">
+<section class="home-hero">
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
     <div class="hero-badge">
-      <span>●</span>
       HealthAxis Digital Hospital
     </div>
 
-    <h1>
-      Book trusted hospital appointments with a smarter patient experience.
-    </h1>
+    <h1>HEALTHAXIS</h1>
 
-    <p class="hero-text">
-      A secure healthcare platform for patients, doctors, and admins.
-      Register, login, book appointments, track visits, and manage health records
-      through one beautiful hospital system.
+    <p class="hero-subtitle">
+      Smart Healthcare Appointment Management System
+    </p>
+
+    <p class="hero-description">
+      A secure platform for patients, doctors, and admins to manage appointments,
+      health records, doctor availability, and hospital workflows in one place.
     </p>
 
     <div class="hero-actions">
       <a routerLink="/register" class="primary-action">Register as Patient</a>
       <a routerLink="/login" class="secondary-action">Login to Portal</a>
     </div>
-
-    <div class="hero-metrics">
-      <article>
-        <strong>24/7</strong>
-        <span>Online Booking</span>
-      </article>
-
-      <article>
-        <strong>JWT</strong>
-        <span>Secure Access</span>
-      </article>
-
-      <article>
-        <strong>3 Roles</strong>
-        <span>Patient Doctor Admin</span>
-      </article>
-    </div>
-  </div>
-
-  <div class="hero-right">
-    <div class="hospital-dashboard">
-      <div class="dashboard-top">
-        <div>
-          <span>Live Hospital Desk</span>
-          <h2>Today’s Care Board</h2>
-        </div>
-
-        <div class="pulse-dot">●</div>
-      </div>
-
-      <div class="doctor-highlight">
-        <div class="doctor-photo">DR</div>
-
-        <div>
-          <h3>Find the right specialist</h3>
-          <p>Search doctors by department, fee, and availability.</p>
-        </div>
-      </div>
-
-      <div class="care-grid">
-        <article>
-          <span>❤️</span>
-          <strong>Cardiology</strong>
-        </article>
-
-        <article>
-          <span>🧠</span>
-          <strong>Neurology</strong>
-        </article>
-
-        <article>
-          <span>🦴</span>
-          <strong>Orthopedic</strong>
-        </article>
-
-        <article>
-          <span>🩺</span>
-          <strong>General</strong>
-        </article>
-      </div>
-
-      <div class="appointment-preview">
-        <div>
-          <span>Next Step</span>
-          <strong>Book Appointment</strong>
-        </div>
-
-        <a routerLink="/login">Start</a>
-      </div>
-    </div>
-
-    <div class="floating-card floating-one">🚑 Emergency support</div>
-    <div class="floating-card floating-two">📋 Digital health records</div>
   </div>
 </section>
 
-<section class="emergency-strip">
-  <div>
-    <strong>Need care today?</strong>
-    <span>Register and book your appointment online in minutes.</span>
+<section class="quick-actions">
+  <article>
+    <div class="quick-icon">FD</div>
+    <div>
+      <h3>Find a Doctor</h3>
+      <p>Search doctors by specialisation and availability.</p>
+    </div>
+  </article>
+
+  <article>
+    <div class="quick-icon">BA</div>
+    <div>
+      <h3>Book Appointment</h3>
+      <p>Choose an active doctor and select a valid time slot.</p>
+    </div>
+  </article>
+
+  <article>
+    <div class="quick-icon">HR</div>
+    <div>
+      <h3>Health Records</h3>
+      <p>View diagnosis, prescription, notes, and visit history.</p>
+    </div>
+  </article>
+
+  <article>
+    <div class="quick-icon">AD</div>
+    <div>
+      <h3>Admin Control</h3>
+      <p>Manage doctors, patients, users, and appointment reports.</p>
+    </div>
+  </article>
+</section>
+
+<section class="find-doctor-section" id="find-doctor">
+  <div class="section-heading">
+    <span>Find a Doctor</span>
+    <h2>Search the right specialist for your care</h2>
+    <p>
+      HealthAxis helps patients find doctors by department, consultation fee,
+      experience, and availability without showing unnecessary doctor images.
+    </p>
   </div>
 
-  <a routerLink="/login">Book Now</a>
+  <div class="find-doctor-card">
+    <div class="find-form">
+      <div class="form-field">
+        <label>Location</label>
+        <select>
+          <option>HealthAxis Hospital</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>Specialisation</label>
+        <select>
+          <option>Select Specialisation</option>
+          <option>Cardiology</option>
+          <option>Neurology</option>
+          <option>Orthopedic</option>
+          <option>General Medicine</option>
+          <option>Dermatology</option>
+          <option>Ophthalmology</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>Doctor</label>
+        <select>
+          <option>Select Doctor</option>
+          <option>Available doctors will appear after login</option>
+        </select>
+      </div>
+
+      <a routerLink="/login" class="find-action">Find Doctor</a>
+    </div>
+  </div>
+</section>
+
+<section class="hospital-info">
+  <div class="hospital-image"></div>
+
+  <div class="hospital-text">
+    <span>About HealthAxis</span>
+    <h2>One connected healthcare system for patients, doctors, and admins.</h2>
+
+    <p>
+      HealthAxis is designed to make appointment booking, doctor workflow,
+      patient care, and admin reporting simple and secure.
+    </p>
+
+    <p>
+      Patients can register, book appointments, track visit status, and view
+      health records. Doctors can manage appointments and create medical records.
+      Admins can manage users, doctors, patients, and reports from one dashboard.
+    </p>
+
+    <div class="info-points">
+      <article>
+        <strong>Secure Access</strong>
+        <span>JWT based role login</span>
+      </article>
+
+      <article>
+        <strong>Smart Booking</strong>
+        <span>Doctor and slot validation</span>
+      </article>
+
+      <article>
+        <strong>Digital Records</strong>
+        <span>Health record management</span>
+      </article>
+    </div>
+  </div>
 </section>
 
 <section class="departments">
   <div class="section-heading">
-    <span>Hospital Departments</span>
-    <h2>Specialized care, beautifully organized</h2>
+    <span>Departments</span>
+    <h2>Specialised care departments</h2>
     <p>
-      Patients can choose doctors by specialization and book visits with a clean,
-      guided appointment experience.
+      Patients can choose doctors by specialisation and book appointments with
+      a simple guided flow.
     </p>
   </div>
 
   <div class="department-grid">
-    <article class="department-card heart">
-      <div class="icon">❤️</div>
+    <article>
+      <div class="department-code">CA</div>
       <h3>Cardiology</h3>
       <p>Heart care consultations with experienced specialists.</p>
     </article>
 
-    <article class="department-card brain">
-      <div class="icon">🧠</div>
+    <article>
+      <div class="department-code">NE</div>
       <h3>Neurology</h3>
       <p>Specialist care for brain and nervous system concerns.</p>
     </article>
 
-    <article class="department-card bone">
-      <div class="icon">🦴</div>
+    <article>
+      <div class="department-code">OR</div>
       <h3>Orthopedic</h3>
       <p>Bone, joint, and injury consultation appointments.</p>
     </article>
 
-    <article class="department-card general">
-      <div class="icon">🩺</div>
+    <article>
+      <div class="department-code">GM</div>
       <h3>General Medicine</h3>
       <p>Everyday health checkups and regular consultations.</p>
     </article>
   </div>
 </section>
 
-<section class="patient-experience">
-  <div class="experience-card">
+<section class="patient-journey">
+  <div class="journey-card">
     <div>
-      <span>Patient Experience</span>
-      <h2>A booking flow designed for real hospital patients</h2>
+      <span>Patient Journey</span>
+      <h2>A simple appointment flow for real hospital users</h2>
       <p>
-        HealthAxis gives patients a simple appointment journey with doctor search,
-        specialty filtering, fee preview, visit preference, and clear booking status.
+        HealthAxis gives patients a clean journey from registration to booking,
+        appointment tracking, and health record viewing.
       </p>
     </div>
 
-    <div class="experience-steps">
+    <div class="journey-steps">
       <article>
         <strong>01</strong>
         <h3>Register</h3>
@@ -161,62 +197,29 @@
 
       <article>
         <strong>02</strong>
-        <h3>Choose Doctor</h3>
-        <p>Filter by department and active doctors.</p>
+        <h3>Find Doctor</h3>
+        <p>Search by specialisation and active status.</p>
       </article>
 
       <article>
         <strong>03</strong>
         <h3>Book Slot</h3>
-        <p>Select date and time with validations.</p>
+        <p>Select a valid date and appointment time.</p>
       </article>
 
       <article>
         <strong>04</strong>
         <h3>Track Visit</h3>
-        <p>View pending, confirmed, and completed status.</p>
+        <p>View pending, confirmed, completed, and cancelled visits.</p>
       </article>
     </div>
   </div>
 </section>
 
-<section class="why">
-  <div class="section-heading">
-    <span>Why HealthAxis?</span>
-    <h2>Professional features for your demo</h2>
-  </div>
-
-  <div class="why-grid">
-    <article>
-      <span>🔐</span>
-      <h3>JWT Secured</h3>
-      <p>Role-based login for Patient, Doctor, and Admin.</p>
-    </article>
-
-    <article>
-      <span>📅</span>
-      <h3>Online Booking</h3>
-      <p>Patients can book appointments with active doctors.</p>
-    </article>
-
-    <article>
-      <span>🧾</span>
-      <h3>Status Tracking</h3>
-      <p>Appointments show Pending, Confirmed, Completed, or Cancelled.</p>
-    </article>
-
-    <article>
-      <span>📋</span>
-      <h3>Health Records</h3>
-      <p>Doctors can create records for completed consultations.</p>
-    </article>
-  </div>
-</section>
-
-<section class="contact">
+<section class="contact-section">
   <div class="contact-card">
-    <div class="contact-main">
-      <span>Contact Us</span>
+    <div>
+      <span>Contact</span>
       <h2>HealthAxis Hospital</h2>
       <p>
         A modern healthcare appointment platform built for secure patient care,
@@ -226,28 +229,28 @@
 
     <div class="contact-grid">
       <article>
-        <strong>📍 Location</strong>
+        <strong>Location</strong>
         <p>HealthAxis Hospital, HITEC City Road, Hyderabad, Telangana</p>
       </article>
 
       <article>
-        <strong>📞 Phone</strong>
+        <strong>Phone</strong>
         <p>+91 98765 43210</p>
       </article>
 
       <article>
-        <strong>✉️ Email</strong>
+        <strong>Email</strong>
         <p>support&#64;healthaxis.com</p>
       </article>
 
       <article>
-        <strong>⏰ Working Hours</strong>
-        <p>Monday - Saturday, 9:00 AM - 6:00 PM</p>
+        <strong>Working Hours</strong>
+        <p>Monday to Saturday, 9:00 AM to 6:00 PM</p>
       </article>
     </div>
   </div>
 </section>
 
 <footer class="footer">
-  <p>© 2026 HealthAxis Hospital. Healthcare Appointment Management System.</p>
+  <p>Copyright © 2026 HealthAxis Hospital. Healthcare Appointment Management System.</p>
 </footer>
