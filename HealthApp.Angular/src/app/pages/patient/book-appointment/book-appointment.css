@@ -111,10 +111,12 @@
   row-gap: 22px;
   width: 100%;
 }
+
 .book-field {
   min-width: 0;
   width: 100%;
 }
+
 .book-field label {
   display: block;
   color: #111827;
@@ -133,17 +135,13 @@
   max-width: 100%;
   min-width: 0;
   height: 56px;
-
   border: 0;
   border-radius: 18px;
-
   background: #f8fafc;
   color: #111827;
-
   padding: 0 18px;
   font-size: 15px;
   font-weight: 750;
-
   box-sizing: border-box;
   box-shadow: inset 0 0 0 1px #e2e8f0;
 }
@@ -235,6 +233,124 @@
   box-shadow: 0 14px 26px rgba(37, 99, 235, 0.24);
 }
 
+.doctor-leave-warning {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 18px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #fff7ed, #fff1f2);
+  border: 1px solid #fdba74;
+  border-left: 7px solid #dc2626;
+  box-shadow: 0 14px 30px rgba(220, 38, 38, 0.1);
+}
+
+.doctor-leave-warning-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #f97316, #dc2626);
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.doctor-leave-warning strong {
+  display: block;
+  color: #991b1b;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.doctor-leave-warning span {
+  display: block;
+  margin-top: 5px;
+  color: #9a3412;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.leave-slot-button {
+  min-height: 72px;
+  display: grid;
+  place-items: center;
+  gap: 5px;
+  padding: 10px;
+  border-color: #fca5a5;
+  background: linear-gradient(135deg, #fff1f2, #fee2e2);
+  color: #991b1b;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.leave-slot-button:hover {
+  background: linear-gradient(135deg, #fff1f2, #fee2e2);
+  transform: none;
+}
+
+.leave-slot-time {
+  color: #7f1d1d;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.leave-slot-status {
+  color: #dc2626;
+  font-size: 10px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.slot-loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 22px;
+  border-radius: 20px;
+  border: 1px dashed #93c5fd;
+  background: #eff6ff;
+  color: #1e3a8a;
+}
+
+.slot-loading-spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 4px solid #bfdbfe;
+  border-top-color: #2563eb;
+  animation: slot-spin 0.8s linear infinite;
+}
+
+.slot-loading-state strong,
+.slot-loading-state span {
+  display: block;
+}
+
+.slot-loading-state strong {
+  color: #1e3a8a;
+  font-weight: 950;
+}
+
+.slot-loading-state span {
+  margin-top: 3px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@keyframes slot-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .book-actions {
   display: flex;
   justify-content: flex-end;
@@ -264,8 +380,9 @@
 }
 
 .book-submit-button:disabled {
-  opacity: 0.72;
+  opacity: 0.58;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .book-loading-backdrop {
@@ -374,5 +491,20 @@
   .book-outline-button,
   .book-submit-button {
     width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .slot-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .doctor-leave-warning {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .doctor-leave-warning-icon {
+    margin: 0 auto;
   }
 }

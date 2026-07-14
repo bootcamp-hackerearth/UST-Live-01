@@ -39,7 +39,8 @@ try
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
         {
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            options.JsonSerializerOptions.Converters.Add(
+                new JsonStringEnumConverter());
         });
 
     builder.Services.AddEndpointsApiExplorer();
@@ -64,7 +65,8 @@ try
                 Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
                 BearerFormat = "JWT",
-                Description = "Enter JWT token. Example: Bearer eyJhbGciOiJIUzI1NiIs..."
+                Description =
+                    "Enter JWT token. Example: Bearer eyJhbGciOiJIUzI1NiIs..."
             });
 
         options.AddSecurityRequirement(document =>
@@ -81,7 +83,9 @@ try
 
     builder.Services.AddDbContext<HealthAppDbContext>(options =>
     {
-        options.UseSqlServer(builder.Configuration.GetConnectionString("HealthDbConnection"));
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString(
+                "HealthDbConnection"));
     });
 
     builder.Services
@@ -103,39 +107,51 @@ try
         .AddDefaultTokenProviders();
 
     var jwt = builder.Configuration.GetSection("Jwt");
-    var jwtKey = jwt["Key"] ?? throw new InvalidOperationException("Jwt:Key missing");
+
+    var jwtKey = jwt["Key"]
+        ?? throw new InvalidOperationException("Jwt:Key missing");
 
     builder.Services
         .AddAuthentication(options =>
         {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+
+            options.DefaultChallengeScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+
+            options.DefaultForbidScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+
+            options.DefaultScheme =
+                JwtBearerDefaults.AuthenticationScheme;
         })
         .AddJwtBearer(options =>
         {
             options.RequireHttpsMetadata = false;
             options.SaveToken = true;
 
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = jwt["Issuer"],
+            options.TokenValidationParameters =
+                new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwt["Issuer"],
 
-                ValidateAudience = true,
-                ValidAudience = jwt["Audience"],
+                    ValidateAudience = true,
+                    ValidAudience = jwt["Audience"],
 
-                ValidateLifetime = true,
+                    ValidateLifetime = true,
 
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(jwtKey)),
 
-                ClockSkew = TimeSpan.Zero,
+                    ClockSkew = TimeSpan.Zero,
 
-                RoleClaimType = ClaimTypes.Role,
-                NameClaimType = ClaimTypes.NameIdentifier
-            };
+                    RoleClaimType = ClaimTypes.Role,
+                    NameClaimType = ClaimTypes.NameIdentifier
+                };
         });
 
     builder.Services.AddAuthorization();
@@ -144,7 +160,10 @@ try
     {
         options.AddPolicy("AllowAdminBlazor", policy =>
         {
-            policy.WithOrigins("https://localhost:7083", "http://localhost:4200")
+            policy
+                .WithOrigins(
+                    "https://localhost:7083",
+                    "http://localhost:4200")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -152,59 +171,119 @@ try
 
     builder.Services.AddHttpContextAccessor();
 
-    builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+    builder.Services.AddScoped(
+        typeof(IRepository<>),
+        typeof(Repository<>));
 
-    builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-    builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
-    builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-    builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
-    builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+    builder.Services.AddScoped<
+        IPatientRepository,
+        PatientRepository>();
 
-    builder.Services.AddScoped<IAuthService, AuthService>();
-    builder.Services.AddScoped<IPatientService, PatientService>();
-    builder.Services.AddScoped<IDoctorService, DoctorService>();
-    builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-    builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
-    builder.Services.AddScoped<IAdminService, AdminService>();
+    builder.Services.AddScoped<
+        IDoctorRepository,
+        DoctorRepository>();
 
-    var rabbitmqConfig = builder.Configuration.GetSection("RabbitMq");
+    builder.Services.AddScoped<
+        IAppointmentRepository,
+        AppointmentRepository>();
 
-    builder.Services.AddMassTransit(x =>
+    builder.Services.AddScoped<
+        IHealthRecordRepository,
+        HealthRecordRepository>();
+
+    builder.Services.AddScoped<
+        IRefreshTokenRepository,
+        RefreshTokenRepository>();
+
+    builder.Services.AddScoped<
+        IDoctorLeaveRepository,
+        DoctorLeaveRepository>();
+
+    builder.Services.AddScoped<
+        IAuthService,
+        AuthService>();
+
+    builder.Services.AddScoped<
+        IPatientService,
+        PatientService>();
+
+    builder.Services.AddScoped<
+        IDoctorService,
+        DoctorService>();
+
+    builder.Services.AddScoped<
+        IAppointmentService,
+        AppointmentService>();
+
+    builder.Services.AddScoped<
+        IHealthRecordService,
+        HealthRecordService>();
+
+    builder.Services.AddScoped<
+        IAdminService,
+        AdminService>();
+
+    builder.Services.AddScoped<
+        IDoctorLeaveService,
+        DoctorLeaveService>();
+
+    var rabbitmqConfig =
+        builder.Configuration.GetSection("RabbitMq");
+
+    builder.Services.AddMassTransit(configuration =>
     {
-        x.AddConsumer<AppointmentBookedConsumer>();
+        configuration.AddConsumer<AppointmentBookedConsumer>();
 
-        x.UsingRabbitMq((context, cfg) =>
+        configuration.UsingRabbitMq((context, rabbitMq) =>
         {
-            cfg.Host(rabbitmqConfig["HostName"], rabbitmqConfig["VirtualHost"], h =>
-            {
-                h.Username(rabbitmqConfig["UserName"]!);
-                h.Password(rabbitmqConfig["Password"]!);
-            });
+            rabbitMq.Host(
+                rabbitmqConfig["HostName"],
+                rabbitmqConfig["VirtualHost"],
+                host =>
+                {
+                    host.Username(
+                        rabbitmqConfig["UserName"]!);
 
-            cfg.ReceiveEndpoint(rabbitmqConfig["AppointmentQueue"]!, e =>
-            {
-                e.ConfigureConsumer<AppointmentBookedConsumer>(context);
-            });
+                    host.Password(
+                        rabbitmqConfig["Password"]!);
+                });
+
+            rabbitMq.ReceiveEndpoint(
+                rabbitmqConfig["AppointmentQueue"]!,
+                endpoint =>
+                {
+                    endpoint.ConfigureConsumer<
+                        AppointmentBookedConsumer>(context);
+                });
         });
     });
 
-    builder.Services.AddAutoMapper(cfg =>
+    builder.Services.AddAutoMapper(configuration =>
     {
-        cfg.AddProfile<MappingProfile>();
+        configuration.AddProfile<MappingProfile>();
     });
 
-    builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection("Garnet"));
+    builder.Services.Configure<GarnetOptions>(
+        builder.Configuration.GetSection("Garnet"));
 
-    builder.Services.AddStackExchangeRedisCache(option => {
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        var garnetOptions = builder.Configuration
+            .GetSection("Garnet")
+            .Get<GarnetOptions>()
+            ?? new GarnetOptions();
 
-        var garnetOptions = builder.Configuration.GetSection("Garnet").Get<GarnetOptions>() ?? new GarnetOptions();
+        options.Configuration =
+            garnetOptions.ConnectionString;
 
-        option.Configuration = garnetOptions.ConnectionString;
-        option.InstanceName = garnetOptions.InstanceName;
+        options.InstanceName =
+            garnetOptions.InstanceName;
     });
 
     builder.Services.AddHostedService<HeartbeatService>();
-    builder.Services.AddHostedService<NotificationCleanupService>();
+
+    builder.Services.AddHostedService<
+        NotificationCleanupService>();
 
     var app = builder.Build();
 
@@ -223,14 +302,26 @@ try
     app.UseSerilogRequestLogging(options =>
     {
         options.MessageTemplate =
-            "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+            "HTTP {RequestMethod} {RequestPath} responded " +
+            "{StatusCode} in {Elapsed:0.0000} ms";
 
-        options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
-        {
-            diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value ?? string.Empty);
-            diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
-            diagnosticContext.Set("UserName", httpContext.User.Identity?.Name ?? "Anonymous");
-        };
+        options.EnrichDiagnosticContext =
+            (diagnosticContext, httpContext) =>
+            {
+                diagnosticContext.Set(
+                    "RequestHost",
+                    httpContext.Request.Host.Value
+                    ?? string.Empty);
+
+                diagnosticContext.Set(
+                    "RequestScheme",
+                    httpContext.Request.Scheme);
+
+                diagnosticContext.Set(
+                    "UserName",
+                    httpContext.User.Identity?.Name
+                    ?? "Anonymous");
+            };
     });
 
     app.UseAuthentication();
@@ -242,26 +333,39 @@ try
     using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
-        var logger = services.GetRequiredService<ILogger<Program>>();
+
+        var logger =
+            services.GetRequiredService<ILogger<Program>>();
 
         try
         {
-            var dbContext = services.GetRequiredService<HealthAppDbContext>();
+            var dbContext =
+                services.GetRequiredService<HealthAppDbContext>();
 
             await dbContext.Database.MigrateAsync();
 
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager =
+                services.GetRequiredService<
+                    RoleManager<IdentityRole>>();
+
+            var userManager =
+                services.GetRequiredService<
+                    UserManager<ApplicationUser>>();
 
             await RoleSeeder.SeedRolesAsync(roleManager);
+
             await RoleSeeder.SeedAdminAsync(userManager);
 
-            logger.LogInformation("Database migration and identity seeding completed successfully.");
+            logger.LogInformation(
+                "Database migration and identity seeding " +
+                "completed successfully.");
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                "An error occurred while applying database migrations or seeding identity data during application startup.",
+                "An error occurred while applying database " +
+                "migrations or seeding identity data during " +
+                "application startup.",
                 ex);
         }
     }
@@ -270,7 +374,9 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "HealthApp API terminated unexpectedly.");
+    Log.Fatal(
+        ex,
+        "HealthApp API terminated unexpectedly.");
 }
 finally
 {

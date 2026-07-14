@@ -69,17 +69,12 @@
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-
             <div>
                 <h3>Loading doctors</h3>
                 <p>Please wait while doctor records are loaded.</p>
             </div>
-
             <div class="progress doctor-progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated"
-                     role="progressbar"
-                     style="width: 100%">
-                </div>
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
             </div>
         </section>
     }
@@ -91,10 +86,7 @@
                     <h2>Doctors</h2>
                     <p>@totalCount total record(s), showing @FilteredDoctors.Count() on this page</p>
                 </div>
-
-                <div class="doctor-page-size-pill">
-                    5 per page
-                </div>
+                <div class="doctor-page-size-pill">5 per page</div>
             </div>
 
             <div class="doctor-table-wrapper">
@@ -109,7 +101,6 @@
                             <th class="doctor-actions-column">Actions</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         @if (!FilteredDoctors.Any())
                         {
@@ -147,15 +138,23 @@
                                     <td>
                                         <div class="doctor-action-buttons">
                                             <button class="doctor-action-btn view" @onclick="() => OpenViewModal(doctor)">
-                                                <span>👁</span>
-                                                View
+                                                <span>👁</span> View
                                             </button>
-
                                             <button class="doctor-action-btn edit" @onclick="() => OpenEditModal(doctor)">
-                                                <span>✎</span>
-                                                Edit
+                                                <span>✎</span> Edit
                                             </button>
+                                            <button class="doctor-action-btn leave"
+                                                    @onclick="() => OpenLeaveModalAsync(doctor)">
+                                                <span class="doctor-action-icon">
+                                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                        <path d="M7 2h2v3H7V2zm8 0h2v3h-2V2z"></path>
+                                                        <path d="M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 6v9h14v-9H5z"></path>
+                                                        <path d="M7 12h3v3H7v-3zm5 0h3v3h-3v-3z"></path>
+                                                    </svg>
+                                                </span>
 
+                                                <span>View Leave</span>
+                                            </button>
                                             <button class="doctor-action-btn @(doctor.IsActive ? "deactivate" : "activate")"
                                                     @onclick="() => OpenToggleConfirmation(doctor)">
                                                 <span>@(doctor.IsActive ? "⏻" : "✓")</span>
@@ -171,22 +170,12 @@
             </div>
 
             <div class="doctor-pagination-bar">
-                <button class="doctor-pagination-button"
-                        disabled="@(!hasPreviousPage || isLoading)"
-                        @onclick="PreviousPage">
-                    Previous
-                </button>
-
+                <button class="doctor-pagination-button" disabled="@(!hasPreviousPage || isLoading)" @onclick="PreviousPage">Previous</button>
                 <div class="doctor-pagination-info">
                     <strong>Page @pageNumber of @SafeTotalPages</strong>
                     <span>@totalCount total records</span>
                 </div>
-
-                <button class="doctor-pagination-button"
-                        disabled="@(!hasNextPage || isLoading)"
-                        @onclick="NextPage">
-                    Next
-                </button>
+                <button class="doctor-pagination-button" disabled="@(!hasNextPage || isLoading)" @onclick="NextPage">Next</button>
             </div>
         </section>
     }
@@ -197,30 +186,14 @@
     <div class="doctor-modal-backdrop">
         <div class="doctor-modal doctor-form-modal">
             <div class="doctor-modal-header">
-                <div>
-                    <span>Doctor Registration</span>
-                    <h2>Add Doctor</h2>
-                </div>
-
+                <div><span>Doctor Registration</span><h2>Add Doctor</h2></div>
                 <button class="doctor-modal-x" @onclick="CloseModals">×</button>
             </div>
-
             <EditForm Model="createDto" OnValidSubmit="CreateDoctor">
                 <DataAnnotationsValidator />
-
                 <div class="doctor-modal-grid">
-                    <div class="doctor-form-field">
-                        <label>Full Name</label>
-                        <InputText class="doctor-input" @bind-Value="createDto.FullName" />
-                        <ValidationMessage For="@(() => createDto.FullName)" />
-                    </div>
-
-                    <div class="doctor-form-field">
-                        <label>Email</label>
-                        <InputText class="doctor-input" @bind-Value="createDto.Email" />
-                        <ValidationMessage For="@(() => createDto.Email)" />
-                    </div>
-
+                    <div class="doctor-form-field"><label>Full Name</label><InputText class="doctor-input" @bind-Value="createDto.FullName" /><ValidationMessage For="@(() => createDto.FullName)" /></div>
+                    <div class="doctor-form-field"><label>Email</label><InputText class="doctor-input" @bind-Value="createDto.Email" /><ValidationMessage For="@(() => createDto.Email)" /></div>
                     <div class="doctor-form-field">
                         <label>Specialisation</label>
                         <InputSelect class="doctor-input" @bind-Value="createDto.Specialisation">
@@ -231,25 +204,12 @@
                         </InputSelect>
                         <ValidationMessage For="@(() => createDto.Specialisation)" />
                     </div>
-
-                    <div class="doctor-form-field">
-                        <label>Practice Start Date</label>
-                        <InputDate class="doctor-input" @bind-Value="createDto.PracticeStartDate" />
-                        <ValidationMessage For="@(() => createDto.PracticeStartDate)" />
-                    </div>
-
-                    <div class="doctor-form-field">
-                        <label>Consultation Fee</label>
-                        <InputNumber class="doctor-input" @bind-Value="createDto.ConsultationFee" />
-                        <ValidationMessage For="@(() => createDto.ConsultationFee)" />
-                    </div>
+                    <div class="doctor-form-field"><label>Practice Start Date</label><InputDate class="doctor-input" @bind-Value="createDto.PracticeStartDate" /><ValidationMessage For="@(() => createDto.PracticeStartDate)" /></div>
+                    <div class="doctor-form-field"><label>Consultation Fee</label><InputNumber class="doctor-input" @bind-Value="createDto.ConsultationFee" /><ValidationMessage For="@(() => createDto.ConsultationFee)" /></div>
                 </div>
-
                 <div class="doctor-modal-actions">
                     <button class="doctor-close-outline" type="button" @onclick="CloseModals">Close</button>
-                    <button class="doctor-primary-action" type="submit" disabled="@isSaving">
-                        @(isSaving ? "Registering..." : "Register Doctor")
-                    </button>
+                    <button class="doctor-primary-action" type="submit" disabled="@isSaving">@(isSaving ? "Registering..." : "Register Doctor")</button>
                 </div>
             </EditForm>
         </div>
@@ -261,24 +221,13 @@
     <div class="doctor-modal-backdrop">
         <div class="doctor-modal doctor-form-modal">
             <div class="doctor-modal-header">
-                <div>
-                    <span>Doctor Profile</span>
-                    <h2>Edit Doctor</h2>
-                </div>
-
+                <div><span>Doctor Profile</span><h2>Edit Doctor</h2></div>
                 <button class="doctor-modal-x" @onclick="CloseModals">×</button>
             </div>
-
             <EditForm Model="updateDto" OnValidSubmit="UpdateDoctor">
                 <DataAnnotationsValidator />
-
                 <div class="doctor-modal-grid">
-                    <div class="doctor-form-field">
-                        <label>Full Name</label>
-                        <InputText class="doctor-input" @bind-Value="updateDto.FullName" />
-                        <ValidationMessage For="@(() => updateDto.FullName)" />
-                    </div>
-
+                    <div class="doctor-form-field"><label>Full Name</label><InputText class="doctor-input" @bind-Value="updateDto.FullName" /><ValidationMessage For="@(() => updateDto.FullName)" /></div>
                     <div class="doctor-form-field">
                         <label>Specialisation</label>
                         <InputSelect class="doctor-input" @bind-Value="updateDto.Specialisation">
@@ -289,33 +238,13 @@
                         </InputSelect>
                         <ValidationMessage For="@(() => updateDto.Specialisation)" />
                     </div>
-
-                    <div class="doctor-form-field">
-                        <label>Practice Start Date</label>
-                        <InputDate class="doctor-input" @bind-Value="updateDto.PracticeStartDate" />
-                        <ValidationMessage For="@(() => updateDto.PracticeStartDate)" />
-                    </div>
-
-                    <div class="doctor-form-field">
-                        <label>Consultation Fee</label>
-                        <InputNumber class="doctor-input" @bind-Value="updateDto.ConsultationFee" />
-                        <ValidationMessage For="@(() => updateDto.ConsultationFee)" />
-                    </div>
-
-                    <div class="doctor-form-field doctor-checkbox-field">
-                        <label>Status</label>
-                        <div class="doctor-active-toggle">
-                            <InputCheckbox @bind-Value="updateDto.IsActive" />
-                            <span>Doctor is active</span>
-                        </div>
-                    </div>
+                    <div class="doctor-form-field"><label>Practice Start Date</label><InputDate class="doctor-input" @bind-Value="updateDto.PracticeStartDate" /><ValidationMessage For="@(() => updateDto.PracticeStartDate)" /></div>
+                    <div class="doctor-form-field"><label>Consultation Fee</label><InputNumber class="doctor-input" @bind-Value="updateDto.ConsultationFee" /><ValidationMessage For="@(() => updateDto.ConsultationFee)" /></div>
+                    <div class="doctor-form-field doctor-checkbox-field"><label>Status</label><div class="doctor-active-toggle"><InputCheckbox @bind-Value="updateDto.IsActive" /><span>Doctor is active</span></div></div>
                 </div>
-
                 <div class="doctor-modal-actions">
                     <button class="doctor-close-outline" type="button" @onclick="CloseModals">Close</button>
-                    <button class="doctor-primary-action" type="submit" disabled="@isSaving">
-                        @(isSaving ? "Saving..." : "Save Changes")
-                    </button>
+                    <button class="doctor-primary-action" type="submit" disabled="@isSaving">@(isSaving ? "Saving..." : "Save Changes")</button>
                 </div>
             </EditForm>
         </div>
@@ -327,40 +256,124 @@
     <div class="doctor-modal-backdrop">
         <div class="doctor-modal doctor-view-modal">
             <div class="doctor-modal-header">
-                <div>
-                    <span>Doctor Details</span>
-                    <h2>@selectedDoctor.FullName</h2>
-                </div>
+                <div><span>Doctor Details</span><h2>@selectedDoctor.FullName</h2></div>
+                <button class="doctor-modal-x" @onclick="CloseModals">×</button>
+            </div>
+            <div class="doctor-detail-hero">
+                <div class="doctor-detail-avatar">@GetInitials(selectedDoctor.FullName)</div>
+                <div><strong>@selectedDoctor.FullName</strong><span>@selectedDoctor.Specialisation</span></div>
+            </div>
+            <div class="doctor-detail-grid">
+                <div><span>Doctor ID</span><strong>@selectedDoctor.DoctorId</strong></div>
+                <div><span>Experience</span><strong>@selectedDoctor.YearsOfExperience yrs</strong></div>
+                <div><span>Consultation Fee</span><strong>₹@selectedDoctor.ConsultationFee</strong></div>
+                <div><span>Status</span><strong>@(selectedDoctor.IsActive ? "Active" : "Inactive")</strong></div>
+            </div>
+            <div class="doctor-modal-actions"><button class="doctor-close-outline" type="button" @onclick="CloseModals">Close</button></div>
+        </div>
+    </div>
+}
 
+@if (selectedLeaveDoctor is not null && showLeaveModal)
+{
+    <div class="doctor-modal-backdrop">
+        <div class="doctor-modal doctor-leave-admin-modal">
+            <div class="doctor-modal-header">
+                <div>
+                    <span>Doctor Availability</span>
+                    <h2>@selectedLeaveDoctor.FullName</h2>
+                </div>
                 <button class="doctor-modal-x" @onclick="CloseModals">×</button>
             </div>
 
-            <div class="doctor-detail-hero">
-                <div class="doctor-detail-avatar">@GetInitials(selectedDoctor.FullName)</div>
+            <div class="admin-leave-doctor-summary">
+                <div class="doctor-detail-avatar">@GetInitials(selectedLeaveDoctor.FullName)</div>
                 <div>
-                    <strong>@selectedDoctor.FullName</strong>
-                    <span>@selectedDoctor.Specialisation</span>
+                    <strong>@selectedLeaveDoctor.FullName</strong>
+                    <span>Doctor ID: @selectedLeaveDoctor.DoctorId · @selectedLeaveDoctor.Specialisation</span>
                 </div>
+                <span class="status-pill @(selectedLeaveDoctor.IsActive ? "active" : "inactive")">
+                    Hospital: @(selectedLeaveDoctor.IsActive ? "Active" : "Inactive")
+                </span>
             </div>
 
-            <div class="doctor-detail-grid">
+            <section class="admin-leave-status-checker">
                 <div>
-                    <span>Doctor ID</span>
-                    <strong>@selectedDoctor.DoctorId</strong>
+                    <span class="admin-leave-section-kicker">Date Status</span>
+                    <h3>Check a specific date</h3>
+                    <p>Hospital status and temporary leave status are displayed separately.</p>
                 </div>
-                <div>
-                    <span>Experience</span>
-                    <strong>@selectedDoctor.YearsOfExperience yrs</strong>
+                <div class="admin-leave-check-controls">
+                    <InputDate class="doctor-input" @bind-Value="selectedLeaveCheckDate" />
+                    <button class="admin-leave-check-button" type="button" disabled="@isCheckingLeaveStatus" @onclick="CheckDoctorLeaveStatusAsync">
+                        @(isCheckingLeaveStatus ? "Checking..." : "Check Status")
+                    </button>
                 </div>
-                <div>
-                    <span>Consultation Fee</span>
-                    <strong>₹@selectedDoctor.ConsultationFee</strong>
+            </section>
+
+            @if (!string.IsNullOrWhiteSpace(leaveModalError))
+            {
+                <div class="admin-leave-inline-message error">@leaveModalError</div>
+            }
+
+            @if (doctorLeaveStatus is not null)
+            {
+                <div class="admin-leave-date-result @(doctorLeaveStatus.IsOnLeave ? "on-leave" : "available")">
+                    <div>
+                        <span>Selected Date</span>
+                        <strong>@FormatDate(doctorLeaveStatus.Date)</strong>
+                    </div>
+                    <div>
+                        <span>Date Status</span>
+                        <strong>@(doctorLeaveStatus.IsOnLeave ? "Doctor On Leave" : "Doctor Available")</strong>
+                    </div>
+                    <p>@doctorLeaveStatus.Message</p>
                 </div>
-                <div>
-                    <span>Status</span>
-                    <strong>@(selectedDoctor.IsActive ? "Active" : "Inactive")</strong>
+            }
+
+            <section class="admin-leave-history-section">
+                <div class="admin-leave-history-header">
+                    <div>
+                        <span class="admin-leave-section-kicker">Leave Records</span>
+                        <h3>Leave history</h3>
+                    </div>
+                    <span class="admin-leave-count-pill">@doctorLeaves.Count record(s)</span>
                 </div>
-            </div>
+
+                @if (isLoadingLeaves)
+                {
+                    <div class="admin-leave-loading-state">
+                        <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+                        <span>Loading leave history...</span>
+                    </div>
+                }
+                else if (!doctorLeaves.Any())
+                {
+                    <div class="admin-leave-empty-state">
+                        <strong>No leave history found.</strong>
+                        <span>This doctor has not created any leave records.</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="admin-leave-history-list">
+                        @foreach (var leave in doctorLeaves)
+                        {
+                            <article class="admin-leave-history-card">
+                                <div class="admin-leave-history-title">
+                                    <div>
+                                        <span>Leave #@leave.DoctorLeaveId</span>
+                                        <strong>@FormatDate(leave.StartDate) – @FormatDate(leave.EndDate)</strong>
+                                    </div>
+                                    <span class="admin-leave-status-pill @GetLeaveStatusClass(leave)">@GetLeaveStatus(leave)</span>
+                                </div>
+                                <p>@leave.Reason</p>
+                                <small>Created @FormatDate(leave.CreatedDate)</small>
+                            </article>
+                        }
+                    </div>
+                }
+            </section>
 
             <div class="doctor-modal-actions">
                 <button class="doctor-close-outline" type="button" @onclick="CloseModals">Close</button>
@@ -374,24 +387,13 @@
     <div class="doctor-modal-backdrop">
         <div class="doctor-modal doctor-confirm-modal">
             <div class="doctor-modal-header">
-                <div>
-                    <span>Status Confirmation</span>
-                    <h2>@(pendingToggleDoctor.IsActive ? "Deactivate Doctor" : "Activate Doctor")</h2>
-                </div>
-
+                <div><span>Status Confirmation</span><h2>@(pendingToggleDoctor.IsActive ? "Deactivate Doctor" : "Activate Doctor")</h2></div>
                 <button class="doctor-modal-x" @onclick="CloseModals">×</button>
             </div>
-
-            <p class="doctor-confirm-text">
-                Are you sure you want to @(pendingToggleDoctor.IsActive ? "deactivate" : "activate")
-                <strong>@pendingToggleDoctor.FullName</strong>?
-            </p>
-
+            <p class="doctor-confirm-text">Are you sure you want to @(pendingToggleDoctor.IsActive ? "deactivate" : "activate") <strong>@pendingToggleDoctor.FullName</strong>?</p>
             <div class="doctor-modal-actions">
                 <button class="doctor-close-outline" type="button" @onclick="CloseModals">Close</button>
-                <button class="doctor-danger-action" type="button" @onclick="ConfirmToggleStatus" disabled="@isSaving">
-                    @(isSaving ? "Updating..." : "Confirm")
-                </button>
+                <button class="doctor-danger-action" type="button" @onclick="ConfirmToggleStatus" disabled="@isSaving">@(isSaving ? "Updating..." : "Confirm")</button>
             </div>
         </div>
     </div>
@@ -399,24 +401,32 @@
 
 @code {
     private List<DoctorDto> doctors = new();
+    private List<DoctorLeaveDto> doctorLeaves = new();
 
     private string searchText = string.Empty;
     private string statusFilter = "All";
     private string? message;
     private string? generatedTemporaryPassword;
+    private string? leaveModalError;
 
     private bool isLoading = true;
     private bool isSaving;
     private bool isError;
+    private bool isLoadingLeaves;
+    private bool isCheckingLeaveStatus;
 
     private bool showCreateModal;
     private bool showEditModal;
     private bool showViewModal;
     private bool showConfirmModal;
+    private bool showLeaveModal;
 
     private int? editingDoctorId;
     private DoctorDto? selectedDoctor;
     private DoctorDto? pendingToggleDoctor;
+    private DoctorDto? selectedLeaveDoctor;
+    private DoctorLeaveStatusDto? doctorLeaveStatus;
+    private DateTime selectedLeaveCheckDate = DateTime.Today;
 
     private CreateDoctorDto createDto = new();
     private UpdateDoctorDto updateDto = new();
@@ -431,26 +441,20 @@
     private int SafeTotalPages => totalPages < 1 ? 1 : totalPages;
 
     private IEnumerable<DoctorDto> FilteredDoctors => doctors
-        .Where(d =>
-            string.IsNullOrWhiteSpace(searchText) ||
-            d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-            d.Specialisation.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase))
-        .Where(d =>
-            statusFilter == "All" ||
-            (statusFilter == "Active" && d.IsActive) ||
-            (statusFilter == "Inactive" && !d.IsActive));
+        .Where(d => string.IsNullOrWhiteSpace(searchText) ||
+                    d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                    d.Specialisation.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase))
+        .Where(d => statusFilter == "All" ||
+                    (statusFilter == "Active" && d.IsActive) ||
+                    (statusFilter == "Inactive" && !d.IsActive));
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadDoctorsAsync(clearMessage: true);
-    }
+    protected override async Task OnInitializedAsync() => await LoadDoctorsAsync(clearMessage: true);
 
     private async Task LoadDoctorsAsync(bool clearMessage = false)
     {
         try
         {
             isLoading = true;
-
             if (clearMessage)
             {
                 message = null;
@@ -458,10 +462,7 @@
                 generatedTemporaryPassword = null;
             }
 
-            var result = await AdminApi.GetDoctorsAsync(
-                pageNumber,
-                PageSize);
-
+            var result = await AdminApi.GetDoctorsAsync(pageNumber, PageSize);
             doctors = result.Items;
             pageNumber = result.PageNumber;
             totalCount = result.TotalCount;
@@ -479,33 +480,11 @@
             message = "Unable to load doctors. Please check API connection or login again.";
             isError = true;
         }
-        finally
-        {
-            isLoading = false;
-        }
+        finally { isLoading = false; }
     }
 
-    private async Task PreviousPage()
-    {
-        if (!hasPreviousPage)
-        {
-            return;
-        }
-
-        pageNumber--;
-        await LoadDoctorsAsync();
-    }
-
-    private async Task NextPage()
-    {
-        if (!hasNextPage)
-        {
-            return;
-        }
-
-        pageNumber++;
-        await LoadDoctorsAsync();
-    }
+    private async Task PreviousPage() { if (hasPreviousPage) { pageNumber--; await LoadDoctorsAsync(); } }
+    private async Task NextPage() { if (hasNextPage) { pageNumber++; await LoadDoctorsAsync(); } }
 
     private void OpenCreateModal()
     {
@@ -514,7 +493,6 @@
         isError = false;
         generatedTemporaryPassword = null;
         showCreateModal = true;
-
         createDto = new CreateDoctorDto
         {
             Specialisation = SpecialisationType.GeneralPractitioner,
@@ -531,38 +509,17 @@
             message = null;
             isError = false;
             generatedTemporaryPassword = null;
-
             var response = await AdminApi.CreateDoctorAsync(createDto);
-
-            if (response is null)
-            {
-                message = "Doctor registration failed.";
-                isError = true;
-                return;
-            }
-
+            if (response is null) { message = "Doctor registration failed."; isError = true; return; }
             message = response.Message;
             generatedTemporaryPassword = response.TemporaryPassword;
-            isError = false;
             showCreateModal = false;
             pageNumber = 1;
-
             await LoadDoctorsAsync();
         }
-        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            message = "Session expired. Please login again.";
-            isError = true;
-        }
-        catch
-        {
-            message = "Doctor registration failed. Please check the details and try again.";
-            isError = true;
-        }
-        finally
-        {
-            isSaving = false;
-        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized) { message = "Session expired. Please login again."; isError = true; }
+        catch { message = "Doctor registration failed. Please check the details and try again."; isError = true; }
+        finally { isSaving = false; }
     }
 
     private void OpenEditModal(DoctorDto doctor)
@@ -573,7 +530,6 @@
         message = null;
         isError = false;
         generatedTemporaryPassword = null;
-
         updateDto = new UpdateDoctorDto
         {
             FullName = doctor.FullName,
@@ -586,73 +542,80 @@
 
     private async Task UpdateDoctor()
     {
-        if (editingDoctorId is null)
-        {
-            return;
-        }
-
+        if (editingDoctorId is null) return;
         try
         {
             isSaving = true;
             message = null;
             isError = false;
             generatedTemporaryPassword = null;
-
             var updatedDoctor = await AdminApi.UpdateDoctorAsync(editingDoctorId.Value, updateDto);
-
-            if (updatedDoctor is null)
-            {
-                message = "Doctor update failed.";
-                isError = true;
-                return;
-            }
-
+            if (updatedDoctor is null) { message = "Doctor update failed."; isError = true; return; }
             message = "Doctor updated successfully.";
-            isError = false;
             showEditModal = false;
             editingDoctorId = null;
-
             await LoadDoctorsAsync();
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized) { message = "Session expired. Please login again."; isError = true; }
+        catch { message = "Doctor update failed. Please try again."; isError = true; }
+        finally { isSaving = false; }
+    }
+
+    private void OpenViewModal(DoctorDto doctor) { CloseModals(); selectedDoctor = doctor; showViewModal = true; }
+    private void OpenToggleConfirmation(DoctorDto doctor) { CloseModals(); pendingToggleDoctor = doctor; showConfirmModal = true; }
+
+    private async Task OpenLeaveModalAsync(DoctorDto doctor)
+    {
+        CloseModals();
+        selectedLeaveDoctor = doctor;
+        selectedLeaveCheckDate = DateTime.Today;
+        doctorLeaveStatus = null;
+        leaveModalError = null;
+        doctorLeaves = new List<DoctorLeaveDto>();
+        showLeaveModal = true;
+        isLoadingLeaves = true;
+
+        try
+        {
+            doctorLeaves = await AdminApi.GetDoctorLeaveHistoryAsync(doctor.DoctorId);
         }
         catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
         {
-            message = "Session expired. Please login again.";
-            isError = true;
+            leaveModalError = "Session expired. Please login again.";
         }
         catch
         {
-            message = "Doctor update failed. Please try again.";
-            isError = true;
+            leaveModalError = "Unable to load this doctor's leave history.";
         }
-        finally
+        finally { isLoadingLeaves = false; }
+    }
+
+    private async Task CheckDoctorLeaveStatusAsync()
+    {
+        if (selectedLeaveDoctor is null) return;
+        try
         {
-            isSaving = false;
+            isCheckingLeaveStatus = true;
+            leaveModalError = null;
+            doctorLeaveStatus = await AdminApi.GetDoctorLeaveStatusAsync(
+                selectedLeaveDoctor.DoctorId,
+                selectedLeaveCheckDate);
         }
-    }
-
-    private void OpenViewModal(DoctorDto doctor)
-    {
-        CloseModals();
-        selectedDoctor = doctor;
-        showViewModal = true;
-    }
-
-    private void OpenToggleConfirmation(DoctorDto doctor)
-    {
-        CloseModals();
-        pendingToggleDoctor = doctor;
-        showConfirmModal = true;
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            leaveModalError = "Session expired. Please login again.";
+        }
+        catch
+        {
+            leaveModalError = "Unable to check the doctor's leave status for the selected date.";
+        }
+        finally { isCheckingLeaveStatus = false; }
     }
 
     private async Task ConfirmToggleStatus()
     {
-        if (pendingToggleDoctor is null)
-        {
-            return;
-        }
-
+        if (pendingToggleDoctor is null) return;
         var doctor = pendingToggleDoctor;
-
         var dto = new UpdateDoctorDto
         {
             FullName = doctor.FullName,
@@ -666,37 +629,17 @@
         {
             isSaving = true;
             generatedTemporaryPassword = null;
-
             var updatedDoctor = await AdminApi.UpdateDoctorAsync(doctor.DoctorId, dto);
-
-            if (updatedDoctor is null)
-            {
-                message = "Doctor status update failed.";
-                isError = true;
-                return;
-            }
-
+            if (updatedDoctor is null) { message = "Doctor status update failed."; isError = true; return; }
             message = "Doctor status updated successfully.";
             isError = false;
             showConfirmModal = false;
             pendingToggleDoctor = null;
-
             await LoadDoctorsAsync();
         }
-        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            message = "Session expired. Please login again.";
-            isError = true;
-        }
-        catch
-        {
-            message = "Doctor update failed. Please try again.";
-            isError = true;
-        }
-        finally
-        {
-            isSaving = false;
-        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized) { message = "Session expired. Please login again."; isError = true; }
+        catch { message = "Doctor update failed. Please try again."; isError = true; }
+        finally { isSaving = false; }
     }
 
     private async Task CopyTemporaryPassword()
@@ -715,27 +658,38 @@
         showEditModal = false;
         showViewModal = false;
         showConfirmModal = false;
+        showLeaveModal = false;
         selectedDoctor = null;
         pendingToggleDoctor = null;
+        selectedLeaveDoctor = null;
+        doctorLeaves = new List<DoctorLeaveDto>();
+        doctorLeaveStatus = null;
+        leaveModalError = null;
+        isLoadingLeaves = false;
+        isCheckingLeaveStatus = false;
     }
+
+    private static string GetLeaveStatus(DoctorLeaveDto leave)
+    {
+        var today = DateTime.Today;
+        if (leave.StartDate.Date <= today && leave.EndDate.Date >= today) return "Current Leave";
+        return leave.StartDate.Date > today ? "Upcoming" : "Completed";
+    }
+
+    private static string GetLeaveStatusClass(DoctorLeaveDto leave) =>
+        GetLeaveStatus(leave) switch
+        {
+            "Current Leave" => "current",
+            "Upcoming" => "upcoming",
+            _ => "completed"
+        };
+
+    private static string FormatDate(DateTime date) => date.ToString("dd MMM yyyy");
 
     private static string GetInitials(string name)
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return "DR";
-        }
-
-        var parts = name
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-            .Take(2)
-            .ToList();
-
-        if (parts.Count == 0)
-        {
-            return "DR";
-        }
-
-        return new string(parts.Select(part => part[0]).ToArray()).ToUpper();
+        if (string.IsNullOrWhiteSpace(name)) return "DR";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).ToList();
+        return parts.Count == 0 ? "DR" : new string(parts.Select(part => part[0]).ToArray()).ToUpper();
     }
 }

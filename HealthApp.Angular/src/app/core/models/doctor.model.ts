@@ -22,5 +22,7 @@ export interface Doctor {
 export interface DoctorAvailability {
   doctorId: number;
   date: string;
+  isOnLeave: boolean;
+  message: string;
   availableSlots: string[];
 }

@@ -17,12 +17,14 @@ namespace HealthApp.API.Service.Impl;
 public class DoctorService(
     IDoctorRepository doctorRepository,
     IAppointmentRepository appointmentRepository,
+    IDoctorLeaveRepository doctorLeaveRepository,
     IHttpContextAccessor httpContextAccessor,
     IDistributedCache distributedCache,
     IMapper mapper,
     ILogger<DoctorService> logger) : IDoctorService
 {
     private const string DoctorEntityName = "Doctor";
+    private const string DoctorOnLeaveMessage = "Doctor On Leave";
 
     public async Task<List<DoctorDto>> GetAllDoctorsAsync()
     {
@@ -52,11 +54,15 @@ public class DoctorService(
         }
 
         var doctor = await doctorRepository.GetByIdAsync(doctorId)
-            ?? throw new EntityNotFoundException(DoctorEntityName, doctorId);
+            ?? throw new EntityNotFoundException(
+                DoctorEntityName,
+                doctorId);
 
         if (!doctor.IsActive)
         {
-            throw new EntityNotFoundException(DoctorEntityName, doctorId);
+            throw new EntityNotFoundException(
+                DoctorEntityName,
+                doctorId);
         }
 
         return mapper.Map<DoctorDto>(doctor);
@@ -86,10 +92,13 @@ public class DoctorService(
 
         if (!Enum.IsDefined(specialisation))
         {
-            throw new BusinessRuleException("Invalid specialisation.");
+            throw new BusinessRuleException(
+                "Invalid specialisation.");
         }
 
-        var doctors = await doctorRepository.GetActiveBySpecialisationAsync(specialisation);
+        var doctors =
+            await doctorRepository.GetActiveBySpecialisationAsync(
+                specialisation);
 
         return mapper.Map<List<DoctorDto>>(doctors);
     }
@@ -123,7 +132,8 @@ public class DoctorService(
             doctorId,
             availabilityDate);
 
-        var cachedAvailability = await distributedCache.GetStringAsync(cacheKey);
+        var cachedAvailability =
+            await distributedCache.GetStringAsync(cacheKey);
 
         if (!string.IsNullOrWhiteSpace(cachedAvailability))
         {
@@ -133,13 +143,16 @@ public class DoctorService(
                 availabilityDate,
                 cacheKey);
 
-            return JsonSerializer.Deserialize<DoctorAvailabilityDto>(cachedAvailability)
-                ?? new DoctorAvailabilityDto
-                {
-                    DoctorId = doctorId,
-                    Date = availabilityDate,
-                    AvailableSlots = new List<string>()
-                };
+            return JsonSerializer.Deserialize<DoctorAvailabilityDto>(
+                       cachedAvailability)
+                   ?? new DoctorAvailabilityDto
+                   {
+                       DoctorId = doctorId,
+                       Date = availabilityDate,
+                       IsOnLeave = false,
+                       Message = string.Empty,
+                       AvailableSlots = new List<string>()
+                   };
         }
 
         logger.LogInformation(
@@ -149,49 +162,74 @@ public class DoctorService(
             cacheKey);
 
         var doctor = await doctorRepository.GetByIdAsync(doctorId)
-            ?? throw new EntityNotFoundException(DoctorEntityName, doctorId);
+            ?? throw new EntityNotFoundException(
+                DoctorEntityName,
+                doctorId);
 
         if (!doctor.IsActive)
         {
-            throw new BusinessRuleException("Doctor is inactive.");
+            throw new BusinessRuleException(
+                "Doctor is inactive.");
         }
 
-        var appointments = await appointmentRepository.GetByDoctorIdAsync(doctorId);
+        var doctorLeave =
+            await doctorLeaveRepository.GetLeaveForDateAsync(
+                doctorId,
+                availabilityDate);
+
+        if (doctorLeave is not null)
+        {
+            var leaveAvailability = new DoctorAvailabilityDto
+            {
+                DoctorId = doctorId,
+                Date = availabilityDate,
+                IsOnLeave = true,
+                Message = DoctorOnLeaveMessage,
+                AvailableSlots = new List<string>()
+            };
+
+            await CacheAvailabilityAsync(
+                cacheKey,
+                leaveAvailability);
+
+            logger.LogInformation(
+                "Doctor is on leave. All appointment slots are unavailable. DoctorId: {DoctorId}, Date: {Date}, DoctorLeaveId: {DoctorLeaveId}",
+                doctorId,
+                availabilityDate,
+                doctorLeave.DoctorLeaveId);
+
+            return leaveAvailability;
+        }
+
+        var appointments =
+            await appointmentRepository.GetByDoctorIdAsync(doctorId);
 
         var bookedSlots = appointments
             .Where(appointment =>
                 appointment.ScheduledDate.Date == availabilityDate &&
-                appointment.Status != AppointmentStatus.Cancelled.ToString())
+                appointment.Status !=
+                AppointmentStatus.Cancelled.ToString())
             .Select(appointment => appointment.TimeSlots)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var availableSlots = TimeSlots.Slots
             .Where(slot => !bookedSlots.Contains(slot))
-            .Where(slot => !IsPastTimeSlot(availabilityDate, slot))
+            .Where(slot =>
+                !IsPastTimeSlot(availabilityDate, slot))
             .ToList();
 
         var availability = new DoctorAvailabilityDto
         {
             DoctorId = doctorId,
             Date = availabilityDate,
+            IsOnLeave = false,
+            Message = string.Empty,
             AvailableSlots = availableSlots
         };
 
-        var serializedAvailability = JsonSerializer.Serialize(availability);
-
-        await distributedCache.SetStringAsync(
+        await CacheAvailabilityAsync(
             cacheKey,
-            serializedAvailability,
-            new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-            });
-
-        logger.LogInformation(
-            "Doctor availability cached for 5 minutes. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
-            doctorId,
-            availabilityDate,
-            cacheKey);
+            availability);
 
         return availability;
     }
@@ -217,20 +255,49 @@ public class DoctorService(
             cacheKey);
     }
 
+    private async Task CacheAvailabilityAsync(
+        string cacheKey,
+        DoctorAvailabilityDto availability)
+    {
+        var serializedAvailability =
+            JsonSerializer.Serialize(availability);
+
+        await distributedCache.SetStringAsync(
+            cacheKey,
+            serializedAvailability,
+            new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow =
+                    TimeSpan.FromMinutes(5)
+            });
+
+        logger.LogInformation(
+            "Doctor availability cached for 5 minutes. DoctorId: {DoctorId}, Date: {Date}, IsOnLeave: {IsOnLeave}, CacheKey: {CacheKey}",
+            availability.DoctorId,
+            availability.Date,
+            availability.IsOnLeave,
+            cacheKey);
+    }
+
     private async Task<Doctor> GetLoggedInDoctorAsync()
     {
-        var userId = CurrentUser?.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = CurrentUser?
+            .FindFirstValue(ClaimTypes.NameIdentifier);
 
         if (string.IsNullOrWhiteSpace(userId))
         {
-            throw new ForbiddenAccessException("Unable to identify logged-in user.");
+            throw new ForbiddenAccessException(
+                "Unable to identify logged-in user.");
         }
 
-        var doctor = await doctorRepository.GetByUserIdAsync(userId);
+        var doctor =
+            await doctorRepository.GetByUserIdAsync(userId);
 
         if (doctor is null)
         {
-            throw new EntityNotFoundException(DoctorEntityName, userId);
+            throw new EntityNotFoundException(
+                DoctorEntityName,
+                userId);
         }
 
         return doctor;
@@ -241,7 +308,8 @@ public class DoctorService(
 
     private bool IsDoctor()
     {
-        return CurrentUser?.IsInRole(Roles.Doctor) == true;
+        return CurrentUser?
+            .IsInRole(Roles.Doctor) == true;
     }
 
     private static void ValidateDoctorId(int id)
@@ -257,26 +325,33 @@ public class DoctorService(
         int doctorId,
         DateTime date)
     {
-        return $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
+        return
+            $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
     }
 
-    private static bool IsPastTimeSlot(DateTime scheduledDate, string timeSlot)
+    private static bool IsPastTimeSlot(
+        DateTime scheduledDate,
+        string timeSlot)
     {
         if (scheduledDate.Date != DateTime.Today)
         {
             return false;
         }
 
-        var slotStartTime = GetSlotStartTime(timeSlot);
+        var slotStartTime =
+            GetSlotStartTime(timeSlot);
 
-        var slotStartDateTime = scheduledDate.Date.Add(slotStartTime);
+        var slotStartDateTime =
+            scheduledDate.Date.Add(slotStartTime);
 
         return slotStartDateTime <= DateTime.Now;
     }
 
-    private static TimeSpan GetSlotStartTime(string timeSlot)
+    private static TimeSpan GetSlotStartTime(
+        string timeSlot)
     {
-        var startText = timeSlot.Split('-')[0].Trim();
+        var startText =
+            timeSlot.Split('-')[0].Trim();
 
         if (!DateTime.TryParse(
                 startText,
@@ -284,7 +359,8 @@ public class DoctorService(
                 DateTimeStyles.None,
                 out var parsedStartTime))
         {
-            throw new BusinessRuleException("Invalid time slot format.");
+            throw new BusinessRuleException(
+                "Invalid time slot format.");
         }
 
         return parsedStartTime.TimeOfDay;

@@ -52,7 +52,9 @@ public class UpdateDoctorDto
 public class DoctorAvailabilityDto 
 { 
     public int DoctorId { get; set; } 
-    public DateTime Date { get; set; } 
+    public DateTime Date { get; set; }
+    public bool IsOnLeave { get; set; }
+    public string Message { get; set; } = string.Empty;
     public List<string> AvailableSlots { get; set; } = new(); 
 }
 

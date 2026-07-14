@@ -12,7 +12,11 @@
   </section>
 
   @if (message) {
-    <div class="book-message-card" [class.error]="isError" [class.success]="!isError">
+    <div
+      class="book-message-card"
+      [class.error]="isError"
+      [class.success]="!isError"
+    >
       <div>
         <strong>{{ isError ? 'Action Failed' : 'Success' }}</strong>
         <span>{{ message }}</span>
@@ -28,86 +32,92 @@
 
     <div class="book-form-grid">
       <div class="book-field">
-        <label>Patient Name
-        <input
-          class="book-control readonly"
-          type="text"
-          [value]="patient?.fullName"
-          readonly
-        />
+        <label>
+          Patient Name
+          <input
+            class="book-control readonly"
+            type="text"
+            [value]="patient?.fullName"
+            readonly
+          />
         </label>
       </div>
 
       <div class="book-field">
-        <label>Specialisation <span>*</span>
-        <select
-          class="book-control"
-          name="specialisation"
-          [(ngModel)]="selectedSpecialisation"
-          (ngModelChange)="onSpecialisationChanged()"
-        >
-          <option value="">Select specialisation</option>
+        <label>
+          Specialisation <span>*</span>
+          <select
+            class="book-control"
+            name="specialisation"
+            [(ngModel)]="selectedSpecialisation"
+            (ngModelChange)="onSpecialisationChanged()"
+          >
+            <option value="">Select specialisation</option>
 
-          @for (specialisation of specialisations; track specialisation) {
-            <option [value]="specialisation">{{ specialisation }}</option>
-          }
-        </select>
+            @for (specialisation of specialisations; track specialisation) {
+              <option [value]="specialisation">{{ specialisation }}</option>
+            }
+          </select>
         </label>
       </div>
 
       <div class="book-field">
-        <label>Doctor <span>*</span>
-        <select
-          class="book-control"
-          name="doctor"
-          [(ngModel)]="selectedDoctorId"
-          (ngModelChange)="onDoctorChanged()"
-          [disabled]="!selectedSpecialisation"
-        >
-          <option [ngValue]="0">
-            {{ selectedSpecialisation ? 'Select doctor' : 'Select specialisation first' }}
-          </option>
+        <label>
+          Doctor <span>*</span>
+          <select
+            class="book-control"
+            name="doctor"
+            [(ngModel)]="selectedDoctorId"
+            (ngModelChange)="onDoctorChanged()"
+            [disabled]="!selectedSpecialisation"
+          >
+            <option [ngValue]="0">
+              {{ selectedSpecialisation ? 'Select doctor' : 'Select specialisation first' }}
+            </option>
 
-          @for (doctor of filteredDoctors; track doctor.doctorId) {
-            <option [ngValue]="doctor.doctorId">{{ doctor.fullName }}</option>
-          }
-        </select>
+            @for (doctor of filteredDoctors; track doctor.doctorId) {
+              <option [ngValue]="doctor.doctorId">{{ doctor.fullName }}</option>
+            }
+          </select>
         </label>
       </div>
 
       <div class="book-field">
-        <label>Experience
-        <input
-          class="book-control readonly"
-          type="text"
-          [value]="selectedDoctor ? selectedDoctor.yearsOfExperience + ' years' : 'Select doctor'"
-          readonly
-        />
+        <label>
+          Experience
+          <input
+            class="book-control readonly"
+            type="text"
+            [value]="selectedDoctor ? selectedDoctor.yearsOfExperience + ' years' : 'Select doctor'"
+            readonly
+          />
         </label>
       </div>
 
       <div class="book-field">
-        <label>Consultation Fee
-        <input
-          class="book-control readonly"
-          type="text"
-          [value]="selectedDoctor ? '₹' + selectedDoctor.consultationFee : 'Select doctor'"
-          readonly
-        />
+        <label>
+          Consultation Fee
+          <input
+            class="book-control readonly"
+            type="text"
+            [value]="selectedDoctor ? '₹' + selectedDoctor.consultationFee : 'Select doctor'"
+            readonly
+          />
         </label>
       </div>
 
       <div class="book-field">
-        <label>Appointment Date <span>*</span>
-        <input
-          class="book-control"
-          type="date"
-          name="appointmentDate"
-          [min]="today"
-          [(ngModel)]="selectedDate"
-          (ngModelChange)="onDateChanged()"
-          [disabled]="!selectedDoctorId"
-        />
+        <label>
+          Appointment Date <span>*</span>
+          <input
+            class="book-control"
+            type="date"
+            name="appointmentDate"
+            [min]="today"
+            [(ngModel)]="selectedDate"
+            (ngModelChange)="onDateChanged()"
+            [disabled]="!selectedDoctorId"
+          />
         </label>
       </div>
     </div>
@@ -124,9 +134,46 @@
         }
       </div>
 
+      @if (isDoctorOnLeave) {
+        <div class="doctor-leave-warning">
+          <div class="doctor-leave-warning-icon">!</div>
+
+          <div>
+            <strong>{{ leaveMessage || 'Doctor On Leave' }}</strong>
+            <span>
+              {{ selectedDoctor?.fullName }} is unavailable on {{ selectedDate }}.
+              Please select another appointment date.
+            </span>
+          </div>
+        </div>
+      }
+
       @if (!selectedDoctorId || !selectedDate) {
         <div class="slot-empty-state">
           Select a doctor and date to view available slots.
+        </div>
+      } @else if (isLoadingAvailability) {
+        <div class="slot-loading-state">
+          <div class="slot-loading-spinner"></div>
+
+          <div>
+            <strong>Checking availability</strong>
+            <span>Please wait while available time slots are loaded.</span>
+          </div>
+        </div>
+      } @else if (isDoctorOnLeave) {
+        <div class="slot-grid leave-slot-grid">
+          @for (slot of allTimeSlots; track slot) {
+            <button
+              type="button"
+              class="slot-button leave-slot-button"
+              disabled
+              title="Doctor On Leave"
+            >
+              <span class="leave-slot-time">{{ slot }}</span>
+              <span class="leave-slot-status">Doctor On Leave</span>
+            </button>
+          }
         </div>
       } @else if (availableSlots.length === 0) {
         <div class="slot-empty-state">
@@ -153,8 +200,21 @@
         Back
       </button>
 
-      <button class="book-submit-button" type="button" [disabled]="isBooking" (click)="bookAppointment()">
-        {{ isBooking ? 'Booking...' : 'Book Appointment' }}
+      <button
+        class="book-submit-button"
+        type="button"
+        [disabled]="!canBookAppointment"
+        (click)="bookAppointment()"
+      >
+        @if (isBooking) {
+          Booking...
+        } @else if (isLoadingAvailability) {
+          Checking Availability...
+        } @else if (isDoctorOnLeave) {
+          Doctor On Leave
+        } @else {
+          Book Appointment
+        }
       </button>
     </div>
   </section>
@@ -163,7 +223,6 @@
     <div class="book-loading-backdrop">
       <div class="book-loading-box">
         <div class="loading-logo">H</div>
-
         <h3>Booking appointment</h3>
         <p>Please wait while HealthApp reserves your slot.</p>
 

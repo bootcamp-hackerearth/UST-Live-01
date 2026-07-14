@@ -1,0 +1,253 @@
+<div class="doctor-leave-page">
+  <section class="leave-hero-card">
+    <div>
+      <span class="leave-kicker">Doctor Portal</span>
+      <h1>Leave & Unavailability</h1>
+      <p>
+        Mark yourself unavailable for a date range and review your leave history.
+      </p>
+    </div>
+
+    <div class="leave-hero-badge">
+      <span>Availability</span>
+      <strong>Plan Ahead</strong>
+    </div>
+  </section>
+
+  @if (message()) {
+    <div
+      class="leave-message-card"
+      [class.error]="isError()"
+      [class.success]="!isError()"
+    >
+      <strong>{{ isError() ? 'Action Failed' : 'Success' }}</strong>
+      <span>{{ message() }}</span>
+    </div>
+  }
+
+  <section class="leave-content-grid">
+    <div class="leave-form-card">
+      <div class="leave-section-title">
+        <span>New Leave</span>
+        <h2>Apply for leave</h2>
+        <p>
+          Select the leave period and provide a clear reason for your unavailability.
+        </p>
+      </div>
+
+      <div class="leave-form-grid">
+        <div class="leave-field">
+          <label>
+            Start Date <span>*</span>
+            <input
+              class="leave-control"
+              type="date"
+              name="leaveStartDate"
+              [min]="today"
+              [ngModel]="startDate()"
+              (ngModelChange)="updateStartDate($event)"
+            />
+          </label>
+        </div>
+
+        <div class="leave-field">
+          <label>
+            End Date <span>*</span>
+            <input
+              class="leave-control"
+              type="date"
+              name="leaveEndDate"
+              [min]="startDate() || today"
+              [ngModel]="endDate()"
+              (ngModelChange)="updateEndDate($event)"
+            />
+          </label>
+        </div>
+
+        <div class="leave-field full-width">
+          <label>
+            Reason <span>*</span>
+            <textarea
+              class="leave-textarea"
+              rows="5"
+              maxlength="500"
+              placeholder="Example: Personal Leave, Medical Conference, Training"
+              [ngModel]="reason()"
+              (ngModelChange)="updateReason($event)"
+            ></textarea>
+          </label>
+
+          <div class="leave-reason-footer">
+            <small>Minimum 3 characters</small>
+            <small>{{ reason().length }}/500</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="leave-information-box">
+        <strong>Before you submit</strong>
+        <span>
+          If active appointments exist in the selected range, you will be asked
+          to confirm their cancellation before the leave is created.
+        </span>
+      </div>
+
+      <div class="leave-form-actions">
+        <button
+          class="leave-submit-button"
+          type="button"
+          [disabled]="isPreviewing() || isSubmitting()"
+          (click)="submitLeave()"
+        >
+          @if (isPreviewing()) {
+            Checking Appointments...
+          } @else if (isSubmitting()) {
+            Creating Leave...
+          } @else {
+            Apply for Leave
+          }
+        </button>
+      </div>
+    </div>
+
+    <aside class="latest-leave-card">
+      <div class="leave-section-title compact">
+        <span>Latest Record</span>
+        <h2>Latest leave</h2>
+      </div>
+
+      @if (latestLeave(); as leave) {
+        <div class="latest-leave-content">
+          <span
+            class="leave-status-pill"
+            [class]="'leave-status-pill ' + getLeaveStatusClass(leave)"
+          >
+            {{ getLeaveStatus(leave) }}
+          </span>
+
+          <strong class="latest-leave-range">
+            {{ formatDate(leave.startDate) }} – {{ formatDate(leave.endDate) }}
+          </strong>
+
+          <p>{{ leave.reason }}</p>
+
+          <small>
+            Created {{ formatDate(leave.createdDate) }}
+          </small>
+        </div>
+      } @else {
+        <div class="leave-empty-state compact-empty">
+          <strong>No leave records yet.</strong>
+          <span>Your latest leave will appear here.</span>
+        </div>
+      }
+    </aside>
+  </section>
+
+  <section class="leave-history-card">
+    <div class="leave-history-header">
+      <div class="leave-section-title compact">
+        <span>Leave Records</span>
+        <h2>Leave history</h2>
+        <p>{{ leaveHistory().length }} record(s) available</p>
+      </div>
+    </div>
+
+    @if (leaveHistory().length === 0) {
+      <div class="leave-empty-state">
+        <strong>No leave history found.</strong>
+        <span>Leave records will appear here after creation.</span>
+      </div>
+    } @else {
+      <div class="leave-history-list">
+        @for (leave of leaveHistory(); track leave.doctorLeaveId) {
+          <article class="leave-history-item">
+            <div class="leave-history-accent"></div>
+
+            <div class="leave-history-main">
+              <div class="leave-history-title-row">
+                <div>
+                  <span>Leave #{{ leave.doctorLeaveId }}</span>
+                  <strong>
+                    {{ formatDate(leave.startDate) }} – {{ formatDate(leave.endDate) }}
+                  </strong>
+                </div>
+
+                <span
+                  [class]="'leave-status-pill ' + getLeaveStatusClass(leave)"
+                >
+                  {{ getLeaveStatus(leave) }}
+                </span>
+              </div>
+
+              <p>{{ leave.reason }}</p>
+
+              <small>
+                Created on {{ formatDate(leave.createdDate) }}
+              </small>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</div>
+
+@if (leaveImpact(); as impact) {
+  <div class="leave-modal-backdrop">
+    <div class="leave-confirm-modal">
+      <div class="leave-modal-header">
+        <div>
+          <span>Schedule Impact</span>
+          <h2>Appointments Will Be Cancelled</h2>
+        </div>
+
+        <button
+          class="leave-modal-x"
+          type="button"
+          [disabled]="isSubmitting()"
+          (click)="closeConfirmationModal()"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="leave-impact-count">
+        {{ impact.affectedAppointmentCount }}
+      </div>
+
+      <p class="leave-modal-text">
+        This leave affects
+        <strong>{{ impact.affectedAppointmentCount }} active appointment(s)</strong>
+        between
+        <strong>{{ formatDate(startDate()) }}</strong>
+        and
+        <strong>{{ formatDate(endDate()) }}</strong>.
+      </p>
+
+      <div class="leave-modal-warning">
+        The affected appointments will be cancelled when this leave is confirmed.
+      </div>
+
+      <div class="leave-modal-actions">
+        <button
+          class="leave-go-back-button"
+          type="button"
+          [disabled]="isSubmitting()"
+          (click)="closeConfirmationModal()"
+        >
+          Go Back
+        </button>
+
+        <button
+          class="leave-confirm-button"
+          type="button"
+          [disabled]="isSubmitting()"
+          (click)="confirmLeave()"
+        >
+          {{ isSubmitting() ? 'Confirming...' : 'Confirm Leave' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,12 +1,18 @@
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';import { Router } from '@angular/router';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  inject
+} from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { AuthService } from '../../../core/services/auth.service';
-import { AppointmentApiService } from '../../../core/services/appointment-api.service';
-import { DoctorApiService } from '../../../core/services/doctor-api.service';
-import { PatientApiService } from '../../../core/services/patient-api.service';
 import { Doctor, SpecialisationType } from '../../../core/models/doctor.model';
 import { Patient } from '../../../core/models/patient.model';
+import { AppointmentApiService } from '../../../core/services/appointment-api.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { DoctorApiService } from '../../../core/services/doctor-api.service';
+import { PatientApiService } from '../../../core/services/patient-api.service';
 
 @Component({
   selector: 'app-book-appointment',
@@ -24,7 +30,7 @@ export class BookAppointment implements OnInit {
 
   patient?: Patient;
 
-  specialisations: SpecialisationType[] = [
+  readonly specialisations: SpecialisationType[] = [
     'Endocrinologist',
     'Oncologist',
     'Gynecologist',
@@ -37,6 +43,25 @@ export class BookAppointment implements OnInit {
     'GeneralPractitioner'
   ];
 
+  // Used only on a leave date so every slot can remain visible and disabled.
+  readonly allTimeSlots: string[] = [
+    '09:00 AM - 09:30 AM',
+    '09:30 AM - 10:00 AM',
+    '10:00 AM - 10:30 AM',
+    '10:30 AM - 11:00 AM',
+    '11:00 AM - 11:30 AM',
+    '11:30 AM - 12:00 PM',
+    '12:00 PM - 12:30 PM',
+    '02:00 PM - 02:30 PM',
+    '02:30 PM - 03:00 PM',
+    '03:00 PM - 03:30 PM',
+    '03:30 PM - 04:00 PM',
+    '04:00 PM - 04:30 PM',
+    '04:30 PM - 05:00 PM',
+    '05:00 PM - 05:30 PM',
+    '05:30 PM - 06:00 PM'
+  ];
+
   doctors: Doctor[] = [];
 
   selectedSpecialisation: SpecialisationType | '' = '';
@@ -46,11 +71,16 @@ export class BookAppointment implements OnInit {
 
   availableSlots: string[] = [];
 
+  isDoctorOnLeave = false;
+  leaveMessage = '';
+
   message = '';
   isError = false;
+
+  isLoadingAvailability = false;
   isBooking = false;
 
-  today = new Date().toISOString().split('T')[0];
+  readonly today = new Date().toISOString().split('T')[0];
 
   ngOnInit(): void {
     const user = this.authService.currentUser();
@@ -77,17 +107,33 @@ export class BookAppointment implements OnInit {
   }
 
   get selectedDoctor(): Doctor | undefined {
-    return this.doctors.find(doctor => doctor.doctorId === this.selectedDoctorId);
+    return this.doctors.find(
+      doctor => doctor.doctorId === this.selectedDoctorId
+    );
+  }
+
+  get canBookAppointment(): boolean {
+    return (
+      !this.isBooking &&
+      !this.isLoadingAvailability &&
+      !this.isDoctorOnLeave &&
+      this.selectedDoctorId > 0 &&
+      Boolean(this.selectedDate) &&
+      Boolean(this.selectedSlot)
+    );
   }
 
   onSpecialisationChanged(): void {
     this.selectedDoctorId = 0;
     this.selectedDate = '';
     this.selectedSlot = '';
-    this.availableSlots = [];
     this.doctors = [];
+    this.availableSlots = [];
+    this.resetLeaveState();
+    this.clearMessage();
 
     if (!this.selectedSpecialisation) {
+      this.cdr.detectChanges();
       return;
     }
 
@@ -107,26 +153,48 @@ export class BookAppointment implements OnInit {
     this.selectedDate = '';
     this.selectedSlot = '';
     this.availableSlots = [];
+    this.resetLeaveState();
     this.clearMessage();
+    this.cdr.detectChanges();
   }
 
   onDateChanged(): void {
     this.selectedSlot = '';
+    this.availableSlots = [];
+    this.resetLeaveState();
     this.clearMessage();
 
     if (!this.selectedDoctorId || !this.selectedDate) {
-      this.availableSlots = [];
+      this.cdr.detectChanges();
       return;
     }
+
+    this.isLoadingAvailability = true;
 
     this.doctorApi
       .getDoctorAvailability(this.selectedDoctorId, this.selectedDate)
       .subscribe({
         next: availability => {
-          this.availableSlots = availability.availableSlots;
+          this.isLoadingAvailability = false;
+          this.isDoctorOnLeave = availability.isOnLeave;
+          this.leaveMessage = availability.message || '';
+          this.availableSlots = availability.availableSlots ?? [];
+
+          if (this.isDoctorOnLeave) {
+            this.selectedSlot = '';
+
+            if (!this.leaveMessage.trim()) {
+              this.leaveMessage = 'Doctor On Leave';
+            }
+          }
+
           this.cdr.detectChanges();
         },
         error: error => {
+          this.isLoadingAvailability = false;
+          this.availableSlots = [];
+          this.selectedSlot = '';
+          this.resetLeaveState();
           this.showError(this.authService.getErrorMessage(error));
           this.cdr.detectChanges();
         }
@@ -134,6 +202,14 @@ export class BookAppointment implements OnInit {
   }
 
   selectSlot(slot: string): void {
+    if (
+      this.isDoctorOnLeave ||
+      this.isLoadingAvailability ||
+      !this.availableSlots.includes(slot)
+    ) {
+      return;
+    }
+
     this.selectedSlot = slot;
     this.clearMessage();
   }
@@ -141,8 +217,35 @@ export class BookAppointment implements OnInit {
   bookAppointment(): void {
     this.clearMessage();
 
+    if (this.isDoctorOnLeave) {
+      this.selectedSlot = '';
+      this.showError(
+        'The selected doctor is on leave on this date. Please choose another date.'
+      );
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (this.isLoadingAvailability) {
+      this.showError(
+        'Please wait while doctor availability is being checked.'
+      );
+      this.cdr.detectChanges();
+      return;
+    }
+
     if (!this.selectedDoctorId || !this.selectedDate || !this.selectedSlot) {
       this.showError('Please select doctor, date, and slot.');
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (!this.availableSlots.includes(this.selectedSlot)) {
+      this.selectedSlot = '';
+      this.showError(
+        'The selected time slot is no longer available. Please select another slot.'
+      );
+      this.cdr.detectChanges();
       return;
     }
 
@@ -173,6 +276,11 @@ export class BookAppointment implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/patient/appointments']);
+  }
+
+  private resetLeaveState(): void {
+    this.isDoctorOnLeave = false;
+    this.leaveMessage = '';
   }
 
   private clearMessage(): void {

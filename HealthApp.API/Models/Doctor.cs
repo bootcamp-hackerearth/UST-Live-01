@@ -16,4 +16,5 @@ public class Doctor
     public DateTime CreatedDate { get; set; } = DateTime.Now;
     public ICollection<Appointment>? Appointments { get; set; }
     public ICollection<HealthRecord>? HealthRecords { get; set; }
+    public ICollection<DoctorLeave>? DoctorLeaves { get; set; }
 }

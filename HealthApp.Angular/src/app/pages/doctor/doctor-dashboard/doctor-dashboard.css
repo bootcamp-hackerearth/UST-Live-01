@@ -430,3 +430,7 @@
     grid-template-columns: 1fr;
   }
 }
+.quick-icon.leave-icon {
+  background: linear-gradient(135deg, #f97316, #dc2626);
+  box-shadow: 0 14px 28px rgba(220, 38, 38, 0.22);
+}

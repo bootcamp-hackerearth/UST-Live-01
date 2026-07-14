@@ -41,6 +41,24 @@
         </span>
         <span class="portal-nav-text">Appointments</span>
       </a>
+      
+      @if (isDoctorPortal) {
+        <a
+          [routerLink]="leaveLink"
+          routerLinkActive="active"
+          title="Leave"
+        >
+          <span class="portal-nav-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 2h2v3H7V2zm8 0h2v3h-2V2z"></path>
+              <path d="M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 6v9h14v-9H5z"></path>
+              <path d="M7 12h10v2H7v-2zm0 4h7v2H7v-2z"></path>
+            </svg>
+          </span>
+
+          <span class="portal-nav-text">Leave</span>
+        </a>
+      }
 
       @if (isPatientPortal) {
         <a [routerLink]="healthRecordsLink" routerLinkActive="active" title="Health Records">

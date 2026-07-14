@@ -147,6 +147,10 @@ export class PortalLayout implements OnInit {
     return this.isDoctorPortal ? '/doctor/appointments' : '/patient/appointments';
   }
 
+  get leaveLink(): string {
+    return '/doctor/leave';
+  }
+
   get healthRecordsLink(): string {
     return '/patient/health-records';
   }

@@ -1,17 +1,19 @@
 import { Routes } from '@angular/router';
-import { Home } from './pages/home/home';
+
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
-import { Login } from './pages/login/login';
-import { Register } from './pages/register/register';
 import { PortalLayout } from './layout/portal-layout/portal-layout';
-import { PatientDashboard } from './pages/patient/patient-dashboard/patient-dashboard';
-import { PatientAppointments } from './pages/patient/patient-appointments/patient-appointments';
-import { BookAppointment } from './pages/patient/book-appointment/book-appointment';
-import { PatientHealthRecords } from './pages/patient/patient-health-records/patient-health-records';
 import { ChangePassword } from './pages/change-password/change-password';
-import { DoctorDashboard } from './pages/doctor/doctor-dashboard/doctor-dashboard';
 import { DoctorAppointments } from './pages/doctor/doctor-appointments/doctor-appointments';
+import { DoctorDashboard } from './pages/doctor/doctor-dashboard/doctor-dashboard';
+import { DoctorLeavePage } from './pages/doctor/doctor-leave/doctor-leave';
+import { Home } from './pages/home/home';
+import { Login } from './pages/login/login';
+import { BookAppointment } from './pages/patient/book-appointment/book-appointment';
+import { PatientAppointments } from './pages/patient/patient-appointments/patient-appointments';
+import { PatientDashboard } from './pages/patient/patient-dashboard/patient-dashboard';
+import { PatientHealthRecords } from './pages/patient/patient-health-records/patient-health-records';
+import { Register } from './pages/register/register';
 
 export const routes: Routes = [
   {
@@ -27,8 +29,8 @@ export const routes: Routes = [
     component: Register
   },
   {
-  path: 'change-password',
-  component: ChangePassword
+    path: 'change-password',
+    component: ChangePassword
   },
   {
     path: 'patient',
@@ -60,26 +62,30 @@ export const routes: Routes = [
     ]
   },
   {
-  path: 'doctor',
-  component: PortalLayout,
-  canActivate: [authGuard, roleGuard],
-  data: { roles: ['Doctor'] },
-  children: [
-    {
-      path: '',
-      redirectTo: 'dashboard',
-      pathMatch: 'full'
-    },
-    {
-      path: 'dashboard',
-      component: DoctorDashboard
-    },
-    {
-      path: 'appointments',
-      component: DoctorAppointments
-    }
-  ]
-},
+    path: 'doctor',
+    component: PortalLayout,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Doctor'] },
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        component: DoctorDashboard
+      },
+      {
+        path: 'appointments',
+        component: DoctorAppointments
+      },
+      {
+        path: 'leave',
+        component: DoctorLeavePage
+      }
+    ]
+  },
   {
     path: '**',
     redirectTo: ''

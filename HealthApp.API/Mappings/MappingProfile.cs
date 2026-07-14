@@ -1,9 +1,7 @@
 using AutoMapper;
-
 using HealthApp.API.Models;
 using HealthApp.Shared.DTOs;
 using HealthApp.Shared.Enums;
-
 
 namespace HealthApp.API.Mappings;
 
@@ -12,81 +10,257 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<Patient, PatientDto>()
-            .ForMember(d => d.FullName, o => o.MapFrom(s => s.PatientName))
-            .ForMember(d => d.Gender, o => o.MapFrom(s => Enum.Parse<GenderType>(s.Gender)));
+            .ForMember(
+                destination => destination.FullName,
+                options => options.MapFrom(
+                    source => source.PatientName))
+            .ForMember(
+                destination => destination.Gender,
+                options => options.MapFrom(
+                    source => Enum.Parse<GenderType>(source.Gender)));
 
         CreateMap<CreatePatientDto, Patient>()
-            .ForMember(d => d.PatientName, o => o.MapFrom(s => s.FullName))
-            .ForMember(d => d.Gender, o => o.MapFrom(s => s.Gender.ToString()))
-            .ForMember(d => d.PatientId, o => o.Ignore())
-            .ForMember(d => d.UserId, o => o.Ignore())
-            .ForMember(d => d.CreatedDate, o => o.Ignore())
-            .ForMember(d => d.Appointments, o => o.Ignore())
-            .ForMember(d => d.HealthRecords, o => o.Ignore());
+            .ForMember(
+                destination => destination.PatientName,
+                options => options.MapFrom(
+                    source => source.FullName))
+            .ForMember(
+                destination => destination.Gender,
+                options => options.MapFrom(
+                    source => source.Gender.ToString()))
+            .ForMember(
+                destination => destination.PatientId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.UserId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.CreatedDate,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Appointments,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.HealthRecords,
+                options => options.Ignore());
 
         CreateMap<UpdatePatientDto, Patient>()
-            .ForMember(d => d.PatientName, o => o.MapFrom(s => s.FullName))
-            .ForMember(d => d.Gender, o => o.MapFrom(s => s.Gender.ToString()))
-            .ForMember(d => d.PatientId, o => o.Ignore())
-            .ForMember(d => d.UserId, o => o.Ignore())
-            .ForMember(d => d.CreatedDate, o => o.Ignore())
-            .ForMember(d => d.Appointments, o => o.Ignore())
-            .ForMember(d => d.HealthRecords, o => o.Ignore());
+            .ForMember(
+                destination => destination.PatientName,
+                options => options.MapFrom(
+                    source => source.FullName))
+            .ForMember(
+                destination => destination.Gender,
+                options => options.MapFrom(
+                    source => source.Gender.ToString()))
+            .ForMember(
+                destination => destination.PatientId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.UserId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.CreatedDate,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Appointments,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.HealthRecords,
+                options => options.Ignore());
 
         CreateMap<Doctor, DoctorDto>()
-            .ForMember(d => d.FullName, o => o.MapFrom(s => s.DoctorName))
-            .ForMember(d => d.Specialisation, o => o.MapFrom(s => Enum.Parse<SpecialisationType>(s.Specialisation)));
+            .ForMember(
+                destination => destination.FullName,
+                options => options.MapFrom(
+                    source => source.DoctorName))
+            .ForMember(
+                destination => destination.Specialisation,
+                options => options.MapFrom(
+                    source => Enum.Parse<SpecialisationType>(
+                        source.Specialisation)));
 
         CreateMap<CreateDoctorDto, Doctor>()
-            .ForMember(d => d.DoctorName, o => o.MapFrom(s => s.FullName))
-            .ForMember(d => d.Specialisation, o => o.MapFrom(s => s.Specialisation.ToString()))
-            .ForMember(d => d.DoctorId, o => o.Ignore())
-            .ForMember(d => d.UserId, o => o.Ignore())
-            .ForMember(d => d.YearsOfExperience, o => o.Ignore())
-            .ForMember(d => d.IsActive, o => o.Ignore())
-            .ForMember(d => d.CreatedDate, o => o.Ignore())
-            .ForMember(d => d.Appointments, o => o.Ignore())
-            .ForMember(d => d.HealthRecords, o => o.Ignore());
+            .ForMember(
+                destination => destination.DoctorName,
+                options => options.MapFrom(
+                    source => source.FullName))
+            .ForMember(
+                destination => destination.Specialisation,
+                options => options.MapFrom(
+                    source => source.Specialisation.ToString()))
+            .ForMember(
+                destination => destination.DoctorId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.UserId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.YearsOfExperience,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.IsActive,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.CreatedDate,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Appointments,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.HealthRecords,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.DoctorLeaves,
+                options => options.Ignore());
 
         CreateMap<UpdateDoctorDto, Doctor>()
-            .ForMember(d => d.DoctorName, o => o.MapFrom(s => s.FullName))
-            .ForMember(d => d.Specialisation, o => o.MapFrom(s => s.Specialisation.ToString()))
-            .ForMember(d => d.DoctorId, o => o.Ignore())
-            .ForMember(d => d.UserId, o => o.Ignore())
-            .ForMember(d => d.YearsOfExperience, o => o.Ignore())
-            .ForMember(d => d.CreatedDate, o => o.Ignore())
-            .ForMember(d => d.Appointments, o => o.Ignore())
-            .ForMember(d => d.HealthRecords, o => o.Ignore());
+            .ForMember(
+                destination => destination.DoctorName,
+                options => options.MapFrom(
+                    source => source.FullName))
+            .ForMember(
+                destination => destination.Specialisation,
+                options => options.MapFrom(
+                    source => source.Specialisation.ToString()))
+            .ForMember(
+                destination => destination.DoctorId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.UserId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.YearsOfExperience,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.CreatedDate,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Appointments,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.HealthRecords,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.DoctorLeaves,
+                options => options.Ignore());
 
         CreateMap<Appointment, AppointmentDto>()
-            .ForMember(d => d.Status, o => o.MapFrom(s => Enum.Parse<AppointmentStatus>(s.Status)))
-            .ForMember(d => d.TimeSlot, o => o.MapFrom(s => s.TimeSlots))
-            .ForMember(d => d.PatientName, o => o.MapFrom(s => s.Patient != null ? s.Patient.PatientName : null))
-            .ForMember(d => d.DoctorName, o => o.MapFrom(s => s.Doctor != null ? s.Doctor.DoctorName : null));
+            .ForMember(
+                destination => destination.Status,
+                options => options.MapFrom(
+                    source => Enum.Parse<AppointmentStatus>(
+                        source.Status)))
+            .ForMember(
+                destination => destination.TimeSlot,
+                options => options.MapFrom(
+                    source => source.TimeSlots))
+            .ForMember(
+                destination => destination.PatientName,
+                options => options.MapFrom(
+                    source => source.Patient != null
+                        ? source.Patient.PatientName
+                        : null))
+            .ForMember(
+                destination => destination.DoctorName,
+                options => options.MapFrom(
+                    source => source.Doctor != null
+                        ? source.Doctor.DoctorName
+                        : null));
 
         CreateMap<BookAppointmentDto, Appointment>()
-            .ForMember(d => d.TimeSlots, o => o.MapFrom(s => s.TimeSlot))
-            .ForMember(d => d.AppointmentId, o => o.Ignore())
-            .ForMember(d => d.PatientId, o => o.Ignore())
-            .ForMember(d => d.Patient, o => o.Ignore())
-            .ForMember(d => d.Doctor, o => o.Ignore())
-            .ForMember(d => d.Status, o => o.Ignore())
-            .ForMember(d => d.CancellationReason, o => o.Ignore())
-            .ForMember(d => d.CreatedDate, o => o.Ignore())
-            .ForMember(d => d.HealthRecord, o => o.Ignore());
+            .ForMember(
+                destination => destination.TimeSlots,
+                options => options.MapFrom(
+                    source => source.TimeSlot))
+            .ForMember(
+                destination => destination.AppointmentId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.PatientId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Patient,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Doctor,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Status,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.CancellationReason,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.CreatedDate,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.HealthRecord,
+                options => options.Ignore());
 
         CreateMap<HealthRecord, HealthRecordDto>()
-            .ForMember(d => d.PatientId, o => o.MapFrom(s => s.PatientId ?? 0))
-            .ForMember(d => d.DoctorId, o => o.MapFrom(s => s.DoctorId ?? 0))
-            .ForMember(d => d.AppointmentId, o => o.MapFrom(s => s.AppointmentId ?? 0))
-            .ForMember(d => d.PatientName, o => o.MapFrom(s => s.Patient != null ? s.Patient.PatientName : null))
-            .ForMember(d => d.DoctorName, o => o.MapFrom(s => s.Doctor != null ? s.Doctor.DoctorName : null));
+            .ForMember(
+                destination => destination.PatientId,
+                options => options.MapFrom(
+                    source => source.PatientId ?? 0))
+            .ForMember(
+                destination => destination.DoctorId,
+                options => options.MapFrom(
+                    source => source.DoctorId ?? 0))
+            .ForMember(
+                destination => destination.AppointmentId,
+                options => options.MapFrom(
+                    source => source.AppointmentId ?? 0))
+            .ForMember(
+                destination => destination.PatientName,
+                options => options.MapFrom(
+                    source => source.Patient != null
+                        ? source.Patient.PatientName
+                        : null))
+            .ForMember(
+                destination => destination.DoctorName,
+                options => options.MapFrom(
+                    source => source.Doctor != null
+                        ? source.Doctor.DoctorName
+                        : null));
 
         CreateMap<AddHealthRecordDto, HealthRecord>()
-            .ForMember(d => d.HealthRecordId, o => o.Ignore())
-            .ForMember(d => d.Patient, o => o.Ignore())
-            .ForMember(d => d.Doctor, o => o.Ignore())
-            .ForMember(d => d.Appointment, o => o.Ignore())
-            .ForMember(d => d.CreatedDate, o => o.Ignore());
+            .ForMember(
+                destination => destination.HealthRecordId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Patient,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Doctor,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Appointment,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.CreatedDate,
+                options => options.Ignore());
+
+        CreateMap<DoctorLeave, DoctorLeaveDto>()
+            .ForMember(
+                destination => destination.DoctorName,
+                options => options.MapFrom(
+                    source => source.Doctor != null
+                        ? source.Doctor.DoctorName
+                        : string.Empty));
+
+        CreateMap<CreateDoctorLeaveDto, DoctorLeave>()
+            .ForMember(
+                destination => destination.DoctorLeaveId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.DoctorId,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.Doctor,
+                options => options.Ignore())
+            .ForMember(
+                destination => destination.CreatedDate,
+                options => options.Ignore());
     }
 }

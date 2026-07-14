@@ -20,6 +20,7 @@ public class HealthAppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<HealthRecord> HealthRecords => Set<HealthRecord>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<DoctorLeave> DoctorLeaves => Set<DoctorLeave>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -67,6 +68,20 @@ public class HealthAppDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(notification => notification.AppointmentId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.Entity<DoctorLeave>()
+            .HasOne(doctorLeave => doctorLeave.Doctor)
+            .WithMany(doctor => doctor.DoctorLeaves)
+            .HasForeignKey(doctorLeave => doctorLeave.DoctorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<DoctorLeave>()
+            .HasIndex(doctorLeave => new
+            {
+                doctorLeave.DoctorId,
+                doctorLeave.StartDate,
+                doctorLeave.EndDate
+            });
+
         builder.Entity<Patient>()
             .Property(patient => patient.CreatedDate)
             .HasDefaultValueSql(SqlDefaultCurrentDate);
@@ -85,6 +100,10 @@ public class HealthAppDbContext : IdentityDbContext<ApplicationUser>
 
         builder.Entity<Notification>()
             .Property(notification => notification.CreatedDate)
+            .HasDefaultValueSql(SqlDefaultCurrentDate);
+
+        builder.Entity<DoctorLeave>()
+            .Property(doctorLeave => doctorLeave.CreatedDate)
             .HasDefaultValueSql(SqlDefaultCurrentDate);
     }
 }

@@ -9,6 +9,7 @@ using HealthApp.Shared.DTOs;
 using HealthApp.Shared.Enums;
 using MassTransit;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Globalization;
 using System.Security.Claims;
 
@@ -18,7 +19,9 @@ public class AppointmentService(
     IAppointmentRepository appointmentRepository,
     IPatientRepository patientRepository,
     IDoctorRepository doctorRepository,
+    IDoctorLeaveRepository doctorLeaveRepository,
     IHttpContextAccessor httpContextAccessor,
+    IDistributedCache distributedCache,
     IMapper mapper,
     IPublishEndpoint publishEndPoint,
     ILogger<AppointmentService> logger) : IAppointmentService
@@ -28,6 +31,9 @@ public class AppointmentService(
 
     private const string InvalidStatusTransitionMessage =
         "Invalid appointment status transition.";
+
+    private const string DoctorOnLeaveBookingMessage =
+        "The selected doctor is on leave on the selected date. Please choose another date.";
 
     public async Task<List<AppointmentDto>> GetAppointmentsAsync(
         int? patientId = null,
@@ -244,15 +250,15 @@ public class AppointmentService(
         }
 
         var patient = await GetLoggedInPatientAsync();
-
         var doctor = await ValidateDoctorExistsAsync(dto.DoctorId);
+        var appointmentDate = dto.ScheduledDate.Date;
 
         if (!doctor.IsActive)
         {
             throw new AppointmentRuleException("Doctor is inactive.");
         }
 
-        if (dto.ScheduledDate.Date < DateTime.Today)
+        if (appointmentDate < DateTime.Today)
         {
             throw new AppointmentRuleException("Appointment date cannot be in the past.");
         }
@@ -262,14 +268,30 @@ public class AppointmentService(
             throw new AppointmentRuleException("Invalid time slot selected.");
         }
 
-        if (IsPastTimeSlot(dto.ScheduledDate.Date, dto.TimeSlot))
+        if (IsPastTimeSlot(appointmentDate, dto.TimeSlot))
         {
             throw new AppointmentRuleException("Selected time slot has already passed.");
         }
 
+        var doctorLeave = await doctorLeaveRepository.GetLeaveForDateAsync(
+            dto.DoctorId,
+            appointmentDate);
+
+        if (doctorLeave is not null)
+        {
+            logger.LogWarning(
+                "Appointment booking blocked because doctor is on leave. PatientId: {PatientId}, DoctorId: {DoctorId}, AppointmentDate: {AppointmentDate}, DoctorLeaveId: {DoctorLeaveId}",
+                patient.PatientId,
+                dto.DoctorId,
+                appointmentDate,
+                doctorLeave.DoctorLeaveId);
+
+            throw new AppointmentRuleException(DoctorOnLeaveBookingMessage);
+        }
+
         if (await appointmentRepository.IsSlotBookedAsync(
                 dto.DoctorId,
-                dto.ScheduledDate.Date,
+                appointmentDate,
                 dto.TimeSlot))
         {
             throw new ConflictException("This time slot is already booked.");
@@ -277,7 +299,7 @@ public class AppointmentService(
 
         if (await appointmentRepository.PatientHasActiveAppointmentOnDateAndSlotAsync(
                 patient.PatientId,
-                dto.ScheduledDate.Date,
+                appointmentDate,
                 dto.TimeSlot))
         {
             throw new ConflictException("Patient already has an appointment in this slot.");
@@ -286,7 +308,7 @@ public class AppointmentService(
         if (await appointmentRepository.PatientHasActiveAppointmentWithDoctorOnDateAsync(
                 patient.PatientId,
                 dto.DoctorId,
-                dto.ScheduledDate.Date))
+                appointmentDate))
         {
             throw new ConflictException(
                 "Patient already has an active appointment with this doctor on the selected date.");
@@ -296,13 +318,25 @@ public class AppointmentService(
 
         appointment.PatientId = patient.PatientId;
         appointment.DoctorId = dto.DoctorId;
-        appointment.ScheduledDate = dto.ScheduledDate.Date;
+        appointment.ScheduledDate = appointmentDate;
         appointment.TimeSlots = dto.TimeSlot;
         appointment.Status = AppointmentStatus.Pending.ToString();
         appointment.CancellationReason = null;
         appointment.CreatedDate = DateTime.Now;
 
         var savedAppointment = await appointmentRepository.AddAsync(appointment);
+
+        logger.LogInformation(
+            "Appointment saved successfully. AppointmentId: {AppointmentId}, PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
+            savedAppointment.AppointmentId,
+            savedAppointment.PatientId,
+            savedAppointment.DoctorId,
+            savedAppointment.ScheduledDate,
+            savedAppointment.TimeSlots);
+
+        await TryInvalidateAvailabilityCacheAsync(
+            savedAppointment.DoctorId,
+            savedAppointment.ScheduledDate);
 
         try
         {
@@ -316,16 +350,20 @@ public class AppointmentService(
             });
 
             logger.LogInformation(
-                "AppointmentBookedEvent published. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}",
+                "AppointmentBookedEvent published to MassTransit/RabbitMQ. AppointmentId: {AppointmentId}, PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
                 savedAppointment.AppointmentId,
-                savedAppointment.DoctorId);
+                savedAppointment.PatientId,
+                savedAppointment.DoctorId,
+                savedAppointment.ScheduledDate,
+                savedAppointment.TimeSlots);
         }
         catch (Exception ex)
         {
             logger.LogError(
                 ex,
-                "Appointment was saved, but AppointmentBookedEvent publishing failed. AppointmentId: {AppointmentId}",
-                savedAppointment.AppointmentId);
+                "Appointment was saved, but AppointmentBookedEvent publishing to MassTransit/RabbitMQ failed. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}",
+                savedAppointment.AppointmentId,
+                savedAppointment.DoctorId);
         }
 
         var appointmentWithDetails = await appointmentRepository
@@ -398,6 +436,19 @@ public class AppointmentService(
 
         var updated = await appointmentRepository.UpdateAsync(appointmentId, appointment)
             ?? throw new EntityNotFoundException("Appointment", appointmentId);
+
+        if (dto.Status == AppointmentStatus.Cancelled)
+        {
+            await TryInvalidateAvailabilityCacheAsync(
+                updated.DoctorId,
+                updated.ScheduledDate);
+        }
+
+        logger.LogInformation(
+            "Appointment status updated. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}, NewStatus: {Status}",
+            updated.AppointmentId,
+            updated.DoctorId,
+            updated.Status);
 
         var updatedWithDetails = await appointmentRepository
             .GetByIdWithDetailsAsync(updated.AppointmentId);
@@ -508,6 +559,34 @@ public class AppointmentService(
         throw new ForbiddenAccessException("You are not allowed to access this appointment.");
     }
 
+    private async Task TryInvalidateAvailabilityCacheAsync(
+        int doctorId,
+        DateTime date)
+    {
+        var cacheKey =
+            $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
+
+        try
+        {
+            await distributedCache.RemoveAsync(cacheKey);
+
+            logger.LogInformation(
+                "Doctor availability cache invalidated after appointment change. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+                doctorId,
+                date.Date,
+                cacheKey);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Appointment operation succeeded, but doctor availability cache invalidation failed. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+                doctorId,
+                date.Date,
+                cacheKey);
+        }
+    }
+
     private static void ValidateAppointmentId(int id)
     {
         if (id <= 0)
@@ -549,7 +628,6 @@ public class AppointmentService(
         }
 
         var slotStartTime = GetSlotStartTime(timeSlot);
-
         var slotStartDateTime = scheduledDate.Date.Add(slotStartTime);
 
         return slotStartDateTime <= DateTime.Now;
@@ -571,8 +649,7 @@ public class AppointmentService(
         return parsedStartTime.TimeOfDay;
     }
 
-    private static void EnsureAppointmentCanBeUpdated(
-        AppointmentStatus currentStatus)
+    private static void EnsureAppointmentCanBeUpdated(AppointmentStatus currentStatus)
     {
         if (currentStatus == AppointmentStatus.Completed ||
             currentStatus == AppointmentStatus.Cancelled)
@@ -588,8 +665,7 @@ public class AppointmentService(
         if (dto.Status == AppointmentStatus.Cancelled &&
             string.IsNullOrWhiteSpace(dto.CancellationReason))
         {
-            throw new AppointmentRuleException(
-                "Cancellation reason is required.");
+            throw new AppointmentRuleException("Cancellation reason is required.");
         }
     }
 

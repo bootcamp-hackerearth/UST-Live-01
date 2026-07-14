@@ -20,3 +20,6 @@ coverage.xml
 dotnet-tools.json
  
 /packages/
+
+Logs/
+.log/

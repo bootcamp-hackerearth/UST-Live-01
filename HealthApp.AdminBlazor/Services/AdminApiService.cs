@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Globalization;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using HealthApp.Shared.DTOs;
@@ -65,6 +66,24 @@ public class AdminApiService(HttpClient httpClient)
         return await response.Content.ReadFromJsonAsync<DoctorDto>(JsonOptions);
     }
 
+    public async Task<List<DoctorLeaveDto>> GetDoctorLeaveHistoryAsync(int doctorId)
+    {
+        return await httpClient.GetFromJsonAsync<List<DoctorLeaveDto>>(
+                $"api/doctor-leaves/doctor/{doctorId}",
+                JsonOptions)
+            ?? new List<DoctorLeaveDto>();
+    }
+
+    public async Task<DoctorLeaveStatusDto?> GetDoctorLeaveStatusAsync(
+        int doctorId,
+        DateTime date)
+    {
+        var dateText = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var url = $"api/doctor-leaves/doctor/{doctorId}/status?date={dateText}";
+
+        return await httpClient.GetFromJsonAsync<DoctorLeaveStatusDto>(url, JsonOptions);
+    }
+
     public async Task<List<UserDto>> GetUsersAsync(string? role = null)
     {
         var url = string.IsNullOrWhiteSpace(role) || role == "All"
@@ -124,7 +143,7 @@ public class AdminApiService(HttpClient httpClient)
 
         if (hasInsurance.HasValue)
         {
-            queryParams.Add($"hasInsurance={hasInsurance.Value.ToString().ToLower()}");
+            queryParams.Add($"hasInsurance={hasInsurance.Value.ToString().ToLowerInvariant()}");
         }
 
         var url = $"api/admin/patients?{string.Join("&", queryParams)}";
