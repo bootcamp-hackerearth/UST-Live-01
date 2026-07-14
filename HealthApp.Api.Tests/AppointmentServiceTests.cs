@@ -19,6 +19,7 @@ namespace HealthApp.Api.Tests.Services
         private readonly Mock<IAppointmentRepository> _appointmentRepo;
         private readonly Mock<IPatientRepository> _patientRepo;
         private readonly Mock<IDoctorRepository> _doctorRepo;
+        private readonly Mock<IDoctorLeaveRepository> _doctorLeaveRepo;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IPublishEndpoint> _publishEndpoint;
         private readonly Mock<IDistributedCache> _cache;
@@ -30,6 +31,7 @@ namespace HealthApp.Api.Tests.Services
             _appointmentRepo = new Mock<IAppointmentRepository>();
             _patientRepo = new Mock<IPatientRepository>();
             _doctorRepo = new Mock<IDoctorRepository>();
+            _doctorLeaveRepo = new Mock<IDoctorLeaveRepository>();
             _mapper = new Mock<IMapper>();
             _publishEndpoint = new Mock<IPublishEndpoint>();
             _cache = new Mock<IDistributedCache>();
@@ -55,6 +57,13 @@ namespace HealthApp.Api.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
+            _doctorLeaveRepo
+                .Setup(repo => repo.GetLeaveForDateAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<DateOnly>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((DoctorLeave?)null);
+
             _publishEndpoint
                 .Setup(publisher => publisher.Publish(
                     It.IsAny<AppointmentBookedEvent>(),
@@ -65,6 +74,7 @@ namespace HealthApp.Api.Tests.Services
                 _appointmentRepo.Object,
                 _patientRepo.Object,
                 _doctorRepo.Object,
+                _doctorLeaveRepo.Object,
                 _mapper.Object,
                 _publishEndpoint.Object,
                 _cache.Object,
@@ -190,6 +200,47 @@ namespace HealthApp.Api.Tests.Services
 
             await Assert.ThrowsAsync<BusinessRuleViolationException>(
                 () => _service.BookAppointmentAsync(dto));
+        }
+
+        [Fact]
+        public async Task BookAppointment_DoctorOnLeave_ShouldThrow()
+        {
+            var dto = ValidDto();
+            var scheduledDate = DateOnly.FromDateTime(dto.ScheduledDate);
+
+            _patientRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Patient());
+
+            SetupPatientUserId();
+
+            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Doctor());
+
+            _doctorLeaveRepo
+                .Setup(repo => repo.GetLeaveForDateAsync(
+                    1,
+                    scheduledDate,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new DoctorLeave
+                {
+                    DoctorLeaveId = 20,
+                    DoctorId = 1,
+                    StartDate = scheduledDate,
+                    EndDate = scheduledDate.AddDays(2),
+                    Reason = "Medical conference",
+                    CreatedAtUtc = DateTime.UtcNow
+                });
+
+            var exception = await Assert.ThrowsAsync<BusinessRuleViolationException>(
+                () => _service.BookAppointmentAsync(dto));
+
+            Assert.Contains("The selected doctor is on leave", exception.Message);
+
+            _appointmentRepo.Verify(
+                repo => repo.Add(
+                    It.IsAny<Appointment>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
         }
 
         [Fact]
@@ -405,20 +456,22 @@ namespace HealthApp.Api.Tests.Services
         }
 
         [Fact]
-        public async Task GetAvailableSlots_DoctorInactive_ShouldThrow()
+        public async Task GetDoctorAvailability_DoctorInactive_ShouldThrow()
         {
             _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
                 .ReturnsAsync(Doctor(false));
 
             await Assert.ThrowsAsync<BusinessRuleViolationException>(
-                () => _service.GetAvailableSlotsAsync(
+                () => _service.GetDoctorAvailabilityAsync(
                     1,
                     DateOnly.FromDateTime(DateTime.Today.AddDays(1))));
         }
 
         [Fact]
-        public async Task GetAvailableSlots_ShouldReturnSlots()
+        public async Task GetDoctorAvailability_NormalDate_ShouldReturnSlots()
         {
+            var date = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
+
             _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
                 .ReturnsAsync(Doctor());
 
@@ -429,11 +482,18 @@ namespace HealthApp.Api.Tests.Services
                     default))
                 .ReturnsAsync(false);
 
-            var result = await _service.GetAvailableSlotsAsync(
-                1,
-                DateOnly.FromDateTime(DateTime.Today.AddDays(1)));
+            var result = await _service.GetDoctorAvailabilityAsync(1, date);
 
-            Assert.NotEmpty(result);
+            Assert.NotNull(result);
+            Assert.Equal(1, result.DoctorId);
+            Assert.Equal(date, result.Date);
+            Assert.False(result.IsDoctorOnLeave);
+            Assert.NotEmpty(result.Slots);
+            Assert.All(result.Slots, slot =>
+            {
+                Assert.True(slot.IsAvailable);
+                Assert.Equal("Available", slot.Status);
+            });
 
             _cache.Verify(cache => cache.GetAsync(
                     It.IsAny<string>(),
@@ -446,6 +506,70 @@ namespace HealthApp.Api.Tests.Services
                     It.IsAny<DistributedCacheEntryOptions>(),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
+        }
+
+        [Fact]
+        public async Task GetDoctorAvailability_DoctorOnLeave_ShouldReturnDisabledSlots()
+        {
+            var date = DateOnly.FromDateTime(DateTime.Today.AddDays(2));
+
+            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync(Doctor());
+
+            _doctorLeaveRepo
+                .Setup(repo => repo.GetLeaveForDateAsync(
+                    1,
+                    date,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new DoctorLeave
+                {
+                    DoctorLeaveId = 10,
+                    DoctorId = 1,
+                    StartDate = date,
+                    EndDate = date.AddDays(2),
+                    Reason = "Medical conference",
+                    CreatedAtUtc = DateTime.UtcNow
+                });
+
+            var result = await _service.GetDoctorAvailabilityAsync(1, date);
+
+            Assert.NotNull(result);
+            Assert.True(result.IsDoctorOnLeave);
+            Assert.NotEmpty(result.Slots);
+            Assert.All(result.Slots, slot =>
+            {
+                Assert.False(slot.IsAvailable);
+                Assert.Equal("DoctorOnLeave", slot.Status);
+            });
+
+            _appointmentRepo.Verify(
+                repo => repo.IsDoctorSlotBookedAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<DateOnly>(),
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task GetDoctorAvailability_InvalidDoctor_ShouldThrow()
+        {
+            await Assert.ThrowsAsync<InvalidRequestException>(
+                () => _service.GetDoctorAvailabilityAsync(
+                    0,
+                    DateOnly.FromDateTime(DateTime.Today)));
+        }
+
+        [Fact]
+        public async Task GetDoctorAvailability_DoctorNotFound_ShouldThrow()
+        {
+            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
+                .ReturnsAsync((Doctor?)null);
+
+            await Assert.ThrowsAsync<EntityNotFoundException>(
+                () => _service.GetDoctorAvailabilityAsync(
+                    1,
+                    DateOnly.FromDateTime(DateTime.Today)));
         }
 
         [Fact]
@@ -621,27 +745,6 @@ namespace HealthApp.Api.Tests.Services
 
             await Assert.ThrowsAsync<EntityNotFoundException>(() =>
                 _service.UpdateAppointmentStatusAsync(1, AppointmentStatus.Pending));
-        }
-
-        [Fact]
-        public async Task GetAvailableSlots_InvalidDoctor_ShouldThrow()
-        {
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _service.GetAvailableSlotsAsync(
-                    0,
-                    DateOnly.FromDateTime(DateTime.Today)));
-        }
-
-        [Fact]
-        public async Task GetAvailableSlots_DoctorNotFound_ShouldThrow()
-        {
-            _doctorRepo.Setup(x => x.GetByIdAsync(1, default))
-                .ReturnsAsync((Doctor?)null);
-
-            await Assert.ThrowsAsync<EntityNotFoundException>(() =>
-                _service.GetAvailableSlotsAsync(
-                    1,
-                    DateOnly.FromDateTime(DateTime.Today)));
         }
 
         [Fact]

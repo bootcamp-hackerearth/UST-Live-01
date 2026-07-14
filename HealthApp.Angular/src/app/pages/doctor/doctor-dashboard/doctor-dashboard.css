@@ -525,3 +525,58 @@
     width: 100%;
   }
 }
+
+/* Doctor leave dashboard integration */
+.availability-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.availability-leave-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 40px;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid #fdba74;
+  border-radius: 999px;
+  color: #c2410c;
+  background: #fff7ed;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+
+.availability-leave-link:hover,
+.availability-leave-link:focus {
+  color: #9a3412;
+  border-color: #f97316;
+  background: #ffedd5;
+  transform: translateY(-1px);
+}
+
+.quick-action-icon.action-red {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.quick-action-card.quick-action-leave:hover {
+  border-color: #fca5a5;
+  background: #fff7f7;
+}
+
+@media (max-width: 767px) {
+  .availability-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .availability-leave-link {
+    flex: 1;
+  }
+}

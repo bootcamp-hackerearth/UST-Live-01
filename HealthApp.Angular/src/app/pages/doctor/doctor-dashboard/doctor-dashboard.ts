@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { forkJoin, finalize } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 
 import { AppointmentDto } from '../../../dtos/appointment.dto';
 import { DoctorDto } from '../../../dtos/doctor.dto';
@@ -17,21 +17,10 @@ interface DoctorDashboardStat {
   cardClass: string;
 }
 
-interface RecentPatientPreview {
-  patientId: number;
-  patientName: string;
-  lastVisit: string;
-  status: string;
-}
-
 @Component({
   selector: 'app-doctor-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink,
-    LoadingSpinnerComponent
-  ],
+  imports: [CommonModule, RouterLink, LoadingSpinnerComponent],
   templateUrl: './doctor-dashboard.html',
   styleUrl: './doctor-dashboard.css'
 })
@@ -40,9 +29,7 @@ export class DoctorDashboard implements OnInit {
   doctorProfile: DoctorDto | null = null;
 
   isLoading = false;
-
   appointments: AppointmentDto[] = [];
-
   stats: DoctorDashboardStat[] = [];
 
   constructor(
@@ -93,36 +80,11 @@ export class DoctorDashboard implements OnInit {
     const today = this.getTodayDate();
 
     return this.appointments
-      .filter(appointment => appointment.scheduledDate.substring(0, 10) === today)
+      .filter(
+        appointment => appointment.scheduledDate.substring(0, 10) === today
+      )
       .sort((a, b) => a.timeSlot.localeCompare(b.timeSlot))
       .slice(0, 5);
-  }
-
-  get recentPatients(): RecentPatientPreview[] {
-    const patientMap = new Map<number, RecentPatientPreview>();
-
-    const sortedAppointments = [...this.appointments].sort((a, b) =>
-      new Date(b.scheduledDate).getTime() - new Date(a.scheduledDate).getTime()
-    );
-
-    for (const appointment of sortedAppointments) {
-      if (patientMap.has(appointment.patientId)) {
-        continue;
-      }
-
-      patientMap.set(appointment.patientId, {
-        patientId: appointment.patientId,
-        patientName: appointment.patientName,
-        lastVisit: appointment.scheduledDate,
-        status: appointment.status
-      });
-
-      if (patientMap.size >= 4) {
-        break;
-      }
-    }
-
-    return Array.from(patientMap.values());
   }
 
   get isDoctorAvailable(): boolean {
@@ -157,20 +119,20 @@ export class DoctorDashboard implements OnInit {
   private buildStats(): void {
     const today = this.getTodayDate();
 
-    const todaysCount = this.appointments.filter(appointment =>
-      appointment.scheduledDate.substring(0, 10) === today
+    const todaysCount = this.appointments.filter(
+      appointment => appointment.scheduledDate.substring(0, 10) === today
     ).length;
 
-    const confirmedCount = this.appointments.filter(appointment =>
-      appointment.status === 'Confirmed'
+    const confirmedCount = this.appointments.filter(
+      appointment => appointment.status === 'Confirmed'
     ).length;
 
-    const completedCount = this.appointments.filter(appointment =>
-      appointment.status === 'Completed'
+    const completedCount = this.appointments.filter(
+      appointment => appointment.status === 'Completed'
     ).length;
 
-    const pendingRecordsCount = this.appointments.filter(appointment =>
-      appointment.status === 'Confirmed'
+    const pendingRecordsCount = this.appointments.filter(
+      appointment => appointment.status === 'Confirmed'
     ).length;
 
     this.stats = [
@@ -203,7 +165,6 @@ export class DoctorDashboard implements OnInit {
 
   private getTodayDate(): string {
     const today = new Date();
-
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
