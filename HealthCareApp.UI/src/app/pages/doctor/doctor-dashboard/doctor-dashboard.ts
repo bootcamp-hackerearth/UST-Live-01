@@ -696,52 +696,112 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   }
 
   private getErrorMessage(error: unknown): string {
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'error' in error
-    ) {
-      const apiError = error as {
-        error?: {
-          message?: string;
-          Message?: string;
-          errors?: Record<string, string[]>;
-          title?: string;
-        } | string;
-        name?: string;
-      };
-
-      if (apiError.name === 'TimeoutError') {
-        return 'The server is taking too long to respond. Please try again.';
-      }
-
-      if (typeof apiError.error === 'string' && apiError.error.trim()) {
-        return apiError.error;
-      }
-
-      if (typeof apiError.error === 'object' && apiError.error !== null) {
-        if (apiError.error.message) {
-          return apiError.error.message;
-        }
-
-        if (apiError.error.Message) {
-          return apiError.error.Message;
-        }
-
-        if (apiError.error.title) {
-          return apiError.error.title;
-        }
-
-        if (apiError.error.errors) {
-          const firstError = Object.values(apiError.error.errors)[0]?.[0];
-
-          if (firstError) {
-            return firstError;
-          }
-        }
-      }
-    }
-
-    return 'Something went wrong. Please try again.';
+  if (this.isTimeoutError(error)) {
+    return 'The server is taking too long to respond. Please try again.';
   }
+
+  const apiError = this.getApiError(error);
+
+  return (
+    this.getStringApiError(apiError) ??
+    this.getStructuredApiError(apiError) ??
+    this.getDirectErrorMessage(error) ??
+    'Something went wrong. Please try again.'
+  );
 }
+
+private isTimeoutError(error: unknown): boolean {
+  if (!this.isObject(error)) {
+    return false;
+  }
+
+  return error['name'] === 'TimeoutError';
+}
+
+private getApiError(error: unknown): unknown {
+  if (!this.isObject(error)) {
+    return undefined;
+  }
+
+  return error['error'];
+}
+
+private getStringApiError(apiError: unknown): string | null {
+  if (typeof apiError === 'string' && apiError.trim().length > 0) {
+    return apiError;
+  }
+
+  return null;
+}
+
+private getStructuredApiError(apiError: unknown): string | null {
+  if (!this.isObject(apiError)) {
+    return null;
+  }
+
+  return (
+    this.getDirectApiMessage(apiError) ??
+    this.getFirstValidationError(apiError)
+  );
+}
+
+private getDirectErrorMessage(error: unknown): string | null {
+  if (!this.isObject(error)) {
+    return null;
+  }
+
+  const message = error['message'];
+
+  if (typeof message === 'string' && message.trim().length > 0) {
+    return message;
+  }
+
+  return null;
+}
+
+private getDirectApiMessage(
+  apiError: Record<string, unknown>
+): string | null {
+  const possibleMessages = [
+    apiError['message'],
+    apiError['Message'],
+    apiError['title']
+  ];
+
+  const message = possibleMessages.find(
+    (value): value is string =>
+      typeof value === 'string' && value.trim().length > 0
+  );
+
+  return message ?? null;
+}
+
+private getFirstValidationError(
+  apiError: Record<string, unknown>
+): string | null {
+  const errors = apiError['errors'];
+
+  if (!this.isValidationErrors(errors)) {
+    return null;
+  }
+
+  return Object.values(errors)[0]?.[0] ?? null;
+}
+
+private isValidationErrors(
+  value: unknown
+): value is Record<string, string[]> {
+  if (!this.isObject(value)) {
+    return false;
+  }
+
+  return Object.values(value).every(
+    (item) =>
+      Array.isArray(item) &&
+      item.every((message) => typeof message === 'string')
+  );
+}
+
+private isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}}

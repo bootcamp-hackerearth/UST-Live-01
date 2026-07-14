@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using HealthCareApp.Exceptions;
-using HealthCareApp.Helpers;
 using HealthCareApp.Messaging.Events;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
-using HealthCareApp.Services;
 using HealthCareApp.Services.Interface;
 using HealthCareApp.Shared.Constants;
 using HealthCareApp.Shared.Dtos.Appointments;
@@ -16,24 +14,41 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthCareApp.Services.Impl
 {
-    public class AppointmentService(
-        IAppointmentRepository appointmentRepository,
-        IPatientRepository patientRepository,
-        IDoctorRepository doctorRepository,
-        IHealthRecordRepository healthRecordRepository,
-        IDoctorLeaveService doctorLeaveService,
-        IMapper mapper,
-        IPublishEndpoint publishEndpoint,
-        ILogger<AppointmentService> logger) : IAppointmentService
+    public class AppointmentService : IAppointmentService
     {
         private const string AppointmentEntityName = "Appointment";
         private const string AppointmentDetailsRequiredMessage = "Appointment details are required.";
         private const string CancellationDetailsRequiredMessage = "Cancellation details are required.";
+        private const string DateFormat = "yyyy-MM-dd";
+        private const string AppointmentBookedEventType = "AppointmentBooked";
+        private const string EventStagePublished = "Published";
 
         private const string ConcurrentSlotBookedMessage =
             "This slot was just booked by another patient. Please choose another available slot.";
 
-        public async Task<AppointmentDailyStatusSummaryDto> GetDailyStatusSummaryAsync(DateTime date)
+        private readonly IAppointmentRepository appointmentRepository;
+        private readonly IPatientRepository patientRepository;
+        private readonly IDoctorRepository doctorRepository;
+        private readonly IHealthRecordRepository healthRecordRepository;
+        private readonly IDoctorLeaveService doctorLeaveService;
+        private readonly IMapper mapper;
+        private readonly IPublishEndpoint publishEndpoint;
+        private readonly ILogger<AppointmentService> logger;
+
+        public AppointmentService(AppointmentServiceDependencies dependencies)
+        {
+            appointmentRepository = dependencies.AppointmentRepository;
+            patientRepository = dependencies.PatientRepository;
+            doctorRepository = dependencies.DoctorRepository;
+            healthRecordRepository = dependencies.HealthRecordRepository;
+            doctorLeaveService = dependencies.DoctorLeaveService;
+            mapper = dependencies.Mapper;
+            publishEndpoint = dependencies.PublishEndpoint;
+            logger = dependencies.Logger;
+        }
+
+        public async Task<AppointmentDailyStatusSummaryDto> GetDailyStatusSummaryAsync(
+            DateTime date)
         {
             var selectedDate = date.Date;
 
@@ -41,12 +56,16 @@ namespace HealthCareApp.Services.Impl
 
             return new AppointmentDailyStatusSummaryDto
             {
-                Date = selectedDate.ToString("yyyy-MM-dd"),
+                Date = FormatDate(selectedDate),
                 Total = appointments.Count,
-                Pending = appointments.Count(a => a.Status == AppointmentStatus.Pending),
-                Confirmed = appointments.Count(a => a.Status == AppointmentStatus.Confirmed),
-                Completed = appointments.Count(a => a.Status == AppointmentStatus.Completed),
-                Cancelled = appointments.Count(a => a.Status == AppointmentStatus.Cancelled)
+                Pending = appointments.Count(appointment =>
+                    appointment.Status == AppointmentStatus.Pending),
+                Confirmed = appointments.Count(appointment =>
+                    appointment.Status == AppointmentStatus.Confirmed),
+                Completed = appointments.Count(appointment =>
+                    appointment.Status == AppointmentStatus.Completed),
+                Cancelled = appointments.Count(appointment =>
+                    appointment.Status == AppointmentStatus.Cancelled)
             };
         }
 
@@ -117,53 +136,53 @@ namespace HealthCareApp.Services.Impl
             {
                 string searchTerm = query.SearchTerm.Trim();
 
-                filteredAppointments = filteredAppointments.Where(a =>
-                    (a.Patient != null &&
-                     a.Patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                    (a.Doctor != null &&
-                     a.Doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                    a.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    (!string.IsNullOrWhiteSpace(a.CancellationReason) &&
-                     a.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
+                filteredAppointments = filteredAppointments.Where(appointment =>
+                    (appointment.Patient != null &&
+                     appointment.Patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (appointment.Doctor != null &&
+                     appointment.Doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    appointment.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrWhiteSpace(appointment.CancellationReason) &&
+                     appointment.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
             }
 
             if (query.PatientId is not null)
             {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.PatientId == query.PatientId.Value);
+                filteredAppointments = filteredAppointments.Where(appointment =>
+                    appointment.PatientId == query.PatientId.Value);
             }
 
             if (query.DoctorId is not null)
             {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.DoctorId == query.DoctorId.Value);
+                filteredAppointments = filteredAppointments.Where(appointment =>
+                    appointment.DoctorId == query.DoctorId.Value);
             }
 
             if (query.Status is not null)
             {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.Status == query.Status.Value);
+                filteredAppointments = filteredAppointments.Where(appointment =>
+                    appointment.Status == query.Status.Value);
             }
 
             if (query.ScheduledDate is not null)
             {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.ScheduledDate.Date == query.ScheduledDate.Value.Date);
+                filteredAppointments = filteredAppointments.Where(appointment =>
+                    appointment.ScheduledDate.Date == query.ScheduledDate.Value.Date);
             }
 
             if (query.UpcomingOnly is not null && query.UpcomingOnly.Value)
             {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.ScheduledDate.Date >= DateTime.Today &&
-                    a.Status != AppointmentStatus.Cancelled &&
-                    a.Status != AppointmentStatus.Completed);
+                filteredAppointments = filteredAppointments.Where(appointment =>
+                    appointment.ScheduledDate.Date >= DateTime.Today &&
+                    appointment.Status != AppointmentStatus.Cancelled &&
+                    appointment.Status != AppointmentStatus.Completed);
             }
 
             int totalRecords = filteredAppointments.Count();
 
             var pagedAppointments = filteredAppointments
-                .OrderByDescending(a => a.ScheduledDate)
-                .ThenBy(a => a.TimeSlot)
+                .OrderByDescending(appointment => appointment.ScheduledDate)
+                .ThenBy(appointment => appointment.TimeSlot)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
@@ -337,13 +356,9 @@ namespace HealthCareApp.Services.Impl
             }
             catch (DbUpdateException ex) when (IsUniqueAppointmentSlotViolation(ex))
             {
-                logger.LogWarning(
+                LogConcurrentAppointmentBookingBlocked(
                     ex,
-                    "Concurrent appointment booking blocked by unique active slot index. DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}, PatientId: {PatientId}",
-                    dto.DoctorId,
-                    dto.ScheduledDate.Date,
-                    dto.TimeSlot,
-                    dto.PatientId);
+                    dto);
 
                 throw new ConflictException(ConcurrentSlotBookedMessage);
             }
@@ -357,21 +372,7 @@ namespace HealthCareApp.Services.Impl
                 TimeSlot = savedAppointment.TimeSlot
             });
 
-            ConsoleHighlightHelper.WriteAppointmentEventBox(
-                "APPOINTMENT BOOKED EVENT PUBLISHED TO RABBITMQ",
-                savedAppointment.AppointmentId,
-                patient.PatientName,
-                savedAppointment.DoctorId,
-                savedAppointment.ScheduledDate.Date,
-                savedAppointment.TimeSlot);
-
-            logger.LogInformation(
-                "AppointmentBookedEvent published. AppointmentId: {AppointmentId}, PatientName: {PatientName}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
-                savedAppointment.AppointmentId,
-                patient.PatientName,
-                savedAppointment.DoctorId,
-                savedAppointment.ScheduledDate.Date,
-                savedAppointment.TimeSlot);
+            LogAppointmentBookedEventPublished(savedAppointment);
 
             return mapper.Map<AppointmentDto>(savedAppointment);
         }
@@ -436,13 +437,10 @@ namespace HealthCareApp.Services.Impl
             }
             catch (DbUpdateException ex) when (IsUniqueAppointmentSlotViolation(ex))
             {
-                logger.LogWarning(
+                LogAppointmentUpdateBlocked(
                     ex,
-                    "Appointment update blocked by unique active slot index. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
                     appointmentId,
-                    dto.DoctorId,
-                    dto.ScheduledDate.Date,
-                    dto.TimeSlot);
+                    dto);
 
                 throw new ConflictException(ConcurrentSlotBookedMessage);
             }
@@ -662,42 +660,42 @@ namespace HealthCareApp.Services.Impl
             {
                 string searchTerm = query.SearchTerm.Trim();
 
-                filteredAppointments = filteredAppointments.Where(a =>
-                    (a.Patient != null &&
-                     a.Patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                    (a.Doctor != null &&
-                     a.Doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                    a.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    a.AppointmentId.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    (!string.IsNullOrWhiteSpace(a.CancellationReason) &&
-                     a.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
+                filteredAppointments = filteredAppointments.Where(appointment =>
+                    (appointment.Patient != null &&
+                     appointment.Patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (appointment.Doctor != null &&
+                     appointment.Doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    appointment.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    appointment.AppointmentId.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrWhiteSpace(appointment.CancellationReason) &&
+                     appointment.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
             }
 
             if (query.Status is not null)
             {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.Status == query.Status.Value);
+                filteredAppointments = filteredAppointments.Where(appointment =>
+                    appointment.Status == query.Status.Value);
             }
 
             if (query.ScheduledDate is not null)
             {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.ScheduledDate.Date == query.ScheduledDate.Value.Date);
+                filteredAppointments = filteredAppointments.Where(appointment =>
+                    appointment.ScheduledDate.Date == query.ScheduledDate.Value.Date);
             }
 
             if (query.UpcomingOnly is not null && query.UpcomingOnly.Value)
             {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.ScheduledDate.Date >= DateTime.Today &&
-                    a.Status != AppointmentStatus.Cancelled &&
-                    a.Status != AppointmentStatus.Completed);
+                filteredAppointments = filteredAppointments.Where(appointment =>
+                    appointment.ScheduledDate.Date >= DateTime.Today &&
+                    appointment.Status != AppointmentStatus.Cancelled &&
+                    appointment.Status != AppointmentStatus.Completed);
             }
 
             int totalRecords = filteredAppointments.Count();
 
             var pagedAppointments = filteredAppointments
-                .OrderByDescending(a => a.ScheduledDate)
-                .ThenBy(a => a.TimeSlot)
+                .OrderByDescending(appointment => appointment.ScheduledDate)
+                .ThenBy(appointment => appointment.TimeSlot)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
@@ -966,6 +964,71 @@ namespace HealthCareApp.Services.Impl
             return patient;
         }
 
+        private void LogConcurrentAppointmentBookingBlocked(
+            DbUpdateException exception,
+            BookAppointmentDto dto)
+        {
+            if (!logger.IsEnabled(LogLevel.Warning))
+            {
+                return;
+            }
+
+            logger.LogWarning(
+                exception,
+                "Concurrent appointment booking blocked by unique active slot index. DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}, PatientId: {PatientId}",
+                dto.DoctorId,
+                FormatDate(dto.ScheduledDate),
+                dto.TimeSlot,
+                dto.PatientId);
+        }
+
+        private void LogAppointmentUpdateBlocked(
+            DbUpdateException exception,
+            int appointmentId,
+            UpdateAppointmentDto dto)
+        {
+            if (!logger.IsEnabled(LogLevel.Warning))
+            {
+                return;
+            }
+
+            logger.LogWarning(
+                exception,
+                "Appointment update blocked by unique active slot index. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
+                appointmentId,
+                dto.DoctorId,
+                FormatDate(dto.ScheduledDate),
+                dto.TimeSlot);
+        }
+
+        private void LogAppointmentBookedEventPublished(Appointment appointment)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            using var appointmentBookedEventLogScope =
+                BeginAppointmentBookedEventLogScope(appointment);
+
+            logger.LogInformation(
+                "Appointment booked event published to RabbitMQ. EventStage: {EventStage}",
+                EventStagePublished);
+        }
+
+        private IDisposable? BeginAppointmentBookedEventLogScope(Appointment appointment)
+        {
+            return logger.BeginScope(new Dictionary<string, object>
+            {
+                ["EventType"] = AppointmentBookedEventType,
+                ["AppointmentId"] = appointment.AppointmentId,
+                ["PatientId"] = appointment.PatientId,
+                ["DoctorId"] = appointment.DoctorId,
+                ["ScheduledDate"] = FormatDate(appointment.ScheduledDate),
+                ["TimeSlot"] = appointment.TimeSlot
+            });
+        }
+
         private static bool IsUniqueAppointmentSlotViolation(DbUpdateException exception)
         {
             Exception? currentException = exception;
@@ -982,6 +1045,11 @@ namespace HealthCareApp.Services.Impl
             }
 
             return false;
+        }
+
+        private static string FormatDate(DateTime date)
+        {
+            return date.ToString(DateFormat);
         }
 
         private static void ValidateAppointmentId(int appointmentId)

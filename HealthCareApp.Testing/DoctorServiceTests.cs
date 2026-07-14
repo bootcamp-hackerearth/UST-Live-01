@@ -4,49 +4,56 @@ using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Services;
+using HealthCareApp.Services.Interface;
 using HealthCareApp.Shared.Constants;
 using HealthCareApp.Shared.Dtos.Doctors;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Moq;
+using HealthCareApp.Services;
 
 namespace HealthCareApp.Testing.Services
 {
     public class DoctorServiceTests
     {
         private readonly Mock<IDoctorRepository> repositoryMock;
-
+        private readonly Mock<IAppointmentRepository> appointmentRepositoryMock;
+        private readonly Mock<ICacheService> cacheServiceMock;
+        private readonly Mock<IDoctorLeaveService> doctorLeaveServiceMock;
         private readonly Mock<IMapper> mapperMock;
-
         private readonly Mock<UserManager<IdentityUser>> userManagerMock;
-
         private readonly Mock<RoleManager<IdentityRole>> roleManagerMock;
+        private readonly Mock<ILogger<DoctorService>> loggerMock;
 
         private readonly DoctorService doctorService;
-
-        private readonly Mock<IAppointmentRepository> appointmentRepositoryMock;
 
         public DoctorServiceTests()
         {
             repositoryMock = new Mock<IDoctorRepository>();
-
             appointmentRepositoryMock = new Mock<IAppointmentRepository>();
-
+            cacheServiceMock = new Mock<ICacheService>();
+            doctorLeaveServiceMock = new Mock<IDoctorLeaveService>();
             mapperMock = new Mock<IMapper>();
-
             userManagerMock = CreateUserManagerMock();
-
             roleManagerMock = CreateRoleManagerMock();
+            loggerMock = new Mock<ILogger<DoctorService>>();
 
             SetupMapper();
+            SetupDefaultAvailabilityDependencies();
 
-            doctorService = new DoctorService(
-                repositoryMock.Object,
-                appointmentRepositoryMock.Object,
-                mapperMock.Object,
-                userManagerMock.Object,
-                roleManagerMock.Object);
+            doctorService = new DoctorService(new DoctorServiceDependencies
+            {
+                Repository = repositoryMock.Object,
+                AppointmentRepository = appointmentRepositoryMock.Object,
+                Mapper = mapperMock.Object,
+                UserManager = userManagerMock.Object,
+                RoleManager = roleManagerMock.Object,
+                CacheService = cacheServiceMock.Object,
+                DoctorLeaveService = doctorLeaveServiceMock.Object,
+                Logger = loggerMock.Object
+            });
         }
 
         [Fact]
@@ -61,7 +68,6 @@ namespace HealthCareApp.Testing.Services
             var result = await doctorService.GetAllDoctorsAsync();
 
             result.Should().HaveCount(4);
-
             result[0].FullName.Should().Be("Rishi Doctor");
 
             repositoryMock.Verify(
@@ -81,13 +87,9 @@ namespace HealthCareApp.Testing.Services
             var result = await doctorService.GetAllDoctorsPagedAsync(null!);
 
             result.PageNumber.Should().Be(1);
-
             result.PageSize.Should().Be(10);
-
             result.TotalRecords.Should().Be(4);
-
             result.TotalPages.Should().Be(1);
-
             result.Items.Should().HaveCount(4);
         }
 
@@ -103,14 +105,12 @@ namespace HealthCareApp.Testing.Services
             var query = new DoctorPaginationQueryDto
             {
                 PageNumber = 0,
-
                 PageSize = 0
             };
 
             var result = await doctorService.GetAllDoctorsPagedAsync(query);
 
             result.PageNumber.Should().Be(1);
-
             result.PageSize.Should().Be(10);
         }
 
@@ -126,7 +126,6 @@ namespace HealthCareApp.Testing.Services
             var query = new DoctorPaginationQueryDto
             {
                 PageNumber = 1,
-
                 PageSize = 500
             };
 
@@ -152,7 +151,6 @@ namespace HealthCareApp.Testing.Services
             var result = await doctorService.GetAllDoctorsPagedAsync(query);
 
             result.TotalRecords.Should().Be(1);
-
             result.Items.Single().FullName.Should().Be("Rishi Doctor");
         }
 
@@ -173,7 +171,6 @@ namespace HealthCareApp.Testing.Services
             var result = await doctorService.GetAllDoctorsPagedAsync(query);
 
             result.TotalRecords.Should().Be(1);
-
             result.Items.Single().Email.Should().Be("meera.doctor@example.com");
         }
 
@@ -194,7 +191,6 @@ namespace HealthCareApp.Testing.Services
             var result = await doctorService.GetAllDoctorsPagedAsync(query);
 
             result.TotalRecords.Should().Be(1);
-
             result.Items.Single().Specialisation.Should().Be(SpecialisationType.Cardiologist);
         }
 
@@ -215,7 +211,6 @@ namespace HealthCareApp.Testing.Services
             var result = await doctorService.GetAllDoctorsPagedAsync(query);
 
             result.TotalRecords.Should().Be(1);
-
             result.Items.Should().OnlyContain(doctor => doctor.IsActive == false);
         }
 
@@ -231,22 +226,16 @@ namespace HealthCareApp.Testing.Services
             var query = new DoctorPaginationQueryDto
             {
                 PageNumber = 2,
-
                 PageSize = 2
             };
 
             var result = await doctorService.GetAllDoctorsPagedAsync(query);
 
             result.PageNumber.Should().Be(2);
-
             result.PageSize.Should().Be(2);
-
             result.TotalRecords.Should().Be(4);
-
             result.TotalPages.Should().Be(2);
-
             result.Items.Should().HaveCount(2);
-
             result.Items.First().DoctorId.Should().Be(3);
         }
 
@@ -264,7 +253,6 @@ namespace HealthCareApp.Testing.Services
             var result = await doctorService.GetAllActiveDoctorsAsync();
 
             result.Should().HaveCount(3);
-
             result.Should().OnlyContain(doctor => doctor.IsActive);
         }
 
@@ -305,7 +293,6 @@ namespace HealthCareApp.Testing.Services
             var result = await doctorService.GetDoctorByIdAsync(doctor.DoctorId);
 
             result.DoctorId.Should().Be(doctor.DoctorId);
-
             result.FullName.Should().Be(doctor.DoctorName);
         }
 
@@ -324,7 +311,6 @@ namespace HealthCareApp.Testing.Services
                 SpecialisationType.Cardiologist);
 
             result.Should().HaveCount(1);
-
             result.Single().Specialisation.Should().Be(SpecialisationType.Cardiologist);
         }
 
@@ -365,7 +351,6 @@ namespace HealthCareApp.Testing.Services
         public async Task CreateDoctorByAdminAsync_WhenFullNameIsEmpty_ShouldThrowBusinessRuleException()
         {
             var dto = GetValidCreateDoctorDto();
-
             dto.FullName = "";
 
             Func<Task> action = async () =>
@@ -380,7 +365,6 @@ namespace HealthCareApp.Testing.Services
         public async Task CreateDoctorByAdminAsync_WhenFullNameHasNumbers_ShouldThrowBusinessRuleException()
         {
             var dto = GetValidCreateDoctorDto();
-
             dto.FullName = "Doctor123";
 
             Func<Task> action = async () =>
@@ -395,7 +379,6 @@ namespace HealthCareApp.Testing.Services
         public async Task CreateDoctorByAdminAsync_WhenEmailIsEmpty_ShouldThrowBusinessRuleException()
         {
             var dto = GetValidCreateDoctorDto();
-
             dto.Email = "";
 
             Func<Task> action = async () =>
@@ -410,7 +393,6 @@ namespace HealthCareApp.Testing.Services
         public async Task CreateDoctorByAdminAsync_WhenPracticeStartDateIsFuture_ShouldThrowBusinessRuleException()
         {
             var dto = GetValidCreateDoctorDto();
-
             dto.PracticeStartDate = DateTime.Today.AddDays(1);
 
             Func<Task> action = async () =>
@@ -425,7 +407,6 @@ namespace HealthCareApp.Testing.Services
         public async Task CreateDoctorByAdminAsync_WhenConsultationFeeIsInvalid_ShouldThrowBusinessRuleException()
         {
             var dto = GetValidCreateDoctorDto();
-
             dto.ConsultationFee = 0;
 
             Func<Task> action = async () =>
@@ -440,7 +421,6 @@ namespace HealthCareApp.Testing.Services
         public async Task CreateDoctorByAdminAsync_WhenDoctorEmailAlreadyExists_ShouldThrowConflictException()
         {
             var dto = GetValidCreateDoctorDto();
-
             string normalizedEmail = dto.Email.Trim().ToLower();
 
             repositoryMock
@@ -459,7 +439,6 @@ namespace HealthCareApp.Testing.Services
         public async Task CreateDoctorByAdminAsync_WhenLoginAccountAlreadyExists_ShouldThrowConflictException()
         {
             var dto = GetValidCreateDoctorDto();
-
             string normalizedEmail = dto.Email.Trim().ToLower();
 
             repositoryMock
@@ -471,7 +450,6 @@ namespace HealthCareApp.Testing.Services
                 .ReturnsAsync(new IdentityUser
                 {
                     Email = normalizedEmail,
-
                     UserName = normalizedEmail
                 });
 
@@ -487,7 +465,6 @@ namespace HealthCareApp.Testing.Services
         public async Task CreateDoctorByAdminAsync_WhenIdentityUserCreationFails_ShouldThrowBusinessRuleException()
         {
             var dto = GetValidCreateDoctorDto();
-
             string normalizedEmail = dto.Email.Trim().ToLower();
 
             repositoryMock
@@ -520,7 +497,6 @@ namespace HealthCareApp.Testing.Services
         public async Task CreateDoctorByAdminAsync_WhenAddToRoleFails_ShouldDeleteIdentityUserAndThrowBusinessRuleException()
         {
             var dto = GetValidCreateDoctorDto();
-
             string normalizedEmail = dto.Email.Trim().ToLower();
 
             repositoryMock
@@ -602,13 +578,9 @@ namespace HealthCareApp.Testing.Services
             var result = await doctorService.CreateDoctorByAdminAsync(dto);
 
             result.DoctorId.Should().Be(10);
-
             result.DoctorName.Should().Be(dto.FullName);
-
             result.Email.Should().Be(dto.Email.ToLower());
-
             result.TemporaryPassword.Should().Contain("@");
-
             result.Message.Should().Be("Doctor account created successfully.");
 
             repositoryMock.Verify(
@@ -666,7 +638,6 @@ namespace HealthCareApp.Testing.Services
         public async Task UpdateDoctorAsync_WhenRepositoryReturnsNull_ShouldThrowEntityNotFoundException()
         {
             var dto = GetValidUpdateDoctorDto();
-
             var existingDoctor = GetDoctors().First();
 
             repositoryMock
@@ -691,7 +662,6 @@ namespace HealthCareApp.Testing.Services
         public async Task UpdateDoctorAsync_WhenValid_ShouldUpdateDoctorAndReturnMappedDoctor()
         {
             var dto = GetValidUpdateDoctorDto();
-
             var existingDoctor = GetDoctors().First();
 
             repositoryMock
@@ -706,14 +676,12 @@ namespace HealthCareApp.Testing.Services
                 .ReturnsAsync((int doctorId, Doctor doctor, CancellationToken cancellationToken) =>
                 {
                     doctor.DoctorId = doctorId;
-
                     return doctor;
                 });
 
             var result = await doctorService.UpdateDoctorAsync(existingDoctor.DoctorId, dto);
 
             result.DoctorId.Should().Be(existingDoctor.DoctorId);
-
             result.FullName.Should().Be(dto.FullName);
 
             repositoryMock.Verify(
@@ -796,7 +764,6 @@ namespace HealthCareApp.Testing.Services
         public async Task GetMyProfileAsync_WhenDoctorExists_ShouldReturnMappedDoctor()
         {
             var doctor = GetDoctors().First();
-
             doctor.IdentityUserId = "identity-1";
 
             repositoryMock
@@ -863,13 +830,16 @@ namespace HealthCareApp.Testing.Services
 
             var result = await doctorService.GetDoctorAvailabilityAsync(doctor.DoctorId, null);
 
-            result.Should().HaveCount(TimeSlots.Slots.Count);
+            result.DoctorId.Should().Be(doctor.DoctorId);
+            result.IsDoctorOnLeave.Should().BeFalse();
+            result.Date.Should().BeEmpty();
+            result.Slots.Should().HaveCount(TimeSlots.Slots.Count);
 
-            result.Select(slot => slot.TimeSlot)
+            result.Slots.Select(slot => slot.TimeSlot)
                 .Should()
                 .BeEquivalentTo(TimeSlots.Slots);
 
-            result.Should().OnlyContain(slot => slot.IsBooked == false);
+            result.Slots.Should().OnlyContain(slot => slot.IsBooked == false);
 
             appointmentRepositoryMock.Verify(
                 repository => repository.GetBookedTimeSlotsByDoctorAndDateAsync(
@@ -888,10 +858,10 @@ namespace HealthCareApp.Testing.Services
             var selectedDate = DateTime.Today.AddDays(1);
 
             var bookedSlots = new List<string>
-    {
-        "09:00 AM - 09:30 AM",
-        "10:00 AM - 10:30 AM"
-    };
+            {
+                "09:00 AM - 09:30 AM",
+                "10:00 AM - 10:30 AM"
+            };
 
             repositoryMock
                 .Setup(repository => repository.GetByIdAsync(doctor.DoctorId))
@@ -900,28 +870,100 @@ namespace HealthCareApp.Testing.Services
             appointmentRepositoryMock
                 .Setup(repository => repository.GetBookedTimeSlotsByDoctorAndDateAsync(
                     doctor.DoctorId,
-                    selectedDate,
+                    selectedDate.Date,
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(bookedSlots);
 
-            var result = await doctorService.GetDoctorAvailabilityAsync(doctor.DoctorId, selectedDate);
+            var result = await doctorService.GetDoctorAvailabilityAsync(
+                doctor.DoctorId,
+                selectedDate);
 
-            result.Should().HaveCount(TimeSlots.Slots.Count);
+            result.DoctorId.Should().Be(doctor.DoctorId);
+            result.Date.Should().Be(selectedDate.ToString("yyyy-MM-dd"));
+            result.IsDoctorOnLeave.Should().BeFalse();
+            result.Slots.Should().HaveCount(TimeSlots.Slots.Count);
 
-            result.Where(slot => bookedSlots.Contains(slot.TimeSlot))
+            result.Slots
+                .Where(slot => bookedSlots.Contains(slot.TimeSlot))
                 .Should()
                 .OnlyContain(slot => slot.IsBooked);
 
-            result.Where(slot => !bookedSlots.Contains(slot.TimeSlot))
+            result.Slots
+                .Where(slot => !bookedSlots.Contains(slot.TimeSlot))
                 .Should()
                 .OnlyContain(slot => !slot.IsBooked);
 
             appointmentRepositoryMock.Verify(
                 repository => repository.GetBookedTimeSlotsByDoctorAndDateAsync(
                     doctor.DoctorId,
-                    selectedDate,
+                    selectedDate.Date,
                     It.IsAny<CancellationToken>()),
                 Times.Once);
+        }
+
+        [Fact]
+        public async Task GetDoctorAvailabilityAsync_WhenDoctorIsOnLeave_ShouldReturnAllSlotsAsBooked()
+        {
+            var doctor = GetDoctors()
+                .First(existingDoctor => existingDoctor.IsActive);
+
+            var selectedDate = DateTime.Today.AddDays(1);
+
+            doctorLeaveServiceMock
+                .Setup(service => service.IsDoctorOnLeaveAsync(
+                    doctor.DoctorId,
+                    selectedDate.Date))
+                .ReturnsAsync(true);
+
+            repositoryMock
+                .Setup(repository => repository.GetByIdAsync(doctor.DoctorId))
+                .ReturnsAsync(doctor);
+
+            var result = await doctorService.GetDoctorAvailabilityAsync(
+                doctor.DoctorId,
+                selectedDate);
+
+            result.DoctorId.Should().Be(doctor.DoctorId);
+            result.Date.Should().Be(selectedDate.ToString("yyyy-MM-dd"));
+            result.IsDoctorOnLeave.Should().BeTrue();
+            result.Slots.Should().HaveCount(TimeSlots.Slots.Count);
+            result.Slots.Should().OnlyContain(slot => slot.IsBooked);
+
+            appointmentRepositoryMock.Verify(
+                repository => repository.GetBookedTimeSlotsByDoctorAndDateAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        private void SetupDefaultAvailabilityDependencies()
+        {
+            doctorLeaveServiceMock
+                .Setup(service => service.IsDoctorOnLeaveAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<DateTime>()))
+                .ReturnsAsync(false);
+
+            cacheServiceMock
+                .Setup(cache => cache.GetAsync<DoctorAvailabilityResponseDto>(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((DoctorAvailabilityResponseDto?)null);
+
+            cacheServiceMock
+                .Setup(cache => cache.SetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<DoctorAvailabilityResponseDto>(),
+                    It.IsAny<TimeSpan>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            cacheServiceMock
+                .Setup(cache => cache.RemoveAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
         }
 
         private void SetupSuccessfulDoctorCreation(CreateDoctorDto dto)
@@ -959,7 +1001,6 @@ namespace HealthCareApp.Testing.Services
                 .ReturnsAsync((Doctor doctor, CancellationToken cancellationToken) =>
                 {
                     doctor.DoctorId = 10;
-
                     return doctor;
                 });
         }
@@ -971,7 +1012,6 @@ namespace HealthCareApp.Testing.Services
                 .Returns((object source) =>
                 {
                     var doctors = ((IEnumerable<Doctor>)source).ToList();
-
                     return doctors.Select(MapToDoctorDto).ToList();
                 });
 
@@ -1021,17 +1061,11 @@ namespace HealthCareApp.Testing.Services
             return new DoctorDto
             {
                 DoctorId = doctor.DoctorId,
-
                 FullName = doctor.DoctorName,
-
                 Email = doctor.Email,
-
                 Specialisation = doctor.Specialisation,
-
                 YearsOfExperience = doctor.YearsOfExperience,
-
                 ConsultationFee = doctor.ConsultationFee,
-
                 IsActive = doctor.IsActive
             };
         }
@@ -1099,13 +1133,9 @@ namespace HealthCareApp.Testing.Services
             return new CreateDoctorDto
             {
                 FullName = "New Doctor",
-
                 Email = "new.doctor@example.com",
-
                 Specialisation = SpecialisationType.GeneralPractitioner,
-
                 PracticeStartDate = DateTime.Today.AddYears(-5),
-
                 ConsultationFee = 600
             };
         }
@@ -1115,13 +1145,9 @@ namespace HealthCareApp.Testing.Services
             return new UpdateDoctorDto
             {
                 FullName = "Updated Doctor",
-
                 Specialisation = SpecialisationType.Dermatologist,
-
                 PracticeStartDate = DateTime.Today.AddYears(-4),
-
                 ConsultationFee = 800,
-
                 IsActive = true
             };
         }

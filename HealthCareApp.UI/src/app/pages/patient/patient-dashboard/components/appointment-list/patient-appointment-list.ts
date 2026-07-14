@@ -104,12 +104,7 @@ export class PatientAppointmentList implements OnInit {
   }
 
   refreshAppointmentsAfterBooking(): void {
-    this.searchTerm = '';
-    this.selectedStatus = '';
-    this.selectedDate = '';
-    this.pageNumber = 1;
-
-    this.loadAppointments();
+    this.clearFilters();
   }
 
   applyFilters(): void {
@@ -118,10 +113,7 @@ export class PatientAppointmentList implements OnInit {
   }
 
   clearFilters(): void {
-    this.searchTerm = '';
-    this.selectedStatus = '';
-    this.selectedDate = '';
-    this.pageNumber = 1;
+    this.resetFilters();
     this.loadAppointments();
   }
 
@@ -213,52 +205,117 @@ export class PatientAppointmentList implements OnInit {
     });
   }
 
+  private resetFilters(): void {
+    this.searchTerm = '';
+    this.selectedStatus = '';
+    this.selectedDate = '';
+    this.pageNumber = 1;
+  }
+
   private getErrorMessage(error: unknown): string {
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'error' in error
-    ) {
-      const apiError = error as {
-        error?: {
-          message?: string;
-          Message?: string;
-          title?: string;
-          errors?: Record<string, string[]>;
-        };
-        name?: string;
-        message?: string;
-      };
-
-      if (apiError.name === 'TimeoutError') {
-        return 'The server is taking too long to respond. Please try again.';
-      }
-
-      if (apiError.error?.message) {
-        return apiError.error.message;
-      }
-
-      if (apiError.error?.Message) {
-        return apiError.error.Message;
-      }
-
-      if (apiError.error?.title) {
-        return apiError.error.title;
-      }
-
-      if (apiError.error?.errors) {
-        const firstError = Object.values(apiError.error.errors)[0]?.[0];
-
-        if (firstError) {
-          return firstError;
-        }
-      }
-
-      if (apiError.message) {
-        return apiError.message;
-      }
+    if (this.isTimeoutError(error)) {
+      return 'The server is taking too long to respond. Please try again.';
     }
 
-    return 'Something went wrong while loading appointments.';
+    const apiError = this.getApiError(error);
+
+    return (
+      this.getDirectErrorMessage(error) ??
+      this.getStringApiError(apiError) ??
+      this.getStructuredApiError(apiError) ??
+      'Something went wrong while loading appointments.'
+    );
+  }
+
+  private isTimeoutError(error: unknown): boolean {
+    return (
+      this.isObject(error) &&
+      error['name'] === 'TimeoutError'
+    );
+  }
+
+  private getApiError(error: unknown): unknown {
+    if (!this.isObject(error) || !('error' in error)) {
+      return undefined;
+    }
+
+    return error['error'];
+  }
+
+  private getDirectErrorMessage(error: unknown): string | null {
+    if (!this.isObject(error)) {
+      return null;
+    }
+
+    const message = error['message'];
+
+    if (typeof message === 'string' && message.trim()) {
+      return message;
+    }
+
+    return null;
+  }
+
+  private getStringApiError(apiError: unknown): string | null {
+    if (typeof apiError === 'string' && apiError.trim()) {
+      return apiError;
+    }
+
+    return null;
+  }
+
+  private getStructuredApiError(apiError: unknown): string | null {
+    if (!this.isObject(apiError)) {
+      return null;
+    }
+
+    return (
+      this.getApiMessage(apiError) ??
+      this.getFirstValidationError(apiError)
+    );
+  }
+
+  private getApiMessage(apiError: Record<string, unknown>): string | null {
+    const possibleMessages = [
+      apiError['message'],
+      apiError['Message'],
+      apiError['title']
+    ];
+
+    const message = possibleMessages.find(
+      (value): value is string =>
+        typeof value === 'string' && value.trim().length > 0
+    );
+
+    return message ?? null;
+  }
+
+  private getFirstValidationError(
+    apiError: Record<string, unknown>
+  ): string | null {
+    const errors = apiError['errors'];
+
+    if (!this.isValidationErrors(errors)) {
+      return null;
+    }
+
+    return Object.values(errors)[0]?.[0] ?? null;
+  }
+
+  private isValidationErrors(
+    value: unknown
+  ): value is Record<string, string[]> {
+    return (
+      this.isObject(value) &&
+      Object.values(value).every(
+        (item) =>
+          Array.isArray(item) &&
+          item.every((message) => typeof message === 'string')
+      )
+    );
+  }
+
+  private isObject(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null;
   }
 }

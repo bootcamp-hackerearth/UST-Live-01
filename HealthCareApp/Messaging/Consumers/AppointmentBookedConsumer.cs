@@ -9,6 +9,10 @@ namespace HealthCareApp.Messaging.Consumers
 {
     public class AppointmentBookedConsumer : IConsumer<AppointmentBookedEvent>
     {
+        private const string DateFormat = "yyyy-MM-dd";
+        private const string AppointmentBookedEventType = "AppointmentBooked";
+        private const string EventStageNotificationCreated = "NotificationCreated";
+
         private readonly HealthAxisDbContext dbContext;
 
         private readonly ILogger<AppointmentBookedConsumer> logger;
@@ -27,7 +31,7 @@ namespace HealthCareApp.Messaging.Consumers
 
             string notificationMessage =
                 $"New appointment booked by {appointmentBookedEvent.PatientName} " +
-                $"on {appointmentBookedEvent.ScheduledDate:yyyy-MM-dd} " +
+                $"on {FormatDate(appointmentBookedEvent.ScheduledDate)} " +
                 $"at {appointmentBookedEvent.TimeSlot}.";
 
             var notification = new Notification
@@ -51,10 +55,43 @@ namespace HealthCareApp.Messaging.Consumers
                 appointmentBookedEvent.DoctorId,
                 notificationMessage);
 
+            LogAppointmentBookedNotificationCreated(
+                appointmentBookedEvent);
+        }
+
+        private void LogAppointmentBookedNotificationCreated(
+            AppointmentBookedEvent appointmentBookedEvent)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            using var appointmentBookedEventLogScope =
+                BeginAppointmentBookedEventLogScope(appointmentBookedEvent);
+
             logger.LogInformation(
-                "AppointmentBookedEvent consumed and notification created. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}",
-                appointmentBookedEvent.AppointmentId,
-                appointmentBookedEvent.DoctorId);
+                "Appointment booked event consumed and doctor notification created. EventStage: {EventStage}",
+                EventStageNotificationCreated);
+        }
+
+        private IDisposable? BeginAppointmentBookedEventLogScope(
+            AppointmentBookedEvent appointmentBookedEvent)
+        {
+            return logger.BeginScope(new Dictionary<string, object>
+            {
+                ["EventType"] = AppointmentBookedEventType,
+                ["EventStage"] = EventStageNotificationCreated,
+                ["AppointmentId"] = appointmentBookedEvent.AppointmentId,
+                ["DoctorId"] = appointmentBookedEvent.DoctorId,
+                ["ScheduledDate"] = FormatDate(appointmentBookedEvent.ScheduledDate),
+                ["TimeSlot"] = appointmentBookedEvent.TimeSlot
+            });
+        }
+
+        private static string FormatDate(DateTime date)
+        {
+            return date.ToString(DateFormat);
         }
     }
 }

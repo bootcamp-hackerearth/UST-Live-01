@@ -266,8 +266,10 @@
               <button
                 type="button"
                 class="ha-password-eye"
+                [attr.aria-label]="showLoginPassword ? 'Hide password' : 'Show password'"
+                [title]="showLoginPassword ? 'Hide password' : 'Show password'"
                 (click)="showLoginPassword = !showLoginPassword">
-                {{ showLoginPassword ? '🙈' : '👁' }}
+                <span aria-hidden="true">👁</span>
               </button>
             </div>
           </label>
@@ -331,10 +333,12 @@
           #signupFormRef="ngForm"
           (ngSubmit)="submitSignup(signupFormRef)"
           novalidate>
+
           <div class="ha-form-grid">
             <div>
               <label>
                 Full Name
+
                 <input
                   type="text"
                   name="fullName"
@@ -367,6 +371,7 @@
             <div>
               <label>
                 Date of Birth
+
                 <input
                   type="date"
                   name="dateOfBirth"
@@ -386,6 +391,7 @@
             <div>
               <label>
                 Gender
+
                 <select
                   name="gender"
                   required
@@ -411,6 +417,7 @@
             <div>
               <label>
                 Email
+
                 <input
                   type="email"
                   name="email"
@@ -437,6 +444,7 @@
             <div class="ha-phone-field">
               <label>
                 Phone Number
+
                 <div class="ha-phone-row">
                   <select
                     name="countryCode"
@@ -472,6 +480,7 @@
             <div>
               <label>
                 Insurance ID
+
                 <input
                   type="text"
                   name="insuranceId"
@@ -499,8 +508,10 @@
                   <button
                     type="button"
                     class="ha-password-eye"
+                    [attr.aria-label]="showSignupPassword ? 'Hide password' : 'Show password'"
+                    [title]="showSignupPassword ? 'Hide password' : 'Show password'"
                     (click)="showSignupPassword = !showSignupPassword">
-                    {{ showSignupPassword ? '🙈' : '👁' }}
+                    <span aria-hidden="true">👁</span>
                   </button>
                 </div>
               </label>
@@ -529,8 +540,10 @@
                   <button
                     type="button"
                     class="ha-password-eye"
+                    [attr.aria-label]="showSignupConfirmPassword ? 'Hide password' : 'Show password'"
+                    [title]="showSignupConfirmPassword ? 'Hide password' : 'Show password'"
                     (click)="showSignupConfirmPassword = !showSignupConfirmPassword">
-                    {{ showSignupConfirmPassword ? '🙈' : '👁' }}
+                    <span aria-hidden="true">👁</span>
                   </button>
                 </div>
               </label>

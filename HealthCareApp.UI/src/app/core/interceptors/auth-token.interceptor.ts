@@ -1,21 +1,70 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpInterceptorFn
+} from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import {
+  catchError,
+  throwError
+} from 'rxjs';
 
 import { AuthService } from '../services/auth.service';
 
 export const authTokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const token = authService.getToken();
+  const router = inject(Router);
 
-  if (!token) {
-    return next(req);
+  const token = authService.getToken();
+  const isAuthEndpoint = req.url.includes('/api/Auth/login') ||
+    req.url.includes('/api/Auth/register-patient');
+
+  if (token && authService.isTokenExpired()) {
+    authService.logout();
+
+    if (!isAuthEndpoint) {
+      redirectToSessionExpired(router);
+
+      return throwError(() => new HttpErrorResponse({
+        status: 401,
+        statusText: 'Session expired',
+        url: req.url,
+        error: {
+          message: 'Session expired. Please login again.'
+        }
+      }));
+    }
   }
 
-  const authRequest = req.clone({
-    setHeaders: {
-      Authorization: `Bearer ${token}`
-    }
-  });
+  const authRequest = token && !authService.isTokenExpired()
+    ? req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    : req;
 
-  return next(authRequest);
+  return next(authRequest).pipe(
+    catchError((error: unknown) => {
+      if (
+        error instanceof HttpErrorResponse &&
+        error.status === 401 &&
+        !isAuthEndpoint
+      ) {
+        authService.logout();
+        redirectToSessionExpired(router);
+      }
+
+      return throwError(() => error);
+    })
+  );
 };
+
+function redirectToSessionExpired(router: Router): void {
+  router.navigate(['/'], {
+    queryParams: {
+      sessionExpired: 'true'
+    },
+    replaceUrl: true
+  });
+}

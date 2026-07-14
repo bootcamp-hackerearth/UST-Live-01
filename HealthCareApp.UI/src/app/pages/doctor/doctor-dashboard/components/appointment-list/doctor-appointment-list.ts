@@ -96,7 +96,7 @@ export class DoctorAppointmentList implements OnInit, OnDestroy {
     notes: ''
   };
 
-  private remindedAppointmentKeys = new Set<string>();
+  private readonly remindedAppointmentKeys = new Set<string>();
 
   private reminderPollingTimer?: ReturnType<typeof setInterval>;
 

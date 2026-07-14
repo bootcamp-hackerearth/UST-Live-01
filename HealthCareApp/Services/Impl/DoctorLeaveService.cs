@@ -13,18 +13,15 @@ namespace HealthCareApp.Services.Impl
     public class DoctorLeaveService : IDoctorLeaveService
     {
         private const string DoctorEntityName = "Doctor";
+        private const string DateFormat = "yyyy-MM-dd";
 
         private const string DoctorLeaveCancellationReason =
             "Doctor is unavailable due to leave. Please rebook another appointment. Sorry for the inconvenience.";
 
         private readonly IDoctorLeaveRepository doctorLeaveRepository;
-
         private readonly IDoctorRepository doctorRepository;
-
         private readonly ICacheService cacheService;
-
         private readonly HealthAxisDbContext dbContext;
-
         private readonly ILogger<DoctorLeaveService> logger;
 
         public DoctorLeaveService(
@@ -57,7 +54,6 @@ namespace HealthCareApp.Services.Impl
                 dto.EndDate);
 
             var startDate = dto.StartDate.Date;
-
             var endDate = dto.EndDate.Date;
 
             var hasOverlappingLeave = await doctorLeaveRepository.HasOverlappingLeaveAsync(
@@ -101,27 +97,19 @@ namespace HealthCareApp.Services.Impl
                     startDate,
                     endDate);
 
-                logger.LogInformation(
-                    "Doctor leave created successfully. DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}, AffectedAppointments: {AffectedAppointments}",
+                LogDoctorLeaveCreated(
                     doctor.DoctorId,
-                    startDate.ToString("yyyy-MM-dd"),
-                    endDate.ToString("yyyy-MM-dd"),
+                    startDate,
+                    endDate,
                     affectedAppointmentCount);
 
                 return MapToDto(
                     doctorLeave,
                     doctor.DoctorName);
             }
-            catch (Exception ex)
+            catch
             {
                 await transaction.RollbackAsync();
-
-                logger.LogError(
-                    ex,
-                    "Doctor leave creation failed. Transaction rolled back. DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}",
-                    doctor.DoctorId,
-                    startDate.ToString("yyyy-MM-dd"),
-                    endDate.ToString("yyyy-MM-dd"));
 
                 throw;
             }
@@ -199,11 +187,10 @@ namespace HealthCareApp.Services.Impl
 
             if (affectedAppointments.Count == 0)
             {
-                logger.LogInformation(
-                    "No pending or confirmed appointments affected by doctor leave. DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}",
+                LogNoAffectedAppointments(
                     doctor.DoctorId,
-                    leaveStartDate.ToString("yyyy-MM-dd"),
-                    leaveEndDate.ToString("yyyy-MM-dd"));
+                    leaveStartDate,
+                    leaveEndDate);
 
                 return 0;
             }
@@ -233,19 +220,12 @@ namespace HealthCareApp.Services.Impl
                     CreatedDate = DateTime.Now
                 });
 
-                logger.LogInformation(
-                    "Appointment cancelled due to doctor leave. AppointmentId: {AppointmentId}, PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
-                    appointment.AppointmentId,
-                    appointment.PatientId,
-                    appointment.DoctorId,
-                    appointment.ScheduledDate.ToString("yyyy-MM-dd"),
-                    appointment.TimeSlot);
+                LogAppointmentCancelledDueToLeave(appointment);
             }
 
             await dbContext.Notifications.AddRangeAsync(notifications);
 
-            logger.LogInformation(
-                "Patient notifications prepared for doctor leave. DoctorId: {DoctorId}, NotificationCount: {NotificationCount}",
+            LogPatientNotificationsPrepared(
                 doctor.DoctorId,
                 notifications.Count);
 
@@ -285,12 +265,11 @@ namespace HealthCareApp.Services.Impl
             }
             catch (Exception ex)
             {
-                logger.LogWarning(
+                LogAvailabilityCacheRemovalFailed(
                     ex,
-                    "Doctor leave was created, but availability cache removal failed. DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}",
                     doctorId,
-                    startDate.ToString("yyyy-MM-dd"),
-                    endDate.ToString("yyyy-MM-dd"));
+                    startDate,
+                    endDate);
             }
         }
 
@@ -309,19 +288,121 @@ namespace HealthCareApp.Services.Impl
 
                 await cacheService.RemoveAsync(cacheKey);
 
-                logger.LogInformation(
-                    "Doctor availability cache removed due to doctor leave. CacheKey: {CacheKey}",
-                    cacheKey);
+                LogAvailabilityCacheRemoved(cacheKey);
 
                 currentDate = currentDate.AddDays(1);
             }
+        }
+
+        private void LogDoctorLeaveCreated(
+            int doctorId,
+            DateTime startDate,
+            DateTime endDate,
+            int affectedAppointmentCount)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                "Doctor leave created successfully. DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}, AffectedAppointments: {AffectedAppointments}",
+                doctorId,
+                FormatDate(startDate),
+                FormatDate(endDate),
+                affectedAppointmentCount);
+        }
+
+        private void LogNoAffectedAppointments(
+            int doctorId,
+            DateTime startDate,
+            DateTime endDate)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                "No pending or confirmed appointments affected by doctor leave. DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}",
+                doctorId,
+                FormatDate(startDate),
+                FormatDate(endDate));
+        }
+
+        private void LogAppointmentCancelledDueToLeave(
+            Appointment appointment)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                "Appointment cancelled due to doctor leave. AppointmentId: {AppointmentId}, PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
+                appointment.AppointmentId,
+                appointment.PatientId,
+                appointment.DoctorId,
+                FormatDate(appointment.ScheduledDate),
+                appointment.TimeSlot);
+        }
+
+        private void LogPatientNotificationsPrepared(
+            int doctorId,
+            int notificationCount)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                "Patient notifications prepared for doctor leave. DoctorId: {DoctorId}, NotificationCount: {NotificationCount}",
+                doctorId,
+                notificationCount);
+        }
+
+        private void LogAvailabilityCacheRemovalFailed(
+            Exception exception,
+            int doctorId,
+            DateTime startDate,
+            DateTime endDate)
+        {
+            if (!logger.IsEnabled(LogLevel.Warning))
+            {
+                return;
+            }
+
+            logger.LogWarning(
+                exception,
+                "Doctor leave was created, but availability cache removal failed. DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}",
+                doctorId,
+                FormatDate(startDate),
+                FormatDate(endDate));
+        }
+
+        private void LogAvailabilityCacheRemoved(string cacheKey)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                "Doctor availability cache removed due to doctor leave. CacheKey: {CacheKey}",
+                cacheKey);
         }
 
         private static string BuildDoctorAvailabilityCacheKey(
             int doctorId,
             DateTime date)
         {
-            return $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
+            return $"doctors:{doctorId}:availability:{FormatDate(date)}";
+        }
+
+        private static string FormatDate(DateTime date)
+        {
+            return date.ToString(DateFormat);
         }
 
         private static DoctorLeaveDto MapToDto(
@@ -333,10 +414,10 @@ namespace HealthCareApp.Services.Impl
                 DoctorLeaveId = doctorLeave.DoctorLeaveId,
                 DoctorId = doctorLeave.DoctorId,
                 DoctorName = doctorName,
-                StartDate = doctorLeave.StartDate.ToString("yyyy-MM-dd"),
-                EndDate = doctorLeave.EndDate.ToString("yyyy-MM-dd"),
+                StartDate = FormatDate(doctorLeave.StartDate),
+                EndDate = FormatDate(doctorLeave.EndDate),
                 Reason = doctorLeave.Reason,
-                CreatedDate = doctorLeave.CreatedDate.ToString("yyyy-MM-dd")
+                CreatedDate = FormatDate(doctorLeave.CreatedDate)
             };
         }
 

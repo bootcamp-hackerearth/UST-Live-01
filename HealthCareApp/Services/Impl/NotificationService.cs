@@ -74,10 +74,13 @@ namespace HealthCareApp.Services.Impl
 
             await dbContext.SaveChangesAsync();
 
-            logger.LogInformation(
-                "Patient notification marked as read. NotificationId: {NotificationId}, PatientId: {PatientId}",
-                notification.NotificationId,
-                patient.PatientId);
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.LogInformation(
+                    "Patient notification marked as read. NotificationId: {NotificationId}, PatientId: {PatientId}",
+                    notification.NotificationId,
+                    patient.PatientId);
+            }
 
             return MapToDto(notification);
         }

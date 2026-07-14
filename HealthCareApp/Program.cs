@@ -1,8 +1,8 @@
+using AutoMapper;
 using HealthCareApp.BackgroundServices;
 using HealthCareApp.Data;
 using HealthCareApp.Mapping;
 using HealthCareApp.Messaging.Consumers;
-using HealthCareApp.Messaging.Test;
 using HealthCareApp.Middleware;
 using HealthCareApp.Options;
 using HealthCareApp.Repository.Impl;
@@ -146,15 +146,43 @@ builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 
-// Register services.
+// Register core services.
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
-builder.Services.AddScoped<IDoctorService, DoctorService>();
-builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// Register DoctorService dependency wrapper to avoid too many constructor parameters.
+builder.Services.AddScoped(serviceProvider => new DoctorServiceDependencies
+{
+    Repository = serviceProvider.GetRequiredService<IDoctorRepository>(),
+    AppointmentRepository = serviceProvider.GetRequiredService<IAppointmentRepository>(),
+    Mapper = serviceProvider.GetRequiredService<IMapper>(),
+    UserManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>(),
+    RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>(),
+    CacheService = serviceProvider.GetRequiredService<ICacheService>(),
+    DoctorLeaveService = serviceProvider.GetRequiredService<IDoctorLeaveService>(),
+    Logger = serviceProvider.GetRequiredService<ILogger<DoctorService>>()
+});
+
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+
+// Register AppointmentService dependency wrapper to avoid too many constructor parameters.
+builder.Services.AddScoped(serviceProvider => new AppointmentServiceDependencies
+{
+    AppointmentRepository = serviceProvider.GetRequiredService<IAppointmentRepository>(),
+    PatientRepository = serviceProvider.GetRequiredService<IPatientRepository>(),
+    DoctorRepository = serviceProvider.GetRequiredService<IDoctorRepository>(),
+    HealthRecordRepository = serviceProvider.GetRequiredService<IHealthRecordRepository>(),
+    DoctorLeaveService = serviceProvider.GetRequiredService<IDoctorLeaveService>(),
+    Mapper = serviceProvider.GetRequiredService<IMapper>(),
+    PublishEndpoint = serviceProvider.GetRequiredService<IPublishEndpoint>(),
+    Logger = serviceProvider.GetRequiredService<ILogger<AppointmentService>>()
+});
+
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 // Register background services.
 builder.Services.AddHostedService<HeartbeatBackgroundService>();
@@ -165,8 +193,6 @@ builder.Services.AddMassTransit(configurator =>
 {
     configurator.SetKebabCaseEndpointNameFormatter();
 
-    // Temporary RabbitMQ connectivity test consumer.
-    configurator.AddConsumer<TestRabbitMqConsumer>();
 
     // Real Sprint 4 AppointmentBooked event consumer.
     configurator.AddConsumer<AppointmentBookedConsumer>();
@@ -185,12 +211,7 @@ builder.Services.AddMassTransit(configurator =>
             });
 
         // Temporary queue for RabbitMQ connectivity testing.
-        rabbitMqConfig.ReceiveEndpoint(
-            rabbitMqSection["TestQueue"]!,
-            endpoint =>
-            {
-                endpoint.ConfigureConsumer<TestRabbitMqConsumer>(context);
-            });
+   
 
         // Real queue for AppointmentBookedEvent.
         rabbitMqConfig.ReceiveEndpoint(
@@ -233,7 +254,10 @@ using (var scope = app.Services.CreateScope())
 
     await RoleSeeder.SeedRoleAsync(roleManager);
 
-    await AdminSeeder.SeedAdminAsync(userManager, roleManager, builder.Configuration);
+    await AdminSeeder.SeedAdminAsync(
+        userManager,
+        roleManager,
+        builder.Configuration);
 }
 
 // Global exception handler middleware.
@@ -269,5 +293,5 @@ try
 }
 finally
 {
-    Log.CloseAndFlush();
+    await Log.CloseAndFlushAsync();
 }

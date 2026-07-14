@@ -119,6 +119,8 @@ export class PatientBookAppointment implements OnInit {
       this.isDoctorOnLeave ||
       !this.form.doctorId ||
       !this.form.scheduledDate ||
+      !this.isCompleteValidDate(this.form.scheduledDate) ||
+      !this.isDateWithinBookingWindow(this.form.scheduledDate) ||
       !this.form.timeSlot
     );
   }
@@ -283,6 +285,25 @@ export class PatientBookAppointment implements OnInit {
     date: string,
     shouldClearMessage = true
   ): void {
+    if (
+      doctorId <= 0 ||
+      !this.isCompleteValidDate(date) ||
+      !this.isDateWithinBookingWindow(date)
+    ) {
+      this.timeSlots = [];
+      this.isLoadingSlots = false;
+      this.form.timeSlot = '';
+
+      this.clearDoctorLeaveState();
+
+      if (shouldClearMessage) {
+        this.message = 'Please select a valid appointment date within the next 30 days.';
+      }
+
+      this.cdr.detectChanges();
+      return;
+    }
+
     this.isLoadingSlots = true;
 
     if (shouldClearMessage) {
@@ -342,10 +363,48 @@ export class PatientBookAppointment implements OnInit {
 
     this.clearDoctorLeaveState();
 
-    if (this.form.doctorId && this.form.scheduledDate) {
-      this.loadDoctorAvailability(this.form.doctorId, this.form.scheduledDate);
-      this.scrollToSection('slot-section');
+    const selectedDateValue = this.form.scheduledDate;
+
+    if (!selectedDateValue) {
+      this.isLoadingSlots = false;
+      this.cdr.detectChanges();
+      return;
     }
+
+    if (!this.isCompleteValidDate(selectedDateValue)) {
+      this.form.scheduledDate = '';
+      this.isLoadingSlots = false;
+      this.message = 'Please select a valid appointment date.';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (!this.isDateWithinBookingWindow(selectedDateValue)) {
+      this.form.scheduledDate = '';
+      this.isLoadingSlots = false;
+      this.message = 'Please select today or a date within the next 30 days.';
+
+      this.patientToast.emit({
+        message: this.message,
+        type: 'warning'
+      });
+
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (!this.form.doctorId) {
+      this.isLoadingSlots = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.loadDoctorAvailability(
+      this.form.doctorId,
+      selectedDateValue
+    );
+
+    this.scrollToSection('slot-section');
 
     this.cdr.detectChanges();
   }
@@ -450,7 +509,7 @@ export class PatientBookAppointment implements OnInit {
 
   getSlotStatus(slot: SlotAvailabilityDto): string {
     if (this.isDoctorOnLeave) {
-      return 'Doctor is in leave';
+      return 'Not Open Yet';
     }
 
     if (this.isTimeSlotBooked(slot)) {
@@ -631,22 +690,13 @@ export class PatientBookAppointment implements OnInit {
       return false;
     }
 
-    const selectedDate = this.parseInputDate(this.form.scheduledDate);
-    const today = this.parseInputDate(this.todayDate);
-    const maxDate = this.parseInputDate(this.maxBookingDate);
-
-    if (!selectedDate || !today || !maxDate) {
+    if (!this.isCompleteValidDate(this.form.scheduledDate)) {
       this.message = 'Please select a valid appointment date.';
       return false;
     }
 
-    if (selectedDate.getTime() < today.getTime()) {
-      this.message = 'Past dates are not allowed. Please select today or a future date.';
-      return false;
-    }
-
-    if (selectedDate.getTime() > maxDate.getTime()) {
-      this.message = 'Appointments can only be booked within the next 30 days.';
+    if (!this.isDateWithinBookingWindow(this.form.scheduledDate)) {
+      this.message = 'Appointments can only be booked from today through the next 30 days.';
       return false;
     }
 
@@ -777,22 +827,80 @@ export class PatientBookAppointment implements OnInit {
     return slotDateTime;
   }
 
-  private parseInputDate(dateValue: string): Date | null {
-    const parts = dateValue.split('-');
+  private isCompleteValidDate(dateValue: string): boolean {
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
-    if (parts.length !== 3) {
-      return null;
+    if (!datePattern.test(dateValue)) {
+      return false;
     }
+
+    const parts = dateValue.split('-');
 
     const year = Number(parts[0]);
     const month = Number(parts[1]);
     const day = Number(parts[2]);
 
-    if (!year || !month || !day) {
+    if (
+      !Number.isInteger(year) ||
+      !Number.isInteger(month) ||
+      !Number.isInteger(day) ||
+      year < 1000 ||
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > 31
+    ) {
+      return false;
+    }
+
+    const parsedDate = new Date(
+      year,
+      month - 1,
+      day
+    );
+
+    return (
+      parsedDate.getFullYear() === year &&
+      parsedDate.getMonth() === month - 1 &&
+      parsedDate.getDate() === day
+    );
+  }
+
+  private isDateWithinBookingWindow(dateValue: string): boolean {
+    if (!this.isCompleteValidDate(dateValue)) {
+      return false;
+    }
+
+    const selectedDate = this.parseInputDate(dateValue);
+    const today = this.parseInputDate(this.todayDate);
+    const maxDate = this.parseInputDate(this.maxBookingDate);
+
+    if (!selectedDate || !today || !maxDate) {
+      return false;
+    }
+
+    return (
+      selectedDate.getTime() >= today.getTime() &&
+      selectedDate.getTime() <= maxDate.getTime()
+    );
+  }
+
+  private parseInputDate(dateValue: string): Date | null {
+    if (!this.isCompleteValidDate(dateValue)) {
       return null;
     }
 
-    return new Date(year, month - 1, day);
+    const parts = dateValue.split('-');
+
+    const year = Number(parts[0]);
+    const month = Number(parts[1]);
+    const day = Number(parts[2]);
+
+    return new Date(
+      year,
+      month - 1,
+      day
+    );
   }
 
   private formatDateForInput(date: Date): string {
@@ -812,62 +920,117 @@ export class PatientBookAppointment implements OnInit {
   }
 
   private getErrorMessage(error: unknown): string {
-    if (typeof error === 'string' && error.trim()) {
+    if (this.isDirectStringError(error)) {
       return error;
     }
 
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'error' in error
-    ) {
-      const apiError = error as {
-        error?: {
-          message?: string;
-          Message?: string;
-          errors?: Record<string, string[]>;
-          title?: string;
-        } | string;
-        name?: string;
-        status?: number;
-        message?: string;
-      };
-
-      if (apiError.name === 'TimeoutError') {
-        return 'The server is taking too long to respond. Please try again.';
-      }
-
-      if (typeof apiError.error === 'string' && apiError.error.trim()) {
-        return apiError.error;
-      }
-
-      if (typeof apiError.error === 'object' && apiError.error !== null) {
-        if (apiError.error.message) {
-          return apiError.error.message;
-        }
-
-        if (apiError.error.Message) {
-          return apiError.error.Message;
-        }
-
-        if (apiError.error.title) {
-          return apiError.error.title;
-        }
-
-        if (apiError.error.errors) {
-          const firstError = Object.values(apiError.error.errors)[0]?.[0];
-
-          if (firstError) {
-            return firstError;
-          }
-        }
-      }
-
-      if (apiError.message) {
-        return apiError.message;
-      }
+    if (this.isTimeoutError(error)) {
+      return 'The server is taking too long to respond. Please try again.';
     }
 
-    return 'Something went wrong while booking the appointment.';
+    const apiError = this.getApiError(error);
+
+    return (
+      this.getStringApiError(apiError) ??
+      this.getStructuredApiError(apiError) ??
+      this.getDirectErrorMessage(error) ??
+      'Something went wrong while booking the appointment.'
+    );
+  }
+
+  private isDirectStringError(error: unknown): error is string {
+    return typeof error === 'string' && error.trim().length > 0;
+  }
+
+  private isTimeoutError(error: unknown): boolean {
+    return (
+      this.isObject(error) &&
+      error['name'] === 'TimeoutError'
+    );
+  }
+
+  private getApiError(error: unknown): unknown {
+    if (!this.isObject(error) || !('error' in error)) {
+      return undefined;
+    }
+
+    return error['error'];
+  }
+
+  private getStringApiError(apiError: unknown): string | null {
+    if (typeof apiError === 'string' && apiError.trim()) {
+      return apiError;
+    }
+
+    return null;
+  }
+
+  private getStructuredApiError(apiError: unknown): string | null {
+    if (!this.isObject(apiError)) {
+      return null;
+    }
+
+    return (
+      this.getApiDirectMessage(apiError) ??
+      this.getFirstValidationError(apiError)
+    );
+  }
+
+  private getDirectErrorMessage(error: unknown): string | null {
+    if (!this.isObject(error)) {
+      return null;
+    }
+
+    const message = error['message'];
+
+    if (typeof message === 'string' && message.trim()) {
+      return message;
+    }
+
+    return null;
+  }
+
+  private getApiDirectMessage(apiError: Record<string, unknown>): string | null {
+    const possibleMessages = [
+      apiError['message'],
+      apiError['Message'],
+      apiError['title']
+    ];
+
+    const message = possibleMessages.find(
+      (value): value is string =>
+        typeof value === 'string' && value.trim().length > 0
+    );
+
+    return message ?? null;
+  }
+
+  private getFirstValidationError(
+    apiError: Record<string, unknown>
+  ): string | null {
+    const errors = apiError['errors'];
+
+    if (!this.isValidationErrors(errors)) {
+      return null;
+    }
+
+    return Object.values(errors)[0]?.[0] ?? null;
+  }
+
+  private isValidationErrors(
+    value: unknown
+  ): value is Record<string, string[]> {
+    return (
+      this.isObject(value) &&
+      Object.values(value).every(
+        (item) =>
+          Array.isArray(item) &&
+          item.every((message) => typeof message === 'string')
+      )
+    );
+  }
+
+  private isObject(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null;
   }
 }

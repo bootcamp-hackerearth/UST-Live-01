@@ -5,7 +5,14 @@ namespace HealthCareApp.BackgroundServices
 {
     public class HeartbeatBackgroundService : BackgroundService
     {
-        private static readonly TimeSpan HeartbeatInterval = TimeSpan.FromSeconds(10);
+        private const string ServiceName = "HealthAxisHeartbeat";
+        private const string StatusStarted = "Started";
+        private const string StatusRunning = "Running";
+        private const string StatusStopping = "Stopping";
+        private const string ShutdownReason = "Application shutdown requested";
+
+        private static readonly TimeSpan HeartbeatInterval =
+            TimeSpan.FromMinutes(1);
 
         private readonly ILogger<HeartbeatBackgroundService> logger;
 
@@ -18,44 +25,67 @@ namespace HealthCareApp.BackgroundServices
         protected override async Task ExecuteAsync(
             CancellationToken stoppingToken)
         {
-            logger.LogInformation(
-                """
-                ============================================================
-                | HealthAxis Heartbeat Background Service STARTED          |
-                | Purpose: Confirms hosted service is running in background |
-                ============================================================
-                """);
+            LogHeartbeatStarted();
 
             try
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    logger.LogInformation(
-                        """
-                        ------------------------------------------------------------
-                        | HEALTHAXIS HEARTBEAT                                     |
-                        | Status : Running                                         |
-                        | Time   : {Time}                                          |
-                        | Note   : Background service is alive without API request |
-                        ------------------------------------------------------------
-                        """,
-                        DateTime.Now.ToString("dd MMM yyyy hh:mm:ss tt"));
+                    LogHeartbeatRunning();
 
                     await Task.Delay(
                         HeartbeatInterval,
                         stoppingToken);
                 }
             }
-            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            catch (OperationCanceledException ex)
+                when (stoppingToken.IsCancellationRequested)
             {
-                logger.LogInformation(
-                    """
-                    ============================================================
-                    | HealthAxis Heartbeat Background Service STOPPING         |
-                    | Reason: Application shutdown requested                   |
-                    ============================================================
-                    """);
+                LogHeartbeatStopping(ex);
             }
+        }
+
+        private void LogHeartbeatStarted()
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                "HealthAxis heartbeat background service started. ServiceName: {ServiceName}, HeartbeatStatus: {HeartbeatStatus}, HeartbeatIntervalSeconds: {HeartbeatIntervalSeconds}",
+                ServiceName,
+                StatusStarted,
+                HeartbeatInterval.TotalSeconds);
+        }
+
+        private void LogHeartbeatRunning()
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                "HealthAxis background service heartbeat. ServiceName: {ServiceName}, HeartbeatStatus: {HeartbeatStatus}",
+                ServiceName,
+                StatusRunning);
+        }
+
+        private void LogHeartbeatStopping(
+            OperationCanceledException exception)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                exception,
+                "HealthAxis heartbeat background service stopping. ServiceName: {ServiceName}, HeartbeatStatus: {HeartbeatStatus}, ShutdownReason: {ShutdownReason}",
+                ServiceName,
+                StatusStopping,
+                ShutdownReason);
         }
     }
 }

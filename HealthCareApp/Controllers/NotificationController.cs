@@ -48,11 +48,23 @@ namespace HealthCareApp.Controllers
                 notificationId,
                 identityUserId);
 
-            logger.LogInformation(
-                "Patient notification marked as read through API. NotificationId: {NotificationId}",
+            LogPatientNotificationMarkedAsReadThroughApi(
                 notification.NotificationId);
 
             return Ok(notification);
+        }
+
+        private void LogPatientNotificationMarkedAsReadThroughApi(
+            int notificationId)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                "Patient notification marked as read through API. NotificationId: {NotificationId}",
+                notificationId);
         }
 
         private string GetLoggedInUserId()

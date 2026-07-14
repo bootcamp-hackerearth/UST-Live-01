@@ -901,3 +901,106 @@ button {
 .ha-password-eye:active {
   transform: translateY(-50%) scale(0.94);
 }
+
+.ha-password-field {
+  position: relative;
+  width: 100%;
+}
+
+.ha-password-field input {
+  width: 100%;
+  padding-right: 48px;
+}
+
+.ha-password-eye {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 16px;
+  display: grid;
+  place-items: center;
+  transform: translateY(-50%);
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.ha-password-eye:hover {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.ha-password-eye:active {
+  transform: translateY(-50%) scale(0.94);
+}
+
+.ha-password-field {
+  position: relative;
+  width: 100%;
+  margin-top: 7px;
+}
+
+.ha-password-field input {
+  width: 100%;
+  margin-top: 0 !important;
+  padding-right: 48px;
+}
+
+/* Hide Edge/IE native password reveal and clear buttons */
+.ha-password-field input::-ms-reveal,
+.ha-password-field input::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Hide browser credential/reveal buttons where supported */
+.ha-password-field input::-webkit-credentials-auto-fill-button,
+.ha-password-field input::-webkit-caps-lock-indicator {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
+.ha-password-eye {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #334155;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  transform: translateY(-50%);
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.ha-password-eye:hover {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.ha-password-eye:active {
+  transform: translateY(-50%) scale(0.94);
+}

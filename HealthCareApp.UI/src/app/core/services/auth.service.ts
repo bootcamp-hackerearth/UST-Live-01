@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, tap } from 'rxjs';
+import {
+  Observable,
+  map,
+  tap
+} from 'rxjs';
 
 import {
   AuthResponse,
@@ -128,15 +132,34 @@ export class AuthService {
     sessionStorage.setItem(this.mustChangePasswordKey, 'false');
   }
 
+  hasStoredSession(): boolean {
+    return Boolean(
+      sessionStorage.getItem(this.tokenKey) ||
+      sessionStorage.getItem(this.roleKey) ||
+      sessionStorage.getItem(this.userIdKey) ||
+      sessionStorage.getItem(this.emailKey) ||
+      sessionStorage.getItem(this.expiryKey)
+    );
+  }
+
   isLoggedIn(): boolean {
     const token = this.getToken();
-    const expiry = Number(sessionStorage.getItem(this.expiryKey) ?? 0);
 
-    if (!token || !expiry) {
+    if (!token) {
       return false;
     }
 
-    return Date.now() < expiry;
+    return !this.isTokenExpired();
+  }
+
+  isTokenExpired(): boolean {
+    const expiry = Number(sessionStorage.getItem(this.expiryKey) ?? 0);
+
+    if (!expiry) {
+      return Boolean(this.getToken());
+    }
+
+    return Date.now() >= expiry;
   }
 
   isAdmin(): boolean {
@@ -181,13 +204,17 @@ export class AuthService {
       return {};
     }
 
-    const base64Payload = tokenParts[1]
-      .replaceAll('-', '+')
-      .replaceAll('_', '/');
+    try {
+      const base64Payload = tokenParts[1]
+        .replaceAll('-', '+')
+        .replaceAll('_', '/');
 
-    const decodedPayload = atob(base64Payload);
+      const decodedPayload = atob(base64Payload);
 
-    return JSON.parse(decodedPayload) as JwtPayload;
+      return JSON.parse(decodedPayload) as JwtPayload;
+    } catch {
+      return {};
+    }
   }
 
   private getUserIdFromPayload(payload: JwtPayload): string {

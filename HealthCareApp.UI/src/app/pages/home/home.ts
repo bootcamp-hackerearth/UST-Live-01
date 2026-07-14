@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { timeout } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
@@ -133,6 +133,7 @@ export class Home implements OnInit {
 
   constructor(
     private readonly router: Router,
+    private readonly route: ActivatedRoute,
     private readonly authService: AuthService
   ) {
   }
@@ -140,6 +141,7 @@ export class Home implements OnInit {
   ngOnInit(): void {
     this.todayDate = new Date().toISOString().split('T')[0];
     this.loadLandingContent();
+    this.showSessionExpiredMessageIfNeeded();
   }
 
   get currentHighlight(): CareHighlight {
@@ -311,6 +313,29 @@ export class Home implements OnInit {
     if (this.currentHighlightIndex < this.highlights.length - 1) {
       this.currentHighlightIndex++;
     }
+  }
+
+  private showSessionExpiredMessageIfNeeded(): void {
+    const isSessionExpired =
+      this.route.snapshot.queryParamMap.get('sessionExpired') === 'true';
+
+    if (!isSessionExpired) {
+      return;
+    }
+
+    this.authService.logout();
+    this.isSignupModalOpen = false;
+    this.isLoginModalOpen = true;
+    this.loginMessage = 'Session expired. Please login again.';
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        sessionExpired: null
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
   }
 
   private redirectAfterLogin(role: UserRole): void {

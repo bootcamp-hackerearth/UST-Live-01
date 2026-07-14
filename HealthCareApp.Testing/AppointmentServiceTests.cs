@@ -4,10 +4,13 @@ using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Services.Impl;
+using HealthCareApp.Services.Interface;
 using HealthCareApp.Shared.Constants;
 using HealthCareApp.Shared.Dtos.Appointments;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
+using MassTransit;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace HealthCareApp.Testing.Services
@@ -19,6 +22,9 @@ namespace HealthCareApp.Testing.Services
         private readonly Mock<IDoctorRepository> doctorRepositoryMock;
         private readonly Mock<IHealthRecordRepository> healthRecordRepositoryMock;
         private readonly Mock<IMapper> mapperMock;
+        private readonly Mock<IDoctorLeaveService> doctorLeaveServiceMock;
+        private readonly Mock<IPublishEndpoint> publishEndpointMock;
+        private readonly Mock<ILogger<AppointmentService>> loggerMock;
 
         private readonly AppointmentService appointmentService;
 
@@ -29,15 +35,23 @@ namespace HealthCareApp.Testing.Services
             doctorRepositoryMock = new Mock<IDoctorRepository>();
             healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
             mapperMock = new Mock<IMapper>();
+            doctorLeaveServiceMock = new Mock<IDoctorLeaveService>();
+            publishEndpointMock = new Mock<IPublishEndpoint>();
+            loggerMock = new Mock<ILogger<AppointmentService>>();
 
             SetupMapper();
 
-            appointmentService = new AppointmentService(
-                appointmentRepositoryMock.Object,
-                patientRepositoryMock.Object,
-                doctorRepositoryMock.Object,
-                healthRecordRepositoryMock.Object,
-                mapperMock.Object);
+            appointmentService = new AppointmentService(new AppointmentServiceDependencies
+            {
+                AppointmentRepository = appointmentRepositoryMock.Object,
+                PatientRepository = patientRepositoryMock.Object,
+                DoctorRepository = doctorRepositoryMock.Object,
+                HealthRecordRepository = healthRecordRepositoryMock.Object,
+                DoctorLeaveService = doctorLeaveServiceMock.Object,
+                Mapper = mapperMock.Object,
+                PublishEndpoint = publishEndpointMock.Object,
+                Logger = loggerMock.Object
+            });
         }
 
         [Fact]

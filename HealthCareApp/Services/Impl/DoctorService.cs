@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using HealthCareApp.Exceptions;
-using HealthCareApp.Helpers;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Services.Interface;
@@ -13,19 +12,12 @@ using System.Text.RegularExpressions;
 
 namespace HealthCareApp.Services
 {
-    public class DoctorService(
-        IDoctorRepository repository,
-        IAppointmentRepository appointmentRepository,
-        IMapper mapper,
-        UserManager<IdentityUser> userManager,
-        RoleManager<IdentityRole> roleManager,
-        ICacheService cacheService,
-        IDoctorLeaveService doctorLeaveService,
-        ILogger<DoctorService> logger) : IDoctorService
+    public class DoctorService : IDoctorService
     {
         private const string DoctorEntityName = "Doctor";
         private const string DoctorRoleName = "Doctor";
         private const string DoctorDetailsRequiredMessage = "Doctor details are required.";
+        private const string DoctorAvailabilityEvent = "DoctorAvailabilityCache";
 
         private static readonly TimeSpan DoctorAvailabilityCacheDuration =
             TimeSpan.FromMinutes(5);
@@ -35,6 +27,27 @@ namespace HealthCareApp.Services
             RegexOptions.Compiled | RegexOptions.CultureInvariant,
             TimeSpan.FromMilliseconds(250));
 
+        private readonly IDoctorRepository repository;
+        private readonly IAppointmentRepository appointmentRepository;
+        private readonly IMapper mapper;
+        private readonly UserManager<IdentityUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly ICacheService cacheService;
+        private readonly IDoctorLeaveService doctorLeaveService;
+        private readonly ILogger<DoctorService> logger;
+
+        public DoctorService(DoctorServiceDependencies dependencies)
+        {
+            repository = dependencies.Repository;
+            appointmentRepository = dependencies.AppointmentRepository;
+            mapper = dependencies.Mapper;
+            userManager = dependencies.UserManager;
+            roleManager = dependencies.RoleManager;
+            cacheService = dependencies.CacheService;
+            doctorLeaveService = dependencies.DoctorLeaveService;
+            logger = dependencies.Logger;
+        }
+
         public async Task<List<DoctorDto>> GetAllDoctorsAsync()
         {
             var doctors = await repository.GetAllAsync();
@@ -42,7 +55,8 @@ namespace HealthCareApp.Services
             return mapper.Map<List<DoctorDto>>(doctors);
         }
 
-        public async Task<PagedResponse<DoctorDto>> GetAllDoctorsPagedAsync(DoctorPaginationQueryDto query)
+        public async Task<PagedResponse<DoctorDto>> GetAllDoctorsPagedAsync(
+            DoctorPaginationQueryDto query)
         {
             query ??= new DoctorPaginationQueryDto();
 
@@ -118,34 +132,39 @@ namespace HealthCareApp.Services
             return mapper.Map<DoctorDto>(doctor);
         }
 
-        public async Task<List<DoctorDto>> GetDoctorsBySpecialisationAsync(SpecialisationType specialisation)
+        public async Task<List<DoctorDto>> GetDoctorsBySpecialisationAsync(
+            SpecialisationType specialisation)
         {
             var doctors = await repository.GetBySpecialisationAsync(specialisation);
 
             return mapper.Map<List<DoctorDto>>(doctors);
         }
 
-        public async Task<List<DoctorDto>> GetActiveDoctorsBySpecialisationAsync(SpecialisationType specialisation)
+        public async Task<List<DoctorDto>> GetActiveDoctorsBySpecialisationAsync(
+            SpecialisationType specialisation)
         {
             var doctors = await repository.GetActiveBySpecialisationAsync(specialisation);
 
             return mapper.Map<List<DoctorDto>>(doctors);
         }
 
-        public async Task<DoctorCreatedResponseDto> CreateDoctorByAdminAsync(CreateDoctorDto dto)
+        public async Task<DoctorCreatedResponseDto> CreateDoctorByAdminAsync(
+            CreateDoctorDto dto)
         {
             ValidateCreateDoctorDto(dto);
 
             string normalizedEmail = dto.Email.Trim().ToLower();
 
-            bool doctorEmailExists = await repository.ExistsByEmailAsync(normalizedEmail);
+            bool doctorEmailExists =
+                await repository.ExistsByEmailAsync(normalizedEmail);
 
             if (doctorEmailExists)
             {
                 throw new ConflictException("A doctor with this email already exists.");
             }
 
-            var existingIdentityUser = await userManager.FindByEmailAsync(normalizedEmail);
+            var existingIdentityUser =
+                await userManager.FindByEmailAsync(normalizedEmail);
 
             if (existingIdentityUser is not null)
             {
@@ -161,11 +180,15 @@ namespace HealthCareApp.Services
                 EmailConfirmed = true
             };
 
-            var createUserResult = await userManager.CreateAsync(identityUser, temporaryPassword);
+            var createUserResult =
+                await userManager.CreateAsync(identityUser, temporaryPassword);
 
             if (!createUserResult.Succeeded)
             {
-                var errors = string.Join(",", createUserResult.Errors.Select(error => error.Description));
+                var errors = string.Join(
+                    ",",
+                    createUserResult.Errors.Select(error => error.Description));
+
                 throw new BusinessRuleException(errors);
             }
 
@@ -174,13 +197,17 @@ namespace HealthCareApp.Services
                 await roleManager.CreateAsync(new IdentityRole(DoctorRoleName));
             }
 
-            var roleResult = await userManager.AddToRoleAsync(identityUser, DoctorRoleName);
+            var roleResult =
+                await userManager.AddToRoleAsync(identityUser, DoctorRoleName);
 
             if (!roleResult.Succeeded)
             {
                 await userManager.DeleteAsync(identityUser);
 
-                var errors = string.Join(",", roleResult.Errors.Select(error => error.Description));
+                var errors = string.Join(
+                    ",",
+                    roleResult.Errors.Select(error => error.Description));
+
                 throw new BusinessRuleException(errors);
             }
 
@@ -188,7 +215,8 @@ namespace HealthCareApp.Services
 
             doctor.DoctorName = dto.FullName.Trim();
             doctor.Email = normalizedEmail;
-            doctor.YearsOfExperience = CalculateYearsOfExperience(dto.PracticeStartDate);
+            doctor.YearsOfExperience =
+                CalculateYearsOfExperience(dto.PracticeStartDate);
             doctor.IsActive = true;
             doctor.MustChangePassword = true;
             doctor.IdentityUserId = identityUser.Id;
@@ -206,7 +234,9 @@ namespace HealthCareApp.Services
             };
         }
 
-        public async Task<DoctorDto> UpdateDoctorAsync(int doctorId, UpdateDoctorDto dto)
+        public async Task<DoctorDto> UpdateDoctorAsync(
+            int doctorId,
+            UpdateDoctorDto dto)
         {
             ValidateDoctorId(doctorId);
 
@@ -224,7 +254,8 @@ namespace HealthCareApp.Services
             doctor.DoctorId = doctorId;
             doctor.Email = existingDoctor.Email;
             doctor.IdentityUserId = existingDoctor.IdentityUserId;
-            doctor.YearsOfExperience = CalculateYearsOfExperience(dto.PracticeStartDate);
+            doctor.YearsOfExperience =
+                CalculateYearsOfExperience(dto.PracticeStartDate);
             doctor.CreatedDate = existingDoctor.CreatedDate;
             doctor.MustChangePassword = existingDoctor.MustChangePassword;
 
@@ -263,7 +294,9 @@ namespace HealthCareApp.Services
 
             if (doctor is null)
             {
-                throw new EntityNotFoundException("Doctor profile for logged-in user", 0);
+                throw new EntityNotFoundException(
+                    "Doctor profile for logged-in user",
+                    0);
             }
 
             return mapper.Map<DoctorDto>(doctor);
@@ -279,29 +312,30 @@ namespace HealthCareApp.Services
             {
                 var selectedDate = date.Value.Date;
 
+                ValidateAvailabilityDate(selectedDate);
+
                 var cacheKey = BuildDoctorAvailabilityCacheKey(
                     doctorId,
                     selectedDate);
 
-                var isDoctorOnLeave = await doctorLeaveService.IsDoctorOnLeaveAsync(
+                using var availabilityLogScope = BeginAvailabilityLogScope(
+                    cacheKey,
                     doctorId,
                     selectedDate);
+
+                var isDoctorOnLeave =
+                    await doctorLeaveService.IsDoctorOnLeaveAsync(
+                        doctorId,
+                        selectedDate);
 
                 if (isDoctorOnLeave)
                 {
                     logger.LogInformation(
-                        "Doctor availability blocked because doctor is on leave. CacheKey: {CacheKey}, DoctorId: {DoctorId}, Date: {Date}",
-                        cacheKey,
-                        doctorId,
-                        selectedDate.ToString("yyyy-MM-dd"));
+                        "Doctor availability blocked because the doctor is on leave. CacheStatus: {CacheStatus}",
+                        "LEAVE");
 
-                    ConsoleHighlightHelper.WriteCacheBox(
-                        "DOCTOR ON LEAVE - ALL SLOTS DISABLED",
-                        cacheKey,
-                        "LEAVE",
-                        ConsoleColor.DarkMagenta);
-
-                    var leaveSlots = await BuildDoctorLeaveAvailabilityAsync(doctorId);
+                    var leaveSlots =
+                        await BuildDoctorLeaveAvailabilityAsync(doctorId);
 
                     var leaveResponse = new DoctorAvailabilityResponseDto
                     {
@@ -320,37 +354,22 @@ namespace HealthCareApp.Services
                     return leaveResponse;
                 }
 
-                var cachedAvailability = await cacheService.GetAsync<DoctorAvailabilityResponseDto>(
-                    cacheKey);
+                var cachedAvailability =
+                    await cacheService.GetAsync<DoctorAvailabilityResponseDto>(
+                        cacheKey);
 
                 if (cachedAvailability is not null)
                 {
                     logger.LogInformation(
-                        "Doctor availability cache HIT. CacheKey: {CacheKey}, DoctorId: {DoctorId}, Date: {Date}",
-                        cacheKey,
-                        doctorId,
-                        selectedDate.ToString("yyyy-MM-dd"));
-
-                    ConsoleHighlightHelper.WriteCacheBox(
-                        "DOCTOR AVAILABILITY CACHE HIT - DATA FROM GARNET",
-                        cacheKey,
-                        "HIT",
-                        ConsoleColor.DarkGreen);
+                        "Doctor availability served from cache. CacheStatus: {CacheStatus}",
+                        "HIT");
 
                     return cachedAvailability;
                 }
 
                 logger.LogInformation(
-                    "Doctor availability cache MISS. CacheKey: {CacheKey}, DoctorId: {DoctorId}, Date: {Date}",
-                    cacheKey,
-                    doctorId,
-                    selectedDate.ToString("yyyy-MM-dd"));
-
-                ConsoleHighlightHelper.WriteCacheBox(
-                    "DOCTOR AVAILABILITY CACHE MISS - FETCHING FROM SQL SERVER",
-                    cacheKey,
-                    "MISS",
-                    ConsoleColor.DarkRed);
+                    "Doctor availability cache miss. Loading from SQL Server. CacheStatus: {CacheStatus}",
+                    "MISS");
 
                 var slots = await BuildDoctorAvailabilityFromDatabaseAsync(
                     doctorId,
@@ -371,23 +390,17 @@ namespace HealthCareApp.Services
                     DoctorAvailabilityCacheDuration);
 
                 logger.LogInformation(
-                    "Doctor availability cached for {Minutes} minutes. CacheKey: {CacheKey}, DoctorId: {DoctorId}, Date: {Date}",
-                    DoctorAvailabilityCacheDuration.TotalMinutes,
-                    cacheKey,
-                    doctorId,
-                    selectedDate.ToString("yyyy-MM-dd"));
-
-                ConsoleHighlightHelper.WriteCacheBox(
-                    "DOCTOR AVAILABILITY CACHED IN GARNET FOR 5 MINUTES",
-                    cacheKey,
+                    "Doctor availability stored in cache. CacheStatus: {CacheStatus}, CacheDurationMinutes: {CacheDurationMinutes}",
                     "SET",
-                    ConsoleColor.DarkBlue);
+                    DoctorAvailabilityCacheDuration.TotalMinutes);
 
                 return availabilityResponse;
             }
 
             logger.LogInformation(
-                "Doctor availability requested without date. Cache skipped. DoctorId: {DoctorId}",
+                "Doctor availability requested without a date; cache was skipped. EventType: {EventType}, CacheStatus: {CacheStatus}, DoctorId: {DoctorId}",
+                DoctorAvailabilityEvent,
+                "SKIPPED",
                 doctorId);
 
             var fallbackSlots = await BuildDoctorAvailabilityFromDatabaseAsync(
@@ -417,19 +430,22 @@ namespace HealthCareApp.Services
 
             if (!doctor.IsActive)
             {
-                throw new BusinessRuleException("Doctor is inactive and not available for appointments.");
+                throw new BusinessRuleException(
+                    "Doctor is inactive and not available for appointments.");
             }
 
             var bookedSlots = new List<string>();
 
             if (date is not null)
             {
-                bookedSlots = await appointmentRepository.GetBookedTimeSlotsByDoctorAndDateAsync(
-                    doctorId,
-                    date.Value.Date);
+                bookedSlots =
+                    await appointmentRepository.GetBookedTimeSlotsByDoctorAndDateAsync(
+                        doctorId,
+                        date.Value.Date);
             }
 
-            var bookedSlotSet = bookedSlots.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var bookedSlotSet =
+                bookedSlots.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             return TimeSlots.Slots
                 .Select(slot => new SlotAvailabilityDto
@@ -452,7 +468,8 @@ namespace HealthCareApp.Services
 
             if (!doctor.IsActive)
             {
-                throw new BusinessRuleException("Doctor is inactive and not available for appointments.");
+                throw new BusinessRuleException(
+                    "Doctor is inactive and not available for appointments.");
             }
 
             return TimeSlots.Slots
@@ -462,6 +479,29 @@ namespace HealthCareApp.Services
                     IsBooked = true
                 })
                 .ToList();
+        }
+
+        private IDisposable? BeginAvailabilityLogScope(
+            string cacheKey,
+            int doctorId,
+            DateTime availabilityDate)
+        {
+            return logger.BeginScope(new Dictionary<string, object>
+            {
+                ["EventType"] = DoctorAvailabilityEvent,
+                ["CacheKey"] = cacheKey,
+                ["DoctorId"] = doctorId,
+                ["AvailabilityDate"] = availabilityDate.ToString("yyyy-MM-dd")
+            });
+        }
+
+        private static void ValidateAvailabilityDate(DateTime selectedDate)
+        {
+            if (selectedDate < DateTime.Today)
+            {
+                throw new BusinessRuleException(
+                    "Availability date cannot be in the past. Please provide a valid date using yyyy-MM-dd format.");
+            }
         }
 
         private static string BuildDoctorAvailabilityCacheKey(
@@ -475,7 +515,8 @@ namespace HealthCareApp.Services
         {
             if (doctorId <= 0)
             {
-                throw new BusinessRuleException("Please provide a valid doctor reference.");
+                throw new BusinessRuleException(
+                    "Please provide a valid doctor reference.");
             }
         }
 
@@ -533,16 +574,19 @@ namespace HealthCareApp.Services
 
             if (practiceStartDate.Date > DateTime.Today)
             {
-                throw new BusinessRuleException("Practice start date cannot be in the future.");
+                throw new BusinessRuleException(
+                    "Practice start date cannot be in the future.");
             }
 
             if (consultationFee < 1 || consultationFee > 100000)
             {
-                throw new BusinessRuleException("Consultation fee must be between 1 and 100,000.");
+                throw new BusinessRuleException(
+                    "Consultation fee must be between 1 and 100,000.");
             }
         }
 
-        private static int CalculateYearsOfExperience(DateTime practiceStartDate)
+        private static int CalculateYearsOfExperience(
+            DateTime practiceStartDate)
         {
             int years = DateTime.Today.Year - practiceStartDate.Year;
 
@@ -568,7 +612,8 @@ namespace HealthCareApp.Services
             }
 
             string formattedName =
-                char.ToUpper(cleanedName[0]) + cleanedName.Substring(1).ToLower();
+                char.ToUpper(cleanedName[0]) +
+                cleanedName.Substring(1).ToLower();
 
             return $"{formattedName}@{DateTime.Today.Year}";
         }

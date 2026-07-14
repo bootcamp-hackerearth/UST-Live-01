@@ -38,12 +38,7 @@ namespace HealthCareApp.Controllers
                 dto,
                 identityUserId);
 
-            logger.LogInformation(
-                "Doctor leave created by logged-in doctor through API. DoctorLeaveId: {DoctorLeaveId}, DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}",
-                doctorLeave.DoctorLeaveId,
-                doctorLeave.DoctorId,
-                doctorLeave.StartDate,
-                doctorLeave.EndDate);
+            LogDoctorLeaveCreatedThroughApi(doctorLeave);
 
             return Ok(doctorLeave);
         }
@@ -87,6 +82,22 @@ namespace HealthCareApp.Controllers
                 date = date.ToString("yyyy-MM-dd"),
                 isOnLeave
             });
+        }
+
+        private void LogDoctorLeaveCreatedThroughApi(
+            DoctorLeaveDto doctorLeave)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                "Doctor leave created by logged-in doctor through API. DoctorLeaveId: {DoctorLeaveId}, DoctorId: {DoctorId}, StartDate: {StartDate}, EndDate: {EndDate}",
+                doctorLeave.DoctorLeaveId,
+                doctorLeave.DoctorId,
+                doctorLeave.StartDate,
+                doctorLeave.EndDate);
         }
 
         private string GetLoggedInUserId()

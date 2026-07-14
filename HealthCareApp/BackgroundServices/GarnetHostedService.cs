@@ -2,47 +2,84 @@
 
 namespace HealthCareApp.BackgroundServices
 {
-    public class GarnetHostedService : IHostedService, IDisposable
+    public sealed class GarnetHostedService : IHostedService, IDisposable
     {
+        private const string GarnetPortArgument = "--port=3278";
+        private const int GarnetPort = 3278;
+
         private GarnetServer? server;
+
+        private bool disposed;
 
         private readonly ILogger<GarnetHostedService> logger;
 
-        public GarnetHostedService(ILogger<GarnetHostedService> logger)
+        public GarnetHostedService(
+            ILogger<GarnetHostedService> logger)
         {
             this.logger = logger;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync(
+            CancellationToken cancellationToken)
         {
             try
             {
-                server = new GarnetServer(["--port=3278"]);
+                server = new GarnetServer([GarnetPortArgument]);
 
                 server.Start();
 
-                logger.LogInformation("Embedded Garnet server started on port 3278.");
+                logger.LogInformation(
+                    "Embedded Garnet server started on port {Port}.",
+                    GarnetPort);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to start embedded Garnet server.");
+                logger.LogError(
+                    ex,
+                    "Failed to start embedded Garnet server.");
             }
 
             return Task.CompletedTask;
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public Task StopAsync(
+            CancellationToken cancellationToken)
         {
-            server?.Dispose();
+            DisposeServer();
 
-            logger.LogInformation("Embedded Garnet server stopped.");
+            logger.LogInformation(
+                "Embedded Garnet server stopped.");
 
             return Task.CompletedTask;
         }
 
         public void Dispose()
         {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                DisposeServer();
+            }
+
+            disposed = true;
+        }
+
+        private void DisposeServer()
+        {
             server?.Dispose();
+
+            server = null;
         }
     }
 }
