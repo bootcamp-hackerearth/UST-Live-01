@@ -61,21 +61,32 @@ export class Login {
             isLoggedIn: true
           });
 
+          localStorage.setItem(
+            'auth',
+            JSON.stringify(authState())
+          );
+
           this.fetchUserDetails(role);
 
           // ✅ ✅ DOCTOR FIRST LOGIN FLOW
           if (role?.toLowerCase() === 'doctor' && isFirstLogin) {
-            this.router.navigateByUrl('/change-password');
+            this.router.navigateByUrl('/doctor/change-password');
             return;
           }
 
           // ✅ NORMAL FLOW
           if (role?.toLowerCase() === 'patient') {
-            this.router.navigateByUrl('/patientdashboard');
+            this.router.navigateByUrl('/patient/dashboard');
           }
           else if (role?.toLowerCase() === 'doctor') {
-            this.router.navigateByUrl('/doctor-dashboard');
+            this.router.navigateByUrl('/doctor/dashboard');
           }
+
+          else if (role?.toLowerCase() === 'admin') {
+            window.location.href =
+              `https://localhost:7235/sso-login?token=${encodeURIComponent(token)}`;
+          }
+
         },
 
         error: () => {
@@ -115,6 +126,12 @@ export class Login {
             name: res.patientName
           }));
 
+          localStorage.setItem(
+            'auth',
+            JSON.stringify(authState())
+          );
+
+
           console.log("Updated state:", authState());
         });
     }
@@ -127,12 +144,14 @@ export class Login {
             name: res.doctorName
           }));
 
+          localStorage.setItem(
+            'auth',
+            JSON.stringify(authState())
+          );
+
+
           console.log("Updated state:", authState());
         });
     }
-  }
-
-  goToAdmin() {
-    window.location.href = "https://localhost:7235/login";
   }
 }

@@ -19,6 +19,7 @@ namespace HealthAxisApplicn.Repositories.Impl
         {
             return await _context.Set<Appointment>()
                 .AsNoTracking()
+                .Include(a => a.Patient)
                 .Where(a =>
                     a.DoctorId == doctorId &&
                     a.ScheduledDate.Date >= DateTime.UtcNow.Date &&
@@ -30,12 +31,11 @@ namespace HealthAxisApplicn.Repositories.Impl
 
 
 
-        public async Task<List<Appointment>> GetAppointmentsByPatientIdAsync(
-            int patientId,
-            CancellationToken ct = default)
+        public async Task<List<Appointment>> GetAppointmentsByPatientIdAsync(int patientId, CancellationToken ct = default)
         {
             return await _context.Set<Appointment>()
                 .AsNoTracking()
+                .Include(a => a.Doctor)
                 .Where(a => a.PatientId == patientId)
                 .OrderByDescending(a => a.ScheduledDate)
                 .ToListAsync(ct);
@@ -88,6 +88,7 @@ namespace HealthAxisApplicn.Repositories.Impl
         public async Task<List<Appointment>> GetTodayAppointmentsAsync(int doctorId, CancellationToken ct = default)
         {
             return await _context.Appointments
+                .Include(a => a.Patient)
                 .Where(a =>
                     a.DoctorId == doctorId &&
                     a.ScheduledDate.Date == DateTime.Today)

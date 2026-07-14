@@ -2,6 +2,7 @@
 @using HealthAxisAdminPortal.Pages.Shared
 @inject IDoctorApiService doctorService
 @inject IJSRuntime JS
+@inject AuthService AuthService
 
 <div class="glass-card p-4">
 
@@ -215,6 +216,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await AuthService.EnsureTokenLoaded();
+
         doctors = await doctorService.GetAllAsync();
     }
 

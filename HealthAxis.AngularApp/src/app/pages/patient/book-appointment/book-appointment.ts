@@ -66,7 +66,7 @@ export class BookAppointment {
         this.message.set("Appointment booked successfully ✅");
 
         setTimeout(() => {
-          this.router.navigateByUrl('/patient-dashboard');
+          this.router.navigateByUrl('/patient/dashboard');
         }, 1500);
       },
 

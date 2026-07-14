@@ -1,0 +1,52 @@
+2026-07-07 09:35:04.727 +05:30 [INF] User profile is available. Using 'C:\Users\310033\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-07-07 09:35:08.522 +05:30 [INF] Executed DbCommand (150ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-07 09:35:08.633 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-07 09:35:08.639 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-07 09:35:08.682 +05:30 [INF] Executed DbCommand (14ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[IsFirstLogin], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-07 09:35:08.904 +05:30 [INF] Heartbeat at "2026-07-07T04:05:08.9025507Z"
+2026-07-07 09:35:09.151 +05:30 [INF] Now listening on: https://localhost:7038
+2026-07-07 09:35:09.154 +05:30 [INF] Now listening on: http://localhost:5289
+2026-07-07 09:35:09.226 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-07 09:35:09.231 +05:30 [INF] Hosting environment: Development
+2026-07-07 09:35:09.235 +05:30 [INF] Content root path: C:\Users\310033\source\repos\HealthAxis\HealthAxisApplicn
+2026-07-07 09:35:30.295 +05:30 [INF] Application is shutting down...
+2026-07-07 09:39:49.353 +05:30 [INF] User profile is available. Using 'C:\Users\310033\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-07-07 09:39:50.969 +05:30 [INF] Executed DbCommand (61ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-07 09:39:51.074 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-07 09:39:51.086 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-07 09:39:51.131 +05:30 [INF] Executed DbCommand (16ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[IsFirstLogin], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-07 09:39:51.263 +05:30 [INF] HeartbeatService constructor called
+2026-07-07 09:39:51.287 +05:30 [INF] HeartbeatService started
+2026-07-07 09:39:51.289 +05:30 [INF] Heartbeat at "2026-07-07T04:09:51.2890000Z"
+2026-07-07 09:39:52.164 +05:30 [INF] Now listening on: https://localhost:7038
+2026-07-07 09:39:52.172 +05:30 [INF] Now listening on: http://localhost:5289
+2026-07-07 09:39:52.324 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-07 09:39:52.334 +05:30 [INF] Hosting environment: Development
+2026-07-07 09:39:52.352 +05:30 [INF] Content root path: C:\Users\310033\source\repos\HealthAxis\HealthAxisApplicn
+2026-07-07 09:40:01.300 +05:30 [INF] Heartbeat at "2026-07-07T04:10:01.3008107Z"
+2026-07-07 09:40:11.312 +05:30 [INF] Heartbeat at "2026-07-07T04:10:11.3120567Z"
+2026-07-07 09:40:19.394 +05:30 [INF] Application is shutting down...

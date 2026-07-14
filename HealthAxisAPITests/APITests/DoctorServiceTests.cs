@@ -1,25 +1,42 @@
-﻿using Xunit;
-using Moq;
+﻿using AutoMapper;
 using FluentAssertions;
-using AutoMapper;
-using HealthAxisApplicn.Services.Impl;
-using HealthAxisApplicn.Repositories;
-using HealthAxisApplicn.Models;
 using HealthAxisApplicn.Dto.Doctors;
+using HealthAxisApplicn.Models;
+using HealthAxisApplicn.Repositories;
+using HealthAxisApplicn.Services.Impl;
+using Moq;
+using StackExchange.Redis;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xunit;
 
 public class DoctorServiceTests
 {
     private readonly Mock<IDoctorRepository> _repoMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly DoctorService _service;
+    private readonly Mock<IConnectionMultiplexer> _redisMock;
+    private readonly Mock<IDatabase> _dbMock;
 
     public DoctorServiceTests()
     {
         _repoMock = new Mock<IDoctorRepository>();
         _mapperMock = new Mock<IMapper>();
-        _service = new DoctorService(_repoMock.Object, _mapperMock.Object);
+        _redisMock = new Mock<IConnectionMultiplexer>();
+
+        _dbMock = new Mock<IDatabase>();
+
+        _redisMock
+            .Setup(r => r.GetDatabase(
+                It.IsAny<int>(),
+                It.IsAny<object>()))
+            .Returns(_dbMock.Object);
+
+        _service = new DoctorService(
+            _repoMock.Object,
+            _mapperMock.Object,
+            _redisMock.Object);
+
     }
 
     [Fact]

@@ -8,6 +8,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="16.1.1" />
+		<PackageReference Include="MassTransit" Version="8.5.1" />
+		<PackageReference Include="MassTransit.RabbitMq" Version="8.5.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.9" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.9" />
@@ -21,7 +23,9 @@
 		<PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+		<PackageReference Include="Serilog.Sinks.ElasticSearch" Version="10.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+		<PackageReference Include="StackExchange.Redis" Version="3.0.17" />
 
 		<!-- ✅ SWAGGER 10.x -->
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.1" />
@@ -37,6 +41,10 @@
   <ItemGroup>
 	<Compile Update="Migrations\**\*.cs"> 
 	<SonarQubeExclude>true</SonarQubeExclude></Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Messaging\Publishers\" />
   </ItemGroup>
 
 </Project>

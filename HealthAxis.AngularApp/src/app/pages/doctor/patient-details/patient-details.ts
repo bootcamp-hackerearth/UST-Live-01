@@ -56,4 +56,3 @@ export class PatientDetails implements OnInit {
     });
   }
 }
-``

@@ -20,13 +20,31 @@ namespace HealthAxisApplicn.Mappings
             CreateMap<CreateDoctorDto, Doctor>();
             CreateMap<UpdateDoctorDto, Doctor>();
 
-         
-            CreateMap<Appointment, AppointmentDto>().ReverseMap();
+
+            CreateMap<Appointment, AppointmentDto>()
+            .ForMember(
+                dest => dest.DoctorName,
+                opt => opt.MapFrom(src => src.Doctor.DoctorName)
+            )
+            
+            .ForMember(
+                    dest => dest.PatientName,
+                    opt => opt.MapFrom(src => src.Patient.PatientName)
+                );
+
+
+            CreateMap<AppointmentDto, Appointment>();
             CreateMap<CreateAppointmentDto, Appointment>();
             CreateMap<UpdateAppointmentStatusDto, Appointment>();
 
-            
-            CreateMap<HealthRecord, HealthRecordDto>().ReverseMap();
+
+            CreateMap<HealthRecord, HealthRecordDto>()
+            .ForMember(
+                dest => dest.DoctorName,
+                opt => opt.MapFrom(src => src.Doctor.DoctorName)
+            );
+
+            CreateMap<HealthRecordDto, HealthRecord>();
         }
     }
 }

@@ -1,14 +1,23 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 @code {
     bool IsLoginPage =>
         NavManager.ToBaseRelativePath(NavManager.Uri).StartsWith("login");
 
-    void Logout()
+    
+    async Task Logout()
     {
-        NavManager.NavigateTo("/login", true);
+        await JS.InvokeVoidAsync("authHelper.removeToken");
+
+        TokenStore.AccessToken = null;
+
+        NavManager.NavigateTo(
+            "http://localhost:55799/login",
+            true);
     }
+
 
 }
 

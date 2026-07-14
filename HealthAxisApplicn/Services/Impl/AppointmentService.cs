@@ -1,11 +1,18 @@
 ﻿using AutoMapper;
 using HealthAxisApplicn.Dto.Appointments;
+using HealthAxisApplicn.Messaging.Contracts;
 using HealthAxisApplicn.Models;
 using HealthAxisApplicn.Repositories;
+using MassTransit;
 
 namespace HealthAxisApplicn.Services.Impl
 {
-    public class AppointmentService(IAppointmentRepository repository, IHealthRecordService healthRecordService, IMapper mapper) : IAppointmentService
+    public class AppointmentService(
+        IAppointmentRepository repository,
+        IHealthRecordService healthRecordService,
+        IMapper mapper,
+        IPublishEndpoint publishEndpoint)
+        : IAppointmentService
     {
         public async Task<AppointmentDto> CreateAsync(CreateAppointmentDto entity, int patientId)
         {
@@ -55,6 +62,28 @@ namespace HealthAxisApplicn.Services.Impl
             appointment.Status = "Pending";
 
             var savedEntity = await repository.CreateAsync(appointment);
+
+            await publishEndpoint.Publish(
+                new BookAppointmentEvent
+                {
+                    EventId = Guid.NewGuid(),
+
+                    EventType = "AppointmentBooked",
+
+                    OccurredAt = DateTime.UtcNow,
+
+                    Source = "HealthAxis.API",
+
+                    AppointmentId = savedEntity.AppointmentId,
+
+                    PatientId = savedEntity.PatientId,
+
+                    DoctorId = savedEntity.DoctorId,
+
+                    ScheduledDate = savedEntity.ScheduledDate,
+
+                    TimeSlot = savedEntity.TimeSlot
+                });
 
             return mapper.Map<AppointmentDto>(savedEntity);
         }

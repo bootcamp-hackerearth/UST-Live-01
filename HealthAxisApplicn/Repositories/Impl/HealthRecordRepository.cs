@@ -14,8 +14,10 @@ namespace HealthAxisApplicn.Repositories.Impl
         }
         public async Task<List<HealthRecord>> GetRecordsByPatientIdAsync(int patientId, CancellationToken ct = default)
         {
-            var recordsByPatientID = await _context.Set<HealthRecord>().Where(h => h.PatientId == patientId).ToListAsync(ct);
-            return recordsByPatientID;
+            return await _context.Set<HealthRecord>()
+                .Include(h => h.Doctor)
+                .Where(h => h.PatientId == patientId)
+                .ToListAsync(ct);
         }
 
         public async Task<List<HealthRecord>> GetRecordsByDoctorIdAsync(int doctorId, CancellationToken ct = default)

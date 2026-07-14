@@ -65,8 +65,6 @@ namespace HealthAxisApplicn.Services.Impl
                 RefreshToken = refreshToken,
                 ExpiresIn = expiry,
                 Message = "Login successful",
-
-                // ✅ CRITICAL
                 IsFirstLogin = user.IsFirstLogin
             };
         }
@@ -120,7 +118,7 @@ namespace HealthAxisApplicn.Services.Impl
 
             await userManager.AddToRoleAsync(user, request.Role);
 
-            // ✅ SET FIRST LOGIN FLAG
+            //SET FIRST LOGIN FLAG
             if (request.Role == "Patient")
                 user.IsFirstLogin = false;
             else
@@ -128,7 +126,7 @@ namespace HealthAxisApplicn.Services.Impl
 
             await userManager.UpdateAsync(user);
 
-            // ✅ PATIENT CREATION (KEEP)
+            //PATIENT CREATION
             if (request.Role == "Patient")
             {
                 if (string.IsNullOrEmpty(request.Name) ||
@@ -229,22 +227,22 @@ namespace HealthAxisApplicn.Services.Impl
 
         public async Task<AuthResponse?> RefreshAsync(string refreshToken)
         {
-            // ✅ Find token in DB
+            // Find token in DB
             var storedToken = await dbContext.RefreshTokens
                 .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
 
-            // ✅ Validate token
+            // Validate token
             if (storedToken == null || storedToken.IsRevoked || storedToken.Expires < DateTime.UtcNow)
             {
                 return null;
             }
 
-            // ✅ Get user
+            // Get user
             var user = await userManager.FindByIdAsync(storedToken.UserId);
             if (user == null)
                 return null;
 
-            // ✅ Generate NEW access token
+            // Generate NEW access token
             var newAccessToken = await GenerateJwtToken(user);
 
             var expiry = int.Parse(configuration["Jwt:AccessTokenExpirationMinutes"]!);

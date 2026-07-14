@@ -108,7 +108,7 @@ export class CreateHealthRecord {
         setTimeout(() => {
 
           this.router.navigateByUrl(
-            '/doctor-appointments'
+            '/doctor/appointments'
           );
 
         }, 1500);

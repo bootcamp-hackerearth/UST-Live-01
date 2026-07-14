@@ -9,7 +9,7 @@
   <div *ngFor="let patient of patients()"
        class="patient-item">
 
-    <a [routerLink]="['/patient-details', patient.patientId]">
+    <a [routerLink]="['/doctor/patient-details', patient.patientId]">
 
       {{ patient.patientName }}
 

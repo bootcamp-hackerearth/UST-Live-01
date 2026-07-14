@@ -10,6 +10,12 @@
 
     <h3>Patient ID: {{ appt.patientId }}</h3>
 
+    <p>
+      <strong>Patient:</strong>
+      {{ appt.patientName }}
+    </p>
+
+
     <p>Date: {{ appt.scheduledDate | date }}</p>
     <p>Slot: {{ appt.timeSlot }}</p>
     <p>Status: {{ appt.status }}</p>

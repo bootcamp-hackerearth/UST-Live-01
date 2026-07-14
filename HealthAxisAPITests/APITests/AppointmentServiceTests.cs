@@ -5,6 +5,8 @@ using HealthAxisApplicn.Models;
 using HealthAxisApplicn.Repositories;
 using HealthAxisApplicn.Services;
 using HealthAxisApplicn.Services.Impl;
+using MassTransit;
+using MassTransit.Transports;
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,6 +18,7 @@ public class AppointmentServiceTests
     private readonly Mock<IMapper> _mapperMock;
     private readonly AppointmentService _service;
     private readonly Mock<IHealthRecordService> _healthRecordMock;
+    private readonly Mock<IPublishEndpoint> _publishMock;
 
 
     public AppointmentServiceTests()
@@ -23,10 +26,12 @@ public class AppointmentServiceTests
         _repoMock = new Mock<IAppointmentRepository>();
         _mapperMock = new Mock<IMapper>();
         _healthRecordMock = new Mock<IHealthRecordService>();
+        _publishMock = new Mock<IPublishEndpoint>();
         _service = new AppointmentService(
             _repoMock.Object,
             _healthRecordMock.Object,
-            _mapperMock.Object);
+            _mapperMock.Object,
+            _publishMock.Object);
 
     }
 

@@ -1,0 +1,41 @@
+<div class="container">
+
+  <h2>My Appointments</h2>
+
+  <div *ngIf="appointments().length === 0">
+    No appointments found.
+  </div>
+
+  <div *ngFor="let appt of appointments()"
+       class="appointment-card">
+
+    <p>
+      <strong>Doctor:</strong>
+      {{ appt.doctorName }}
+    </p>
+
+    <p>
+      <strong>Date:</strong>
+      {{ appt.scheduledDate | date }}
+    </p>
+
+    <p>
+      <strong>Time Slot:</strong>
+      {{ appt.timeSlot }}
+    </p>
+
+    <p>
+      <strong>Status:</strong>
+      {{ appt.status }}
+    </p>
+
+    <p *ngIf="appt.cancellationReason">
+      <strong>Cancellation Reason:</strong>
+      {{ appt.cancellationReason }}
+    </p>
+
+  </div>
+
+  <p>{{ message() }}</p>
+
+</div>

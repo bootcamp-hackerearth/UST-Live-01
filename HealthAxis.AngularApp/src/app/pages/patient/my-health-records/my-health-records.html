@@ -1,0 +1,43 @@
+<div class="container">
+
+  <h2>My Health Records</h2>
+
+  <div *ngIf="records().length === 0">
+    No health records found.
+  </div>
+
+  <div *ngFor="let record of records()"
+       class="record-card">
+
+
+    <p>
+      <strong>Doctor:</strong>
+      {{ record.doctorName }}
+    </p>
+
+
+    <p>
+      <strong>Visit Date:</strong>
+      {{ record.visitDate | date }}
+    </p>
+
+    <p>
+      <strong>Diagnosis:</strong>
+      {{ record.diagnosis }}
+    </p>
+
+    <p>
+      <strong>Prescription:</strong>
+      {{ record.prescription }}
+    </p>
+
+    <p>
+      <strong>Notes:</strong>
+      {{ record.notes || 'N/A' }}
+    </p>
+
+  </div>
+
+  <p>{{ message() }}</p>
+
+</div>

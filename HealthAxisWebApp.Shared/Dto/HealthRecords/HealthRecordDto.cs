@@ -8,6 +8,7 @@ namespace HealthAxisApplicn.Dto.HealthRecords
         public int HealthRecordId { get; set; }
         public int PatientId { get; set; }
         public int DoctorId { get; set; }
+        public string DoctorName { get; set; } = string.Empty;
         public int AppointmentId { get; set; }
         public DateTime VisitDate { get; set; }
 

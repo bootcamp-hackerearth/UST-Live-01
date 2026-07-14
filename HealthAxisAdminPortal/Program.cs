@@ -1,5 +1,6 @@
 using HealthAxisAdminPortal;
 using HealthAxisAdminPortal.Services.FrontEndMemory;
+using HealthAxisAdminPortal.Services.Helpers;
 using HealthAxisAdminPortal.Services.Implementation;
 using HealthAxisAdminPortal.Services.Interfaces;
 using Microsoft.AspNetCore.Components.Web;
@@ -12,6 +13,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped<IDoctorApiService, DoctorApiService>();
 builder.Services.AddScoped<IAuthApiService, AuthApiService>();
 builder.Services.AddScoped<IPatientApiService, PatientApiService>();
+builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddScoped(sp =>
 {

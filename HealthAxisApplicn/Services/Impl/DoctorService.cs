@@ -4,15 +4,19 @@ using HealthAxisApplicn.Mappings;
 using HealthAxisApplicn.Models;
 using HealthAxisApplicn.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace HealthAxisApplicn.Services.Impl
 {
-    public class DoctorService(IDoctorRepository repository, IMapper mapper) : IDoctorService
+    public class DoctorService(IDoctorRepository repository, IMapper mapper, IConnectionMultiplexer redis) : IDoctorService
     {
         public async Task<DoctorDto> CreateAsync(CreateDoctorDto entity)
         {
             var doctor = mapper.Map<Doctor>(entity);
             var savedEntity = await repository.CreateAsync(doctor);
+            await InvalidateActiveDoctorsCache();
             return mapper.Map<DoctorDto>(savedEntity);
         }
 
@@ -26,6 +30,7 @@ namespace HealthAxisApplicn.Services.Impl
             existing.IsActive = false;
 
             var updated = await repository.UpdateAsync(id, existing);
+            await InvalidateActiveDoctorsCache();
 
             return mapper.Map<DoctorDto>(updated);
 
@@ -38,7 +43,34 @@ namespace HealthAxisApplicn.Services.Impl
 
         public async Task<List<DoctorDto>> GetActiveDoctorsAsync()
         {
-            return mapper.Map<List<DoctorDto>>(await repository.GetActiveDoctorsAsync());
+            Log.Information("DOCTOR SERVICE HIT");
+
+            var db = redis.GetDatabase();
+
+            const string cacheKey = "doctors:active";
+
+            var cachedDoctors =
+                await db.StringGetAsync(cacheKey);
+
+            if (!cachedDoctors.IsNullOrEmpty)
+            {
+                Log.Information("CACHE HIT !!");
+
+                return JsonSerializer.Deserialize<List<DoctorDto>>(
+                    cachedDoctors.ToString())!;
+            }
+
+            Log.Information("CACHE MISS !!");
+
+            var doctors = mapper.Map<List<DoctorDto>>(
+                await repository.GetActiveDoctorsAsync());
+
+            await db.StringSetAsync(
+                cacheKey,
+                JsonSerializer.Serialize(doctors),
+                TimeSpan.FromMinutes(5));
+
+            return doctors;
         }
 
         public async Task<DoctorDto?> GetByIdAsync(int id)
@@ -74,6 +106,7 @@ namespace HealthAxisApplicn.Services.Impl
             existing.IsActive = entity.IsActive;
 
             var updated = await repository.UpdateAsync(id, existing);
+            await InvalidateActiveDoctorsCache();
 
             return mapper.Map<DoctorDto?>(updated);
 
@@ -89,6 +122,7 @@ namespace HealthAxisApplicn.Services.Impl
             doctor.IsActive = !doctor.IsActive;
 
             await repository.UpdateAsync(id, doctor);
+            await InvalidateActiveDoctorsCache();
 
             return true;
         }
@@ -106,6 +140,15 @@ namespace HealthAxisApplicn.Services.Impl
         {
             var doctors = await repository.FilterAsync(name, specialization);
             return mapper.Map<List<DoctorDto>>(doctors);
+        }
+
+        private async Task InvalidateActiveDoctorsCache()
+        {
+            var db = redis.GetDatabase();
+
+            await db.KeyDeleteAsync("doctors:active");
+
+            Log.Information("ACTIVE DOCTORS CACHE INVALIDATED");
         }
 
 

@@ -1,21 +1,26 @@
 using HealthAxisApplicn.Data;
 using HealthAxisApplicn.Mappings;
+using HealthAxisApplicn.Messaging.Consumers;
 using HealthAxisApplicn.MiddleWare;
 using HealthAxisApplicn.Models;
 using HealthAxisApplicn.Repositories;
 using HealthAxisApplicn.Repositories.Impl;
 using HealthAxisApplicn.Services;
 using HealthAxisApplicn.Services.Impl;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Serilog;
+using Serilog.Debugging;
+using Serilog.Sinks.Elasticsearch;
+using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using Serilog;
 
 
 Log.Logger = new LoggerConfiguration()
@@ -23,8 +28,36 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
+SelfLog.Enable(msg => Console.WriteLine(msg));
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseSerilog();
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration.ReadFrom.Configuration(context.Configuration)
+
+        .ReadFrom.Services(services)
+
+        .Enrich.FromLogContext()
+
+        .WriteTo.Console()
+
+        .WriteTo.File(
+            "logs/healthaxis-.log",
+            rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: 7)
+
+        .WriteTo.Elasticsearch(
+            new ElasticsearchSinkOptions(
+                new Uri("https://localhost:9200"))
+            {
+                AutoRegisterTemplate = true,
+                IndexFormat = "healthaxis-logs-{0:yyyy.MM}",
+
+                ModifyConnectionSettings = x => x.BasicAuthentication(
+                            "elastic",
+                            "tGar3TbjGsaZW0+ZjJSv")
+
+            });
+});
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -141,6 +174,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddHostedService<HeartbeatService>();
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MappingProfile>();
@@ -162,6 +196,48 @@ builder.Services.AddCors(options =>
         });
 });
 
+var rabbitMqSettings =
+    builder.Configuration.GetSection("RabbitMQ");
+
+var host =
+    rabbitMqSettings["Host"];
+
+var virtualHost =
+    rabbitMqSettings["VirtualHost"];
+
+var username =
+    rabbitMqSettings["Username"];
+
+var password =
+    rabbitMqSettings["Password"];
+
+var queueName =
+    rabbitMqSettings["QueueName"];
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<BookAppointmentConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(host!, virtualHost!, h =>
+        {
+            h.Username(username!);
+            h.Password(password!);
+        });
+
+        cfg.ReceiveEndpoint(queueName!, e =>
+        {
+            e.ConfigureConsumer<BookAppointmentConsumer>(
+                context);
+        });
+    });
+});
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    return ConnectionMultiplexer.Connect("localhost:6379");
+});
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())

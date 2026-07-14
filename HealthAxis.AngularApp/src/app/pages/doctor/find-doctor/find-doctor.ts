@@ -78,7 +78,7 @@ export class FindDoctor implements OnInit {
   book(doc: any) {
     console.log("Book clicked:", doc);
 
-    this.router.navigate(['/book-appointment'], {
+    this.router.navigate(['/patient/book-appointment'], {
       state: { doctor: doc }
     });
   }

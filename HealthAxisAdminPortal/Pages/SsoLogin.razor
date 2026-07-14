@@ -1,0 +1,48 @@
+﻿@page "/sso-login"
+
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+
+<p>Signing in...</p>
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        var token = GetQueryParameter("token");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            TokenStore.AccessToken = token;
+            
+            await JS.InvokeVoidAsync(
+                "authHelper.setToken",
+                token);
+
+            NavManager.NavigateTo("/");
+            return;
+        }
+
+        NavManager.NavigateTo("/login");
+    }
+
+    private string? GetQueryParameter(string name)
+    {
+        var uri = new Uri(NavManager.Uri);
+
+        var query = uri.Query.TrimStart('?');
+
+        foreach (var item in query.Split('&',
+                 StringSplitOptions.RemoveEmptyEntries))
+        {
+            var parts = item.Split('=');
+
+            if (parts.Length == 2 && parts[0] == name)
+            {
+                return Uri.UnescapeDataString(parts[1]);
+            }
+        }
+
+        return null;
+    }
+}

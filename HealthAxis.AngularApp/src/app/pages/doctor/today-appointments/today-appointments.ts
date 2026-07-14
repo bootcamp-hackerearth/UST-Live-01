@@ -74,7 +74,7 @@ export class TodayAppointments implements OnInit {
         if (status === 'Completed') {
 
           this.router.navigate(
-            ['/create-health-record'],
+            ['/doctor/create-health-record'],
             {
               state: {
                 appointmentId: id
@@ -153,7 +153,7 @@ export class TodayAppointments implements OnInit {
   addHealthRecord(appt: any) {
 
     this.router.navigate(
-      ['/create-health-record'],
+      ['/doctor/create-health-record'],
       {
         state: {
           appointmentId: appt.appointmentId
