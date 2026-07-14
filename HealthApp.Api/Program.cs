@@ -16,27 +16,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
-using Serilog.Events;
 using System.Text;
-
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-    .MinimumLevel.Override("System", LogEventLevel.Warning)
-    .WriteTo.Console()
-    .WriteTo.File(
-        "Logs/healthapp-.log",
-        rollingInterval: RollingInterval.Day
-        )
-    .Enrich.FromLogContext()
-    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog();
+// Serilog
+// Reads Console, File, and Elasticsearch sinks from appsettings.json.
+builder.Host.UseSerilog((context, services, loggerConfiguration) =>
+{
+    loggerConfiguration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext();
+});
 
 // Controllers
 builder.Services.AddControllers();
@@ -54,39 +46,46 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1"
     });
 
-    options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
-    {
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        Description = "Enter JWT token only. Do not type Bearer."
-    });
+    options.AddSecurityDefinition(
+        "bearer",
+        new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            Description = "Enter JWT token only. Do not type Bearer."
+        });
 
-    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-    {
-        [new OpenApiSecuritySchemeReference("bearer", document)] = []
-    });
+    options.AddSecurityRequirement(document =>
+        new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference(
+                "bearer",
+                document)] = []
+        });
 });
 
 // Database
 builder.Services.AddDbContext<HealthAppDbContext>(options =>
 {
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"));
+        builder.Configuration.GetConnectionString(
+            "DefaultConnection"));
 });
 
 // Identity with ApplicationUser
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-{
-    options.User.RequireUniqueEmail = true;
+builder.Services
+    .AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
 
-    options.Password.RequireDigit = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequiredLength = 8;
-})
-.AddEntityFrameworkStores<HealthAppDbContext>()
-.AddDefaultTokenProviders();
+        options.Password.RequireDigit = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequiredLength = 8;
+    })
+    .AddEntityFrameworkStores<HealthAppDbContext>()
+    .AddDefaultTokenProviders();
 
 // CORS
 builder.Services.AddCors(options =>
@@ -95,7 +94,10 @@ builder.Services.AddCors(options =>
         "AllowBlazor",
         policy =>
         {
-            policy.WithOrigins("https://localhost:7028", "http://localhost:4200")
+            policy
+                .WithOrigins(
+                    "https://localhost:7028",
+                    "http://localhost:4200")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -103,33 +105,45 @@ builder.Services.AddCors(options =>
 });
 
 // JWT Authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services
+    .AddAuthentication(
+        JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         var jwt = builder.Configuration.GetSection("Jwt");
 
-        options.TokenValidationParameters = new TokenValidationParameters
+        var jwtKey = jwt["Key"];
+
+        if (string.IsNullOrWhiteSpace(jwtKey))
         {
-            ValidateIssuer = true,
-            ValidIssuer = jwt["Issuer"],
+            throw new InvalidOperationException(
+                "JWT signing key is not configured.");
+        }
 
-            ValidateAudience = true,
-            ValidAudience = jwt["Audience"],
+        options.TokenValidationParameters =
+            new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwt["Issuer"],
 
-            ValidateLifetime = true,
+                ValidateAudience = true,
+                ValidAudience = jwt["Audience"],
 
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwt["Key"]!)),
+                ValidateLifetime = true,
 
-            ClockSkew = TimeSpan.Zero
-        };
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey =
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtKey)),
+
+                ClockSkew = TimeSpan.Zero
+            };
     });
 
 // Authorization
 builder.Services.AddAuthorization();
 
-// Global Exception Handler
+// Global exception handling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddProblemDetails();
@@ -139,42 +153,108 @@ builder.Services.AddSingleton<
     CustomAuthorizationMiddlewareResultHandler>();
 
 // Repository registrations
-builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
-builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
-builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
+builder.Services.AddScoped<
+    IDoctorRepository,
+    DoctorRepository>();
+
+builder.Services.AddScoped<
+    IPatientRepository,
+    PatientRepository>();
+
+builder.Services.AddScoped<
+    IAppointmentRepository,
+    AppointmentRepository>();
+
+builder.Services.AddScoped<
+    IHealthRecordRepository,
+    HealthRecordRepository>();
+
+builder.Services.AddScoped<
+    IAdminRepository,
+    AdminRepository>();
+
+builder.Services.AddScoped<
+    IDoctorLeaveRepository,
+    DoctorLeaveRepository>();
 
 // Service registrations
-builder.Services.AddScoped<IDoctorService, DoctorService>();
-builder.Services.AddScoped<IPatientService, PatientService>();
-builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAdminService, AdminService>();
-builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddHostedService<NotificationCleanupService>();
-builder.Services.AddHostedService<HeartbeatService>();
+builder.Services.AddScoped<
+    IDoctorService,
+    DoctorService>();
+
+builder.Services.AddScoped<
+    IPatientService,
+    PatientService>();
+
+builder.Services.AddScoped<
+    IAppointmentService,
+    AppointmentService>();
+
+builder.Services.AddScoped<
+    IHealthRecordService,
+    HealthRecordService>();
+
+builder.Services.AddScoped<
+    IAuthService,
+    AuthService>();
+
+builder.Services.AddScoped<
+    IAdminService,
+    AdminService>();
+
+builder.Services.AddScoped<
+    IDoctorLeaveService,
+    DoctorLeaveService>();
+
+builder.Services.AddScoped<
+    INotificationService,
+    NotificationService>();
+
+// Hosted services
+builder.Services.AddHostedService<
+    NotificationCleanupService>();
+
+builder.Services.AddHostedService<
+    HeartbeatService>();
 
 // MassTransit / RabbitMQ
-builder.Services.AddMassTransit(config =>
+builder.Services.AddMassTransit(configuration =>
 {
-    config.AddConsumer<AppointmentBookedConsumer>();
+    configuration.AddConsumer<
+        AppointmentBookedConsumer>();
 
-    config.AddConsumer<AppointmentCancelledByDoctorLeaveConsumer>();
+    configuration.AddConsumer<
+        AppointmentCancelledByDoctorLeaveConsumer>();
 
-    config.UsingRabbitMq((context, rabbitConfig) =>
-    {
-        rabbitConfig.Host("localhost", "/", host =>
+    configuration.UsingRabbitMq(
+        (context, rabbitConfig) =>
         {
-            host.Username("guest");
-            host.Password("guest");
-        });
+            var rabbitMqSection =
+                builder.Configuration.GetSection("RabbitMq");
 
-        rabbitConfig.ConfigureEndpoints(context);
-    });
+            var host =
+                rabbitMqSection["Host"] ?? "localhost";
+
+            var virtualHost =
+                rabbitMqSection["VirtualHost"] ?? "/";
+
+            var username =
+                rabbitMqSection["Username"] ?? "guest";
+
+            var password =
+                rabbitMqSection["Password"] ?? "guest";
+
+            rabbitConfig.Host(
+                host,
+                virtualHost,
+                hostConfiguration =>
+                {
+                    hostConfiguration.Username(username);
+                    hostConfiguration.Password(password);
+                });
+
+            rabbitConfig.ConfigureEndpoints(context);
+        });
 });
 
 // Garnet / Redis distributed cache
@@ -187,62 +267,100 @@ builder.Services.AddStackExchangeRedisCache(options =>
         .GetSection("Garnet")
         .Get<GarnetOptions>() ?? new GarnetOptions();
 
-    options.Configuration = garnetOptions.ConnectionString;
-    options.InstanceName = garnetOptions.InstanceName;
+    options.Configuration =
+        garnetOptions.ConnectionString;
+
+    options.InstanceName =
+        garnetOptions.InstanceName;
 });
 
 // AutoMapper
-builder.Services.AddAutoMapper(cfg =>
+builder.Services.AddAutoMapper(configuration =>
 {
-    cfg.AddProfile<MappingProfile>();
+    configuration.AddProfile<MappingProfile>();
 });
 
 var app = builder.Build();
 
-// Seed roles and admin user
-using (var scope = app.Services.CreateScope())
+try
 {
-    var roleManager = scope.ServiceProvider
-        .GetRequiredService<RoleManager<IdentityRole>>();
+    Log.Information(
+        "Starting HealthApp API in {Environment}",
+        app.Environment.EnvironmentName);
 
-    var userManager = scope.ServiceProvider
-        .GetRequiredService<UserManager<ApplicationUser>>();
+    Log.Information(
+        "Serilog configuration loaded for HealthApp API");
 
-    var configuration = scope.ServiceProvider
-        .GetRequiredService<IConfiguration>();
+    // Seed roles and admin user
+    using (var scope = app.Services.CreateScope())
+    {
+        var roleManager = scope.ServiceProvider
+            .GetRequiredService<
+                RoleManager<IdentityRole>>();
 
-    await RoleSeeder.SeedRolesAndAdminAsync(
-        roleManager,
-        userManager,
-        configuration);
+        var userManager = scope.ServiceProvider
+            .GetRequiredService<
+                UserManager<ApplicationUser>>();
+
+        var configuration = scope.ServiceProvider
+            .GetRequiredService<IConfiguration>();
+
+        await RoleSeeder.SeedRolesAndAdminAsync(
+            roleManager,
+            userManager,
+            configuration);
+    }
+
+    // Seed login users for seeded doctors and patients
+    await DemoUserSeeder
+        .SeedDoctorAndPatientUsersAsync(
+            app.Services);
+
+    // Swagger / OpenAPI
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapOpenApi();
+
+        app.UseSwagger();
+
+        app.UseSwaggerUI();
+    }
+
+    // Record one log entry for each HTTP request.
+    app.UseSerilogRequestLogging(options =>
+    {
+        options.MessageTemplate =
+            "HTTP {RequestMethod} {RequestPath} " +
+            "responded {StatusCode} in " +
+            "{Elapsed:0.0000} ms";
+    });
+
+    app.UseHttpsRedirection();
+
+    app.UseExceptionHandler();
+
+    app.UseCors("AllowBlazor");
+
+    app.UseAuthentication();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    Log.Information(
+        "HealthApp API started successfully");
+
+    await app.RunAsync();
 }
-
-// Seed login users for seeded doctors and patients
-await DemoUserSeeder.SeedDoctorAndPatientUsersAsync(
-    app.Services);
-
-// Configure HTTP pipeline
-if (app.Environment.IsDevelopment())
+catch (Exception exception)
 {
-    app.MapOpenApi();
+    Log.Fatal(
+        exception,
+        "HealthApp API terminated unexpectedly");
 
-    app.UseSwagger();
-
-    app.UseSwaggerUI();
+    throw;
 }
-
-app.UseHttpsRedirection();
-
-app.UseExceptionHandler();
-
-app.UseSerilogRequestLogging();
-
-app.UseCors("AllowBlazor");
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-await app.RunAsync();
+finally
+{
+    await Log.CloseAndFlushAsync();
+}
