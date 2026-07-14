@@ -125,3 +125,280 @@
 2026-07-09 09:48:41.416 +05:30 [INF] HTTP GET /api/doctors/all responded 200 in 7.5473 ms
 2026-07-09 09:48:42.254 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:48:42.2547534+05:30"----------------
 2026-07-09 09:48:52.263 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T09:48:52.2633879+05:30"----------------
+2026-07-09 11:39:27.698 +05:30 [INF] HealthAxis Heartbeat Background Service started.+++++++++++++++
+2026-07-09 11:39:27.773 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:39:27.7720646+05:30"----------------
+2026-07-09 11:39:27.931 +05:30 [INF] Now listening on: http://localhost:5066
+2026-07-09 11:39:28.035 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-09 11:39:28.037 +05:30 [INF] Hosting environment: Development
+2026-07-09 11:39:28.038 +05:30 [INF] Content root path: C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api
+2026-07-09 11:39:37.793 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:39:37.7928365+05:30"----------------
+2026-07-09 11:39:47.806 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:39:47.8061905+05:30"----------------
+2026-07-09 11:39:57.820 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:39:57.8204472+05:30"----------------
+2026-07-09 11:40:07.838 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:40:07.8375918+05:30"----------------
+2026-07-09 11:40:17.844 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:40:17.8448746+05:30"----------------
+2026-07-09 11:40:27.852 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:40:27.8522227+05:30"----------------
+2026-07-09 11:40:37.861 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:40:37.8614113+05:30"----------------
+2026-07-09 11:40:47.873 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:40:47.8728921+05:30"----------------
+2026-07-09 11:40:56.463 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 41.2143 ms
+2026-07-09 11:40:56.516 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-07-09 11:40:57.248 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 739.5953 ms
+2026-07-09 11:40:57.317 +05:30 [INF] HTTP OPTIONS /api/PatientApi/me responded 204 in 0.8249 ms
+2026-07-09 11:40:57.533 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-09 11:40:57.630 +05:30 [INF] HTTP GET /api/PatientApi/me responded 200 in 308.7969 ms
+2026-07-09 11:40:57.636 +05:30 [INF] HTTP OPTIONS /api/appointments/me responded 204 in 0.1277 ms
+2026-07-09 11:40:57.637 +05:30 [INF] HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0604 ms
+2026-07-09 11:40:57.842 +05:30 [INF] HTTP GET /api/HealthRecordApi/me responded 200 in 199.2051 ms
+2026-07-09 11:40:57.886 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:40:57.8863233+05:30"----------------
+2026-07-09 11:40:57.984 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 343.2615 ms
+2026-07-09 11:40:59.393 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 15.0993 ms
+2026-07-09 11:41:00.957 +05:30 [INF] HTTP OPTIONS /api/doctors/activedoctors responded 204 in 0.1601 ms
+2026-07-09 11:41:01.730 +05:30 [INF] HTTP GET /api/doctors/activedoctors responded 200 in 767.9905 ms
+2026-07-09 11:41:03.900 +05:30 [INF] HTTP OPTIONS /api/appointments/me responded 204 in 0.1609 ms
+2026-07-09 11:41:03.926 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 20.2758 ms
+2026-07-09 11:41:07.903 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:41:07.9036922+05:30"----------------
+2026-07-09 11:41:11.049 +05:30 [INF] HTTP OPTIONS /api/appointments/doctor/1/availability responded 204 in 0.1353 ms
+2026-07-09 11:41:58.695 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:41:58.6954276+05:30"----------------
+2026-07-09 11:41:58.703 +05:30 [ERR] An unexpected Error Occured : The JSON value could not be converted to System.String. Path: $[0] | LineNumber: 0 | BytePositionInLine: 2.
+System.Text.Json.JsonException: The JSON value could not be converted to System.String. Path: $[0] | LineNumber: 0 | BytePositionInLine: 2.
+ ---> System.InvalidOperationException: Cannot get the value of a token type 'StartObject' as a string.
+   at System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(JsonTokenType tokenType)
+   at System.Text.Json.Utf8JsonReader.GetString()
+   at System.Text.Json.Serialization.JsonCollectionConverter`2.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, TCollection& value)
+   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   --- End of inner exception stack trace ---
+   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, Utf8JsonReader& reader, Exception ex)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   at System.Text.Json.Serialization.Metadata.JsonTypeInfo`1.Deserialize(Utf8JsonReader& reader, ReadStack& state)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)
+   at System.Text.Json.JsonSerializer.Deserialize[TValue](String json, JsonSerializerOptions options)
+   at HealthApp.Api.Service.Impl.AppointmentService.CheckDoctorAvailability(Int32 doctorId, DateTime date) in C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api\Service\Impl\AppointmentService.cs:line 162
+   at HealthApp.Api.Controllers.AppointmentApiController.CheckDoctorAvailability(Int32 doctorId, DateTime date) in C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api\Controllers\AppointmentApiController.cs:line 72
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddlewareImpl.<Invoke>g__Awaited|10_0(ExceptionHandlerMiddlewareImpl middleware, HttpContext context, Task task)
+2026-07-09 11:41:58.741 +05:30 [ERR] HTTP GET /api/appointments/doctor/1/availability responded 500 in 47684.0618 ms
+2026-07-09 11:42:04.268 +05:30 [INF] HTTP OPTIONS /api/appointments/doctor/1/availability responded 204 in 0.1368 ms
+2026-07-09 11:42:09.317 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:42:09.3179334+05:30"----------------
+2026-07-09 11:42:09.320 +05:30 [ERR] An unexpected Error Occured : The JSON value could not be converted to System.String. Path: $[0] | LineNumber: 0 | BytePositionInLine: 2.
+System.Text.Json.JsonException: The JSON value could not be converted to System.String. Path: $[0] | LineNumber: 0 | BytePositionInLine: 2.
+ ---> System.InvalidOperationException: Cannot get the value of a token type 'StartObject' as a string.
+   at System.Text.Json.ThrowHelper.ThrowInvalidOperationException_ExpectedString(JsonTokenType tokenType)
+   at System.Text.Json.Utf8JsonReader.GetString()
+   at System.Text.Json.Serialization.JsonCollectionConverter`2.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, TCollection& value)
+   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   --- End of inner exception stack trace ---
+   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, Utf8JsonReader& reader, Exception ex)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   at System.Text.Json.Serialization.Metadata.JsonTypeInfo`1.Deserialize(Utf8JsonReader& reader, ReadStack& state)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)
+   at System.Text.Json.JsonSerializer.Deserialize[TValue](String json, JsonSerializerOptions options)
+   at HealthApp.Api.Service.Impl.AppointmentService.CheckDoctorAvailability(Int32 doctorId, DateTime date) in C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api\Service\Impl\AppointmentService.cs:line 162
+   at HealthApp.Api.Controllers.AppointmentApiController.CheckDoctorAvailability(Int32 doctorId, DateTime date) in C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api\Controllers\AppointmentApiController.cs:line 72
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddlewareImpl.<Invoke>g__Awaited|10_0(ExceptionHandlerMiddlewareImpl middleware, HttpContext context, Task task)
+2026-07-09 11:42:09.327 +05:30 [ERR] HTTP GET /api/appointments/doctor/1/availability responded 500 in 5051.4288 ms
+2026-07-09 11:42:19.330 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:42:19.3306704+05:30"----------------
+2026-07-09 11:42:29.343 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:42:29.3429720+05:30"----------------
+2026-07-09 11:42:39.356 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:42:39.3566173+05:30"----------------
+2026-07-09 11:42:49.371 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:42:49.3715149+05:30"----------------
+2026-07-09 11:42:59.379 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:42:59.3790597+05:30"----------------
+2026-07-09 11:43:09.382 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:43:09.3819587+05:30"----------------
+2026-07-09 11:43:19.390 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:43:19.3904444+05:30"----------------
+2026-07-09 11:43:29.404 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:43:29.4043736+05:30"----------------
+2026-07-09 11:43:39.410 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:43:39.4100707+05:30"----------------
+2026-07-09 11:43:49.420 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:43:49.4205289+05:30"----------------
+2026-07-09 11:43:59.429 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:43:59.4295251+05:30"----------------
+2026-07-09 11:44:09.442 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:44:09.4424323+05:30"----------------
+2026-07-09 11:44:19.457 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:44:19.4576201+05:30"----------------
+2026-07-09 11:44:29.466 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:44:29.4662372+05:30"----------------
+2026-07-09 11:44:39.478 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:44:39.4779571+05:30"----------------
+2026-07-09 11:44:49.493 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:44:49.4920836+05:30"----------------
+2026-07-09 11:44:59.511 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:44:59.5115746+05:30"----------------
+2026-07-09 11:45:09.517 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:45:09.5177989+05:30"----------------
+2026-07-09 11:45:19.536 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:45:19.5363282+05:30"----------------
+2026-07-09 11:45:29.553 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:45:29.5531578+05:30"----------------
+2026-07-09 11:45:39.567 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:45:39.5678299+05:30"----------------
+2026-07-09 11:45:49.584 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:45:49.5842115+05:30"----------------
+2026-07-09 11:45:59.596 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:45:59.5962252+05:30"----------------
+2026-07-09 11:46:09.599 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:46:09.5992799+05:30"----------------
+2026-07-09 11:46:19.617 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:46:19.6173616+05:30"----------------
+2026-07-09 11:46:29.632 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:46:29.6323168+05:30"----------------
+2026-07-09 11:46:39.637 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:46:39.6378312+05:30"----------------
+2026-07-09 11:46:49.651 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:46:49.6517450+05:30"----------------
+2026-07-09 11:46:59.659 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:46:59.6591429+05:30"----------------
+2026-07-09 11:47:09.669 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:47:09.6682055+05:30"----------------
+2026-07-09 11:47:19.680 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:47:19.6809406+05:30"----------------
+2026-07-09 11:47:29.696 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:47:29.6966329+05:30"----------------
+2026-07-09 11:47:39.715 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:47:39.7150373+05:30"----------------
+2026-07-09 11:47:49.723 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:47:49.7233308+05:30"----------------
+2026-07-09 11:47:59.729 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:47:59.7298728+05:30"----------------
+2026-07-09 11:48:09.741 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:48:09.7416857+05:30"----------------
+2026-07-09 11:48:19.752 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:48:19.7521737+05:30"----------------
+2026-07-09 11:48:29.769 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:48:29.7696616+05:30"----------------
+2026-07-09 11:48:39.774 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:48:39.7745308+05:30"----------------
+2026-07-09 11:48:49.787 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:48:49.7877275+05:30"----------------
+2026-07-09 11:48:59.794 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:48:59.7944470+05:30"----------------
+2026-07-09 11:49:09.799 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:49:09.7994132+05:30"----------------
+2026-07-09 11:49:19.815 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:49:19.8153736+05:30"----------------
+2026-07-09 11:49:29.820 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:49:29.8197554+05:30"----------------
+2026-07-09 11:49:39.840 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:49:39.8403046+05:30"----------------
+2026-07-09 11:49:49.855 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:49:49.8544260+05:30"----------------
+2026-07-09 11:49:59.870 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:49:59.8707032+05:30"----------------
+2026-07-09 11:50:09.884 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:50:09.8843105+05:30"----------------
+2026-07-09 11:50:19.901 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:50:19.9016672+05:30"----------------
+2026-07-09 11:50:29.911 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:50:29.9112966+05:30"----------------
+2026-07-09 11:50:39.921 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:50:39.9218960+05:30"----------------
+2026-07-09 11:50:49.930 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:50:49.9301912+05:30"----------------
+2026-07-09 11:50:59.937 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:50:59.9370493+05:30"----------------
+2026-07-09 11:51:09.948 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:51:09.9489814+05:30"----------------
+2026-07-09 11:51:19.956 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:51:19.9560350+05:30"----------------
+2026-07-09 11:51:29.974 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:51:29.9748651+05:30"----------------
+2026-07-09 11:51:39.992 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:51:39.9921408+05:30"----------------
+2026-07-09 11:51:49.996 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:51:49.9968192+05:30"----------------
+2026-07-09 11:52:00.010 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:52:00.0106448+05:30"----------------
+2026-07-09 11:52:10.026 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:52:10.0268061+05:30"----------------
+2026-07-09 11:52:20.035 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:52:20.0357643+05:30"----------------
+2026-07-09 11:52:30.041 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:52:30.0414053+05:30"----------------
+2026-07-09 11:52:40.058 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:52:40.0582786+05:30"----------------
+2026-07-09 11:52:50.063 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:52:50.0638730+05:30"----------------
+2026-07-09 11:53:00.078 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:53:00.0787666+05:30"----------------
+2026-07-09 11:53:10.096 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:53:10.0963070+05:30"----------------
+2026-07-09 11:53:20.104 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:53:20.1040386+05:30"----------------
+2026-07-09 11:53:30.112 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:53:30.1122468+05:30"----------------
+2026-07-09 11:53:40.117 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:53:40.1169950+05:30"----------------
+2026-07-09 11:53:50.131 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:53:50.1312167+05:30"----------------
+2026-07-09 11:54:00.138 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:54:00.1382800+05:30"----------------
+2026-07-09 11:54:10.148 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:54:10.1480261+05:30"----------------
+2026-07-09 11:54:20.154 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:54:20.1543951+05:30"----------------
+2026-07-09 11:54:30.164 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:54:30.1648148+05:30"----------------
+2026-07-09 11:54:40.176 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:54:40.1764619+05:30"----------------
+2026-07-09 11:54:50.183 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:54:50.1835289+05:30"----------------
+2026-07-09 11:55:00.197 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:55:00.1973110+05:30"----------------
+2026-07-09 11:55:10.200 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:55:10.2003419+05:30"----------------
+2026-07-09 11:55:20.203 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:55:20.2039454+05:30"----------------
+2026-07-09 11:55:30.206 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:55:30.2062328+05:30"----------------
+2026-07-09 11:55:40.210 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:55:40.2104231+05:30"----------------
+2026-07-09 11:55:50.215 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:55:50.2157936+05:30"----------------
+2026-07-09 11:56:10.267 +05:30 [INF] HealthAxis Heartbeat Background Service started.+++++++++++++++
+2026-07-09 11:56:10.365 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:56:10.3645695+05:30"----------------
+2026-07-09 11:56:10.478 +05:30 [INF] Now listening on: http://localhost:5066
+2026-07-09 11:56:10.572 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-09 11:56:10.574 +05:30 [INF] Hosting environment: Development
+2026-07-09 11:56:10.576 +05:30 [INF] Content root path: C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api
+2026-07-09 11:56:20.388 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:56:20.3886165+05:30"----------------
+2026-07-09 11:56:30.402 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:56:30.4018957+05:30"----------------
+2026-07-09 11:56:40.418 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:56:40.4180728+05:30"----------------
+2026-07-09 11:56:50.425 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:56:50.4250053+05:30"----------------
+2026-07-09 11:57:00.443 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:57:00.4434618+05:30"----------------
+2026-07-09 11:57:10.446 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:57:10.4464491+05:30"----------------
+2026-07-09 11:57:20.459 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:57:20.4592797+05:30"----------------
+2026-07-09 11:57:30.471 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:57:30.4716446+05:30"----------------
+2026-07-09 11:57:40.475 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:57:40.4749375+05:30"----------------
+2026-07-09 11:57:50.491 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:57:50.4907495+05:30"----------------
+2026-07-09 11:58:00.499 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:58:00.4989541+05:30"----------------
+2026-07-09 11:58:10.514 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:58:10.5147188+05:30"----------------
+2026-07-09 11:58:20.522 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:58:20.5222616+05:30"----------------
+2026-07-09 11:58:30.535 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:58:30.5344254+05:30"----------------
+2026-07-09 11:58:40.552 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:58:40.5527770+05:30"----------------
+2026-07-09 11:58:50.562 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:58:50.5623529+05:30"----------------
+2026-07-09 11:59:00.570 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:59:00.5702227+05:30"----------------
+2026-07-09 11:59:10.586 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:59:10.5861661+05:30"----------------
+2026-07-09 11:59:20.596 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:59:20.5959900+05:30"----------------
+2026-07-09 11:59:30.612 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:59:30.6120502+05:30"----------------
+2026-07-09 11:59:40.617 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:59:40.6170832+05:30"----------------
+2026-07-09 11:59:50.621 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T11:59:50.6215118+05:30"----------------
+2026-07-09 12:00:00.624 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:00:00.6248282+05:30"----------------
+2026-07-09 12:00:10.638 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:00:10.6383843+05:30"----------------
+2026-07-09 12:00:20.653 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:00:20.6532406+05:30"----------------
+2026-07-09 12:00:30.661 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:00:30.6615315+05:30"----------------
+2026-07-09 12:00:40.671 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:00:40.6715943+05:30"----------------
+2026-07-09 12:00:50.684 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:00:50.6844551+05:30"----------------
+2026-07-09 12:01:00.688 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:01:00.6875204+05:30"----------------
+2026-07-09 12:01:10.700 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:01:10.6997924+05:30"----------------
+2026-07-09 12:01:20.707 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:01:20.7069503+05:30"----------------
+2026-07-09 12:01:30.713 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:01:30.7132077+05:30"----------------
+2026-07-09 12:01:40.725 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:01:40.7256874+05:30"----------------
+2026-07-09 12:01:50.737 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:01:50.7370801+05:30"----------------
+2026-07-09 12:02:00.749 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:02:00.7491501+05:30"----------------
+2026-07-09 12:02:20.039 +05:30 [INF] HealthAxis Heartbeat Background Service started.+++++++++++++++
+2026-07-09 12:02:20.109 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:02:20.1081645+05:30"----------------
+2026-07-09 12:02:20.225 +05:30 [INF] Now listening on: http://localhost:5066
+2026-07-09 12:02:20.333 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-09 12:02:20.335 +05:30 [INF] Hosting environment: Development
+2026-07-09 12:02:20.337 +05:30 [INF] Content root path: C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api
+2026-07-09 12:02:30.127 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:02:30.1272475+05:30"----------------
+2026-07-09 12:02:40.134 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:02:40.1344357+05:30"----------------
+2026-07-09 12:02:50.149 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:02:50.1496241+05:30"----------------
+2026-07-09 12:03:00.161 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:03:00.1616787+05:30"----------------
+2026-07-09 12:03:10.165 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:03:10.1656292+05:30"----------------
+2026-07-09 12:03:20.179 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:03:20.1791398+05:30"----------------
+2026-07-09 12:03:28.667 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 23.8058 ms
+2026-07-09 12:03:28.706 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-07-09 12:03:29.306 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 608.0602 ms
+2026-07-09 12:03:29.353 +05:30 [INF] HTTP OPTIONS /api/PatientApi/me responded 204 in 1.0679 ms
+2026-07-09 12:03:29.583 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-09 12:03:29.679 +05:30 [INF] HTTP GET /api/PatientApi/me responded 200 in 320.8921 ms
+2026-07-09 12:03:29.685 +05:30 [INF] HTTP OPTIONS /api/appointments/me responded 204 in 0.1066 ms
+2026-07-09 12:03:29.686 +05:30 [INF] HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0741 ms
+2026-07-09 12:03:29.885 +05:30 [INF] HTTP GET /api/HealthRecordApi/me responded 200 in 194.1105 ms
+2026-07-09 12:03:30.033 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 344.0222 ms
+2026-07-09 12:03:30.193 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:03:30.1897342+05:30"----------------
+2026-07-09 12:03:30.631 +05:30 [INF] HTTP OPTIONS /api/doctors/activedoctors responded 204 in 0.1214 ms
+2026-07-09 12:03:31.286 +05:30 [INF] HTTP GET /api/doctors/activedoctors responded 200 in 648.9856 ms
+2026-07-09 12:03:34.927 +05:30 [INF] HTTP OPTIONS /api/appointments/me responded 204 in 0.3104 ms
+2026-07-09 12:03:34.957 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 21.8984 ms
+2026-07-09 12:03:39.503 +05:30 [INF] HTTP OPTIONS /api/doctors/activedoctors responded 204 in 0.1172 ms
+2026-07-09 12:03:39.528 +05:30 [INF] HTTP GET /api/doctors/activedoctors responded 200 in 20.0184 ms
+2026-07-09 12:03:40.206 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:03:40.2064209+05:30"----------------
+2026-07-09 12:03:44.535 +05:30 [INF] HTTP OPTIONS /api/appointments/me responded 204 in 0.1260 ms
+2026-07-09 12:03:44.561 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 21.1664 ms
+2026-07-09 12:03:48.116 +05:30 [INF] HTTP OPTIONS /api/appointments/doctor/6/availability responded 204 in 0.4216 ms
+2026-07-09 12:03:48.180 +05:30 [INF] HTTP GET /api/appointments/doctor/6/availability responded 200 in 57.2268 ms
+2026-07-09 12:03:50.224 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:03:50.2241458+05:30"----------------
+2026-07-09 12:04:00.232 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:04:00.2322096+05:30"----------------
+2026-07-09 12:04:02.713 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 0.1698 ms
+2026-07-09 12:04:03.097 +05:30 [INF] New appointment booked. AppointmentId: 15, Patient: S N K, Doctor: Shiva, Date: "2026-07-20T00:00:00.0000000", Slot: 10:00 AM
+2026-07-09 12:04:03.102 +05:30 [INF] HTTP POST /api/appointments responded 200 in 380.7128 ms
+2026-07-09 12:04:06.564 +05:30 [INF] HTTP OPTIONS /api/appointments/me responded 204 in 0.2116 ms
+2026-07-09 12:04:06.575 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 5.2779 ms
+2026-07-09 12:04:10.236 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:04:10.2361156+05:30"----------------
+2026-07-09 12:04:20.249 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:04:20.2476198+05:30"----------------
+2026-07-09 12:04:22.285 +05:30 [INF] HTTP OPTIONS /api/PatientApi/me responded 204 in 0.1904 ms
+2026-07-09 12:04:22.295 +05:30 [INF] HTTP GET /api/PatientApi/me responded 200 in 3.9385 ms
+2026-07-09 12:04:22.301 +05:30 [INF] HTTP OPTIONS /api/appointments/me responded 204 in 0.0726 ms
+2026-07-09 12:04:22.302 +05:30 [INF] HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0584 ms
+2026-07-09 12:04:22.313 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 7.1238 ms
+2026-07-09 12:04:22.322 +05:30 [INF] HTTP GET /api/HealthRecordApi/me responded 200 in 11.9546 ms
+2026-07-09 12:04:30.268 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:04:30.2683671+05:30"----------------
+2026-07-09 12:04:40.278 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:04:40.2780083+05:30"----------------
+2026-07-09 12:04:47.286 +05:30 [INF] HTTP OPTIONS /api/appointments/me responded 204 in 0.1002 ms
+2026-07-09 12:04:47.308 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 17.0879 ms
+2026-07-09 12:04:49.499 +05:30 [INF] HTTP OPTIONS /api/doctors/activedoctors responded 204 in 0.1182 ms
+2026-07-09 12:04:49.510 +05:30 [INF] HTTP GET /api/doctors/activedoctors responded 200 in 5.3884 ms
+2026-07-09 12:04:50.288 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:04:50.2883879+05:30"----------------
+2026-07-09 12:04:51.394 +05:30 [INF] HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.3639 ms
+2026-07-09 12:04:51.415 +05:30 [INF] HTTP GET /api/HealthRecordApi/me responded 200 in 13.8579 ms
+2026-07-09 12:05:00.297 +05:30 [INF] HealthAxis heartbeat running at "2026-07-09T12:05:00.2977314+05:30"----------------

@@ -8,6 +8,7 @@ using HealthApp.Api.Repository.Impl;
 using HealthApp.Api.Repository.Interface;
 using HealthApp.Api.Service.Impl;
 using HealthApp.Api.Service.Interface;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -132,7 +133,36 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 
 builder.Services.AddScoped<IAppointmentEventPublisher, AppointmentEventPublisher>();
-//builder.Services.AddSingleton<RabbitMQPublisher>();
+builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
+builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
+
+
+
+
+builder.Services.Configure<RabbitMqOptions>(
+    builder.Configuration.GetSection("RabbitMq"));
+
+builder.Services.Configure<RabbitMqOptions>(
+    builder.Configuration.GetSection("RabbitMq"));
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var rabbitMqOptions = builder.Configuration
+            .GetSection("RabbitMq")
+            .Get<RabbitMqOptions>() ?? new RabbitMqOptions();
+
+        cfg.Host(
+            rabbitMqOptions.HostName,
+            rabbitMqOptions.VirtualHost,
+            h =>
+            {
+                h.Username(rabbitMqOptions.UserName);
+                h.Password(rabbitMqOptions.Password);
+            });
+    });
+});
 
 builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection("Garnet"));
 builder.Services.AddStackExchangeRedisCache(options =>

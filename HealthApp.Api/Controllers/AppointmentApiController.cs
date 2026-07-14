@@ -1,4 +1,5 @@
-﻿using HealthApp.Api.Service.Interface;
+﻿using HealthApp.Api.Service.Impl;
+using HealthApp.Api.Service.Interface;
 using HealthApp.Shared.Dto;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -65,12 +66,15 @@ namespace HealthApp.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("doctor/{doctorId}/availability")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User,Admin")]
-        public async Task<IActionResult> CheckDoctorAvailability(int doctorId, [FromQuery] DateTime date)
+
+        [HttpGet("doctor/{doctorId:int}/availability")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> CheckDoctorAvailability(int doctorId,[FromQuery] DateTime date)
         {
-            var data = await _service.CheckDoctorAvailability(doctorId, date);
-            return Ok(data);
+            var result = await _service
+                .CheckDoctorAvailability(doctorId, date);
+
+            return Ok(result);
         }
 
         [HttpGet("slot-booked")]

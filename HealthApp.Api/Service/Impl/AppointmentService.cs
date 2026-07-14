@@ -6,6 +6,8 @@ using HealthApp.Api.Model;
 using HealthApp.Api.Repository.Interface;
 using HealthApp.Api.Service.Interface;
 using HealthApp.Shared.Dto;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace HealthApp.Api.Service.Impl
 {
@@ -16,6 +18,8 @@ namespace HealthApp.Api.Service.Impl
         private readonly IDoctorRepository _doctorRepository;
         private readonly IMapper _mapper;
         private readonly IAppointmentEventPublisher _appointmentEventPublisher;
+        private readonly IDoctorLeaveRepository _doctorLeaveRepository;
+
 
         private const string AppointmentEntity = "Appointment";
 
@@ -24,14 +28,24 @@ namespace HealthApp.Api.Service.Impl
             IPatientRepository patientRepository,
             IDoctorRepository doctorRepository,
             IMapper mapper,
-            IAppointmentEventPublisher appointmentEventPublisher)
+            IAppointmentEventPublisher appointmentEventPublisher,
+            IDoctorLeaveRepository doctorLeaveRepository)
         {
             _repo = repo;
             _patientRepository = patientRepository;
             _doctorRepository = doctorRepository;
             _mapper = mapper;
             _appointmentEventPublisher = appointmentEventPublisher;
+            _doctorLeaveRepository = doctorLeaveRepository;
         }
+        private const string DoctorAvailabilityCachePrefix = "appointment:doctor:availability";
+
+        private readonly DistributedCacheEntryOptions cacheOptions = new()
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+        };
+
+
 
         public async Task<object> Add(AppointmentDto dto, string identityUserId)
         {
@@ -40,6 +54,15 @@ namespace HealthApp.Api.Service.Impl
 
             if (patient == null)
                 throw new EntityNotFoundException("Patient", 0);
+
+
+
+            var isDoctorOnLeave = await _doctorLeaveRepository.
+                IsDoctorOnLeaveAsync(dto.DoctorId, dto.ScheduledDate);
+
+            if (isDoctorOnLeave)
+                throw new AppointmentRuleException
+                    ("Doctor is on leave for the selected date. Please choose another date.");
 
             var isBooked = await _repo.IsSlotBookedAsync(
                 dto.DoctorId,
@@ -140,15 +163,64 @@ namespace HealthApp.Api.Service.Impl
             return _mapper.Map<AppointmentDto>(saved);
         }
 
-        public async Task<List<string>> CheckDoctorAvailability(
-            int doctorId,
-            DateTime date)
+        public async Task<DoctorAvailabilityResponseDto> CheckDoctorAvailability(
+    int doctorId,
+    DateTime date)
         {
-            var list = await _repo.GetBookedSlotsAsync(
-                doctorId,
-                date);
+            var selectedDate = date.Date;
 
-            return list ?? new List<string>();
+            var allSlots = new List<string>
+    {
+        "09:00 AM",
+        "10:00 AM",
+        "11:00 AM",
+        "12:00 PM",
+        "01:00 PM",
+        "02:00 PM",
+        "03:00 PM",
+        "04:00 PM",
+        "05:00 PM"
+    };
+
+            var isDoctorOnLeave = await _doctorLeaveRepository
+                .IsDoctorOnLeaveAsync(doctorId, selectedDate);
+
+            if (isDoctorOnLeave)
+            {
+                return new DoctorAvailabilityResponseDto
+                {
+                    DoctorId = doctorId,
+                    Date = selectedDate,
+                    IsDoctorOnLeave = true,
+                    Message = "Doctor is on leave for the selected date.",
+                    Slots = allSlots.Select(slot => new DoctorSlotDto
+                    {
+                        TimeSlot = slot,
+                        IsAvailable = false,
+                        Status = "Doctor On Leave"
+                    }).ToList()
+                };
+            }
+
+            var bookedSlots = await _repo.GetBookedSlotsAsync(
+                doctorId,
+                selectedDate);
+
+            bookedSlots ??= new List<string>();
+
+            return new DoctorAvailabilityResponseDto
+            {
+                DoctorId = doctorId,
+                Date = selectedDate,
+                IsDoctorOnLeave = false,
+                Message = "Doctor is available for the selected date.",
+                Slots = allSlots.Select(slot => new DoctorSlotDto
+                {
+                    TimeSlot = slot,
+                    IsAvailable = !bookedSlots.Contains(slot),
+                    Status = bookedSlots.Contains(slot) ? "Booked" : "Available"
+                }).ToList()
+            };
         }
 
         public async Task<bool> IsSlotBooked(

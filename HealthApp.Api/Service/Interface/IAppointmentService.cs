@@ -20,8 +20,7 @@ namespace HealthApp.Api.Service.Interface
         Task<AppointmentDto> ConfirmAppointment(int appointmentId);
         Task<AppointmentDto> CompleteAppointment(int appointmentId);
 
-        Task<List<string>> CheckDoctorAvailability(int doctorId, DateTime date);
-
+        Task<DoctorAvailabilityResponseDto> CheckDoctorAvailability(int doctorId,DateTime date);
         Task<bool> IsSlotBooked(int doctorId, DateTime date, string timeSlot);
 
         Task<List<AppointmentDto>> GetUpcomingAppointmentsByDoctor(int doctorId,

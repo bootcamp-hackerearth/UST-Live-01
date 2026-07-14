@@ -1,0 +1,745 @@
+﻿@page "/doctor-leaves"
+@rendermode InteractiveServer
+
+@using HealthApp.Shared.Dto
+@using HealthApp.Blazor.Components.service.Interface
+@using Microsoft.AspNetCore.Components.Forms
+@inject IDoctorLeaveService DoctorLeaveService
+
+<PageTitle>Doctor Leave</PageTitle>
+
+<div class="page">
+
+    <div class="header">
+        <div>
+            <h2>Doctor Leave</h2>
+            <p>View and manage doctor unavailability records</p>
+        </div>
+
+        <div class="summary-box">
+            Total Records: <strong>@totalRecords</strong>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <div class="toolbar-left">
+
+            <input class="input search"
+                   placeholder="Search by Doctor Name..."
+                   @bind="searchName"
+                   @bind:event="oninput" />
+
+            <InputDate class="input date-input"
+                       @bind-Value="searchDate" />
+
+            <button class="btn primary" @onclick="ApplyFilters">
+                Search
+            </button>
+
+        </div>
+
+        <div class="toolbar-right">
+            <button class="btn light" @onclick="ResetFilters">
+                Reset
+            </button>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="empty">
+            Loading doctor leave records...
+        </div>
+    }
+    else if (!filteredLeaves.Any())
+    {
+        <div class="empty">
+            No doctor leave records found.
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Doctor</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Reason</th>
+                        <th>Created Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var leave in filteredLeaves)
+                    {
+                        <tr>
+                            <td>@leave.DoctorLeaveId</td>
+
+                            <td>
+                                <div class="doctor-cell">
+                                    <div class="avatar">
+                                        @GetInitial(leave.DoctorName)
+                                    </div>
+
+                                    <div>
+                                        <strong>@leave.DoctorName</strong>
+                                        <span>Doctor ID: @leave.DoctorId</span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>@leave.StartDate.ToString("dd-MM-yyyy")</td>
+
+                            <td>@leave.EndDate.ToString("dd-MM-yyyy")</td>
+
+                            <td>
+                                <span class="reason-text">
+                                    @leave.Reason
+                                </span>
+                            </td>
+
+                            <td>@leave.CreatedDate.ToString("dd-MM-yyyy")</td>
+
+                            <td>
+                                <span class="@GetStatusClass(leave)">
+                                    @GetLeaveStatus(leave)
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="pagination">
+        <button class="btn light"
+                disabled="@(pageNumber == 1)"
+                @onclick="PreviousPage">
+            Prev
+        </button>
+
+        <span>Page @pageNumber of @totalPages</span>
+
+        <button class="btn light"
+                disabled="@(pageNumber >= totalPages)"
+                @onclick="NextPage">
+            Next
+        </button>
+    </div>
+
+</div>
+
+@code {
+    private List<DoctorLeaveDto> leaves = new();
+    private List<DoctorLeaveDto> filteredLeaves = new();
+
+    private string searchName = string.Empty;
+    private DateTime? searchDate;
+
+    private int pageNumber = 1;
+    private int pageSize = 10;
+    private int totalRecords = 0;
+    private int totalPages = 1;
+
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadLeaves();
+    }
+
+    private async Task LoadLeaves()
+    {
+        isLoading = true;
+
+        var result = await DoctorLeaveService.GetAllDoctorLeavesAsync(
+            pageNumber,
+            pageSize);
+
+        leaves = result.Data ?? new List<DoctorLeaveDto>();
+        totalRecords = result.TotalRecords;
+
+        totalPages = totalRecords <= 0
+            ? 1
+            : (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+        ApplyFilters();
+
+        isLoading = false;
+    }
+
+    private void ApplyFilters()
+    {
+        IEnumerable<DoctorLeaveDto> query = leaves;
+
+        if (!string.IsNullOrWhiteSpace(searchName))
+        {
+            query = query.Where(x =>
+                !string.IsNullOrWhiteSpace(x.DoctorName) &&
+                x.DoctorName.Contains(
+                    searchName,
+                    StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (searchDate.HasValue)
+        {
+            var selectedDate = searchDate.Value.Date;
+
+            query = query.Where(x =>
+                x.StartDate.Date <= selectedDate &&
+                x.EndDate.Date >= selectedDate);
+        }
+
+        filteredLeaves = query.ToList();
+    }
+
+    private async Task ResetFilters()
+    {
+        searchName = string.Empty;
+        searchDate = null;
+        pageNumber = 1;
+
+        await LoadLeaves();
+    }
+
+    private async Task NextPage()
+    {
+        if (pageNumber < totalPages)
+        {
+            pageNumber++;
+            await LoadLeaves();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (pageNumber > 1)
+        {
+            pageNumber--;
+            await LoadLeaves();
+        }
+    }
+
+    private static string GetInitial(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "D";
+        }
+
+        return name.Trim()[0].ToString().ToUpper();
+    }
+
+    private static string GetLeaveStatus(DoctorLeaveDto leave)
+    {
+        var today = DateTime.Today;
+
+        if (leave.EndDate.Date < today)
+        {
+            return "Completed";
+        }
+
+        if (leave.StartDate.Date <= today &&
+            leave.EndDate.Date >= today)
+        {
+            return "Active";
+        }
+
+        return "Upcoming";
+    }
+
+    private static string GetStatusClass(DoctorLeaveDto leave)
+    {
+        var status = GetLeaveStatus(leave);
+
+        return status switch
+        {
+            "Active" => "status active",
+            "Upcoming" => "status upcoming",
+            "Completed" => "status completed",
+            _ => "status"
+        };
+    }
+}
+
+
+
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    }
+
+    .admin-page {
+        padding: 66px 66px;
+        background: #f3f7fc;
+        min-height: 100vh;
+        color: #000000;
+    }
+
+    /* HEADER */
+    .page-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 34px;
+    }
+
+        .page-heading h1 {
+            margin: 0 0 20px;
+            font-size: 42px;
+            font-weight: 900;
+            color: #000000;
+            letter-spacing: -0.5px;
+        }
+
+        .page-heading p {
+            margin: 0;
+            font-size: 22px;
+            color: #000000;
+            font-weight: 400;
+        }
+
+    .summary-pill {
+        margin-top: 20px;
+        background: #ffffff;
+        padding: 18px 28px;
+        border-radius: 18px;
+        color: #000000;
+        font-size: 18px;
+        font-weight: 800;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+        white-space: nowrap;
+    }
+
+        .summary-pill strong {
+            color: #2563eb;
+        }
+
+    /* FILTER AREA */
+    .filter-card {
+        display: flex;
+        align-items: flex-end;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+        .filter-group label {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .filter-input,
+        .filter-group input {
+            width: 250px;
+            height: 50px;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 0 16px;
+            font-size: 16px;
+            background: #ffffff;
+            color: #000000;
+            outline: none;
+        }
+
+            .filter-input:focus,
+            .filter-group input:focus {
+                border-color: #2563eb;
+                box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+            }
+
+    .search-btn,
+    .reset-btn {
+        height: 50px;
+        border: none;
+        padding: 0 24px;
+        border-radius: 14px;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .search-btn {
+        background: #2563eb;
+        color: #ffffff;
+    }
+
+        .search-btn:hover {
+            background: #1d4ed8;
+        }
+
+    .reset-btn {
+        background: #f3f4f6;
+        color: #000000;
+    }
+
+        .reset-btn:hover {
+            background: #e5e7eb;
+        }
+
+    /* TABLE CARD */
+    .table-card {
+        margin-top: 26px;
+        background: #ffffff;
+        border-radius: 28px;
+        padding: 28px;
+        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+        overflow: hidden;
+    }
+
+    /* Optional fallback if HTML has class="card" */
+    .card {
+        margin-top: 20px;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 18px;
+        box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+    }
+
+    .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    /* TABLE */
+    .leave-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .leave-table thead {
+            background: #f8fafc;
+        }
+
+        .leave-table th {
+            text-align: left;
+            padding: 18px 26px;
+            color: #64748b;
+            font-size: 16px;
+            font-weight: 900;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .leave-table td {
+            padding: 22px 26px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #000000;
+            font-size: 20px;
+            vertical-align: middle;
+        }
+
+        .leave-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .leave-table tbody tr:hover {
+            background: #f8fbff;
+        }
+
+    /* DOCTOR CELL */
+    .doctor-cell {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 210px;
+    }
+
+    .avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        background: #dbeafe;
+        color: #2563eb;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .doctor-cell strong {
+        display: block;
+        color: #000000;
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .toolbar-left {
+        display: flex;
+        gap: 10px;
+    }
+
+    .toolbar-right {
+        display: flex;
+        gap: 10px;
+    }
+    .doctor-cell span {
+        display: block;
+        color: #64748b;
+        font-size: 15px;
+        margin-top: 4px;
+    }
+
+    /* REASON */
+    .reason-text {
+        display: inline-block;
+        max-width: 260px;
+        color: #000000;
+        line-height: 1.45;
+        word-break: break-word;
+    }
+
+    /* STATUS BADGES */
+    .status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 16px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+        .status.active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status.upcoming {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.completed {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+    /* EMPTY / LOADING */
+    .empty-box,
+    .loading-box {
+        min-height: 260px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        color: #64748b;
+        border: 1px dashed #cbd5e1;
+        border-radius: 22px;
+        background: #f8fafc;
+        font-size: 17px;
+    }
+
+    .empty-icon {
+        font-size: 36px;
+        margin-bottom: 10px;
+    }
+
+    .empty-box h3 {
+        margin: 0 0 8px;
+        color: #000000;
+        font-size: 22px;
+        font-weight: 900;
+    }
+
+    .empty-box p {
+        margin: 0;
+        color: #64748b;
+    }
+
+    /* PAGINATION */
+    .pagination {
+        margin-top: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 18px;
+    }
+
+        .pagination button {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: #e0ecff;
+            color: #2563eb;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+            .pagination button:hover:not(:disabled) {
+                background: #2563eb;
+                color: #ffffff;
+            }
+
+            .pagination button:disabled {
+                background: #f3f4f6;
+                color: #9ca3af;
+                cursor: not-allowed;
+            }
+
+        .pagination span {
+            color: #64748b;
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .pagination strong {
+            color: #64748b;
+        }
+
+    /* RESPONSIVE */
+    @@media (max-width: 1200px) {
+        .admin-page {
+            padding: 50px 34px;
+        }
+
+        .filter-card {
+            align-items: stretch;
+        }
+
+        .filter-input,
+        .filter-group input {
+            width: 280px;
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .admin-page {
+            padding: 34px 22px;
+        }
+
+        .page-heading {
+            flex-direction: column;
+            gap: 18px;
+        }
+
+            .page-heading h1 {
+                font-size: 36px;
+            }
+
+            .page-heading p {
+                font-size: 18px;
+            }
+
+        .summary-pill {
+            width: fit-content;
+        }
+
+        .filter-card {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-input,
+        .filter-group input,
+        .search-btn,
+        .reset-btn {
+            width: 100%;
+        }
+
+        .table-card {
+            padding: 22px;
+            border-radius: 24px;
+        }
+
+        .leave-table {
+            min-width: 1000px;
+        }
+
+        .pagination {
+            flex-wrap: wrap;
+        }
+    }
+
+    .summary-box {
+        background: white;
+        padding: 12px 18px;
+        border-radius: 14px;
+        color: #111827;
+        font-weight: 800;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    }
+
+        .summary-box strong {
+            color: #2563eb;
+        }
+
+    .date-input {
+        min-width: 210px;
+    }
+
+    .doctor-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: #dbeafe;
+        color: #2563eb;
+        display: grid;
+        place-items: center;
+        font-weight: 900;
+        font-size: 18px;
+    }
+
+    .doctor-cell strong {
+        display: block;
+        color: #111827;
+        font-weight: 800;
+    }
+
+    .doctor-cell span {
+        display: block;
+        color: #64748b;
+        font-size: 12px;
+        margin-top: 3px;
+    }
+
+    .reason-text {
+        display: inline-block;
+        max-width: 260px;
+        line-height: 1.4;
+        color: #334155;
+    }
+
+    .upcoming {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .completed {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+
+</style>

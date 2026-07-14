@@ -12,14 +12,15 @@ namespace HealthApp.Api.BackgroundServices
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            logger.LogInformation("HealthAxis Heartbeat Background Service started.+++++++++++++++");
+            logger.LogInformation("HealthAxis Heartbeat Background Service started.+++++++++++++");
             while (!stoppingToken.IsCancellationRequested)
             {
-                logger.LogInformation("HealthAxis heartbeat running at {Time}----------------",
+                logger.LogInformation("HealthAxis heartbeat running at {Time}------------",
                     DateTime.Now);
                 await Task.Delay(TimeSpan.FromSeconds(10),stoppingToken);
             }
-            logger.LogInformation("HealthAxis Heartbeat Background Service stopped.***************");
+            logger.LogInformation(
+                   "HealthAxis Heartbeat Background Service stopped.**************");
         }
     }
 }

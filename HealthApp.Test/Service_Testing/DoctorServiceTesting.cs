@@ -1,12 +1,13 @@
-﻿using Xunit;
-using Moq;
+﻿using AutoMapper;
 using FluentAssertions;
-using HealthApp.Api.Service.Impl;
-using HealthApp.Api.Repository.Interface;
-using HealthApp.Api.Model;
-using HealthApp.Shared.Dto;
-using AutoMapper;
 using HealthApp.Api.Exceptions;
+using HealthApp.Api.Model;
+using HealthApp.Api.Repository.Interface;
+using HealthApp.Api.Service.Impl;
+using HealthApp.Shared.Dto;
+using Microsoft.Extensions.Caching.Distributed;
+using Moq;
+using Xunit;
 
 namespace HealthApp.Test.Service_Testing
 {
@@ -15,13 +16,21 @@ namespace HealthApp.Test.Service_Testing
         private readonly Mock<IDoctorRepository> _repo;
         private readonly Mock<IMapper> _mapper;
         private readonly DoctorService _service;
+        private readonly Mock<IDistributedCache> _cache;
+
 
         public DoctorServiceTesting()
         {
             _repo = new Mock<IDoctorRepository>();
             _mapper = new Mock<IMapper>();
-            _service = new DoctorService(_repo.Object, _mapper.Object);
+            _cache = new Mock<IDistributedCache>();
+
+            _service = new DoctorService(
+                _repo.Object,
+                _mapper.Object,
+                _cache.Object);
         }
+
 
         [Fact]
         public async Task AddDoctor_ShouldCreateDoctor()

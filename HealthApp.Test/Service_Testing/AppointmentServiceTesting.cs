@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentAssertions;
 using HealthApp.Api.Exceptions;
+using HealthApp.Api.Messaging.Publisher;
 using HealthApp.Api.Model;
 using HealthApp.Api.Repository.Interface;
 using HealthApp.Api.Service.Impl;
@@ -16,6 +17,8 @@ namespace HealthApp.Test.Service_Testing
         private readonly Mock<IPatientRepository> _patientRepo;
         private readonly Mock<IDoctorRepository> _doctorRepo;
         private readonly Mock<IMapper> _mapper;
+        private readonly Mock<IAppointmentEventPublisher> _appointmentPublisher;
+        private readonly Mock<IDoctorLeaveRepository> _doctorLeaveRepo;
 
         private readonly AppointmentService _service;
 
@@ -26,11 +29,16 @@ namespace HealthApp.Test.Service_Testing
             _doctorRepo = new Mock<IDoctorRepository>();
             _mapper = new Mock<IMapper>();
 
+            _appointmentPublisher = new Mock<IAppointmentEventPublisher>();
+            _doctorLeaveRepo = new Mock<IDoctorLeaveRepository>();
+
             _service = new AppointmentService(
                 _repo.Object,
                 _patientRepo.Object,
                 _doctorRepo.Object,
-                _mapper.Object
+                _mapper.Object,
+                _appointmentPublisher.Object,
+                _doctorLeaveRepo.Object
             );
         }
 
@@ -195,7 +203,11 @@ namespace HealthApp.Test.Service_Testing
 
             var result = await _service.CheckDoctorAvailability(1, DateTime.Now);
 
-            result.Should().Contain("10:00 AM");
+            result.Should().NotBeNull();
+
+            result.Slots.Should().Contain(x =>
+                x.TimeSlot == "10:00 AM" &&
+                x.Status == "Booked");
         }
         [Fact]
         public async Task GetAppointmentById_ShouldThrow_WhenNotFound()
@@ -277,9 +289,14 @@ namespace HealthApp.Test.Service_Testing
                 .ReturnsAsync((List<string>)null);
 
             var result =
-                await _service.CheckDoctorAvailability(1, DateTime.Now);
+    await _service.CheckDoctorAvailability(1, DateTime.Now);
 
-            result.Should().BeEmpty();
+            result.Should().NotBeNull();
+
+            result.Slots.Should().NotBeEmpty();
+
+            result.Slots.Should().OnlyContain(x =>
+                x.Status == "Available");
         }
 
         [Fact]
