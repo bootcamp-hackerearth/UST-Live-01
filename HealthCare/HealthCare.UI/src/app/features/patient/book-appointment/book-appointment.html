@@ -31,6 +31,7 @@
           <input
             type="date"
             formControlName="scheduledDate"
+            [min]="minDate"
             class="w-full border rounded-xl px-4 py-2
                    focus:ring-2 focus:ring-[#0B5ED7] outline-none">
         </div>
@@ -43,7 +44,6 @@
 
           <select
             formControlName="specialization"
-            (change)="loadDoctors()"
             class="w-full border rounded-xl px-4 py-2
                    focus:ring-2 focus:ring-[#0B5ED7]">
 
@@ -74,7 +74,7 @@
         </select>
 
 
-          @if(!doctors.length && form.value.specialization){
+         @if(!doctors.length && form.get('specialization')?.value){
             <p class="text-xs text-gray-400 mt-1">
               No doctors available
             </p>
@@ -99,10 +99,15 @@
             }
           </select>
 
-          @if(!slots.length && form.value.doctorId){
+          @if(!slots.length && form.get('doctorId')?.value){
             <p class="text-xs text-gray-400 mt-1">
               No slots available
             </p>
+          }
+          @if(form.get('doctorId')?.value && !slots.length){
+           <p class="text-sm text-red-500 mt-2">
+            No available time slots for the selected date.
+          </p>
           }
         </div>
 

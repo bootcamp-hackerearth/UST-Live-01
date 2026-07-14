@@ -85,7 +85,7 @@
 <!--  MODAL -->
 @if(showBookingModal){
   <app-book-appointment
-    (close)="showBookingModal = false">
+    (appointmentClosed)="showBookingModal = false">
   </app-book-appointment>
 }
 

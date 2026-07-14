@@ -58,28 +58,72 @@ namespace HealthCare.Api.Tests
         [Fact]
         public async Task AddAsync_ShouldAddAppointment()
         {
-            var patient = new Patient{ UserId="1",PatientId = 1,FullName = "Test Patient", Gender = "Male" };
-            var doctor = new Doctor{ UserId="as", DoctorId = 1, FullName = "Test Doctor",Specialisation = "Cardiology"};
-            _context.Patients.Add(patient);
-            _context.Doctors.Add(doctor);
-            await _context.SaveChangesAsync();
+            // Arrange
+            var patient = new Patient
+            {
+                PatientId = 1,
+                UserId = "1",
+                FullName = "Test Patient",
+                Gender = "Male"
+            };
 
-            var dto = new CreateAppointmentDto();
-            var appointment = new Appointment
+            var doctor = new Doctor
             {
                 DoctorId = 1,
-                Doctor = doctor,
+                UserId = "as",
+                FullName = "Test Doctor",
+                Specialisation = "Cardiology"
+            };
+
+            _context.Patients.Add(patient);
+            _context.Doctors.Add(doctor);
+
+            await _context.SaveChangesAsync();
+
+            var dto = new CreateAppointmentDto
+            {
+                DoctorId = 1,
                 ScheduledDate = DateOnly.FromDateTime(DateTime.Today),
                 TimeSlot = "10:00"
             };
 
-            _mapperMock.Setup(m => m.Map<Appointment>(dto)).Returns(appointment);
+            var appointment = new Appointment
+            {
+                AppointmentId = 1,
+                DoctorId = 1,
+                Doctor = doctor,
+                ScheduledDate = dto.ScheduledDate,
+                TimeSlot = dto.TimeSlot
+            };
+
+            _mapperMock
+                .Setup(x => x.Map<Appointment>(dto))
+                .Returns(appointment);
+
+            _repoMock
+                .Setup(x => x.IsAvailable(dto.ScheduledDate,dto.DoctorId,dto.TimeSlot)).ReturnsAsync(true);
+
+            _repoMock.Setup(x => x.AddAsync(It.IsAny<Appointment>())).ReturnsAsync(appointment);
+
+            // Act
             await _service.AddAsync(dto, 1);
 
-            _repoMock.Verify(r => r.AddAsync(appointment), Times.Once);
-            _publishEndpointMock.Verify( p => p.Publish(It.IsAny<AppointmentBookedEvent>(),default),Times.Once);
+            // Assert
+            _repoMock.Verify(
+                x => x.AddAsync(It.IsAny<Appointment>()),
+                Times.Once);
 
-            _cacheMock.Verify(c => c.RemoveAsync(It.IsAny<string>(),default),Times.Once);
+            _publishEndpointMock.Verify(
+                x => x.Publish(
+                    It.IsAny<AppointmentBookedEvent>(),
+                    default),
+                Times.Once);
+
+            _cacheMock.Verify(
+                x => x.RemoveAsync(
+                    It.IsAny<string>(),
+                    default),
+                Times.Once);
         }
 
         //  Update

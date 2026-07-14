@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Serilog.Core;
 using System.Linq.Expressions;
+using System.Numerics;
 
 namespace HealthCare.Api.Services.Implementations
 {
@@ -44,6 +45,8 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task AddAsync(CreateAppointmentDto dto, int patientId)
         {
+            await IsAvailable(dto.ScheduledDate,dto.DoctorId,dto.TimeSlot);
+
             var appointment = _mapper.Map<Appointment>(dto);
 
             appointment.PatientId = patientId;
@@ -53,7 +56,7 @@ namespace HealthCare.Api.Services.Implementations
             await _repository.AddAsync(appointment);
 
             await _context.SaveChangesAsync();
-            await InvalidateAvailabilityCache(appointment.Doctor.Specialisation, appointment.ScheduledDate);
+
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Appointment created. AppointmentId={AppointmentId}, PatientId={PatientId}, DoctorId={DoctorId}",appointment.AppointmentId,patientId, appointment.DoctorId);
 
@@ -66,6 +69,8 @@ namespace HealthCare.Api.Services.Implementations
 
                 if (patient != null && doctor != null)
                 {
+                    await InvalidateAvailabilityCache(appointment.Doctor.Specialisation, appointment.ScheduledDate);
+
                     var appointmentBookedEvent = new AppointmentBookedEvent
                     {
                         AppointmentId = appointment.AppointmentId,
@@ -172,7 +177,10 @@ namespace HealthCare.Api.Services.Implementations
 
             await _repository.UpdateAsync(appointment);
             await _context.SaveChangesAsync();
-            await InvalidateAvailabilityCache(appointment.Doctor.Specialisation, appointment.ScheduledDate);
+
+            var doctor = await _context.Doctors.FindAsync(appointment.DoctorId);
+            if (doctor != null)
+                await InvalidateAvailabilityCache(appointment.Doctor.Specialisation, appointment.ScheduledDate);
         }
         public async Task<List<string>> AvailableTimeSlots(DateOnly date, int doctorId)
         {

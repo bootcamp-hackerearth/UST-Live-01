@@ -29,8 +29,6 @@ namespace HealthCare.Api
                 .WriteTo.Console()
                 .CreateBootstrapLogger();
 
-            //builder.Host.UseSerilog();
-
             try
             {
                 Log.Information("Starting HealthCare API");
@@ -57,13 +55,6 @@ namespace HealthCare.Api
                         {
                             h.Username(builder.Configuration["RabbitMq:Username"] ?? "guest");
                             h.Password(builder.Configuration["RabbitMq:Password"] ?? "guest");
-                        });
-
-                        // Configure JSON serializer for message serialization
-                        cfg.ConfigureJsonSerializerOptions(settings =>
-                        {
-                            settings.PropertyNameCaseInsensitive = true;
-                            return settings;
                         });
 
                         // Configure receive endpoint for appointment booked events
@@ -94,9 +85,13 @@ namespace HealthCare.Api
                 );
 
                 //CORS
+                var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
                 builder.Services.AddCors(options =>
                 {
-                    options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+                    options.AddPolicy("AllowAllClients", policy =>
+                    {
+                        policy.WithOrigins(allowedOrigins ?? Array.Empty<string>()).AllowAnyHeader().AllowAnyMethod();
+                    });
                 });
 
 
@@ -211,7 +206,7 @@ namespace HealthCare.Api
 
                 }
 
-                app.UseCors("AllowAll");
+                app.UseCors("AllowAllClients");
 
                 app.UseHttpsRedirection();
 
