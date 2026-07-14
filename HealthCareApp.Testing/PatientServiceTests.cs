@@ -7,6 +7,7 @@ using HealthCareApp.Services;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Dtos.Patients;
 using HealthCareApp.Shared.Enums;
+using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 
 namespace HealthCareApp.Testing.Services
@@ -18,18 +19,21 @@ namespace HealthCareApp.Testing.Services
         private readonly Mock<IMapper> mapperMock;
 
         private readonly PatientService patientService;
+        private readonly Mock<IDistributedCache> cacheMock;
 
         public PatientServiceTests()
         {
             repositoryMock = new Mock<IPatientRepository>();
 
             mapperMock = new Mock<IMapper>();
+            cacheMock = new Mock<IDistributedCache>();
 
             SetupMapper();
 
             patientService = new PatientService(
                 repositoryMock.Object,
-                mapperMock.Object);
+                mapperMock.Object,
+                cacheMock.Object);
         }
 
         [Fact]

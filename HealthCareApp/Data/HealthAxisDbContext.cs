@@ -1,8 +1,9 @@
-﻿using HealthCareApp.Shared.Enums;
-using HealthCareApp.Models;
+﻿using HealthCareApp.Models;
+using HealthCareApp.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace HealthCareApp.Data
 {
@@ -22,6 +23,12 @@ namespace HealthCareApp.Data
         public DbSet<HealthRecord> HealthRecords { get; set; }
 
         public DbSet<Notification> Notifications { get; set; }
+
+        public DbSet<DoctorLeave> DoctorLeaves => Set<DoctorLeave>();
+
+        public DbSet<PatientNotification> PatientNotifications { get; set; }
+
+
 
         private static DateTime UtcDate(int year, int month, int day)
         {
@@ -70,6 +77,62 @@ namespace HealthCareApp.Data
                 .WithOne(a => a.HealthRecord)
                 .HasForeignKey<HealthRecord>(hr => hr.AppointmentId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+
+            builder.Entity<DoctorLeave>(entity =>
+            {
+                entity.HasKey(x => x.DoctorLeaveId);
+
+                entity.Property(x => x.Reason)
+                    .HasMaxLength(500)
+                    .IsRequired();
+
+                entity.HasOne(x => x.Doctor)
+                    .WithMany(x => x.Leaves)
+                    .HasForeignKey(x => x.DoctorId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+
+            builder.Entity<PatientNotification>(entity =>
+            {
+                entity.HasKey(x => x.PatientNotificationId);
+
+                entity.Property(x => x.Title)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(x => x.Message)
+                    .HasMaxLength(1000)
+                    .IsRequired();
+
+                entity.Property(x => x.NotificationType)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.Property(x => x.IsRead)
+                    .IsRequired();
+
+                entity.Property(x => x.CreatedDateUtc)
+                    .IsRequired();
+
+                entity.HasOne(x => x.Patient)
+                    .WithMany()
+                    .HasForeignKey(x => x.PatientId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(x => x.Doctor)
+                    .WithMany()
+                    .HasForeignKey(x => x.DoctorId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Appointment)
+                    .WithMany()
+                    .HasForeignKey(x => x.AppointmentId)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
+
+
 
             // Patient seed data
             builder.Entity<Patient>().HasData(

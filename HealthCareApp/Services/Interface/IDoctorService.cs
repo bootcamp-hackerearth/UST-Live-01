@@ -1,6 +1,7 @@
-﻿using HealthCareApp.Shared.Enums;
-using HealthCareApp.Shared.Dtos.Pagination;
+﻿using HealthCareApp.Shared.Dtos.DoctorDto;
 using HealthCareApp.Shared.Dtos.Doctors;
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Enums;
 
 namespace HealthCareApp.Services
 {
@@ -22,7 +23,7 @@ namespace HealthCareApp.Services
 
         Task<DoctorDto> DeleteDoctorAsync(int doctorId);
 
-        Task<List<SlotAvailabilityDto>> GetDoctorAvailabilityAsync(int doctorId, DateTime? date);
+        Task<DoctorAvailabilityResponseDto> GetDoctorAvailabilityAsync(int doctorId,DateTime? date);
 
         Task<DoctorDto> GetMyProfileAsync(string identityUserId);
 

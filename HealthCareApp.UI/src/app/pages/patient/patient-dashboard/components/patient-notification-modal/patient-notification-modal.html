@@ -1,0 +1,93 @@
+@if (currentNotification) {
+  <div
+    class="pn-backdrop"
+    (click)="dismiss()"
+    (keydown.escape)="dismiss()">
+
+    <dialog
+      open
+      class="pn-modal"
+      (click)="$event.stopPropagation()"
+      (keydown.escape)="dismiss(); $event.stopPropagation()">
+
+      <div class="pn-icon">
+        @if (isDoctorLeaveNotification) {
+          !
+        } @else {
+          i
+        }
+      </div>
+
+      <span class="pn-kicker">
+        Patient Notification
+      </span>
+
+      <h3>
+        {{ currentNotification.title }}
+      </h3>
+
+      <p>
+        {{ currentNotification.message }}
+      </p>
+
+      <div class="pn-meta-grid">
+        @if (currentNotification.appointmentId) {
+          <div>
+            <span>Appointment</span>
+            <strong>#{{ currentNotification.appointmentId }}</strong>
+          </div>
+        }
+
+        @if (currentNotification.doctorId) {
+          <div>
+            <span>Doctor Reference</span>
+            <strong>#{{ currentNotification.doctorId }}</strong>
+          </div>
+        }
+
+        <div>
+          <span>Received</span>
+          <strong>{{ formatCreatedDate(currentNotification.createdDateUtc) }}</strong>
+        </div>
+      </div>
+
+      @if (isDoctorLeaveNotification) {
+        <div class="pn-warning-card">
+          <strong>Action recommended</strong>
+
+          <span>
+            Please review appointment availability and choose another suitable slot if required.
+          </span>
+        </div>
+      }
+
+      <div class="pn-actions">
+        <button
+          type="button"
+          class="pn-secondary"
+          [disabled]="isProcessing"
+          (click)="dismiss()">
+          {{ isProcessing ? 'Updating...' : 'Mark as Read' }}
+        </button>
+
+        @if (isDoctorLeaveNotification) {
+          <button
+            type="button"
+            class="pn-primary"
+            [disabled]="isProcessing"
+            (click)="rebook()">
+            {{ isProcessing ? 'Opening...' : 'Rebook Now' }}
+          </button>
+        }
+      </div>
+
+      @if (notifications.length > 1) {
+        <small class="pn-count">
+          {{ notifications.length - 1 }} more unread notification(s)
+        </small>
+      }
+
+    </dialog>
+
+  </div>
+}

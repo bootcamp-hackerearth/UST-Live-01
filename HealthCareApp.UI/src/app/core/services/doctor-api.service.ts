@@ -3,6 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 import { DoctorDto } from '../../shared/models/doctor.models';
+import {
+  DoctorAvailabilityResponseDto,ApiDoctorAvailabilityResponseDto
+} from '../../shared/models/doctor.models';
 
 export interface SlotAvailabilityDto {
   timeSlot: string;
@@ -63,24 +66,35 @@ export class DoctorApiService {
   }
 
   getDoctorAvailability(
-    doctorId: number,
-    date?: string
-  ): Observable<SlotAvailabilityDto[]> {
-    const url = date
-      ? `${this.apiUrl}/${doctorId}/availability?date=${date}`
-      : `${this.apiUrl}/${doctorId}/availability`;
+  doctorId: number,
+  date?: string
+): Observable<DoctorAvailabilityResponseDto> {
+  const url = date
+    ? `${this.apiUrl}/${doctorId}/availability?date=${date}`
+    : `${this.apiUrl}/${doctorId}/availability`;
 
-    return this.http
-      .get<ApiSlotAvailabilityDto[]>(url)
-      .pipe(
-        map((slots: ApiSlotAvailabilityDto[]) =>
-          (slots ?? []).map((slot: ApiSlotAvailabilityDto) => ({
+  return this.http
+    .get<ApiDoctorAvailabilityResponseDto>(url)
+    .pipe(
+      map((response: ApiDoctorAvailabilityResponseDto) => {
+        const apiSlots = response.slots ?? response.Slots ?? [];
+
+        return {
+          doctorId: response.doctorId ?? response.DoctorId ?? doctorId,
+          date: response.date ?? response.Date ?? date ?? '',
+          isDoctorOnLeave:
+            response.isDoctorOnLeave ??
+            response.IsDoctorOnLeave ??
+            false,
+          message: response.message ?? response.Message ?? '',
+          slots: apiSlots.map((slot: ApiSlotAvailabilityDto) => ({
             timeSlot: slot.timeSlot ?? slot.TimeSlot ?? '',
             isBooked: slot.isBooked ?? slot.IsBooked ?? false
           }))
-        )
-      );
-  }
+        };
+      })
+    );
+}
 
   private mapDoctor(doctor: ApiDoctorDto): DoctorDto {
     return {

@@ -177,6 +177,38 @@ namespace HealthCareApp.Migrations
                         });
                 });
 
+            modelBuilder.Entity("HealthCareApp.Models.DoctorLeave", b =>
+                {
+                    b.Property<int>("DoctorLeaveId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DoctorLeaveId"));
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.HasKey("DoctorLeaveId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("DoctorLeaves");
+                });
+
             modelBuilder.Entity("HealthCareApp.Models.HealthRecord", b =>
                 {
                     b.Property<int>("HealthRecordId")
@@ -366,6 +398,55 @@ namespace HealthCareApp.Migrations
                             PatientName = "Kiran Das",
                             PhoneNumber = "7654321098"
                         });
+                });
+
+            modelBuilder.Entity("HealthCareApp.Models.PatientNotification", b =>
+                {
+                    b.Property<int>("PatientNotificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PatientNotificationId"));
+
+                    b.Property<int?>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDateUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("NotificationType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("PatientNotificationId");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("PatientNotifications");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -585,6 +666,17 @@ namespace HealthCareApp.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("HealthCareApp.Models.DoctorLeave", b =>
+                {
+                    b.HasOne("HealthCareApp.Models.Doctor", "Doctor")
+                        .WithMany("Leaves")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+                });
+
             modelBuilder.Entity("HealthCareApp.Models.HealthRecord", b =>
                 {
                     b.HasOne("HealthCareApp.Models.Appointment", "Appointment")
@@ -619,6 +711,31 @@ namespace HealthCareApp.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("IdentityUser");
+                });
+
+            modelBuilder.Entity("HealthCareApp.Models.PatientNotification", b =>
+                {
+                    b.HasOne("HealthCareApp.Models.Appointment", "Appointment")
+                        .WithMany()
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("HealthCareApp.Models.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("HealthCareApp.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -682,6 +799,8 @@ namespace HealthCareApp.Migrations
                     b.Navigation("Appointments");
 
                     b.Navigation("HealthRecords");
+
+                    b.Navigation("Leaves");
                 });
 
             modelBuilder.Entity("HealthCareApp.Models.Patient", b =>

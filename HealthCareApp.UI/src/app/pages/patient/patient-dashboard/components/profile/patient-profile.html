@@ -1,14 +1,13 @@
-<section class="pp-profile-shell">
+<section class="pp-command-page">
 
-  <div class="pp-hero-card">
+  <section class="pp-hero">
     <div>
-      <span class="pp-kicker">Patient Account Center</span>
+      <span>Account Command Center</span>
 
-      <h2>My Profile</h2>
+      <h2>Patient Profile</h2>
 
       <p>
-        View and manage your personal HealthAxis profile, contact information,
-        insurance details, and account security.
+        Manage identity details, contact information, insurance data, and password security from one protected account space.
       </p>
     </div>
 
@@ -29,12 +28,18 @@
         </button>
       </div>
     }
-  </div>
+  </section>
 
   @if (isLoading) {
-    <div class="pp-form-message">
-      Loading patient profile...
-    </div>
+    <section class="pp-state-card">
+      <div class="pp-state-icon">↻</div>
+
+      <h3>Loading patient profile...</h3>
+
+      <p>
+        Please wait while HealthAxis loads your account information.
+      </p>
+    </section>
   }
 
   @if (!isLoading && message && !isEditMode) {
@@ -47,71 +52,76 @@
 
     @if (!isEditMode && !isPasswordMode) {
 
-      <div class="pp-profile-overview">
+      <section class="pp-profile-board">
 
-        <article class="pp-identity-card">
+        <article class="pp-identity-panel">
           <div class="pp-avatar">
             {{ patient.patientName[0] }}
           </div>
 
-          <div>
+          <div class="pp-identity-copy">
             <span>Patient Identity</span>
 
             <h3>{{ patient.patientName }}</h3>
 
             <p>{{ patient.email }}</p>
           </div>
+
+          <div class="pp-profile-status">
+            <strong>Active</strong>
+            <span>Patient Account</span>
+          </div>
         </article>
 
-        <section class="pp-info-grid">
+        <section class="pp-info-board">
 
-          <article class="pp-info-tile">
+          <article class="pp-info-card">
             <span>Full Name</span>
             <strong>{{ patient.patientName }}</strong>
           </article>
 
-          <article class="pp-info-tile">
+          <article class="pp-info-card">
             <span>Date of Birth</span>
             <strong>{{ patient.dateOfBirth }}</strong>
           </article>
 
-          <article class="pp-info-tile">
+          <article class="pp-info-card">
             <span>Gender</span>
             <strong>{{ patient.gender }}</strong>
           </article>
 
-          <article class="pp-info-tile">
+          <article class="pp-info-card">
             <span>Email</span>
             <strong>{{ patient.email }}</strong>
           </article>
 
-          <article class="pp-info-tile">
+          <article class="pp-info-card">
             <span>Phone Number</span>
             <strong>{{ patient.phoneNumber }}</strong>
           </article>
 
-          <article class="pp-info-tile">
+          <article class="pp-info-card">
             <span>Insurance ID</span>
             <strong>{{ patient.insuranceId || 'Not Provided' }}</strong>
           </article>
 
         </section>
 
-      </div>
+      </section>
 
     }
 
     @if (isEditMode) {
 
-      <form class="pp-form-card" (ngSubmit)="saveProfile()">
+      <form class="pp-form-panel" (ngSubmit)="saveProfile()">
 
         <div class="pp-form-heading">
           <span>Edit Profile</span>
 
-          <h3>Update Personal Details</h3>
+          <h3>Update patient details</h3>
 
           <p>
-            Keep your patient information accurate for appointment booking and care records.
+            Keep your profile accurate for booking appointments and maintaining consultation records.
           </p>
         </div>
 
@@ -263,31 +273,31 @@
 
     @if (isPasswordMode) {
 
-      <form class="pp-form-card" (ngSubmit)="changePassword()">
+      <form class="pp-form-panel security" (ngSubmit)="changePassword()">
 
         <div class="pp-form-heading">
-          <span>Account Security</span>
+          <span>Security Center</span>
 
-          <h3>Change Password</h3>
+          <h3>Change password</h3>
 
           <p>
-            Use a strong password with uppercase letter, number, and special character.
+            Use a strong password with an uppercase letter, number, special character, and at least 8 characters.
           </p>
         </div>
 
-        <div class="pp-security-note">
+        <div class="pp-security-strip">
           <div class="pp-security-icon">🔒</div>
 
           <div>
-            <strong>Password safety tip</strong>
+            <strong>Password safety rule</strong>
 
             <p>
-              Avoid reusing old passwords. Choose a unique password for your HealthAxis account.
+              Your new password must be different from your current password.
             </p>
           </div>
         </div>
 
-        <div class="pp-form-grid">
+        <div class="pp-form-grid password-grid">
 
           <div class="pp-field-card">
             <label>
@@ -443,7 +453,7 @@
           !
         </div>
 
-        <span class="pp-confirm-kicker">Unsaved Changes</span>
+        <span class="pp-confirm-kicker warning-text">Unsaved Changes</span>
 
         <h3>Discard profile changes?</h3>
 
@@ -488,7 +498,7 @@
           !
         </div>
 
-        <span class="pp-confirm-kicker">Password Form</span>
+        <span class="pp-confirm-kicker warning-text">Password Form</span>
 
         <h3>Discard password changes?</h3>
 

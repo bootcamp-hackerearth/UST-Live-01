@@ -1,332 +1,366 @@
-<section class="ba-booking-shell compact">
+<section class="ba-booking-page">
 
-  <form class="ba-booking-card" (ngSubmit)="submit()">
+  <form class="ba-booking-shell" (ngSubmit)="submit()">
 
-    <div class="ba-form-header compact-header">
+    <section class="ba-booking-hero">
       <div>
-        <span>Guided Booking Flow</span>
+        <span>Appointment Builder</span>
 
-        <h3>Book Appointment</h3>
+        <h2>Book a new visit</h2>
 
         <p>
-          Search specialisation, choose doctor, select date, and book an available slot.
+          Select a care type, choose an available doctor, pick a date, and reserve a valid slot.
         </p>
       </div>
-    </div>
 
-    <div class="ba-progress-row">
-      <div class="ba-progress-item active">
+      <div class="ba-hero-status" [class.leave]="isDoctorOnLeave">
+        <strong>
+          {{ isDoctorOnLeave ? 'Doctor On Leave' : (form.timeSlot ? 'Ready' : 'In Progress') }}
+        </strong>
+
+        <span>Booking Status</span>
+      </div>
+    </section>
+
+    <section class="ba-step-strip">
+      <div class="ba-step active">
         <strong>01</strong>
-        <span>Specialisation</span>
+        <span>Care Type</span>
       </div>
 
-      <div class="ba-progress-line"></div>
-
-      <div class="ba-progress-item active">
+      <div class="ba-step" [class.active]="selectedSpecialisation">
         <strong>02</strong>
         <span>Doctor</span>
       </div>
 
-      <div class="ba-progress-line"></div>
-
-      <div class="ba-progress-item active">
+      <div class="ba-step" [class.active]="form.scheduledDate">
         <strong>03</strong>
+        <span>Date</span>
+      </div>
+
+      <div class="ba-step" [class.active]="form.timeSlot">
+        <strong>04</strong>
         <span>Slot</span>
       </div>
-    </div>
+    </section>
 
-    <section class="ba-section-card" id="specialisation-section">
-      <div class="ba-section-heading">
+    <section class="ba-panel" id="specialisation-section">
+      <div class="ba-panel-heading">
         <span>Step 1</span>
 
-        <h4>Find Specialisation</h4>
+        <h3>Choose specialisation</h3>
 
         <p>
-          Search and select the type of care you need. Suggestions are kept compact for easy booking.
+          Search and select the type of medical care required.
         </p>
       </div>
 
       @if (isLoadingDoctors) {
-        <div class="ba-empty-state">
-          Loading active doctors...
-        </div>
+      <div class="ba-info-card">
+        Loading active doctors...
+      </div>
       }
 
-      <div class="ba-specialisation-combo">
-
+      <div class="ba-specialisation-row">
         <label>
           Search Specialisation
 
-          <input
-            type="text"
-            name="specialisationSearchTerm"
-            placeholder="Search e.g. Cardiology, Dermatology, Pediatrics"
-            autocomplete="off"
-            [disabled]="isLoadingDoctors"
-            [(ngModel)]="specialisationSearchTerm"
-            (focus)="openSpecialisationDropdown()"
-            (ngModelChange)="openSpecialisationDropdown()"
-            (blur)="closeSpecialisationDropdown()">
+          <input type="text" name="specialisationSearchTerm"
+            placeholder="Search e.g. Cardiology, Dermatology, Pediatrics" autocomplete="off"
+            [disabled]="isLoadingDoctors" [(ngModel)]="specialisationSearchTerm" (focus)="openSpecialisationDropdown()"
+            (ngModelChange)="openSpecialisationDropdown()" (blur)="closeSpecialisationDropdown()">
         </label>
 
         @if (selectedSpecialisation) {
-          <button
-            type="button"
-            class="ba-clear-specialisation"
-            (click)="clearSpecialisation()">
-            Clear
-          </button>
+        <button type="button" class="ba-clear-btn" (click)="clearSpecialisation()">
+          Clear
+        </button>
         }
 
         @if (isSpecialisationDropdownOpen) {
-          <div id="specialisation-dropdown" class="ba-specialisation-dropdown">
+        <div class="ba-specialisation-dropdown">
 
-            @if (filteredSpecialisations.length === 0) {
-              <div class="ba-specialisation-empty">
-                No specialisation found.
-              </div>
-            }
-
-            @for (specialisation of visibleSpecialisations; track specialisation) {
-              <button
-                type="button"
-                class="ba-specialisation-option"
-                [class.selected]="selectedSpecialisation === specialisation"
-                (mousedown)="selectSpecialisation(specialisation)">
-
-                <span>{{ specialisation[0] }}</span>
-
-                <div>
-                  <strong>{{ specialisation }}</strong>
-                  <small>View available doctors</small>
-                </div>
-              </button>
-            }
-
+          @if (filteredSpecialisations.length === 0) {
+          <div class="ba-specialisation-empty">
+            No specialisation found.
           </div>
-        }
+          }
 
+          @for (specialisation of visibleSpecialisations; track specialisation) {
+          <button type="button" class="ba-specialisation-option"
+            [class.selected]="selectedSpecialisation === specialisation"
+            (mousedown)="selectSpecialisation(specialisation)">
+
+            <span>{{ specialisation[0] }}</span>
+
+            <div>
+              <strong>{{ specialisation }}</strong>
+              <small>View doctors for this care type</small>
+            </div>
+          </button>
+          }
+
+        </div>
+        }
       </div>
 
       @if (selectedSpecialisation) {
-        <div class="ba-selected-specialisation">
-          <span>Selected care type</span>
-          <strong>{{ selectedSpecialisation }}</strong>
-        </div>
+      <div class="ba-selected-chip">
+        <span>Selected Care Type</span>
+        <strong>{{ selectedSpecialisation }}</strong>
+      </div>
       }
     </section>
 
     @if (selectedSpecialisation) {
-      <section class="ba-section-card" id="doctor-section">
-        <div class="ba-section-heading">
-          <span>Step 2</span>
+    <section class="ba-panel" id="doctor-section">
+      <div class="ba-panel-heading">
+        <span>Step 2</span>
 
-          <h4>Select Doctor</h4>
+        <h3>Select doctor</h3>
 
-          <p>
-            Showing active doctors for {{ selectedSpecialisation }}.
-          </p>
-        </div>
+        <p>
+          Choose one active doctor from {{ selectedSpecialisation }}.
+        </p>
+      </div>
 
-        @if (filteredDoctors.length === 0) {
-          <div class="ba-empty-state">
-            No active doctors available for this specialisation.
+      @if (filteredDoctors.length === 0) {
+      <div class="ba-info-card">
+        No active doctors available for this specialisation.
+      </div>
+      }
+
+      @if (filteredDoctors.length > 0) {
+      <div class="ba-doctor-grid">
+        @for (doctor of filteredDoctors; track doctor.doctorId) {
+        <button type="button" class="ba-doctor-card" [class.selected]="form.doctorId === doctor.doctorId"
+          (click)="selectDoctor(doctor.doctorId)">
+
+          <div class="ba-doctor-avatar">
+            {{ doctor.doctorName.split(' ')[1]?.[0] || doctor.doctorName[0] || 'D' }}
           </div>
-        }
 
-        @if (filteredDoctors.length > 0) {
-          <div class="ba-doctor-grid">
-            @for (doctor of filteredDoctors; track doctor.doctorId) {
-              <button
-                type="button"
-                class="ba-doctor-card"
-                [class.selected]="form.doctorId === doctor.doctorId"
-                (click)="selectDoctor(doctor.doctorId)">
+          <div>
+            <h4>{{ doctor.doctorName }}</h4>
 
-                <div class="ba-doctor-avatar">
-                  {{ doctor.doctorName.split(' ')[1]?.[0] || doctor.doctorName[0] || 'D' }}
-                </div>
+            <p>{{ doctor.specialisation }}</p>
 
-                <div class="ba-doctor-info">
-                  <h5>{{ doctor.doctorName }}</h5>
-
-                  <p>{{ doctor.specialisation }}</p>
-
-                  <div class="ba-doctor-meta">
-                    <span>{{ doctor.yearsOfExperience }} yrs exp</span>
-                    <span>₹{{ doctor.consultationFee }}</span>
-                  </div>
-                </div>
-
-              </button>
-            }
+            <div class="ba-doctor-meta">
+              <span>{{ doctor.yearsOfExperience }} yrs exp</span>
+              <span>₹{{ doctor.consultationFee }}</span>
+            </div>
           </div>
+
+          <i>✓</i>
+        </button>
         }
-      </section>
+      </div>
+      }
+    </section>
     }
 
     @if (form.doctorId) {
-      <section class="ba-section-card" id="date-section">
-        <div class="ba-section-heading">
+    <section class="ba-date-summary-grid">
+
+      <section class="ba-panel compact" id="date-section">
+        <div class="ba-panel-heading">
           <span>Step 3</span>
 
-          <h4>Select Date</h4>
+          <h3>Choose date</h3>
 
           <p>
-            Pick a date within the next 30 days to view available slots for {{ selectedDoctor?.doctorName }}.
+            Select a date within the next 30 days.
           </p>
         </div>
 
         <label class="ba-date-field">
           Appointment Date
 
-          <input
-            type="date"
-            name="scheduledDate"
-            [min]="todayDate"
-            [max]="maxBookingDate"
-            [(ngModel)]="form.scheduledDate"
-            (ngModelChange)="onDateChange()">
+          <input type="date" name="scheduledDate" [min]="todayDate" [max]="maxBookingDate"
+            [(ngModel)]="form.scheduledDate" (ngModelChange)="onDateChange()">
         </label>
       </section>
+
+      <section class="ba-summary-card">
+        <span>Appointment Summary</span>
+
+        <h3>{{ selectedDoctor?.doctorName || 'Doctor not selected' }}</h3>
+
+        <div class="ba-summary-grid">
+          <div>
+            <small>Care Type</small>
+            <strong>{{ selectedSpecialisation || 'Pending' }}</strong>
+          </div>
+
+          <div>
+            <small>Date</small>
+            <strong>{{ form.scheduledDate || 'Pending' }}</strong>
+          </div>
+
+          <div>
+            <small>Slot</small>
+            <strong>
+              @if (isDoctorOnLeave) {
+              Doctor On Leave
+              } @else {
+              {{ form.timeSlot || 'Pending' }}
+              }
+            </strong>
+          </div>
+
+          <div>
+            <small>Fee</small>
+            <strong>
+              @if (selectedDoctor) {
+              ₹{{ selectedDoctor.consultationFee }}
+              } @else {
+              Pending
+              }
+            </strong>
+          </div>
+        </div>
+      </section>
+
+    </section>
     }
 
     @if (form.doctorId && form.scheduledDate) {
-      <section class="ba-section-card" id="slot-section">
-        <div class="ba-section-heading">
-          <span>Step 4</span>
+    <section class="ba-panel" id="slot-section">
+      <div class="ba-panel-heading">
+        <span>Step 4</span>
 
-          <h4>Select Time Slot</h4>
+        <h3>Select available slot</h3>
 
-          <p>
-            Booked and past time slots are shown in red and cannot be selected.
-          </p>
+        <p>
+          @if (isDoctorOnLeave) {
+          The selected doctor is unavailable on this date. Please choose another date.
+          } @else {
+          Available slots are shown horizontally. Booked and expired slots are locked.
+          }
+        </p>
+      </div>
+
+      @if (isLoadingSlots) {
+      <div class="ba-info-card">
+        Loading available slots...
+      </div>
+      }
+
+      @if (!isLoadingSlots && isDoctorOnLeave) {
+      <div class="ba-leave-warning">
+        <div class="ba-leave-warning-icon">
+          !
         </div>
 
-        @if (isLoadingSlots) {
-          <div class="ba-empty-state">
-            Loading available slots...
-          </div>
-        }
+        <div>
+          <strong>
+            Doctor On Leave
+          </strong>
 
-        @if (!isLoadingSlots && timeSlots.length === 0) {
-          <div class="ba-empty-state">
-            No slots available for this doctor.
-          </div>
-        }
+          <p>
+            {{ doctorLeaveMessage || 'The selected doctor is unavailable on this date. Please choose another appointment
+            date.' }}
+          </p>
+        </div>
+      </div>
+      }
 
-        @if (!isLoadingSlots && timeSlots.length > 0) {
-          <div class="ba-slot-grid">
-            @for (slot of timeSlots; track slot.timeSlot) {
-              <button
-                type="button"
-                [class]="getSlotClass(slot)"
-                [disabled]="isTimeSlotDisabled(slot)"
-                (click)="selectTimeSlot(slot)">
+      @if (!isLoadingSlots && timeSlots.length === 0) {
+      <div class="ba-info-card">
+        No slots available for this doctor.
+      </div>
+      }
 
-                <strong>{{ slot.timeSlot }}</strong>
-                <span>{{ getSlotStatus(slot) }}</span>
-              </button>
-            }
-          </div>
+      @if (!isLoadingSlots && timeSlots.length > 0) {
+      <div class="ba-slot-grid">
+        @for (slot of timeSlots; track slot.timeSlot) {
+        <button type="button" [class]="getSlotClass(slot)" [disabled]="isTimeSlotDisabled(slot)"
+          (click)="selectTimeSlot(slot)">
+
+          <strong>{{ slot.timeSlot }}</strong>
+          <span>{{ getSlotStatus(slot) }}</span>
+        </button>
         }
-      </section>
+      </div>
+      }
+    </section>
     }
 
     @if (message) {
-      <div class="ba-form-message">
-        {{ message }}
-      </div>
+    <div class="ba-form-message">
+      {{ message }}
+    </div>
     }
 
-    <div class="ba-submit-row" id="submit-section">
-      <div class="ba-submit-note">
-        <strong>Note:</strong>
-        Your appointment will be created as Pending until confirmed by the doctor.
+    <section class="ba-submit-bar" id="submit-section">
+      <div>
+        <strong>Submit appointment request</strong>
+        <span>Appointment will stay Pending until confirmed by the doctor.</span>
       </div>
 
-      <button
-        type="submit"
-        class="ba-primary-btn"
-        [disabled]="isBookingButtonDisabled">
+      <button type="submit" class="ba-primary-btn" [disabled]="isBookingButtonDisabled">
         {{ isSubmitting ? 'Booking...' : 'Book Appointment' }}
       </button>
-    </div>
+    </section>
 
   </form>
 
   @if (isBookingConfirmOpen && selectedDoctor) {
-    <div
-      class="ba-confirm-backdrop"
-      (click)="closeBookingConfirm()"
-      (keydown.escape)="closeBookingConfirm()">
+  <div class="ba-confirm-backdrop" (click)="closeBookingConfirm()" (keydown.escape)="closeBookingConfirm()">
 
-      <dialog
-        open
-        class="ba-confirm-modal"
-        (click)="$event.stopPropagation()"
-        (keydown.escape)="closeBookingConfirm(); $event.stopPropagation()">
+    <dialog open class="ba-confirm-modal" (click)="$event.stopPropagation()"
+      (keydown.escape)="closeBookingConfirm(); $event.stopPropagation()">
 
-        <div class="ba-confirm-icon">
-          ✓
+      <div class="ba-confirm-icon">✓</div>
+
+      <span class="ba-confirm-kicker">Confirm Appointment</span>
+
+      <h3>Confirm your booking?</h3>
+
+      <p>
+        Please review your appointment details before submitting.
+      </p>
+
+      <div class="ba-confirm-details">
+        <div>
+          <span>Doctor</span>
+          <strong>{{ selectedDoctor.doctorName }}</strong>
         </div>
 
-        <span class="ba-confirm-kicker">Confirm Appointment</span>
-
-        <h3>Confirm your booking?</h3>
-
-        <p>
-          Please review your appointment details before submitting your request.
-        </p>
-
-        <div class="ba-confirm-details">
-          <div>
-            <span>Doctor</span>
-            <strong>{{ selectedDoctor.doctorName }}</strong>
-          </div>
-
-          <div>
-            <span>Specialisation</span>
-            <strong>{{ selectedDoctor.specialisation }}</strong>
-          </div>
-
-          <div>
-            <span>Date</span>
-            <strong>{{ form.scheduledDate }}</strong>
-          </div>
-
-          <div>
-            <span>Time Slot</span>
-            <strong>{{ form.timeSlot }}</strong>
-          </div>
-
-          <div>
-            <span>Consultation Fee</span>
-            <strong>₹{{ selectedDoctor.consultationFee }}</strong>
-          </div>
+        <div>
+          <span>Specialisation</span>
+          <strong>{{ selectedDoctor.specialisation }}</strong>
         </div>
 
-        <div class="ba-confirm-actions">
-          <button
-            type="button"
-            class="ba-confirm-edit"
-            [disabled]="isSubmitting"
-            (click)="closeBookingConfirm()">
-            Edit Details
-          </button>
-
-          <button
-            type="button"
-            class="ba-confirm-submit"
-            [disabled]="isSubmitting"
-            (click)="confirmBooking()">
-            {{ isSubmitting ? 'Booking...' : 'Confirm Booking' }}
-          </button>
+        <div>
+          <span>Date</span>
+          <strong>{{ form.scheduledDate }}</strong>
         </div>
 
-      </dialog>
+        <div>
+          <span>Time Slot</span>
+          <strong>{{ form.timeSlot }}</strong>
+        </div>
 
-    </div>
+        <div>
+          <span>Consultation Fee</span>
+          <strong>₹{{ selectedDoctor.consultationFee }}</strong>
+        </div>
+      </div>
+
+      <div class="ba-confirm-actions">
+        <button type="button" class="ba-confirm-edit" [disabled]="isSubmitting" (click)="closeBookingConfirm()">
+          Edit Details
+        </button>
+
+        <button type="button" class="ba-confirm-submit" [disabled]="isSubmitting" (click)="confirmBooking()">
+          {{ isSubmitting ? 'Booking...' : 'Confirm Booking' }}
+        </button>
+      </div>
+
+    </dialog>
+
+  </div>
   }
 
 </section>

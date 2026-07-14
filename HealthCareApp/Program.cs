@@ -43,10 +43,10 @@ builder.Services.AddMassTransit(x =>
             h =>
             {
                 h.Username(
-                    builder.Configuration["RabbitMQ:Username"]);
+                    builder.Configuration["RabbitMQ:Username"]!);
 
                 h.Password(
-                    builder.Configuration["RabbitMQ:Password"]);
+                    builder.Configuration["RabbitMQ:Password"]!);
             });
 
         cfg.ConfigureEndpoints(context);
@@ -167,6 +167,8 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 builder.Services.AddScoped<ICacheService,CacheService>();
+builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
+builder.Services.AddScoped<IPatientNotificationService, PatientNotificationService>();
 
 // Register background services.
 builder.Services.AddHostedService<HeartbeatBackgroundService>();

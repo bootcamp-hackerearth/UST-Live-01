@@ -41,5 +41,6 @@ namespace HealthCareApp.Models
         public ICollection<Appointment>? Appointments { get; set; }
 
         public ICollection<HealthRecord>? HealthRecords { get; set; }
+        public ICollection<DoctorLeave> Leaves { get; set; } = new List<DoctorLeave>();
     }
 }

@@ -3,11 +3,14 @@ using FluentAssertions;
 using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
+using HealthCareApp.Services;
 using HealthCareApp.Services.Impl;
+using HealthCareApp.Services.Interface;
 using HealthCareApp.Shared.Constants;
 using HealthCareApp.Shared.Dtos.Appointments;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
+using MassTransit;
 using Moq;
 
 namespace HealthCareApp.Testing.Services
@@ -19,6 +22,9 @@ namespace HealthCareApp.Testing.Services
         private readonly Mock<IDoctorRepository> doctorRepositoryMock;
         private readonly Mock<IHealthRecordRepository> healthRecordRepositoryMock;
         private readonly Mock<IMapper> mapperMock;
+        private readonly Mock<IBus> busMock;
+        private readonly Mock<ICacheService> cacheServiceMock;
+        private readonly Mock<IDoctorLeaveService> doctorLeaveServiceMock;
 
         private readonly AppointmentService appointmentService;
 
@@ -29,6 +35,9 @@ namespace HealthCareApp.Testing.Services
             doctorRepositoryMock = new Mock<IDoctorRepository>();
             healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
             mapperMock = new Mock<IMapper>();
+            busMock = new Mock<IBus>();
+            cacheServiceMock = new Mock<ICacheService>();
+            doctorLeaveServiceMock = new Mock<IDoctorLeaveService>();
 
             SetupMapper();
 
@@ -37,7 +46,10 @@ namespace HealthCareApp.Testing.Services
                 patientRepositoryMock.Object,
                 doctorRepositoryMock.Object,
                 healthRecordRepositoryMock.Object,
-                mapperMock.Object);
+                mapperMock.Object,
+                busMock.Object,
+                cacheServiceMock.Object,
+                doctorLeaveServiceMock.Object);
         }
 
         [Fact]

@@ -1,0 +1,284 @@
+<section class="dl-command-page">
+
+  <section class="dl-hero">
+    <div>
+      <span>Doctor Unavailability</span>
+
+      <h2>Leave Management</h2>
+
+      <p>
+        Mark yourself unavailable for planned leave, emergencies, conferences, or personal time.
+        Patients cannot book appointments with you on leave dates.
+      </p>
+    </div>
+
+    <div class="dl-hero-count">
+      <strong>{{ leaves.length }}</strong>
+      <span>Total Leave Records</span>
+    </div>
+  </section>
+
+  <section class="dl-grid">
+
+    <form class="dl-form-panel" (ngSubmit)="submitLeave()">
+
+      <div class="dl-panel-heading">
+        <span>Create Leave</span>
+
+        <h3>Set unavailable date range</h3>
+
+        <p>
+          Select your leave dates and add a clear reason. Overlapping leave ranges are blocked by the system.
+        </p>
+      </div>
+
+      <div class="dl-warning-card">
+        <div class="dl-warning-icon">!</div>
+
+        <div>
+          <strong>Booking protection enabled</strong>
+
+          <p>
+            Once leave is created, patients will see all selected-date slots as disabled and marked as Doctor On Leave.
+          </p>
+        </div>
+      </div>
+
+      <div class="dl-form-grid">
+
+        <div class="dl-field-card">
+          <label>
+            Start Date
+
+            <input
+              type="date"
+              name="leaveStartDate"
+              [min]="todayDate"
+              [(ngModel)]="form.startDate">
+          </label>
+
+          @if (hasSubmitted && isStartDateInvalid) {
+            <div class="dl-field-error">
+              Start date is required and cannot be in the past.
+            </div>
+          }
+        </div>
+
+        <div class="dl-field-card">
+          <label>
+            End Date
+
+            <input
+              type="date"
+              name="leaveEndDate"
+              [min]="form.startDate || todayDate"
+              [(ngModel)]="form.endDate">
+          </label>
+
+          @if (hasSubmitted && isEndDateInvalid) {
+            <div class="dl-field-error">
+              End date is required and cannot be before start date.
+            </div>
+          }
+        </div>
+
+        <div class="dl-field-card full">
+          <label>
+            Reason
+
+            <textarea
+              name="leaveReason"
+              rows="5"
+              maxlength="500"
+              placeholder="Example: Medical conference, personal leave, emergency leave..."
+              [(ngModel)]="form.reason">
+            </textarea>
+          </label>
+
+          <div class="dl-counter">
+            {{ form.reason.trim().length }}/500
+          </div>
+
+          @if (hasSubmitted && isReasonInvalid) {
+            <div class="dl-field-error">
+              Reason is required and cannot exceed 500 characters.
+            </div>
+          }
+        </div>
+
+      </div>
+
+      @if (message) {
+        <div class="dl-form-message">
+          {{ message }}
+        </div>
+      }
+
+      <div class="dl-form-actions">
+        <button
+          type="button"
+          class="dl-secondary-btn"
+          [disabled]="isSubmitting || isLoadingLeaves"
+          (click)="loadLeaves()">
+          Refresh History
+        </button>
+
+        <button
+          type="submit"
+          class="dl-primary-btn"
+          [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Creating Leave...' : 'Create Leave' }}
+        </button>
+      </div>
+
+    </form>
+
+    <section class="dl-history-panel">
+
+      <div class="dl-panel-heading">
+        <span>Leave History</span>
+
+        <h3>Your unavailable dates</h3>
+
+        <p>
+          View your latest and previous leave records.
+        </p>
+      </div>
+
+      @if (isLoadingLeaves) {
+        <section class="dl-state-card">
+          <div class="dl-state-icon">↻</div>
+
+          <h3>Loading leave history...</h3>
+
+          <p>
+            Please wait while HealthAxis loads your unavailable dates.
+          </p>
+        </section>
+      }
+
+      @if (!isLoadingLeaves && latestLeave) {
+        <article class="dl-latest-card">
+          <span>Latest Leave</span>
+
+          <h4>
+            {{ formatDisplayDate(latestLeave.startDate) }}
+            -
+            {{ formatDisplayDate(latestLeave.endDate) }}
+          </h4>
+
+          <p>{{ latestLeave.reason }}</p>
+
+          <small>
+            Created {{ formatCreatedDate(latestLeave.createdDateUtc) }}
+          </small>
+        </article>
+      }
+
+      @if (!isLoadingLeaves && leaves.length === 0) {
+        <section class="dl-state-card">
+          <div class="dl-state-icon">⛔</div>
+
+          <h3>No leave records yet</h3>
+
+          <p>
+            Create your first leave request using the form.
+          </p>
+        </section>
+      }
+
+      @if (!isLoadingLeaves && leaves.length > 0) {
+        <div class="dl-history-list">
+          @for (leave of leaves; track leave.doctorLeaveId) {
+            <article class="dl-history-item">
+              <div>
+                <strong>
+                  {{ formatDisplayDate(leave.startDate) }}
+                  -
+                  {{ formatDisplayDate(leave.endDate) }}
+                </strong>
+
+                <span>
+                  Created {{ formatCreatedDate(leave.createdDateUtc) }}
+                </span>
+              </div>
+
+              <p>
+                {{ leave.reason }}
+              </p>
+            </article>
+          }
+        </div>
+      }
+
+    </section>
+
+  </section>
+
+  @if (isConfirmModalOpen) {
+    <div
+      class="dl-modal-backdrop"
+      (click)="closeConfirmModal()"
+      (keydown.escape)="closeConfirmModal()">
+
+      <dialog
+        open
+        class="dl-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeConfirmModal(); $event.stopPropagation()">
+
+        <button
+          type="button"
+          class="dl-modal-close"
+          [disabled]="isSubmitting"
+          (click)="closeConfirmModal()">
+          ×
+        </button>
+
+        <div class="dl-modal-icon">
+          !
+        </div>
+
+        <span class="dl-modal-kicker">
+          Confirm Unavailability
+        </span>
+
+        <h3>Create doctor leave?</h3>
+
+        <p>
+          Patients will not be able to book appointments with you from
+          <strong>{{ form.startDate }}</strong>
+          to
+          <strong>{{ form.endDate }}</strong>.
+        </p>
+
+        <div class="dl-confirm-summary">
+          <strong>Reason</strong>
+
+          <span>{{ form.reason }}</span>
+        </div>
+
+        <div class="dl-modal-actions">
+          <button
+            type="button"
+            class="dl-keep-btn"
+            [disabled]="isSubmitting"
+            (click)="closeConfirmModal()">
+            Review Again
+          </button>
+
+          <button
+            type="button"
+            class="dl-confirm-action-btn"
+            [disabled]="isSubmitting"
+            (click)="confirmCreateLeave()">
+            {{ isSubmitting ? 'Saving...' : 'Yes, Create Leave' }}
+          </button>
+        </div>
+
+      </dialog>
+
+    </div>
+  }
+
+</section>

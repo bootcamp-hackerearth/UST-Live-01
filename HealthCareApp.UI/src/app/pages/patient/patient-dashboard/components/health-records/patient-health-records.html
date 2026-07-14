@@ -1,39 +1,38 @@
-<section class="hr-records-shell">
+<section class="hr-command-page">
 
-  <div class="hr-hero-card">
+  <section class="hr-hero">
     <div>
-      <span class="hr-kicker">Medical History</span>
+      <span>Medical Vault</span>
 
       <h2>Health Records</h2>
 
       <p>
-        Review your diagnosis, prescriptions, visit notes, and care history from
-        your completed consultations.
+        View completed consultation records, diagnosis details, prescriptions, and care notes from one secure record board.
       </p>
     </div>
 
-    <div class="hr-hero-badge">
+    <div class="hr-hero-count">
       <strong>{{ totalRecords }}</strong>
-      <span>Records Available</span>
+      <span>Records</span>
     </div>
-  </div>
+  </section>
 
-  <section class="hr-filter-card">
+  <section class="hr-filter-panel">
 
-    <div class="hr-search-field">
+    <div class="hr-search-box">
       <label>
         Search Health Records
 
         <input
           type="text"
           name="healthRecordSearch"
-          placeholder="Search by doctor, diagnosis, prescription, or appointment ID"
+          placeholder="Search doctor, diagnosis, prescription, notes, or appointment ID"
           [(ngModel)]="searchTerm"
           (ngModelChange)="applyFilters()">
       </label>
     </div>
 
-    <div class="hr-filter-grid">
+    <div class="hr-filter-row">
 
       <label>
         Visit Date
@@ -62,36 +61,34 @@
         </select>
       </label>
 
-    </div>
-
-    @if (hasActiveFilters) {
-      <div class="hr-filter-actions">
+      @if (hasActiveFilters) {
         <button
           type="button"
-          class="hr-clear-filters-btn"
+          class="hr-clear-btn"
           (click)="clearFilters()">
           Clear Filters
         </button>
-      </div>
-    }
+      }
+
+    </div>
 
   </section>
 
   @if (isLoading) {
-    <div class="hr-empty-card">
-      <div class="hr-empty-icon">↻</div>
+    <section class="hr-state-card">
+      <div class="hr-state-icon">↻</div>
 
       <h3>Loading health records...</h3>
 
       <p>
-        Please wait while HealthAxis loads your medical history.
+        Please wait while HealthAxis loads your medical record vault.
       </p>
-    </div>
+    </section>
   }
 
   @if (!isLoading && errorMessage) {
-    <div class="hr-empty-card">
-      <div class="hr-empty-icon">!</div>
+    <section class="hr-state-card error">
+      <div class="hr-state-icon">!</div>
 
       <h3>Unable to load health records</h3>
 
@@ -101,27 +98,26 @@
 
       <button
         type="button"
-        class="hr-clear-filters-btn"
         (click)="loadRecords()">
         Retry
       </button>
-    </div>
+    </section>
   }
 
   @if (!isLoading && !errorMessage && records.length === 0) {
-    <div class="hr-empty-card">
-      <div class="hr-empty-icon">▣</div>
+    <section class="hr-state-card">
+      <div class="hr-state-icon">▣</div>
 
       <h3>No health records available</h3>
 
       <p>
-        Your consultation records will appear here after completed visits.
+        Completed consultation records will appear here after doctors add medical notes.
       </p>
-    </div>
+    </section>
   }
 
   @if (!isLoading && !errorMessage && records.length > 0) {
-    <div class="hr-record-grid">
+    <section class="hr-record-board">
 
       @for (rec of records; track rec.healthRecordId) {
 
@@ -132,7 +128,7 @@
           (click)="openDetails(rec)">
 
           <div class="hr-record-top">
-            <div class="hr-record-icon">
+            <div class="hr-record-badge">
               HR
             </div>
 
@@ -144,25 +140,25 @@
               <p>{{ formatDate(rec.visitDate) }}</p>
             </div>
 
-            <span class="hr-view-btn">
+            <div class="hr-view-pill">
               View
-            </span>
+            </div>
           </div>
 
-          <div class="hr-diagnosis-box">
+          <div class="hr-diagnosis-panel">
             <span>Diagnosis</span>
             <strong>{{ rec.diagnosis }}</strong>
           </div>
 
-          <div class="hr-record-detail-grid">
+          <div class="hr-record-grid">
 
-            <div class="hr-detail-tile">
+            <div>
               <span>Prescription</span>
               <p>{{ rec.prescription }}</p>
             </div>
 
             @if (rec.notes) {
-              <div class="hr-detail-tile">
+              <div>
                 <span>Doctor Notes</span>
                 <p>{{ rec.notes }}</p>
               </div>
@@ -170,28 +166,26 @@
 
           </div>
 
-          <div class="hr-card-footer">
+          <div class="hr-record-footer">
             <span>Appointment #{{ rec.appointmentId }}</span>
-            <small>Click to view full medical summary</small>
+            <small>Open full record summary</small>
           </div>
 
         </button>
 
       }
 
-    </div>
+    </section>
 
-    <section class="hr-pagination-card">
-
+    <section class="hr-pagination">
       <div>
         <strong>Page {{ pageNumber }} of {{ totalPages || 1 }}</strong>
         <span>Total Records: {{ totalRecords }}</span>
       </div>
 
-      <div class="hr-pagination-actions">
+      <div class="hr-page-actions">
         <button
           type="button"
-          class="hr-page-btn"
           [disabled]="!canGoPrevious"
           (click)="goToPreviousPage()">
           Previous
@@ -199,18 +193,15 @@
 
         <button
           type="button"
-          class="hr-page-btn"
           [disabled]="!canGoNext"
           (click)="goToNextPage()">
           Next
         </button>
       </div>
-
     </section>
   }
 
   @if (isModalOpen && selectedRecord) {
-
     <div
       class="hr-modal-backdrop"
       (click)="closeModal()"
@@ -222,29 +213,26 @@
         (click)="$event.stopPropagation()"
         (keydown.escape)="closeModal(); $event.stopPropagation()">
 
-        <div class="hr-modal-accent"></div>
+        <button
+          type="button"
+          class="hr-modal-close"
+          (click)="closeModal()">
+          ×
+        </button>
 
-        <div class="hr-modal-header">
-          <div>
-            <span class="hr-modal-kicker">Health Record Details</span>
-
-            <h3>{{ selectedRecord.doctorName }}</h3>
-
-            <p>
-              {{ formatDate(selectedRecord.visitDate) }} • Appointment #{{ selectedRecord.appointmentId }}
-            </p>
-          </div>
-
-          <button
-            type="button"
-            class="hr-modal-close"
-            (click)="closeModal()">
-            ×
-          </button>
+        <div class="hr-modal-icon">
+          HR
         </div>
 
-        <div class="hr-modal-summary">
+        <span class="hr-modal-kicker">Health Record Details</span>
 
+        <h3>{{ selectedRecord.doctorName }}</h3>
+
+        <p>
+          {{ formatDate(selectedRecord.visitDate) }} • Appointment #{{ selectedRecord.appointmentId }}
+        </p>
+
+        <section class="hr-modal-summary">
           <div>
             <span>Patient</span>
             <strong>{{ selectedRecord.patientName }}</strong>
@@ -259,12 +247,11 @@
             <span>Visit Date</span>
             <strong>{{ formatDate(selectedRecord.visitDate) }}</strong>
           </div>
+        </section>
 
-        </div>
+        <section class="hr-modal-body">
 
-        <div class="hr-modal-body">
-
-          <div class="hr-modal-section diagnosis">
+          <div class="hr-modal-section primary">
             <span>Diagnosis</span>
             <p>{{ selectedRecord.diagnosis }}</p>
           </div>
@@ -281,12 +268,11 @@
             </div>
           }
 
-        </div>
+        </section>
 
       </dialog>
 
     </div>
-
   }
 
 </section>

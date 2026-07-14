@@ -4,12 +4,15 @@ using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Services;
+using HealthCareApp.Services.Interface;
 using HealthCareApp.Shared.Constants;
 using HealthCareApp.Shared.Dtos.Doctors;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Moq;
+using static MassTransit.Util.ChartTable;
 
 namespace HealthCareApp.Testing.Services
 {
@@ -27,6 +30,10 @@ namespace HealthCareApp.Testing.Services
 
         private readonly Mock<IAppointmentRepository> appointmentRepositoryMock;
 
+        private readonly Mock<ICacheService> cacheServiceMock;
+        private readonly Mock<ILogger<DoctorService>> loggerMock;
+        private readonly Mock<IDoctorLeaveService> doctorLeaveServiceMock;
+
         public DoctorServiceTests()
         {
             repositoryMock = new Mock<IDoctorRepository>();
@@ -39,6 +46,13 @@ namespace HealthCareApp.Testing.Services
 
             roleManagerMock = CreateRoleManagerMock();
 
+            cacheServiceMock = new Mock<ICacheService>();
+           
+            loggerMock = new Mock<ILogger<DoctorService>>();
+
+            doctorLeaveServiceMock = new Mock<IDoctorLeaveService>();
+
+
             SetupMapper();
 
             doctorService = new DoctorService(
@@ -46,7 +60,10 @@ namespace HealthCareApp.Testing.Services
                 appointmentRepositoryMock.Object,
                 mapperMock.Object,
                 userManagerMock.Object,
-                roleManagerMock.Object);
+                roleManagerMock.Object,
+                cacheServiceMock.Object,
+                doctorLeaveServiceMock.Object,
+                loggerMock.Object);
         }
 
         [Fact]
@@ -863,13 +880,11 @@ namespace HealthCareApp.Testing.Services
 
             var result = await doctorService.GetDoctorAvailabilityAsync(doctor.DoctorId, null);
 
-            result.Should().HaveCount(TimeSlots.Slots.Count);
+            result.Slots.Should().HaveCount(TimeSlots.Slots.Count);
 
-            result.Select(slot => slot.TimeSlot)
-                .Should()
-                .BeEquivalentTo(TimeSlots.Slots);
+            result.Slots.Select(slot => slot.TimeSlot).Should().BeEquivalentTo(TimeSlots.Slots);
 
-            result.Should().OnlyContain(slot => slot.IsBooked == false);
+            result.Slots.Should().OnlyContain(slot => !slot.IsBooked);
 
             appointmentRepositoryMock.Verify(
                 repository => repository.GetBookedTimeSlotsByDoctorAndDateAsync(
@@ -906,13 +921,13 @@ namespace HealthCareApp.Testing.Services
 
             var result = await doctorService.GetDoctorAvailabilityAsync(doctor.DoctorId, selectedDate);
 
-            result.Should().HaveCount(TimeSlots.Slots.Count);
+            result.Slots.Should().HaveCount(TimeSlots.Slots.Count);
 
-            result.Where(slot => bookedSlots.Contains(slot.TimeSlot))
+            result.Slots.Where(slot => bookedSlots.Contains(slot.TimeSlot))
                 .Should()
                 .OnlyContain(slot => slot.IsBooked);
 
-            result.Where(slot => !bookedSlots.Contains(slot.TimeSlot))
+            result.Slots.Where(slot => !bookedSlots.Contains(slot.TimeSlot))
                 .Should()
                 .OnlyContain(slot => !slot.IsBooked);
 

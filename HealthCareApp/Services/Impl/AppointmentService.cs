@@ -18,7 +18,7 @@ namespace HealthCareApp.Services.Impl
         IPatientRepository patientRepository,
         IDoctorRepository doctorRepository,
         IHealthRecordRepository healthRecordRepository,
-        IMapper mapper, IBus bus,ICacheService cacheService) : IAppointmentService
+        IMapper mapper, IBus bus,ICacheService cacheService, IDoctorLeaveService doctorLeaveService) : IAppointmentService
     {
 
         private const string AppointmentEntityName = "Appointment";
@@ -281,6 +281,18 @@ namespace HealthCareApp.Services.Impl
             ValidateAppointmentDate(dto.ScheduledDate);
 
             ValidateTimeSlot(dto.TimeSlot);
+
+            var appointmentDate = DateOnly.FromDateTime(dto.ScheduledDate.Date);
+
+            var leaveStatus = await doctorLeaveService.GetDoctorLeaveStatusAsync(
+                dto.DoctorId,
+                appointmentDate);
+
+            if (leaveStatus.IsDoctorOnLeave)
+            {
+                throw new AppointmentRuleException(
+                    leaveStatus.Message);
+            }
 
             var isSlotBooked = await appointmentRepository.IsSlotBookedAsync(
                 dto.DoctorId,

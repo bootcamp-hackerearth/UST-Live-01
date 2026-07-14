@@ -4,6 +4,7 @@ using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Services.Interface;
 using HealthCareApp.Shared.Constants;
+using HealthCareApp.Shared.Dtos.DoctorDto;
 using HealthCareApp.Shared.Dtos.Doctors;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
@@ -19,6 +20,7 @@ namespace HealthCareApp.Services
         UserManager<IdentityUser> userManager,
         RoleManager<IdentityRole> roleManager,
         ICacheService cacheService,
+        IDoctorLeaveService doctorLeaveService,
         ILogger<DoctorService> logger) : IDoctorService
     {
         private const string DoctorEntityName = "Doctor";
@@ -264,29 +266,37 @@ namespace HealthCareApp.Services
             return mapper.Map<DoctorDto>(doctor);
         }
 
-        public async Task<List<SlotAvailabilityDto>> GetDoctorAvailabilityAsync(
-            int doctorId,
-            DateTime? date)
+        public async Task<DoctorAvailabilityResponseDto> GetDoctorAvailabilityAsync(
+    int doctorId,
+    DateTime? date)
         {
             ValidateDoctorId(doctorId);
 
-            var cacheKey = $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
-            var cachedAvailability = await cacheService.GetAsync<List<SlotAvailabilityDto>>(cacheKey);
+            var selectedDateTime = date?.Date ?? DateTime.Today;
 
-           
-            if (cachedAvailability != null)
+            var selectedDate = DateOnly.FromDateTime(selectedDateTime);
+
+            var cacheKey = $"doctors:{doctorId}:availability:{selectedDate:yyyy-MM-dd}";
+
+            var cachedAvailability =
+                await cacheService.GetAsync<DoctorAvailabilityResponseDto>(cacheKey);
+
+            if (cachedAvailability is not null)
             {
                 logger.LogInformation(
-                    "Availability Cache Hit for doctor {DoctorId}",
-                    doctorId);
+                    "Availability Cache Hit for doctor {DoctorId} on {Date}",
+                    doctorId,
+                    selectedDate);
 
                 return cachedAvailability;
             }
 
-            logger.LogInformation("Availability Cache Miss for doctor {DoctorId}",doctorId);
+            logger.LogInformation(
+                "Availability Cache Miss for doctor {DoctorId} on {Date}",
+                doctorId,
+                selectedDate);
 
             var doctor = await repository.GetByIdAsync(doctorId);
-
 
             if (doctor is null)
             {
@@ -295,30 +305,72 @@ namespace HealthCareApp.Services
 
             if (!doctor.IsActive)
             {
-                throw new BusinessRuleException("Doctor is inactive and not available for appointments.");
+                throw new BusinessRuleException(
+                    "Doctor is inactive and not available for appointments.");
             }
 
-            var bookedSlots = new List<string>();
+            var leaveStatus = await doctorLeaveService.GetDoctorLeaveStatusAsync(
+                doctorId,
+                selectedDate);
 
-            if (date is not null)
+            if (leaveStatus.IsDoctorOnLeave)
             {
-                bookedSlots = await appointmentRepository.GetBookedTimeSlotsByDoctorAndDateAsync(
-                    doctorId,
-                    date.Value);
+                var leaveAvailability = new DoctorAvailabilityResponseDto
+                {
+                    DoctorId = doctorId,
+                    Date = selectedDate.ToString("yyyy-MM-dd"),
+                    IsDoctorOnLeave = true,
+                    Message = leaveStatus.Message,
+                    Slots = TimeSlots.Slots
+                        .Select(slot => new SlotAvailabilityDto
+                        {
+                            TimeSlot = slot,
+                            IsBooked = true
+                        })
+                        .ToList()
+                };
+
+                await cacheService.SetAsync(
+                    cacheKey,
+                    leaveAvailability,
+                    TimeSpan.FromMinutes(5));
+
+                return leaveAvailability;
             }
 
-            var bookedSlotSet = bookedSlots.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var bookedSlots =
+                await appointmentRepository.GetBookedTimeSlotsByDoctorAndDateAsync(
+                    doctorId,
+                    selectedDateTime);
 
-            var availability = TimeSlots.Slots
-                .Select(slot => new SlotAvailabilityDto
-                {
-                    TimeSlot = slot,
-                    IsBooked = bookedSlotSet.Contains(slot)
-                })
-                .ToList();
+            var bookedSlotSet =
+                bookedSlots.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            await cacheService.SetAsync(cacheKey,availability,TimeSpan.FromMinutes(5));
-            logger.LogInformation("Availability cached for doctor {DoctorId} with key {CacheKey}",doctorId,cacheKey);
+            var availability = new DoctorAvailabilityResponseDto
+            {
+                DoctorId = doctorId,
+                Date = selectedDate.ToString("yyyy-MM-dd"),
+                IsDoctorOnLeave = false,
+                Message = string.Empty,
+                Slots = TimeSlots.Slots
+                    .Select(slot => new SlotAvailabilityDto
+                    {
+                        TimeSlot = slot,
+                        IsBooked = bookedSlotSet.Contains(slot)
+                    })
+                    .ToList()
+            };
+
+            await cacheService.SetAsync(
+                cacheKey,
+                availability,
+                TimeSpan.FromMinutes(5));
+
+            logger.LogInformation(
+                "Availability cached for doctor {DoctorId} with key {CacheKey}",
+                doctorId,
+                cacheKey);
+
             return availability;
         }
 

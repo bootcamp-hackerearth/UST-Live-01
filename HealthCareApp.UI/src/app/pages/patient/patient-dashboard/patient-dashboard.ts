@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin,timeout} from 'rxjs';
 
 import { AppointmentDto } from '../../../shared/models/appointment.models';
 import { HealthRecordDto } from '../../../shared/models/health-record.models';
@@ -15,6 +15,9 @@ import { PatientBookAppointment } from './components/book-appointment/patient-bo
 import { PatientAppointmentList } from './components/appointment-list/patient-appointment-list';
 import { PatientHealthRecords } from './components/health-records/patient-health-records';
 import { PatientProfile } from './components/profile/patient-profile';
+import { PatientNotificationModal } from './components/patient-notification-modal/patient-notification-modal';
+import { PatientNotificationApiService } from '../../../core/services/patient-notification-api.service';
+import { PatientNotificationDto } from '../../../shared/models/patient-notification.models';
 
 type PatientDashboardSection =
   | 'dashboard'
@@ -39,7 +42,8 @@ interface DashboardSummary {
     PatientBookAppointment,
     PatientAppointmentList,
     PatientHealthRecords,
-    PatientProfile
+    PatientProfile,
+    PatientNotificationModal
   ],
   templateUrl: './patient-dashboard.html',
   styleUrl: './patient-dashboard.css'
@@ -58,6 +62,8 @@ export class PatientDashboard implements OnInit, OnDestroy {
 
   upcomingAppointments: AppointmentDto[] = [];
   healthRecords: HealthRecordDto[] = [];
+  unreadNotifications: PatientNotificationDto[] = [];
+  isNotificationProcessing = false;
 
   isDashboardLoading = false;
   dashboardErrorMessage = '';
@@ -75,12 +81,14 @@ export class PatientDashboard implements OnInit, OnDestroy {
     private readonly patientApiService: PatientApiService,
     private readonly appointmentApiService: AppointmentApiService,
     private readonly healthRecordApiService: HealthRecordApiService,
+    private readonly patientNotificationApiService: PatientNotificationApiService,
     private readonly router: Router
   ) {
   }
 
   ngOnInit(): void {
     this.loadDashboardData();
+    this.loadUnreadNotifications();
     this.showToast('Welcome to your HealthAxis patient portal.', 'success');
   }
 
@@ -165,6 +173,7 @@ export class PatientDashboard implements OnInit, OnDestroy {
 
   handleBookingSuccess(): void {
     this.loadDashboardData();
+    this.loadUnreadNotifications();
     this.activeSection = 'dashboard';
     this.showToast('Appointment booked successfully ', 'success');
   }
@@ -241,6 +250,90 @@ export class PatientDashboard implements OnInit, OnDestroy {
   retryDashboardLoad(): void {
     this.loadDashboardData();
   }
+
+  loadUnreadNotifications(): void {
+  this.patientNotificationApiService.getMyUnreadNotifications().pipe(
+    timeout(15000)
+  ).subscribe({
+    next: (notifications: PatientNotificationDto[]) => {
+      this.unreadNotifications = notifications ?? [];
+    },
+    error: (error: unknown) => {
+      console.log('Patient notifications API error:', error);
+    }
+  });
+}
+
+markNotificationAsRead(notification: PatientNotificationDto): void {
+  if (this.isNotificationProcessing) {
+    return;
+  }
+
+  this.isNotificationProcessing = true;
+
+  this.patientNotificationApiService.markAsRead(
+    notification.patientNotificationId
+  ).pipe(
+    timeout(15000)
+  ).subscribe({
+    next: () => {
+      this.isNotificationProcessing = false;
+
+      this.unreadNotifications = this.unreadNotifications.filter(
+        item => item.patientNotificationId !== notification.patientNotificationId
+      );
+    },
+    error: (error: unknown) => {
+      console.log('Mark patient notification read API error:', error);
+
+      this.isNotificationProcessing = false;
+
+      this.showToast(
+        'Unable to update notification. Please try again.',
+        'warning'
+      );
+    }
+  });
+}
+
+rebookFromNotification(notification: PatientNotificationDto): void {
+  if (this.isNotificationProcessing) {
+    return;
+  }
+
+  this.isNotificationProcessing = true;
+
+  this.patientNotificationApiService.markAsRead(
+    notification.patientNotificationId
+  ).pipe(
+    timeout(15000)
+  ).subscribe({
+    next: () => {
+      this.isNotificationProcessing = false;
+
+      this.unreadNotifications = this.unreadNotifications.filter(
+        item => item.patientNotificationId !== notification.patientNotificationId
+      );
+
+      this.setActiveSection('book');
+
+      this.showToast(
+        'Please choose a new doctor/date/slot for rebooking.',
+        'info'
+      );
+    },
+    error: (error: unknown) => {
+      console.log('Rebook notification API error:', error);
+
+      this.isNotificationProcessing = false;
+
+      this.showToast(
+        'Unable to open rebooking. Please try again.',
+        'warning'
+      );
+    }
+  });
+}
 
   private calculatePercentage(value: number): number {
     return Math.round((value / this.chartTotalCount) * 100);

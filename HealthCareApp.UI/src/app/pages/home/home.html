@@ -1,255 +1,248 @@
 <div class="ha-page">
-  <header class="ha-navbar">
-    <div class="ha-brand">
+
+  <nav class="ha-navbar">
+    <button class="ha-brand" type="button" (click)="scrollToAbout()">
       <div class="ha-logo">HA</div>
 
       <div>
-        <h2>{{ brandName }}</h2>
-        <span>Connected Care Platform</span>
+        <h2>HealthAxis</h2>
+        <span>Digital Care Network</span>
       </div>
-    </div>
+    </button>
 
-    <nav class="ha-nav-actions">
-      <button type="button" class="ha-nav-link" (click)="scrollToAbout()">
-        About Us
+    <div class="ha-nav-actions">
+      <button class="ha-nav-link" type="button" (click)="scrollToAbout()">
+        About
       </button>
 
-      <button type="button" class="ha-nav-link" (click)="openSignupModal()">
-        Sign Up
+      <button class="ha-nav-link" type="button" (click)="scrollToGoals()">
+        Goals
       </button>
 
-      <button type="button" class="ha-nav-primary" (click)="openLoginModal()">
+      <button class="ha-nav-link" type="button" (click)="openCreatePatientModal()">
+        Register Patient
+      </button>
+
+      <button class="ha-nav-primary" type="button" (click)="openLoginModal()">
         Login
       </button>
-    </nav>
-  </header>
-
-  <main class="ha-hero">
-    <section class="ha-hero-content">
-      <div class="ha-kicker">
-        <span></span>
-        {{ platformStatus }}
-      </div>
-
-      <h1>{{ heroTitle }}</h1>
-
-      <p>
-        {{ heroDescription }}
-      </p>
-
-      <div class="ha-hero-actions">
-        <button type="button" class="ha-primary-btn" (click)="openSignupModal()">
-          Create Account
-        </button>
-
-        <button type="button" class="ha-secondary-btn" (click)="openLoginModal()">
-          Login to Portal
-        </button>
-      </div>
-
-      <div class="ha-trust-row">
-        <div>
-          <strong>24/7</strong>
-          <span>Digital access</span>
-        </div>
-
-        <div>
-          <strong>Fast</strong>
-          <span>Appointment flow</span>
-        </div>
-
-        <div>
-          <strong>Secure</strong>
-          <span>Care workspace</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="ha-hero-visual">
-      <div class="ha-care-card">
-        <div class="ha-card-header">
-          <div class="ha-plus">+</div>
-
-          <div>
-            <h3>Care Hub</h3>
-            <p>A focused workspace for healthcare users</p>
-          </div>
-        </div>
-
-        <div class="ha-ecg-box">
-          <svg
-            class="ha-ecg-svg"
-            viewBox="0 0 760 160"
-            preserveAspectRatio="none"
-            aria-hidden="true">
-            <line
-              x1="0"
-              y1="82"
-              x2="760"
-              y2="82"
-              stroke="rgba(148, 163, 184, 0.20)"
-              stroke-width="2"
-              stroke-linecap="round">
-            </line>
-
-            <polyline
-              points="0,82 80,82 120,82 145,48 180,118 215,82 310,82 350,82 385,60 420,104 455,82 545,82 590,82 625,35 675,130 720,82 760,82"
-              fill="none"
-              stroke="#0ea5e9"
-              stroke-width="7"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-dasharray="1200"
-              stroke-dashoffset="1200"
-              filter="drop-shadow(0 8px 14px rgba(14, 165, 233, 0.30))">
-              <animate
-                attributeName="stroke-dashoffset"
-                values="1200;0;-1200"
-                dur="2.8s"
-                repeatCount="indefinite">
-              </animate>
-            </polyline>
-          </svg>
-        </div>
-
-        <div class="ha-care-steps">
-          <div>
-            <span>01</span>
-            <strong>Choose care</strong>
-          </div>
-
-          <div>
-            <span>02</span>
-            <strong>Book visit</strong>
-          </div>
-
-          <div>
-            <span>03</span>
-            <strong>Track records</strong>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <section id="about-section" class="ha-about">
-    <div class="ha-section-heading">
-      <span>About HealthAxis</span>
-
-      <h2>Designed for a smoother healthcare journey</h2>
-
-      <p>
-        HealthAxis is built to give patients and doctors a clean, simple, and reliable
-        digital experience for appointments, health records, and care coordination.
-      </p>
     </div>
+  </nav>
 
-    <div class="ha-feature-grid">
-      @for (feature of features; track feature.title) {
-        <article class="ha-feature-card">
-          <div class="ha-feature-icon">
-            {{ feature.icon }}
+  <main>
+
+    <section class="ha-hero">
+      <div class="ha-hero-copy">
+        <div class="ha-kicker">
+          <span></span>
+          Secure Healthcare Access Platform
+        </div>
+
+        <h1>
+          A sharper way to manage care, appointments, and medical records.
+        </h1>
+
+        <p>
+          HealthAxis connects patients and doctors through protected dashboards,
+          guided booking, appointment tracking, and digital health record access.
+        </p>
+
+        <div class="ha-hero-actions">
+          <button class="ha-primary-btn" type="button" (click)="openCreatePatientModal()">
+            Register Patient
+          </button>
+
+          <button class="ha-secondary-btn" type="button" (click)="openBookVisitModal()">
+            Book Visit
+          </button>
+
+          <button class="ha-ghost-btn" type="button" (click)="openLoginModal()">
+            Login
+          </button>
+        </div>
+
+        <div class="ha-stats-row">
+          <article>
+            <strong>JWT</strong>
+            <span>Secured access</span>
+          </article>
+
+          <article>
+            <strong>2</strong>
+            <span>Patient & doctor portals</span>
+          </article>
+
+          <article>
+            <strong>24/7</strong>
+            <span>Digital availability</span>
+          </article>
+        </div>
+      </div>
+
+      <div class="ha-hero-panel">
+        <div class="ha-system-card">
+          <div class="ha-system-header">
+            <div class="ha-system-icon">+</div>
+
+            <div>
+              <span>Care Control Panel</span>
+              <h3>Live Workflow</h3>
+            </div>
           </div>
 
-          <h3>{{ feature.title }}</h3>
+          <div class="ha-flow-list">
+            <button type="button" class="ha-flow-item" (click)="openCreatePatientModal()">
+              <span>01</span>
+              <div>
+                <strong>Register Patient</strong>
+                <small>Create a protected patient account.</small>
+              </div>
+            </button>
+
+            <button type="button" class="ha-flow-item" (click)="openLoginModal()">
+              <span>02</span>
+              <div>
+                <strong>Login Securely</strong>
+                <small>Enter the correct role-based workspace.</small>
+              </div>
+            </button>
+
+            <button type="button" class="ha-flow-item" (click)="openBookVisitModal()">
+              <span>03</span>
+              <div>
+                <strong>Book Appointment</strong>
+                <small>Choose doctor, date, and available slot.</small>
+              </div>
+            </button>
+
+            <button type="button" class="ha-flow-item" (click)="scrollToGoals()">
+              <span>04</span>
+              <div>
+                <strong>Health Records</strong>
+                <small>Access consultation summaries after visits.</small>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about-section" class="ha-about">
+      <div class="ha-section-heading">
+        <span>About HealthAxis</span>
+
+        <h2>
+          Built for organized healthcare movement.
+        </h2>
+
+        <p>
+          HealthAxis is designed around secure access, clean patient journeys,
+          doctor workflows, appointment visibility, and digital record continuity.
+        </p>
+      </div>
+
+      <div class="ha-feature-grid">
+        @for (feature of features; track feature.title) {
+          <article class="ha-feature-card">
+            <div class="ha-feature-icon">
+              {{ feature.icon }}
+            </div>
+
+            <h3>{{ feature.title }}</h3>
+
+            <p>{{ feature.text }}</p>
+          </article>
+        }
+      </div>
+    </section>
+
+    <section id="goals-section" class="ha-goals">
+      <div class="ha-goal-slider">
+        <div class="ha-goal-left">
+          <span>Our Goals</span>
+
+          <h2>
+            {{ activeGoal.title }}
+          </h2>
 
           <p>
-            {{ feature.description }}
+            {{ activeGoal.text }}
           </p>
-        </article>
-      }
-    </div>
-  </section>
 
-  <section class="ha-highlight-section">
-    <div class="ha-highlight-left">
-      <span>Why Choose Us</span>
+          <div class="ha-slider-actions">
+            <button type="button" (click)="previousGoal()">
+              ‹
+            </button>
 
-      <h2>Care that feels organized from the first click</h2>
+            <button type="button" (click)="nextGoal()">
+              ›
+            </button>
+          </div>
+        </div>
 
-      <p>
-        HealthAxis keeps the experience simple for users while supporting real healthcare
-        actions like booking, appointment tracking, and health record access.
-      </p>
-    </div>
+        <div class="ha-goal-card">
+          <strong>{{ activeGoal.number }}</strong>
+          <span>HealthAxis Mission</span>
+          <p>{{ activeGoal.text }}</p>
+        </div>
+      </div>
+    </section>
 
-    <div class="ha-highlight-card">
-      <div class="ha-highlight-count">
-        {{ currentHighlightIndex + 1 }} / {{ highlights.length }}
+    <section class="ha-final-strip">
+      <div>
+        <span>Ready to continue?</span>
+        <h2>Start with registration or login to your secure workspace.</h2>
       </div>
 
-      <h3>{{ currentHighlight.title }}</h3>
-
-      <p>
-        {{ currentHighlight.description }}
-      </p>
-
-      <div class="ha-carousel-actions">
-        <button
-          type="button"
-          [disabled]="currentHighlightIndex === 0"
-          (click)="showPreviousHighlight()">
-          ‹
+      <div class="ha-final-actions">
+        <button class="ha-primary-btn" type="button" (click)="openCreatePatientModal()">
+          Register Patient
         </button>
 
-        <button
-          type="button"
-          [disabled]="currentHighlightIndex === highlights.length - 1"
-          (click)="showNextHighlight()">
-          ›
+        <button class="ha-secondary-btn" type="button" (click)="openLoginModal()">
+          Login
         </button>
       </div>
-    </div>
-  </section>
+    </section>
 
-  @if (isLoginModalOpen) {
-    <div
-      class="ha-modal-backdrop"
-      (click)="closeModals()"
-      (keydown.escape)="closeModals()">
+  </main>
 
-      <dialog
+  @if (activeModal === 'login') {
+    <div class="ha-modal-backdrop" (click)="closeModals()">
+       <dialog
         open
-        class="ha-auth-modal"
+        class="ha-modal"
         (click)="$event.stopPropagation()"
         (keydown.escape)="closeModals(); $event.stopPropagation()">
 
-        <button type="button" class="ha-modal-close" (click)="closeModals()">
+        <button class="ha-modal-close" type="button" (click)="closeModals()">
           ×
         </button>
 
-        <div class="ha-auth-logo">HA</div>
+        <span class="ha-modal-kicker">Secure Login</span>
 
-        <h2>Welcome Back</h2>
+        <h2>Login to HealthAxis</h2>
 
         <p>
-          Sign in with your registered HealthAxis account.
+          Enter your HealthAxis credentials to continue to the correct dashboard.
         </p>
 
-        <form
-          class="ha-auth-form"
-          #loginFormRef="ngForm"
-          (ngSubmit)="submitLogin(loginFormRef)"
-          novalidate>
+        @if (modalMessage) {
+          <div class="ha-modal-message" [class]="modalMessageType">
+            {{ modalMessage }}
+          </div>
+        }
 
+        <form class="ha-modal-form" (ngSubmit)="submitLogin()">
           <label>
-            Email
+            Email Address
 
             <input
               type="email"
-              name="usernameOrEmail"
-              placeholder="Enter email"
-              required
-              email
-              [(ngModel)]="loginForm.usernameOrEmail"
-              #usernameOrEmail="ngModel" />
+              name="loginEmail"
+              placeholder="name@example.com"
+              [(ngModel)]="loginForm.email">
           </label>
-
-          @if (usernameOrEmail.invalid && usernameOrEmail.touched) {
-            <div class="ha-field-error">
-              Enter a valid email address.
-            </div>
-          }
 
           <label>
             Password
@@ -258,289 +251,190 @@
               type="password"
               name="loginPassword"
               placeholder="Enter password"
-              required
-              [(ngModel)]="loginForm.password"
-              #loginPassword="ngModel" />
+              [(ngModel)]="loginForm.password">
           </label>
 
-          @if (loginPassword.invalid && loginPassword.touched) {
-            <div class="ha-field-error">
-              Password is required.
-            </div>
-          }
-
-          @if (loginMessage) {
-            <div class="ha-form-message">
-              {{ loginMessage }}
-            </div>
-          }
-
-          <button
-            type="submit"
-            class="ha-auth-submit"
-            [disabled]="isSubmittingLogin">
-            {{ isSubmittingLogin ? 'Please wait...' : 'Login' }}
+          <button class="ha-modal-primary" type="submit" [disabled]="isLoggingIn">
+            {{ isLoggingIn ? 'Logging in...' : 'Login' }}
           </button>
         </form>
 
-        <div class="ha-auth-switch">
-          New patient?
-          <button type="button" (click)="openSignupModal()">
-            Create patient account
-          </button>
-        </div>
+        <button class="ha-modal-switch" type="button" (click)="openCreatePatientModal()">
+          New patient? Register here
+        </button>
+
       </dialog>
     </div>
   }
 
-  @if (isSignupModalOpen) {
-    <div
-      class="ha-modal-backdrop"
-      (click)="closeModals()"
-      (keydown.escape)="closeModals()">
-
+  @if (activeModal === 'register') {
+    <div class="ha-modal-backdrop" (click)="closeModals()">
       <dialog
         open
-        class="ha-auth-modal ha-signup-modal"
+        class="ha-modal wide"
         (click)="$event.stopPropagation()"
         (keydown.escape)="closeModals(); $event.stopPropagation()">
 
-        <button type="button" class="ha-modal-close" (click)="closeModals()">
+        <button class="ha-modal-close" type="button" (click)="closeModals()">
           ×
         </button>
 
-        <div class="ha-auth-logo">HA</div>
+        <span class="ha-modal-kicker">Patient Registration</span>
 
-        <h2>Create Patient Account</h2>
+        <h2>Create patient account</h2>
 
         <p>
-          Register as a patient to book appointments and access your care records.
+          Register a patient profile and use the account to access the patient dashboard.
         </p>
 
-        <form
-          class="ha-auth-form"
-          #signupFormRef="ngForm"
-          (ngSubmit)="submitSignup(signupFormRef)"
-          novalidate>
-          <div class="ha-form-grid">
-            <div>
-              <label>
-                Full Name
-                <input
-                  type="text"
-                  name="fullName"
-                  placeholder="Enter full name"
-                  required
-                  minlength="2"
-                  maxlength="100"
-                  [pattern]="namePattern"
-                  [(ngModel)]="patientRegisterForm.fullName"
-                  #fullName="ngModel" />
-              </label>
-
-              @if (fullName.invalid && fullName.touched) {
-                <div class="ha-field-error">
-                  @if (fullName.hasError('required')) {
-                    Full name is required.
-                  }
-
-                  @if (fullName.hasError('pattern')) {
-                    Name should contain only letters and spaces.
-                  }
-
-                  @if (fullName.hasError('minlength')) {
-                    Name must be at least 2 characters.
-                  }
-                </div>
-              }
-            </div>
-
-            <div>
-              <label>
-                Date of Birth
-                <input
-                  type="date"
-                  name="dateOfBirth"
-                  required
-                  [max]="todayDate"
-                  [(ngModel)]="patientRegisterForm.dateOfBirth"
-                  #dateOfBirth="ngModel" />
-              </label>
-
-              @if (dateOfBirth.invalid && dateOfBirth.touched) {
-                <div class="ha-field-error">
-                  Date of birth is required and cannot be a future date.
-                </div>
-              }
-            </div>
-
-            <div>
-              <label>
-                Gender
-                <select
-                  name="gender"
-                  required
-                  [(ngModel)]="patientRegisterForm.gender"
-                  #gender="ngModel">
-                  <option value="">Select gender</option>
-
-                  @for (genderOption of genderOptions; track genderOption) {
-                    <option [value]="genderOption">
-                      {{ genderOption }}
-                    </option>
-                  }
-                </select>
-              </label>
-
-              @if (gender.invalid && gender.touched) {
-                <div class="ha-field-error">
-                  Gender is required.
-                </div>
-              }
-            </div>
-
-            <div>
-              <label>
-                Email
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Enter email"
-                  required
-                  email
-                  [(ngModel)]="patientRegisterForm.email"
-                  #email="ngModel" />
-              </label>
-
-              @if (email.invalid && email.touched) {
-                <div class="ha-field-error">
-                  @if (email.hasError('required')) {
-                    Email is required.
-                  }
-
-                  @if (email.hasError('email')) {
-                    Enter a valid email address.
-                  }
-                </div>
-              }
-            </div>
-
-            <div class="ha-phone-field">
-              <label>
-                Phone Number
-                <div class="ha-phone-row">
-                  <select
-                    name="countryCode"
-                    class="ha-country-code"
-                    required
-                    [(ngModel)]="patientRegisterForm.countryCode">
-                    @for (countryCodeOption of countryCodeOptions; track countryCodeOption.value) {
-                      <option [value]="countryCodeOption.value">
-                        {{ countryCodeOption.label }}
-                      </option>
-                    }
-                  </select>
-
-                  <input
-                    type="text"
-                    name="phoneNumber"
-                    placeholder="Enter phone number"
-                    required
-                    maxlength="10"
-                    [pattern]="phonePattern"
-                    [(ngModel)]="patientRegisterForm.phoneNumber"
-                    #phoneNumber="ngModel" />
-                </div>
-              </label>
-
-              @if (phoneNumber.invalid && phoneNumber.touched) {
-                <div class="ha-field-error">
-                  Phone number must contain exactly 10 digits.
-                </div>
-              }
-            </div>
-
-            <div>
-              <label>
-                Insurance ID
-                <input
-                  type="text"
-                  name="insuranceId"
-                  placeholder="Optional insurance ID"
-                  maxlength="50"
-                  [(ngModel)]="patientRegisterForm.insuranceId" />
-              </label>
-            </div>
-
-            <div>
-              <label>
-                Password
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Create password"
-                  required
-                  minlength="8"
-                  [pattern]="passwordPattern"
-                  [(ngModel)]="patientRegisterForm.password"
-                  #password="ngModel" />
-              </label>
-
-              @if (password.invalid && (password.dirty || password.touched)) {
-                <div class="ha-field-error">
-                  Password must be at least 8 characters and include 1 uppercase letter,
-                  1 number, and 1 special character.
-                </div>
-              }
-            </div>
-
-            <div>
-              <label>
-                Confirm Password
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Confirm password"
-                  required
-                  [(ngModel)]="patientRegisterForm.confirmPassword"
-                  #confirmPassword="ngModel" />
-              </label>
-
-              @if (confirmPassword.invalid && confirmPassword.touched) {
-                <div class="ha-field-error">
-                  Confirm password is required.
-                </div>
-              }
-
-              @if (isPasswordMismatch) {
-                <div class="ha-field-error">
-                  Password and Confirm Password do not match.
-                </div>
-              }
-            </div>
+        @if (modalMessage) {
+          <div class="ha-modal-message" [class]="modalMessageType">
+            {{ modalMessage }}
           </div>
+        }
 
-          @if (signupMessage) {
-            <div class="ha-form-message">
-              {{ signupMessage }}
-            </div>
-          }
+        <form class="ha-modal-form register" (ngSubmit)="submitRegister()">
+          <label>
+            Full Name
 
-          <button
-            type="submit"
-            class="ha-auth-submit"
-            [disabled]="isSubmittingSignup">
-            {{ isSubmittingSignup ? 'Please wait...' : 'Create Account' }}
+            <input
+              type="text"
+              name="registerFullName"
+              placeholder="Full name"
+              [(ngModel)]="registerForm.fullName">
+          </label>
+
+          <label>
+            Date of Birth
+
+            <input
+              type="date"
+              name="registerDateOfBirth"
+              [max]="todayDate"
+              [(ngModel)]="registerForm.dateOfBirth">
+          </label>
+
+          <label>
+            Gender
+
+            <select
+              name="registerGender"
+              [(ngModel)]="registerForm.gender">
+
+              <option value="">Select gender</option>
+
+              @for (gender of genderOptions; track gender) {
+                <option [value]="gender">
+                  {{ gender }}
+                </option>
+              }
+
+            </select>
+          </label>
+
+          <label>
+            Email
+
+            <input
+              type="email"
+              name="registerEmail"
+              placeholder="name@example.com"
+              [(ngModel)]="registerForm.email">
+          </label>
+
+          <label>
+            Phone Number
+
+            <input
+              type="text"
+              name="registerPhone"
+              maxlength="10"
+              placeholder="9876543210"
+              [(ngModel)]="registerForm.phoneNumber">
+          </label>
+
+          <label>
+            Insurance ID
+
+            <input
+              type="text"
+              name="registerInsurance"
+              maxlength="30"
+              placeholder="Insurance ID"
+              [(ngModel)]="registerForm.insuranceId">
+          </label>
+
+          <label>
+            Password
+
+            <input
+              type="password"
+              name="registerPassword"
+              placeholder="Strong password"
+              [(ngModel)]="registerForm.password">
+          </label>
+
+          <label>
+            Confirm Password
+
+            <input
+              type="password"
+              name="registerConfirmPassword"
+              placeholder="Confirm password"
+              [(ngModel)]="registerForm.confirmPassword">
+          </label>
+
+          <button class="ha-modal-primary full" type="submit" [disabled]="isRegistering">
+            {{ isRegistering ? 'Creating account...' : 'Create Patient Account' }}
           </button>
         </form>
 
-        <div class="ha-auth-switch">
-          Already have an account?
-          <button type="button" (click)="openLoginModal()">
-            Login
-          </button>
-        </div>
+        <button class="ha-modal-switch" type="button" (click)="openLoginModal()">
+          Already registered? Login
+        </button>
+
       </dialog>
     </div>
   }
+
+  @if (activeModal === 'visit') {
+    <div class="ha-modal-backdrop" (click)="closeModals()">
+      <dialog
+        open
+        class="ha-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeModals(); $event.stopPropagation()">
+
+        <button class="ha-modal-close" type="button" (click)="closeModals()">
+          ×
+        </button>
+
+        <span class="ha-modal-kicker">Book Visit</span>
+
+        <h2>Patient login required</h2>
+
+        <p>
+          Appointment booking is available inside the patient dashboard after login.
+        </p>
+
+        @if (modalMessage) {
+          <div class="ha-modal-message" [class]="modalMessageType">
+            {{ modalMessage }}
+          </div>
+        }
+
+        <div class="ha-modal-actions">
+          <button class="ha-modal-primary" type="button" (click)="continueVisitFlow()">
+            Continue to Login
+          </button>
+
+          <button class="ha-modal-secondary" type="button" (click)="openCreatePatientModal()">
+            Register Patient
+          </button>
+        </div>
+
+      </dialog>
+    </div>
+  }
+
 </div>

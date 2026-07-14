@@ -1,13 +1,13 @@
-<section class="dp-profile-shell">
+<section class="dp-command-page">
 
-  <div class="dp-hero-card">
+  <section class="dp-hero">
     <div>
-      <span class="dp-kicker">Doctor Account Center</span>
+      <span>Doctor Account Center</span>
 
-      <h2>My Profile</h2>
+      <h2>Doctor Profile</h2>
 
       <p>
-        View your HealthAxis doctor profile and manage account security.
+        Review your doctor identity, specialisation, consultation details, account status, and password security.
       </p>
     </div>
 
@@ -21,103 +21,142 @@
         </button>
       </div>
     }
-  </div>
+  </section>
 
   @if (isLoading) {
-    <div class="dp-admin-note">
-      Loading doctor profile...
-    </div>
+    <section class="dp-state-card">
+      <div class="dp-state-icon">↻</div>
+
+      <h3>Loading doctor profile...</h3>
+
+      <p>
+        Please wait while HealthAxis loads your doctor account information.
+      </p>
+    </section>
   }
 
-  @if (!isLoading && profileMessage) {
-    <div class="dp-form-message">
-      {{ profileMessage }}
-    </div>
+  @if (!isLoading && profileMessage && !isPasswordMode) {
+    <section class="dp-state-card error">
+      <div class="dp-state-icon">!</div>
+
+      <h3>Unable to load doctor profile</h3>
+
+      <p>{{ profileMessage }}</p>
+
+      <button
+        type="button"
+        (click)="loadProfile()">
+        Retry
+      </button>
+    </section>
   }
 
   @if (!isLoading && doctor && !isPasswordMode) {
 
-    <div class="dp-profile-overview">
+    <section class="dp-profile-board">
 
-      <article class="dp-identity-card">
+      <article class="dp-identity-panel">
         <div class="dp-avatar">
           {{ doctor.doctorName[0] }}
         </div>
 
-        <div>
+        <div class="dp-identity-copy">
           <span>Doctor Identity</span>
 
           <h3>{{ doctor.doctorName }}</h3>
 
           <p>{{ doctor.specialisation }}</p>
         </div>
+
+        <div
+          class="dp-status-chip"
+          [class.inactive]="!doctor.isActive">
+          <strong>{{ getDoctorStatusText() }}</strong>
+          <span>Account Status</span>
+        </div>
       </article>
 
-      <section class="dp-info-grid">
+      <section class="dp-info-board">
 
-        <article class="dp-info-tile">
+        <article class="dp-info-card">
           <span>Doctor Name</span>
           <strong>{{ doctor.doctorName }}</strong>
         </article>
 
-        <article class="dp-info-tile">
+        <article class="dp-info-card">
           <span>Specialisation</span>
           <strong>{{ doctor.specialisation }}</strong>
         </article>
 
-        <article class="dp-info-tile">
+        <article class="dp-info-card">
           <span>Experience</span>
           <strong>{{ doctor.yearsOfExperience }} Years</strong>
         </article>
 
-        <article class="dp-info-tile">
+        <article class="dp-info-card">
           <span>Consultation Fee</span>
           <strong>₹{{ doctor.consultationFee }}</strong>
         </article>
 
-        <article class="dp-info-tile">
+        <article class="dp-info-card">
+          <span>Doctor ID</span>
+          <strong>#{{ doctor.doctorId }}</strong>
+        </article>
+
+        <article class="dp-info-card">
           <span>Status</span>
           <strong>{{ getDoctorStatusText() }}</strong>
         </article>
 
-        <article class="dp-info-tile">
-          <span>Profile Access</span>
-          <strong>Managed by Admin</strong>
-        </article>
-
       </section>
 
-      <div class="dp-admin-note">
-        <strong>Note:</strong>
-        Doctor profile details are managed by the Admin. You can update only your account password.
-      </div>
+      <section class="dp-security-banner">
+        <div class="dp-security-icon">🔐</div>
 
-    </div>
+        <div>
+          <span>Account Security</span>
+
+          <h3>Password protection</h3>
+
+          <p>
+            Change your password regularly and avoid reusing passwords from other systems.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="dp-primary-action"
+          (click)="enablePasswordChange()">
+          Change Password
+        </button>
+      </section>
+
+    </section>
 
   }
 
   @if (isPasswordMode) {
 
-    <form class="dp-form-card" (ngSubmit)="changePassword()">
+    <form class="dp-form-panel" (ngSubmit)="changePassword()">
 
       <div class="dp-form-heading">
-        <span>Account Security</span>
+        <span>Security Center</span>
 
-        <h3>Change Password</h3>
+        <h3>Change password</h3>
 
         <p>
-          Use a strong password with uppercase letter, number, and special character.
+          Use a strong password with uppercase letter, number, special character, and at least 8 characters.
         </p>
       </div>
 
       <div class="dp-security-note">
-        <div class="dp-security-icon">🔒</div>
+        <div class="dp-security-note-icon">🔒</div>
 
         <div>
-          <strong>Password safety tip</strong>
+          <strong>Password safety rule</strong>
 
           <p>
-            Choose a unique password and avoid reusing old passwords.
+            Your new password must be different from your current password.
           </p>
         </div>
       </div>
@@ -215,51 +254,6 @@
 
   }
 
-  @if (isDiscardPasswordModalOpen) {
-    <div
-      class="dp-confirm-backdrop"
-      (click)="closeDiscardPasswordModal()"
-      (keydown.escape)="closeDiscardPasswordModal()">
-
-      <dialog
-        open
-        class="dp-confirm-modal"
-        (click)="$event.stopPropagation()"
-        (keydown.escape)="closeDiscardPasswordModal(); $event.stopPropagation()">
-
-        <div class="dp-confirm-icon warning">
-          !
-        </div>
-
-        <span class="dp-confirm-kicker">Password Form</span>
-
-        <h3>Discard password changes?</h3>
-
-        <p>
-          You have entered password details. If you discard, the password fields will be cleared.
-        </p>
-
-        <div class="dp-confirm-actions">
-          <button
-            type="button"
-            class="dp-confirm-cancel"
-            (click)="closeDiscardPasswordModal()">
-            Keep Editing
-          </button>
-
-          <button
-            type="button"
-            class="dp-confirm-danger"
-            (click)="confirmDiscardPasswordChanges()">
-            Discard Changes
-          </button>
-        </div>
-
-      </dialog>
-
-    </div>
-  }
-
   @if (isPasswordConfirmModalOpen) {
     <div
       class="dp-confirm-backdrop"
@@ -281,7 +275,7 @@
         <h3>Change your password?</h3>
 
         <p>
-          After changing your password, use the new password for future logins.
+          After changing your password, use the new password for future doctor logins.
         </p>
 
         <div class="dp-confirm-actions">
@@ -289,7 +283,7 @@
             type="button"
             class="dp-confirm-cancel"
             (click)="closePasswordConfirmModal()">
-            Cancel
+            Review Again
           </button>
 
           <button
@@ -297,6 +291,51 @@
             class="dp-confirm-primary"
             (click)="confirmPasswordChange()">
             Yes, Change Password
+          </button>
+        </div>
+
+      </dialog>
+
+    </div>
+  }
+
+  @if (isDiscardPasswordModalOpen) {
+    <div
+      class="dp-confirm-backdrop"
+      (click)="closeDiscardPasswordModal()"
+      (keydown.escape)="closeDiscardPasswordModal()">
+
+      <dialog
+        open
+        class="dp-confirm-modal"
+        (click)="$event.stopPropagation()"
+        (keydown.escape)="closeDiscardPasswordModal(); $event.stopPropagation()">
+
+        <div class="dp-confirm-icon warning">
+          !
+        </div>
+
+        <span class="dp-confirm-kicker warning-text">Password Form</span>
+
+        <h3>Discard password changes?</h3>
+
+        <p>
+          You have entered password details. If you discard, the password fields will be cleared.
+        </p>
+
+        <div class="dp-confirm-actions">
+          <button
+            type="button"
+            class="dp-confirm-cancel"
+            (click)="closeDiscardPasswordModal()">
+            Keep Editing
+          </button>
+
+          <button
+            type="button"
+            class="dp-confirm-danger"
+            (click)="confirmDiscardPasswordChanges()">
+            Discard Changes
           </button>
         </div>
 

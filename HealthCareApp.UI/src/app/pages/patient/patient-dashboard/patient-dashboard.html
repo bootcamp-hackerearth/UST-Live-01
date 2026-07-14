@@ -1,38 +1,38 @@
-<div class="pd-page" [class.pd-sidebar-open]="isSidebarOpen">
+<div class="px-page" [class.sidebar-open]="isSidebarOpen">
 
   @if (isSidebarOpen) {
     <button
       type="button"
-      class="pd-sidebar-overlay"
+      class="px-sidebar-overlay"
       aria-label="Close sidebar"
       (click)="closeSidebar()">
     </button>
   }
 
-  <aside class="pd-sidebar" [class.open]="isSidebarOpen">
-    <div class="pd-brand">
-      <div class="pd-brand-logo">HA</div>
+  <aside class="px-sidebar" [class.open]="isSidebarOpen">
+    <div class="px-brand">
+      <div class="px-brand-logo">HA</div>
 
-      <div class="pd-brand-copy">
+      <div class="px-brand-text">
         <h2>HealthAxis</h2>
-        <span>Patient Portal</span>
+        <span>Patient Command</span>
       </div>
 
       <button
         type="button"
-        class="pd-sidebar-toggle"
+        class="px-sidebar-toggle"
         (click)="toggleSidebar()">
         ☰
       </button>
     </div>
 
-    <nav class="pd-menu">
+    <nav class="px-menu">
       <button
         type="button"
         [class.active]="activeSection === 'dashboard'"
         (click)="setActiveSection('dashboard')">
         <span>⌂</span>
-        <strong>Dashboard</strong>
+        <strong>Command</strong>
       </button>
 
       <button
@@ -40,7 +40,7 @@
         [class.active]="activeSection === 'book'"
         (click)="setActiveSection('book')">
         <span>＋</span>
-        <strong>Book Appointment</strong>
+        <strong>Book Visit</strong>
       </button>
 
       <button
@@ -48,7 +48,7 @@
         [class.active]="activeSection === 'appointments'"
         (click)="setActiveSection('appointments')">
         <span>◷</span>
-        <strong>My Appointments</strong>
+        <strong>Appointments</strong>
       </button>
 
       <button
@@ -56,7 +56,7 @@
         [class.active]="activeSection === 'records'"
         (click)="setActiveSection('records')">
         <span>▣</span>
-        <strong>Health Records</strong>
+        <strong>Records</strong>
       </button>
 
       <button
@@ -69,7 +69,7 @@
 
       <button
         type="button"
-        class="pd-logout-menu-btn"
+        class="px-logout-btn"
         (click)="logout()">
         <span>↪</span>
         <strong>Logout</strong>
@@ -77,25 +77,30 @@
     </nav>
   </aside>
 
-  <main class="pd-main">
+  <main class="px-main">
 
-    <header class="pd-topbar">
-      <div class="pd-topbar-left">
-        <div>
-          <span class="pd-kicker">Patient Workspace</span>
+    <header class="px-topbar">
+      <button
+        type="button"
+        class="px-mobile-menu-btn"
+        (click)="toggleSidebar()">
+        ☰
+      </button>
 
-          <h1>
-            Welcome back, {{ patientFirstName }}
-          </h1>
+      <div class="px-headline">
+        <span>Patient Workspace</span>
 
-          <p>
-            Manage appointments, care records, and your HealthAxis profile from one place.
-          </p>
-        </div>
+        <h1>
+          Hello, {{ patientFirstName }}
+        </h1>
+
+        <p>
+          Your appointments, records, profile, and care movement are arranged in one command view.
+        </p>
       </div>
 
-      <div class="pd-user-card">
-        <div class="pd-user-avatar">
+      <div class="px-user-chip">
+        <div class="px-user-avatar">
           {{ patientFirstName[0] || 'P' }}
         </div>
 
@@ -107,18 +112,18 @@
     </header>
 
     @if (isDashboardLoading && activeSection === 'dashboard') {
-      <section class="pd-empty-card">
-        Loading your HealthAxis workspace...
+      <section class="px-state-card">
+        <div class="px-state-icon">↻</div>
+        <h3>Loading patient command center...</h3>
+        <p>Please wait while HealthAxis prepares your patient workspace.</p>
       </section>
     }
 
     @if (!isDashboardLoading && dashboardErrorMessage && activeSection === 'dashboard') {
-      <section class="pd-empty-card">
-        <strong>Unable to load dashboard</strong>
-
-        <p>
-          {{ dashboardErrorMessage }}
-        </p>
+      <section class="px-state-card error">
+        <div class="px-state-icon">!</div>
+        <h3>Unable to load dashboard</h3>
+        <p>{{ dashboardErrorMessage }}</p>
 
         <button type="button" (click)="retryDashboardLoad()">
           Retry
@@ -128,22 +133,22 @@
 
     @if (!isDashboardLoading && !dashboardErrorMessage && activeSection === 'dashboard') {
 
-      <section class="pd-premium-dashboard">
+      <section class="px-dashboard">
 
-        <article class="pd-hero-panel">
-          <div class="pd-hero-content">
-            <span class="pd-hero-label">Care Overview</span>
+        <section class="px-command-hero">
+          <div class="px-command-copy">
+            <span class="px-eyebrow">Care Pulse</span>
 
             <h2>
-              Your healthcare journey, organized beautifully.
+              Your healthcare activity, mapped as a live command flow.
             </h2>
 
             <p>
-              Track upcoming appointments, pending confirmations, completed visits,
-              and health records from one smart HealthAxis workspace.
+              Switch faster between booking, appointment tracking, health records, and profile management.
+              No pie chart. No old layout. This is a new patient command center.
             </p>
 
-            <div class="pd-hero-actions">
+            <div class="px-command-actions">
               <button type="button" (click)="setActiveSection('book')">
                 Book Appointment
               </button>
@@ -151,86 +156,95 @@
               <button
                 type="button"
                 class="secondary"
+                (click)="setActiveSection('appointments')">
+                Track Appointments
+              </button>
+
+              <button
+                type="button"
+                class="ghost"
                 (click)="setActiveSection('records')">
-                View Records
+                Open Records
               </button>
             </div>
           </div>
 
-          <div class="pd-chart-card">
-            <div class="pd-donut-wrap">
-              <div
-                class="pd-donut"
-                [style.background]="chartBackground">
-                <div class="pd-donut-center">
-                  <strong>{{ totalOverviewCount }}</strong>
-                  <span>Total Items</span>
+          <aside class="px-pulse-board">
+            <div class="px-pulse-header">
+              <span>Live Summary</span>
+              <strong>{{ totalOverviewCount }}</strong>
+              <small>Total care items</small>
+            </div>
+
+            <div class="px-pulse-list">
+              <div class="px-pulse-row blue">
+                <div>
+                  <span>Upcoming</span>
+                  <strong>{{ summary.upcomingCount }}</strong>
                 </div>
+                <i [style.width.%]="upcomingPercentage"></i>
+              </div>
+
+              <div class="px-pulse-row amber">
+                <div>
+                  <span>Pending</span>
+                  <strong>{{ summary.pendingCount }}</strong>
+                </div>
+                <i [style.width.%]="pendingPercentage"></i>
+              </div>
+
+              <div class="px-pulse-row green">
+                <div>
+                  <span>Completed</span>
+                  <strong>{{ summary.completedCount }}</strong>
+                </div>
+                <i [style.width.%]="completedPercentage"></i>
+              </div>
+
+              <div class="px-pulse-row violet">
+                <div>
+                  <span>Records</span>
+                  <strong>{{ summary.healthRecordCount }}</strong>
+                </div>
+                <i [style.width.%]="recordPercentage"></i>
               </div>
             </div>
+          </aside>
+        </section>
 
-            <div class="pd-chart-legend">
-              <div>
-                <span class="blue-dot"></span>
-                Upcoming
-                <strong>{{ upcomingPercentage }}%</strong>
-              </div>
-
-              <div>
-                <span class="amber-dot"></span>
-                Pending
-                <strong>{{ pendingPercentage }}%</strong>
-              </div>
-
-              <div>
-                <span class="green-dot"></span>
-                Completed
-                <strong>{{ completedPercentage }}%</strong>
-              </div>
-
-              <div>
-                <span class="purple-dot"></span>
-                Records
-                <strong>{{ recordPercentage }}%</strong>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <section class="pd-summary-grid premium">
-          <article class="pd-summary-card blue">
+        <section class="px-metric-strip">
+          <article class="px-metric-card blue">
             <span>Upcoming</span>
             <strong>{{ summary.upcomingCount }}</strong>
-            <p>Appointments scheduled ahead</p>
+            <p>Scheduled visits ahead</p>
           </article>
 
-          <article class="pd-summary-card amber">
+          <article class="px-metric-card amber">
             <span>Pending</span>
             <strong>{{ summary.pendingCount }}</strong>
             <p>Waiting confirmation</p>
           </article>
 
-          <article class="pd-summary-card green">
+          <article class="px-metric-card green">
             <span>Completed</span>
             <strong>{{ summary.completedCount }}</strong>
-            <p>Completed consultations</p>
+            <p>Finished consultations</p>
           </article>
 
-          <article class="pd-summary-card purple">
-            <span>Health Records</span>
+          <article class="px-metric-card violet">
+            <span>Records</span>
             <strong>{{ summary.healthRecordCount }}</strong>
-            <p>Care records available</p>
+            <p>Medical notes available</p>
           </article>
         </section>
 
-        <section class="pd-dashboard-grid premium-grid">
+        <section class="px-work-grid">
 
-          <article class="pd-panel pd-next-panel premium-panel">
-            <div class="pd-panel-header">
+          <article class="px-board-card px-next-visit">
+            <div class="px-card-heading">
               <div>
-                <span class="pd-panel-eyebrow">Next Visit</span>
+                <span>Next Movement</span>
                 <h3>Next Appointment</h3>
-                <p>Your closest scheduled visit</p>
               </div>
 
               <button type="button" (click)="setActiveSection('appointments')">
@@ -239,77 +253,72 @@
             </div>
 
             @if (nextAppointment) {
-              <div class="pd-next-card premium-next">
-                <div class="pd-date-box">
+              <div class="px-visit-ticket">
+                <div class="px-date-tower">
                   <strong>{{ formatDate(nextAppointment.scheduledDate).split(' ')[0] }}</strong>
                   <span>{{ formatDate(nextAppointment.scheduledDate).split(' ')[1] }}</span>
                 </div>
 
-                <div class="pd-next-info">
+                <div class="px-ticket-content">
+                  <span>Doctor Visit</span>
                   <h4>{{ nextAppointment.doctorName }}</h4>
-
                   <p>{{ nextAppointment.specialisation }}</p>
 
-                  <div class="pd-next-tags">
-                    <span class="pd-time-pill">
-                      {{ nextAppointment.timeSlot }}
-                    </span>
-
-                    <span [class]="getStatusClass(nextAppointment.status)">
+                  <div class="px-ticket-tags">
+                    <small>{{ nextAppointment.timeSlot }}</small>
+                    <small [class]="getStatusClass(nextAppointment.status)">
                       {{ nextAppointment.status }}
-                    </span>
+                    </small>
                   </div>
                 </div>
               </div>
             } @else {
-              <div class="pd-empty-card">
+              <div class="px-empty-mini">
                 No upcoming appointments found.
               </div>
             }
           </article>
 
-          <article class="pd-panel premium-panel">
-            <div class="pd-panel-header">
+          <article class="px-board-card px-actions-card">
+            <div class="px-card-heading">
               <div>
-                <span class="pd-panel-eyebrow">Shortcuts</span>
-                <h3>Quick Actions</h3>
-                <p>Common patient tasks</p>
+                <span>Fast Access</span>
+                <h3>Patient Controls</h3>
               </div>
             </div>
 
-            <div class="pd-action-grid premium-actions">
+            <div class="px-action-stack">
               <button type="button" (click)="setActiveSection('book')">
-                <span>＋</span>
-                <strong>Book Appointment</strong>
-                <small>Choose doctor and slot</small>
+                <b>＋</b>
+                <div>
+                  <strong>Book Visit</strong>
+                  <small>Select doctor and slot</small>
+                </div>
               </button>
 
               <button type="button" (click)="setActiveSection('appointments')">
-                <span>◷</span>
-                <strong>View Appointments</strong>
-                <small>Track visit status</small>
-              </button>
-
-              <button type="button" (click)="setActiveSection('records')">
-                <span>▣</span>
-                <strong>Health Records</strong>
-                <small>View medical history</small>
+                <b>◷</b>
+                <div>
+                  <strong>Appointment Timeline</strong>
+                  <small>Track status and cancellation</small>
+                </div>
               </button>
 
               <button type="button" (click)="setActiveSection('profile')">
-                <span>◎</span>
-                <strong>Edit Profile</strong>
-                <small>Update personal details</small>
+                <b>◎</b>
+                <div>
+                  <strong>Account Profile</strong>
+                  <small>Update patient details</small>
+                </div>
               </button>
             </div>
           </article>
 
-          <article class="pd-panel pd-wide-panel premium-panel">
-            <div class="pd-panel-header">
+          <article class="px-board-card px-record-card">
+            <div class="px-card-heading">
               <div>
-                <span class="pd-panel-eyebrow">Latest Medical Note</span>
-                <h3>Recent Health Record</h3>
-                <p>Latest consultation summary</p>
+                <span>Medical Memory</span>
+                <h3>Latest Health Record</h3>
               </div>
 
               <button type="button" (click)="setActiveSection('records')">
@@ -318,7 +327,7 @@
             </div>
 
             @if (latestHealthRecord) {
-              <div class="pd-record-preview premium-record-preview">
+              <div class="px-record-layout">
                 <div>
                   <span>Visit Date</span>
                   <strong>{{ formatDate(latestHealthRecord.visitDate) }}</strong>
@@ -339,7 +348,7 @@
                 </p>
               </div>
             } @else {
-              <div class="pd-empty-card">
+              <div class="px-empty-mini">
                 No health records available.
               </div>
             }
@@ -377,41 +386,39 @@
 
   @if (isLogoutModalOpen) {
     <div
-      class="pd-confirm-backdrop"
+      class="px-confirm-backdrop"
       (click)="closeLogoutModal()"
       (keydown.escape)="closeLogoutModal()">
 
       <dialog
         open
-        class="pd-confirm-modal"
+        class="px-confirm-modal"
         (click)="$event.stopPropagation()"
         (keydown.escape)="closeLogoutModal(); $event.stopPropagation()">
 
-        <div class="pd-confirm-icon">
+        <div class="px-confirm-icon">
           ↪
         </div>
 
-        <div>
-          <span class="pd-confirm-kicker">Logout Confirmation</span>
+        <span>Logout Confirmation</span>
 
-          <h3>Do you want to logout?</h3>
+        <h3>Do you want to logout?</h3>
 
-          <p>
-            You will be redirected to the HealthAxis home page.
-          </p>
-        </div>
+        <p>
+          You will be redirected to the HealthAxis landing page.
+        </p>
 
-        <div class="pd-confirm-actions">
+        <div class="px-confirm-actions">
           <button
             type="button"
-            class="pd-confirm-cancel"
+            class="stay"
             (click)="closeLogoutModal()">
             Stay Logged In
           </button>
 
           <button
             type="button"
-            class="pd-confirm-logout"
+            class="logout"
             (click)="confirmLogout()">
             Yes, Logout
           </button>
@@ -424,7 +431,7 @@
 
   @if (toastMessage) {
     <div
-      class="pd-toast"
+      class="px-toast"
       [class.success]="toastType === 'success'"
       [class.warning]="toastType === 'warning'">
       <span>{{ toastMessage }}</span>
@@ -434,5 +441,14 @@
       </button>
     </div>
   }
+
+  @if (unreadNotifications.length > 0) {
+  <app-patient-notification-modal
+    [notifications]="unreadNotifications"
+    [isProcessing]="isNotificationProcessing"
+    (markAsRead)="markNotificationAsRead($event)"
+    (rebookNow)="rebookFromNotification($event)">
+  </app-patient-notification-modal>
+}
 
 </div>
