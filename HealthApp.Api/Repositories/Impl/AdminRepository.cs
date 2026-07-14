@@ -21,10 +21,10 @@ namespace HealthApp.Api.Repositories.Impl
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<AdminUserDto>> GetUsersAsync(string? role)
+        public async Task<IEnumerable<AdminUserDto>> GetUsersAsync(
+            string? role)
         {
             var users = await _userManager.Users.ToListAsync();
-
             var result = new List<AdminUserDto>();
 
             foreach (var user in users)
@@ -32,7 +32,9 @@ namespace HealthApp.Api.Repositories.Impl
                 var roles = await _userManager.GetRolesAsync(user);
 
                 if (!string.IsNullOrWhiteSpace(role) &&
-                    !roles.Contains(role, StringComparer.OrdinalIgnoreCase))
+                    !roles.Contains(
+                        role,
+                        StringComparer.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -50,7 +52,8 @@ namespace HealthApp.Api.Repositories.Impl
             return result;
         }
 
-        public async Task<IEnumerable<AppointmentReportDto>> GetAppointmentReportsAsync()
+        public async Task<IEnumerable<AppointmentReportDto>>
+            GetAppointmentReportsAsync()
         {
             var reports = await _context.Appointments
                 .GroupBy(appointment => appointment.ScheduledDate)
@@ -71,6 +74,85 @@ namespace HealthApp.Api.Repositories.Impl
                 .ToListAsync();
 
             return reports;
+        }
+
+        public async Task<IEnumerable<AdminDoctorLeaveDto>>
+            GetDoctorLeavesAsync(
+                string? search,
+                string? status,
+                DateOnly? fromDate,
+                DateOnly? toDate,
+                int pageNumber,
+                int pageSize,
+                CancellationToken ct = default)
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
+            var query = _context.DoctorLeaves
+                .AsNoTracking()
+                .Include(leave => leave.Doctor)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(leave =>
+                    leave.Doctor != null &&
+                    leave.Doctor.FullName != null &&
+                    leave.Doctor.FullName.Contains(search));
+            }
+
+            if (fromDate.HasValue)
+            {
+                query = query.Where(leave =>
+                    leave.EndDate >= fromDate.Value);
+            }
+
+            if (toDate.HasValue)
+            {
+                query = query.Where(leave =>
+                    leave.StartDate <= toDate.Value);
+            }
+
+            query = status switch
+            {
+                "Current" => query.Where(leave =>
+                    leave.StartDate <= today &&
+                    leave.EndDate >= today),
+
+                "Upcoming" => query.Where(leave =>
+                    leave.StartDate > today),
+
+                "Past" => query.Where(leave =>
+                    leave.EndDate < today),
+
+                _ => query
+            };
+
+            return await query
+                .OrderByDescending(leave => leave.StartDate)
+                .ThenByDescending(leave => leave.CreatedAtUtc)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(leave => new AdminDoctorLeaveDto
+                {
+                    DoctorLeaveId = leave.DoctorLeaveId,
+                    DoctorId = leave.DoctorId,
+                    DoctorName = leave.Doctor != null
+                        ? leave.Doctor.FullName ?? "Doctor"
+                        : "Doctor",
+                    StartDate = leave.StartDate,
+                    EndDate = leave.EndDate,
+                    Reason = leave.Reason,
+                    CreatedAtUtc = leave.CreatedAtUtc,
+                    Status = today < leave.StartDate
+                        ? "Upcoming"
+                        : today > leave.EndDate
+                            ? "Past"
+                            : "Current",
+                    IsSingleDayLeave =
+                        leave.StartDate == leave.EndDate
+                })
+                .ToListAsync(ct);
         }
     }
 }
