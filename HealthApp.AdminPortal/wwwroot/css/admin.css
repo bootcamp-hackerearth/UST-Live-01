@@ -2041,3 +2041,157 @@ a {
         min-height: 96px !important;
     }
 }
+/* Doctor Leaves admin page */
+.doctor-leave-page-badge {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.42rem 0.75rem;
+    border-radius: 999px;
+    color: #c2410c;
+    background: #ffedd5;
+    font-size: 0.75rem;
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.doctor-leave-clear-btn {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.doctor-leave-summary {
+    min-height: 130px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-radius: 22px;
+    color: #ffffff;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+}
+
+.doctor-leave-summary-icon {
+    width: 54px;
+    height: 54px;
+    min-width: 54px;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 1.4rem;
+}
+
+.doctor-leave-summary-value {
+    font-size: 1.9rem;
+    font-weight: 850;
+    line-height: 1;
+}
+
+.doctor-leave-summary-label {
+    margin-top: 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    opacity: 0.92;
+}
+
+.leave-summary-all {
+    background: linear-gradient(135deg, #0d9488, #0f766e);
+}
+
+.leave-summary-current {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+}
+
+.leave-summary-upcoming {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.leave-summary-past {
+    background: linear-gradient(135deg, #64748b, #475569);
+}
+
+.doctor-leave-readonly-pill {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    color: #0f766e;
+    background: #ccfbf1;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.leave-doctor-avatar {
+    background: linear-gradient(135deg, #f97316, #dc2626);
+}
+
+.leave-period-cell {
+    min-width: 150px;
+}
+
+.leave-reason-text {
+    max-width: 300px;
+    color: #334155;
+    font-weight: 600;
+    line-height: 1.45;
+}
+
+.leave-type-badge,
+.leave-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+    .leave-type-badge.single-day {
+        color: #0e7490;
+        background: #cffafe;
+    }
+
+    .leave-type-badge.multi-day {
+        color: #6d28d9;
+        background: #ede9fe;
+    }
+
+    .leave-status-badge.leave-current {
+        color: #991b1b;
+        background: #fee2e2;
+    }
+
+    .leave-status-badge.leave-upcoming {
+        color: #92400e;
+        background: #fef3c7;
+    }
+
+    .leave-status-badge.leave-past {
+        color: #475569;
+        background: #e2e8f0;
+    }
+
+.doctor-leaves-table th,
+.doctor-leaves-table td {
+    vertical-align: middle;
+}
+
+@media (max-width: 767px) {
+    .doctor-leave-clear-btn {
+        width: 100%;
+    }
+
+    .leave-reason-text {
+        min-width: 220px;
+    }
+}

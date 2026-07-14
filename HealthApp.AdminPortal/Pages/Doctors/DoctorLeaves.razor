@@ -1,0 +1,364 @@
+﻿@page "/doctor-leaves"
+@attribute [Authorize(Roles = "Admin")]
+
+@using HealthApp.Shared.Dtos
+
+@inject IAdminDoctorLeaveService DoctorLeaveService
+@inject INotificationService NotificationService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Doctor Leaves - HealthApp Admin</PageTitle>
+
+<div class="page-header-box mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 w-100">
+        <div>
+            <div class="doctor-leave-page-badge mb-2">
+                <i class="bi bi-calendar2-x"></i>
+                Leave Oversight
+            </div>
+
+            <h2>Doctor Leaves</h2>
+            <p class="text-muted mb-0">
+                Review current, upcoming, and past doctor unavailability records.
+            </p>
+        </div>
+
+        <button type="button"
+                class="btn btn-health rounded-pill px-4"
+                disabled="@isLoading"
+                @onclick="LoadLeaves">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            Refresh
+        </button>
+    </div>
+</div>
+
+<div class="filter-card mb-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-xl-3 col-md-6">
+            <label class="form-label fw-semibold">Doctor</label>
+            <div class="input-group">
+                <span class="input-group-text bg-white">
+                    <i class="bi bi-search text-muted"></i>
+                </span>
+                <input class="form-control"
+                       placeholder="Search doctor by name"
+                       @bind="SearchText"
+                       @bind:event="oninput" />
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-6">
+            <label class="form-label fw-semibold">Status</label>
+            <select class="form-select" @bind="SelectedStatus">
+                <option value="">All Statuses</option>
+                <option value="Current">Current</option>
+                <option value="Upcoming">Upcoming</option>
+                <option value="Past">Past</option>
+            </select>
+        </div>
+
+        <div class="col-xl-2 col-md-6">
+            <label class="form-label fw-semibold">From Date</label>
+            <InputDate class="form-control" @bind-Value="FromDate" />
+        </div>
+
+        <div class="col-xl-2 col-md-6">
+            <label class="form-label fw-semibold">To Date</label>
+            <InputDate class="form-control" @bind-Value="ToDate" />
+        </div>
+
+        <div class="col-xl-3 col-md-12">
+            <div class="d-flex gap-2">
+                <button type="button"
+                        class="btn btn-health rounded-pill px-4 flex-fill"
+                        disabled="@isLoading"
+                        @onclick="SearchLeaves">
+                    <i class="bi bi-funnel me-2"></i>
+                    Apply Filters
+                </button>
+
+                <button type="button"
+                        class="btn btn-outline-secondary rounded-pill doctor-leave-clear-btn"
+                        title="Clear filters"
+                        disabled="@isLoading"
+                        @onclick="ClearFilters">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="doctor-leave-summary leave-summary-all">
+            <div class="doctor-leave-summary-icon">
+                <i class="bi bi-calendar-range"></i>
+            </div>
+            <div>
+                <div class="doctor-leave-summary-value">@leaves.Count</div>
+                <div class="doctor-leave-summary-label">Visible Records</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="doctor-leave-summary leave-summary-current">
+            <div class="doctor-leave-summary-icon">
+                <i class="bi bi-calendar2-x-fill"></i>
+            </div>
+            <div>
+                <div class="doctor-leave-summary-value">@CurrentCount</div>
+                <div class="doctor-leave-summary-label">Current</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="doctor-leave-summary leave-summary-upcoming">
+            <div class="doctor-leave-summary-icon">
+                <i class="bi bi-calendar-event"></i>
+            </div>
+            <div>
+                <div class="doctor-leave-summary-value">@UpcomingCount</div>
+                <div class="doctor-leave-summary-label">Upcoming</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="doctor-leave-summary leave-summary-past">
+            <div class="doctor-leave-summary-icon">
+                <i class="bi bi-calendar2-check"></i>
+            </div>
+            <div>
+                <div class="doctor-leave-summary-value">@PastCount</div>
+                <div class="doctor-leave-summary-label">Past</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-card">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h5 class="fw-bold mb-1">Leave Records</h5>
+            <p class="text-muted small mb-0">
+                Showing @leaves.Count matching record(s)
+            </p>
+        </div>
+
+        <span class="doctor-leave-readonly-pill">
+            <i class="bi bi-eye me-1"></i>
+            Read-only view
+        </span>
+    </div>
+
+    @if (isLoading)
+    {
+        <LoadingView Message="Loading doctor leaves..." />
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle custom-table doctor-leaves-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Leave Period</th>
+                        <th>Reason</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (!leaves.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="bi bi-calendar2-check"></i>
+                                    <h6 class="fw-bold mt-3 mb-1">No leave records found</h6>
+                                    <p class="text-muted mb-0">
+                                        Try changing the doctor, status, or date filters.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var leave in leaves)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="doctor-name-cell">
+                                        <div class="doctor-avatar leave-doctor-avatar">
+                                            <i class="bi bi-person-badge"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">@leave.DoctorName</div>
+                                            <small class="text-muted">
+                                                ID: DOC-@leave.DoctorId.ToString("000")
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="leave-period-cell">
+                                        <div class="fw-bold">
+                                            @leave.StartDate.ToString("dd MMM yyyy")
+                                        </div>
+                                        @if (!leave.IsSingleDayLeave)
+                                        {
+                                            <small class="text-muted">
+                                                to @leave.EndDate.ToString("dd MMM yyyy")
+                                            </small>
+                                        }
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="leave-reason-text" title="@leave.Reason">
+                                        @leave.Reason
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="leave-type-badge @(leave.IsSingleDayLeave ? "single-day" : "multi-day")">
+                                        <i class="bi @(leave.IsSingleDayLeave ? "bi-calendar-day" : "bi-calendar-range")"></i>
+                                        @(leave.IsSingleDayLeave ? "Single Day" : "Multiple Days")
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="leave-status-badge @GetStatusClass(leave.Status)">
+                                        <i class="bi @GetStatusIcon(leave.Status)"></i>
+                                        @leave.Status
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="fw-semibold">
+                                        @leave.CreatedAtUtc.ToLocalTime().ToString("dd MMM yyyy")
+                                    </div>
+                                    <small class="text-muted">
+                                        @leave.CreatedAtUtc.ToLocalTime().ToString("hh:mm tt")
+                                    </small>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+    private string SearchText { get; set; } = string.Empty;
+    private string SelectedStatus { get; set; } = string.Empty;
+    private DateOnly? FromDate { get; set; }
+    private DateOnly? ToDate { get; set; }
+    private List<AdminDoctorLeaveDto> leaves = new();
+    private bool isLoading = true;
+
+    private int CurrentCount => leaves.Count(leave =>
+        leave.Status.Equals("Current", StringComparison.OrdinalIgnoreCase));
+
+    private int UpcomingCount => leaves.Count(leave =>
+        leave.Status.Equals("Upcoming", StringComparison.OrdinalIgnoreCase));
+
+    private int PastCount => leaves.Count(leave =>
+        leave.Status.Equals("Past", StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadLeaves();
+    }
+
+    private async Task LoadLeaves()
+    {
+        isLoading = true;
+
+        var result = await DoctorLeaveService.GetDoctorLeaves(
+            SearchText,
+            SelectedStatus,
+            FromDate,
+            ToDate,
+            pageNumber: 1,
+            pageSize: 100);
+
+        if (result.IsSuccess)
+        {
+            leaves = result.Data ?? new List<AdminDoctorLeaveDto>();
+        }
+        else
+        {
+            leaves = new List<AdminDoctorLeaveDto>();
+            NotificationService.Error(result.Message);
+            RedirectToLoginIfSessionExpired(result.Message);
+        }
+
+        isLoading = false;
+    }
+
+    private async Task SearchLeaves()
+    {
+        if (FromDate.HasValue &&
+            ToDate.HasValue &&
+            ToDate.Value < FromDate.Value)
+        {
+            NotificationService.Warning(
+                "To date cannot be before from date.");
+            return;
+        }
+
+        await LoadLeaves();
+    }
+
+    private async Task ClearFilters()
+    {
+        SearchText = string.Empty;
+        SelectedStatus = string.Empty;
+        FromDate = null;
+        ToDate = null;
+        await LoadLeaves();
+    }
+
+    private static string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Current" => "leave-current",
+            "Upcoming" => "leave-upcoming",
+            "Past" => "leave-past",
+            _ => "leave-past"
+        };
+    }
+
+    private static string GetStatusIcon(string status)
+    {
+        return status switch
+        {
+            "Current" => "bi-exclamation-circle-fill",
+            "Upcoming" => "bi-clock-fill",
+            "Past" => "bi-check-circle-fill",
+            _ => "bi-circle-fill"
+        };
+    }
+
+    private void RedirectToLoginIfSessionExpired(string message)
+    {
+        if (message.Contains("session has expired", StringComparison.OrdinalIgnoreCase)
+            || message.Contains("please login", StringComparison.OrdinalIgnoreCase)
+            || message.Contains("login again", StringComparison.OrdinalIgnoreCase))
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+}

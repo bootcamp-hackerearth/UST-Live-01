@@ -31,6 +31,8 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IAdminDoctorLeaveService,AdminDoctorLeaveService>();
+
 builder.Services.AddScoped<AuthRedirectState>();
 
 builder.Services.AddAuthorizationCore();
