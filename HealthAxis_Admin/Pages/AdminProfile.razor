@@ -10,55 +10,120 @@
 @inject NavigationManager NavigationManager
 
 <section class="admin-profile-page">
+    <section class="page-header">
+        <div>
+            <p>Administrator Account</p>
 
-    
+            <h1>Admin Profile</h1>
 
-      
-
-  
-
-    <section class="profile-card">
-
-        <div class="profile-top">
-            <div class="admin-avatar">
-                @GetInitial(profile.Email)
-            </div>
-
-            <div>
-                <p>Administrator Account</p>
-               <h1>Admin Profile</h1>
-                
-            </div>
+            <span>
+                Review your administrator account information
+                and current workspace access.
+            </span>
         </div>
 
-        <div class="profile-details-grid">
-
-            <div class="detail-box">
-                <span>Email Address</span>
-                <strong>@GetSafeText(profile.Email, "Not available")</strong>
-               
-            </div>
-
-            <div class="detail-box">
-                <span>Phone Number</span>
-                <strong>@GetSafeText(profile.PhoneNumber, "Not available")</strong>
-               
-            </div>
-
-            
-
-            <div class="detail-box">
-                <span>Account Status</span>
-                <strong class="active-text">Active</strong>
-                <small>Workspace access is enabled.</small>
-            </div>
-
-        </div>
-
-        
-
+        <button type="button"
+                class="refresh-button"
+                disabled="@isLoading"
+                @onclick="LoadProfileAsync">
+            @(isLoading ? "Refreshing..." : "Refresh Profile")
+        </button>
     </section>
 
+    @if (isLoading)
+    {
+        <div class="info-box" role="status">
+            Loading administrator profile...
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="error-box" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    @if (!isLoading)
+    {
+        <section class="profile-card">
+            <div class="profile-top">
+                <div class="admin-avatar"
+                     aria-hidden="true">
+                    @GetInitial(profile.Email)
+                </div>
+
+                <div>
+                    <p>Administrator</p>
+
+                    <h2>Admin Profile</h2>
+
+                    <span>
+                        HealthAxis system administrator account
+                    </span>
+                </div>
+            </div>
+
+            <div class="profile-details-grid">
+                <div class="detail-box">
+                    <span>Email Address</span>
+
+                    <strong>
+                        @GetSafeText(
+                            profile.Email,
+                            "Not available")
+                    </strong>
+
+                    <small>
+                        Used for administrator authentication.
+                    </small>
+                </div>
+
+                <div class="detail-box">
+                    <span>Phone Number</span>
+
+                    <strong>
+                        @GetSafeText(
+                            profile.PhoneNumber,
+                            "Not available")
+                    </strong>
+
+                    <small>
+                        Registered administrator contact number.
+                    </small>
+                </div>
+
+                <div class="detail-box">
+                    <span>Account Role</span>
+
+                    <strong>
+                        Administrator
+                    </strong>
+
+                    <small>
+                        Full administrative workspace access.
+                    </small>
+                </div>
+
+                <div class="detail-box">
+                    <span>Account Status</span>
+
+                    <strong class="active-text">
+                        Active
+                    </strong>
+
+                    <small>
+                        Workspace access is enabled.
+                    </small>
+                </div>
+            </div>
+
+            <div class="profile-note">
+                Profile information is managed through the
+                HealthAxis identity and administration system.
+            </div>
+        </section>
+    }
 </section>
 
 <style>
@@ -69,54 +134,68 @@
 
     .page-header {
         padding: 30px;
+        border: 1px solid rgba(148, 163, 184, 0.24);
         border-radius: 30px;
-        color: #ffffff;
-        background: radial-gradient(circle at top right, rgba(124, 58, 237, 0.28), transparent 30%), linear-gradient(135deg, #020617, #075985);
         display: flex;
-        justify-content: space-between;
         align-items: flex-end;
+        justify-content: space-between;
         gap: 18px;
-        box-shadow: 0 20px 50px rgba(7, 89, 133, 0.2);
+        color: #ffffff;
+        background:
+            radial-gradient(
+                circle at top right,
+                rgba(124, 58, 237, 0.28),
+                transparent 30%
+            ),
+            linear-gradient(
+                135deg,
+                #020617,
+                #075985
+            );
+        box-shadow:
+            0 20px 50px
+            rgba(7, 89, 133, 0.2);
     }
 
-        .page-header p {
-            margin: 0;
-            color: #7dd3fc;
-            font-weight: 900;
-            text-transform: uppercase;
-            font-size: 13px;
-            letter-spacing: 0.08em;
-        }
+    .page-header p {
+        margin: 0;
+        color: #7dd3fc;
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
 
-        .page-header h1 {
-            margin: 8px 0 6px;
-            font-size: 40px;
-        }
+    .page-header h1 {
+        margin: 8px 0 6px;
+        font-size: 40px;
+    }
 
-        .page-header span {
-            color: #dbeafe;
-            line-height: 1.6;
-            font-weight: 700;
-        }
+    .page-header span {
+        color: #dbeafe;
+        line-height: 1.6;
+        font-weight: 700;
+    }
 
     .refresh-button {
+        min-width: 150px;
+        min-height: 46px;
+        padding: 0 20px;
         border: none;
         border-radius: 999px;
-        padding: 13px 20px;
-        background: #ffffff;
         color: #0f172a;
+        background: #ffffff;
         font-weight: 900;
-        cursor: pointer;
         white-space: nowrap;
+        cursor: pointer;
     }
 
-        .refresh-button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
+    .refresh-button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
 
     .error-box,
-    .success-box,
     .info-box {
         padding: 14px 16px;
         border-radius: 16px;
@@ -124,65 +203,83 @@
     }
 
     .error-box {
-        background: rgba(239, 68, 68, 0.18);
+        border:
+            1px solid
+            rgba(248, 113, 113, 0.35);
         color: #fecaca;
-        border: 1px solid rgba(248, 113, 113, 0.35);
-    }
-
-    .success-box {
-        background: rgba(34, 197, 94, 0.18);
-        color: #86efac;
-        border: 1px solid rgba(34, 197, 94, 0.35);
+        background:
+            rgba(239, 68, 68, 0.18);
     }
 
     .info-box {
-        background: rgba(14, 165, 233, 0.18);
+        border:
+            1px solid
+            rgba(56, 189, 248, 0.35);
         color: #bae6fd;
-        border: 1px solid rgba(56, 189, 248, 0.35);
+        background:
+            rgba(14, 165, 233, 0.18);
     }
 
     .profile-card {
-        border: 1px solid rgba(148, 163, 184, 0.24);
-        border-radius: 30px;
         padding: 28px;
-        background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 35%), rgba(15, 23, 42, 0.72);
-        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+        border:
+            1px solid
+            rgba(148, 163, 184, 0.24);
+        border-radius: 30px;
+        background:
+            radial-gradient(
+                circle at top right,
+                rgba(56, 189, 248, 0.12),
+                transparent 35%
+            ),
+            rgba(15, 23, 42, 0.72);
+        box-shadow:
+            0 20px 50px
+            rgba(15, 23, 42, 0.25);
     }
 
     .profile-top {
+        margin-bottom: 26px;
         display: flex;
         align-items: center;
         gap: 18px;
-        margin-bottom: 26px;
     }
 
     .admin-avatar {
         width: 76px;
         height: 76px;
+        min-width: 76px;
         border-radius: 24px;
         display: grid;
         place-items: center;
         color: #ffffff;
+        background:
+            linear-gradient(
+                135deg,
+                #0ea5e9,
+                #7c3aed
+            );
         font-size: 34px;
         font-weight: 900;
-        background: linear-gradient(135deg, #0ea5e9, #7c3aed);
-        box-shadow: 0 14px 30px rgba(14, 165, 233, 0.25);
+        box-shadow:
+            0 14px 30px
+            rgba(14, 165, 233, 0.25);
     }
 
     .profile-top p {
         margin: 0;
         color: #7dd3fc;
         font-size: 13px;
+        font-weight: 900;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        font-weight: 900;
     }
 
     .profile-top h2 {
         margin: 6px 0;
         color: #ffffff;
         font-size: 30px;
-        word-break: break-word;
+        overflow-wrap: anywhere;
     }
 
     .profile-top span {
@@ -192,39 +289,45 @@
 
     .profile-details-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
         gap: 16px;
     }
 
     .detail-box {
+        min-width: 0;
         padding: 18px;
+        border:
+            1px solid
+            rgba(148, 163, 184, 0.24);
         border-radius: 20px;
-        background: rgba(30, 41, 59, 0.82);
-        border: 1px solid rgba(148, 163, 184, 0.24);
+        background:
+            rgba(30, 41, 59, 0.82);
     }
 
-        .detail-box span {
-            display: block;
-            color: #94a3b8;
-            font-size: 13px;
-            font-weight: 900;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
+    .detail-box span {
+        display: block;
+        margin-bottom: 8px;
+        color: #94a3b8;
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
 
-        .detail-box strong {
-            display: block;
-            color: #ffffff;
-            font-size: 18px;
-            word-break: break-word;
-        }
+    .detail-box strong {
+        display: block;
+        color: #ffffff;
+        font-size: 18px;
+        overflow-wrap: anywhere;
+    }
 
-        .detail-box small {
-            display: block;
-            margin-top: 8px;
-            color: #cbd5e1;
-            font-weight: 700;
-        }
+    .detail-box small {
+        display: block;
+        margin-top: 8px;
+        color: #cbd5e1;
+        font-weight: 700;
+        line-height: 1.5;
+    }
 
     .active-text {
         color: #86efac !important;
@@ -233,10 +336,13 @@
     .profile-note {
         margin-top: 20px;
         padding: 16px;
+        border:
+            1px solid
+            rgba(56, 189, 248, 0.24);
         border-radius: 18px;
-        background: rgba(14, 165, 233, 0.12);
-        border: 1px solid rgba(56, 189, 248, 0.24);
         color: #dbeafe;
+        background:
+            rgba(14, 165, 233, 0.12);
         line-height: 1.6;
         font-weight: 800;
     }
@@ -244,8 +350,8 @@
     @@media (max-width: 900px) {
         .page-header,
         .profile-top {
-            flex-direction: column;
             align-items: flex-start;
+            flex-direction: column;
         }
 
         .profile-details-grid {
@@ -262,8 +368,7 @@
     private AdminProfileDto profile = new();
 
     private bool isLoading;
-    private string message = string.Empty;
-    private string messageClass = "success-box";
+    private string errorMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -278,27 +383,34 @@
 
     private async Task LoadProfileAsync()
     {
+        if (isLoading)
+        {
+            return;
+        }
+
         isLoading = true;
-        message = string.Empty;
+        errorMessage = string.Empty;
 
         try
         {
-            profile = await ProfileService.GetProfileAsync();
+            profile =
+                await ProfileService
+                    .GetProfileAsync();
         }
         catch (HttpRequestException)
         {
-            profile = new AdminProfileDto();
-            ShowMessage("Could not load admin profile.", false);
+            ResetProfile(
+                "Could not load admin profile.");
         }
         catch (JsonException)
         {
-            profile = new AdminProfileDto();
-            ShowMessage("Admin profile data format is invalid.", false);
+            ResetProfile(
+                "Admin profile data format is invalid.");
         }
         catch (InvalidOperationException)
         {
-            profile = new AdminProfileDto();
-            ShowMessage("Admin profile service is not available.", false);
+            ResetProfile(
+                "Admin profile service is not available.");
         }
         finally
         {
@@ -306,23 +418,29 @@
         }
     }
 
-    private void ShowMessage(string text, bool isSuccess)
+    private void ResetProfile(
+        string error)
     {
-        message = text;
-        messageClass = isSuccess ? "success-box" : "error-box";
+        profile = new AdminProfileDto();
+        errorMessage = error;
     }
 
-    private static string GetInitial(string? value)
+    private static string GetInitial(
+        string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             return "A";
         }
 
-        return value.Trim()[..1].ToUpperInvariant();
+        return value
+            .Trim()[..1]
+            .ToUpperInvariant();
     }
 
-    private static string GetSafeText(string? value, string fallback)
+    private static string GetSafeText(
+        string? value,
+        string fallback)
     {
         return string.IsNullOrWhiteSpace(value)
             ? fallback

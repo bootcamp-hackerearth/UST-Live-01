@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using HealthAxis.API.Data;
+﻿using HealthAxis.API.Data;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
@@ -27,7 +26,6 @@ namespace HealthAxis.API.Services.Implementation
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
 
         public AdminService(
@@ -35,14 +33,12 @@ namespace HealthAxis.API.Services.Implementation
             IAppointmentRepository appointmentRepository,
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            IMapper mapper,
             ApplicationDbContext context)
         {
             _doctorRepository = doctorRepository;
             _appointmentRepository = appointmentRepository;
             _userManager = userManager;
             _roleManager = roleManager;
-            _mapper = mapper;
             _context = context;
         }
 

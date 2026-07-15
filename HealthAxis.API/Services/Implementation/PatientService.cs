@@ -1,170 +1,274 @@
 ﻿using AutoMapper;
 using HealthAxis.API.Exceptions;
-using HealthAxis.API.Models;
-using HealthAxis.API.Repositories.Implementations;
 using HealthAxis.API.Repositories.Interfaces;
-using HealthAxis.Shared.DTO.CommonDtos;
 using HealthAxis.Shared.DTO.HealthRecordDtos;
 using HealthAxis.Shared.DTO.PatientDtos;
-using HealthAxis.Shared.Utilities;
 
 namespace HealthAxis.API.Services.Implementation
 {
     public class PatientService(
-     IPatientRepository patientRepository,
-     IDoctorRepository doctorRepository,
-     IHealthRecordRepository healthRecordRepository,
-     IAppointmentRepository appointmentRepository,
-     IMapper mapper) : IPatientService
+        IPatientRepository patientRepository,
+        IDoctorRepository doctorRepository,
+        IHealthRecordRepository healthRecordRepository,
+        IAppointmentRepository appointmentRepository,
+        IMapper mapper) : IPatientService
     {
         public async Task<List<PatientDto>> GetAllAsync()
         {
+            var patients =
+                await patientRepository.GetAllAsync();
+
             return mapper.Map<List<PatientDto>>(
-                await patientRepository.GetAllAsync());
+                patients);
         }
 
-        public async Task<PatientDto?> GetByIdAsync(int id)
+        public async Task<PatientDto?> GetByIdAsync(
+            int id)
         {
-            var patient = await patientRepository.GetByIdAsync(id);
+            var patient =
+                await patientRepository.GetByIdAsync(id);
 
-            if (patient == null)
+            if (patient is null)
             {
-                throw new NotFoundException("Patient not found");
-            }
-
-            return mapper.Map<PatientDto>(patient);
-        }
-        public async Task<PatientDto?> GetByUserIdAsync(string userId)
-        {
-            var patients = await patientRepository.GetAllAsync();
-
-            var patient = patients.FirstOrDefault(p => p.UserId == userId);
-
-            if (patient == null)
-            {
-                throw new NotFoundException("Patient profile not found");
+                throw new NotFoundException(
+                    "Patient not found");
             }
 
             return mapper.Map<PatientDto>(patient);
         }
 
-        public async Task<PatientDto?> UpdateAsync(int id, UpdatePatientDto patientDto)
+        public async Task<PatientDto?> GetByUserIdAsync(
+            string userId)
         {
-            var existingPatient = await patientRepository.GetByIdAsync(id);
+            var patients =
+                await patientRepository.GetAllAsync();
 
-            if (existingPatient == null)
+            var patient =
+                patients.FirstOrDefault(
+                    patientItem =>
+                        patientItem.UserId == userId);
+
+            if (patient is null)
             {
-                throw new NotFoundException("Patient not found");
+                throw new NotFoundException(
+                    "Patient profile not found");
             }
 
-            var patients = await patientRepository.GetAllAsync();
+            return mapper.Map<PatientDto>(patient);
+        }
 
-            var emailExists = patients.Any(p =>
-                p.PatientId != id &&
-                p.Email.Equals(patientDto.Email, StringComparison.OrdinalIgnoreCase));
+        public async Task<PatientDto?> UpdateAsync(
+            int id,
+            UpdatePatientDto patientDto)
+        {
+            ArgumentNullException.ThrowIfNull(
+                patientDto);
+
+            var existingPatient =
+                await patientRepository.GetByIdAsync(id);
+
+            if (existingPatient is null)
+            {
+                throw new NotFoundException(
+                    "Patient not found");
+            }
+
+            var patients =
+                await patientRepository.GetAllAsync();
+
+            var emailExists =
+                patients.Any(patient =>
+                    patient.PatientId != id &&
+                    patient.Email.Equals(
+                        patientDto.Email,
+                        StringComparison.OrdinalIgnoreCase));
 
             if (emailExists)
             {
-                throw new ValidationExceptions("Email already registered");
+                throw new ValidationExceptions(
+                    "Email already registered");
             }
 
-            var phoneExists = patients.Any(p =>
-                p.PatientId != id &&
-                p.PhoneNumber == patientDto.PhoneNumber);
+            var phoneExists =
+                patients.Any(patient =>
+                    patient.PatientId != id &&
+                    patient.PhoneNumber ==
+                    patientDto.PhoneNumber);
 
             if (phoneExists)
             {
-                throw new ValidationExceptions("Phone number already registered");
+                throw new ValidationExceptions(
+                    "Phone number already registered");
             }
 
-            existingPatient.FullName = patientDto.FullName;
-            existingPatient.DateOfBirth = patientDto.DateOfBirth;
-            existingPatient.Gender = patientDto.Gender;
-            existingPatient.PhoneNumber = patientDto.PhoneNumber;
-            existingPatient.Email = patientDto.Email;
+            existingPatient.FullName =
+                patientDto.FullName;
 
-            var updated = await patientRepository.UpdateAsync(id, existingPatient);
+            existingPatient.DateOfBirth =
+                patientDto.DateOfBirth;
 
-            return mapper.Map<PatientDto>(updated);
+            existingPatient.Gender =
+                patientDto.Gender;
+
+            existingPatient.PhoneNumber =
+                patientDto.PhoneNumber;
+
+            existingPatient.Email =
+                patientDto.Email;
+
+            var updatedPatient =
+                await patientRepository.UpdateAsync(
+                    id,
+                    existingPatient);
+
+            return mapper.Map<PatientDto>(
+                updatedPatient);
         }
-        public async Task<List<HealthRecordDto>> GetHealthRecordsByPatientIdAsync(
-    int patientId)
-        {
-            var patient = await patientRepository.GetByIdAsync(patientId);
 
-            if (patient == null)
+        public async Task<List<HealthRecordDto>>
+            GetHealthRecordsByPatientIdAsync(
+                int patientid)
+        {
+            var patient =
+                await patientRepository.GetByIdAsync(
+                    patientid);
+
+            if (patient is null)
             {
-                throw new NotFoundException("Patient not found.");
+                throw new NotFoundException(
+                    "Patient not found.");
             }
 
-            var healthRecords = await healthRecordRepository.GetAllAsync();
-            var doctors = await doctorRepository.GetAllAsync();
+            var healthRecords =
+                await healthRecordRepository.GetAllAsync();
 
-            var patientRecords = healthRecords
-                .Where(record => record.PatientId == patientId)
-                .OrderByDescending(record => record.VisitDate)
-                .ToList();
+            var doctors =
+                await doctorRepository.GetAllAsync();
 
-            return patientRecords.Select(record =>
-            {
-                var doctor = doctors.FirstOrDefault(
-                    doctorItem => doctorItem.DoctorId == record.DoctorId);
+            var patientRecords =
+                healthRecords
+                    .Where(record =>
+                        record.PatientId == patientid)
+                    .OrderByDescending(record =>
+                        record.VisitDate)
+                    .ToList();
 
-                return new HealthRecordDto
+            return patientRecords
+                .Select(record =>
                 {
-                    HealthRecordId = record.HealthRecordId,
-                    RecordId = record.HealthRecordId,
-                    AppointmentId = record.AppointmentId,
+                    var doctor =
+                        doctors.FirstOrDefault(
+                            doctorItem =>
+                                doctorItem.DoctorId ==
+                                record.DoctorId);
 
-                    PatientId = record.PatientId,
-                    PatientName = patient.FullName,
+                    return new HealthRecordDto
+                    {
+                        HealthRecordId =
+                            record.HealthRecordId,
 
-                    DoctorId = record.DoctorId,
-                    DoctorName = doctor?.FullName ?? "Doctor not assigned",
-                    Specialisation = doctor?.Specialisation.ToString() ?? "Not assigned",
+                        RecordId =
+                            record.HealthRecordId,
 
-                    VisitDate = record.VisitDate,
-                    Diagnosis = record.Diagnosis,
-                    Prescription = record.Prescription,
-                    Notes = record.Notes,
-                    UpdatedDate = record.UpdatedDate
-                };
-            }).ToList();
-        }
-        public async Task<List<PatientDto>> GetPatientsForDoctorAsync(int doctorId)
-        {
-            var appointments = await appointmentRepository.GetAllAsync();
+                        AppointmentId =
+                            record.AppointmentId,
 
-            var patientIds = appointments
-                .Where(a => a.DoctorId == doctorId)
-                .Select(a => a.PatientId)
-                .Distinct()
+                        PatientId =
+                            record.PatientId,
+
+                        PatientName =
+                            patient.FullName,
+
+                        DoctorId =
+                            record.DoctorId,
+
+                        DoctorName =
+                            doctor?.FullName ??
+                            "Doctor not assigned",
+
+                        Specialisation =
+                            doctor?.Specialisation
+                                .ToString() ??
+                            "Not assigned",
+
+                        VisitDate =
+                            record.VisitDate,
+
+                        CreatedAt =
+                            record.CreatedAt,
+
+                        Diagnosis =
+                            record.Diagnosis,
+
+                        Prescription =
+                            record.Prescription,
+
+                        Notes =
+                            record.Notes,
+
+                        UpdatedDate =
+                            record.UpdatedDate
+                    };
+                })
                 .ToList();
-
-            var patients = await patientRepository.GetAllAsync();
-
-            var doctorPatients = patients
-                .Where(p => patientIds.Contains(p.PatientId))
-                .ToList();
-
-            return mapper.Map<List<PatientDto>>(doctorPatients);
         }
-        public async Task<PatientDto?> GetPatientForDoctorAsync(int doctorId, int patientId)
-        {
-            var appointments = await appointmentRepository.GetAllAsync();
 
-            var hasAppointmentWithDoctor = appointments.Any(a =>
-                a.DoctorId == doctorId &&
-                a.PatientId == patientId);
+        public async Task<List<PatientDto>>
+            GetPatientsForDoctorAsync(
+                int doctorId)
+        {
+            var appointments =
+                await appointmentRepository.GetAllAsync();
+
+            var patientIds =
+                appointments
+                    .Where(appointment =>
+                        appointment.DoctorId ==
+                        doctorId)
+                    .Select(appointment =>
+                        appointment.PatientId)
+                    .Distinct()
+                    .ToList();
+
+            var patients =
+                await patientRepository.GetAllAsync();
+
+            var doctorPatients =
+                patients
+                    .Where(patient =>
+                        patientIds.Contains(
+                            patient.PatientId))
+                    .ToList();
+
+            return mapper.Map<List<PatientDto>>(
+                doctorPatients);
+        }
+
+        public async Task<PatientDto?>
+            GetPatientForDoctorAsync(
+                int doctorId,
+                int patientId)
+        {
+            var appointments =
+                await appointmentRepository.GetAllAsync();
+
+            var hasAppointmentWithDoctor =
+                appointments.Any(appointment =>
+                    appointment.DoctorId ==
+                    doctorId &&
+                    appointment.PatientId ==
+                    patientId);
 
             if (!hasAppointmentWithDoctor)
             {
                 return null;
             }
 
-            var patient = await patientRepository.GetByIdAsync(patientId);
+            var patient =
+                await patientRepository.GetByIdAsync(
+                    patientId);
 
-            if (patient == null)
+            if (patient is null)
             {
                 return null;
             }

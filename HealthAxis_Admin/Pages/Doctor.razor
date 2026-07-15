@@ -87,6 +87,8 @@
     }
     else
     {
+        var filteredDoctors = GetFilteredDoctors();
+
         <div class="table-wrapper doctors-table-wrapper">
             <table class="modern-table doctors-table">
                 <thead>
@@ -102,7 +104,7 @@
                 </thead>
 
                 <tbody>
-                    @foreach (var doctor in FilteredDoctors)
+                    @foreach (var doctor in filteredDoctors)
                     {
                         <tr>
                             <td>
@@ -162,7 +164,7 @@
             </table>
         </div>
 
-        @if (!FilteredDoctors.Any())
+        @if (filteredDoctors.Count == 0)
         {
             <p class="not-found">
                 No doctors matched your search/filter on this page.
@@ -343,6 +345,9 @@
 
 @if (showAppointmentsDialog && selectedDoctor is not null)
 {
+    var filteredDoctorAppointments =
+        GetFilteredDoctorAppointments();
+
     <div class="modal-backdrop-custom">
         <div class="doctor-dialog doctor-appointments-dialog">
 
@@ -377,7 +382,7 @@
             {
                 <div class="empty-box">Loading appointments...</div>
             }
-            else if (!FilteredDoctorAppointments.Any())
+            else if (filteredDoctorAppointments.Count == 0)
             {
                 <div class="empty-box">No appointments found for this status.</div>
             }
@@ -395,7 +400,7 @@
                         </thead>
 
                         <tbody>
-                            @foreach (var appointment in FilteredDoctorAppointments)
+                            @foreach (var appointment in filteredDoctorAppointments)
                             {
                                 <tr>
                                     <td>@GetSafeText(appointment.PatientName, "Patient")</td>
@@ -1158,69 +1163,83 @@
     private int editingDoctorId;
     private int messageVersion;
 
-    private List<DoctorDto> FilteredDoctors
+    private List<DoctorDto> GetFilteredDoctors()
     {
-        get
+        var filteredDoctors =
+            doctors.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(searchText))
         {
-            var filteredDoctors = doctors.AsEnumerable();
+            var cleanSearchText =
+                searchText.Trim();
 
-            if (!string.IsNullOrWhiteSpace(searchText))
-            {
-                filteredDoctors = filteredDoctors.Where(doctor =>
-                    ContainsIgnoreCase(doctor.FullName, searchText) ||
-                    ContainsIgnoreCase(doctor.Email, searchText) ||
-                    ContainsIgnoreCase(doctor.Specialisation.ToString(), searchText));
-            }
-
-            if (!string.Equals(
-                    selectedSpecialisation,
-                    AllSpecialisationsOption,
-                    StringComparison.OrdinalIgnoreCase) &&
-                Enum.TryParse<Specialisation>(selectedSpecialisation, out var specialisation))
-            {
-                filteredDoctors = filteredDoctors.Where(doctor =>
-                    doctor.Specialisation == specialisation);
-            }
-
-            if (string.Equals(
-                    selectedStatus,
-                    ActiveStatusOption,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                filteredDoctors = filteredDoctors.Where(doctor => doctor.IsActive);
-            }
-
-            if (string.Equals(
-                    selectedStatus,
-                    InactiveStatusOption,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                filteredDoctors = filteredDoctors.Where(doctor => !doctor.IsActive);
-            }
-
-            return filteredDoctors.ToList();
+            filteredDoctors =
+                filteredDoctors.Where(doctor =>
+                    ContainsIgnoreCase(
+                        doctor.FullName,
+                        cleanSearchText) ||
+                    ContainsIgnoreCase(
+                        doctor.Email,
+                        cleanSearchText) ||
+                    ContainsIgnoreCase(
+                        doctor.Specialisation.ToString(),
+                        cleanSearchText));
         }
+
+        if (!string.Equals(
+                selectedSpecialisation,
+                AllSpecialisationsOption,
+                StringComparison.OrdinalIgnoreCase) &&
+            Enum.TryParse<Specialisation>(
+                selectedSpecialisation,
+                out var specialisation))
+        {
+            filteredDoctors =
+                filteredDoctors.Where(doctor =>
+                    doctor.Specialisation ==
+                    specialisation);
+        }
+
+        if (string.Equals(
+                selectedStatus,
+                ActiveStatusOption,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            filteredDoctors =
+                filteredDoctors.Where(doctor =>
+                    doctor.IsActive);
+        }
+        else if (string.Equals(
+                     selectedStatus,
+                     InactiveStatusOption,
+                     StringComparison.OrdinalIgnoreCase))
+        {
+            filteredDoctors =
+                filteredDoctors.Where(doctor =>
+                    !doctor.IsActive);
+        }
+
+        return filteredDoctors.ToList();
     }
 
-    private List<AdminAppointmentDetailDto> FilteredDoctorAppointments
+    private IReadOnlyList<AdminAppointmentDetailDto>
+        GetFilteredDoctorAppointments()
     {
-        get
+        if (string.Equals(
+                selectedDoctorAppointmentStatus,
+                AllAppointmentStatusOption,
+                StringComparison.OrdinalIgnoreCase))
         {
-            if (string.Equals(
-                    selectedDoctorAppointmentStatus,
-                    AllAppointmentStatusOption,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                return doctorAppointments;
-            }
+            return doctorAppointments;
+        }
 
-            return doctorAppointments
-                .Where(appointment => string.Equals(
+        return doctorAppointments
+            .Where(appointment =>
+                string.Equals(
                     appointment.Status,
                     selectedDoctorAppointmentStatus,
                     StringComparison.OrdinalIgnoreCase))
-                .ToList();
-        }
+            .ToList();
     }
 
     protected override async Task OnInitializedAsync()

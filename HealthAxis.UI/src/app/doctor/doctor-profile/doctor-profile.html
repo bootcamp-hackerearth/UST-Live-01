@@ -290,16 +290,20 @@
             />
 
             <button
-              type="button"
-              aria-label="Show or hide current password"
-              (click)="toggleCurrentPasswordVisibility()"
-            >
-              {{
-                showCurrentPassword()
-                  ? 'Hide'
-                  : 'Show'
-              }}
-            </button>
+  type="button"
+  [attr.aria-label]="
+    showCurrentPassword()
+      ? 'Hide current password'
+      : 'Show current password'
+  "
+  (click)="toggleCurrentPasswordVisibility()"
+>
+  {{
+    showCurrentPassword()
+      ? 'Hide'
+      : 'Show'
+  }}
+</button>
           </div>
 
           @if (getCurrentPasswordError()) {
@@ -328,16 +332,20 @@
             />
 
             <button
-              type="button"
-              aria-label="Show or hide new password"
-              (click)="toggleNewPasswordVisibility()"
-            >
-              {{
-                showNewPassword()
-                  ? 'Hide'
-                  : 'Show'
-              }}
-            </button>
+  type="button"
+  [attr.aria-label]="
+    showNewPassword()
+      ? 'Hide new password'
+      : 'Show new password'
+  "
+  (click)="toggleNewPasswordVisibility()"
+>
+  {{
+    showNewPassword()
+      ? 'Hide'
+      : 'Show'
+  }}
+</button>
           </div>
 
           @if (getNewPasswordError()) {
@@ -366,16 +374,20 @@
             />
 
             <button
-              type="button"
-              aria-label="Show or hide password confirmation"
-              (click)="toggleConfirmPasswordVisibility()"
-            >
-              {{
-                showConfirmPassword()
-                  ? 'Hide'
-                  : 'Show'
-              }}
-            </button>
+  type="button"
+  [attr.aria-label]="
+    showConfirmPassword()
+      ? 'Hide password confirmation'
+      : 'Show password confirmation'
+  "
+  (click)="toggleConfirmPasswordVisibility()"
+>
+  {{
+    showConfirmPassword()
+      ? 'Hide'
+      : 'Show'
+  }}
+</button>
           </div>
 
           @if (getConfirmPasswordError()) {

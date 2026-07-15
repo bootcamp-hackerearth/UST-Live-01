@@ -68,12 +68,21 @@
     {
         <div class="empty-box">Loading patients from database...</div>
     }
-    else if (FilteredPatients.Count == 0)
-    {
-        <div class="empty-box">No patients found.</div>
-    }
     else
     {
+        var filteredPatients = GetFilteredPatients();
+        var pagedPatients = GetPagedPatients(
+            filteredPatients,
+            currentPage);
+        var totalPages = GetTotalPages(
+            filteredPatients.Count);
+
+        if (filteredPatients.Count == 0)
+        {
+            <div class="empty-box">No patients found.</div>
+        }
+        else
+        {
         <div class="table-wrapper patients-table-wrapper">
             <table class="modern-table patients-table">
                 <thead>
@@ -88,7 +97,7 @@
                 </thead>
 
                 <tbody>
-                    @foreach (var patient in PagedPatients)
+                    @foreach (var patient in pagedPatients)
                     {
                         <tr>
                             <td>
@@ -133,7 +142,7 @@
             </table>
         </div>
 
-        @if (FilteredPatients.Count > PageSize)
+        @if (filteredPatients.Count > PageSize)
         {
             <div class="pagination-bar patient-pagination">
 
@@ -145,18 +154,19 @@
                 </button>
 
                 <span class="page-info">
-                    Page @currentPage of @TotalPages
-                    • Showing @PagedPatients.Count of @FilteredPatients.Count patients
+                    Page @currentPage of @totalPages
+                    • Showing @pagedPatients.Count of @filteredPatients.Count patients
                 </span>
 
                 <button type="button"
                         class="secondary-btn page-btn"
-                        disabled="@(currentPage == TotalPages)"
+                        disabled="@(currentPage == totalPages)"
                         @onclick="GoToNextPage">
                     Next
                 </button>
 
             </div>
+        }
         }
     }
 
@@ -386,6 +396,9 @@
 
 @if (showAppointmentsDialog && selectedPatient is not null)
 {
+    var filteredPatientAppointments =
+        GetFilteredPatientAppointments();
+
     <div class="modal-backdrop-custom">
         <div class="doctor-dialog user-detail-dialog patient-appointments-dialog">
 
@@ -420,7 +433,7 @@
             {
                 <div class="empty-box">Loading appointments...</div>
             }
-            else if (!FilteredPatientAppointments.Any())
+            else if (filteredPatientAppointments.Count == 0)
             {
                 <div class="empty-box">No appointments found for this status.</div>
             }
@@ -439,7 +452,7 @@
                         </thead>
 
                         <tbody>
-                            @foreach (var appointment in FilteredPatientAppointments)
+                            @foreach (var appointment in filteredPatientAppointments)
                             {
                                 <tr>
                                     <td>@GetSafeText(appointment.DoctorName, "Doctor")</td>
@@ -1130,59 +1143,82 @@
     private int editingPatientId;
     private int messageVersion;
 
-    private List<AdminPatientDto> FilteredPatients
+    private List<AdminPatientDto> GetFilteredPatients()
     {
-        get
+        if (string.IsNullOrWhiteSpace(searchText))
         {
-            if (string.IsNullOrWhiteSpace(searchText))
-            {
-                return patients;
-            }
-
-            return patients
-                .Where(patient =>
-                    ContainsIgnoreCase(patient.FullName, searchText) ||
-                    ContainsIgnoreCase(patient.PhoneNumber, searchText) ||
-                    ContainsIgnoreCase(patient.Email, searchText) ||
-                    ContainsIgnoreCase(patient.Gender, searchText) ||
-                    patient.PatientId.ToString().Contains(
-                        searchText,
-                        StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            return patients;
         }
+
+        var cleanSearchText =
+            searchText.Trim();
+
+        return patients
+            .Where(patient =>
+                ContainsIgnoreCase(
+                    patient.FullName,
+                    cleanSearchText) ||
+                ContainsIgnoreCase(
+                    patient.PhoneNumber,
+                    cleanSearchText) ||
+                ContainsIgnoreCase(
+                    patient.Email,
+                    cleanSearchText) ||
+                ContainsIgnoreCase(
+                    patient.Gender,
+                    cleanSearchText) ||
+                patient.PatientId
+                    .ToString()
+                    .Contains(
+                        cleanSearchText,
+                        StringComparison.OrdinalIgnoreCase))
+            .ToList();
     }
 
-    private List<AdminPatientAppointmentDto> FilteredPatientAppointments
+    private IReadOnlyList<AdminPatientAppointmentDto>
+        GetFilteredPatientAppointments()
     {
-        get
+        if (string.Equals(
+                selectedPatientAppointmentStatus,
+                AllAppointmentStatusOption,
+                StringComparison.OrdinalIgnoreCase))
         {
-            if (string.Equals(
-                    selectedPatientAppointmentStatus,
-                    AllAppointmentStatusOption,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                return patientAppointments;
-            }
+            return patientAppointments;
+        }
 
-            return patientAppointments
-                .Where(appointment => string.Equals(
+        return patientAppointments
+            .Where(appointment =>
+                string.Equals(
                     appointment.Status,
                     selectedPatientAppointmentStatus,
                     StringComparison.OrdinalIgnoreCase))
-                .ToList();
-        }
+            .ToList();
     }
 
-    private List<AdminPatientDto> PagedPatients =>
-        FilteredPatients
-            .Skip((currentPage - 1) * PageSize)
+    private static List<AdminPatientDto> GetPagedPatients(
+        IReadOnlyList<AdminPatientDto> filteredPatients,
+        int pageNumber)
+    {
+        return filteredPatients
+            .Skip(
+                (pageNumber - FirstPageNumber) *
+                PageSize)
             .Take(PageSize)
             .ToList();
+    }
 
-    private int TotalPages =>
-        FilteredPatients.Count == 0
-            ? FirstPageNumber
-            : (int)Math.Ceiling((double)FilteredPatients.Count / PageSize);
+    private static int GetTotalPages(
+        int filteredPatientCount)
+    {
+        if (filteredPatientCount == 0)
+        {
+            return FirstPageNumber;
+        }
+
+        return (int)Math.Ceiling(
+            (double)filteredPatientCount /
+            PageSize);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -1479,7 +1515,14 @@
 
     private void GoToNextPage()
     {
-        if (currentPage < TotalPages)
+        var filteredPatientCount =
+            GetFilteredPatients().Count;
+
+        var totalPages =
+            GetTotalPages(
+                filteredPatientCount);
+
+        if (currentPage < totalPages)
         {
             currentPage++;
         }

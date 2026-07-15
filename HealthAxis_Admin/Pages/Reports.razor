@@ -68,7 +68,7 @@
             Loading appointment reports...
         </div>
     }
-    else if (FilteredReports.Count == 0)
+    else if (!GetFilteredReports().Any())
     {
         <div class="empty-box">
             No appointment reports found.
@@ -91,7 +91,7 @@
                 </thead>
 
                 <tbody>
-                    @foreach (var report in PagedReports)
+                    @foreach (var report in GetPagedReports())
                     {
                         <tr>
                             <td>
@@ -162,7 +162,7 @@
             </table>
         </div>
 
-        @if (TotalPages > MinimumPaginationPages)
+        @if (GetTotalPages() > MinimumPaginationPages)
         {
             <div class="pagination-bar">
                 <button type="button"
@@ -173,13 +173,13 @@
                 </button>
 
                 <span>
-                    Page @currentPage of @TotalPages
-                    • Total @FilteredReports.Count reports
+                    Page @currentPage of @GetTotalPages()
+                    • Total @GetFilteredReportCount() reports
                 </span>
 
                 <button type="button"
                         class="secondary-btn"
-                        disabled="@(currentPage == TotalPages)"
+                        disabled="@(currentPage == GetTotalPages())"
                         @onclick="GoToNextPage">
                     Next
                 </button>
@@ -538,50 +538,58 @@
     private int messageVersion;
     private int processingAppointmentId;
 
-    private List<AdminAppointmentDetailDto> FilteredReports
+    private IEnumerable<AdminAppointmentDetailDto> GetFilteredReports()
     {
-        get
+        IEnumerable<AdminAppointmentDetailDto> filteredReports = reports;
+
+        if (!string.IsNullOrWhiteSpace(searchText))
         {
-            var filteredReports = reports.AsEnumerable();
-
-            if (!string.IsNullOrWhiteSpace(searchText))
-            {
-                filteredReports = filteredReports.Where(report =>
-                    ContainsIgnoreCase(report.PatientName, searchText) ||
-                    ContainsIgnoreCase(report.DoctorName, searchText) ||
-                    ContainsIgnoreCase(report.Status, searchText) ||
-                    ContainsIgnoreCase(report.Specialisation, searchText) ||
-                    report.AppointmentId.ToString().Contains(
-                        searchText,
-                        StringComparison.OrdinalIgnoreCase));
-            }
-
-            if (!string.Equals(
-                    selectedStatus,
-                    AllStatusOption,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                filteredReports = filteredReports.Where(report =>
-                    string.Equals(
-                        report.Status,
-                        selectedStatus,
-                        StringComparison.OrdinalIgnoreCase));
-            }
-
-            return filteredReports.ToList();
+            filteredReports = filteredReports.Where(report =>
+                ContainsIgnoreCase(report.PatientName, searchText) ||
+                ContainsIgnoreCase(report.DoctorName, searchText) ||
+                ContainsIgnoreCase(report.Status, searchText) ||
+                ContainsIgnoreCase(report.Specialisation, searchText) ||
+                report.AppointmentId.ToString().Contains(
+                    searchText,
+                    StringComparison.OrdinalIgnoreCase));
         }
+
+        if (!string.Equals(
+                selectedStatus,
+                AllStatusOption,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            filteredReports = filteredReports.Where(report =>
+                string.Equals(
+                    report.Status,
+                    selectedStatus,
+                    StringComparison.OrdinalIgnoreCase));
+        }
+
+        return filteredReports;
     }
 
-    private List<AdminAppointmentDetailDto> PagedReports =>
-        FilteredReports
-            .Skip((currentPage - 1) * PageSize)
+    private List<AdminAppointmentDetailDto> GetPagedReports()
+    {
+        return GetFilteredReports()
+            .Skip((currentPage - FirstPageNumber) * PageSize)
             .Take(PageSize)
             .ToList();
+    }
 
-    private int TotalPages =>
-        FilteredReports.Count == 0
+    private int GetFilteredReportCount()
+    {
+        return GetFilteredReports().Count();
+    }
+
+    private int GetTotalPages()
+    {
+        var filteredReportCount = GetFilteredReportCount();
+
+        return filteredReportCount == 0
             ? FirstPageNumber
-            : (int)Math.Ceiling((double)FilteredReports.Count / PageSize);
+            : (int)Math.Ceiling((double)filteredReportCount / PageSize);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -707,7 +715,7 @@
 
     private void GoToNextPage()
     {
-        if (currentPage < TotalPages)
+        if (currentPage < GetTotalPages())
         {
             currentPage++;
         }

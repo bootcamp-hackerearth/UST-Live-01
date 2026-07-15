@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using FluentAssertions;
+﻿using FluentAssertions;
 using HealthAxis.API.Data;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
@@ -29,7 +28,6 @@ namespace HealthAxis.API.Tests.Services
         private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
         private readonly Mock<UserManager<IdentityUser>> _userManagerMock;
         private readonly Mock<RoleManager<IdentityRole>> _roleManagerMock;
-        private readonly Mock<IMapper> _mapperMock;
         private readonly ApplicationDbContext _context;
         private readonly AdminService _service;
 
@@ -72,17 +70,6 @@ namespace HealthAxis.API.Tests.Services
             _userManagerMock = MockUserManager(users, roles);
             _roleManagerMock = MockRoleManager();
 
-            _mapperMock = new Mock<IMapper>();
-
-            _mapperMock
-                .Setup(mapper => mapper.Map<List<DoctorDto>>(It.IsAny<List<Doctor>>()))
-                .Returns((List<Doctor> doctors) =>
-                    doctors.Select(MapDoctorDto).ToList());
-
-            _mapperMock
-                .Setup(mapper => mapper.Map<DoctorDto>(It.IsAny<Doctor>()))
-                .Returns((Doctor doctor) => MapDoctorDto(doctor));
-
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
@@ -94,7 +81,6 @@ namespace HealthAxis.API.Tests.Services
                 _appointmentRepositoryMock.Object,
                 _userManagerMock.Object,
                 _roleManagerMock.Object,
-                _mapperMock.Object,
                 _context);
         }
 
@@ -1041,22 +1027,6 @@ namespace HealthAxis.API.Tests.Services
                 CurrentPassword = "Old@123",
                 NewPassword = "New@123",
                 ConfirmNewPassword = "New@123"
-            };
-        }
-
-        private static DoctorDto MapDoctorDto(Doctor doctor)
-        {
-            return new DoctorDto
-            {
-                DoctorId = doctor.DoctorId,
-                FullName = doctor.FullName,
-                Email = doctor.UserId == "doctor-user-1"
-                    ? "doctor@gmail.com"
-                    : string.Empty,
-                Specialisation = doctor.Specialisation,
-                YearsOfExperience = doctor.YearsOfExperience,
-                ConsultationFee = doctor.ConsultationFee,
-                IsActive = doctor.IsActive
             };
         }
 

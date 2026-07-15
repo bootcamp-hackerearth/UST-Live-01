@@ -64,7 +64,7 @@
             Loading users from database...
         </div>
     }
-    else if (FilteredUsers.Count == 0)
+    else if (!GetFilteredUsers().Any())
     {
         <div class="empty-box">
             No users found.
@@ -87,7 +87,7 @@
                 </thead>
 
                 <tbody>
-                    @foreach (var user in PagedUsers)
+                    @foreach (var user in GetPagedUsers())
                     {
                         <tr>
                             <td>
@@ -160,7 +160,7 @@
             </table>
         </div>
 
-        @if (TotalPages > MinimumPaginationPages)
+        @if (GetTotalPages() > MinimumPaginationPages)
         {
             <div class="pagination-bar users-pagination">
                 <button type="button"
@@ -171,13 +171,13 @@
                 </button>
 
                 <span>
-                    Page @currentPage of @TotalPages
-                    • Total @FilteredUsers.Count users
+                    Page @currentPage of @GetTotalPages()
+                    • Total @GetFilteredUserCount() users
                 </span>
 
                 <button type="button"
                         class="secondary-btn"
-                        disabled="@(currentPage == TotalPages)"
+                        disabled="@(currentPage == GetTotalPages())"
                         @onclick="GoToNextPage">
                     Next
                 </button>
@@ -725,49 +725,56 @@
     private int currentPage = FirstPageNumber;
     private int messageVersion;
 
-    private List<AdminUserDto> FilteredUsers
+    private IEnumerable<AdminUserDto> GetFilteredUsers()
     {
-        get
+        IEnumerable<AdminUserDto> filteredUsers = users;
+
+        if (!string.IsNullOrWhiteSpace(searchText))
         {
-            var filteredUsers = users.AsEnumerable();
-
-            if (!string.IsNullOrWhiteSpace(searchText))
-            {
-                filteredUsers = filteredUsers.Where(user =>
-                    ContainsIgnoreCase(user.FullName, searchText) ||
-                    ContainsIgnoreCase(user.Email, searchText) ||
-                    ContainsIgnoreCase(user.Role, searchText) ||
-                    ContainsIgnoreCase(user.PhoneNumber, searchText) ||
-                    ContainsIgnoreCase(user.Specialisation, searchText) ||
-                    ContainsIgnoreCase(user.UserId, searchText));
-            }
-
-            if (!string.Equals(
-                    selectedRole,
-                    AllRolesOption,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                filteredUsers = filteredUsers.Where(user =>
-                    string.Equals(
-                        user.Role,
-                        selectedRole,
-                        StringComparison.OrdinalIgnoreCase));
-            }
-
-            return filteredUsers.ToList();
+            filteredUsers = filteredUsers.Where(user =>
+                ContainsIgnoreCase(user.FullName, searchText) ||
+                ContainsIgnoreCase(user.Email, searchText) ||
+                ContainsIgnoreCase(user.Role, searchText) ||
+                ContainsIgnoreCase(user.PhoneNumber, searchText) ||
+                ContainsIgnoreCase(user.Specialisation, searchText) ||
+                ContainsIgnoreCase(user.UserId, searchText));
         }
+
+        if (!string.Equals(
+                selectedRole,
+                AllRolesOption,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            filteredUsers = filteredUsers.Where(user =>
+                string.Equals(
+                    user.Role,
+                    selectedRole,
+                    StringComparison.OrdinalIgnoreCase));
+        }
+
+        return filteredUsers;
     }
 
-    private List<AdminUserDto> PagedUsers =>
-        FilteredUsers
-            .Skip((currentPage - 1) * PageSize)
-            .Take(PageSize)
-            .ToList();
+    private IEnumerable<AdminUserDto> GetPagedUsers()
+    {
+        return GetFilteredUsers()
+            .Skip((currentPage - FirstPageNumber) * PageSize)
+            .Take(PageSize);
+    }
 
-    private int TotalPages =>
-        FilteredUsers.Count == 0
+    private int GetFilteredUserCount()
+    {
+        return GetFilteredUsers().Count();
+    }
+
+    private int GetTotalPages()
+    {
+        var filteredUserCount = GetFilteredUserCount();
+
+        return filteredUserCount == 0
             ? FirstPageNumber
-            : (int)Math.Ceiling((double)FilteredUsers.Count / PageSize);
+            : (int)Math.Ceiling((double)filteredUserCount / PageSize);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -857,7 +864,7 @@
 
     private void GoToNextPage()
     {
-        if (currentPage < TotalPages)
+        if (currentPage < GetTotalPages())
         {
             currentPage++;
         }
