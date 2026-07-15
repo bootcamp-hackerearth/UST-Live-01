@@ -48,9 +48,9 @@ export class PatientProfile {
   showConfirmPassword = signal(false);
 
   constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private patientService: PatientService
+    private readonly formBuilder: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly patientService: PatientService
   ) {
     this.profileForm = this.formBuilder.group({
       patientName: [
@@ -70,7 +70,7 @@ export class PatientProfile {
         '',
         [
           Validators.required,
-          Validators.pattern(/^[0-9]{10}$/)
+          Validators.pattern(/^\d{10}$/)
         ]
       ],
       dateOfBirth: [

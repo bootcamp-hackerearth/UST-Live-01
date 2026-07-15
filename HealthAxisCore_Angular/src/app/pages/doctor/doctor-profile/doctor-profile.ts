@@ -52,9 +52,9 @@ export class DoctorProfile {
   showConfirmPassword = signal(false);
 
   constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private doctorService: DoctorService
+    private readonly formBuilder: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly doctorService: DoctorService
   ) {
     this.statusForm = this.formBuilder.group({
       isActive: [true]

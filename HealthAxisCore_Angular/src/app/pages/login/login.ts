@@ -16,7 +16,7 @@ import { LoginRequest } from '../../core/models/login-request';
   imports: [
     CommonModule,
     RouterLink,
-    ReactiveFormsModule,
+    ReactiveFormsModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.css'
@@ -33,8 +33,8 @@ export class Login {
   errorMessage = signal('');
 
   constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService
+    private readonly formBuilder: FormBuilder,
+    private readonly authService: AuthService
   ) {
     this.loginForm = this.formBuilder.group({
       email: [

@@ -18,7 +18,7 @@ import { RegisterPatientRequest } from '../../core/models/register-patient-reque
   imports: [
     CommonModule,
     RouterLink,
-    ReactiveFormsModule,
+    ReactiveFormsModule
   ],
   templateUrl: './register.html',
   styleUrl: './register.css'
@@ -41,8 +41,8 @@ export class Register {
   minimumDateOfBirth = this.getMinimumDateOfBirth();
 
   constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService
+    private readonly formBuilder: FormBuilder,
+    private readonly authService: AuthService
   ) {
     this.registerForm = this.formBuilder.group(
       {
@@ -79,7 +79,7 @@ export class Register {
           '',
           [
             Validators.required,
-            Validators.pattern(/^[0-9]{10}$/)
+            Validators.pattern(/^\d{10}$/)
           ]
         ],
         insuranceID: [
@@ -194,16 +194,18 @@ export class Register {
     });
   }
 
-  private static emailDomainValidator(control: AbstractControl): ValidationErrors | null {
+  private static emailDomainValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
     const email = control.value?.toString().trim().toLowerCase();
 
-    if (!email || !email.includes('@')) {
+    if (!email?.includes('@')) {
       return null;
     }
 
     const domainPart = email.split('@')[1];
 
-    if (!domainPart || !domainPart.includes('.')) {
+    if (!domainPart?.includes('.')) {
       return null;
     }
 
@@ -218,7 +220,9 @@ export class Register {
     return null;
   }
 
-  private static dateOfBirthValidator(control: AbstractControl): ValidationErrors | null {
+  private static dateOfBirthValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
     const value = control.value;
 
     if (!value) {
@@ -256,7 +260,9 @@ export class Register {
     return null;
   }
 
-  private passwordsShouldMatch(control: AbstractControl): ValidationErrors | null {
+  private passwordsShouldMatch(
+    control: AbstractControl
+  ): ValidationErrors | null {
     const password = control.get('password')?.value;
 
     const confirmPassword = control.get('confirmPassword')?.value;

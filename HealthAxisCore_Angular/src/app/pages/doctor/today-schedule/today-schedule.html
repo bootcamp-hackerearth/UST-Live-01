@@ -53,6 +53,7 @@
     </a>
   </div>
   }
+
   @for (appointment of appointments(); track appointment.appointmentId) {
   <article class="schedule-card">
     <div class="patient-avatar">
@@ -154,13 +155,13 @@
     </div>
 
     <div class="modal-body">
-      <label>Cancellation reason</label>
+      <label for="doctorCancellationReason">Cancellation reason</label>
 
-      <textarea [ngModel]="cancellationReason()"
+      <textarea id="doctorCancellationReason"
+                [ngModel]="cancellationReason()"
                 (ngModelChange)="cancellationReason.set($event)"
                 placeholder="Enter the reason for cancelling this appointment"
-                [class.input-invalid]="cancellationSubmitted() && !cancellationReason().trim()">
-        </textarea>
+                [class.input-invalid]="cancellationSubmitted() && !cancellationReason().trim()"></textarea>
 
       @if (cancellationSubmitted() && !cancellationReason().trim()) {
       <small class="validation-message">

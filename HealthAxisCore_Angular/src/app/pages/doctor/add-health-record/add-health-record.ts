@@ -45,12 +45,12 @@ export class AddHealthRecord {
   successMessage = signal('');
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private formBuilder: FormBuilder,
-    private appointmentService: AppointmentService,
-    private healthRecordService: HealthRecordService,
-    private authService: AuthService
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly formBuilder: FormBuilder,
+    private readonly appointmentService: AppointmentService,
+    private readonly healthRecordService: HealthRecordService,
+    private readonly authService: AuthService
   ) {
     this.appointmentId = Number(this.route.snapshot.paramMap.get('appointmentId'));
 

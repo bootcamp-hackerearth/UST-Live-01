@@ -27,8 +27,8 @@ export class DoctorDashboard {
   today = new Date().toISOString().split('T')[0];
 
   constructor(
-    private authService: AuthService,
-    private appointmentService: AppointmentService
+    private readonly authService: AuthService,
+    private readonly appointmentService: AppointmentService
   ) {
     this.loadTodayAppointments();
   }
@@ -36,15 +36,15 @@ export class DoctorDashboard {
   totalToday = computed(() => this.appointments().length);
 
   pendingCount = computed(() =>
-    this.appointments().filter(a => a.status === 'Pending').length
+    this.appointments().filter(appointment => appointment.status === 'Pending').length
   );
 
   confirmedCount = computed(() =>
-    this.appointments().filter(a => a.status === 'Confirmed').length
+    this.appointments().filter(appointment => appointment.status === 'Confirmed').length
   );
 
   completedCount = computed(() =>
-    this.appointments().filter(a => a.status === 'Completed').length
+    this.appointments().filter(appointment => appointment.status === 'Completed').length
   );
 
   loadTodayAppointments(): void {

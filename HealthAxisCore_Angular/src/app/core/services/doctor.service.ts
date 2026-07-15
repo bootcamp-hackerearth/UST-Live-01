@@ -14,7 +14,7 @@ import { DoctorDto } from '../models/doctor.model';
 export class DoctorService {
   private readonly apiUrl = `${environment.apiBaseUrl}/doctors`;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private readonly httpClient: HttpClient) {
   }
 
   getDoctors(specialisation?: string): Observable<DoctorDto[]> {

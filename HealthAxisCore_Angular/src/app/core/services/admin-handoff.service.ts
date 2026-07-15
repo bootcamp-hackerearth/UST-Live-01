@@ -11,7 +11,7 @@ import { CreateAdminHandoffResponse } from '../models/admin-handoff.model';
 export class AdminHandoffService {
   private readonly apiUrl = `${environment.apiBaseUrl}/admin-handoff`;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private readonly httpClient: HttpClient) {
   }
 
   create(): Observable<CreateAdminHandoffResponse> {

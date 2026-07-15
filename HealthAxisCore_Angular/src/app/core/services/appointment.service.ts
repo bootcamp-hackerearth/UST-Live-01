@@ -18,7 +18,7 @@ import {
 export class AppointmentService {
   private readonly apiUrl = `${environment.apiBaseUrl}/appointments`;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private readonly httpClient: HttpClient) {
   }
 
   getAppointments(filters?: {

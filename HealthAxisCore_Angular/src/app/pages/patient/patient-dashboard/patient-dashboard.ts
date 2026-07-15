@@ -19,7 +19,7 @@ import { HealthRecordDto } from '../../../core/models/health-record.model';
   selector: 'app-patient-dashboard',
   imports: [
     CommonModule,
-    RouterLink,
+    RouterLink
   ],
   templateUrl: './patient-dashboard.html',
   styleUrl: './patient-dashboard.css'
@@ -95,10 +95,10 @@ export class PatientDashboard {
   ]);
 
   constructor(
-    private authService: AuthService,
-    private appointmentService: AppointmentService,
-    private doctorService: DoctorService,
-    private patientService: PatientService
+    private readonly authService: AuthService,
+    private readonly appointmentService: AppointmentService,
+    private readonly doctorService: DoctorService,
+    private readonly patientService: PatientService
   ) {
     this.loadDashboardData();
   }

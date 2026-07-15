@@ -1,11 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 import { AppointmentService } from '../../../core/services/appointment.service';
 import { AppointmentDto } from '../../../core/models/appointment.model';
 import { AuthService } from '../../../core/services/auth.service';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-my-appointments',
@@ -33,8 +33,8 @@ export class MyAppointments {
   successMessage = signal('');
 
   constructor(
-    private appointmentService: AppointmentService,
-    private authService: AuthService
+    private readonly appointmentService: AppointmentService,
+    private readonly authService: AuthService
   ) {
     this.loadAppointments();
   }
@@ -67,46 +67,4 @@ export class MyAppointments {
 
     this.selectedAppointment.set(appointment);
     this.cancellationReason.set('');
-    this.cancellationSubmitted.set(false);
-  }
-
-  closeCancelModal(): void {
-    this.selectedAppointment.set(null);
-    this.cancellationReason.set('');
-    this.cancellationSubmitted.set(false);
-  }
-
-  confirmCancellation(): void {
-    this.cancellationSubmitted.set(true);
-    this.errorMessage.set('');
-    this.successMessage.set('');
-
-    const appointment = this.selectedAppointment();
-
-    if (!appointment) {
-      return;
-    }
-
-    if (!this.cancellationReason().trim()) {
-      return;
-    }
-
-    this.appointmentService.updateStatus(appointment.appointmentId, {
-      status: 'Cancelled',
-      cancellationReason: this.cancellationReason().trim()
-    }).subscribe({
-      next: () => {
-        this.successMessage.set('Appointment cancelled successfully.');
-        this.closeCancelModal();
-        this.loadAppointments();
-      },
-      error: error => {
-        this.errorMessage.set(this.authService.getErrorMessage(error));
-      }
-    });
-  }
-
-  getStatusClass(status: string): string {
-    return `status-badge status-${status.toLowerCase()}`;
-  }
-}
+    this.cancellationSubmitted

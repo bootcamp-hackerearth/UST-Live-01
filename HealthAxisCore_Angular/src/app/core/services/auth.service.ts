@@ -51,9 +51,9 @@ export class AuthService {
   );
 
   constructor(
-    private httpClient: HttpClient,
-    private router: Router,
-    private adminHandoffService : AdminHandoffService
+    private readonly httpClient: HttpClient,
+    private readonly router: Router,
+    private readonly adminHandoffService: AdminHandoffService
   ) {
   }
 
@@ -77,7 +77,6 @@ export class AuthService {
       }
     );
   }
-
 
   registerPatient(request: RegisterPatientRequest): Observable<AuthResponse> {
     return this.httpClient
@@ -168,34 +167,6 @@ export class AuthService {
       fallbackMessage;
   }
 
-  private saveSession(response: AuthResponse): void {
-    const currentUser: CurrentUser = {
-      userId: response.userId,
-      patientId: response.patientId,
-      doctorId: response.doctorId,
-      fullName: response.fullName,
-      email: response.email,
-      role: response.role,
-      firstLogin: response.firstLogin
-    };
-
-    localStorage.setItem(this.accessTokenKey, response.accessToken);
-    localStorage.setItem(this.refreshTokenKey, response.refreshToken);
-    localStorage.setItem(this.currentUserKey, JSON.stringify(currentUser));
-
-    this.accessTokenSignal.set(response.accessToken);
-    this.currentUserSignal.set(currentUser);
-  }
-
-  private loadCurrentUserFromStorage(): CurrentUser | null {
-    const userJson = localStorage.getItem(this.currentUserKey);
-
-    if (!userJson) {
-      return null;
-    }
-
-    return JSON.parse(userJson) as CurrentUser;
-  }
   changeFirstLoginPassword(
     request: ChangeFirstLoginPasswordRequest
   ): Observable<string> {
@@ -227,6 +198,36 @@ export class AuthService {
       })
     );
   }
+
+  private saveSession(response: AuthResponse): void {
+    const currentUser: CurrentUser = {
+      userId: response.userId,
+      patientId: response.patientId,
+      doctorId: response.doctorId,
+      fullName: response.fullName,
+      email: response.email,
+      role: response.role,
+      firstLogin: response.firstLogin
+    };
+
+    localStorage.setItem(this.accessTokenKey, response.accessToken);
+    localStorage.setItem(this.refreshTokenKey, response.refreshToken);
+    localStorage.setItem(this.currentUserKey, JSON.stringify(currentUser));
+
+    this.accessTokenSignal.set(response.accessToken);
+    this.currentUserSignal.set(currentUser);
+  }
+
+  private loadCurrentUserFromStorage(): CurrentUser | null {
+    const userJson = localStorage.getItem(this.currentUserKey);
+
+    if (!userJson) {
+      return null;
+    }
+
+    return JSON.parse(userJson) as CurrentUser;
+  }
+
   private redirectAdminToBlazor(): void {
     this.adminHandoffService.create().subscribe({
       next: response => {
@@ -234,7 +235,7 @@ export class AuthService {
           code: response.code
         });
 
-        window.location.href =
+        globalThis.location.href =
           `${environment.adminAppUrl}?${queryParams.toString()}`;
       },
       error: error => {

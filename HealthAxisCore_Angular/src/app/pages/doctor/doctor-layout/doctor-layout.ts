@@ -8,8 +8,7 @@ import { AuthService } from '../../../core/services/auth.service';
   imports: [
     RouterOutlet,
     RouterLink,
-    RouterLinkActive,
-    
+    RouterLinkActive
   ],
   templateUrl: './doctor-layout.html',
   styleUrl: './doctor-layout.css'
@@ -23,7 +22,7 @@ export class DoctorLayout {
     this.authService.currentUser()?.firstLogin ?? false
   );
 
-  constructor(private authService: AuthService) {
+  constructor(private readonly authService: AuthService) {
   }
 
   logout(): void {

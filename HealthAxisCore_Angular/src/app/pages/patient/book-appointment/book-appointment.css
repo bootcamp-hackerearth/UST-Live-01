@@ -3,7 +3,7 @@
   --ha-cyan-dark: #149ab2;
   --ha-text-main: #102a43;
   --ha-text-soft: #1f4e5f;
-  --ha-text-muted: #5b7c89;
+  --ha-text-muted: #334155;
   --ha-pink: #ff9fa8;
   --ha-shadow-main: 18px 18px 42px rgba(21, 94, 117, 0.16), -14px -14px 35px rgba(255, 255, 255, 0.68), inset 1px 1px 0 rgba(255, 255, 255, 0.76), inset -1px -1px 0 rgba(34, 199, 214, 0.16);
   --ha-shadow-button: 10px 10px 24px rgba(21, 94, 117, 0.20), -6px -6px 18px rgba(255, 255, 255, 0.64);
@@ -204,9 +204,9 @@
 }
 
 .past-slot {
-  opacity: 0.58;
-  background: rgba(226, 232, 240, 0.74);
-  color: #64748b;
+  opacity: 1;
+  background: rgba(226, 232, 240, 0.86);
+  color: #334155;
 }
 
 .booked-slot {
@@ -282,8 +282,8 @@
 }
 
 .empty-state {
-  color: var(--ha-text-muted);
-  background: rgba(236, 254, 255, 0.62);
+  color: #334155;
+  background: rgba(236, 254, 255, 0.82);
 }
 
 @media (max-width: 900px) {

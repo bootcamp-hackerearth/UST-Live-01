@@ -48,9 +48,9 @@
 }
 
 .theme-toggle-dark {
-  color: #dbeafe;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)), rgba(0, 0, 0, 0.58);
-  border: 1px solid rgba(34, 211, 238, 0.18);
+  color: #f8fafc;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(0, 0, 0, 0.90));
+  border: 1px solid rgba(34, 211, 238, 0.28);
   box-shadow: 12px 12px 24px rgba(0, 0, 0, 0.46), -6px -6px 18px rgba(255, 255, 255, 0.025), inset 1px 1px 0 rgba(255, 255, 255, 0.08);
 }
 

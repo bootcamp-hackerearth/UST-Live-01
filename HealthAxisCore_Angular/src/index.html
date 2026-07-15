@@ -7,10 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <script>
-  (function () {
-    var savedTheme = localStorage.getItem('healthaxis_theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  })();
+    (function initializeHealthAxisTheme() {
+      const savedTheme = localStorage.getItem('healthaxis_theme') || 'light';
+
+      document.documentElement.dataset.theme = savedTheme;
+    })();
   </script>
 </head>
 <body>

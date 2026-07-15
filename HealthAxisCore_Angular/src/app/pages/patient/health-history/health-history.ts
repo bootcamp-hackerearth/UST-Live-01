@@ -1,13 +1,15 @@
+import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { PatientService } from '../../../core/services/patient.service';
 import { HealthRecordDto } from '../../../core/models/health-record.model';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-health-history',
-  imports: [CommonModule],
+  imports: [
+    CommonModule
+  ],
   templateUrl: './health-history.html',
   styleUrl: './health-history.css'
 })
@@ -19,8 +21,8 @@ export class HealthHistory {
   errorMessage = signal('');
 
   constructor(
-    private authService: AuthService,
-    private patientService: PatientService
+    private readonly authService: AuthService,
+    private readonly patientService: PatientService
   ) {
     this.loadRecords();
   }

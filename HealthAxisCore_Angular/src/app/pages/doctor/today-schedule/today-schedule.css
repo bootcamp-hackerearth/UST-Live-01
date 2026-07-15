@@ -320,11 +320,11 @@
   border-radius: 15px;
   display: inline-flex;
   align-items: center;
-  color: rgba(31, 78, 95, 0.58);
+  color: #334155;
   font-weight: 950;
   cursor: not-allowed;
-  background: rgba(230, 255, 255, 0.42);
-  border: 1px solid rgba(20, 154, 178, 0.14);
+  background: rgba(230, 255, 255, 0.72);
+  border: 1px solid rgba(20, 154, 178, 0.24);
 }
 
 .cancel-button {

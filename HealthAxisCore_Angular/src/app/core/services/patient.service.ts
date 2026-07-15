@@ -15,7 +15,7 @@ import { HealthRecordDto } from '../models/health-record.model';
 export class PatientService {
   private readonly apiUrl = `${environment.apiBaseUrl}/patients`;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private readonly httpClient: HttpClient) {
   }
 
   getById(patientId: number): Observable<PatientDto> {

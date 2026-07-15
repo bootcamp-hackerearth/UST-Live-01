@@ -127,13 +127,13 @@
     </div>
 
     <div class="modal-body">
-      <label>Cancellation reason</label>
+      <label for="patientCancellationReason">Cancellation reason</label>
 
-      <textarea [ngModel]="cancellationReason()"
+      <textarea id="patientCancellationReason"
+                [ngModel]="cancellationReason()"
                 (ngModelChange)="cancellationReason.set($event)"
                 placeholder="Enter the reason for cancelling this appointment"
-                [class.input-invalid]="cancellationSubmitted() && !cancellationReason().trim()">
-        </textarea>
+                [class.input-invalid]="cancellationSubmitted() && !cancellationReason().trim()"></textarea>
 
       @if (cancellationSubmitted() && !cancellationReason().trim()) {
       <small class="validation-message">

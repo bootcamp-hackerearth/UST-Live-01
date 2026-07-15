@@ -14,7 +14,7 @@ import {
 export class HealthRecordService {
   private readonly apiUrl = `${environment.apiBaseUrl}/health-records`;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private readonly httpClient: HttpClient) {
   }
 
   getByPatientId(patientId: number): Observable<HealthRecordDto[]> {

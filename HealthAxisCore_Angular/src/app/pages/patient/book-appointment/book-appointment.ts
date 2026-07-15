@@ -129,11 +129,11 @@ export class BookAppointment {
   });
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private doctorService: DoctorService,
-    private appointmentService: AppointmentService,
-    private authService: AuthService
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly doctorService: DoctorService,
+    private readonly appointmentService: AppointmentService,
+    private readonly authService: AuthService
   ) {
     this.doctorId = Number(this.route.snapshot.paramMap.get('doctorId'));
 

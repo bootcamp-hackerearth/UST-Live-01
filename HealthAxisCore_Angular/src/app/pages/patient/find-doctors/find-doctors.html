@@ -12,18 +12,20 @@
 
 <section class="filter-card">
   <div class="filter-group">
-    <label>Search doctor</label>
+    <label for="doctorSearch">Search doctor</label>
 
-    <input type="text"
+    <input id="doctorSearch"
+           type="text"
            [ngModel]="searchText()"
            (ngModelChange)="searchText.set($event)"
            placeholder="Search by doctor name or specialisation" />
   </div>
 
   <div class="filter-group">
-    <label>Specialisation</label>
+    <label for="doctorSpecialisation">Specialisation</label>
 
-    <select [ngModel]="selectedSpecialisation()"
+    <select id="doctorSpecialisation"
+            [ngModel]="selectedSpecialisation()"
             (ngModelChange)="selectedSpecialisation.set($event); onSpecialisationChange()">
       <option value="">All specialisations</option>
 

@@ -40,8 +40,8 @@ export class FindDoctors {
   ];
 
   constructor(
-    private doctorService: DoctorService,
-    private authService: AuthService
+    private readonly doctorService: DoctorService,
+    private readonly authService: AuthService
   ) {
     this.loadDoctors();
   }

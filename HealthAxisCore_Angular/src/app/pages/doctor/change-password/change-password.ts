@@ -37,9 +37,9 @@ export class ChangePassword {
   showConfirmPassword = signal(false);
 
   constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private router: Router
+    private readonly formBuilder: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {
     this.passwordForm = this.formBuilder.group({
       currentPassword: [

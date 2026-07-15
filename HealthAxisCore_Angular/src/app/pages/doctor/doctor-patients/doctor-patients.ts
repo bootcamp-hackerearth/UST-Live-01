@@ -42,55 +42,7 @@ export class DoctorPatients {
   today = new Date().toISOString().split('T')[0];
 
   patients = computed(() => {
-    const patientMap = new Map<number, DoctorPatientView>();
-
-    const validAppointments = this.appointments()
-      .filter(appointment => appointment.status !== 'Cancelled');
-
-    for (const appointment of validAppointments) {
-      const appointmentDate = this.getDateOnly(appointment.scheduledDate);
-
-      const existingPatient = patientMap.get(appointment.patientId);
-
-      if (!existingPatient) {
-        patientMap.set(appointment.patientId, {
-          patientId: appointment.patientId,
-          patientName: appointment.patientName,
-          completedVisits: appointment.status === 'Completed' ? 1 : 0,
-          totalValidAppointments: 1,
-          lastVisit: appointment.status === 'Completed'
-            ? appointment.scheduledDate
-            : null,
-          nextAppointment: this.isUpcomingAppointment(appointment)
-            ? appointment.scheduledDate
-            : null
-        });
-
-        continue;
-      }
-
-      existingPatient.totalValidAppointments++;
-
-      if (appointment.status === 'Completed') {
-        existingPatient.completedVisits++;
-
-        if (
-          !existingPatient.lastVisit ||
-          appointmentDate > this.getDateOnly(existingPatient.lastVisit)
-        ) {
-          existingPatient.lastVisit = appointment.scheduledDate;
-        }
-      }
-
-      if (this.isUpcomingAppointment(appointment)) {
-        if (
-          !existingPatient.nextAppointment ||
-          appointmentDate < this.getDateOnly(existingPatient.nextAppointment)
-        ) {
-          existingPatient.nextAppointment = appointment.scheduledDate;
-        }
-      }
-    }
+    const patientMap = this.buildPatientMap();
 
     return Array.from(patientMap.values())
       .sort((firstPatient, secondPatient) =>
@@ -102,14 +54,13 @@ export class DoctorPatients {
     const search = this.searchText().trim().toLowerCase();
 
     return this.patients().filter(patient =>
-      !search ||
-      patient.patientName.toLowerCase().includes(search)
+      this.matchesSearch(patient, search)
     );
   });
 
   constructor(
-    private appointmentService: AppointmentService,
-    private authService: AuthService
+    private readonly appointmentService: AppointmentService,
+    private readonly authService: AuthService
   ) {
     this.loadPatients();
   }
@@ -130,16 +81,159 @@ export class DoctorPatients {
     });
   }
 
-  private isUpcomingAppointment(appointment: AppointmentDto): boolean {
+  private buildPatientMap(): Map<number, DoctorPatientView> {
+    const patientMap = new Map<number, DoctorPatientView>();
+
+    const validAppointments = this.appointments()
+      .filter(appointment => this.isValidAppointment(appointment));
+
+    for (const appointment of validAppointments) {
+      this.addAppointmentToPatientMap(
+        patientMap,
+        appointment
+      );
+    }
+
+    return patientMap;
+  }
+
+  private addAppointmentToPatientMap(
+    patientMap: Map<number, DoctorPatientView>,
+    appointment: AppointmentDto
+  ): void {
+    const existingPatient = patientMap.get(appointment.patientId);
+
+    if (!existingPatient) {
+      patientMap.set(
+        appointment.patientId,
+        this.createPatientView(appointment)
+      );
+
+      return;
+    }
+
+    this.updatePatientView(
+      existingPatient,
+      appointment
+    );
+  }
+
+  private createPatientView(
+    appointment: AppointmentDto
+  ): DoctorPatientView {
+    return {
+      patientId: appointment.patientId,
+      patientName: appointment.patientName,
+      completedVisits: this.isCompletedAppointment(appointment) ? 1 : 0,
+      totalValidAppointments: 1,
+      lastVisit: this.isCompletedAppointment(appointment)
+        ? appointment.scheduledDate
+        : null,
+      nextAppointment: this.isUpcomingAppointment(appointment)
+        ? appointment.scheduledDate
+        : null
+    };
+  }
+
+  private updatePatientView(
+    patient: DoctorPatientView,
+    appointment: AppointmentDto
+  ): void {
+    patient.totalValidAppointments++;
+
+    this.updateCompletedVisitDetails(
+      patient,
+      appointment
+    );
+
+    this.updateNextAppointmentDetails(
+      patient,
+      appointment
+    );
+  }
+
+  private updateCompletedVisitDetails(
+    patient: DoctorPatientView,
+    appointment: AppointmentDto
+  ): void {
+    if (!this.isCompletedAppointment(appointment)) {
+      return;
+    }
+
+    patient.completedVisits++;
+
+    if (this.isMoreRecentVisit(appointment, patient.lastVisit)) {
+      patient.lastVisit = appointment.scheduledDate;
+    }
+  }
+
+  private updateNextAppointmentDetails(
+    patient: DoctorPatientView,
+    appointment: AppointmentDto
+  ): void {
+    if (!this.isUpcomingAppointment(appointment)) {
+      return;
+    }
+
+    if (this.isEarlierUpcomingAppointment(appointment, patient.nextAppointment)) {
+      patient.nextAppointment = appointment.scheduledDate;
+    }
+  }
+
+  private isValidAppointment(
+    appointment: AppointmentDto
+  ): boolean {
+    return appointment.status !== 'Cancelled';
+  }
+
+  private isCompletedAppointment(
+    appointment: AppointmentDto
+  ): boolean {
+    return appointment.status === 'Completed';
+  }
+
+  private isUpcomingAppointment(
+    appointment: AppointmentDto
+  ): boolean {
     const appointmentDate = this.getDateOnly(appointment.scheduledDate);
 
-    return (
-      appointmentDate >= this.today &&
+    return appointmentDate >= this.today &&
       (
         appointment.status === 'Pending' ||
         appointment.status === 'Confirmed'
-      )
-    );
+      );
+  }
+
+  private isMoreRecentVisit(
+    appointment: AppointmentDto,
+    currentLastVisit: string | null
+  ): boolean {
+    if (!currentLastVisit) {
+      return true;
+    }
+
+    return this.getDateOnly(appointment.scheduledDate) >
+      this.getDateOnly(currentLastVisit);
+  }
+
+  private isEarlierUpcomingAppointment(
+    appointment: AppointmentDto,
+    currentNextAppointment: string | null
+  ): boolean {
+    if (!currentNextAppointment) {
+      return true;
+    }
+
+    return this.getDateOnly(appointment.scheduledDate) <
+      this.getDateOnly(currentNextAppointment);
+  }
+
+  private matchesSearch(
+    patient: DoctorPatientView,
+    search: string
+  ): boolean {
+    return !search ||
+      patient.patientName.toLowerCase().includes(search);
   }
 
   private getDateOnly(dateValue: string): string {

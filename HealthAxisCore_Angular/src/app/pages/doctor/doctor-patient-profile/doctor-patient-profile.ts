@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+
 import { PatientService } from '../../../core/services/patient.service';
 import { HealthRecordService } from '../../../core/services/health-record.service';
 import { PatientDto } from '../../../core/models/patient.model';
@@ -28,10 +29,10 @@ export class DoctorPatientProfile {
   errorMessage = signal('');
 
   constructor(
-    private route: ActivatedRoute,
-    private patientService: PatientService,
-    private healthRecordService: HealthRecordService,
-    private authService: AuthService
+    private readonly route: ActivatedRoute,
+    private readonly patientService: PatientService,
+    private readonly healthRecordService: HealthRecordService,
+    private readonly authService: AuthService
   ) {
     this.patientId = Number(this.route.snapshot.paramMap.get('patientId'));
 

@@ -13,9 +13,10 @@
 
 <section class="filter-card">
   <div class="filter-group">
-    <label>Search patient</label>
+    <label for="patientSearch">Search patient</label>
 
-    <input type="text"
+    <input id="patientSearch"
+           type="text"
            [ngModel]="searchText()"
            (ngModelChange)="searchText.set($event)"
            placeholder="Search by patient name" />

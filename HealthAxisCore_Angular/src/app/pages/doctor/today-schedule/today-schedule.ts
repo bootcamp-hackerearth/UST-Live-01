@@ -36,9 +36,9 @@ export class TodaySchedule {
   today = new Date().toISOString().split('T')[0];
 
   constructor(
-    private appointmentService: AppointmentService,
-    private healthRecordService: HealthRecordService,
-    private authService: AuthService
+    private readonly appointmentService: AppointmentService,
+    private readonly healthRecordService: HealthRecordService,
+    private readonly authService: AuthService
   ) {
     this.loadSchedule();
   }
