@@ -149,13 +149,14 @@
     <Property Name="sonar.java.jvmframeworkconfig.activate">true</Property>
     <Property Name="sonar.updatecenter.url">https://downloads.sonarsource.com/sonarqube/update/update-center.properties</Property>
     <Property Name="sonar.core.id">147B411E-AZ6DE1AjInH_RGULaukj</Property>
-    <Property Name="sonar.core.startTime">03-07-2026 10:01:07</Property>
+    <Property Name="sonar.core.startTime">15-07-2026 09:24:17</Property>
   </ServerSettings>
   <LocalSettings>
     <Property Name="sonar.host.url">http://localhost:9000</Property>
+    <Property Name="sonar.coverage.exclusions">**/bin/**,**/obj/**,**/Migrations/**,**/Middleware/**,**/Controllers/**,**/Exceptions/**,**/Data/**,**/Consumers/**,**/DTOs/**,**/Mappings/**,**/Properties/**,**/Repositories/**,**/Repository/**,**/HealthAxis.Shared/**,**/HealthAxis.Admin/**,**/HealthAxis.Angular/**,**/Program.cs,**/BackgroundServices/**</Property>
     <Property Name="sonar.cs.vscoveragexml.reportsPaths">C:\Sprint3\HealthAxis\coverage.xml</Property>
     <Property Name="sonar.verbose">true</Property>
-    <Property Name="sonar.exclusions">**/node_modules/**,**/bin/**,**/obj/**,**/Migrations/**,**/TestResults/**,**/coverage-report/**,**/*.css,**/*.razor,**/*.g.cs,**/*.designer.cs,**/*.slnLaunch.user,**/launchSettings.json,C:\Sprint3\HealthAxis\coverage.xml</Property>
+    <Property Name="sonar.exclusions">**/bin/**,**/obj/**,**/Migrations/**,**/*.css,**/*.scss,**/*.html,**/*.razor,**/node_modules/**,C:\Sprint3\HealthAxis\coverage.xml</Property>
   </LocalSettings>
   <ScannerOptsSettings />
   <AnalyzersSettings>

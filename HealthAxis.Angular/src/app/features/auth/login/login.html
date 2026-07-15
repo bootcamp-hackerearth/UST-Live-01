@@ -50,7 +50,7 @@
         </div>
       }
 
-      <form [formGroup]="loginForm" (ngSubmit)="submitLogin()">
+      <form [formGroup]="loginForm" (ngSubmit)="submitLogin()" autocomplete="on">
         <div class="form-group">
           <label for="email">Email</label>
 
