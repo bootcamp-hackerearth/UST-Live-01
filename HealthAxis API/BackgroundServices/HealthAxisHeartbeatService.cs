@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-
-namespace HealthAxis.API.BackgroundServices
+﻿namespace HealthAxis.API.BackgroundServices
 {
     public class HealthAxisHeartbeatService : BackgroundService
     {
@@ -15,15 +13,40 @@ namespace HealthAxis.API.BackgroundServices
         protected override async Task ExecuteAsync(
             CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation(
-                    "HealthAxis heartbeat service is running at {Time}",
+                    "HealthAxis heartbeat service started at {StartedAt}",
                     DateTimeOffset.Now);
+            }
 
-                await Task.Delay(
-                    TimeSpan.FromSeconds(10),
-                    stoppingToken);
+            try
+            {
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation(
+                            "HealthAxis heartbeat service is running at {HeartbeatTime}",
+                            DateTimeOffset.Now);
+                    }
+
+                    await Task.Delay(
+                        TimeSpan.FromMinutes(8),
+                        stoppingToken);
+                }
+            }
+            catch (OperationCanceledException)
+                when (stoppingToken.IsCancellationRequested)
+            {
+
+            }
+
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    "HealthAxis heartbeat service stopped at {StoppedAt}",
+                    DateTimeOffset.Now);
             }
         }
     }

@@ -1,0 +1,15 @@
+﻿C:\Sprint3\HealthAxis\HealthAxis.API.Tests\Services\AdminServiceTests.cs
+C:\Sprint3\HealthAxis\HealthAxis.API.Tests\Services\AppointmentServiceTests.cs
+C:\Sprint3\HealthAxis\HealthAxis.API.Tests\Services\AuthServiceTests.cs
+C:\Sprint3\HealthAxis\HealthAxis.API.Tests\Services\DoctorServiceTests.cs
+C:\Sprint3\HealthAxis\HealthAxis.API.Tests\Services\HealthRecordServiceTests.cs
+C:\Sprint3\HealthAxis\HealthAxis.API.Tests\Services\PatientServiceTests.cs
+C:\Users\287684\.nuget\packages\microsoft.net.test.sdk\18.6.0\build\net8.0\Microsoft.NET.Test.Sdk.Program.cs
+C:\Users\287684\.nuget\packages\microsoft.testplatform.testhost\18.6.0\build\net8.0\x64\testhost.exe
+C:\Users\287684\.nuget\packages\microsoft.testplatform.testhost\18.6.0\build\net8.0\x64\testhost.dll
+C:\Users\287684\.nuget\packages\xunit.runner.visualstudio\3.1.4\build\net8.0\xunit.abstractions.dll
+C:\Users\287684\.nuget\packages\xunit.runner.visualstudio\3.1.4\build\net8.0\xunit.runner.visualstudio.testadapter.dll
+C:\Sprint3\HealthAxis\HealthAxis.API.Tests\coverage.xml
+C:\Sprint3\HealthAxis\HealthAxis.API.Tests\HealthAxis.API.Tests.csproj.Backup.tmp
+C:\Sprint3\HealthAxis\HealthAxis.API.Tests\TestResults\7fa1d79a-88ca-4222-a593-ed24d8a78695\287684_3YHY0V3_2026-07-03.10_31_10.coverage
+C:\Sprint3\HealthAxis\HealthAxis.API.Tests\TestResults\ce63acd4-b257-4572-84f3-3cdf84ed7e79\287684_3YHY0V3_2026-07-03.10_27_57.coverage
