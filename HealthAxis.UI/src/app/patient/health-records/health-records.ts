@@ -12,6 +12,11 @@ import { HealthRecord } from '../../core/models/health-record.model';
 import { PatientService } from '../../core/services/patient.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
+type HealthRecordFilter =
+  | 'All'
+  | 'Final'
+  | 'Updated';
+
 @Component({
   selector: 'app-health-records',
   imports: [
@@ -31,17 +36,46 @@ export class HealthRecords {
   readonly errorMessage = signal('');
   readonly searchText = signal('');
 
+  readonly selectedRecordFilter =
+    signal<HealthRecordFilter>('All');
+
   readonly filteredRecords = computed(() => {
     const searchValue =
-      this.searchText().trim().toLowerCase();
+      this.searchText()
+        .trim()
+        .toLowerCase();
 
-    const records = searchValue
-      ? this.healthRecords().filter((record) =>
-          this.includesSearchValue(record, searchValue)
-        )
-      : this.healthRecords();
+    const selectedFilter =
+      this.selectedRecordFilter();
 
-    return records
+    return this.healthRecords()
+      .filter((record) => {
+        const isUpdated =
+          this.hasUpdated(record);
+
+        const matchesRecordFilter =
+          selectedFilter === 'All' ||
+          (
+            selectedFilter === 'Updated' &&
+            isUpdated
+          ) ||
+          (
+            selectedFilter === 'Final' &&
+            !isUpdated
+          );
+
+        const matchesSearch =
+          !searchValue ||
+          this.includesSearchValue(
+            record,
+            searchValue
+          );
+
+        return (
+          matchesRecordFilter &&
+          matchesSearch
+        );
+      })
       .slice()
       .sort(
         (first, second) =>
@@ -99,8 +133,20 @@ export class HealthRecords {
     this.searchText.set(input.value);
   }
 
-  clearSearch(): void {
+  onRecordFilterChange(
+    event: Event
+  ): void {
+    const select =
+      event.target as HTMLSelectElement;
+
+    this.selectedRecordFilter.set(
+      select.value as HealthRecordFilter
+    );
+  }
+
+  clearFilters(): void {
     this.searchText.set('');
+    this.selectedRecordFilter.set('All');
   }
 
   openRecordDetails(record: HealthRecord): void {

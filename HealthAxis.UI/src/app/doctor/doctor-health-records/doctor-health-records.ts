@@ -30,6 +30,11 @@ import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 const PAGE_SIZE = 6;
 const PRINT_DELAY_IN_MS = 250;
 
+type DoctorHealthRecordFilter =
+  | 'All'
+  | 'Final'
+  | 'Updated';
+
 @Component({
   selector: 'app-doctor-health-records',
   imports: [
@@ -63,6 +68,10 @@ export class DoctorHealthRecords {
   readonly errorMessage = signal('');
   readonly successDialogMessage = signal('');
   readonly searchText = signal('');
+
+  readonly selectedRecordFilter =
+    signal<DoctorHealthRecordFilter>('All');
+
   readonly currentPage = signal(1);
 
   readonly editForm =
@@ -118,12 +127,36 @@ export class DoctorHealthRecords {
         .trim()
         .toLowerCase();
 
+    const selectedFilter =
+      this.selectedRecordFilter();
+
     return this.doctorRecords().filter(
-      (record) =>
-        this.matchesSearch(
-          record,
-          searchValue
-        )
+      (record) => {
+        const isUpdated =
+          this.hasUpdated(record);
+
+        const matchesRecordFilter =
+          selectedFilter === 'All' ||
+          (
+            selectedFilter === 'Updated' &&
+            isUpdated
+          ) ||
+          (
+            selectedFilter === 'Final' &&
+            !isUpdated
+          );
+
+        const matchesSearch =
+          this.matchesSearch(
+            record,
+            searchValue
+          );
+
+        return (
+          matchesRecordFilter &&
+          matchesSearch
+        );
+      }
     );
   });
 
@@ -218,8 +251,22 @@ export class DoctorHealthRecords {
     this.currentPage.set(1);
   }
 
-  clearSearch(): void {
+  onRecordFilterChange(
+    event: Event
+  ): void {
+    const select =
+      event.target as HTMLSelectElement;
+
+    this.selectedRecordFilter.set(
+      select.value as DoctorHealthRecordFilter
+    );
+
+    this.currentPage.set(1);
+  }
+
+  clearFilters(): void {
     this.searchText.set('');
+    this.selectedRecordFilter.set('All');
     this.currentPage.set(1);
   }
 
@@ -1306,6 +1353,9 @@ export class DoctorHealthRecords {
       record.diagnosis,
       record.prescription,
       record.notes,
+      this.hasUpdated(record)
+        ? 'Updated'
+        : 'Final',
       this.getAppointmentId(
         record
       ).toString(),

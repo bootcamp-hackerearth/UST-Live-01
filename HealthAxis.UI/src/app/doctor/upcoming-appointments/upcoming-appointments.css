@@ -621,11 +621,19 @@ textarea {
   background: var(--cancelled-light);
 }
 
-.past-pending-badge {
-  border-color: #d2d6dd;
-  border-style: dashed;
-  color: #626b78;
-  background: #f3f4f6;
+.status-cell {
+  display: grid;
+  justify-items: start;
+  gap: 5px;
+}
+
+.past-time-note {
+  display: block;
+  color: #8a5a13;
+  font-size: 9px;
+  line-height: 1.35;
+  font-weight: 750;
+  white-space: nowrap;
 }
 
 .action-column {

@@ -144,44 +144,22 @@
             [class.selected]="selectedDoctorId() === doctor.doctorId"
             [class.inactive]="!doctor.isActive"
           >
+            <div class="doctor-card-header">
+              <div class="doctor-main">
+                <span class="doctor-avatar" aria-hidden="true">
+                  {{ doctor.fullName.charAt(0) }}
+                </span>
 
-            <div class="doctor-main">
+                <div class="doctor-name">
+                  <h3>
+                    {{ getDoctorDisplayName(doctor.fullName) }}
+                  </h3>
 
-              <span class="doctor-avatar" aria-hidden="true">
-                {{ doctor.fullName.charAt(0) }}
-              </span>
-
-              <div class="doctor-name">
-                <h3>
-                  {{ getDoctorDisplayName(doctor.fullName) }}
-                </h3>
-
-                <p>
-                  {{ doctor.specialisation }}
-                </p>
+                  <p>
+                    {{ doctor.specialisation }}
+                  </p>
+                </div>
               </div>
-
-            </div>
-
-            <div class="doctor-information">
-
-              <div>
-                <span>Experience</span>
-                <strong>
-                  {{ doctor.yearsOfExperience }} years
-                </strong>
-              </div>
-
-              <div>
-                <span>Consultation Fee</span>
-                <strong>
-                  ₹{{ doctor.consultationFee }}
-                </strong>
-              </div>
-
-            </div>
-
-            <div class="doctor-actions">
 
               <span
                 class="doctor-status"
@@ -190,25 +168,41 @@
               >
                 {{ getDoctorStatusText(doctor) }}
               </span>
-
-              <button
-                type="button"
-                class="select-doctor-button"
-                [class.selected-button]="
-                  selectedDoctorId() === doctor.doctorId
-                "
-                [disabled]="!doctor.isActive"
-                (click)="selectDoctor(doctor)"
-              >
-                @if (selectedDoctorId() === doctor.doctorId) {
-                  Selected
-                } @else {
-                  Select Doctor
-                }
-              </button>
-
             </div>
 
+            <div class="doctor-information">
+              <div>
+                <span>Experience</span>
+
+                <strong>
+                  {{ doctor.yearsOfExperience }} years
+                </strong>
+              </div>
+
+              <div>
+                <span>Consultation Fee</span>
+
+                <strong>
+                  ₹{{ doctor.consultationFee }}
+                </strong>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="select-doctor-button"
+              [class.selected-button]="
+                selectedDoctorId() === doctor.doctorId
+              "
+              [disabled]="!doctor.isActive"
+              (click)="selectDoctor(doctor)"
+            >
+              @if (selectedDoctorId() === doctor.doctorId) {
+                Selected
+              } @else {
+                Select Doctor
+              }
+            </button>
           </article>
         }
 

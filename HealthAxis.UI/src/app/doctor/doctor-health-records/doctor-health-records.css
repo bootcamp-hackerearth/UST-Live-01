@@ -264,7 +264,10 @@ textarea {
 
 .toolbar-card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 90px;
+  grid-template-columns:
+    minmax(0, 1fr)
+    160px
+    90px;
   gap: 13px;
   align-items: center;
 }
@@ -301,6 +304,26 @@ textarea {
   background: transparent;
   font-size: 13px;
   font-weight: 650;
+}
+
+.record-filter {
+  width: 100%;
+  height: 50px;
+  padding: 0 38px 0 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 11px;
+  outline: none;
+  color: var(--heading);
+  background: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.record-filter:focus {
+  border-color: var(--primary);
+  box-shadow:
+    0 0 0 3px rgba(91, 61, 245, 0.1);
 }
 
 .clear-button {
@@ -990,6 +1013,16 @@ textarea {
   .stats-grid {
     grid-template-columns: 1fr;
   }
+
+  .toolbar-card {
+    grid-template-columns:
+      minmax(0, 1fr)
+      150px;
+  }
+
+  .clear-button {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 700px) {
@@ -1001,6 +1034,7 @@ textarea {
   }
 
   .refresh-button,
+  .record-filter,
   .clear-button {
     width: 100%;
   }

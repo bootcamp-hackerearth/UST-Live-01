@@ -548,10 +548,6 @@ export class UpcomingAppointments {
   getAppointmentStatusLabel(
     appointment: Appointment
   ): string {
-    if (this.isPastPending(appointment)) {
-      return 'Past Pending';
-    }
-
     return this.getStatusLabel(
       appointment.status
     );
@@ -560,10 +556,6 @@ export class UpcomingAppointments {
   getAppointmentStatusClass(
     appointment: Appointment
   ): string {
-    if (this.isPastPending(appointment)) {
-      return 'past-pending-badge';
-    }
-
     return this.getStatusClass(
       appointment.status
     );
@@ -705,6 +697,9 @@ export class UpcomingAppointments {
       this.getAppointmentStatusLabel(
         appointment
       ),
+      this.isPastPending(appointment)
+        ? 'Scheduled time passed'
+        : '',
       appointment.appointmentId.toString(),
       appointment.cancellationReason ?? ''
     ]

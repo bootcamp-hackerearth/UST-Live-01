@@ -285,20 +285,28 @@
                 </td>
 
                 <td>
-                  <span
-                    [class]="
-                      'status-badge ' +
-                      getAppointmentStatusClass(
-                        appointment
-                      )
-                    "
-                  >
-                    {{
-                      getAppointmentStatusLabel(
-                        appointment
-                      )
-                    }}
-                  </span>
+                  <div class="status-cell">
+                    <span
+                      [class]="
+                        'status-badge ' +
+                        getAppointmentStatusClass(
+                          appointment
+                        )
+                      "
+                    >
+                      {{
+                        getAppointmentStatusLabel(
+                          appointment
+                        )
+                      }}
+                    </span>
+
+                    @if (isPastPending(appointment)) {
+                      <small class="past-time-note">
+                        Scheduled time passed
+                      </small>
+                    }
+                  </div>
                 </td>
 
                 <td class="action-column">
@@ -494,6 +502,12 @@
               )
             }}
           </strong>
+
+          @if (isPastPending(appointment)) {
+            <small class="past-time-note">
+              Scheduled time passed
+            </small>
+          }
         </div>
 
         <div>

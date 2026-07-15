@@ -110,10 +110,29 @@
       />
     </div>
 
+    <select
+      class="record-filter"
+      aria-label="Filter doctor health records"
+      [value]="selectedRecordFilter()"
+      (change)="onRecordFilterChange($event)"
+    >
+      <option value="All">
+        All Records
+      </option>
+
+      <option value="Final">
+        Final
+      </option>
+
+      <option value="Updated">
+        Updated
+      </option>
+    </select>
+
     <button
       type="button"
       class="clear-button"
-      (click)="clearSearch()"
+      (click)="clearFilters()"
     >
       Clear
     </button>
@@ -172,7 +191,8 @@
         <h3>No matching records</h3>
 
         <p>
-          Change the search text to view other records.
+          Change the search text or record filter
+          to view other records.
         </p>
       </div>
     } @else {
@@ -255,7 +275,7 @@
                     </span>
                   } @else {
                     <span class="record-state original-state">
-                      Created
+                      Final
                     </span>
                   }
                 </td>

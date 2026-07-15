@@ -41,7 +41,13 @@
   z-index: 600;
   width: var(--sidebar-width);
   height: var(--viewport-height);
-  overflow: hidden;
+
+  /*
+    This must remain visible. The collapse button is partly outside
+    the sidebar edge, so overflow: hidden was cutting it off.
+  */
+  overflow: visible;
+
   border-right: 1px solid var(--border-color);
   background: #ffffff;
   box-shadow:
@@ -52,6 +58,7 @@
   display: block;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 .dashboard-main {
@@ -71,61 +78,73 @@
 }
 
 .sidebar-toggle {
-  border: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid #d7d0ff;
+  border-radius: 50%;
   display: grid;
   place-items: center;
-  gap: 4px;
+  color: var(--primary-color);
+  background: #ffffff;
   cursor: pointer;
+  box-shadow:
+    0 8px 22px rgba(38, 45, 75, 0.16);
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
 }
 
-.sidebar-toggle span {
-  width: 17px;
-  height: 2px;
-  display: block;
-  border-radius: 999px;
+.sidebar-toggle svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .close-sidebar {
   position: absolute;
-  top: 126px;
-  right: 14px;
+  top: 50%;
+  right: -18px;
   z-index: 700;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  border: 1px solid #dedafc;
-  border-radius: 11px;
-  background: #f2efff;
-}
-
-.close-sidebar span {
-  background: var(--primary-color);
+  transform: translateY(-50%);
 }
 
 .close-sidebar:hover {
-  background: #e9e5ff;
+  color: #ffffff;
+  border-color: var(--primary-color);
+  background: var(--primary-color);
+  transform:
+    translateY(-50%)
+    scale(1.05);
 }
 
 .open-sidebar {
   position: fixed;
-  top: 118px;
-  left: 14px;
+  top: 50%;
+  left: 12px;
   z-index: 550;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border-radius: 13px;
+  width: 40px;
+  height: 40px;
+  color: #ffffff;
+  border-color: var(--primary-color);
   background: var(--primary-color);
+  transform: translateY(-50%);
   box-shadow:
-    0 14px 30px rgba(91, 61, 245, 0.24);
-}
-
-.open-sidebar span {
-  background: #ffffff;
+    0 12px 28px rgba(91, 61, 245, 0.24);
 }
 
 .open-sidebar:hover {
+  border-color: var(--primary-dark);
   background: var(--primary-dark);
+  transform:
+    translateY(-50%)
+    scale(1.05);
 }
 
 .mobile-sidebar-backdrop {
@@ -300,13 +319,13 @@
   }
 
   .close-sidebar {
-    top: 114px;
-    right: 12px;
+    top: 50%;
+    right: -18px;
   }
 
   .open-sidebar {
-    top: 96px;
-    left: 12px;
+    top: 50%;
+    left: 10px;
   }
 
   .dashboard-content {

@@ -64,7 +64,7 @@ export class BookAppointment {
   private readonly doctorService = inject(DoctorService);
   private readonly appointmentService = inject(AppointmentService);
 
-  private readonly doctorPageSize = 8;
+  private readonly doctorPageSize = 6;
 
   readonly patient = signal<Patient | null>(null);
   readonly doctors = signal<Doctor[]>([]);
