@@ -42,11 +42,11 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
                 "region": {
-                  "startLine": 10,
+                  "startLine": 9,
                   "startColumn": 16,
-                  "endLine": 10,
+                  "endLine": 9,
                   "endColumn": 34
                 }
               }
@@ -55,11 +55,11 @@
           "relatedLocations": [
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
                 "region": {
-                  "startLine": 16,
+                  "startLine": 14,
                   "startColumn": 31,
-                  "endLine": 16,
+                  "endLine": 14,
                   "endColumn": 39
                 }
               }
@@ -79,11 +79,11 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
                 "region": {
-                  "startLine": 10,
+                  "startLine": 9,
                   "startColumn": 16,
-                  "endLine": 10,
+                  "endLine": 9,
                   "endColumn": 34
                 }
               }
@@ -92,11 +92,11 @@
           "relatedLocations": [
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
                 "region": {
-                  "startLine": 17,
+                  "startLine": 16,
                   "startColumn": 30,
-                  "endLine": 17,
+                  "endLine": 16,
                   "endColumn": 37
                 }
               }
@@ -116,11 +116,11 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
                 "region": {
-                  "startLine": 10,
+                  "startLine": 9,
                   "startColumn": 16,
-                  "endLine": 10,
+                  "endLine": 9,
                   "endColumn": 34
                 }
               }
@@ -129,7 +129,7 @@
           "relatedLocations": [
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
                 "region": {
                   "startLine": 18,
                   "startColumn": 35,
@@ -153,11 +153,11 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
                 "region": {
-                  "startLine": 10,
+                  "startLine": 9,
                   "startColumn": 16,
-                  "endLine": 10,
+                  "endLine": 9,
                   "endColumn": 34
                 }
               }
@@ -166,11 +166,48 @@
           "relatedLocations": [
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
                 "region": {
-                  "startLine": 19,
+                  "startLine": 20,
                   "startColumn": 36,
-                  "endLine": 19,
+                  "endLine": 20,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'Notifications' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 16,
+                  "endLine": 9,
+                  "endColumn": 34
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "region": {
+                  "startLine": 22,
+                  "startColumn": 36,
+                  "endLine": 22,
                   "endColumn": 49
                 }
               }
@@ -190,11 +227,11 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
                 "region": {
-                  "startLine": 10,
+                  "startLine": 9,
                   "startColumn": 16,
-                  "endLine": 10,
+                  "endLine": 9,
                   "endColumn": 34
                 }
               }
@@ -203,12 +240,430 @@
           "relatedLocations": [
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
                 "region": {
-                  "startLine": 22,
+                  "startLine": 24,
                   "startColumn": 36,
-                  "endLine": 22,
+                  "endLine": 24,
                   "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8618",
+          "level": "warning",
+          "message": "Non-nullable property 'DoctorLeaves' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the property as nullable.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 16,
+                  "endLine": 9,
+                  "endColumn": 34
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Data/HealthAppDbContext.cs",
+                "region": {
+                  "startLine": 26,
+                  "startColumn": 35,
+                  "endLine": 26,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8604",
+          "level": "warning",
+          "message": "Possible null reference argument for parameter 'value' in 'Claim.Claim(string type, string value)'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Services/Implementation/AuthService.cs",
+                "region": {
+                  "startLine": 219,
+                  "startColumn": 9,
+                  "endLine": 219,
+                  "endColumn": 36
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/BackgroundServices/NotificationCleanupService.cs",
+                "region": {
+                  "startLine": 25,
+                  "startColumn": 13,
+                  "endLine": 28,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/BackgroundServices/NotificationCleanupService.cs",
+                "region": {
+                  "startLine": 49,
+                  "startColumn": 17,
+                  "endLine": 52,
+                  "endColumn": 18
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/BackgroundServices/NotificationCleanupService.cs",
+                "region": {
+                  "startLine": 113,
+                  "startColumn": 13,
+                  "endLine": 116,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Consumers/AppointmentBookedConsumers.cs",
+                "region": {
+                  "startLine": 37,
+                  "startColumn": 13,
+                  "endLine": 41,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/BackgroundServices/HeartbeatService.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 13,
+                  "endLine": 17,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/BackgroundServices/HeartbeatService.cs",
+                "region": {
+                  "startLine": 25,
+                  "startColumn": 21,
+                  "endLine": 28,
+                  "endColumn": 22
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/BackgroundServices/HeartbeatService.cs",
+                "region": {
+                  "startLine": 37,
+                  "startColumn": 17,
+                  "endLine": 40,
+                  "endColumn": 18
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/BackgroundServices/HeartbeatService.cs",
+                "region": {
+                  "startLine": 46,
+                  "startColumn": 13,
+                  "endLine": 49,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/BackgroundServices/NotificationCleanupService.cs",
+                "region": {
+                  "startLine": 76,
+                  "startColumn": 21,
+                  "endLine": 80,
+                  "endColumn": 22
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/BackgroundServices/NotificationCleanupService.cs",
+                "region": {
+                  "startLine": 89,
+                  "startColumn": 17,
+                  "endLine": 94,
+                  "endColumn": 18
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'DelayBeforeRetryAsync' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/BackgroundServices/DoctorAvailabilityMonitorService.cs",
+                "region": {
+                  "startLine": 115,
+                  "startColumn": 28,
+                  "endLine": 115,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1860",
+          "level": "note",
+          "message": "Prefer comparing 'Count' to 0 rather than using 'Any()', both for clarity and for performance",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/BackgroundServices/NotificationCleanupService.cs",
+                "region": {
+                  "startLine": 74,
+                  "startColumn": 22,
+                  "endLine": 74,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "DiagnosticPropertyKey": "Count"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Services/Implementation/DoctorLeaveService.cs",
+                "region": {
+                  "startLine": 138,
+                  "startColumn": 17,
+                  "endLine": 142,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Services/Implementation/DoctorService.cs",
+                "region": {
+                  "startLine": 244,
+                  "startColumn": 21,
+                  "endLine": 246,
+                  "endColumn": 34
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Services/Implementation/DoctorService.cs",
+                "region": {
+                  "startLine": 251,
+                  "startColumn": 17,
+                  "endLine": 253,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Services/Implementation/DoctorService.cs",
+                "region": {
+                  "startLine": 270,
+                  "startColumn": 17,
+                  "endLine": 272,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisApi/Services/Implementation/AppointmentService.cs",
+                "region": {
+                  "startLine": 265,
+                  "startColumn": 13,
+                  "endLine": 272,
+                  "endColumn": 14
                 }
               }
             }
@@ -219,11 +674,71 @@
         }
       ],
       "rules": {
+        "CA1822": {
+          "id": "CA1822",
+          "shortDescription": "Mark members as static",
+          "fullDescription": "Members that do not access instance data or call instance methods can be marked as static. After you mark the methods as static, the compiler will emit nonvirtual call sites to these members. This can give you a measurable performance gain for performance-sensitive code.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1822",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "PortedFromFxCop",
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1860": {
+          "id": "CA1860",
+          "shortDescription": "Avoid using 'Enumerable.Any()' extension method",
+          "fullDescription": "Prefer using 'IsEmpty', 'Count' or 'Length' properties whichever available, rather than calling 'Enumerable.Any()'. The intent is clearer and it is more performant than using 'Enumerable.Any()' extension method.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1860",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1873": {
+          "id": "CA1873",
+          "shortDescription": "Avoid potentially expensive logging",
+          "fullDescription": "In many situations, logging is disabled or set to a log level that results in an unnecessary evaluation for this argument.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1873",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
         "CS7022": {
           "id": "CS7022",
           "shortDescription": "The entry point of the program is global code; ignoring entry point",
           "defaultLevel": "warning",
           "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS7022)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "CS8604": {
+          "id": "CS8604",
+          "shortDescription": "Possible null reference argument.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8604)",
           "properties": {
             "category": "Compiler",
             "isEnabledByDefault": true,

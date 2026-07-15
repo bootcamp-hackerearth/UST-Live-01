@@ -1,5 +1,5 @@
-ê
-NC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Enums\UserRole.cs
+ï
+SC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Enums\UserRole.cs
 	namespace 	
 
 HealthAxis
@@ -20,8 +20,8 @@ HealthAxis
 , 
 Doctor 
 } 
-}		 ‚
-XC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Enums\SpecialisationType.cs
+}		 Á
+]C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Enums\SpecialisationType.cs
 	namespace 	
 
 HealthAxis
@@ -61,8 +61,8 @@ Oncologist 
 , 
 GeneralPractitioner 
 } 
-} π
-PC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Enums\GenderType.cs
+} æ
+UC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Enums\GenderType.cs
 	namespace 	
 
 HealthAxis
@@ -88,8 +88,8 @@ GenderType 
 }		 
 }
 
- œ
-WC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Enums\AppointmentStatus.cs
+ ë
+\C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Enums\AppointmentStatus.cs
 	namespace 	
 
 HealthAxis
@@ -111,11 +111,14 @@ HealthAxis
 	Cancelled 
 , 
 	Completed 
-}		 
-}
+, 
+DoctorUnavailable		 
+,		 
+}
 
- ˛
-UC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\RegisterDto.cs
+ 
+} É
+ZC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\User\RegisterDTO.cs
 	namespace 	
 HealthAxisCore_Api
  
@@ -282,8 +285,8 @@ GenderType$$ 
 !((6 7
 ;((7 8
 })) 
-}** ◊
-]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\RefreshTokenRequest.cs
+}** ‹
+bC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\User\RefreshTokenRequest.cs
 	namespace 	
 HealthAxisCore_Api
  
@@ -322,8 +325,8 @@ GenderType$$ 
 }		 
 }
 
- ¡
-RC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\LoginDto.cs
+ ∆
+WC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\User\LoginDTO.cs
 	namespace 	
 
 HealthAxis
@@ -441,8 +444,8 @@ HealthAxis
 Empty6 ;
 ;; <
 } 
-} ß
-[C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\ChangePasswordDto.cs
+} ¨
+`C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\User\ChangePasswordDTO.cs
 	namespace 	
 
 HealthAxis
@@ -544,8 +547,8 @@ HealthAxis
 Empty9 >
 ;> ?
 } 
-} ß
-YC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\User\AuthResponseDto.cs
+} ¨
+^C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\User\AuthResponseDTO.cs
 	namespace 	
 
 HealthAxis
@@ -634,8 +637,8 @@ HealthAxis
 ;+ ,
 }- .
 } 
-} ·
-]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\UpdatePatientDto.cs
+} Ê
+bC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Patient\UpdatePatientDTO.cs
 	namespace 	
 
 HealthAxis
@@ -812,8 +815,8 @@ GenderType 
 ;- .
 }/ 0
 } 
-} °
-_C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\PatientResponseDto.cs
+} ¶
+dC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Patient\PatientResponseDTO.cs
 	namespace 	
 
 HealthAxis
@@ -929,8 +932,8 @@ GenderType 
 Empty9 >
 ;> ?
 } 
-} ·
-]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Patient\CreatePatientDto.cs
+} Ê
+bC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Patient\CreatePatientDTO.cs
 	namespace 	
 
 HealthAxis
@@ -1107,8 +1110,8 @@ GenderType 
 ;- .
 }/ 0
 } 
-} ¥
-iC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\HealthRecordResponseDto.cs
+} π
+nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\HealthRecord\HealthRecordResponseDTO.cs
 	namespace 	
 
 HealthAxis
@@ -1210,8 +1213,8 @@ HealthAxis
 ;' (
 }) *
 } 
-} ≈
-gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\HealthRecord\CreateHealthRecordDto.cs
+}  
+lC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\HealthRecord\CreateHealthRecordDTO.cs
 	namespace 	
 
 HealthAxis
@@ -1336,8 +1339,8 @@ HealthAxis
 ;' (
 }) *
 } 
-} ü
-]C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\DoctorResponseDto.cs
+} ø
+bC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\DoctorResponseDTO.cs
 	namespace 	
 
 HealthAxis
@@ -1422,10 +1425,130 @@ DoctorName		  
 ;! "
 set# &
 ;& '
-}( )
-} 
-} º
-aC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\CreateDoctorResultDto.cs
+}( )
+public 
+bool 
+	IsOnLeave 
+{ 
+get  #
+;# $
+set% (
+;( )
+}* +
+} 
+} Ù
+KC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Class1.cs
+	namespace 	
+HealthAxis_Shared
+ 
+{ 
+public 
+
+class 
+Class1 
+{ 
+} 
+} µ
+nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\DoctorAvailabilityResponseDto.cs
+	namespace 	
+
+HealthAxis
+ 
+. 
+Shared 
+. 
+DTOs  
+.  !
+Doctor! '
+{ 
+public 
+
+class )
+DoctorAvailabilityResponseDto .
+{		 
+public
+
+ 
+int
+
+ 
+DoctorId
+
+ 
+{
+
+ 
+get
+
+ !
+;
+
+! "
+set
+
+# &
+;
+
+& '
+}
+
+( )
+public 
+string 
+
+DoctorName  
+{! "
+get# &
+;& '
+set( +
+;+ ,
+}- .
+=/ 0
+string1 7
+.7 8
+Empty8 =
+;= >
+public 
+bool 
+IsAvailable 
+{  !
+get" %
+;% &
+set' *
+;* +
+}, -
+public 
+bool 
+	IsOnLeave 
+{ 
+get  #
+;# $
+set% (
+;( )
+}* +
+public 
+DateTime 
+? 
+LeaveStartDate '
+{( )
+get* -
+;- .
+set/ 2
+;2 3
+}4 5
+public 
+DateTime 
+? 
+LeaveEndDate %
+{& '
+get( +
+;+ ,
+set- 0
+;0 1
+}2 3
+} 
+} ¡
+fC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\CreateDoctorResultDTO.cs
 	namespace 	
 
 HealthAxis
@@ -1613,8 +1736,8 @@ JsonIgnore	 
 ;""' (
 }"") *
 }## 
-}$$ Œ
-[C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Doctor\CreateDoctorDto.cs
+}$$ ”
+`C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\CreateDoctorDTO.cs
 	namespace 	
 
 HealthAxis
@@ -1812,8 +1935,188 @@ DoctorName  
 true- 1
 ;1 2
 } 
-} œ
-\C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Common\PagedResponseDto.cs
+} Í
+eC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\DoctorLeaves\DoctorLeaveDto.cs
+	namespace 	
+
+HealthAxis
+ 
+. 
+Shared 
+. 
+DTOs  
+.  !
+DoctorLeaves! -
+{ 
+public 
+
+class 
+DoctorLeaveDto 
+{		 
+public
+
+ 
+int
+
+ 
+LeaveId
+
+ 
+{
+
+ 
+get
+
+  
+;
+
+  !
+set
+
+" %
+;
+
+% &
+}
+
+' (
+public 
+int 
+DoctorId 
+{ 
+get !
+;! "
+set# &
+;& '
+}( )
+public 
+string 
+
+DoctorName  
+{! "
+get# &
+;& '
+set( +
+;+ ,
+}- .
+=/ 0
+string1 7
+.7 8
+Empty8 =
+;= >
+public 
+DateTime 
+	StartDate !
+{" #
+get$ '
+;' (
+set) ,
+;, -
+}. /
+public 
+DateTime 
+EndDate 
+{  !
+get" %
+;% &
+set' *
+;* +
+}, -
+public 
+string 
+Reason 
+{ 
+get "
+;" #
+set$ '
+;' (
+}) *
+=+ ,
+string- 3
+.3 4
+Empty4 9
+;9 :
+public 
+DateTime 
+CreatedDate #
+{$ %
+get& )
+;) *
+set+ .
+;. /
+}0 1
+} 
+} ∂
+mC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\DoctorLeaves\CreateMyDoctorLeaveDto.cs
+	namespace 	
+
+HealthAxis
+ 
+. 
+Shared 
+. 
+DTOs  
+.  !
+DoctorLeaves! -
+{ 
+public 
+
+class "
+CreateMyDoctorLeaveDto '
+{		 
+public
+
+ 
+DateTime
+
+ 
+	StartDate
+
+ !
+{
+
+" #
+get
+
+$ '
+;
+
+' (
+set
+
+) ,
+;
+
+, -
+}
+
+. /
+public 
+DateTime 
+EndDate 
+{  !
+get" %
+;% &
+set' *
+;* +
+}, -
+public 
+string 
+Reason 
+{ 
+get "
+;" #
+set$ '
+;' (
+}) *
+=+ ,
+string- 3
+.3 4
+Empty4 9
+;9 :
+} 
+} ‘
+aC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Common\PagedResponseDto.cs
 	namespace 	
 
 HealthAxis
@@ -1909,8 +2212,8 @@ PageNumber# -
 TotalPages0 :
 ;: ;
 } 
-} ¿
-YC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Common\ErrorResponse.cs
+} ≈
+^C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Common\ErrorResponse.cs
 	namespace 	
 
 HealthAxis
@@ -1966,8 +2269,8 @@ StatusCode		 
 }
 
  
-} ˚
-eC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Appointment\CreateAppointmentDto.cs
+} Ä
+jC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Appointment\CreateAppointmentDTO.cs
 	namespace 	
 
 HealthAxis
@@ -2058,8 +2361,8 @@ HealthAxis
 Empty6 ;
 ;; <
 } 
-} √
-gC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\DTOs\Appointment\AppointmentResponseDto.cs
+} »
+lC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Appointment\AppointmentResponseDTO.cs
 	namespace 	
 
 HealthAxis
@@ -2164,16 +2467,4 @@ HealthAxis
 ;4 5
 }6 7
 } 
-} Ô
-FC:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\Class1.cs
-	namespace 	
-HealthAxis_Shared
- 
-{ 
-public 
-
-class 
-Class1 
-{ 
-} 
-} 
+} 

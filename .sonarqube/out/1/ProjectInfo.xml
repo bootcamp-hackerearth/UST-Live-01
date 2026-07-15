@@ -4,15 +4,15 @@
   <ProjectLanguage>C#</ProjectLanguage>
   <ProjectType>Test</ProjectType>
   <ProjectGuid>05bd55ab-6eeb-7356-0349-b0f2f9348407</ProjectGuid>
-  <FullPath>C:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\HealthAxisCore_Api.csproj</FullPath>
+  <FullPath>C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisApi\HealthAxisCore_Api.csproj</FullPath>
   <IsExcluded>false</IsExcluded>
   <AnalysisResultFiles>
-    <AnalysisResultFile Id="FilesToAnalyze" Location="C:\Users\287802\source\repos\HealthAxisApi\.sonarqube\conf\1\FilesToAnalyze.txt" />
+    <AnalysisResultFile Id="FilesToAnalyze" Location="C:\Users\287802\source\repos\Sprint4_HealthAxis\.sonarqube\conf\1\FilesToAnalyze.txt" />
   </AnalysisResultFiles>
   <AnalysisSettings>
-    <Property Name="sonar.cs.roslyn.reportFilePaths">C:\Users\287802\source\repos\HealthAxisApi\.sonarqube\out\1\Issues.json</Property>
-    <Property Name="sonar.cs.analyzer.projectOutPaths">C:\Users\287802\source\repos\HealthAxisApi\.sonarqube\out\1</Property>
-    <Property Name="sonar.cs.scanner.telemetry">C:\Users\287802\source\repos\HealthAxisApi\.sonarqube\out\1\Telemetry.json</Property>
+    <Property Name="sonar.cs.roslyn.reportFilePaths">C:\Users\287802\source\repos\Sprint4_HealthAxis\.sonarqube\out\1\Issues.json</Property>
+    <Property Name="sonar.cs.analyzer.projectOutPaths">C:\Users\287802\source\repos\Sprint4_HealthAxis\.sonarqube\out\1</Property>
+    <Property Name="sonar.cs.scanner.telemetry">C:\Users\287802\source\repos\Sprint4_HealthAxis\.sonarqube\out\1\Telemetry.json</Property>
   </AnalysisSettings>
   <Configuration>Debug</Configuration>
   <Platform>AnyCPU</Platform>

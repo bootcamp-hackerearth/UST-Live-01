@@ -1,5 +1,5 @@
-÷
-jC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IPatientApiService.cs
+ü
+oC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IPatientApiService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -136,8 +136,8 @@ pageNumber 
 ), -
 ;- .
 } 
-} ‡
-oC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IHealthRecordApiService.cs
+} Œ
+tC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IHealthRecordApiService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -176,8 +176,8 @@ Interfaces) 3
 }
 
  
-} ý
-iC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IDoctorApiService.cs
+} ‚
+nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IDoctorApiService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -292,8 +292,8 @@ pageNumber 
 )A B
 ;B C
 } 
-} Œ
-iC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IDashboardService.cs
+} ‘
+nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IDashboardService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -317,8 +317,8 @@ Interfaces) 3
 )2 3
 ;3 4
 } 
-}		 ½
-jC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IAuthStaterService.cs
+}		 Â
+oC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IAuthStaterService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -418,9 +418,9 @@ IsLoggedIn	 
 ) 
 ; 
 } 
-} ó
+} ø
 
-dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IAuthService.cs
+iC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IAuthService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -505,8 +505,8 @@ LoginAsync# -
 )$ %
 ;% &
 } 	
-} ß
-nC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IAppointmentApiService.cs
+} ä
+sC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IAppointmentApiService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -636,8 +636,8 @@ pageNumber 
 )  ; <
 ;  < =
 }!! 
-}"" òG
-mC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\PatientApiService.cs
+}"" ÷G
+rC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\PatientApiService.cs
 	namespace
 
  	!
@@ -1165,8 +1165,8 @@ pageNumberDD (
 ;ss/ 0
 }tt 	
 }uu 
-}vv í
-rC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\HealthRecordApiService.cs
+}vv ò
+wC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\HealthRecordApiService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -1278,8 +1278,8 @@ HttpClient& 0
 ;/ 0
 }   	
 }!! 
-}"" ¿C
-lC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\DoctorApiService.cs
+}"" ÄC
+qC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\DoctorApiService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -1761,8 +1761,8 @@ PatchAsync__' 1
 ;dd/ 0
 }ee 	
 }ff 
-}gg È"
-lC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\DashboardService.cs
+}gg Í"
+qC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\DashboardService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -1986,8 +1986,8 @@ lC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implm
 ;-- 
 }.. 	
 }// 
-}00 ÇA
-lC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\AuthStateService.cs
+}00 ÌA
+qC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\AuthStateService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -2474,8 +2474,8 @@ parsedBoolEE# -
 }aa 
 }bb 	
 }cc 
-}dd É$
-gC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\AuthService.cs
+}dd Î$
+lC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\AuthService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -2756,8 +2756,8 @@ _authStateEE# -
 ;EE6 7
 }FF 	
 }GG 
-}HH ‹g
-qC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\AppointmentApiService.cs
+}HH g
+vC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\AppointmentApiService.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -3630,8 +3630,8 @@ pageNumberHH (
 ££ 	
 }
 ¤¤ 
-}¥¥ × 
-KC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Program.cs
+}¥¥ Ü 
+PC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Program.cs
 var
 
  
@@ -3876,8 +3876,8 @@ HeadOutlet %
 RunAsync(( 
 ((( 
 )((  
-;((  !Þ
-\C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Handlers\AuthHeadHandler.cs
+;((  !ã
+aC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Handlers\AuthHeadHandler.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -3993,8 +3993,8 @@ _authState "
 ;C D
 } 	
 }   
-}!! ó
-dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\DTOs\Dashboard\AdminDashboardDto.cs
+}!! ø
+iC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\DTOs\Dashboard\AdminDashboardDTO.cs
 	namespace 	!
 HealthAxisAdminLayout
  
@@ -4080,8 +4080,8 @@ dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\DTOs\Dashboard
 ;4 5
 }6 7
 } 	
-} ›
-kC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Auth\CustomeAuthenticationStateProvider.cs
+}  
+pC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Auth\CustomeAuthenticationStateProvider.cs
 	namespace 	!
 HealthAxisAdminLayout
  

@@ -1,6 +1,6 @@
-Q
-OC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\_Imports.razorñ
-\C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\RedirectToLogin.razor
+V
+TC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\_Imports.razorõ
+aC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Pages\RedirectToLogin.razor
  (
 
  -
@@ -8,8 +8,8 @@ OC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\_Imports.razor
  )
  $
 
- ﬂ
-UC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\Patients.razorr
+ ‰
+ZC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Pages\Patients.razorr
 
 îî% -YY %tt &xx 
 èè5 =
@@ -192,13 +192,13 @@ UC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\Patients
 ≤≤3 9
 ¥¥ 
  )
-ææ -å
-RC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\Login.razor
+ææ -ë
+WC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Pages\Login.razor
  ( -
 
  )
- $ À
-QC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\Home.razor
+ $ –
+VC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Pages\Home.razor
 
 " 4
 
@@ -208,512 +208,520 @@ QC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\Home.raz
 $ 5
 
  /
- $  }
-YC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\HealthRecord.razor
+ $  Ç
+^C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Pages\HealthRecord.razor
 
  )
- $ Ç)
-TC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\Doctors.razorl
+ $ ”)
+YC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Pages\Doctors.razorx
 
-ëë$ +
-ıı  
-©© !
-≠≠ 
-ÃÃ0 7
-ÀÀ! (
-ÕÕ# *
-œœ' .
-‰‰ ¸
+°°$ +
+ˇˇ  
+¥¥ !
+∏∏ 
+◊◊0 7
+‹‹ 
+ﬂﬂ 
+‚‚ 
+ÂÂ' .
+˙˙ ¸
 
-ìì &
+££ &
 ÇÇ" ,
 ââ" ,
 éé= G
 úú" ,
 ¶¶" ,
 ´´5 ?
-ƒƒ 
-ÖÖM W
-ôôB L
-¢¢4 >
-££8 B
-––& 0
-÷÷ 
-ﬁﬁ& 0
-‰‰ $
+⁄⁄ 
+õõM W
+ØØB L
+∏∏4 >
+ππ8 B
+ÊÊ& 0
 ÏÏ 
-ÒÒ 
-˘˘ 
-˛˛ 
-ìì $
+ÙÙ& 0
+˙˙ $
+ÇÇ 
+áá 
+èè 
+îî 
+©© $
 
-ïï %
-çç 
-ËË <
+•• %
+ùù 
+˛˛ <
 
-óó -
-ÊÊ 
-ˆˆ 
-¯¯% 3
-˘˘ t
+ßß -
+¸¸ 
+åå 
+éé% 3
+èè t
 
-ôô   $ +## 
-∏∏ 
-¬¬ 
-”” 
-„„ 
-ÄÄ 
-ÁÁ 
-ÌÌ .
+©©   $ +## 
+ŒŒ 
+ÿÿ 
+ÈÈ 
+˘˘ 
+ññ 
+˝˝ 
+É	É	 .
 
-õõ """ $
-ËË 
-ÓÓ 0
+´´ """ $
+˛˛ 
+Ñ	Ñ	 0
 
-ùù 
-ˇˇ )
-ﬂﬂ 
-ÙÙ 0
+≠≠ 
+ââ )
+ıı 
+ää 0
 
-üü )
-ÑÑ 2
-‡‡ &
-˚˚ 0
+ØØ )
+éé 2
+ˆˆ &
+ëë 0
 
-°° !
-èè *
-·· 
-ÇÇ ¶
+±± !
+ôô *
+˜˜ 
+òò ¶
 
-££ mmS \
+≥≥ mmS \
 ∂∂# ,
 ºº# ,
-©© 
-ÇÇ; D
-àà; D
-éé; D
-ÿÿ 
-ÓÓ 
-‚‚ 
-ˇˇ 
-ˇˇ 
-úú R
+¥¥ 
+íí; D
+òò; D
+ûû; D
+ÓÓ 
+ÑÑ 
+¯¯ 
+ïï 
+ïï 
+≤≤ R
 
-•• cc	 
-∑∑ 
-ææ 
-““ 
-åå 
-±± \
+µµ cc	 
+ÕÕ 
+‘‘ 
+ËË 
+¢¢ 
+«« \
 
-ßß ii $jj #
+∑∑ ii $jj #
 ∑∑  
-øø 
-ÏÏ 
-¯¯ 
-òò 0
+’’ 
+ÇÇ 
+éé 
+ÆÆ 0
 
-©© !
-òò 
-ÿÿ 
-ÿÿ ,0
+ππ !
+££ 
+ÓÓ 
+ÓÓ ,0
 
-´´ 
-¿¿ 
-ÖÖ< K
-ôô º
+ªª 
+÷÷ 
+õõ< K
+ØØ º
 
-≠≠" 2rr !uu+ ;
-ππ 
-¡¡ 
-ææ 
-≈≈ 
-““ 
-ÿÿ 
-‡‡ 
-ÊÊ 
+ΩΩ" 2rr !uu+ ;
+œœ 
+◊◊ 
+‘‘ 
+€€ 
+ËË 
 ÓÓ 
-ÛÛ 
-˚˚ 
-ÄÄ 
-öö 0
+ˆˆ 
+¸¸ 
+ÑÑ 
+ââ 
+ëë 
+ññ 
+∞∞ 0
 
-ØØ &
-¡¡	 
-¢¢ 
-∑∑ 0
+øø &
+——	 
+∏∏ 
+ÕÕ 0
 
-±± &
-““ *
-££ 
-±± !0
+¡¡ &
+‚‚ *
+ππ 
+«« !0
 
-≥≥ %
-……1 C
-§§ 
-∏∏ H
+√√ %
+ŸŸ1 C
+∫∫ 
+ŒŒ H
 
-µµ) ;
-÷÷ +
-ÓÓ= O
-•• 
-©© 
-ππ Ã
+≈≈) ;
+ÊÊ +
+˛˛= O
+ªª 
+øø 
+œœ Ã
 
-∑∑ 
-´´, 7
-∞∞" -
-¥¥, 7
-›› 
-ıı 
-¸¸ 
-ÉÉ 
-åå 
-ìì 
-ïï 
-úú 
-ûû 
-™™ 
-ØØ 
-çç 
-≤≤ H
+«« 
+ªª, 7
+¿¿" -
+ƒƒ, 7
+ÛÛ 
+ãã 
+íí 
+ôô 
+¢¢ 
+©© 
+´´ 
+≤≤ 
+¥¥ 
+¿¿ 
+≈≈ 
+££ 
+»» H
 
-ππ 
-¢¢( 0
-ﬁﬁ 
-ãã 
-™™$ ,
-ØØ  (`
+…… 
+≤≤( 0
+ÙÙ 
+°° 
+¿¿$ ,
+≈≈  (`
 
-ªª 
-ıı+ 5
-úúN X
-……  *
-ÂÂ 
-•• 
-±± 
-±±" ,H
+ÀÀ 
+ˇˇ+ 5
+¨¨N X
+ŸŸ  *
+˚˚ 
+ªª 
+«« 
+««" ,H
 
-ΩΩ 
-∞∞3 =
-∞∞I S
-¥¥; E
-ÊÊ 
-úú $
+ÕÕ 
+¿¿3 =
+¿¿I S
+ƒƒ; E
+¸¸ 
+≤≤ $
 
-øø *
-§§2 Av
+œœ *
+¥¥2 Av
 
-¡¡ $II: K
-ÂÂ 
-°° 
-••9 J
-∫∫ 
-¡¡& 7
-««B S
-œœ& 7
-ŸŸ# 4R
+—— $II: K
+˚˚ 
+∑∑ 
+ªª9 J
+–– 
+◊◊& 7
+››B S
+ÂÂ& 7
+ÔÔ# 4R
 
-√√ %DD /
-ÊÊ 
-¢¢ 
-ªª 
-ŒŒ& 8
-ÿÿ (F
+”” %DD /
+¸¸ 
+∏∏ 
+—— 
+‰‰& 8
+ÓÓ (F
 
-≈≈ $?? .
-ÁÁ 
-££ 
-ºº 
-◊◊ (F
+’’ $?? .
+˝˝ 
+ππ 
+““ 
+ÌÌ (F
 
-«« $''	 
-ËË 
-•• 
-ßß 
-ππ 
+◊◊ $''	 
+˛˛ 
+ªª 
+ΩΩ 
+œœ 
 
-…… 
+ŸŸ 
 …… !
 
-ÀÀ 
-““ "
+€€ 
+““ "$
 
-ÀÀ/ 0
-ÀÀ4 5
+‹‹ 
+‹‹ 
+‹‹& '
 
-ÕÕ 
+ﬁﬁ 
 €€ $
 
-ÕÕ1 2
-ÕÕ7 8
+ﬂﬂ 
+ﬂﬂ 
 
-œœ #
-‰‰ (
+·· 
+‰‰ #
 
-œœ6 7
-œœ; <
+‚‚ 
+‚‚ 
 
-——" 4Ñ
+ÂÂ #
+ÓÓ (
 
-÷÷ "
-”” 
-ˆˆ 
-˝˝ 
-ÑÑ 
-çç 
-ññ 
-üü 
-èè 
-¥¥ 
-èè !0
+ÂÂ6 7
+ÂÂ; <
 
-‹‹ 
-‰‰ 
-ÂÂ 
-ÊÊ 
+ÁÁ" 4Ñ
 
-ÚÚ &
-ÄÄ! 0
+ÏÏ "
+ÈÈ 
+åå 
+ìì 
+öö 
+££ 
+¨¨ 
+µµ 
+•• 
+   
+•• !0
 
-ÚÚ7 8
-ÙÙ 
+ÚÚ 
+˙˙ 
+˚˚ 
+¸¸ 
 
-˘˘ .
-ÖÖ 6
+àà &
+ää! 0
 
-˘˘? @
-˚˚! "
+àà7 8
+ää 
 
-ÄÄ &
-êê .
+èè .
+èè 6
 
-ÄÄ7 8
-ÇÇ 
+èè? @
+ëë! "
 
-áá (
-££+ <
+ññ &
+öö .
 
-áá9 :
-ââ 
+ññ7 8
+òò 
 
-ââ6 B
-ãã #
+ùù (
+≥≥+ <
 
-ëë #
-™™* 6
+ùù9 :
+üü 
 
-öö 
-≥≥* 2
+üü6 B
+°° #
 
-££ !
-úú! 2
+ßß #
+∫∫* 6
 
-≠≠ 
-úú8 G$
+∞∞ 
+√√* 2
 
-ØØ 
-±± 
-±±/ 2
+ππ !
+¨¨! 2
 
-¥¥ 1 ?
+√√ 
+¨¨8 G$
 
-ºº 
-ÅÅB K`
+≈≈ 
+«« 
+««/ 2
 
-ºº- 3
-¿¿  
-∆∆ 
-«« 
-»» #
-……  &
-   $
-ÀÀ "
+   1 ?
 
-œœ mm= F
+““ 
+ëëB K`
+
+““- 3
+÷÷  
+‹‹ 
+›› 
+ﬁﬁ #
+ﬂﬂ  &
+‡‡ $
+·· "
+
+ÂÂ mm= F
 ªª" +
 
-÷÷ #
-ÚÚ6 H
+ÏÏ #
+˝˝6 H
 
-€€ !
+ÒÒ !
 µµ" ,
 
-ÉÉ '
-ÓÓ &
+ôô '
+ÑÑ &
 
-ÖÖ 
-áá 
+õõ 
+ùù 
 
-óó $
-ÚÚ #<
+≠≠ $
+àà #<
 
-ôô 
-õõ 
-°° )
-¢¢ *
-££ )
+ØØ 
+±± 
+∑∑ )
+∏∏ *
+ππ )
 
-∑∑ %66" 6
+ÕÕ %66" 6
 
-øø 'QQ" 2
+’’ 'QQ" 2
 
-ÃÃ ,WW" 7
+‚‚ ,WW" 7
 
-’’ 
-››B N
+ÎÎ 
+ÛÛB N
 
-‚‚ #
-ááB N<
+¯¯ #
+óóB N<
 
-‚‚6 <
-‰‰ 
-ÊÊ #
-ÍÍ; A
-ÒÒ! '
+¯¯6 <
+˙˙ 
+¸¸ #
+ÄÄ; A
+áá! '
 
-ÙÙ *
-éé ,$
+ää *
+ûû ,$
 
-˝˝ )
-ÒÒ  
-¯¯ $0
+ìì )
+áá  
+éé $0
 
-˝˝< B
-ÖÖ 
-ÜÜ 
-ãã 
+ìì< B
+õõ 
+úú 
+°° 
 
-ÑÑ 
-àà 
+öö 
+ûû 
 
-†† -
-ççB X$
+∂∂ -
+ùùB X$
 
-††@ F
-§§ #
-©©W ]
+∂∂@ F
+∫∫ #
+øøW ]
 
-µµ '
-ÕÕ& <
+ÀÀ '
+››& <
 
-ºº #
-›› 
+““ #
+ÛÛ 
 
-ŒŒ #
-¿¿ 
+‰‰ #
+÷÷ 
 
-‹‹ $
-¡¡ 
+ÚÚ $
+◊◊ 
 
-ÍÍ )
-¬¬  
+ÄÄ )
+ÿÿ  
 
-˜˜ "
-√√ 
+çç "
+ŸŸ 
 
-ÑÑ $
-‰‰ $
+öö $
+˙˙ $
 
-ÑÑ, 1
-àà: ?
-ââ& +
+öö, 1
+ûû: ?
+üü& +
 
-àà 
-ââ <
+ûû 
+üü <
 
-ëë 
-∂∂ 
-—— 
-ãã 
-∞∞ 
+ßß 
+ÃÃ 
+ÁÁ 
+°° 
+∆∆ 
 
-ùù %
-““- 8$
+≥≥ %
+››- 8$
 
-ùù. 2
-üü& *
-§§ T
+≥≥. 2
+µµ& *
+∫∫ T
 
-§§ 
-¶¶ 
-®® 
-©© 
-™™ 
-≠≠ 
-≠≠ $
+∫∫ 
+ºº 
+ææ 
+øø 
+¿¿ 
+√√ 
+√√ $
 
-∞∞ 5
-ÙÙ- HH
+∆∆ 5
+ÑÑ- HH
 
-∞∞> F
-≤≤ 
-∑∑ 
-ºº 
-¡¡ 
-∆∆ 
+∆∆> F
+»» 
+ÕÕ 
+““ 
+◊◊ 
+‹‹ 
 
-∑∑! )
-ππ 
+ÕÕ! )
+œœ 
 
-ºº! )
-ææ& .
+““! )
+‘‘& .
 
-¡¡! )
-√√ $
+◊◊! )
+ŸŸ $
 
-∆∆ 
-»») .
-   
+‹‹ 
+ﬁﬁ) .
+‡‡ 
 
-ÕÕ 2
-˜˜1 I
+„„ 2
+áá1 I
 
-ÕÕE K
-œœ 
+„„E K
+ÂÂ 
 
-ŸŸ 9
-ˆˆ: Y
+ÔÔ 9
+ÜÜ: Y
 
-ŸŸL R
-€€ T
+ÔÔL R
+ÒÒ T
 
-ÂÂ "
-ââ 
-©© 
-≠≠ 
-…… 
+˚˚ "
+üü 
+øø 
+√√ 
 ﬂﬂ 
-ää !
+ıı 
+†† !
 
-ÂÂ* .
-ÁÁ Ñ
+˚˚* .
+˝˝ Ñ
 
-ÎÎ  
-ÍÍ 
-˜˜ 
-ìì 
-ùù 
-√√ 
-—— 
-ìì 
-òò 
-≠≠ 
-   
+Å	Å	  
+ÄÄ 
+çç 
+©© 
+≥≥ 
+ŸŸ 
+ÁÁ 
+©© 
+ÆÆ 
+√√ 
+‡‡ 
 
-ÎÎ( ,
-ÌÌ "
+Å	Å	( ,
+É	É	 "
  
-«« 
-›› 
+›› 
+ÛÛ 
  1
-©©' 9:
+øø' 9:
  '
-‹‹ ,
-ÖÖ )
-ôô" /
-ÑÑ  -ı
-WC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\AuthBridge.razor
+ÚÚ ,
+õõ )
+ØØ" /
+öö  -˙
+\C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Pages\AuthBridge.razor
  (&&" 1
 
 " 4
@@ -733,8 +741,8 @@ WC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\AuthBrid
 II MM 
 SS -%% (2
  $ + 5&& 00 n
- ** ++ ,, -- .. UU VV WW XX YY Ÿ
-XC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\Appointment.razorj
+ ** ++ ,, -- .. UU VV WW XX YY ﬁ
+]C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Pages\Appointment.razorj
 
 ––) 5RR %
 †† &
@@ -1061,8 +1069,8 @@ XC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\Appointm
 ÄÄ 1
 ìì  2
 ∫∫  2
-··  2˚
-[C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\AdminDashboard.razort
+··  2Ä
+`C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Pages\AdminDashboard.razort
 
 µµ (-- << "FF "PP "ZZ "pp &vv &|| &
 ÇÇ &
@@ -1096,8 +1104,17 @@ XC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Pages\Appointm
 
 
  *
-≈≈ .∂
-ZC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Layout\GenericModal.razor
+≈≈ .Ó
+^C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Layout\AdminLayout.razor
+TT (aa -
+VV >>! +ZZ 
+
+XX" 4
+]] CC8 >
+ $aa 
+  ZZ &__ `
+^C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Layout\EmptyLayout.razorª
+_C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Layout\GenericModal.razor
 !! "<< 2
 ##  44 ;; AA 
 %%  00 
@@ -1111,18 +1128,18 @@ ZC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Layout\Generic
 -- 22 !
 .. 33 (
 99 " )
-?? " '[
-YC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Layout\EmptyLayout.razorÈ
-YC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Layout\AdminLayout.razor
-TT (aa -
-VV >>! +ZZ 
+?? " 'Q
+OC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\App.razor¶
+tC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IHealthRecordApiService.cs
 
-XX" 4
-]] CC8 >
- $aa 
-  ZZ &__ L
-JC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\App.razor–
-jC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IPatientApiService.cs
+ ,
+
+, A
+
+		 *
+
+		/ 1’
+oC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IPatientApiService.cs
 
  '
 
@@ -1164,17 +1181,8 @@ jC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Inter
 
  %
 
-* ,°
-oC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IHealthRecordApiService.cs
-
- ,
-
-, A
-
-		 *
-
-		/ 1€
-iC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IDoctorApiService.cs
+* ,‡
+nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IDoctorApiService.cs
 
  &
 
@@ -1214,13 +1222,13 @@ iC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Inter
 
 , 4
 
-; AÉ
-iC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IDashboardService.cs
+; Aà
+nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IDashboardService.cs
 
  &
 
-  1¸
-jC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IAuthStaterService.cs
+  1Å
+oC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IAuthStaterService.cs
 
  &
 
@@ -1246,8 +1254,8 @@ jC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Inter
 
 	 
 
-	 “
-dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IAuthService.cs
+	 ◊
+iC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IAuthService.cs
 
  %
 
@@ -1267,8 +1275,8 @@ dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Inter
 
  &
 
- #¯
-nC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Interfaces\IAppointmentApiService.cs
+ #˝
+sC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IAppointmentApiService.cs
 
  +
 
@@ -1312,8 +1320,8 @@ nC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Inter
 
    )
 
-  . ;Û
-mC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\PatientApiService.cs
+  . ;¯
+rC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\PatientApiService.cs
 
  "Z
 $ )  $   77 $TT $[[! &ee! &oo! &
@@ -1352,8 +1360,8 @@ mC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implm
 
 mm  2
 mm7 9pp !
-oo ss ö
-rC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\HealthRecordApiService.cs
+oo ss ü
+wC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\HealthRecordApiService.cs
 
  '(
 		$ )  $! &
@@ -1364,8 +1372,8 @@ rC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implm
 
   7
 < >$ &
-  Ë
-lC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\DoctorApiService.cs
+  Ì
+qC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\DoctorApiService.cs
 
 		 !Z
 $ )  $77 $>> CC! &QQ! &XX! &__! &
@@ -1404,8 +1412,8 @@ lC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implm
 ]]  4
 ]]9 A``% -
 ]]H N``7 =
-__ dd ∂
-lC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\DashboardService.cs
+__ dd ª
+qC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\DashboardService.cs
 
  !
 		+ 9   .
@@ -1427,8 +1435,8 @@ lC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implm
 $$. /$$3 4
 ((9 :((> ?
 )); <))@ A
-**; <**@ A«
-lC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\AuthStateService.cs
+**; <**@ AÃ
+qC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\AuthStateService.cs
 
  !™
 
@@ -1455,8 +1463,8 @@ lC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implm
 BB CC" ,
 CC6 @EE# -
 
-OO %Ò
-gC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\AuthService.cs
+OO %ˆ
+lC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\AuthService.cs
 
  Z
 
@@ -1482,8 +1490,8 @@ gC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implm
 
 >> )
 
-CC &È	
-qC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implmentations\AppointmentApiService.cs
+CC &Ó	
+vC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\AppointmentApiService.cs
 
  &b
 $ )  $##! &bb $
@@ -1553,15 +1561,15 @@ qC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Services\Implm
 üü# 0
 
 ûû 
-¢¢ Ä
-KC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Program.csÑ
+¢¢ Ö
+PC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Program.csÑ
 
 
              !! "" $$ && (( 
 0 6 
 
-  å
-\C:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Handlers\AuthHeadHandler.cs
+  ë
+aC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Handlers\AuthHeadHandler.cs
 
  "(
 + 5   "
@@ -1572,8 +1580,8 @@ KC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Program.csÑ
 ; D
  & ( /
  /1 B
- + 0< A“
-dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\DTOs\Dashboard\AdminDashboardDto.cs
+ + 0< A◊
+iC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\DTOs\Dashboard\AdminDashboardDTO.cs
 
  &
 
@@ -1591,8 +1599,8 @@ dC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\DTOs\Dashboard
 
  ,
 
- )Ø
-kC:\Users\287802\source\repos\HealthAxisApi\HealthAxisAdminLayout\Auth\CustomeAuthenticationStateProvider.cs
+ )¥
+pC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Auth\CustomeAuthenticationStateProvider.cs
 
  .<
 		' 1  ' 1!!+ 5""+ 5

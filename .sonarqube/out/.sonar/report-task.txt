@@ -1,6 +1,6 @@
-projectKey=HealthAxis
+projectKey=HealthAxis_Api
 serverUrl=http://localhost:9000
 serverVersion=26.1.0.118079
-dashboardUrl=http://localhost:9000/dashboard?id=HealthAxis
-ceTaskId=8dad4f6f-d70c-4030-bffb-4590ba450ad4
-ceTaskUrl=http://localhost:9000/api/ce/task?id=8dad4f6f-d70c-4030-bffb-4590ba450ad4
+dashboardUrl=http://localhost:9000/dashboard?id=HealthAxis_Api
+ceTaskId=17dbd8ec-7406-4ddd-9810-41f3c3da0a35
+ceTaskUrl=http://localhost:9000/api/ce/task?id=17dbd8ec-7406-4ddd-9810-41f3c3da0a35

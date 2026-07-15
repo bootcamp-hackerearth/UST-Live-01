@@ -18,7 +18,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Layout/AdminLayout.razor",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Layout/AdminLayout.razor",
                 "region": {
                   "startLine": 84,
                   "startColumn": 44,
@@ -39,7 +39,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 39,
                   "startColumn": 43,
@@ -52,7 +52,7 @@
           "relatedLocations": [
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 40,
                   "startColumn": 43,
@@ -63,7 +63,7 @@
             },
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 41,
                   "startColumn": 43,
@@ -74,7 +74,7 @@
             },
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 42,
                   "startColumn": 43,
@@ -85,7 +85,7 @@
             },
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 43,
                   "startColumn": 43,
@@ -112,7 +112,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 56,
                   "startColumn": 55,
@@ -125,7 +125,7 @@
           "relatedLocations": [
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 57,
                   "startColumn": 55,
@@ -136,7 +136,7 @@
             },
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 58,
                   "startColumn": 54,
@@ -147,7 +147,7 @@
             },
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 60,
                   "startColumn": 59,
@@ -158,7 +158,7 @@
             },
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 66,
                   "startColumn": 64,
@@ -185,7 +185,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 89,
                   "startColumn": 43,
@@ -198,7 +198,7 @@
           "relatedLocations": [
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 90,
                   "startColumn": 43,
@@ -209,7 +209,7 @@
             },
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 91,
                   "startColumn": 43,
@@ -220,7 +220,7 @@
             },
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 92,
                   "startColumn": 43,
@@ -231,7 +231,7 @@
             },
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 93,
                   "startColumn": 43,
@@ -258,7 +258,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/AuthBridge.razor",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Pages/AuthBridge.razor",
                 "region": {
                   "startLine": 21,
                   "startColumn": 44,
@@ -279,7 +279,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/Login.razor",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Pages/Login.razor",
                 "region": {
                   "startLine": 20,
                   "startColumn": 44,
@@ -300,7 +300,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/RedirectToLogin.razor",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Pages/RedirectToLogin.razor",
                 "region": {
                   "startLine": 6,
                   "startColumn": 44,
@@ -321,33 +321,12 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Program.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Program.cs",
                 "region": {
                   "startLine": 21,
                   "startColumn": 34,
                   "endLine": 21,
                   "endColumn": 59
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2486",
-          "level": "warning",
-          "message": "Handle the exception or explain in a comment why it can be ignored.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 45,
-                  "startColumn": 13,
-                  "endLine": 47,
-                  "endColumn": 14
                 }
               }
             }
@@ -363,12 +342,33 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthService.cs",
                 "region": {
                   "startLine": 29,
                   "startColumn": 23,
                   "endLine": 29,
                   "endColumn": 43
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2486",
+          "level": "warning",
+          "message": "Handle the exception or explain in a comment why it can be ignored.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "region": {
+                  "startLine": 45,
+                  "startColumn": 13,
+                  "endLine": 47,
+                  "endColumn": 14
                 }
               }
             }
@@ -384,7 +384,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 46,
                   "startColumn": 13,
@@ -405,30 +405,9 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 72,
-                  "startColumn": 13,
-                  "endLine": 74,
-                  "endColumn": 14
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S108",
-          "level": "warning",
-          "message": "Either remove or fill this block of code.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 73,
                   "startColumn": 13,
                   "endLine": 74,
                   "endColumn": 14
@@ -447,7 +426,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 95,
                   "startColumn": 13,
@@ -468,7 +447,28 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "region": {
+                  "startLine": 73,
+                  "startColumn": 13,
+                  "endLine": 74,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S108",
+          "level": "warning",
+          "message": "Either remove or fill this block of code.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
                 "region": {
                   "startLine": 96,
                   "startColumn": 13,
@@ -489,7 +489,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisAdminLayout/Pages/AuthBridge.razor",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Pages/AuthBridge.razor",
                 "region": {
                   "startLine": 60,
                   "startColumn": 19,

@@ -18,7 +18,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/DoctorResponseDto.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxis_Shared/DTOs/Doctor/DoctorResponseDTO.cs",
                 "region": {
                   "startLine": 18,
                   "startColumn": 23,
@@ -31,7 +31,7 @@
           "relatedLocations": [
             {
               "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/DoctorResponseDto.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxis_Shared/DTOs/Doctor/DoctorResponseDTO.cs",
                 "region": {
                   "startLine": 18,
                   "startColumn": 23,
@@ -52,7 +52,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/Class1.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxis_Shared/Class1.cs",
                 "region": {
                   "startLine": 3,
                   "startColumn": 18,
@@ -73,7 +73,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDto.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDTO.cs",
                 "region": {
                   "startLine": 8,
                   "startColumn": 20,
@@ -94,7 +94,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDto.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDTO.cs",
                 "region": {
                   "startLine": 27,
                   "startColumn": 13,
@@ -115,7 +115,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDto.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDTO.cs",
                 "region": {
                   "startLine": 28,
                   "startColumn": 13,
@@ -136,7 +136,7 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDto.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxis_Shared/DTOs/Doctor/CreateDoctorResultDTO.cs",
                 "region": {
                   "startLine": 29,
                   "startColumn": 13,
