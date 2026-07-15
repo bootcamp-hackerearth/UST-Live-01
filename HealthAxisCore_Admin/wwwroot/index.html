@@ -35,9 +35,9 @@
     </script>
 
     <script>
-        window.healthAxisTheme = {
+        globalThis.healthAxisTheme = {
             setTheme: function (theme) {
-                document.documentElement.setAttribute("data-theme", theme);
+                document.documentElement.dataset.theme = theme;
                 localStorage.setItem("healthaxis_theme", theme);
             },
 
@@ -47,12 +47,14 @@
 
             initializeTheme: function () {
                 const theme = localStorage.getItem("healthaxis_theme") || "dark";
-                document.documentElement.setAttribute("data-theme", theme);
+
+                document.documentElement.dataset.theme = theme;
+
                 return theme;
             }
         };
 
-        window.healthAxisTheme.initializeTheme();
+        globalThis.healthAxisTheme.initializeTheme();
     </script>
 
     <script src="_framework/blazor.webassembly.js"></script>

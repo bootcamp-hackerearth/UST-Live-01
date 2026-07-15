@@ -14,14 +14,12 @@ import { PatientService } from '../../../core/services/patient.service';
 import { AppointmentDto } from '../../../core/models/appointment.model';
 import { DoctorDto } from '../../../core/models/doctor.model';
 import { HealthRecordDto } from '../../../core/models/health-record.model';
-import { ThemeToggle } from '../../../shared/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-patient-dashboard',
   imports: [
     CommonModule,
     RouterLink,
-    ThemeToggle
   ],
   templateUrl: './patient-dashboard.html',
   styleUrl: './patient-dashboard.css'

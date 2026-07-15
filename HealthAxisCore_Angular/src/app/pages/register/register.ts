@@ -12,7 +12,6 @@ import {
 
 import { AuthService } from '../../core/services/auth.service';
 import { RegisterPatientRequest } from '../../core/models/register-patient-request';
-import { ThemeToggle } from '../../shared/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-register',
@@ -20,7 +19,6 @@ import { ThemeToggle } from '../../shared/theme-toggle/theme-toggle';
     CommonModule,
     RouterLink,
     ReactiveFormsModule,
-    ThemeToggle
   ],
   templateUrl: './register.html',
   styleUrl: './register.css'

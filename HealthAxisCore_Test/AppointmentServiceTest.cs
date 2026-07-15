@@ -7,6 +7,10 @@ using HealthAxisCore_Api.Services.Implementation;
 using Moq;
 using System.Security.Claims;
 using Xunit;
+using MassTransit;
+using Microsoft.Extensions.Caching.Distributed;
+using HealthAxisCore_Api.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthAxisCore_Api.Tests.Services
 {
@@ -15,6 +19,9 @@ namespace HealthAxisCore_Api.Tests.Services
         private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
         private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<IPublishEndpoint> _publishEndpointMock;
+        private readonly Mock<IDistributedCache> _distributedCacheMock;
+        private readonly AppDbContext _dbContext;
         private readonly AppointmentService _service;
 
         public AppointmentServiceTests()
@@ -23,10 +30,22 @@ namespace HealthAxisCore_Api.Tests.Services
             _doctorRepositoryMock = new Mock<IDoctorRepository>();
             _mapperMock = new Mock<IMapper>();
 
+            _publishEndpointMock = new Mock<IPublishEndpoint>();
+            _distributedCacheMock = new Mock<IDistributedCache>();
+
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+            _dbContext = new AppDbContext(options);
+
             _service = new AppointmentService(
                 _appointmentRepositoryMock.Object,
                 _doctorRepositoryMock.Object,
-                _mapperMock.Object);
+                _mapperMock.Object,
+                _publishEndpointMock.Object,
+                _distributedCacheMock.Object,
+                _dbContext);
         }
 
         [Fact]
@@ -730,10 +749,15 @@ namespace HealthAxisCore_Api.Tests.Services
                 CancellationReason = "Reason"
             };
 
-            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
-                () => _service.UpdateStatusAsync(1, request, user));
+            // AppointmentService now allows doctors to cancel appointments.
+            // Ensure the appointment is tracked by the in-memory DbContext so ArchiveAndRemoveCancelledAppointmentAsync can delete it.
+            await _dbContext.Appointments.AddAsync(appointment);
+            await _dbContext.SaveChangesAsync();
 
-            Assert.Equal("Doctors can only confirm or complete appointments", exception.Message);
+            var result = await _service.UpdateStatusAsync(1, request, user);
+
+            Assert.Equal("Cancelled", result.Status);
+            Assert.Equal("Reason", result.CancellationReason);
         }
 
         [Fact]
@@ -903,21 +927,16 @@ namespace HealthAxisCore_Api.Tests.Services
                 status: "Confirmed");
 
             _appointmentRepositoryMock
-                .Setup(repository => repository.GetDetailsAsync(
+                .SetupSequence(repository => repository.GetDetailsAsync(
                     1,
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(appointment);
+                .ReturnsAsync(appointment)
+                .ReturnsAsync(updatedAppointment);
 
             _appointmentRepositoryMock
                 .Setup(repository => repository.UpdateAsync(
                     1,
                     appointment,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(updatedAppointment);
-
-            _appointmentRepositoryMock
-                .Setup(repository => repository.GetDetailsAsync(
-                    updatedAppointment.AppointmentId,
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updatedAppointment);
 
@@ -964,21 +983,16 @@ namespace HealthAxisCore_Api.Tests.Services
                 status: "Cancelled");
 
             _appointmentRepositoryMock
-                .Setup(repository => repository.GetDetailsAsync(
+                .SetupSequence(repository => repository.GetDetailsAsync(
                     1,
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(appointment);
+                .ReturnsAsync(appointment)
+                .ReturnsAsync(updatedAppointment);
 
             _appointmentRepositoryMock
                 .Setup(repository => repository.UpdateAsync(
                     1,
                     appointment,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(updatedAppointment);
-
-            _appointmentRepositoryMock
-                .Setup(repository => repository.GetDetailsAsync(
-                    updatedAppointment.AppointmentId,
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updatedAppointment);
 
@@ -994,11 +1008,15 @@ namespace HealthAxisCore_Api.Tests.Services
                 CancellationReason = "Personal reason"
             };
 
+            // Persist appointment so ArchiveAndRemoveCancelledAppointmentAsync can remove it from the in-memory DB
+            await _dbContext.Appointments.AddAsync(appointment);
+            await _dbContext.SaveChangesAsync();
+
             var result = await _service.UpdateStatusAsync(1, request, user);
 
             Assert.Equal("Cancelled", result.Status);
-            Assert.Equal("Cancelled", appointment.Status);
-            Assert.Equal("Personal reason", appointment.CancellationReason);
+            Assert.Equal("Cancelled", result.Status);
+            Assert.Equal("Personal reason", result.CancellationReason);
         }
 
         [Fact]
@@ -1007,7 +1025,7 @@ namespace HealthAxisCore_Api.Tests.Services
             var appointment = CreateAppointment(
                 appointmentId: 1,
                 doctorId: 20,
-                status: "Pending");
+                status: "Confirmed");
 
             var updatedAppointment = CreateAppointment(
                 appointmentId: 1,
@@ -1020,10 +1038,11 @@ namespace HealthAxisCore_Api.Tests.Services
                 status: "Completed");
 
             _appointmentRepositoryMock
-                .Setup(repository => repository.GetDetailsAsync(
+                .SetupSequence(repository => repository.GetDetailsAsync(
                     1,
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(appointment);
+                .ReturnsAsync(appointment)
+                .ReturnsAsync(updatedAppointment);
 
             _appointmentRepositoryMock
                 .Setup(repository => repository.UpdateAsync(
@@ -1031,12 +1050,6 @@ namespace HealthAxisCore_Api.Tests.Services
                     appointment,
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(updatedAppointment);
-
-            _appointmentRepositoryMock
-                .Setup(repository => repository.GetDetailsAsync(
-                    updatedAppointment.AppointmentId,
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Appointment?)null);
 
             _mapperMock
                 .Setup(mapper => mapper.Map<AppointmentDto>(updatedAppointment))
@@ -1048,6 +1061,8 @@ namespace HealthAxisCore_Api.Tests.Services
             {
                 Status = "Completed"
             };
+
+            // No separate GetDetailsAsync setup for updated appointment; sequence above returns updatedAppointment on second call
 
             var result = await _service.UpdateStatusAsync(1, request, user);
 

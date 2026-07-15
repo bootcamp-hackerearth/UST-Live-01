@@ -2,7 +2,6 @@ import { Component, computed } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
-import { ThemeToggle } from '../../../shared/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-doctor-layout',
@@ -10,7 +9,7 @@ import { ThemeToggle } from '../../../shared/theme-toggle/theme-toggle';
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
-    ThemeToggle
+    
   ],
   templateUrl: './doctor-layout.html',
   styleUrl: './doctor-layout.css'

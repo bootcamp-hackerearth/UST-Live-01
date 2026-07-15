@@ -37,7 +37,40 @@
 <section class="patients-grid">
   @if (!isLoading() && filteredPatients().length === 0) {
   <div class="empty-state">
-    No patients found.
+    <div class="empty-icon">
+      <span>⌕</span>
+    </div>
+
+    <div class="empty-content">
+      <span class="empty-kicker">No Patient Records</span>
+
+      <h2>No patients found.</h2>
+
+      @if (searchText()) {
+      <p>
+        No patient matches your current search. Try changing the patient name or clearing
+        the search box to view all connected patients.
+      </p>
+      } @else {
+      <p>
+        Patients will appear here after they have a valid appointment with you.
+        Completed consultations and upcoming appointments will be shown in this directory.
+      </p>
+      }
+    </div>
+
+    @if (searchText()) {
+    <button type="button"
+            class="empty-action"
+            (click)="searchText.set('')">
+      Clear Search
+    </button>
+    } @else {
+    <a routerLink="/doctor/dashboard"
+       class="empty-action">
+      Back to Dashboard
+    </a>
+    }
   </div>
   }
 

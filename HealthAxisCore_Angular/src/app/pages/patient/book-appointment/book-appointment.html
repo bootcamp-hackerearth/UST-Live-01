@@ -1,152 +1,124 @@
-<section class="booking-page">
-  <div class="booking-header">
-    <div>
-      <span class="page-kicker">Book Appointment</span>
+<section class="page-hero">
+  <div>
+    <span class="page-kicker">Book Appointment</span>
 
-      @if (doctor()) {
-      <h1>{{ doctor()?.doctorName }}</h1>
+    <h1>
+      Schedule your visit.
+    </h1>
 
-      <p>
-        {{ doctor()?.specialisation }} ·
-        {{ doctor()?.yearsOfExperience }} years experience
-      </p>
-      } @else {
-      <h1>Doctor details</h1>
+    <p>
+      Select an available date and time slot. Appointments must be booked at least
+      2 hours before the scheduled time.
+    </p>
+  </div>
 
-      <p>Loading selected doctor information.</p>
-      }
+  <a routerLink="/patient/doctors" class="hero-back-link">
+    Back to Doctors
+  </a>
+</section>
+
+@if (isLoading()) {
+<div class="info-message">
+  Loading doctor details...
+</div>
+}
+
+@if (successMessage()) {
+<div class="success-message">
+  {{ successMessage() }}
+</div>
+}
+
+@if (errorMessage()) {
+<div class="error-message">
+  {{ errorMessage() }}
+</div>
+}
+
+@if (doctor()) {
+<section class="booking-card">
+  <div class="doctor-summary">
+    <div class="doctor-avatar">
+      {{ doctor()?.doctorName?.charAt(0) }}
     </div>
 
-    <a routerLink="/patient/doctors" class="back-link">
-      Back to doctors
-    </a>
-  </div>
-
-  @if (isLoading()) {
-  <div class="info-message">
-    Loading doctor details...
-  </div>
-  }
-
-  @if (errorMessage()) {
-  <div class="error-message">
-    {{ errorMessage() }}
-  </div>
-  }
-
-  @if (successMessage()) {
-  <div class="success-message">
-    {{ successMessage() }}
-  </div>
-  }
-
-  @if (doctor()) {
-  <div class="booking-grid">
-    <section class="doctor-summary-card">
-      <div class="doctor-avatar">
-        {{ doctor()?.doctorName?.charAt(0) }}
-      </div>
-
+    <div>
       <h2>{{ doctor()?.doctorName }}</h2>
 
       <p>{{ doctor()?.specialisation }}</p>
 
-      <div class="summary-details">
-        <div>
-          <span>Experience</span>
-          <strong>{{ doctor()?.yearsOfExperience }} yrs</strong>
-        </div>
-
-        <div>
-          <span>Consultation Fee</span>
-          <strong>₹{{ doctor()?.consultationFee }}</strong>
-        </div>
+      <div class="doctor-meta">
+        <span>{{ doctor()?.yearsOfExperience }} years experience</span>
+        <span>₹{{ doctor()?.consultationFee }}</span>
       </div>
-    </section>
-
-    <section class="booking-card">
-      <h2>Select appointment date</h2>
-
-      <div class="form-group">
-        <label>Date</label>
-
-        <input type="date"
-               [ngModel]="selectedDate()"
-               (ngModelChange)="selectedDate.set($event); loadSlots()"
-               [min]="today"
-               [max]="maxBookingDate" />
-
-        <small class="date-help-text">
-          Appointments can be booked only from today up to 6 months ahead.
-        </small>
-      </div>
-
-      <div class="slots-heading-row">
-        <h2>Available slots</h2>
-
-        @if (selectedDate()) {
-        <span class="slot-help">
-          Red slots are unavailable.
-        </span>
-        }
-      </div>
-
-      <div class="slot-legend">
-        <span>
-          <i class="legend-dot available-dot"></i>
-          Available
-        </span>
-
-        <span>
-          <i class="legend-dot selected-dot"></i>
-          Selected
-        </span>
-
-        <span>
-          <i class="legend-dot unavailable-dot"></i>
-          Unavailable
-        </span>
-      </div>
-
-      <div class="slot-grid">
-        @if (!selectedDate()) {
-        <div class="empty-state">
-          Please select a date to view slots.
-        </div>
-        }
-
-        @if (selectedDate()) {
-        @for (slot of slotViews(); track slot.time) {
-        <button type="button"
-                [class]="getSlotClass(slot)"
-                [disabled]="!slot.isAvailable"
-                [title]="slot.label"
-                (click)="selectSlot(slot)">
-          <span>{{ slot.time }}</span>
-
-          @if (slot.isPast) {
-          <small>Past</small>
-          }
-
-          @if (slot.isBooked) {
-          <small>Booked</small>
-          }
-
-          @if (slot.isPatientBusy) {
-          <small>Your Slot</small>
-          }
-        </button>
-        }
-        }
-      </div>
-
-      <button type="button"
-              class="book-button"
-              [disabled]="!canConfirmAppointment()"
-              (click)="bookAppointment()">
-        {{ isSaving() ? 'Booking...' : 'Confirm Appointment' }}
-      </button>
-    </section>
+    </div>
   </div>
-  }
+
+  <div class="booking-form">
+    <label for="appointmentDate">
+      Appointment Date
+    </label>
+
+    <input id="appointmentDate"
+           type="date"
+           [min]="today"
+           [max]="maxBookingDate"
+           [ngModel]="selectedDate()"
+           (ngModelChange)="selectedDate.set($event); loadSlots()" />
+  </div>
+
+  <section class="slots-section">
+    <div class="section-header">
+      <div>
+        <span class="page-kicker">Available Slots</span>
+
+        <h3>
+          Choose a consultation time
+        </h3>
+      </div>
+    </div>
+
+    @if (!selectedDate()) {
+    <div class="empty-state">
+      Select a date to view available slots.
+    </div>
+    }
+
+    @if (selectedDate()) {
+    <div class="slots-grid">
+      @for (slot of slotViews(); track slot.time) {
+      <button type="button"
+              [class]="getSlotClass(slot)"
+              [disabled]="!slot.isAvailable"
+              (click)="selectSlot(slot)">
+        <span class="slot-time">
+          {{ slot.time }}
+        </span>
+
+        <span class="slot-label">
+          {{ slot.label }}
+        </span>
+      </button>
+      }
+    </div>
+    }
+  </section>
+
+  <div class="booking-actions">
+    <button type="button"
+            class="book-button"
+            [disabled]="!canConfirmAppointment()"
+            (click)="bookAppointment()">
+      @if (isSaving()) {
+      Booking...
+      } @else {
+      Confirm Appointment
+      }
+    </button>
+
+    <a routerLink="/patient/doctors" class="secondary-action">
+      Cancel
+    </a>
+  </div>
 </section>
+}

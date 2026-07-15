@@ -175,6 +175,75 @@ namespace HealthAxisCore_Api.Migrations
                     b.ToTable("Appointments");
                 });
 
+            modelBuilder.Entity("HealthAxisCore_Api.Models.CancelledAppointmentArchive", b =>
+                {
+                    b.Property<int>("CancelledAppointmentArchiveId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CancelledAppointmentArchiveId"));
+
+                    b.Property<DateTime>("ArchivedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CancellationReason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CancelledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CancelledByRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CancelledByUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DoctorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("LegalHold")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OriginalAppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PatientName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ScheduledDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TimeSlot")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("WasAutoCancelled")
+                        .HasColumnType("bit");
+
+                    b.HasKey("CancelledAppointmentArchiveId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("OriginalAppointmentId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("ScheduledDate");
+
+                    b.ToTable("CancelledAppointmentArchives");
+                });
+
             modelBuilder.Entity("HealthAxisCore_Api.Models.Doctor", b =>
                 {
                     b.Property<int>("DoctorId")
@@ -255,6 +324,9 @@ namespace HealthAxisCore_Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
 
+                    b.Property<int?>("AppointmentId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -269,7 +341,12 @@ namespace HealthAxisCore_Api.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("NotificationId");
+
+                    b.HasIndex("AppointmentId");
 
                     b.HasIndex("DoctorId");
 
@@ -542,11 +619,18 @@ namespace HealthAxisCore_Api.Migrations
 
             modelBuilder.Entity("HealthAxisCore_Api.Models.Notification", b =>
                 {
+                    b.HasOne("HealthAxisCore_Api.Models.Appointment", "Appointment")
+                        .WithMany()
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("HealthAxisCore_Api.Models.Doctor", "Doctor")
                         .WithMany()
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Appointment");
 
                     b.Navigation("Doctor");
                 });

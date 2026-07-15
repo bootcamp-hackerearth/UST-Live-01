@@ -10,7 +10,6 @@ import {
 
 import { AuthService } from '../../core/services/auth.service';
 import { LoginRequest } from '../../core/models/login-request';
-import { ThemeToggle } from '../../shared/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +17,6 @@ import { ThemeToggle } from '../../shared/theme-toggle/theme-toggle';
     CommonModule,
     RouterLink,
     ReactiveFormsModule,
-    ThemeToggle
   ],
   templateUrl: './login.html',
   styleUrl: './login.css'

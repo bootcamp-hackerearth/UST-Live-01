@@ -6,6 +6,7 @@ using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Implementation;
 using Moq;
 using System.Security.Claims;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace HealthAxisCore_Api.Tests.Services
 {
@@ -13,11 +14,13 @@ namespace HealthAxisCore_Api.Tests.Services
     {
         private static DoctorService CreateService(
             Mock<IDoctorRepository>? repositoryMock = null,
-            Mock<IMapper>? mapperMock = null)
+            Mock<IMapper>? mapperMock = null,
+            Mock<IDistributedCache>? distributedCacheMock = null)
         {
             return new DoctorService(
                 repositoryMock?.Object ?? new Mock<IDoctorRepository>().Object,
-                mapperMock?.Object ?? new Mock<IMapper>().Object);
+                mapperMock?.Object ?? new Mock<IMapper>().Object,
+                distributedCacheMock?.Object ?? new Mock<IDistributedCache>().Object);
         }
 
         private static ClaimsPrincipal CreateUser(

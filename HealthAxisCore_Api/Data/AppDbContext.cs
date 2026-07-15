@@ -11,13 +11,20 @@ namespace HealthAxisCore_Api.Data
         }
 
         public DbSet<Patient> Patients { get; set; }
+
         public DbSet<Doctor> Doctors { get; set; }
+
         public DbSet<Appointment> Appointments { get; set; }
+
         public DbSet<HealthRecord> HealthRecords { get; set; }
+
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+
         public DbSet<AdminHandoffCode> AdminHandoffCodes { get; set; }
 
         public DbSet<Notification> Notifications { get; set; }
+
+        public DbSet<CancelledAppointmentArchive> CancelledAppointmentArchives { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -76,6 +83,24 @@ namespace HealthAxisCore_Api.Data
                 .WithMany()
                 .HasForeignKey(n => n.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Notification>()
+                .HasOne(n => n.Appointment)
+                .WithMany()
+                .HasForeignKey(n => n.AppointmentId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<CancelledAppointmentArchive>()
+                .HasIndex(a => a.OriginalAppointmentId);
+
+            builder.Entity<CancelledAppointmentArchive>()
+                .HasIndex(a => a.PatientId);
+
+            builder.Entity<CancelledAppointmentArchive>()
+                .HasIndex(a => a.DoctorId);
+
+            builder.Entity<CancelledAppointmentArchive>()
+                .HasIndex(a => a.ScheduledDate);
         }
     }
 }

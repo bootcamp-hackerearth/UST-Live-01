@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="HealthAxis.Api/HealthAxisCore_Api.csproj" />
+  <Project Path="HealthAxisCore_Api/HealthAxisCore_Api.csproj" />
   <Project Path="HealthAxisCore_Admin/HealthAxisCore_Admin.csproj" Id="f0b542a7-9bea-49b8-baba-a4e6b4baf607" />
   <Project Path="HealthAxisCore_Angular/HealthAxisCore_Angular.esproj">
     <Build />

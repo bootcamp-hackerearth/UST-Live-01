@@ -119,9 +119,12 @@ export class TodaySchedule {
     return 'Add Record';
   }
 
+  canConfirmAppointment(appointment: AppointmentDto): boolean {
+    return appointment.status === 'Pending';
+  }
+
   canCompleteAppointment(appointment: AppointmentDto): boolean {
-    return appointment.status !== 'Completed' &&
-      appointment.status !== 'Cancelled';
+    return appointment.status === 'Confirmed';
   }
 
   canCancelAppointment(appointment: AppointmentDto): boolean {
@@ -129,7 +132,36 @@ export class TodaySchedule {
       appointment.status === 'Confirmed';
   }
 
+  markConfirmed(appointment: AppointmentDto): void {
+    if (!this.canConfirmAppointment(appointment)) {
+      return;
+    }
+
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    this.appointmentService.updateStatus(appointment.appointmentId, {
+      status: 'Confirmed',
+      cancellationReason: ''
+    }).subscribe({
+      next: () => {
+        this.successMessage.set('Appointment confirmed successfully.');
+        this.loadSchedule();
+      },
+      error: error => {
+        this.errorMessage.set(this.authService.getErrorMessage(error));
+      }
+    });
+  }
+
   markCompleted(appointment: AppointmentDto): void {
+    if (!this.canCompleteAppointment(appointment)) {
+      return;
+    }
+
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
     this.appointmentService.updateStatus(appointment.appointmentId, {
       status: 'Completed',
       cancellationReason: ''
@@ -172,6 +204,9 @@ export class TodaySchedule {
     if (!this.cancellationReason().trim()) {
       return;
     }
+
+    this.errorMessage.set('');
+    this.successMessage.set('');
 
     this.appointmentService.updateStatus(appointment.appointmentId, {
       status: 'Cancelled',

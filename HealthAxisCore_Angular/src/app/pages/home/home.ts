@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ThemeToggle } from '../../shared/theme-toggle/theme-toggle';
+
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink,ThemeToggle],
+  imports: [RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })

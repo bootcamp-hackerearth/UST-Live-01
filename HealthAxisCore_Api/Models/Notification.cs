@@ -8,6 +8,11 @@ namespace HealthAxisCore_Api.Models
         [Key]
         public int NotificationId { get; set; }
 
+        public int? AppointmentId { get; set; }
+
+        [ForeignKey(nameof(AppointmentId))]
+        public Appointment? Appointment { get; set; }
+
         [ForeignKey(nameof(Doctor))]
         public int DoctorId { get; set; }
 
@@ -20,5 +25,7 @@ namespace HealthAxisCore_Api.Models
         public bool IsRead { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        public DateTime? ReadAt { get; set; }
     }
 }

@@ -32,10 +32,27 @@
 <section class="schedule-list">
   @if (!isLoading() && appointments().length === 0) {
   <div class="empty-state">
-    No appointments scheduled for today.
+    <div class="empty-icon">
+      <span>✓</span>
+    </div>
+
+    <div class="empty-content">
+      <span class="empty-kicker">Schedule Clear</span>
+
+      <h2>No appointments scheduled for today.</h2>
+
+      <p>
+        There are no consultations in your queue right now. New bookings will appear here
+        once patients schedule appointments for today.
+      </p>
+    </div>
+
+    <a routerLink="/doctor/dashboard"
+       class="empty-action">
+      Back to Dashboard
+    </a>
   </div>
   }
-
   @for (appointment of appointments(); track appointment.appointmentId) {
   <article class="schedule-card">
     <div class="patient-avatar">
@@ -80,6 +97,14 @@
               class="disabled-action"
               disabled>
         {{ getAddRecordText(appointment) }}
+      </button>
+      }
+
+      @if (canConfirmAppointment(appointment)) {
+      <button type="button"
+              class="confirm-button"
+              (click)="markConfirmed(appointment)">
+        Confirm
       </button>
       }
 

@@ -10,15 +10,20 @@
 </div>
 
 @code {
+    private const string AngularLoginUrlConfigurationKey = "AngularLoginUrl";
+
     protected override void OnInitialized()
     {
-        var angularLoginUrl = Configuration["AngularLoginUrl"];
+        var angularLoginUrl = Configuration[AngularLoginUrlConfigurationKey];
 
         if (string.IsNullOrWhiteSpace(angularLoginUrl))
         {
-            angularLoginUrl = "http://localhost:56902/login";
+            throw new InvalidOperationException(
+                $"Configuration value '{AngularLoginUrlConfigurationKey}' is missing.");
         }
 
-        NavigationManager.NavigateTo(angularLoginUrl, forceLoad: true);
+        NavigationManager.NavigateTo(
+            angularLoginUrl,
+            forceLoad: true);
     }
 }

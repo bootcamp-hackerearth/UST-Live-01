@@ -152,18 +152,18 @@ namespace HealthAxisCore_Api.Services.Implementation
                     JsonOptions);
 
                 Logger.Information(
-                    "Doctor availability cache HIT. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+                    "[CACHE-HIT] Doctor availability served from Garnet | DoctorId={DoctorId} | Date={Date} | Key={CacheKey}",
                     id,
-                    date.Date,
+                    date.Date.ToString("yyyy-MM-dd"),
                     cacheKey);
 
                 return cachedSlots ?? new List<string>();
             }
 
             Logger.Information(
-                "Doctor availability cache MISS. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
+                "[CACHE-MISS] Doctor availability not found in Garnet | DoctorId={DoctorId} | Date={Date} | Key={CacheKey}",
                 id,
-                date.Date,
+                date.Date.ToString("yyyy-MM-dd"),
                 cacheKey);
 
             var availableSlots = await repository.GetAvailableSlotsAsync(
@@ -185,9 +185,9 @@ namespace HealthAxisCore_Api.Services.Implementation
                 ct);
 
             Logger.Information(
-                "Doctor availability cached. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}, TtlMinutes: {TtlMinutes}",
+                "[CACHE-SET] Doctor availability cached | DoctorId={DoctorId} | Date={Date} | Key={CacheKey} | TTL={TtlMinutes} minutes",
                 id,
-                date.Date,
+                date.Date.ToString("yyyy-MM-dd"),
                 cacheKey,
                 5);
 

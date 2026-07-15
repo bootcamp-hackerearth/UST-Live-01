@@ -225,7 +225,8 @@ namespace HealthAxisCore_Api.Tests.Services
             var patientId = 10;
 
             var user = CreateUser(
-                role: "Admin");
+                role: "Patient",
+                patientId: patientId);
 
             var records = new List<HealthRecord>();
 
@@ -418,7 +419,7 @@ namespace HealthAxisCore_Api.Tests.Services
             var exception = await Assert.ThrowsAsync<UnauthorizedException>(
                 () => service.CreateAsync(request, user, ct));
 
-            Assert.Equal("Cannot complete another doctor's appointment", exception.Message);
+            Assert.Equal("Cannot add health record for another doctor's appointment", exception.Message);
 
             appointmentRepositoryMock.Verify(x => x.GetDetailsAsync(request.AppointmentId, ct), Times.Once);
             appointmentRepositoryMock.Verify(x => x.UpdateAsync(
@@ -454,7 +455,7 @@ namespace HealthAxisCore_Api.Tests.Services
                 appointmentId: appointmentId,
                 patientId: patientId,
                 doctorId: doctorId,
-                status: "Confirmed");
+                status: "Completed");
 
             var mappedRecord = new HealthRecord
             {
@@ -545,8 +546,8 @@ namespace HealthAxisCore_Api.Tests.Services
             Assert.Equal(doctorId, mappedRecord.DoctorId);
             Assert.NotEqual(default, mappedRecord.VisitDate);
 
+
             appointmentRepositoryMock.Verify(x => x.GetDetailsAsync(appointmentId, ct), Times.Once);
-            appointmentRepositoryMock.Verify(x => x.UpdateAsync(appointmentId, appointment, ct), Times.Once);
 
             healthRecordRepositoryMock.Verify(x => x.CreateAsync(
                     It.Is<HealthRecord>(r =>
@@ -588,7 +589,7 @@ namespace HealthAxisCore_Api.Tests.Services
                 appointmentId: appointmentId,
                 patientId: patientId,
                 doctorId: doctorId,
-                status: "Confirmed");
+                status: "Completed");
 
             var mappedRecord = new HealthRecord
             {

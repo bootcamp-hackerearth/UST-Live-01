@@ -14,18 +14,20 @@ var apiBaseUrl = builder.Configuration["ApiBaseUrl"];
 
 if (string.IsNullOrWhiteSpace(apiBaseUrl))
 {
-    apiBaseUrl = "https://localhost:7056/";
+    throw new InvalidOperationException(
+        "Configuration value 'ApiBaseUrl' is missing. Please configure it in appsettings.json or appsettings.Development.json.");
 }
 
-builder.Services.AddScoped(sp =>
+builder.Services.AddScoped(_ =>
 {
     return new HttpClient
     {
-        BaseAddress = new Uri(apiBaseUrl)
+        BaseAddress = new Uri(apiBaseUrl, UriKind.Absolute)
     };
 });
 
 builder.Services.AddAuthorizationCore();
+
 builder.Services.AddScoped<AdminHandoffService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuthService>();
@@ -40,5 +42,5 @@ builder.Services.AddScoped<AuthenticationStateProvider>(serviceProvider =>
 {
     return serviceProvider.GetRequiredService<ApiAuthenticationStateProvider>();
 });
-await Task.Delay(2000);
+
 await builder.Build().RunAsync();

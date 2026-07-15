@@ -22,6 +22,7 @@ interface SlotView {
   isPast: boolean;
   isBooked: boolean;
   isPatientBusy: boolean;
+  isTooCloseToBook: boolean;
   label: string;
 }
 
@@ -81,6 +82,9 @@ export class BookAppointment {
     return this.workingSlots.map(slot => {
       const isPast = this.isPastSlot(selectedDate, slot);
 
+      const isTooCloseToBook =
+        this.isWithinTwoHourBookingWindow(selectedDate, slot);
+
       const isReturnedAsAvailable = availableSlots.includes(slot);
 
       const isPatientBusy = patientBookedSlots.includes(slot);
@@ -88,13 +92,15 @@ export class BookAppointment {
       const isBooked =
         !!selectedDate &&
         !isPast &&
+        !isTooCloseToBook &&
         !isReturnedAsAvailable;
 
       const isAvailable =
         !!selectedDate &&
         isReturnedAsAvailable &&
         !isPast &&
-        !isPatientBusy;
+        !isPatientBusy &&
+        !isTooCloseToBook;
 
       let label = 'Available';
 
@@ -102,6 +108,8 @@ export class BookAppointment {
         label = 'Select date';
       } else if (isPast) {
         label = 'Past slot';
+      } else if (isTooCloseToBook) {
+        label = 'Booking closes 2 hours before this slot';
       } else if (isPatientBusy) {
         label = 'You already have another appointment at this time';
       } else if (isBooked) {
@@ -114,6 +122,7 @@ export class BookAppointment {
         isPast,
         isBooked,
         isPatientBusy,
+        isTooCloseToBook,
         label
       };
     });
@@ -219,6 +228,11 @@ export class BookAppointment {
         return;
       }
 
+      if (slot.isTooCloseToBook) {
+        this.errorMessage.set('Appointments must be booked at least 2 hours before the scheduled time.');
+        return;
+      }
+
       if (slot.isPatientBusy) {
         this.errorMessage.set('You already have another appointment at this time.');
         return;
@@ -266,6 +280,11 @@ export class BookAppointment {
 
     if (!selectedSlotView?.isAvailable) {
       this.errorMessage.set('Selected slot is not available. Please choose another slot.');
+      return;
+    }
+
+    if (selectedSlotView.isTooCloseToBook) {
+      this.errorMessage.set('Appointments must be booked at least 2 hours before the scheduled time.');
       return;
     }
 
@@ -327,6 +346,10 @@ export class BookAppointment {
       return 'slot-button unavailable past-slot';
     }
 
+    if (slot.isTooCloseToBook) {
+      return 'slot-button unavailable too-close-slot';
+    }
+
     if (slot.isPatientBusy) {
       return 'slot-button unavailable patient-busy-slot';
     }
@@ -360,6 +383,25 @@ export class BookAppointment {
     const slotMinutes = this.convertSlotToMinutes(slot);
 
     return slotMinutes <= currentMinutes;
+  }
+
+  private isWithinTwoHourBookingWindow(
+    selectedDate: string,
+    slot: string
+  ): boolean {
+    if (!selectedDate) {
+      return false;
+    }
+
+    const slotDateTime = new Date(`${selectedDate}T${slot}:00`);
+
+    const bookingDeadline = new Date(
+      slotDateTime.getTime() - 2 * 60 * 60 * 1000
+    );
+
+    const now = new Date();
+
+    return now >= bookingDeadline;
   }
 
   private convertSlotToMinutes(slot: string): number {
