@@ -23,6 +23,8 @@ namespace HealthAxisCore_Api.Data
 
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
+        public DbSet<DoctorLeave> DoctorLeaves { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -62,6 +64,12 @@ namespace HealthAxisCore_Api.Data
                 .WithMany()
                 .HasForeignKey(a => a.DoctorId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<DoctorLeave>()
+                .HasOne(dl => dl.Doctor)
+                .WithMany(d => d.DoctorLeaves)
+                .HasForeignKey(dl => dl.DoctorId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

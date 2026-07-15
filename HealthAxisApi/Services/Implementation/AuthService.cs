@@ -210,10 +210,20 @@ namespace HealthAxisCore_Api.Services.Implementations
             var roles = await _userManager.GetRolesAsync(user);
 
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email!)
-            };
+{
+    new Claim(ClaimTypes.NameIdentifier, user.Id),
+    new Claim(ClaimTypes.Email, user.Email!),
+
+    new Claim(
+        "ReferenceId",
+        user.ReferenceId.ToString()
+    ),
+
+    new Claim(
+        "Role",
+        user.Role ?? string.Empty
+    )
+};
 
             foreach (var role in roles)
             {

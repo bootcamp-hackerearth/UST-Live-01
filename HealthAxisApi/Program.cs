@@ -6,6 +6,8 @@ using HealthAxisCore_Api.Middleware;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Options;
 using HealthAxisCore_Api.Repositories;
+using HealthAxisCore_Api.Repositories.Implementation;
+using HealthAxisCore_Api.Repositories.Interface;
 using HealthAxisCore_Api.Services.Implementation;
 using HealthAxisCore_Api.Services.Implementations;
 using HealthAxisCore_Api.Services.Interfaces;
@@ -13,25 +15,29 @@ using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using System.Text;
 
-var builder = WebApplication.CreateBuilder(args);
-
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.FromLogContext()
-    .CreateLogger();
-
-builder.Host.UseSerilog();
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
 try
 {
     Log.Information("Starting HealthAxis API");
+
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.Host.UseSerilog((context, services, configuration) =>
+    {
+        configuration
+            .ReadFrom.Configuration(context.Configuration)
+            .ReadFrom.Services(services)
+            .Enrich.FromLogContext();
+    });
 
     builder.Services.AddControllers();
 
@@ -70,7 +76,7 @@ try
     });
 
     builder.Services.Configure<GarnetOptions>(
-    builder.Configuration.GetSection(GarnetOptions.SectionName));
+        builder.Configuration.GetSection(GarnetOptions.SectionName));
 
     builder.Services.AddStackExchangeRedisCache(options =>
     {
@@ -95,11 +101,13 @@ try
     builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
     builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
     builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
+    builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
 
     builder.Services.AddScoped<IPatientService, PatientService>();
     builder.Services.AddScoped<IDoctorService, DoctorService>();
     builder.Services.AddScoped<IAppointmentService, AppointmentService>();
     builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
+    builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
 
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ICacheService, CacheService>();
@@ -132,6 +140,7 @@ try
 
     builder.Services.AddHostedService<HeartbeatService>();
     builder.Services.AddHostedService<NotificationCleanupService>();
+    builder.Services.AddHostedService<DoctorAvailabilityMonitorService>();
 
     builder.Services.AddEndpointsApiExplorer();
 
@@ -183,6 +192,7 @@ try
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
+
         });
     });
 
@@ -190,8 +200,11 @@ try
 
     using (var scope = app.Services.CreateScope())
     {
-        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager =
+            scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        var userManager =
+            scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
         await RoleSeeder.SeedRolesAsync(roleManager);
         await AdminSeeder.SeedAdminAsync(userManager);
@@ -234,7 +247,6 @@ try
     app.UseMiddleware<GlobalExceptionHandler>();
 
     app.UseCors(CorsPolicy);
-
     app.UseAuthentication();
     app.UseAuthorization();
 

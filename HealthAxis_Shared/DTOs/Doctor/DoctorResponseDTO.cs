@@ -16,5 +16,7 @@ namespace HealthAxis.Shared.DTOs.Doctor
 
         public bool IsActive { get; set; }
         public string Email { get; set; }
+
+        public bool IsOnLeave { get; set; }
     }
 }

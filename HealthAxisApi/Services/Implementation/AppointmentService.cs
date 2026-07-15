@@ -6,6 +6,7 @@ using HealthAxisCore_Api.Contracts;
 using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Repositories;
+using HealthAxisCore_Api.Repositories.Interface;
 using HealthAxisCore_Api.Services.Interfaces;
 using MassTransit;
 
@@ -16,6 +17,7 @@ namespace HealthAxisCore_Api.Services.Implementations
         private readonly IAppointmentRepository _repository;
         private readonly IDoctorRepository _doctorRepository;
         private readonly IPatientRepository _patientRepository;
+        private readonly IDoctorLeaveRepository _doctorLeaveRepository;
         private readonly IMapper _mapper;
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly ILogger<AppointmentService> _logger;
@@ -24,6 +26,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             IAppointmentRepository repository,
             IDoctorRepository doctorRepository,
             IPatientRepository patientRepository,
+            IDoctorLeaveRepository doctorLeaveRepository,
             IMapper mapper,
             IPublishEndpoint publishEndpoint,
             ILogger<AppointmentService> logger)
@@ -31,6 +34,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             _repository = repository;
             _doctorRepository = doctorRepository;
             _patientRepository = patientRepository;
+            _doctorLeaveRepository = doctorLeaveRepository;
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
             _logger = logger;
@@ -171,6 +175,18 @@ namespace HealthAxisCore_Api.Services.Implementations
             if (!isAvailable)
             {
                 throw new AppointmentRuleException("Doctor not available for the selected date");
+            }
+
+            var activeLeave = await _doctorLeaveRepository.GetActiveLeaveForDateAsync(
+                dto.DoctorId,
+                dto.ScheduledDate
+            );
+
+            if (activeLeave != null)
+            {
+                throw new AppointmentRuleException(
+                    $"Doctor is unavailable from {activeLeave.StartDate:dd-MMM-yyyy} to {activeLeave.EndDate:dd-MMM-yyyy}. Please choose another doctor."
+                );
             }
 
             var existingAppointments = await _repository.GetAllAsync();
@@ -320,7 +336,8 @@ namespace HealthAxisCore_Api.Services.Implementations
                 throw new EntityNotFoundException("Appointment not found");
             }
 
-            if (appt.Status == AppointmentStatus.Cancelled)
+            if (appt.Status == AppointmentStatus.Cancelled ||
+                appt.Status == AppointmentStatus.DoctorUnavailable)
             {
                 throw new AppointmentRuleException("Appointment already cancelled");
             }
@@ -354,6 +371,12 @@ namespace HealthAxisCore_Api.Services.Implementations
                 throw new AppointmentRuleException("Cannot confirm a cancelled appointment");
             }
 
+            if (appt.Status == AppointmentStatus.DoctorUnavailable)
+            {
+                throw new AppointmentRuleException(
+                    "Cannot confirm an appointment cancelled due to doctor unavailability");
+            }
+
             if (appt.Status == AppointmentStatus.Confirmed)
             {
                 throw new AppointmentRuleException("Appointment is already confirmed");
@@ -381,6 +404,12 @@ namespace HealthAxisCore_Api.Services.Implementations
             if (appt.Status == AppointmentStatus.Cancelled)
             {
                 throw new AppointmentRuleException("Cannot complete a cancelled appointment");
+            }
+
+            if (appt.Status == AppointmentStatus.DoctorUnavailable)
+            {
+                throw new AppointmentRuleException(
+                    "Cannot complete an appointment cancelled due to doctor unavailability");
             }
 
             if (appt.Status == AppointmentStatus.Pending)

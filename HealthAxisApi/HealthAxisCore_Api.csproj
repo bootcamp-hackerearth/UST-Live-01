@@ -8,6 +8,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="16.1.1" />
+		<PackageReference Include="elastic.serilog.sinks" Version="9.0.0" />
 		<PackageReference Include="FluentAssertions" Version="8.10.0" />
 		<PackageReference Include="MassTransit" Version="8.4.1" />
 		<PackageReference Include="MassTransit.RabbitMQ" Version="8.4.1" />

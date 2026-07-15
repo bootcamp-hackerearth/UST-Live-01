@@ -5,6 +5,7 @@
         Pending,
         Confirmed,
         Cancelled,
-        Completed
+        Completed,
+        DoctorUnavailable,
     }
 }

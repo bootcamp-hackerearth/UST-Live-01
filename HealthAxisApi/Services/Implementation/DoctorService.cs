@@ -82,11 +82,16 @@ namespace HealthAxisCore_Api.Services.Implementations
             {
                 if (status.Equals("Active", StringComparison.OrdinalIgnoreCase))
                 {
-                    query = query.Where(d => d.IsActive);
+                    query = query.Where(d => d.IsActive && !d.IsOnLeave);
                 }
                 else if (status.Equals("Inactive", StringComparison.OrdinalIgnoreCase))
                 {
                     query = query.Where(d => !d.IsActive);
+                }
+                else if (status.Equals("OnLeave", StringComparison.OrdinalIgnoreCase) ||
+                         status.Equals("On Leave", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(d => d.IsOnLeave);
                 }
             }
 
@@ -135,6 +140,7 @@ namespace HealthAxisCore_Api.Services.Implementations
         {
             var doctor = _mapper.Map<Doctor>(dto);
             doctor.CreatedDate = DateTime.Now;
+            doctor.IsOnLeave = false;
 
             await _repository.AddAsync(doctor);
 
@@ -249,8 +255,12 @@ namespace HealthAxisCore_Api.Services.Implementations
                 var doctors =
                     await _repository.GetDoctors(name, specialization, isActive);
 
+                var availableDoctors = doctors
+                    .Where(d => d.IsActive && !d.IsOnLeave)
+                    .ToList();
+
                 var doctorDtos =
-                    _mapper.Map<List<DoctorResponseDto>>(doctors);
+                    _mapper.Map<List<DoctorResponseDto>>(availableDoctors);
 
                 await _cacheService.SetAsync(
                     cacheKey,

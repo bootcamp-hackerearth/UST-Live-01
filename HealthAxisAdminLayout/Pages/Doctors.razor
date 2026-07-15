@@ -222,6 +222,16 @@
             <div class="doctor-stat-icon">○</div>
         </div>
 
+        <div class="doctor-stat-card doctor-stat-orange">
+            <div>
+                <span>On Leave</span>
+                <h2>@OnLeaveDoctors</h2>
+                <p>Currently unavailable doctors</p>
+            </div>
+
+            <div class="doctor-stat-icon">⏸</div>
+        </div>
+
         <div class="doctor-stat-card doctor-stat-purple">
             <div>
                 <span>Specialisations</span>
@@ -273,6 +283,7 @@
                 <option value="All">All Status</option>
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
+                <option value="OnLeave">On Leave</option>
             </select>
 
         </div>
@@ -368,7 +379,11 @@
                                     <button class="doctor-status-icon-btn"
                                             title="Click to view status meaning"
                                             @onclick="ToggleStatusLegend">
-                                        @if (doctor.IsActive)
+                                        @if (doctor.IsOnLeave)
+                                        {
+                                            <span class="status-icon onleave">⏸</span>
+                                        }
+                                        else if (doctor.IsActive)
                                         {
                                             <span class="status-icon active">✓</span>
                                         }
@@ -376,6 +391,7 @@
                                         {
                                             <span class="status-icon inactive">!</span>
                                         }
+
                                     </button>
                                 </td>
 
@@ -584,9 +600,15 @@
 
     private int TotalDoctors => totalCount;
 
-    private int ActiveDoctors => doctors.Count(d => d.IsActive);
+    private int ActiveDoctors =>
+    doctors.Count(d => d.IsActive && !d.IsOnLeave);
 
-    private int InactiveDoctors => doctors.Count(d => !d.IsActive);
+    private int InactiveDoctors =>
+        doctors.Count(d => !d.IsActive);
+
+    private int OnLeaveDoctors =>
+        doctors.Count(d => d.IsOnLeave);
+
 
     private int SpecialisationCount => doctors.Select(d => d.Specialisation).Distinct().Count();
 

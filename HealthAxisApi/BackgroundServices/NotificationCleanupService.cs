@@ -8,6 +8,10 @@ namespace HealthAxisCore_Api.BackgroundServices
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<NotificationCleanupService> _logger;
 
+        private static readonly TimeSpan CleanupInterval = TimeSpan.FromHours(6);
+
+        private const int RetentionDays = 30;
+
         public NotificationCleanupService(
             IServiceScopeFactory scopeFactory,
             ILogger<NotificationCleanupService> logger)
@@ -23,7 +27,7 @@ namespace HealthAxisCore_Api.BackgroundServices
                 DateTimeOffset.Now
             );
 
-            using var timer = new PeriodicTimer(TimeSpan.FromHours(6));
+            using var timer = new PeriodicTimer(CleanupInterval);
 
             try
             {
@@ -36,7 +40,9 @@ namespace HealthAxisCore_Api.BackgroundServices
             }
             catch (OperationCanceledException)
             {
-                _logger.LogInformation("NotificationCleanupService cancellation requested.");
+                _logger.LogInformation(
+                    "NotificationCleanupService cancellation requested."
+                );
             }
             finally
             {
@@ -47,15 +53,17 @@ namespace HealthAxisCore_Api.BackgroundServices
             }
         }
 
-        private async Task CleanupOldNotificationsAsync(CancellationToken cancellationToken)
+        private async Task CleanupOldNotificationsAsync(
+            CancellationToken cancellationToken)
         {
             try
             {
                 using var scope = _scopeFactory.CreateScope();
 
-                var dbContext = scope.ServiceProvider.GetRequiredService<HealthAppDbContext>();
+                var dbContext =
+                    scope.ServiceProvider.GetRequiredService<HealthAppDbContext>();
 
-                var cutoffDate = DateTime.Now.AddDays(-30);
+                var cutoffDate = DateTime.Now.AddDays(-RetentionDays);
 
                 var oldReadNotifications = await dbContext.Notifications
                     .Where(notification =>
@@ -66,8 +74,9 @@ namespace HealthAxisCore_Api.BackgroundServices
                 if (!oldReadNotifications.Any())
                 {
                     _logger.LogInformation(
-                        "Notification cleanup completed at {Time}. No old read notifications found.",
-                        DateTimeOffset.Now
+                        "Notification cleanup completed at {Time}. No read notifications older than {RetentionDays} days were found.",
+                        DateTimeOffset.Now,
+                        RetentionDays
                     );
 
                     return;
@@ -78,9 +87,10 @@ namespace HealthAxisCore_Api.BackgroundServices
                 await dbContext.SaveChangesAsync(cancellationToken);
 
                 _logger.LogInformation(
-                    "Notification cleanup completed at {Time}. Deleted {Count} old read notifications.",
+                    "Notification cleanup completed at {Time}. Deleted {Count} read notifications older than {RetentionDays} days.",
                     DateTimeOffset.Now,
-                    oldReadNotifications.Count
+                    oldReadNotifications.Count,
+                    RetentionDays
                 );
             }
             catch (OperationCanceledException)
@@ -97,7 +107,8 @@ namespace HealthAxisCore_Api.BackgroundServices
             }
         }
 
-        public override async Task StopAsync(CancellationToken cancellationToken)
+        public override async Task StopAsync(
+            CancellationToken cancellationToken)
         {
             _logger.LogInformation(
                 "NotificationCleanupService is stopping gracefully at {Time}",
