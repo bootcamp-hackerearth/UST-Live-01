@@ -1,304 +1,584 @@
 <section class="profile-page">
-  <section class="profile-header">
-    <div>
+
+  <section class="profile-hero">
+
+    <div class="hero-content">
+
+      <span class="hero-label">
+        Patient Account
+      </span>
+
       <h1>My Profile</h1>
-      <p>View patient details and update account security.</p>
+
+      <p>
+        Review your personal details and manage account security
+        from one place.
+      </p>
+
     </div>
+
+    <div class="hero-account-card">
+
+      <span class="hero-account-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M5 21v-2a7 7 0 0114 0v2"></path>
+          <path d="M17 8l2 2 3-4"></path>
+        </svg>
+      </span>
+
+      <div>
+        <strong>Active Patient Account</strong>
+        <span>Your profile is ready to use</span>
+      </div>
+
+    </div>
+
   </section>
 
   @if (errorMessage()) {
-    <div class="alert error">
+    <div class="page-alert" role="alert">
       {{ errorMessage() }}
     </div>
   }
 
-  @if (successMessage()) {
-    <div class="alert success">
-      {{ successMessage() }}
-    </div>
-  }
-
   @if (loading()) {
-    <div class="loading-card">
-      Loading profile details...
-    </div>
+    <section class="loading-card">
+      <span class="loader"></span>
+      <strong>Loading profile details...</strong>
+    </section>
   }
 
-  @if (!loading() && patient()) {
+  @if (!loading() && patient(); as currentPatient) {
+
     <section class="profile-grid">
-      <article class="profile-card">
+
+      <aside class="identity-card">
+
         <div class="avatar-circle">
-          {{ patient()!.fullName.charAt(0) }}
+          {{ patientInitial() }}
         </div>
 
-        <h2>{{ patient()!.fullName }}</h2>
-        <p>{{ patient()!.email }}</p>
+        <h2>{{ currentPatient.fullName }}</h2>
 
-        <div class="summary-badge">
-          <span>Patient Portal Account</span>
-        </div>
-      </article>
+        <p>{{ currentPatient.email }}</p>
 
-      <article class="details-card">
-        <div class="details-header">
+        <span class="account-type">
+          Patient Portal Account
+        </span>
+
+        <div class="identity-summary">
+
           <div>
-            <p>PATIENT DETAILS</p>
-            <h2>Patient Information</h2>
+            <span>Patient ID</span>
+            <strong>#{{ currentPatient.patientId }}</strong>
+          </div>
+
+          <div>
+            <span>Account Status</span>
+            <strong class="active-text">Active</strong>
+          </div>
+
+        </div>
+
+      </aside>
+
+      <article class="information-card">
+
+        <div class="card-header">
+
+          <div>
+            <span>Personal Information</span>
+            <h2>Patient Details</h2>
+            <p>
+              Information connected to your HealthAxis patient account.
+            </p>
           </div>
 
           <button
             type="button"
-            class="edit-profile-button"
+            class="edit-button"
             (click)="openEditDialog()"
           >
-            Edit Patient Details
+            Edit Details
           </button>
+
         </div>
 
-        <div class="details-grid">
-          <div class="detail-row">
-            <span>Full Name</span>
-            <strong>{{ patient()!.fullName }}</strong>
+        <div class="information-grid">
+
+          <div class="information-item">
+
+            <span class="information-icon purple-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M5 21v-2a7 7 0 0114 0v2"></path>
+              </svg>
+            </span>
+
+            <div>
+              <span>Full Name</span>
+              <strong>{{ currentPatient.fullName }}</strong>
+            </div>
+
           </div>
 
-          <div class="detail-row">
-            <span>Date of Birth</span>
-            <strong>{{ patient()!.dateOfBirth | date: 'mediumDate' }}</strong>
+          <div class="information-item">
+
+            <span class="information-icon blue-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                <path d="M8 3v4M16 3v4M3 10h18"></path>
+              </svg>
+            </span>
+
+            <div>
+              <span>Date of Birth</span>
+              <strong>
+                {{ currentPatient.dateOfBirth | date: 'dd MMM yyyy' }}
+              </strong>
+            </div>
+
           </div>
 
-          <div class="detail-row">
-            <span>Gender</span>
-            <strong>{{ patient()!.gender }}</strong>
+          <div class="information-item">
+
+            <span class="information-icon green-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 7v10M7 12h10"></path>
+              </svg>
+            </span>
+
+            <div>
+              <span>Gender</span>
+              <strong>{{ currentPatient.gender }}</strong>
+            </div>
+
           </div>
 
-          <div class="detail-row">
-            <span>Phone Number</span>
-            <strong>{{ patient()!.phoneNumber }}</strong>
+          <div class="information-item">
+
+            <span class="information-icon orange-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M4 4h4l2 5-3 2a15 15 0 006 6l2-3 5 2v4a2 2 0 01-2 2C9 22 2 15 2 6a2 2 0 012-2z"
+                ></path>
+              </svg>
+            </span>
+
+            <div>
+              <span>Phone Number</span>
+              <strong>{{ currentPatient.phoneNumber }}</strong>
+            </div>
+
           </div>
 
-          <div class="detail-row">
-            <span>Email Address</span>
-            <strong>{{ patient()!.email }}</strong>
+          <div class="information-item full-information-item">
+
+            <span class="information-icon pink-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                <path d="M3 7l9 6 9-6"></path>
+              </svg>
+            </span>
+
+            <div>
+              <span>Email Address</span>
+              <strong>{{ currentPatient.email }}</strong>
+            </div>
+
           </div>
 
-          <div class="detail-row">
-            <span>Account Status</span>
-            <strong>Active</strong>
-          </div>
         </div>
+
       </article>
+
     </section>
 
-    <section class="password-card" id="change-password">
-      <div class="password-header">
+    <section class="security-card" id="change-password">
+
+      <div class="security-heading">
+
+        <span class="security-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <rect x="5" y="10" width="14" height="10" rx="2"></rect>
+            <path d="M8 10V7a4 4 0 018 0v3"></path>
+          </svg>
+        </span>
+
         <div>
-          <p>SECURITY</p>
+          <span>Account Security</span>
           <h2>Change Password</h2>
-          <span>Use a strong password to keep your account safe.</span>
+
+          <p>
+            Use a strong password that you do not use for another account.
+          </p>
         </div>
+
       </div>
 
-      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+      <form
+        [formGroup]="passwordForm"
+        (ngSubmit)="changePassword()"
+      >
         <div class="password-grid">
+
           <div class="form-group">
-            <label for="currentPassword">Current Password</label>
+
+            <label for="currentPassword">
+              Current Password
+            </label>
 
             <input
               id="currentPassword"
               type="password"
               placeholder="Enter current password"
+              autocomplete="current-password"
               formControlName="currentPassword"
             />
 
-            @if (currentPassword.invalid && currentPassword.touched) {
-              <small>Current password is required.</small>
-            }
+            <small class="field-error">
+              @if (
+                currentPassword.invalid &&
+                currentPassword.touched
+              ) {
+                Current password is required.
+              }
+            </small>
+
           </div>
 
           <div class="form-group">
-            <label for="newPassword">New Password</label>
+
+            <label for="newPassword">
+              New Password
+            </label>
 
             <input
               id="newPassword"
               type="password"
-              placeholder="Enter new password"
+              placeholder="Create a strong password"
+              autocomplete="new-password"
               formControlName="newPassword"
             />
 
-            @if (newPassword.invalid && newPassword.touched) {
-              <small>New password must be at least 6 characters.</small>
-            }
+            <small class="field-error">
+              @if (
+                newPassword.invalid &&
+                newPassword.touched
+              ) {
+                {{ getPasswordErrorMessage() }}
+              }
+            </small>
+
           </div>
 
           <div class="form-group">
-            <label for="confirmPassword">Confirm New Password</label>
+
+            <label for="confirmPassword">
+              Confirm New Password
+            </label>
 
             <input
               id="confirmPassword"
               type="password"
               placeholder="Re-enter new password"
+              autocomplete="new-password"
               formControlName="confirmPassword"
             />
 
-            @if (confirmPassword.invalid && confirmPassword.touched) {
-              <small>Confirm password is required.</small>
-            }
+            <small class="field-error">
+              @if (
+                confirmPassword.invalid &&
+                confirmPassword.touched
+              ) {
+                Confirm password is required.
+              }
+
+              @if (
+                passwordForm.errors?.['passwordMismatch'] &&
+                confirmPassword.touched
+              ) {
+                Password and confirm password do not match.
+              }
+            </small>
+
           </div>
+
         </div>
 
-        @if (passwordForm.errors?.['passwordMismatch'] && confirmPassword.touched) {
-          <small class="password-error">
-            New password and confirm password must match.
-          </small>
-        }
+        <div class="password-requirement">
+          Password must contain at least 8 characters with uppercase,
+          lowercase, number, and special character.
+        </div>
 
         <button
           type="submit"
-          class="change-password-button"
+          class="password-button"
           [disabled]="passwordSaving()"
         >
-          {{ passwordSaving() ? 'Changing...' : 'Change Password' }}
+          @if (passwordSaving()) {
+            Changing Password...
+          } @else {
+            Change Password
+          }
         </button>
+
       </form>
+
     </section>
+
   }
 
-  @if (isEditDialogOpen() && patient()) {
-    <div class="modal-backdrop">
-      <section class="edit-modal">
-        <div class="modal-header">
-          <div>
-            <p>Edit Profile</p>
-            <h2>Update Patient Details</h2>
+</section>
+
+@if (isEditDialogOpen() && patient()) {
+  <div
+    class="modal-backdrop"
+    role="presentation"
+  >
+    <section
+      class="edit-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="editProfileTitle"
+    >
+
+      <header class="modal-header">
+
+        <div>
+          <span>Edit Profile</span>
+          <h2 id="editProfileTitle">
+            Update Patient Details
+          </h2>
+
+          <p>
+            Make changes to your personal information.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="close-button"
+          aria-label="Close edit profile"
+          [disabled]="saving()"
+          (click)="closeEditDialog()"
+        >
+          ×
+        </button>
+
+      </header>
+
+      <form
+        [formGroup]="editForm"
+        (ngSubmit)="updatePatientDetails()"
+      >
+
+        <div class="edit-form-grid">
+
+          <div class="form-group full-width">
+
+            <label for="fullName">
+              Full Name
+            </label>
+
+            <input
+              id="fullName"
+              type="text"
+              maxlength="80"
+              placeholder="Enter full name"
+              autocomplete="name"
+              formControlName="fullName"
+            />
+
+            <small class="field-error">
+              @if (fullName.invalid && fullName.touched) {
+                {{ getFullNameErrorMessage() }}
+              }
+            </small>
+
           </div>
+
+          <div class="form-group">
+
+            <label for="dateOfBirth">
+              Date of Birth
+            </label>
+
+            <input
+              id="dateOfBirth"
+              type="date"
+              formControlName="dateOfBirth"
+              [max]="maxDate"
+            />
+
+            <small class="field-error">
+              @if (
+                dateOfBirth.invalid &&
+                dateOfBirth.touched
+              ) {
+                @if (dateOfBirth.errors?.['required']) {
+                  Date of birth is required.
+                }
+
+                @if (dateOfBirth.errors?.['futureDate']) {
+                  Date of birth cannot be in the future.
+                }
+              }
+            </small>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="gender">
+              Gender
+            </label>
+
+            <select
+              id="gender"
+              formControlName="gender"
+            >
+              <option value="">
+                Select gender
+              </option>
+
+              <option value="Male">
+                Male
+              </option>
+
+              <option value="Female">
+                Female
+              </option>
+
+              <option value="Other">
+                Other
+              </option>
+            </select>
+
+            <small class="field-error">
+              @if (gender.invalid && gender.touched) {
+                Gender is required.
+              }
+            </small>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="phoneNumber">
+              Phone Number
+            </label>
+
+            <input
+              id="phoneNumber"
+              type="tel"
+              maxlength="10"
+              placeholder="Enter phone number"
+              autocomplete="tel"
+              formControlName="phoneNumber"
+            />
+
+            <small class="field-error">
+              @if (
+                phoneNumber.invalid &&
+                phoneNumber.touched
+              ) {
+                Enter a valid 10 digit phone number.
+              }
+            </small>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="email">
+              Email Address
+            </label>
+
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter email address"
+              autocomplete="email"
+              formControlName="email"
+            />
+
+            <small class="field-error">
+              @if (email.invalid && email.touched) {
+                Enter a valid email address.
+              }
+            </small>
+
+          </div>
+
+        </div>
+
+        <div class="modal-actions">
+
+          <button
+            type="submit"
+            class="save-button"
+            [disabled]="saving()"
+          >
+            @if (saving()) {
+              Updating Details...
+            } @else {
+              Save Changes
+            }
+          </button>
 
           <button
             type="button"
-            class="close-button"
+            class="cancel-button"
+            [disabled]="saving()"
             (click)="closeEditDialog()"
           >
-            ×
+            Cancel
           </button>
+
         </div>
 
-        <form [formGroup]="editForm" (ngSubmit)="updatePatientDetails()">
-          <div class="edit-form-grid">
-            <div class="form-group">
-              <label for="fullName">Full Name</label>
+      </form>
 
-              <input
-                id="fullName"
-                type="text"
-                maxlength="80"
-                placeholder="Enter full name"
-                formControlName="fullName"
-              />
+    </section>
+  </div>
+}
 
-              @if (fullName.invalid && fullName.touched) {
-                <small>Name should contain only letters and spaces.</small>
-              }
-            </div>
+@if (successDialogMessage()) {
+  <div class="modal-backdrop">
 
-            <div class="form-group">
-              <label for="dateOfBirth">Date of Birth</label>
+    <section
+      class="success-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="successDialogTitle"
+    >
 
-              <input
-                id="dateOfBirth"
-                type="date"
-                formControlName="dateOfBirth"
-                [max]="maxDate"
-              />
+      <span class="success-dialog-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M8 12l3 3 5-6"></path>
+        </svg>
+      </span>
 
-              @if (dateOfBirth.invalid && dateOfBirth.touched) {
-                <small>Date of birth is required and cannot be future date.</small>
-              }
-            </div>
+      <h2 id="successDialogTitle">
+        Changes Saved
+      </h2>
 
-            <div class="form-group">
-              <label for="gender">Gender</label>
+      <p>
+        {{ successDialogMessage() }}
+      </p>
 
-              <select id="gender" formControlName="gender">
-                <option value="">Select gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
+      <button
+        type="button"
+        (click)="closeSuccessDialog()"
+      >
+        Done
+      </button>
 
-              @if (gender.invalid && gender.touched) {
-                <small>Gender is required.</small>
-              }
-            </div>
+    </section>
 
-            <div class="form-group">
-              <label for="phoneNumber">Phone Number</label>
-
-              <input
-                id="phoneNumber"
-                type="tel"
-                maxlength="10"
-                placeholder="Enter phone number"
-                formControlName="phoneNumber"
-              />
-
-              @if (phoneNumber.invalid && phoneNumber.touched) {
-                <small>Enter a valid 10 digit phone number.</small>
-              }
-            </div>
-
-            <div class="form-group full-width">
-              <label for="email">Email Address</label>
-
-              <input
-                id="email"
-                type="email"
-                placeholder="Enter email address"
-                formControlName="email"
-              />
-
-              @if (email.invalid && email.touched) {
-                <small>Enter a valid email address.</small>
-              }
-            </div>
-          </div>
-
-          <div class="modal-actions">
-            <button
-              type="submit"
-              class="save-button"
-              [disabled]="saving()"
-            >
-              {{ saving() ? 'Updating...' : 'Update Details' }}
-            </button>
-
-            <button
-              type="button"
-              class="cancel-button"
-              [disabled]="saving()"
-              (click)="closeEditDialog()"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </section>
-    </div>
-  }
-
-  @if (successDialogMessage()) {
-    <div class="modal-backdrop">
-      <section class="success-modal">
-        <div class="success-icon">✅</div>
-
-        <h2>Success</h2>
-
-        <p>
-          {{ successDialogMessage() }}
-        </p>
-
-        <button type="button" (click)="closeSuccessDialog()">
-          Done
-        </button>
-      </section>
-    </div>
-  }
-</section>
+  </div>
+}

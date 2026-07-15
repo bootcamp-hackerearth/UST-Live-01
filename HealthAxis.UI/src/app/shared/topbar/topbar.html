@@ -1,20 +1,35 @@
 <header class="topbar">
   <div class="topbar-left">
-    <p>{{ getGreeting() }}</p>
-    <h1>{{ authService.role() }} Portal</h1>
+    <p>
+      {{ getGreeting() }}, {{ getFirstName() }}
+    </p>
+
+    <h1>
+      {{ authService.role() }} Portal
+    </h1>
   </div>
 
   <div class="topbar-right">
     @if (authService.role() === 'Doctor') {
       <button
         type="button"
-        class="doctor-status-toggle"
-        [class.inactive]="doctorStatusState.isActive() === false"
-        [disabled]="statusUpdating() || doctorStatusState.isActive() === null"
+        class="doctor-status-button"
+        [class.unavailable]="
+          doctorStatusState.isActive() === false
+        "
+        [disabled]="
+          statusUpdating() ||
+          doctorStatusState.isActive() === null
+        "
         (click)="toggleDoctorStatus()"
       >
+        <span
+          class="status-dot"
+          aria-hidden="true"
+        ></span>
+
         @if (statusUpdating()) {
-          Updating...
+          Updating
         } @else {
           {{ getDoctorStatusText() }}
         }
@@ -22,45 +37,103 @@
     }
 
     <div class="time-card">
-      <span>🕘</span>
+      <span
+        class="time-icon"
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 24 24">
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+          ></circle>
+
+          <path d="M12 7v5l3 2"></path>
+        </svg>
+      </span>
 
       <div>
-        <strong>{{ currentTime() | date: 'hh:mm a' }}</strong>
-        <small>{{ currentTime() | date: 'EEE, dd MMM yyyy' }}</small>
+        <strong>
+          {{ currentTime() | date: 'hh:mm a' }}
+        </strong>
+
+        <small>
+          {{ currentTime() | date: 'EEE, dd MMM yyyy' }}
+        </small>
       </div>
     </div>
 
-    <div class="profile-wrapper" (click)="$event.stopPropagation()">
+    <div
+      class="profile-wrapper"
+      (click)="$event.stopPropagation()"
+    >
       <button
         type="button"
         class="profile-button"
+        aria-label="Open profile menu"
+        aria-controls="profileMenu"
+        [attr.aria-expanded]="isProfileMenuOpen()"
         (click)="toggleProfileMenu()"
       >
-        <span class="profile-icon">👥</span>
+        <span class="profile-avatar">
+          {{ getProfileInitial() }}
+        </span>
 
-        <div>
-          <strong>{{ authService.role() }}</strong>
-        </div>
+        <span class="profile-details">
+          <strong>
+            {{ getProfileName() }}
+          </strong>
 
-        <span class="dropdown-arrow">
-          {{ isProfileMenuOpen() ? '⌃' : '⌄' }}
+          <small>
+            {{ authService.role() }} Portal
+          </small>
+        </span>
+
+        <span
+          class="profile-arrow"
+          [class.open]="isProfileMenuOpen()"
+          aria-hidden="true"
+        >
+          <svg viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5"></path>
+          </svg>
         </span>
       </button>
 
       @if (isProfileMenuOpen()) {
-        <div class="profile-menu">
-          <a [routerLink]="profileRoute()" (click)="isProfileMenuOpen.set(false)">
-            <span>👤</span>
+        <div
+          id="profileMenu"
+          class="profile-menu"
+        >
+          <div class="profile-menu-heading">
+            <strong>
+              {{ getProfileName() }}
+            </strong>
+
+            <span>
+              {{ authService.role() }} account
+            </span>
+          </div>
+
+          <a
+            [routerLink]="profileRoute()"
+            (click)="isProfileMenuOpen.set(false)"
+          >
             View Profile
           </a>
 
-          <button type="button" (click)="goToChangePassword()">
-            <span>🔐</span>
+          <button
+            type="button"
+            (click)="goToChangePassword()"
+          >
             Change Password
           </button>
 
-          <button type="button" (click)="logout()">
-            <span>🚪</span>
+          <button
+            type="button"
+            class="logout-action"
+            (click)="requestLogout()"
+          >
             Logout
           </button>
         </div>
@@ -70,7 +143,10 @@
 </header>
 
 @if (statusError()) {
-  <div class="doctor-status-message error">
+  <div
+    class="status-error"
+    role="alert"
+  >
     {{ statusError() }}
   </div>
 }

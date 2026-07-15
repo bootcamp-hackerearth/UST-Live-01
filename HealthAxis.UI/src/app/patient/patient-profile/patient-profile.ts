@@ -8,6 +8,7 @@ import {
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   signal
 } from '@angular/core';
@@ -19,9 +20,15 @@ import { AuthService } from '../../core/services/auth.service';
 import { ChangePasswordRequest } from '../../core/models/auth.model';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
+const PASSWORD_PATTERN =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+
 @Component({
   selector: 'app-patient-profile',
-  imports: [ReactiveFormsModule, DatePipe],
+  imports: [
+    ReactiveFormsModule,
+    DatePipe
+  ],
   templateUrl: './patient-profile.html',
   styleUrl: './patient-profile.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -36,11 +43,26 @@ export class PatientProfile {
   readonly saving = signal(false);
   readonly passwordSaving = signal(false);
   readonly errorMessage = signal('');
-  readonly successMessage = signal('');
   readonly successDialogMessage = signal('');
   readonly isEditDialogOpen = signal(false);
 
   readonly maxDate = this.formatDateForInput(new Date());
+
+  readonly patientInitial = computed(() => {
+    const name = this.patient()?.fullName?.trim();
+
+    return name
+      ? name.charAt(0).toUpperCase()
+      : 'P';
+  });
+
+  readonly memberSince = computed(() => {
+    const createdDate = this.patient()?.createdDate;
+
+    return createdDate
+      ? new Date(createdDate)
+      : null;
+  });
 
   readonly editForm = this.formBuilder.nonNullable.group({
     fullName: [
@@ -59,7 +81,12 @@ export class PatientProfile {
         PatientProfile.noFutureDateValidator
       ]
     ],
-    gender: ['', [Validators.required]],
+    gender: [
+      '',
+      [
+        Validators.required
+      ]
+    ],
     phoneNumber: [
       '',
       [
@@ -79,16 +106,27 @@ export class PatientProfile {
 
   readonly passwordForm = this.formBuilder.nonNullable.group(
     {
-      currentPassword: ['', [Validators.required]],
+      currentPassword: [
+        '',
+        [
+          Validators.required
+        ]
+      ],
       newPassword: [
         '',
         [
           Validators.required,
-          Validators.minLength(6),
-          Validators.maxLength(50)
+          Validators.minLength(8),
+          Validators.maxLength(50),
+          Validators.pattern(PASSWORD_PATTERN)
         ]
       ],
-      confirmPassword: ['', [Validators.required]]
+      confirmPassword: [
+        '',
+        [
+          Validators.required
+        ]
+      ]
     },
     {
       validators: PatientProfile.passwordMatchValidator
@@ -134,7 +172,6 @@ export class PatientProfile {
   loadProfile(): void {
     this.loading.set(true);
     this.errorMessage.set('');
-    this.successMessage.set('');
 
     this.patientService.getMyProfile().subscribe({
       next: (patient: Patient) => {
@@ -143,31 +180,36 @@ export class PatientProfile {
       },
       error: (error: unknown) => {
         this.loading.set(false);
+
         this.errorMessage.set(
-          getFriendlyErrorMessage(error, 'Could not load patient profile.')
+          getFriendlyErrorMessage(
+            error,
+            'Could not load patient profile.'
+          )
         );
       }
     });
   }
 
   openEditDialog(): void {
-    const patient = this.patient();
+    const currentPatient = this.patient();
 
-    if (!patient) {
+    if (!currentPatient) {
       this.errorMessage.set('Patient details not found.');
       return;
     }
 
     this.errorMessage.set('');
-    this.successMessage.set('');
     this.successDialogMessage.set('');
 
     this.editForm.reset({
-      fullName: patient.fullName,
-      dateOfBirth: this.formatDateForInput(new Date(patient.dateOfBirth)),
-      gender: patient.gender,
-      phoneNumber: patient.phoneNumber,
-      email: patient.email
+      fullName: currentPatient.fullName,
+      dateOfBirth: this.formatDateForInput(
+        new Date(currentPatient.dateOfBirth)
+      ),
+      gender: currentPatient.gender,
+      phoneNumber: currentPatient.phoneNumber,
+      email: currentPatient.email
     });
 
     this.isEditDialogOpen.set(true);
@@ -183,12 +225,13 @@ export class PatientProfile {
 
   updatePatientDetails(): void {
     this.errorMessage.set('');
-    this.successMessage.set('');
     this.successDialogMessage.set('');
 
     if (this.editForm.invalid) {
       this.editForm.markAllAsTouched();
-      this.errorMessage.set('Please correct the patient details.');
+      this.errorMessage.set(
+        'Please correct the patient details.'
+      );
       return;
     }
 
@@ -226,25 +269,26 @@ export class PatientProfile {
         },
         error: (error: unknown) => {
           this.saving.set(false);
+
           this.errorMessage.set(
-            getFriendlyErrorMessage(error, 'Could not update patient details.')
+            getFriendlyErrorMessage(
+              error,
+              'Could not update patient details.'
+            )
           );
         }
       });
   }
 
-  closeSuccessDialog(): void {
-    this.successDialogMessage.set('');
-  }
-
   changePassword(): void {
     this.errorMessage.set('');
-    this.successMessage.set('');
     this.successDialogMessage.set('');
 
     if (this.passwordForm.invalid) {
       this.passwordForm.markAllAsTouched();
-      this.errorMessage.set('Please correct the password details.');
+      this.errorMessage.set(
+        'Please correct the password details.'
+      );
       return;
     }
 
@@ -261,21 +305,72 @@ export class PatientProfile {
     this.authService.changePassword(request).subscribe({
       next: () => {
         this.passwordSaving.set(false);
+
         this.passwordForm.reset({
           currentPassword: '',
           newPassword: '',
           confirmPassword: ''
         });
 
-        this.successDialogMessage.set('Password changed successfully.');
+        this.successDialogMessage.set(
+          'Password changed successfully.'
+        );
       },
       error: (error: unknown) => {
         this.passwordSaving.set(false);
+
         this.errorMessage.set(
-          getFriendlyErrorMessage(error, 'Could not change password.')
+          getFriendlyErrorMessage(
+            error,
+            'Could not change password.'
+          )
         );
       }
     });
+  }
+
+  closeSuccessDialog(): void {
+    this.successDialogMessage.set('');
+  }
+
+  getFullNameErrorMessage(): string {
+    if (this.fullName.hasError('required')) {
+      return 'Full name is required.';
+    }
+
+    if (this.fullName.hasError('minlength')) {
+      return 'Full name must contain at least 3 characters.';
+    }
+
+    if (this.fullName.hasError('maxlength')) {
+      return 'Full name cannot exceed 80 characters.';
+    }
+
+    if (this.fullName.hasError('pattern')) {
+      return 'Use only letters and spaces.';
+    }
+
+    return '';
+  }
+
+  getPasswordErrorMessage(): string {
+    if (this.newPassword.hasError('required')) {
+      return 'New password is required.';
+    }
+
+    if (this.newPassword.hasError('minlength')) {
+      return 'Password must contain at least 8 characters.';
+    }
+
+    if (this.newPassword.hasError('maxlength')) {
+      return 'Password cannot exceed 50 characters.';
+    }
+
+    if (this.newPassword.hasError('pattern')) {
+      return 'Use uppercase, lowercase, number, and special character.';
+    }
+
+    return '';
   }
 
   private formatDateForInput(date: Date): string {
@@ -299,31 +394,26 @@ export class PatientProfile {
     selectedDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
 
-    if (selectedDate > today) {
-      return {
-        futureDate: true
-      };
-    }
-
-    return null;
+    return selectedDate > today
+      ? { futureDate: true }
+      : null;
   }
 
   private static passwordMatchValidator(
     control: AbstractControl
   ): ValidationErrors | null {
-    const newPassword = control.get('newPassword')?.value;
-    const confirmPassword = control.get('confirmPassword')?.value;
+    const newPassword =
+      control.get('newPassword')?.value;
+
+    const confirmPassword =
+      control.get('confirmPassword')?.value;
 
     if (!newPassword || !confirmPassword) {
       return null;
     }
 
-    if (newPassword !== confirmPassword) {
-      return {
-        passwordMismatch: true
-      };
-    }
-
-    return null;
+    return newPassword !== confirmPassword
+      ? { passwordMismatch: true }
+      : null;
   }
 }

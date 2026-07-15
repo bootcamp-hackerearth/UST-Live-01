@@ -4,19 +4,19 @@
 >
   @if (!isSidebarClosed()) {
     <aside class="sidebar-area">
-      <app-sidebar></app-sidebar>
+      <app-sidebar
+        (logoutRequested)="openLogoutDialog()"
+      ></app-sidebar>
 
       <button
         type="button"
-        class="sidebar-toggle inside-sidebar"
+        class="sidebar-toggle close-sidebar"
         aria-label="Close sidebar"
         (click)="toggleSidebar()"
       >
-        <span class="toggle-lines">
-  <span></span>
-  <span></span>
-  <span></span>
-</span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
       </button>
     </aside>
   }
@@ -29,14 +29,76 @@
         aria-label="Open sidebar"
         (click)="toggleSidebar()"
       >
-        ☰
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
       </button>
     }
 
-    <app-topbar></app-topbar>
+    <app-topbar
+      (logoutRequested)="openLogoutDialog()"
+    ></app-topbar>
 
     <section class="dashboard-content">
       <router-outlet></router-outlet>
     </section>
   </main>
 </section>
+
+@if (isLogoutDialogOpen()) {
+  <div class="logout-dialog-backdrop">
+    <section
+      class="logout-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="logoutDialogTitle"
+      aria-describedby="logoutDialogDescription"
+    >
+      <button
+        type="button"
+        class="logout-dialog-close"
+        aria-label="Close logout confirmation"
+        (click)="closeLogoutDialog()"
+      >
+        ×
+      </button>
+
+      <span
+        class="logout-dialog-icon"
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 24 24">
+          <path d="M10 17l5-5-5-5"></path>
+          <path d="M15 12H3"></path>
+          <path d="M14 4h5a2 2 0 012 2v12a2 2 0 01-2 2h-5"></path>
+        </svg>
+      </span>
+
+      <h2 id="logoutDialogTitle">
+        Confirm Logout
+      </h2>
+
+      <p id="logoutDialogDescription">
+        Are you sure you want to logout from your HealthAxis account?
+      </p>
+
+      <div class="logout-dialog-actions">
+        <button
+          type="button"
+          class="cancel-logout-button"
+          (click)="closeLogoutDialog()"
+        >
+          Stay Logged In
+        </button>
+
+        <button
+          type="button"
+          class="confirm-logout-button"
+          (click)="confirmLogout()"
+        >
+          Logout
+        </button>
+      </div>
+    </section>
+  </div>
+}

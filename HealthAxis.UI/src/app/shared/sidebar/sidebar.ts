@@ -1,17 +1,37 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  output
+} from '@angular/core';
+import {
+  RouterLink,
+  RouterLinkActive
+} from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
 
+type SidebarIcon =
+  | 'dashboard'
+  | 'calendar'
+  | 'appointments'
+  | 'records'
+  | 'profile'
+  | 'completed';
+
 interface SidebarMenuItem {
   label: string;
-  icon: string;
+  icon: SidebarIcon;
   path: string;
 }
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [
+    RouterLink,
+    RouterLinkActive
+  ],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -19,61 +39,65 @@ interface SidebarMenuItem {
 export class Sidebar {
   readonly authService = inject(AuthService);
 
-  private readonly patientMenu: readonly SidebarMenuItem[] = [
-    {
-      label: 'Dashboard',
-      icon: '🏠',
-      path: '/patient/dashboard'
-    },
-    {
-      label: 'Book Appointment',
-      icon: '📅',
-      path: '/patient/book-appointment'
-    },
-    {
-      label: 'My Appointments',
-      icon: '📋',
-      path: '/patient/my-appointments'
-    },
-    {
-      label: 'Health Records',
-      icon: '🧾',
-      path: '/patient/health-records'
-    },
-    {
-      label: 'My Profile',
-      icon: '👤',
-      path: '/patient/profile'
-    }
-  ];
+  readonly logoutRequested = output<void>();
 
-  private readonly doctorMenu: readonly SidebarMenuItem[] = [
-    {
-      label: 'Dashboard',
-      icon: '🏠',
-      path: '/doctor/dashboard'
-    },
-    {
-      label: 'Appointments',
-      icon: '📅',
-      path: '/doctor/upcoming-appointments'
-    },
-    {
-      label: 'Completed Visits',
-      icon: '✅',
-      path: '/doctor/completed-appointments'
-    },
-    {
-      label: 'Health Records',
-      icon: '🧾',
-      path: '/doctor/health-records'
-    },
-    {
-      label: 'My Profile',
-      icon: '👤',
-      path: '/doctor/profile'
-    }
-  ];
+  private readonly patientMenu:
+    readonly SidebarMenuItem[] = [
+      {
+        label: 'Dashboard',
+        icon: 'dashboard',
+        path: '/patient/dashboard'
+      },
+      {
+        label: 'Book Appointment',
+        icon: 'calendar',
+        path: '/patient/book-appointment'
+      },
+      {
+        label: 'My Appointments',
+        icon: 'appointments',
+        path: '/patient/my-appointments'
+      },
+      {
+        label: 'Health Records',
+        icon: 'records',
+        path: '/patient/health-records'
+      },
+      {
+        label: 'My Profile',
+        icon: 'profile',
+        path: '/patient/profile'
+      }
+    ];
+
+  private readonly doctorMenu:
+    readonly SidebarMenuItem[] = [
+      {
+        label: 'Dashboard',
+        icon: 'dashboard',
+        path: '/doctor/dashboard'
+      },
+      {
+        label: 'Appointments',
+        icon: 'calendar',
+        path: '/doctor/upcoming-appointments'
+      },
+      {
+        label: 'Completed Visits',
+        icon: 'completed',
+        path: '/doctor/completed-appointments'
+      },
+      {
+        label: 'Health Records',
+        icon: 'records',
+        path: '/doctor/health-records'
+      },
+      {
+        label: 'My Profile',
+        icon: 'profile',
+        path: '/doctor/profile'
+      }
+    ];
 
   readonly menuItems = computed(() => {
     const role = this.authService.role();
@@ -90,16 +114,12 @@ export class Sidebar {
   });
 
   readonly contactRoute = computed(() => {
-    const role = this.authService.role();
-
-    if (role === 'Doctor') {
-      return '/doctor/contact-us';
-    }
-
-    return '/patient/contact-us';
+    return this.authService.role() === 'Doctor'
+      ? '/doctor/contact-us'
+      : '/patient/contact-us';
   });
 
-  logout(): void {
-    this.authService.logout();
+  requestLogout(): void {
+    this.logoutRequested.emit();
   }
 }

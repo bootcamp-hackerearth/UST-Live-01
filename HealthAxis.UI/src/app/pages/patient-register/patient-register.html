@@ -1,50 +1,65 @@
 <section class="register-page">
+
   <div class="register-shell">
 
     <aside class="register-showcase">
 
-      <div class="brand-card">
-        <div class="brand-logo">H</div>
-
-        <div>
-          <h1>HealthAxis</h1>
-          <p>Patient Registration Portal</p>
-        </div>
-      </div>
+      <div class="showcase-overlay"></div>
 
       <div class="showcase-content">
-        <span class="showcase-label">Patient Registration</span>
 
-        <h2>Create your patient account</h2>
+        <div class="showcase-brand">
 
-        <p>
-          Register once to book appointments, manage visits, and access your
-          medical records securely.
-        </p>
-      </div>
+          <span class="brand-symbol" aria-hidden="true">
+            <span class="brand-cross"></span>
+          </span>
 
-      <div class="role-preview">
-
-        <article>
           <div>
-            <strong>Online Appointment Booking</strong>
-            <small>Choose doctors, dates, and available time slots</small>
+            <strong>HealthAxis</strong>
+            <small>Digital Hospital</small>
           </div>
-        </article>
 
-        <article>
-          <div>
-            <strong>Visit Status Tracking</strong>
-            <small>Track pending, confirmed, and completed visits</small>
-          </div>
-        </article>
+        </div>
 
-        <article>
-          <div>
-            <strong>Secure Medical Records</strong>
-            <small>View prescriptions, diagnosis notes, and visit history</small>
-          </div>
-        </article>
+        <div class="showcase-message">
+
+          <span>Patient Registration</span>
+
+          <h1>
+            Start your healthcare journey with HealthAxis
+          </h1>
+
+          <p>
+            Create one secure patient account to book appointments,
+            track consultations, and access medical records.
+          </p>
+
+        </div>
+
+        <div class="registration-benefits">
+
+          <article>
+            <strong>Find Active Doctors</strong>
+            <span>
+              Search doctors by specialisation and availability.
+            </span>
+          </article>
+
+          <article>
+            <strong>Book Appointments</strong>
+            <span>
+              Select a valid date and available time slot.
+            </span>
+          </article>
+
+          <article>
+            <strong>View Health Records</strong>
+            <span>
+              Access diagnosis, prescriptions, and visit notes.
+            </span>
+          </article>
+
+        </div>
 
       </div>
 
@@ -55,62 +70,80 @@
       <div class="form-card">
 
         <div class="form-header">
-          <span>Patient Details</span>
+
+          <span>Patient Account</span>
 
           <h2>Register as Patient</h2>
 
           <p>
-            Fill in the required details carefully. Your account will be secured
-            using Identity authentication.
+            Enter your details carefully to create your secure account.
           </p>
+
         </div>
 
         @if (errorMessage()) {
-          <div class="alert error">
+          <div class="alert error-alert" role="alert">
             {{ errorMessage() }}
           </div>
         }
 
         @if (successMessage()) {
-          <div class="alert success">
+          <div class="alert success-alert" role="status">
             {{ successMessage() }}
           </div>
         }
 
-        <form [formGroup]="registerForm" (ngSubmit)="registerPatient()">
+        <form
+          [formGroup]="registerForm"
+          (ngSubmit)="registerPatient()">
 
           <div class="form-grid">
 
             <div class="form-group full-width">
-              <label for="fullName">Full Name</label>
+
+              <label for="fullName">
+                Full Name
+              </label>
 
               <input
                 id="fullName"
                 type="text"
                 formControlName="fullName"
-                placeholder="Enter Full Name"
+                placeholder="Enter your full name"
                 autocomplete="name"
               />
 
               <small class="field-error">
+
                 @if (fullName.invalid && fullName.touched) {
+
                   @if (fullName.errors?.['required']) {
-                    Name is required.
+                    Full name is required.
                   }
 
                   @if (fullName.errors?.['pattern']) {
-                    Name should contain only letters and spaces.
+                    Use only letters and spaces.
                   }
 
                   @if (fullName.errors?.['minlength']) {
-                    Minimum 3 characters required.
+                    Enter at least 3 characters.
                   }
+
+                  @if (fullName.errors?.['maxlength']) {
+                    Full name cannot exceed 80 characters.
+                  }
+
                 }
+
               </small>
+
             </div>
 
             <div class="form-group">
-              <label for="dateOfBirth">Date of Birth</label>
+
+              <label for="dateOfBirth">
+                Date of Birth
+              </label>
 
               <input
                 id="dateOfBirth"
@@ -119,7 +152,9 @@
               />
 
               <small class="field-error">
+
                 @if (dateOfBirth.invalid && dateOfBirth.touched) {
+
                   @if (dateOfBirth.errors?.['required']) {
                     Date of birth is required.
                   }
@@ -127,21 +162,36 @@
                   @if (dateOfBirth.errors?.['futureDate']) {
                     Date of birth cannot be in the future.
                   }
+
                 }
+
               </small>
+
             </div>
 
             <div class="form-group">
-              <label for="gender">Gender</label>
 
-              <select id="gender" formControlName="gender">
-                <option value="">Select Gender</option>
+              <label for="gender">
+                Gender
+              </label>
 
-                @for (genderOption of genderOptions; track genderOption.value) {
+              <select
+                id="gender"
+                formControlName="gender">
+
+                <option value="">
+                  Select Gender
+                </option>
+
+                @for (
+                  genderOption of genderOptions;
+                  track genderOption.value
+                ) {
                   <option [value]="genderOption.value">
                     {{ genderOption.label }}
                   </option>
                 }
+
               </select>
 
               <small class="field-error">
@@ -149,34 +199,43 @@
                   Gender is required.
                 }
               </small>
+
             </div>
 
             <div class="form-group">
-              <label for="phoneNumber">Phone Number</label>
+
+              <label for="phoneNumber">
+                Phone Number
+              </label>
 
               <input
                 id="phoneNumber"
-                type="text"
+                type="tel"
                 formControlName="phoneNumber"
-                placeholder="Enter 10 digit Mobile Number"
+                placeholder="Enter 10 digit phone number"
                 autocomplete="tel"
+                maxlength="10"
               />
 
               <small class="field-error">
                 @if (phoneNumber.invalid && phoneNumber.touched) {
-                  Enter a valid 10 digit mobile number.
+                  Enter a valid 10 digit phone number.
                 }
               </small>
+
             </div>
 
             <div class="form-group">
-              <label for="email">Email Address</label>
+
+              <label for="email">
+                Email Address
+              </label>
 
               <input
                 id="email"
                 type="email"
                 formControlName="email"
-                placeholder="Enter Email Address"
+                placeholder="Enter your email address"
                 autocomplete="email"
               />
 
@@ -185,65 +244,100 @@
                   Enter a valid email address.
                 }
               </small>
+
             </div>
 
             <div class="form-group">
-              <label for="password">Password</label>
+
+              <label for="password">
+                Password
+              </label>
 
               <input
                 id="password"
                 type="password"
                 formControlName="password"
-                placeholder="Enter Password"
+                placeholder="Create a password"
                 autocomplete="new-password"
               />
 
               <small class="field-error">
                 @if (password.invalid && password.touched) {
-                  Password must contain uppercase, lowercase, number, special character,
-                  and at least 8 characters.
+                  Use 8 characters with uppercase, lowercase,
+                  number, and special character.
                 }
               </small>
+
             </div>
 
             <div class="form-group">
-              <label for="confirmPassword">Confirm Password</label>
+
+              <label for="confirmPassword">
+                Confirm Password
+              </label>
 
               <input
                 id="confirmPassword"
                 type="password"
                 formControlName="confirmPassword"
-                placeholder="Re-Enter Password"
+                placeholder="Re-enter your password"
                 autocomplete="new-password"
               />
 
               <small class="field-error">
-                @if (confirmPassword.invalid && confirmPassword.touched) {
+
+                @if (
+                  confirmPassword.invalid &&
+                  confirmPassword.touched
+                ) {
                   Confirm password is required.
                 }
 
-                @if (registerForm.errors?.['passwordMismatch'] && confirmPassword.touched) {
+                @if (
+                  registerForm.errors?.['passwordMismatch'] &&
+                  confirmPassword.touched
+                ) {
                   Password and confirm password do not match.
                 }
+
               </small>
+
             </div>
 
           </div>
 
-          <button type="submit" [disabled]="loading()">
-            {{ loading() ? 'Creating Patient Account...' : 'Create Patient Account' }}
+          <button
+            type="submit"
+            class="submit-button"
+            [disabled]="loading()">
+
+            @if (loading()) {
+              Creating Patient Account...
+            } @else {
+              Create Patient Account
+            }
+
           </button>
 
         </form>
 
         <p class="bottom-text">
           Already registered?
-          <a routerLink="/login">Login here</a>
+          <a routerLink="/login">
+            Login here
+          </a>
         </p>
+
+        <a
+          routerLink="/"
+          class="home-link">
+          Back to Home
+        </a>
 
       </div>
 
     </main>
 
   </div>
+
 </section>

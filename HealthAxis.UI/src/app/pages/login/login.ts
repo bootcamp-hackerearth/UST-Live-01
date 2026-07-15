@@ -1,17 +1,29 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal
+} from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink
+} from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink
+  ],
   templateUrl: './login.html',
   styleUrl: './login.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -35,7 +47,12 @@ export class Login {
         Validators.pattern(this.emailPattern)
       ]
     ],
-    password: ['', [Validators.required]]
+    password: [
+      '',
+      [
+        Validators.required
+      ]
+    ]
   });
 
   constructor() {
@@ -94,15 +111,20 @@ export class Login {
   private handleLoginQueryParams(): void {
     const queryParams = this.route.snapshot.queryParamMap;
 
-    const isAdminLogout = queryParams.get('adminLogout') === 'true';
-    const isSessionExpired = queryParams.get('sessionExpired') === 'true';
+    const isAdminLogout =
+      queryParams.get('adminLogout') === 'true';
+
+    const isSessionExpired =
+      queryParams.get('sessionExpired') === 'true';
 
     if (isAdminLogout || isSessionExpired) {
       this.authService.clearSession();
     }
 
     if (isSessionExpired) {
-      this.errorMessage.set('Your session expired. Please login again.');
+      this.errorMessage.set(
+        'Your session expired. Please login again.'
+      );
     }
 
     if (isAdminLogout || isSessionExpired) {

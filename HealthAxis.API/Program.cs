@@ -4,12 +4,13 @@ using HealthAxis.API.Data;
 using HealthAxis.API.Mappings;
 using HealthAxis.API.Messaging;
 using HealthAxis.API.Middlewares;
+using HealthAxis.API.Options;
 using HealthAxis.API.Repositories.Implementations;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services;
 using HealthAxis.API.Services.Implementation;
 using HealthAxis.API.Services.Interfaces;
-using HealthAxis.API.Options;
+using HealthCare.Api.BackgroundServices;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -247,6 +248,11 @@ try
         options.Configuration = garnetOptions.ConnectionString;
         options.InstanceName = garnetOptions.InstanceName;
     });
+
+    builder.Services.AddSingleton<GarnetHostedService>();
+    builder.Services.AddHostedService(sp => sp.GetRequiredService<GarnetHostedService>());
+    builder.Services.AddStackExchangeRedisCache(options =>
+        options.Configuration = "localhost:6379");
 
     var app = builder.Build();
 

@@ -1,10 +1,19 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet
+} from '@angular/router';
 
 @Component({
   selector: 'app-public-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive
+  ],
   templateUrl: './public-layout.html',
-  styleUrl: './public-layout.css'
+  styleUrl: './public-layout.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PublicLayout {}

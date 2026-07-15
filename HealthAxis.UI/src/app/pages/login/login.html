@@ -1,76 +1,95 @@
 <section class="login-page">
-  <div class="login-shell">
-    <aside class="login-showcase">
-      <div class="brand-card">
-        <div class="brand-logo">H</div>
 
-        <div>
-          <h1>HealthAxis</h1>
-          <p>Healthcare Management Portal</p>
-        </div>
-      </div>
+  <div class="login-shell">
+
+    <aside class="login-showcase">
+
+      <div class="showcase-overlay"></div>
 
       <div class="showcase-content">
-        <span class="showcase-label">Secure Access</span>
 
-        <h2>Welcome to HealthAxis</h2>
-
-        <p>
-          Access your healthcare workspace securely based on your role.
-        </p>
-      </div>
-
-      <div class="role-preview">
-        <article>
-          <div class="role-icon patient-icon">P</div>
+        <div class="showcase-brand">
+          <span class="brand-symbol" aria-hidden="true">
+            <span class="brand-cross"></span>
+          </span>
 
           <div>
+            <strong>HealthAxis</strong>
+            <small>Digital Hospital</small>
+          </div>
+        </div>
+
+        <div class="showcase-message">
+          <span>Secure healthcare access</span>
+
+          <h1>
+            Welcome back to your HealthAxis portal
+          </h1>
+
+          <p>
+            Login securely to manage appointments, health records,
+            patient care, and hospital administration.
+          </p>
+        </div>
+
+        <div class="portal-list">
+
+          <article>
             <strong>Patient Portal</strong>
-            <small>Book appointments and view health records</small>
-          </div>
-        </article>
+            <span>
+              Book appointments and view medical records.
+            </span>
+          </article>
 
-        <article>
-          <div class="role-icon doctor-icon">D</div>
-
-          <div>
+          <article>
             <strong>Doctor Portal</strong>
-            <small>Manage appointments and visit records</small>
-          </div>
-        </article>
+            <span>
+              Manage consultations and create health records.
+            </span>
+          </article>
 
-        <article>
-          <div class="role-icon admin-icon">A</div>
+          <article>
+            <strong>Admin Portal</strong>
+            <span>
+              Manage doctors, patients, users, and reports.
+            </span>
+          </article>
 
-          <div>
-            <strong>Admin Console</strong>
-            <small>Manage users, doctors, and reports</small>
-          </div>
-        </article>
+        </div>
+
       </div>
+
     </aside>
 
     <main class="login-form-panel">
-      <div class="form-card">
-        <div class="form-header">
-          <span>Login</span>
 
-          <h2>Access your healthcare portal</h2>
+      <div class="form-card">
+
+        <div class="form-header">
+          <span>Account Login</span>
+
+          <h2>Access your portal</h2>
 
           <p>
-            Use your registered email and password to continue.
+            Enter your registered email address and password.
           </p>
         </div>
 
         @if (errorMessage()) {
-          <div class="alert error">
+          <div class="alert error-alert" role="alert">
             {{ errorMessage() }}
           </div>
         }
 
-        <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <form
+          [formGroup]="loginForm"
+          (ngSubmit)="login()">
+
           <div class="form-group">
-            <label for="email">Email Address</label>
+
+            <label for="email">
+              Email Address
+            </label>
 
             <input
               id="email"
@@ -87,16 +106,20 @@
                 {{ getEmailErrorMessage() }}
               }
             </small>
+
           </div>
 
           <div class="form-group">
-            <label for="password">Password</label>
+
+            <label for="password">
+              Password
+            </label>
 
             <input
               id="password"
               type="password"
               formControlName="password"
-              placeholder="Enter password"
+              placeholder="Enter your password"
               autocomplete="current-password"
               [class.input-error]="password.invalid && password.touched"
               (input)="clearError()"
@@ -107,22 +130,46 @@
                 Password is required.
               }
             </small>
+
           </div>
 
-          <button type="submit" [disabled]="loading()">
+          <button
+            type="submit"
+            class="submit-button"
+            [disabled]="loading()">
+
             @if (loading()) {
               Checking credentials...
             } @else {
               Login
             }
+
           </button>
+
         </form>
 
-        <p class="bottom-text">
-          New patient?
-          <a routerLink="/register">Create patient account</a>
-        </p>
+        <div class="form-divider">
+          <span></span>
+          <p>New to HealthAxis?</p>
+          <span></span>
+        </div>
+
+        <a
+          routerLink="/register"
+          class="register-link">
+          Create Patient Account
+        </a>
+
+        <a
+          routerLink="/"
+          class="home-link">
+          Back to Home
+        </a>
+
       </div>
+
     </main>
+
   </div>
+
 </section>

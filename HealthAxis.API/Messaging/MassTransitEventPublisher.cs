@@ -28,18 +28,18 @@ namespace HealthAxis.API.Messaging
 
                 _logger.LogInformation(
                     """
-                    ┌──────────────────────────────────────────────────────────────┐
-                    │               MASSTRANSIT EVENT PUBLISHED                    │
-                    ├──────────────────────────────────────────────────────────────┤
-                    │ Event Type      : {EventType}                                |
-                    │ Patient Name    : {PatientName}                              |
-                    │ Doctor Name     : {DoctorName}                               |
-                    │ Doctor ID       : {DoctorId}                                 |
-                    │ Appointment ID  : {AppointmentId}                            |
-                    │ Scheduled Date  : {ScheduledDate:yyyy-MM-dd}                 |
-                    │ Time Slot       : {TimeSlot}                                 |
-                    │ Status          : {Status}                                   |
-                    └──────────────────────────────────────────────────────────────┘
+                   
+                                   MASSTRANSIT EVENT PUBLISHED                    
+                    ─────────────────────────────────────────────────
+                     Event Type      : {EventType}                                
+                     Patient Name    : {PatientName}                              
+                     Doctor Name     : {DoctorName}                               
+                     Doctor ID       : {DoctorId}                                 
+                     Appointment ID  : {AppointmentId}                            
+                     Scheduled Date  : {ScheduledDate:yyyy-MM-dd}                 
+                     Time Slot       : {TimeSlot}                                 
+                     Status          : {Status}                                  
+                    
                     """,
                     appointmentBookedEvent.EventType,
                     appointmentBookedEvent.PatientName,

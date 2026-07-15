@@ -1,44 +1,60 @@
+import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
   OnDestroy,
   inject,
+  output,
   signal
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import {
+  Router,
+  RouterLink
+} from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
 import { DoctorService } from '../../core/services/doctor.service';
 import { DoctorStatusStateService } from '../../core/services/doctor-status-state.service';
+import { PatientService } from '../../core/services/patient.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
+
+const CLOCK_INTERVAL_IN_MS = 1000;
+const ERROR_DURATION_IN_MS = 3000;
 
 @Component({
   selector: 'app-topbar',
-  imports: [DatePipe, RouterLink],
+  imports: [
+    DatePipe,
+    RouterLink
+  ],
   templateUrl: './topbar.html',
   styleUrl: './topbar.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Topbar implements OnDestroy {
   readonly authService = inject(AuthService);
-  readonly doctorStatusState = inject(DoctorStatusStateService);
+  readonly doctorStatusState =
+    inject(DoctorStatusStateService);
 
   private readonly router = inject(Router);
   private readonly doctorService = inject(DoctorService);
+  private readonly patientService = inject(PatientService);
+
+  readonly logoutRequested = output<void>();
 
   readonly currentTime = signal(new Date());
+  readonly displayName = signal('');
   readonly isProfileMenuOpen = signal(false);
   readonly statusUpdating = signal(false);
   readonly statusError = signal('');
 
   private readonly timerId = window.setInterval(() => {
     this.currentTime.set(new Date());
-  }, 1000);
+  }, CLOCK_INTERVAL_IN_MS);
 
   constructor() {
-    this.loadDoctorStatus();
+    this.loadCurrentUser();
   }
 
   ngOnDestroy(): void {
@@ -51,7 +67,9 @@ export class Topbar implements OnDestroy {
   }
 
   toggleProfileMenu(): void {
-    this.isProfileMenuOpen.update((isOpen) => !isOpen);
+    this.isProfileMenuOpen.update(
+      (isOpen) => !isOpen
+    );
   }
 
   getGreeting(): string {
@@ -68,14 +86,41 @@ export class Topbar implements OnDestroy {
     return 'Good Evening';
   }
 
-  getDoctorStatusText(): string {
-    const status = this.doctorStatusState.isActive();
+  getFirstName(): string {
+    const name = this.displayName().trim();
 
-    if (status === null) {
-      return 'Loading...';
+    if (!name) {
+      return this.authService.role() || 'User';
     }
 
-    return status ? 'Active' : 'Inactive';
+    return name.split(/\s+/)[0];
+  }
+
+  getProfileName(): string {
+    const name = this.displayName().trim();
+
+    return name ||
+      this.authService.role() ||
+      'User';
+  }
+
+  getProfileInitial(): string {
+    return this.getProfileName()
+      .charAt(0)
+      .toUpperCase();
+  }
+
+  getDoctorStatusText(): string {
+    const status =
+      this.doctorStatusState.isActive();
+
+    if (status === null) {
+      return 'Loading';
+    }
+
+    return status
+      ? 'Available'
+      : 'Unavailable';
   }
 
   profileRoute(): string {
@@ -98,23 +143,25 @@ export class Topbar implements OnDestroy {
     const role = this.authService.role();
 
     if (role === 'Doctor') {
-      this.router.navigate(['/doctor/change-password']);
+      void this.router.navigate([
+        '/doctor/change-password'
+      ]);
       return;
     }
 
     if (role === 'Patient') {
-      this.router.navigate(['/patient/change-password']);
+      void this.router.navigate([
+        '/patient/change-password'
+      ]);
       return;
     }
 
-    this.router.navigate(['/login']);
+    void this.router.navigate(['/login']);
   }
 
-  logout(): void {
+  requestLogout(): void {
     this.isProfileMenuOpen.set(false);
-    this.authService.logout();
-    this.doctorStatusState.clearStatus();
-    this.router.navigate(['/login']);
+    this.logoutRequested.emit();
   }
 
   toggleDoctorStatus(): void {
@@ -122,48 +169,97 @@ export class Topbar implements OnDestroy {
       return;
     }
 
-    const currentStatus = this.doctorStatusState.isActive();
+    const currentStatus =
+      this.doctorStatusState.isActive();
 
     if (currentStatus === null) {
-      this.statusError.set('Doctor status is still loading.');
+      this.showStatusError(
+        'Doctor status is still loading.'
+      );
       return;
     }
-
-    const nextStatus = !currentStatus;
 
     this.statusUpdating.set(true);
     this.statusError.set('');
 
-    this.doctorService.updateMyStatus(nextStatus).subscribe({
-      next: (response) => {
-        this.statusUpdating.set(false);
-        this.doctorStatusState.setStatus(response.isActive);
-      },
-      error: (error: unknown) => {
-        this.statusUpdating.set(false);
-        this.statusError.set(
-          getFriendlyErrorMessage(error, 'Could not update doctor status.')
-        );
+    this.doctorService
+      .updateMyStatus(!currentStatus)
+      .subscribe({
+        next: (response) => {
+          this.statusUpdating.set(false);
 
-        window.setTimeout(() => {
-          this.statusError.set('');
-        }, 3000);
-      }
-    });
+          this.doctorStatusState.setStatus(
+            response.isActive
+          );
+        },
+        error: (error: unknown) => {
+          this.statusUpdating.set(false);
+
+          this.showStatusError(
+            getFriendlyErrorMessage(
+              error,
+              'Could not update doctor status.'
+            )
+          );
+        }
+      });
   }
 
-  private loadDoctorStatus(): void {
-    if (this.authService.role() !== 'Doctor') {
+  private loadCurrentUser(): void {
+    const role = this.authService.role();
+
+    if (role === 'Patient') {
+      this.loadPatientDetails();
       return;
     }
 
-    this.doctorService.getMyDoctorProfile().subscribe({
-      next: (doctor) => {
-        this.doctorStatusState.setStatus(Boolean(doctor.isActive));
-      },
-      error: () => {
-        this.doctorStatusState.clearStatus();
-      }
-    });
+    if (role === 'Doctor') {
+      this.loadDoctorDetails();
+    }
+  }
+
+  private loadPatientDetails(): void {
+    this.patientService
+      .getMyProfile()
+      .subscribe({
+        next: (patient) => {
+          this.displayName.set(
+            patient.fullName
+          );
+        },
+        error: () => {
+          this.displayName.set('Patient');
+        }
+      });
+  }
+
+  private loadDoctorDetails(): void {
+    this.doctorService
+      .getMyDoctorProfile()
+      .subscribe({
+        next: (doctor) => {
+          this.displayName.set(
+            doctor.fullName
+          );
+
+          this.doctorStatusState.setStatus(
+            Boolean(doctor.isActive)
+          );
+        },
+        error: () => {
+          this.displayName.set('Doctor');
+          this.doctorStatusState.clearStatus();
+        }
+      });
+  }
+
+  private showStatusError(
+    message: string
+  ): void {
+    this.statusError.set(message);
+
+    window.setTimeout(() => {
+      this.statusError.set('');
+    }, ERROR_DURATION_IN_MS);
   }
 }

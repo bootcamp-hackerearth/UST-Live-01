@@ -14,7 +14,10 @@ import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
 @Component({
   selector: 'app-health-records',
-  imports: [DatePipe, RouterLink],
+  imports: [
+    DatePipe,
+    RouterLink
+  ],
   templateUrl: './health-records.html',
   styleUrl: './health-records.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -24,13 +27,13 @@ export class HealthRecords {
 
   readonly healthRecords = signal<HealthRecord[]>([]);
   readonly selectedRecord = signal<HealthRecord | null>(null);
-
   readonly loading = signal(false);
   readonly errorMessage = signal('');
   readonly searchText = signal('');
 
   readonly filteredRecords = computed(() => {
-    const searchValue = this.searchText().trim().toLowerCase();
+    const searchValue =
+      this.searchText().trim().toLowerCase();
 
     const records = searchValue
       ? this.healthRecords().filter((record) =>
@@ -42,8 +45,8 @@ export class HealthRecords {
       .slice()
       .sort(
         (first, second) =>
-          new Date(second.visitDate).getTime() -
-          new Date(first.visitDate).getTime()
+          this.getRecordDateValue(second) -
+          this.getRecordDateValue(first)
       );
   });
 
@@ -52,15 +55,17 @@ export class HealthRecords {
       .slice()
       .sort(
         (first, second) =>
-          new Date(second.visitDate).getTime() -
-          new Date(first.visitDate).getTime()
+          this.getRecordDateValue(second) -
+          this.getRecordDateValue(first)
       )[0];
 
     return record ?? null;
   });
 
   readonly updatedRecordsCount = computed(() =>
-    this.healthRecords().filter((record) => this.hasUpdated(record)).length
+    this.healthRecords().filter(
+      (record) => this.hasUpdated(record)
+    ).length
   );
 
   constructor() {
@@ -78,8 +83,12 @@ export class HealthRecords {
       },
       error: (error: unknown) => {
         this.loading.set(false);
+
         this.errorMessage.set(
-          getFriendlyErrorMessage(error, 'Could not load your health records.')
+          getFriendlyErrorMessage(
+            error,
+            'Could not load your health records.'
+          )
         );
       }
     });
@@ -88,6 +97,10 @@ export class HealthRecords {
   onSearchInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.searchText.set(input.value);
+  }
+
+  clearSearch(): void {
+    this.searchText.set('');
   }
 
   openRecordDetails(record: HealthRecord): void {
@@ -109,17 +122,24 @@ export class HealthRecords {
   }
 
   getRecordId(record: HealthRecord): number {
-    return record.healthRecordId ?? record.recordId ?? record.appointmentId;
+    return record.healthRecordId ??
+      record.recordId ??
+      record.appointmentId;
   }
 
   hasUpdated(record: HealthRecord): boolean {
     return Boolean(record.updatedDate);
   }
 
-  getDoctorDisplayName(name: string | null | undefined): string {
+  getDoctorDisplayName(
+    name: string | null | undefined
+  ): string {
     const cleanName = (name ?? '').trim();
 
-    if (!cleanName || cleanName.toLowerCase() === 'doctor') {
+    if (
+      !cleanName ||
+      cleanName.toLowerCase() === 'doctor'
+    ) {
       return 'Doctor not assigned';
     }
 
@@ -133,14 +153,35 @@ export class HealthRecords {
     return `Dr. ${cleanName}`;
   }
 
-  getSafeText(value: string | null | undefined, fallback: string): string {
+  getSafeText(
+    value: string | null | undefined,
+    fallback: string
+  ): string {
     const cleanValue = (value ?? '').trim();
 
     return cleanValue || fallback;
   }
 
+  getCreatedDateText(record: HealthRecord): string {
+    if (!record.createdAt) {
+      return 'Not available';
+    }
+
+    const createdDate = new Date(record.createdAt);
+
+    if (Number.isNaN(createdDate.getTime())) {
+      return 'Not available';
+    }
+
+    return createdDate.toLocaleString();
+  }
+
   printHealthRecord(record: HealthRecord): void {
-    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    const printWindow = window.open(
+      '',
+      '_blank',
+      'width=900,height=700'
+    );
 
     if (!printWindow) {
       this.errorMessage.set(
@@ -150,57 +191,95 @@ export class HealthRecords {
     }
 
     const recordId = this.getRecordId(record);
+
     const patientName = this.escapeHtml(
       this.getSafeText(record.patientName, 'Patient')
     );
+
     const doctorName = this.escapeHtml(
       this.getDoctorDisplayName(record.doctorName)
     );
+
     const specialisation = this.escapeHtml(
-      this.getSafeText(record.specialisation, 'Not assigned')
+      this.getSafeText(
+        record.specialisation,
+        'Not assigned'
+      )
     );
+
     const diagnosis = this.escapeHtml(
-      this.getSafeText(record.diagnosis, 'Diagnosis not provided.')
+      this.getSafeText(
+        record.diagnosis,
+        'Diagnosis not provided.'
+      )
     );
+
     const prescription = this.escapeHtml(
-      this.getSafeText(record.prescription, 'No prescription added.')
+      this.getSafeText(
+        record.prescription,
+        'No prescription added.'
+      )
     );
+
     const notes = this.escapeHtml(
-      this.getSafeText(record.notes, 'No doctor notes added.')
+      this.getSafeText(
+        record.notes,
+        'No doctor notes added.'
+      )
     );
-    const visitDate = new Date(record.visitDate).toLocaleDateString();
+
+    const visitDate =
+      new Date(record.visitDate).toLocaleDateString();
+
+    const createdAt = this.escapeHtml(
+      this.getCreatedDateText(record)
+    );
+
+    const updatedAt = record.updatedDate
+      ? new Date(record.updatedDate).toLocaleString()
+      : 'Not updated';
 
     printWindow.document.open();
 
     printWindow.document.write(`
       <!DOCTYPE html>
-      <html>
+      <html lang="en">
         <head>
+          <meta charset="UTF-8" />
           <title>Health Record #${recordId}</title>
 
           <style>
+            * {
+              box-sizing: border-box;
+            }
+
             body {
-              font-family: Arial, sans-serif;
               margin: 0;
-              background: #f8fafc;
-              color: #0f172a;
+              padding: 24px;
+              font-family: Arial, sans-serif;
+              color: #111c36;
+              background: #f7f8fc;
             }
 
             .document {
               width: 800px;
-              margin: 24px auto;
-              background: white;
+              max-width: 100%;
+              margin: 0 auto;
               padding: 32px;
-              border-radius: 18px;
-              border: 1px solid #e2e8f0;
+              border: 1px solid #e6e8f0;
+              border-radius: 20px;
+              background: #ffffff;
             }
 
             .header {
-              background: linear-gradient(135deg, #0f172a, #047857);
-              color: white;
-              padding: 22px;
-              border-radius: 16px;
-              margin-bottom: 24px;
+              padding: 24px;
+              border-radius: 17px;
+              color: #ffffff;
+              background: linear-gradient(
+                135deg,
+                #704dff,
+                #4d27e9
+              );
             }
 
             .header h1 {
@@ -210,69 +289,86 @@ export class HealthRecords {
 
             .header p {
               margin: 8px 0 0;
-              color: #d1fae5;
+              color: #eeeaff;
             }
 
             .grid {
+              margin-top: 22px;
               display: grid;
               grid-template-columns: 1fr 1fr;
-              gap: 14px;
-              margin-bottom: 20px;
+              gap: 13px;
             }
 
             .box {
-              border: 1px solid #dbeafe;
-              background: #f8fafc;
-              border-radius: 12px;
               padding: 14px;
+              border: 1px solid #e6e8f0;
+              border-radius: 13px;
+              background: #faf9ff;
             }
 
             .box span {
               display: block;
-              color: #64748b;
-              font-size: 12px;
-              font-weight: bold;
               margin-bottom: 6px;
+              color: #66738a;
+              font-size: 11px;
+              font-weight: bold;
+              text-transform: uppercase;
             }
 
             .box strong {
-              font-size: 15px;
+              color: #111c36;
+              font-size: 14px;
             }
 
             .section {
-              border: 1px solid #dbeafe;
-              border-radius: 14px;
-              padding: 16px;
               margin-top: 16px;
+              padding: 17px;
+              border: 1px solid #e6e8f0;
+              border-radius: 14px;
             }
 
             .section h2 {
               margin: 0 0 10px;
-              font-size: 18px;
+              color: #111c36;
+              font-size: 17px;
             }
 
             .section p {
               margin: 0;
+              color: #334155;
               line-height: 1.7;
               white-space: pre-wrap;
+            }
+
+            .diagnosis {
+              background: #fffaf0;
+            }
+
+            .prescription {
+              background: #f1f7ff;
+            }
+
+            .notes {
+              background: #effbf7;
             }
 
             .footer {
               margin-top: 24px;
               padding-top: 14px;
-              border-top: 1px solid #e2e8f0;
+              border-top: 1px solid #e6e8f0;
+              color: #66738a;
               font-size: 12px;
-              color: #64748b;
+              line-height: 1.6;
             }
 
             @media print {
               body {
-                background: white;
+                padding: 0;
+                background: #ffffff;
               }
 
               .document {
                 width: auto;
-                margin: 0;
                 border: none;
                 border-radius: 0;
               }
@@ -281,13 +377,13 @@ export class HealthRecords {
         </head>
 
         <body>
-          <div class="document">
-            <div class="header">
+          <main class="document">
+            <header class="header">
               <h1>HealthAxis Medical Record</h1>
               <p>Patient Health Record Document</p>
-            </div>
+            </header>
 
-            <div class="grid">
+            <section class="grid">
               <div class="box">
                 <span>Record ID</span>
                 <strong>#${recordId}</strong>
@@ -317,27 +413,38 @@ export class HealthRecords {
                 <span>Visit Date</span>
                 <strong>${visitDate}</strong>
               </div>
-            </div>
 
-            <div class="section">
+              <div class="box">
+                <span>Record Created</span>
+                <strong>${createdAt}</strong>
+              </div>
+
+              <div class="box">
+                <span>Last Updated</span>
+                <strong>${updatedAt}</strong>
+              </div>
+            </section>
+
+            <section class="section diagnosis">
               <h2>Diagnosis</h2>
               <p>${diagnosis}</p>
-            </div>
+            </section>
 
-            <div class="section">
+            <section class="section prescription">
               <h2>Prescription</h2>
               <p>${prescription}</p>
-            </div>
+            </section>
 
-            <div class="section">
+            <section class="section notes">
               <h2>Doctor Notes</h2>
               <p>${notes}</p>
-            </div>
+            </section>
 
-            <div class="footer">
-              This record is generated from HealthAxis. Please consult your doctor before changing any medication.
-            </div>
-          </div>
+            <footer class="footer">
+              This record was generated from HealthAxis.
+              Please consult your doctor before changing any medication.
+            </footer>
+          </main>
 
           <script>
             window.onload = function () {
@@ -351,6 +458,15 @@ export class HealthRecords {
     printWindow.document.close();
   }
 
+  private getRecordDateValue(
+    record: HealthRecord
+  ): number {
+    const dateValue =
+      record.createdAt ?? record.visitDate;
+
+    return new Date(dateValue).getTime();
+  }
+
   private includesSearchValue(
     record: HealthRecord,
     searchValue: string
@@ -362,9 +478,14 @@ export class HealthRecords {
       record.diagnosis,
       record.prescription,
       record.notes,
-      record.visitDate
+      record.visitDate,
+      record.createdAt,
+      record.updatedDate
     ]
-      .filter((value): value is string => typeof value === 'string')
+      .filter(
+        (value): value is string =>
+          typeof value === 'string'
+      )
       .join(' ')
       .toLowerCase();
 

@@ -1,59 +1,99 @@
+:host {
+  --primary-color: #5b3df5;
+  --primary-light: #f1eeff;
+  --text-dark: #111c36;
+  --text-muted: #596782;
+
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 .topbar {
-  margin: 16px 22px 0;
-  min-height: 108px;
-  border-radius: 30px;
-  padding: 18px 24px;
-  background:
-    radial-gradient(circle at top right, rgba(34, 197, 94, 0.18), transparent 32%),
-    linear-gradient(135deg, #020617, #075985);
-  color: white;
+  min-height: 98px;
+  margin: 18px 18px 0;
+  padding: 17px 22px 17px 28px;
+  border: 1px solid #e7e9f1;
+  border-radius: 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  box-shadow: 0 18px 48px rgba(7, 89, 133, 0.2);
+  gap: 20px;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(91, 61, 245, 0.035),
+      transparent 30%
+    ),
+    #ffffff;
+  box-shadow: 0 10px 30px rgba(38, 45, 75, 0.05);
+}
+
+.topbar-left {
+  padding-left: 12px;
+  border-left: 2px solid #d8d2ff;
 }
 
 .topbar-left p {
   margin: 0;
-  color: #7dd3fc;
-  text-transform: uppercase;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  font-size: 13px;
+  color: #3c506e;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .topbar-left h1 {
-  margin: 8px 0 0;
-  font-size: 30px;
-  line-height: 1.1;
+  margin: 7px 0 0;
+  color: var(--text-dark);
+  font-size: 31px;
+  line-height: 1;
+  font-weight: 900;
 }
 
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+}
+
+.time-card,
+.profile-button,
+.doctor-status-button {
+  min-height: 68px;
+  border: 1px solid #e6e8f0;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 7px 20px rgba(38, 45, 75, 0.06);
 }
 
 .time-card {
-  min-width: 210px;
-  min-height: 64px;
-  border-radius: 20px;
+  min-width: 205px;
   padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.18);
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.time-card > span {
+.time-icon {
   width: 42px;
   height: 42px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  background: rgba(255, 255, 255, 0.12);
+  min-width: 42px;
+  padding: 9px;
+  border-radius: 13px;
+  color: var(--primary-color);
+  background: var(--primary-light);
+}
+
+.time-icon svg,
+.profile-arrow svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .time-card strong,
@@ -62,13 +102,16 @@
 }
 
 .time-card strong {
-  font-size: 18px;
+  color: var(--text-dark);
+  font-size: 16px;
+  font-weight: 900;
 }
 
 .time-card small {
-  margin-top: 3px;
-  color: #dbeafe;
-  font-weight: 800;
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .profile-wrapper {
@@ -76,130 +119,219 @@
 }
 
 .profile-button {
-  min-width: 166px;
-  min-height: 64px;
-  border: none;
-  border-radius: 999px;
-  padding: 9px 14px;
-  color: white;
-  background: rgba(255, 255, 255, 0.14);
+  min-width: 225px;
+  padding: 8px 13px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  color: inherit;
+  font: inherit;
   cursor: pointer;
 }
 
-.profile-icon {
-  width: 46px;
-  height: 46px;
+.profile-button:hover {
+  border-color: #d9d2ff;
+  background: #fcfbff;
+}
+
+.profile-avatar {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, #0ea5e9, #22c55e);
-  flex-shrink: 0;
+  color: #ffffff;
+  background:
+    linear-gradient(
+      145deg,
+      #7454f7,
+      #4924df
+    );
+  font-size: 17px;
+  font-weight: 900;
 }
 
-.profile-button strong,
-.profile-button small {
-  display: block;
+.profile-details {
+  min-width: 0;
+  display: grid;
   text-align: left;
 }
 
-.profile-button strong {
-  font-size: 15px;
+.profile-details strong {
+  max-width: 125px;
+  overflow: hidden;
+  color: var(--text-dark);
+  font-size: 14px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.profile-button small {
-  margin-top: 2px;
-  color: #dbeafe;
-  font-size: 12px;
-  font-weight: 800;
+.profile-details small {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
 }
 
-.dropdown-arrow {
+.profile-arrow {
+  width: 18px;
+  height: 18px;
   margin-left: auto;
-  font-size: 13px;
+  color: #314664;
+  transition: transform 180ms ease;
+}
+
+.profile-arrow.open {
+  transform: rotate(180deg);
 }
 
 .profile-menu {
   position: absolute;
+  top: calc(100% + 10px);
   right: 0;
-  top: calc(100% + 12px);
-  z-index: 200;
-  width: 260px;
-  padding: 14px;
-  border-radius: 24px;
-  background: white;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+  z-index: 500;
+  width: 230px;
+  padding: 9px;
+  border: 1px solid #e4e7ef;
+  border-radius: 15px;
   display: grid;
-  gap: 8px;
+  gap: 5px;
+  background: #ffffff;
+  box-shadow: 0 20px 50px rgba(38, 45, 75, 0.16);
+}
+
+.profile-menu-heading {
+  padding: 11px 13px;
+  border-bottom: 1px solid #eceef4;
+  display: grid;
+}
+
+.profile-menu-heading strong {
+  overflow: hidden;
+  color: var(--text-dark);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-menu-heading span {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 650;
 }
 
 .profile-menu a,
 .profile-menu button {
-  min-height: 50px;
+  min-height: 44px;
+  padding: 0 13px;
   border: none;
-  border-radius: 16px;
-  padding: 0 14px;
-  background: white;
-  color: #0f172a;
-  text-decoration: none;
-  font-weight: 900;
+  border-radius: 10px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  color: var(--text-dark);
+  background: #ffffff;
+  text-decoration: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
   cursor: pointer;
-  font-family: inherit;
-  font-size: 15px;
 }
 
 .profile-menu a:hover,
 .profile-menu button:hover {
-  background: #f1f5f9;
+  color: var(--primary-color);
+  background: var(--primary-light);
 }
 
-@media (max-width: 950px) {
+.profile-menu .logout-action {
+  color: #ef3340;
+}
+
+.profile-menu .logout-action:hover {
+  color: #d92735;
+  background: #fff0f1;
+}
+
+.doctor-status-button {
+  min-width: 125px;
+  padding: 0 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #148667;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #2dc9a5;
+}
+
+.doctor-status-button.unavailable {
+  color: #ef3340;
+}
+
+.doctor-status-button.unavailable .status-dot {
+  background: #ef3340;
+}
+
+.doctor-status-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.status-error {
+  margin: 10px 18px 0;
+  padding: 12px 14px;
+  border: 1px solid #ffc9ce;
+  border-radius: 12px;
+  color: #bf1f2c;
+  background: #fff0f1;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+@media (max-width: 1060px) {
   .topbar {
-    margin: 16px;
-    flex-direction: column;
     align-items: flex-start;
+    flex-direction: column;
   }
 
   .topbar-right {
     width: 100%;
     flex-wrap: wrap;
   }
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    margin: 12px;
+    padding: 18px;
+  }
+
+  .topbar-right {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
 
   .time-card,
-  .profile-button {
-    flex: 1;
+  .profile-wrapper,
+  .profile-button,
+  .doctor-status-button {
+    width: 100%;
   }
-}
 
-.doctor-status-toggle {
-  border: none;
-  border-radius: 999px;
-  padding: 11px 18px;
-  min-width: 112px;
-  background: #16a34a;
-  color: white;
-  font-weight: 900;
-  cursor: pointer;
-  box-shadow: 0 12px 28px rgba(22, 163, 74, 0.24);
-}
-
-.doctor-status-toggle.inactive {
-  background: #dc2626;
-  box-shadow: 0 12px 28px rgba(220, 38, 38, 0.24);
-}
-
-.doctor-status-toggle:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-@media (max-width: 800px) {
-  .doctor-status-toggle {
+  .profile-menu {
     width: 100%;
   }
 }

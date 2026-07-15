@@ -1,6 +1,10 @@
 :root {
   --healthaxis-ui-scale: 0.78;
-  --healthaxis-font: "Inter", "Segoe UI", Arial, sans-serif;
+  --healthaxis-font:
+    "Inter",
+    "Segoe UI",
+    Arial,
+    sans-serif;
 }
 
 * {
@@ -8,28 +12,28 @@
 }
 
 html {
+  min-height: 100%;
   scroll-behavior: smooth;
   background: #f8fafc;
 }
 
 body {
+  min-height: 100vh;
   margin: 0;
-  font-family: var(--healthaxis-font);
-  background: #f8fafc;
-  color: #0f172a;
   overflow-x: hidden;
+  color: #0f172a;
+  background: #f8fafc;
+  font-family: var(--healthaxis-font);
 }
 
-/*
-  This makes browser 100% look like your 80-85% view.
-  Your screenshot target looks closest to 0.86.
-  If still big: use 0.84.
-  If too small: use 0.88.
-*/
 app-root {
   display: block;
+  min-height:
+    calc(
+      100vh /
+      var(--healthaxis-ui-scale)
+    );
   zoom: var(--healthaxis-ui-scale);
-  min-height: calc(100vh / var(--healthaxis-ui-scale));
 }
 
 button,
@@ -41,13 +45,13 @@ textarea {
 
 button {
   transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    background 0.18s ease;
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
-button:hover:not(:disabled),
-a:hover {
+button:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
@@ -57,13 +61,18 @@ button:disabled {
 
 a {
   transition:
-    transform 0.18s ease,
-    color 0.18s ease,
-    background 0.18s ease;
+    transform 180ms ease,
+    color 180ms ease,
+    background-color 180ms ease;
+}
+
+a:hover {
+  transform: translateY(-1px);
 }
 
 ::-webkit-scrollbar {
   width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -71,8 +80,8 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
   border-radius: 999px;
+  background: #94a3b8;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -81,12 +90,14 @@ a {
 
 @media print {
   app-root {
+    min-height: 100vh;
     zoom: 1;
   }
 }
 
 @media (max-width: 900px) {
   app-root {
+    min-height: 100vh;
     zoom: 1;
   }
 }

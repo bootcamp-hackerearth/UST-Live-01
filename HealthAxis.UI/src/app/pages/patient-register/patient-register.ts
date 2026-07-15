@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal
+} from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -6,17 +11,23 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import {
+  Router,
+  RouterLink
+} from '@angular/router';
 
+import { RegisterPatientRequest } from '../../core/models/auth.model';
 import { Gender } from '../../core/models/gender.enum';
 import { AuthService } from '../../core/services/auth.service';
-import { RegisterPatientRequest } from '../../core/models/auth.model';
 
 const REDIRECT_DELAY_IN_MS = 1000;
 
 @Component({
   selector: 'app-patient-register',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink
+  ],
   templateUrl: './patient-register.html',
   styleUrl: './patient-register.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -63,7 +74,12 @@ export class PatientRegister {
           PatientRegister.noFutureDateValidator
         ]
       ],
-      gender: ['', [Validators.required]],
+      gender: [
+        '',
+        [
+          Validators.required
+        ]
+      ],
       phoneNumber: [
         '',
         [
@@ -71,16 +87,29 @@ export class PatientRegister {
           Validators.pattern(/^[1-9][0-9]{9}$/)
         ]
       ],
-      email: ['', [Validators.required, Validators.email]],
+      email: [
+        '',
+        [
+          Validators.required,
+          Validators.email
+        ]
+      ],
       password: [
         '',
         [
           Validators.required,
           Validators.minLength(8),
-          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/)
+          Validators.pattern(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/
+          )
         ]
       ],
-      confirmPassword: ['', [Validators.required]]
+      confirmPassword: [
+        '',
+        [
+          Validators.required
+        ]
+      ]
     },
     {
       validators: PatientRegister.passwordsMatchValidator
@@ -116,7 +145,6 @@ export class PatientRegister {
   }
 
   registerPatient(): void {
-
     this.errorMessage.set('');
     this.successMessage.set('');
 
@@ -142,7 +170,10 @@ export class PatientRegister {
     this.authService.registerPatient(request).subscribe({
       next: () => {
         this.loading.set(false);
-        this.successMessage.set('Patient registered successfully. Please login now.');
+
+        this.successMessage.set(
+          'Patient registered successfully. Please login now.'
+        );
 
         window.setTimeout(() => {
           void this.router.navigate(['/login']);
@@ -150,6 +181,7 @@ export class PatientRegister {
       },
       error: (error: unknown) => {
         this.loading.set(false);
+
         this.errorMessage.set(
           this.getFriendlyMessage(
             error,
@@ -160,8 +192,13 @@ export class PatientRegister {
     });
   }
 
-  private getFriendlyMessage(error: unknown, fallback: string): string {
-    const possibleError = error as { friendlyMessage?: unknown };
+  private getFriendlyMessage(
+    error: unknown,
+    fallback: string
+  ): string {
+    const possibleError = error as {
+      friendlyMessage?: unknown;
+    };
 
     if (typeof possibleError.friendlyMessage === 'string') {
       return possibleError.friendlyMessage;
@@ -176,7 +213,11 @@ export class PatientRegister {
     const password = control.get('password')?.value;
     const confirmPassword = control.get('confirmPassword')?.value;
 
-    if (password && confirmPassword && password !== confirmPassword) {
+    if (
+      password &&
+      confirmPassword &&
+      password !== confirmPassword
+    ) {
       return {
         passwordMismatch: true
       };

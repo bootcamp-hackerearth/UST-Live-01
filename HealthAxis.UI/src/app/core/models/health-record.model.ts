@@ -8,6 +8,7 @@ export interface HealthRecord {
   doctorName?: string;
   specialisation?: string;
   visitDate: string;
+  createdAt?: string | null;
   diagnosis: string;
   prescription: string;
   notes: string;

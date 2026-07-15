@@ -1,76 +1,154 @@
 <section class="appointments-page">
   <section class="page-header">
     <div>
-      <p>Patient Services</p>
+      <span class="page-label">Patient Services</span>
+
       <h1>My Appointments</h1>
-      <span>
-        View your appointments, download appointment details, and cancel pending
-        or confirmed appointments if needed.
-      </span>
+
+      <p>
+        Review your upcoming and previous hospital visits, manage
+        appointments, and download appointment documents.
+      </p>
     </div>
 
-    <a routerLink="/patient/book-appointment" class="book-button">
-      + Book Appointment
+    <a
+      routerLink="/patient/book-appointment"
+      class="book-button"
+    >
+      Book Appointment
     </a>
   </section>
 
   @if (errorMessage()) {
-    <div class="alert error">{{ errorMessage() }}</div>
+    <div class="page-alert error-alert" role="alert">
+      <span class="alert-symbol" aria-hidden="true">!</span>
+
+      <span>{{ errorMessage() }}</span>
+    </div>
   }
 
   @if (successMessage()) {
-    <div class="alert success">{{ successMessage() }}</div>
+    <div class="page-alert success-alert" role="status">
+      <span class="alert-symbol" aria-hidden="true">✓</span>
+
+      <span>{{ successMessage() }}</span>
+    </div>
   }
 
-  <section class="stats-grid">
-    <div class="stat-card pending">
-      <span>⏳</span>
-      <div>
+  <section
+    class="statistics-grid"
+    aria-label="Appointment status filters"
+  >
+    <button
+      type="button"
+      class="statistic-card pending-card"
+      [class.selected]="isStatusSelected('Pending')"
+      [attr.aria-pressed]="isStatusSelected('Pending')"
+      (click)="selectStatus('Pending')"
+    >
+      <span class="statistic-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 7v5l3 2"></path>
+        </svg>
+      </span>
+
+      <span class="statistic-content">
         <strong>{{ pendingCount() }}</strong>
-        <p>Pending</p>
-      </div>
-    </div>
+        <span>Pending</span>
+      </span>
+    </button>
 
-    <div class="stat-card confirmed">
-      <span>📅</span>
-      <div>
+    <button
+      type="button"
+      class="statistic-card confirmed-card"
+      [class.selected]="isStatusSelected('Confirmed')"
+      [attr.aria-pressed]="isStatusSelected('Confirmed')"
+      (click)="selectStatus('Confirmed')"
+    >
+      <span class="statistic-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M8 12l3 3 5-6"></path>
+        </svg>
+      </span>
+
+      <span class="statistic-content">
         <strong>{{ confirmedCount() }}</strong>
-        <p>Confirmed</p>
-      </div>
-    </div>
+        <span>Confirmed</span>
+      </span>
+    </button>
 
-    <div class="stat-card completed">
-      <span>✅</span>
-      <div>
+    <button
+      type="button"
+      class="statistic-card completed-card"
+      [class.selected]="isStatusSelected('Completed')"
+      [attr.aria-pressed]="isStatusSelected('Completed')"
+      (click)="selectStatus('Completed')"
+    >
+      <span class="statistic-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 3h12v18H6z"></path>
+          <path d="M9 8h6M9 12h6M9 16h4"></path>
+        </svg>
+      </span>
+
+      <span class="statistic-content">
         <strong>{{ completedCount() }}</strong>
-        <p>Completed</p>
-      </div>
-    </div>
+        <span>Completed</span>
+      </span>
+    </button>
 
-    <div class="stat-card cancelled">
-      <span>❌</span>
-      <div>
+    <button
+      type="button"
+      class="statistic-card cancelled-card"
+      [class.selected]="isStatusSelected('Cancelled')"
+      [attr.aria-pressed]="isStatusSelected('Cancelled')"
+      (click)="selectStatus('Cancelled')"
+    >
+      <span class="statistic-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M9 9l6 6M15 9l-6 6"></path>
+        </svg>
+      </span>
+
+      <span class="statistic-content">
         <strong>{{ cancelledCount() }}</strong>
-        <p>Cancelled</p>
-      </div>
-    </div>
+        <span>Cancelled</span>
+      </span>
+    </button>
   </section>
 
-  <section class="toolbar-card">
-    <div class="search-box">
-      <span>🔍</span>
+  <section class="content-card toolbar-card">
+    <div class="search-field">
+      <label for="appointmentSearch">
+        Search Appointments
+      </label>
 
-      <input
-        type="search"
-        maxlength="80"
-        placeholder="Search doctor, specialization, date, status..."
-        [value]="searchText()"
-        (input)="onSearchInput($event)"
-      />
+      <div class="search-input-wrapper">
+        <span class="search-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-4-4"></path>
+          </svg>
+        </span>
+
+        <input
+          id="appointmentSearch"
+          type="search"
+          maxlength="80"
+          placeholder="Doctor, specialisation, date, status, or appointment ID"
+          [value]="searchText()"
+          (input)="onSearchInput($event)"
+        />
+      </div>
     </div>
 
-    <div class="status-dropdown">
-      <label for="statusFilter">Status</label>
+    <div class="status-field">
+      <label for="statusFilter">
+        Status
+      </label>
 
       <select
         id="statusFilter"
@@ -78,116 +156,179 @@
         (change)="onStatusChange($event)"
       >
         @for (status of statusFilters; track status) {
-          <option [value]="status">{{ status }}</option>
+          <option [value]="status">
+            {{ status }}
+          </option>
         }
       </select>
     </div>
 
-    <button type="button" class="clear-filter-button" (click)="clearFilters()">
-      Clear
+    <button
+      type="button"
+      class="clear-button"
+      (click)="clearFilters()"
+    >
+      Clear Filters
     </button>
   </section>
 
-  <section class="simple-summary-card">
-    <div class="section-title">
-      <p>Upcoming Visit</p>
+  <section class="content-card next-appointment-card">
+    <div class="section-header">
+      <span>Upcoming Visit</span>
       <h2>Next Appointment</h2>
     </div>
 
-    @if (nextAppointment()) {
-      <div class="next-grid">
-        <div class="summary-item">
-          <span>Doctor</span>
-          <strong>{{ getDoctorDisplayName(nextAppointment()!.doctorName) }}</strong>
+    @if (nextAppointment(); as appointment) {
+      <div class="next-appointment-grid">
+        <div class="doctor-summary">
+          <span class="doctor-avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="7" r="4"></circle>
+              <path d="M5 21v-2a7 7 0 0114 0v2"></path>
+            </svg>
+          </span>
+
+          <span class="doctor-information">
+            <span>Doctor</span>
+
+            <strong>
+              {{ getDoctorDisplayName(appointment.doctorName) }}
+            </strong>
+
+            <small>
+              {{
+                getSafeText(
+                  appointment.specialisation,
+                  'Not assigned'
+                )
+              }}
+            </small>
+          </span>
         </div>
 
-        <div class="summary-item">
-          <span>Specialization</span>
-          <strong>{{ getSafeText(nextAppointment()!.specialisation, 'N/A') }}</strong>
-        </div>
-
-        <div class="summary-item">
+        <div class="next-detail">
           <span>Date</span>
-          <strong>{{ nextAppointment()!.scheduledDate | date: 'mediumDate' }}</strong>
+
+          <strong>
+            {{
+              appointment.scheduledDate
+                | date: 'dd MMM yyyy'
+            }}
+          </strong>
         </div>
 
-        <div class="summary-item">
-          <span>Time Slot</span>
-          <strong>{{ nextAppointment()!.timeSlot }}</strong>
+        <div class="next-detail">
+          <span>Time</span>
+
+          <strong>
+            {{ appointment.timeSlot }}
+          </strong>
         </div>
 
-        <div class="summary-item">
+        <div class="next-detail">
           <span>Status</span>
-          <strong>{{ nextAppointment()!.status }}</strong>
+
+          <strong
+            [class]="
+              'status-badge ' +
+              getAppointmentStatusClass(appointment)
+            "
+          >
+            {{ getAppointmentStatusText(appointment) }}
+          </strong>
         </div>
       </div>
     } @else {
-      <div class="empty-box">
-        No upcoming appointments available.
+      <div class="empty-state">
+        No upcoming appointment is available.
       </div>
     }
   </section>
 
-  <section class="list-card">
-    <div class="list-heading-row">
-      <div class="section-title">
-        <p>Appointment History</p>
+  <section class="content-card appointment-list-card">
+    <div class="list-header">
+      <div class="section-header">
+        <span>Appointment History</span>
         <h2>All Appointments</h2>
       </div>
 
       <span class="result-count">
-        Showing {{ filteredAppointments().length }} appointments
+        {{ filteredAppointments().length }} appointments
       </span>
     </div>
 
     @if (loading()) {
-      <div class="empty-box">Loading appointments...</div>
-    }
-
-    @if (!loading() && appointments().length === 0) {
-      <div class="empty-box">
+      <div class="empty-state">
+        Loading appointments...
+      </div>
+    } @else if (appointments().length === 0) {
+      <div class="empty-state">
         You have no appointments yet.
       </div>
-    }
-
-    @if (!loading() && appointments().length > 0 && filteredAppointments().length === 0) {
-      <div class="empty-box">
-        No appointments found for the selected filter.
+    } @else if (filteredAppointments().length === 0) {
+      <div class="empty-state">
+        No appointments match the selected filters.
       </div>
-    }
-
-    @if (!loading() && filteredAppointments().length > 0) {
+    } @else {
       <div class="table-wrapper">
         <table class="appointment-table">
           <thead>
             <tr>
               <th>Doctor</th>
-              <th>Specialization</th>
+              <th>Specialisation</th>
               <th>Date</th>
-              <th>Time Slot</th>
+              <th>Time</th>
               <th>Status</th>
-              <th class="action-column">Action</th>
+              <th class="action-column">Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            @for (appointment of pagedAppointments(); track appointment.appointmentId) {
+            @for (
+              appointment of pagedAppointments();
+              track appointment.appointmentId
+            ) {
               <tr>
-                <td>{{ getDoctorDisplayName(appointment.doctorName) }}</td>
-
                 <td>
-                  {{ getSafeText(appointment.specialisation, 'N/A') }}
+                  {{
+                    getDoctorDisplayName(
+                      appointment.doctorName
+                    )
+                  }}
                 </td>
 
                 <td>
-                  {{ appointment.scheduledDate | date: 'mediumDate' }}
+                  {{
+                    getSafeText(
+                      appointment.specialisation,
+                      'Not assigned'
+                    )
+                  }}
                 </td>
 
-                <td>{{ appointment.timeSlot }}</td>
+                <td>
+                  {{
+                    appointment.scheduledDate
+                      | date: 'dd MMM yyyy'
+                  }}
+                </td>
 
                 <td>
-                  <span [class]="'status-badge ' + getStatusClass(appointment.status)">
-                    {{ appointment.status }}
+                  {{ appointment.timeSlot }}
+                </td>
+
+                <td>
+                  <span
+                    [class]="
+                      'status-badge ' +
+                      getAppointmentStatusClass(appointment)
+                    "
+                  >
+                    {{
+                      getAppointmentStatusText(
+                        appointment
+                      )
+                    }}
                   </span>
                 </td>
 
@@ -195,38 +336,56 @@
                   <div class="appointment-actions">
                     <button
                       type="button"
-                      class="view-action"
-                      (click)="openAppointmentDetails(appointment)"
+                      class="action-button view-action"
+                      (click)="
+                        openAppointmentDetails(appointment)
+                      "
                     >
                       View
                     </button>
 
-                    @if (canCancel(appointment)) {
+                    @if (
+                      canDownloadAppointmentPdf(appointment)
+                    ) {
                       <button
                         type="button"
-                        class="pdf-action"
-                        (click)="printAppointmentPdf(appointment)"
+                        class="action-button pdf-action"
+                        (click)="
+                          printAppointmentPdf(appointment)
+                        "
                       >
                         PDF
                       </button>
+                    }
 
+                    @if (canCancel(appointment)) {
                       <button
                         type="button"
-                        class="cancel-action"
-                        (click)="openCancelDialog(appointment)"
+                        class="action-button cancel-action"
+                        (click)="
+                          openCancelDialog(appointment)
+                        "
                       >
                         Cancel
                       </button>
                     }
 
-                    @if (canViewHealthRecord(appointment)) {
+                    @if (
+                      canViewHealthRecord(appointment)
+                    ) {
                       <button
                         type="button"
-                        class="health-pdf-action"
-                        [disabled]="!hasHealthRecord(appointment)"
-                        (click)="printHealthRecordForAppointment(appointment)"
+                        class="action-button record-action"
+                        [disabled]="
+                          !hasHealthRecord(appointment)
+                        "
+                        (click)="
+                          openHealthRecordDetails(
+                            appointment
+                          )
+                        "
                       >
-                        HR PDF
+                        Record
                       </button>
                     }
                   </div>
@@ -247,7 +406,9 @@
           Previous
         </button>
 
-        <span>Page {{ currentPage() }} of {{ totalPages() }}</span>
+        <span>
+          Page {{ currentPage() }} of {{ totalPages() }}
+        </span>
 
         <button
           type="button"
@@ -260,257 +421,372 @@
       </div>
     }
   </section>
+</section>
 
-  @if (selectedAppointment(); as appointment) {
-    <h2 id="appointmentDetailsTitle">Appointment Details</h2>
-    <div
-  class="modal-backdrop"
-  role="button"
-  tabindex="0"
-  aria-label="Close appointment details"
-  (click)="onAppointmentBackdropClick($event)"
-  (keydown.enter)="closeAppointmentDetails()"
-  (keydown.space)="closeAppointmentDetails(); $event.preventDefault()">
+@if (selectedAppointment(); as appointment) {
+  <div class="modal-backdrop">
+    <section
+      class="modal-card details-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="appointmentDetailsTitle"
+    >
+      <div class="modal-header">
+        <div>
+          <span>Appointment Details</span>
 
-  <section
-    class="details-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="appointmentDetailsTitle">
-        <div class="modal-header">
-          <div>
-            <p>Appointment Details</p>
-            <h2>Appointment #{{ appointment.appointmentId }}</h2>
-          </div>
+          <h2 id="appointmentDetailsTitle">
+            Appointment #{{ appointment.appointmentId }}
+          </h2>
+        </div>
 
-          <div class="modal-top-actions">
-            @if (canDownloadAppointmentPdf(appointment)) {
-              <button
-                type="button"
-                class="modal-pdf-button"
-                (click)="printAppointmentPdf(appointment)"
-              >
-                PDF
-              </button>
-            }
-
-            @if (canViewHealthRecord(appointment)) {
-              <button
-                type="button"
-                class="modal-health-record-button"
-                [disabled]="!hasHealthRecord(appointment)"
-                (click)="openHealthRecordDetails(appointment)"
-              >
-                Record
-              </button>
-
-              <button
-                type="button"
-                class="modal-health-pdf-button"
-                [disabled]="!hasHealthRecord(appointment)"
-                (click)="printHealthRecordForAppointment(appointment)"
-              >
-                HR PDF
-              </button>
-            }
-
+        <div class="modal-header-actions">
+          @if (canDownloadAppointmentPdf(appointment)) {
             <button
               type="button"
-              class="close-button"
-              (click)="closeAppointmentDetails()"
+              class="modal-action-button"
+              (click)="printAppointmentPdf(appointment)"
             >
-              ×
+              Appointment PDF
             </button>
-          </div>
-        </div>
+          }
 
-        <div class="details-grid">
-          <div>
-            <span>Doctor</span>
-            <strong>{{ getDoctorDisplayName(appointment.doctorName) }}</strong>
-          </div>
-
-          <div>
-            <span>Specialization</span>
-            <strong>{{ getSafeText(appointment.specialisation, 'N/A') }}</strong>
-          </div>
-
-          <div>
-            <span>Date</span>
-            <strong>{{ appointment.scheduledDate | date: 'fullDate' }}</strong>
-          </div>
-
-          <div>
-            <span>Time Slot</span>
-            <strong>{{ appointment.timeSlot }}</strong>
-          </div>
-
-          <div>
-            <span>Status</span>
-            <strong>{{ appointment.status }}</strong>
-          </div>
-
-          <div>
-            <span>Cancellation Reason</span>
-            <strong>{{ appointment.cancellationReason || '-' }}</strong>
-          </div>
-        </div>
-
-        
-      </section>
-    </div>
-  }
-
-  @if (selectedHealthRecord(); as record) {
-    <div class="modal-backdrop" (click)="closeHealthRecordDetails()">
-      <section class="health-record-modal" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <div>
-            <p>Health Record</p>
-            <h2>Medical Record #{{ getRecordId(record) }}</h2>
-          </div>
-
-          <div class="modal-top-actions">
+          @if (canViewHealthRecord(appointment)) {
             <button
               type="button"
-              class="modal-health-pdf-button"
-              (click)="printHealthRecordPdf(record)"
+              class="modal-action-button"
+              [disabled]="!hasHealthRecord(appointment)"
+              (click)="
+                openHealthRecordDetails(appointment)
+              "
             >
-              HR PDF
+              View Record
             </button>
-
-            <button
-              type="button"
-              class="close-button"
-              (click)="closeHealthRecordDetails()"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-
-        <div class="details-grid">
-          <div>
-            <span>Patient</span>
-            <strong>{{ getSafeText(record.patientName, 'Patient') }}</strong>
-          </div>
-
-          <div>
-            <span>Doctor</span>
-            <strong>{{ getDoctorDisplayName(record.doctorName) }}</strong>
-          </div>
-
-          <div>
-            <span>Specialisation</span>
-            <strong>{{ getSafeText(record.specialisation, 'Not assigned') }}</strong>
-          </div>
-
-          <div>
-            <span>Visit Date</span>
-            <strong>{{ record.visitDate | date: 'fullDate' }}</strong>
-          </div>
-
-          <div>
-            <span>Appointment ID</span>
-            <strong>#{{ record.appointmentId }}</strong>
-          </div>
-
-          <div>
-            <span>Record ID</span>
-            <strong>#{{ getRecordId(record) }}</strong>
-          </div>
-        </div>
-
-        <section class="health-section diagnosis">
-          <h3>Diagnosis</h3>
-          <p>{{ getSafeText(record.diagnosis, 'Diagnosis not provided.') }}</p>
-        </section>
-
-        <section class="health-section prescription">
-          <h3>Prescription</h3>
-          <p>{{ getSafeText(record.prescription, 'No prescription added.') }}</p>
-        </section>
-
-        <section class="health-section notes">
-          <h3>Doctor Notes</h3>
-          <p>{{ getSafeText(record.notes, 'No doctor notes added.') }}</p>
-        </section>
-      </section>
-    </div>
-  }
-
-  @if (cancelTarget()) {
-    <div class="modal-backdrop">
-      <section class="cancel-modal">
-        <div class="modal-header">
-          <div>
-            <p>Cancel Appointment</p>
-            <h2>Confirm cancellation</h2>
-          </div>
+          }
 
           <button
             type="button"
             class="close-button"
-            (click)="closeCancelDialog()"
+            aria-label="Close appointment details"
+            (click)="closeAppointmentDetails()"
           >
             ×
           </button>
         </div>
+      </div>
 
-        <div class="cancel-details">
-          <div>
-            <span>Doctor</span>
-            <strong>{{ getDoctorDisplayName(cancelTarget()!.doctorName) }}</strong>
-          </div>
+      <div class="details-grid">
+        <div>
+          <span>Doctor</span>
 
-          <div>
-            <span>Date</span>
-            <strong>{{ cancelTarget()!.scheduledDate | date: 'mediumDate' }}</strong>
-          </div>
-
-          <div>
-            <span>Time</span>
-            <strong>{{ cancelTarget()!.timeSlot }}</strong>
-          </div>
+          <strong>
+            {{
+              getDoctorDisplayName(
+                appointment.doctorName
+              )
+            }}
+          </strong>
         </div>
 
-        <label for="cancelReason">
-          Cancellation Reason <span class="optional-text">(Optional)</span>
-        </label>
+        <div>
+          <span>Specialisation</span>
 
-        <textarea
-          id="cancelReason"
-          rows="4"
-          maxlength="200"
-          placeholder="Reason is optional."
-          [value]="cancellationReason()"
-          (input)="onCancellationReasonInput($event)"
-        ></textarea>
+          <strong>
+            {{
+              getSafeText(
+                appointment.specialisation,
+                'Not assigned'
+              )
+            }}
+          </strong>
+        </div>
 
-        <small>
-          You can leave this empty. Add a reason only if you want to inform the hospital.
-        </small>
+        <div>
+          <span>Date</span>
 
-        <div class="modal-actions">
+          <strong>
+            {{
+              appointment.scheduledDate
+                | date: 'fullDate'
+            }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Time Slot</span>
+
+          <strong>
+            {{ appointment.timeSlot }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+
+          <strong
+            [class]="
+              'status-badge ' +
+              getAppointmentStatusClass(appointment)
+            "
+          >
+            {{ getAppointmentStatusText(appointment) }}
+          </strong>
+        </div>
+
+        @if (isCancelled(appointment)) {
+          <div class="cancellation-detail">
+            <span>Cancellation Reason</span>
+
+            <strong>
+              {{
+                appointment.cancellationReason ||
+                'No cancellation reason was provided.'
+              }}
+            </strong>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+}
+
+@if (selectedHealthRecord(); as record) {
+  <div class="modal-backdrop">
+    <section
+      class="modal-card health-record-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="healthRecordTitle"
+    >
+      <div class="modal-header">
+        <div>
+          <span>Health Record</span>
+
+          <h2 id="healthRecordTitle">
+            Medical Record #{{ getRecordId(record) }}
+          </h2>
+        </div>
+
+        <div class="modal-header-actions">
           <button
             type="button"
-            class="confirm-cancel-button"
-            [disabled]="cancelling()"
-            (click)="confirmCancelAppointment()"
+            class="modal-action-button"
+            (click)="printHealthRecordPdf(record)"
           >
-            {{ cancelling() ? 'Cancelling...' : 'Cancel Appointment' }}
+            Record PDF
           </button>
 
           <button
             type="button"
-            class="keep-button"
-            [disabled]="cancelling()"
-            (click)="closeCancelDialog()"
+            class="close-button"
+            aria-label="Close health record"
+            (click)="closeHealthRecordDetails()"
           >
-            Keep Appointment
+            ×
           </button>
         </div>
+      </div>
+
+      <div class="details-grid">
+        <div>
+          <span>Patient</span>
+
+          <strong>
+            {{
+              getSafeText(
+                record.patientName,
+                'Patient'
+              )
+            }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Doctor</span>
+
+          <strong>
+            {{ getDoctorDisplayName(record.doctorName) }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Specialisation</span>
+
+          <strong>
+            {{
+              getSafeText(
+                record.specialisation,
+                'Not assigned'
+              )
+            }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Visit Date</span>
+
+          <strong>
+            {{ record.visitDate | date: 'fullDate' }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Appointment ID</span>
+
+          <strong>
+            #{{ record.appointmentId }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Record ID</span>
+
+          <strong>
+            #{{ getRecordId(record) }}
+          </strong>
+        </div>
+      </div>
+
+      <section class="health-section diagnosis-section">
+        <h3>Diagnosis</h3>
+
+        <p>
+          {{
+            getSafeText(
+              record.diagnosis,
+              'Diagnosis not provided.'
+            )
+          }}
+        </p>
       </section>
-    </div>
-  }
-</section>
+
+      <section class="health-section prescription-section">
+        <h3>Prescription</h3>
+
+        <p>
+          {{
+            getSafeText(
+              record.prescription,
+              'No prescription was added.'
+            )
+          }}
+        </p>
+      </section>
+
+      <section class="health-section notes-section">
+        <h3>Doctor Notes</h3>
+
+        <p>
+          {{
+            getSafeText(
+              record.notes,
+              'No doctor notes were added.'
+            )
+          }}
+        </p>
+      </section>
+    </section>
+  </div>
+}
+
+@if (cancelTarget(); as appointment) {
+  <div class="modal-backdrop">
+    <section
+      class="modal-card cancel-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cancelAppointmentTitle"
+    >
+      <div class="warning-symbol" aria-hidden="true">
+        !
+      </div>
+
+      <div class="cancel-heading">
+        <span>Cancel Appointment</span>
+
+        <h2 id="cancelAppointmentTitle">
+          Confirm cancellation
+        </h2>
+
+        <p>
+          This action will cancel your appointment request.
+        </p>
+      </div>
+
+      <div class="cancel-details">
+        <div>
+          <span>Doctor</span>
+
+          <strong>
+            {{
+              getDoctorDisplayName(
+                appointment.doctorName
+              )
+            }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Date</span>
+
+          <strong>
+            {{
+              appointment.scheduledDate
+                | date: 'dd MMM yyyy'
+            }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Time</span>
+
+          <strong>
+            {{ appointment.timeSlot }}
+          </strong>
+        </div>
+      </div>
+
+      <label for="cancelReason">
+        Cancellation Reason
+        <span>(Optional)</span>
+      </label>
+
+      <textarea
+        id="cancelReason"
+        rows="4"
+        maxlength="200"
+        placeholder="Enter a reason only when needed"
+        [value]="cancellationReason()"
+        (input)="onCancellationReasonInput($event)"
+      ></textarea>
+
+      <small class="helper-text">
+        You may leave the reason empty.
+      </small>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="confirm-cancel-button"
+          [disabled]="cancelling()"
+          (click)="confirmCancelAppointment()"
+        >
+          @if (cancelling()) {
+            Cancelling...
+          } @else {
+            Cancel Appointment
+          }
+        </button>
+
+        <button
+          type="button"
+          class="keep-button"
+          [disabled]="cancelling()"
+          (click)="closeCancelDialog()"
+        >
+          Keep Appointment
+        </button>
+      </div>
+    </section>
+  </div>
+}

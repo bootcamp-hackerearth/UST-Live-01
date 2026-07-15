@@ -27,20 +27,20 @@ namespace HealthAxis.API.Consumers
 
             _logger.LogInformation(
                 """
-                ┌──────────────────────────────────────────────────────────────┐
-                │               MASSTRANSIT EVENT CONSUMED                     │
-                ├──────────────────────────────────────────────────────────────┤
-                │ Event Type      : {EventType}                                |
-                │ Patient ID      : {PatientId}                                |
-                │ Patient Name    : {PatientName}                              |
-                │ Doctor Name     : {DoctorName}                               |
-                │ Doctor ID       : {DoctorId}                                 |
-                │ Appointment ID  : {AppointmentId}                            |
-                │ Scheduled Date  : {ScheduledDate:yyyy-MM-dd}                 |
-                │ Time Slot       : {TimeSlot}                                 |
-                │ Status          : {Status}                                   |
-                │ Notification    : Saved to database                          |
-                └──────────────────────────────────────────────────────────────┘
+                
+                               MASSTRANSIT EVENT CONSUMED                     
+                ──────────────────────────────────────────────────────────────
+                 Event Type      : {EventType}                                
+                 Patient ID      : {PatientId}                                
+                 Patient Name    : {PatientName}                              
+                 Doctor Name     : {DoctorName}                               
+                 Doctor ID       : {DoctorId}                                 
+                 Appointment ID  : {AppointmentId}                            
+                 Scheduled Date  : {ScheduledDate:yyyy-MM-dd}                 
+                 Time Slot       : {TimeSlot}                                 
+                 Status          : {Status}                                   
+                 Notification    : Saved to database                          
+                
                 """,
                 appointmentBookedEvent.EventType,
                 appointmentBookedEvent.PatientId,
