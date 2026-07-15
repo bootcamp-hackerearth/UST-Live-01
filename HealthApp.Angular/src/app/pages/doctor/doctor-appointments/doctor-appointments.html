@@ -14,6 +14,83 @@
     </div>
   }
 
+  @if (pendingReminders().length > 0) {
+    <section class="pending-reminder-panel">
+      <div class="pending-reminder-header">
+        <div>
+          <span class="pending-reminder-kicker">Action Required</span>
+          <h2>Pending Appointment Reminders</h2>
+          <p>{{ pendingReminders().length }} appointment(s) require confirmation or cancellation.</p>
+        </div>
+
+        <button class="review-pending-button" type="button" (click)="showAllPendingReminders()">
+          Review Pending
+        </button>
+      </div>
+
+      <div class="pending-reminder-list">
+        @for (reminder of visiblePendingReminders(); track reminder.appointment.appointmentId) {
+          <article
+            class="pending-reminder-card"
+            [class.info]="reminder.severity === 'info'"
+            [class.warning]="reminder.severity === 'warning'"
+            [class.urgent]="reminder.severity === 'urgent'"
+            [class.critical]="reminder.severity === 'critical'"
+            [class.overdue]="reminder.severity === 'overdue'"
+          >
+            <div class="pending-reminder-icon" aria-hidden="true">
+              @if (reminder.severity === 'overdue') { ! }
+              @else if (reminder.severity === 'critical') { !! }
+              @else { ⏱ }
+            </div>
+
+            <div class="pending-reminder-content">
+              <div class="pending-reminder-title-row">
+                <div>
+                  <span class="pending-severity-label">{{ reminder.title }}</span>
+                  <h3>Appointment #{{ reminder.appointment.appointmentId }} · {{ reminder.appointment.patientName || 'Patient' }}</h3>
+                </div>
+                <span class="pending-time-badge">{{ reminder.timeLabel }}</span>
+              </div>
+
+              <p>{{ reminder.message }}</p>
+
+              <div class="pending-reminder-meta">
+                <span>{{ formatDate(reminder.appointment.scheduledDate) }}</span>
+                <span>{{ reminder.appointment.timeSlot }}</span>
+                <span>Patient ID: {{ reminder.appointment.patientId }}</span>
+              </div>
+            </div>
+
+            <div class="pending-reminder-actions">
+              <button class="reminder-action-button view" type="button" (click)="openPatientModal(reminder.appointment)">
+                View Patient
+              </button>
+
+              @if (reminder.severity !== 'overdue') {
+                <button class="reminder-action-button confirm" type="button" (click)="confirmAppointment(reminder.appointment)">
+                  Confirm
+                </button>
+              }
+
+              <button class="reminder-action-button cancel" type="button" (click)="openCancelModal(reminder.appointment)">
+                Cancel
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+
+      @if (pendingReminders().length > visiblePendingReminders().length) {
+        <div class="pending-reminder-more">
+          <span>{{ pendingReminders().length - visiblePendingReminders().length }} more pending appointment(s) require attention.</span>
+          <button type="button" (click)="showAllPendingReminders()">Show all reminders</button>
+        </div>
+      }
+    </section>
+  }
+
+
   <section class="doctor-filter-card">
     <div class="doctor-search-box">
       <span>⌕</span>
