@@ -46,12 +46,27 @@ namespace HealthAxis.API.Services
         {
             if (createDto.ScheduledDate.Date < DateTime.Today)
             {
+                _logger.LogWarning(
+                    "Appointment booking failed. Reason {Reason}, PatientId {PatientId}, DoctorId {DoctorId}, ScheduledDate {ScheduledDate}, TimeSlot {TimeSlot}",
+                    "Past date selected",
+                    createDto.PatientId,
+                    createDto.DoctorId,
+                    createDto.ScheduledDate.ToString("yyyy-MM-dd"),
+                    createDto.TimeSlot);
+
                 throw new InvalidOperationException(
                     "Past dates are not allowed.");
             }
 
             if (string.IsNullOrWhiteSpace(createDto.TimeSlot))
             {
+                _logger.LogWarning(
+                    "Appointment booking failed. Reason {Reason}, PatientId {PatientId}, DoctorId {DoctorId}, ScheduledDate {ScheduledDate}",
+                    "Time slot is required",
+                    createDto.PatientId,
+                    createDto.DoctorId,
+                    createDto.ScheduledDate.ToString("yyyy-MM-dd"));
+
                 throw new InvalidOperationException(
                     "Time slot is required.");
             }
@@ -59,6 +74,14 @@ namespace HealthAxis.API.Services
             if (createDto.ScheduledDate.Date == DateTime.Today &&
                 IsPastSlot(createDto.TimeSlot))
             {
+                _logger.LogWarning(
+                    "Appointment booking failed. Reason {Reason}, PatientId {PatientId}, DoctorId {DoctorId}, ScheduledDate {ScheduledDate}, TimeSlot {TimeSlot}",
+                    "Past time slot selected",
+                    createDto.PatientId,
+                    createDto.DoctorId,
+                    createDto.ScheduledDate.ToString("yyyy-MM-dd"),
+                    createDto.TimeSlot);
+
                 throw new InvalidOperationException(
                     "Past time slots are not allowed.");
             }
@@ -68,6 +91,14 @@ namespace HealthAxis.API.Services
 
             if (createDto.ScheduledDate.Date > maxAllowedDate)
             {
+                _logger.LogWarning(
+                    "Appointment booking failed. Reason {Reason}, PatientId {PatientId}, DoctorId {DoctorId}, ScheduledDate {ScheduledDate}, MaxAllowedDate {MaxAllowedDate}",
+                    "Appointment date exceeds six months limit",
+                    createDto.PatientId,
+                    createDto.DoctorId,
+                    createDto.ScheduledDate.ToString("yyyy-MM-dd"),
+                    maxAllowedDate.ToString("yyyy-MM-dd"));
+
                 throw new InvalidOperationException(
                     "Appointments can only be booked up to 6 months in advance.");
             }
@@ -79,12 +110,24 @@ namespace HealthAxis.API.Services
 
             if (doctor == null)
             {
+                _logger.LogWarning(
+                    "Appointment booking failed. Reason {Reason}, DoctorId {DoctorId}, PatientId {PatientId}",
+                    "Doctor not found",
+                    createDto.DoctorId,
+                    createDto.PatientId);
+
                 throw new InvalidOperationException(
                     "Doctor not found.");
             }
 
             if (!doctor.IsActive)
             {
+                _logger.LogWarning(
+                    "Appointment booking failed. Reason {Reason}, DoctorId {DoctorId}, PatientId {PatientId}",
+                    "Doctor is inactive",
+                    createDto.DoctorId,
+                    createDto.PatientId);
+
                 throw new InvalidOperationException(
                     "This doctor is currently inactive and cannot accept appointments.");
             }
@@ -96,6 +139,12 @@ namespace HealthAxis.API.Services
 
             if (patient == null)
             {
+                _logger.LogWarning(
+                    "Appointment booking failed. Reason {Reason}, PatientId {PatientId}, DoctorId {DoctorId}",
+                    "Patient not found",
+                    createDto.PatientId,
+                    createDto.DoctorId);
+
                 throw new InvalidOperationException(
                     "Patient not found.");
             }
@@ -112,6 +161,14 @@ namespace HealthAxis.API.Services
 
             if (doctorAlreadyBooked)
             {
+                _logger.LogWarning(
+                    "Appointment booking failed. Reason {Reason}, DoctorId {DoctorId}, PatientId {PatientId}, ScheduledDate {ScheduledDate}, TimeSlot {TimeSlot}",
+                    "Doctor already booked",
+                    createDto.DoctorId,
+                    createDto.PatientId,
+                    createDto.ScheduledDate.ToString("yyyy-MM-dd"),
+                    createDto.TimeSlot);
+
                 throw new InvalidOperationException(
                     "This doctor is already booked for the selected date and time slot.");
             }
@@ -125,6 +182,14 @@ namespace HealthAxis.API.Services
 
             if (patientAlreadyBookedAtSameTime)
             {
+                _logger.LogWarning(
+                    "Appointment booking failed. Reason {Reason}, PatientId {PatientId}, DoctorId {DoctorId}, ScheduledDate {ScheduledDate}, TimeSlot {TimeSlot}",
+                    "Patient already has appointment at same time",
+                    createDto.PatientId,
+                    createDto.DoctorId,
+                    createDto.ScheduledDate.ToString("yyyy-MM-dd"),
+                    createDto.TimeSlot);
+
                 throw new InvalidOperationException(
                     "You already have an appointment booked at this date and time slot.");
             }
@@ -151,24 +216,20 @@ namespace HealthAxis.API.Services
                 ct);
 
             _logger.LogInformation(
-                """
-
-                ====================================
-                GARNET CACHE INVALIDATED
-                ====================================
-
-                Doctor Id     : {DoctorId}
-                AppointmentId : {AppointmentId}
-                Date          : {Date}
-                Cache Key     : {CacheKey}
-
-                ====================================
-
-                """,
+                "Garnet availability cache invalidated. DoctorId {DoctorId}, AppointmentId {AppointmentId}, ScheduledDate {ScheduledDate}, CacheKey {CacheKey}",
                 createdAppointment.DoctorId,
                 createdAppointment.AppointmentId,
                 createdAppointment.ScheduledDate.ToString("yyyy-MM-dd"),
                 availabilityCacheKey);
+
+            _logger.LogInformation(
+                "Appointment booked successfully. AppointmentId {AppointmentId}, PatientId {PatientId}, DoctorId {DoctorId}, PatientName {PatientName}, ScheduledDate {ScheduledDate}, TimeSlot {TimeSlot}",
+                createdAppointment.AppointmentId,
+                createdAppointment.PatientId,
+                createdAppointment.DoctorId,
+                patient.FullName,
+                createdAppointment.ScheduledDate.ToString("yyyy-MM-dd"),
+                createdAppointment.TimeSlot);
 
             AppointmentBookedEvent appointmentBookedEvent = new()
             {
@@ -180,22 +241,7 @@ namespace HealthAxis.API.Services
             };
 
             _logger.LogInformation(
-                """
-
-                ====================================
-                PUBLISHING APPOINTMENT EVENT
-                ====================================
-
-                Event Type    : AppointmentBookedEvent
-                AppointmentId : {AppointmentId}
-                Patient       : {PatientName}
-                Doctor Id     : {DoctorId}
-                Date          : {Date}
-                Time Slot     : {TimeSlot}
-
-                ====================================
-
-                """,
+                "Publishing AppointmentBookedEvent. AppointmentId {AppointmentId}, PatientName {PatientName}, DoctorId {DoctorId}, ScheduledDate {ScheduledDate}, TimeSlot {TimeSlot}",
                 appointmentBookedEvent.AppointmentId,
                 appointmentBookedEvent.PatientName,
                 appointmentBookedEvent.DoctorId,
@@ -207,18 +253,7 @@ namespace HealthAxis.API.Services
                 ct);
 
             _logger.LogInformation(
-                """
-
-                ====================================
-                APPOINTMENT EVENT PUBLISHED
-                ====================================
-
-                AppointmentId : {AppointmentId}
-                Doctor Id     : {DoctorId}
-
-                ====================================
-
-                """,
+                "AppointmentBookedEvent published successfully. AppointmentId {AppointmentId}, DoctorId {DoctorId}",
                 appointmentBookedEvent.AppointmentId,
                 appointmentBookedEvent.DoctorId);
 
@@ -290,8 +325,16 @@ namespace HealthAxis.API.Services
 
             if (appointment == null)
             {
+                _logger.LogWarning(
+                    "Appointment status update failed. Reason {Reason}, AppointmentId {AppointmentId}",
+                    "Appointment not found",
+                    appointmentId);
+
                 return null;
             }
+
+            AppointmentStatus oldStatus =
+                appointment.Status;
 
             if (statusUpdateDto.Status == AppointmentStatus.Confirmed)
             {
@@ -313,6 +356,12 @@ namespace HealthAxis.API.Services
             }
 
             await _appointmentRepository.SaveChangesAsync(ct);
+
+            _logger.LogInformation(
+                "Appointment status updated. AppointmentId {AppointmentId}, OldStatus {OldStatus}, NewStatus {NewStatus}",
+                appointment.AppointmentId,
+                oldStatus,
+                appointment.Status);
 
             return await MapAppointmentWithNamesAsync(
                 appointment,
@@ -351,6 +400,11 @@ namespace HealthAxis.API.Services
                     .OrderBy(reportItem =>
                         reportItem.Date)
                     .ToList();
+
+            _logger.LogInformation(
+                "Appointment report generated. ReportDateCount {ReportDateCount}, TotalAppointments {TotalAppointments}",
+                report.Count,
+                appointments.Count);
 
             return report;
         }

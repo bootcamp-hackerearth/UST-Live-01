@@ -4,6 +4,7 @@ using HealthAxis.API.Enums;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories;
 using HealthAxis.API.Services;
+using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 
 namespace HealthAxis.API.Tests.Services
@@ -13,24 +14,55 @@ namespace HealthAxis.API.Tests.Services
         private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
         private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<IDistributedCache> _cacheMock;
+
         private readonly DoctorService _doctorService;
 
         public DoctorServiceTests()
         {
-            _doctorRepositoryMock = new Mock<IDoctorRepository>();
-            _appointmentRepositoryMock = new Mock<IAppointmentRepository>();
-            _mapperMock = new Mock<IMapper>();
+            _doctorRepositoryMock =
+                new Mock<IDoctorRepository>();
 
-            _doctorService = new DoctorService(
-                _doctorRepositoryMock.Object,
-                _appointmentRepositoryMock.Object,
-                _mapperMock.Object);
+            _appointmentRepositoryMock =
+                new Mock<IAppointmentRepository>();
+
+            _mapperMock =
+                new Mock<IMapper>();
+
+            _cacheMock =
+                new Mock<IDistributedCache>();
+
+            _cacheMock
+                .Setup(cache => cache.GetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((byte[]?)null);
+
+            _cacheMock
+                .Setup(cache => cache.SetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<byte[]>(),
+                    It.IsAny<DistributedCacheEntryOptions>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            _cacheMock
+                .Setup(cache => cache.RemoveAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            _doctorService =
+                new DoctorService(
+                    _doctorRepositoryMock.Object,
+                    _appointmentRepositoryMock.Object,
+                    _mapperMock.Object,
+                    _cacheMock.Object);
         }
 
         [Fact]
         public async Task GetAvailabilityAsync_WhenDoctorDoesNotExist_ReturnsNull()
         {
-            // Arrange
             const int doctorId = 404;
             DateTime date = DateTime.Today.AddDays(1);
             string timeSlot = "09:00-09:30";
@@ -41,14 +73,12 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Doctor?)null);
 
-            // Act
             DoctorAvailabilityDto? result =
                 await _doctorService.GetAvailabilityAsync(
                     doctorId,
                     date,
                     timeSlot);
 
-            // Assert
             Assert.Null(result);
 
             _appointmentRepositoryMock.Verify(
@@ -63,7 +93,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailabilityAsync_WhenDoctorIsInactive_ReturnsUnavailable()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today.AddDays(1);
             string timeSlot = "09:00-09:30";
@@ -81,14 +110,12 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(doctor);
 
-            // Act
             DoctorAvailabilityDto? result =
                 await _doctorService.GetAvailabilityAsync(
                     doctorId,
                     date,
                     timeSlot);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal(doctorId, result.DoctorId);
             Assert.Equal(date.Date, result.Date);
@@ -107,7 +134,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailabilityAsync_WhenActiveDoctorAndSlotIsBooked_ReturnsUnavailable()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today.AddDays(1);
             string timeSlot = "10:00-10:30";
@@ -133,14 +159,12 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            // Act
             DoctorAvailabilityDto? result =
                 await _doctorService.GetAvailabilityAsync(
                     doctorId,
                     date,
                     timeSlot);
 
-            // Assert
             Assert.NotNull(result);
             Assert.False(result.IsAvailable);
             Assert.Equal(doctorId, result.DoctorId);
@@ -151,7 +175,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailabilityAsync_WhenActiveDoctorAndSlotIsNotBooked_ReturnsAvailable()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today.AddDays(1).AddHours(5);
             string timeSlot = "11:00-11:30";
@@ -177,14 +200,12 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
 
-            // Act
             DoctorAvailabilityDto? result =
                 await _doctorService.GetAvailabilityAsync(
                     doctorId,
                     date,
                     timeSlot);
 
-            // Assert
             Assert.NotNull(result);
             Assert.True(result.IsAvailable);
             Assert.Equal(date.Date, result.Date);
@@ -201,7 +222,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task UpdateActiveStatusAsync_WhenDoctorDoesNotExist_ReturnsNull()
         {
-            // Arrange
             const int doctorId = 404;
 
             _doctorRepositoryMock
@@ -210,13 +230,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Doctor?)null);
 
-            // Act
             DoctorReadDto? result =
                 await _doctorService.UpdateActiveStatusAsync(
                     doctorId,
                     true);
 
-            // Assert
             Assert.Null(result);
 
             _doctorRepositoryMock.Verify(
@@ -233,7 +251,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task UpdateActiveStatusAsync_WhenDoctorExists_UpdatesStatusSavesAndReturnsMappedDoctor()
         {
-            // Arrange
             const int doctorId = 1;
 
             Doctor doctor = new()
@@ -265,13 +282,11 @@ namespace HealthAxis.API.Tests.Services
                 .Setup(mapper => mapper.Map<DoctorReadDto>(doctor))
                 .Returns(expectedDto);
 
-            // Act
             DoctorReadDto? result =
                 await _doctorService.UpdateActiveStatusAsync(
                     doctorId,
                     false);
 
-            // Assert
             Assert.NotNull(result);
             Assert.False(doctor.IsActive);
             Assert.Equal(expectedDto.DoctorId, result.DoctorId);
@@ -291,7 +306,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task UpdateActiveStatusAsync_WhenUpdatingToActive_SetsDoctorActiveTrue()
         {
-            // Arrange
             const int doctorId = 1;
 
             Doctor doctor = new()
@@ -323,13 +337,11 @@ namespace HealthAxis.API.Tests.Services
                 .Setup(mapper => mapper.Map<DoctorReadDto>(doctor))
                 .Returns(expectedDto);
 
-            // Act
             DoctorReadDto? result =
                 await _doctorService.UpdateActiveStatusAsync(
                     doctorId,
                     true);
 
-            // Assert
             Assert.NotNull(result);
             Assert.True(doctor.IsActive);
             Assert.True(result.IsActive);
@@ -338,7 +350,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenDoctorDoesNotExist_ReturnsEmptyList()
         {
-            // Arrange
             const int doctorId = 404;
             DateTime date = DateTime.Today.AddDays(1);
 
@@ -348,13 +359,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Doctor?)null);
 
-            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     date);
 
-            // Assert
             Assert.Empty(result);
 
             _appointmentRepositoryMock.Verify(
@@ -366,7 +375,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenDoctorIsInactive_ReturnsEmptyList()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today.AddDays(1);
 
@@ -383,13 +391,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(doctor);
 
-            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     date);
 
-            // Assert
             Assert.Empty(result);
 
             _appointmentRepositoryMock.Verify(
@@ -401,7 +407,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenDateIsInPast_ReturnsEmptyList()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today.AddDays(-1);
 
@@ -418,13 +423,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(doctor);
 
-            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     date);
 
-            // Assert
             Assert.Empty(result);
 
             _appointmentRepositoryMock.Verify(
@@ -436,7 +439,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenDateIsMoreThanSixMonthsAhead_ReturnsEmptyList()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today.AddMonths(6).AddDays(1);
 
@@ -453,13 +455,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(doctor);
 
-            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     date);
 
-            // Assert
             Assert.Empty(result);
 
             _appointmentRepositoryMock.Verify(
@@ -471,7 +471,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenNoAppointmentsExist_ReturnsAllSlots()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today.AddDays(1);
 
@@ -493,21 +492,26 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Appointment>());
 
-            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     date);
 
-            // Assert
             Assert.Equal(GetAllSlots().Count, result.Count);
             Assert.Equal(GetAllSlots(), result);
+
+            _cacheMock.Verify(
+                cache => cache.SetAsync(
+                    $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}",
+                    It.IsAny<byte[]>(),
+                    It.IsAny<DistributedCacheEntryOptions>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenSlotsBookedForDoctor_ReturnsOnlyUnbookedSlots()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today.AddDays(1);
 
@@ -551,13 +555,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(appointments);
 
-            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     date);
 
-            // Assert
             Assert.DoesNotContain("09:00-09:30", result);
             Assert.DoesNotContain("10:00-10:30", result);
             Assert.Contains("09:30-10:00", result);
@@ -568,7 +570,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenBookedAppointmentIsCancelled_DoesNotBlockSlot()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today.AddDays(1);
 
@@ -603,13 +604,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(appointments);
 
-            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     date);
 
-            // Assert
             Assert.Contains("09:00-09:30", result);
             Assert.Equal(GetAllSlots().Count, result.Count);
         }
@@ -617,7 +616,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenAppointmentsBelongToOtherDoctor_DoesNotBlockSlots()
         {
-            // Arrange
             const int doctorId = 1;
             const int otherDoctorId = 2;
             DateTime date = DateTime.Today.AddDays(1);
@@ -653,13 +651,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(appointments);
 
-            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     date);
 
-            // Assert
             Assert.Contains("09:00-09:30", result);
             Assert.Equal(GetAllSlots().Count, result.Count);
         }
@@ -667,7 +663,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenAppointmentsAreOnDifferentDate_DoesNotBlockSlots()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime selectedDate = DateTime.Today.AddDays(1);
             DateTime differentDate = selectedDate.AddDays(1);
@@ -703,13 +698,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(appointments);
 
-            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     selectedDate);
 
-            // Assert
             Assert.Contains("09:00-09:30", result);
             Assert.Equal(GetAllSlots().Count, result.Count);
         }
@@ -717,7 +710,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenDateIsExactlySixMonthsAhead_ReturnsSlots()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today.AddMonths(6);
 
@@ -739,13 +731,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Appointment>());
 
-            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     date);
 
-            // Assert
             Assert.NotEmpty(result);
             Assert.Equal(GetAllSlots().Count, result.Count);
         }
@@ -753,7 +743,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenDateIsToday_ReturnsOnlyFutureSlots()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today;
 
@@ -775,30 +764,32 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Appointment>());
 
-            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     date);
 
-            // Assert
             Assert.Equal(GetFutureSlotsForToday(), result);
+
             Assert.All(result, slot =>
             {
-                string startTime = slot.Split('-')[0];
-                Assert.True(TimeSpan.Parse(startTime) > DateTime.Now.TimeOfDay);
+                string startTime =
+                    slot.Split('-')[0];
+
+                Assert.True(
+                    TimeSpan.Parse(startTime) > DateTime.Now.TimeOfDay);
             });
         }
 
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenDateIsTodayAndFutureSlotIsBooked_ExcludesBookedFutureSlot()
         {
-            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today;
 
             string? futureSlot =
-                GetFutureSlotsForToday().FirstOrDefault();
+                GetFutureSlotsForToday()
+                    .FirstOrDefault();
 
             if (futureSlot == null)
             {
@@ -836,13 +827,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(appointments);
 
-            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     date);
 
-            // Assert
             Assert.DoesNotContain(futureSlot, result);
         }
 
@@ -873,7 +862,8 @@ namespace HealthAxis.API.Tests.Services
             return GetAllSlots()
                 .Where(slot =>
                 {
-                    string startTime = slot.Split('-')[0];
+                    string startTime =
+                        slot.Split('-')[0];
 
                     return TimeSpan.TryParse(
                                startTime,
