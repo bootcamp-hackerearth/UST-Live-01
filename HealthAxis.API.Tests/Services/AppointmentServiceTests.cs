@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
 using HealthAxis.API.DTOs.Appointments;
 using HealthAxis.API.Enums;
+using HealthAxis.API.Messages;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories;
 using HealthAxis.API.Services;
+using MassTransit;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace HealthAxis.API.Tests.Services
@@ -14,107 +18,163 @@ namespace HealthAxis.API.Tests.Services
         private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
         private readonly Mock<IPatientRepository> _patientRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<IPublishEndpoint> _publishEndpointMock;
+        private readonly Mock<ILogger<AppointmentService>> _loggerMock;
+        private readonly Mock<IDistributedCache> _cacheMock;
+
         private readonly AppointmentService _appointmentService;
 
         public AppointmentServiceTests()
         {
-            _appointmentRepositoryMock = new Mock<IAppointmentRepository>();
-            _doctorRepositoryMock = new Mock<IDoctorRepository>();
-            _patientRepositoryMock = new Mock<IPatientRepository>();
-            _mapperMock = new Mock<IMapper>();
+            _appointmentRepositoryMock =
+                new Mock<IAppointmentRepository>();
 
-            _appointmentService = new AppointmentService(
-                _appointmentRepositoryMock.Object,
-                _doctorRepositoryMock.Object,
-                _patientRepositoryMock.Object,
-                _mapperMock.Object);
+            _doctorRepositoryMock =
+                new Mock<IDoctorRepository>();
+
+            _patientRepositoryMock =
+                new Mock<IPatientRepository>();
+
+            _mapperMock =
+                new Mock<IMapper>();
+
+            _publishEndpointMock =
+                new Mock<IPublishEndpoint>();
+
+            _loggerMock =
+                new Mock<ILogger<AppointmentService>>();
+
+            _cacheMock =
+                new Mock<IDistributedCache>();
+
+            _publishEndpointMock
+                .Setup(publisher => publisher.Publish(
+                    It.IsAny<AppointmentBookedEvent>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            _cacheMock
+                .Setup(cache => cache.RemoveAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            _appointmentService =
+                new AppointmentService(
+                    _appointmentRepositoryMock.Object,
+                    _doctorRepositoryMock.Object,
+                    _patientRepositoryMock.Object,
+                    _mapperMock.Object,
+                    _publishEndpointMock.Object,
+                    _loggerMock.Object,
+                    _cacheMock.Object);
         }
 
         [Fact]
         public async Task CreateAsync_WhenScheduledDateIsInPast_ThrowsInvalidOperationException()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
-            createDto.ScheduledDate = DateTime.Today.AddDays(-1);
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
-            // Act & Assert
+            createDto.ScheduledDate =
+                DateTime.Today.AddDays(-1);
+
             InvalidOperationException exception =
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     _appointmentService.CreateAsync(createDto));
 
-            Assert.Equal("Past dates are not allowed.", exception.Message);
+            Assert.Equal(
+                "Past dates are not allowed.",
+                exception.Message);
         }
 
         [Fact]
         public async Task CreateAsync_WhenTimeSlotIsEmpty_ThrowsInvalidOperationException()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
-            createDto.TimeSlot = string.Empty;
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
-            // Act & Assert
+            createDto.TimeSlot =
+                string.Empty;
+
             InvalidOperationException exception =
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     _appointmentService.CreateAsync(createDto));
 
-            Assert.Equal("Time slot is required.", exception.Message);
+            Assert.Equal(
+                "Time slot is required.",
+                exception.Message);
         }
 
         [Fact]
         public async Task CreateAsync_WhenTimeSlotIsWhiteSpace_ThrowsInvalidOperationException()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
-            createDto.TimeSlot = "   ";
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
-            // Act & Assert
+            createDto.TimeSlot =
+                "   ";
+
             InvalidOperationException exception =
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     _appointmentService.CreateAsync(createDto));
 
-            Assert.Equal("Time slot is required.", exception.Message);
+            Assert.Equal(
+                "Time slot is required.",
+                exception.Message);
         }
 
         [Fact]
         public async Task CreateAsync_WhenScheduledDateIsTodayAndTimeSlotIsPast_ThrowsInvalidOperationException()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
-            createDto.ScheduledDate = DateTime.Today;
-            createDto.TimeSlot = "00:00";
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
-            // Act & Assert
+            createDto.ScheduledDate =
+                DateTime.Today;
+
+            createDto.TimeSlot =
+                "00:00";
+
             InvalidOperationException exception =
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     _appointmentService.CreateAsync(createDto));
 
-            Assert.Equal("Past time slots are not allowed.", exception.Message);
+            Assert.Equal(
+                "Past time slots are not allowed.",
+                exception.Message);
         }
 
         [Fact]
         public async Task CreateAsync_WhenTodayTimeSlotFormatIsInvalid_ThrowsInvalidOperationException()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
-            createDto.ScheduledDate = DateTime.Today;
-            createDto.TimeSlot = "Invalid Slot";
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
-            // Act & Assert
+            createDto.ScheduledDate =
+                DateTime.Today;
+
+            createDto.TimeSlot =
+                "Invalid Slot";
+
             InvalidOperationException exception =
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     _appointmentService.CreateAsync(createDto));
 
-            Assert.Equal("Past time slots are not allowed.", exception.Message);
+            Assert.Equal(
+                "Past time slots are not allowed.",
+                exception.Message);
         }
 
         [Fact]
         public async Task CreateAsync_WhenScheduledDateIsMoreThanSixMonthsAhead_ThrowsInvalidOperationException()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
-            createDto.ScheduledDate = DateTime.Today.AddMonths(6).AddDays(1);
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
-            // Act & Assert
+            createDto.ScheduledDate =
+                DateTime.Today.AddMonths(6).AddDays(1);
+
             InvalidOperationException exception =
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     _appointmentService.CreateAsync(createDto));
@@ -127,8 +187,8 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task CreateAsync_WhenDoctorDoesNotExist_ThrowsInvalidOperationException()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
             _doctorRepositoryMock
                 .Setup(repository => repository.GetByIdAsync(
@@ -136,19 +196,20 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Doctor?)null);
 
-            // Act & Assert
             InvalidOperationException exception =
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     _appointmentService.CreateAsync(createDto));
 
-            Assert.Equal("Doctor not found.", exception.Message);
+            Assert.Equal(
+                "Doctor not found.",
+                exception.Message);
         }
 
         [Fact]
         public async Task CreateAsync_WhenDoctorIsInactive_ThrowsInvalidOperationException()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
             Doctor doctor = new()
             {
@@ -163,7 +224,6 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(doctor);
 
-            // Act & Assert
             InvalidOperationException exception =
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     _appointmentService.CreateAsync(createDto));
@@ -176,10 +236,11 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task CreateAsync_WhenPatientDoesNotExist_ThrowsInvalidOperationException()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
-            Doctor doctor = CreateActiveDoctor(createDto.DoctorId);
+            Doctor doctor =
+                CreateActiveDoctor(createDto.DoctorId);
 
             _doctorRepositoryMock
                 .Setup(repository => repository.GetByIdAsync(
@@ -193,22 +254,26 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Patient?)null);
 
-            // Act & Assert
             InvalidOperationException exception =
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     _appointmentService.CreateAsync(createDto));
 
-            Assert.Equal("Patient not found.", exception.Message);
+            Assert.Equal(
+                "Patient not found.",
+                exception.Message);
         }
 
         [Fact]
         public async Task CreateAsync_WhenDoctorAlreadyBookedForSameSlot_ThrowsInvalidOperationException()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
-            Doctor doctor = CreateActiveDoctor(createDto.DoctorId);
-            Patient patient = CreatePatient(createDto.PatientId);
+            Doctor doctor =
+                CreateActiveDoctor(createDto.DoctorId);
+
+            Patient patient =
+                CreatePatient(createDto.PatientId);
 
             List<Appointment> existingAppointments = new()
             {
@@ -223,9 +288,12 @@ namespace HealthAxis.API.Tests.Services
                 }
             };
 
-            SetupDoctorPatientAndAppointments(createDto, doctor, patient, existingAppointments);
+            SetupDoctorPatientAndAppointments(
+                createDto,
+                doctor,
+                patient,
+                existingAppointments);
 
-            // Act & Assert
             InvalidOperationException exception =
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     _appointmentService.CreateAsync(createDto));
@@ -238,11 +306,14 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task CreateAsync_WhenDoctorBookingIsCancelled_AllowsNewAppointment()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
-            Doctor doctor = CreateActiveDoctor(createDto.DoctorId);
-            Patient patient = CreatePatient(createDto.PatientId);
+            Doctor doctor =
+                CreateActiveDoctor(createDto.DoctorId);
+
+            Patient patient =
+                CreatePatient(createDto.PatientId);
 
             List<Appointment> existingAppointments = new()
             {
@@ -275,7 +346,11 @@ namespace HealthAxis.API.Tests.Services
                 Status = AppointmentStatus.Scheduled
             };
 
-            SetupDoctorPatientAndAppointments(createDto, doctor, patient, existingAppointments);
+            SetupDoctorPatientAndAppointments(
+                createDto,
+                doctor,
+                patient,
+                existingAppointments);
 
             _mapperMock
                 .Setup(mapper => mapper.Map<Appointment>(createDto))
@@ -287,11 +362,9 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(createdAppointment);
 
-            // Act
             AppointmentReadDto result =
                 await _appointmentService.CreateAsync(createDto);
 
-            // Assert
             Assert.Equal(10, result.AppointmentId);
             Assert.Equal(AppointmentStatus.Scheduled, result.Status);
 
@@ -300,16 +373,36 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<Appointment>(),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
+
+            _cacheMock.Verify(
+                cache => cache.RemoveAsync(
+                    $"doctors:{createDto.DoctorId}:availability:{createDto.ScheduledDate:yyyy-MM-dd}",
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            _publishEndpointMock.Verify(
+                publisher => publisher.Publish(
+                    It.Is<AppointmentBookedEvent>(appointmentEvent =>
+                        appointmentEvent.AppointmentId == createdAppointment.AppointmentId &&
+                        appointmentEvent.PatientName == patient.FullName &&
+                        appointmentEvent.DoctorId == createDto.DoctorId &&
+                        appointmentEvent.ScheduledDate == createDto.ScheduledDate.Date &&
+                        appointmentEvent.TimeSlot == createDto.TimeSlot),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
         public async Task CreateAsync_WhenPatientAlreadyBookedForSameSlot_ThrowsInvalidOperationException()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
-            Doctor doctor = CreateActiveDoctor(createDto.DoctorId);
-            Patient patient = CreatePatient(createDto.PatientId);
+            Doctor doctor =
+                CreateActiveDoctor(createDto.DoctorId);
+
+            Patient patient =
+                CreatePatient(createDto.PatientId);
 
             List<Appointment> existingAppointments = new()
             {
@@ -324,9 +417,12 @@ namespace HealthAxis.API.Tests.Services
                 }
             };
 
-            SetupDoctorPatientAndAppointments(createDto, doctor, patient, existingAppointments);
+            SetupDoctorPatientAndAppointments(
+                createDto,
+                doctor,
+                patient,
+                existingAppointments);
 
-            // Act & Assert
             InvalidOperationException exception =
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     _appointmentService.CreateAsync(createDto));
@@ -339,11 +435,14 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task CreateAsync_WhenValidRequest_CreatesAppointmentWithScheduledStatusAndReturnsNames()
         {
-            // Arrange
-            AppointmentCreateDto createDto = CreateAppointmentCreateDto();
+            AppointmentCreateDto createDto =
+                CreateAppointmentCreateDto();
 
-            Doctor doctor = CreateActiveDoctor(createDto.DoctorId);
-            Patient patient = CreatePatient(createDto.PatientId);
+            Doctor doctor =
+                CreateActiveDoctor(createDto.DoctorId);
+
+            Patient patient =
+                CreatePatient(createDto.PatientId);
 
             Appointment mappedAppointment = new()
             {
@@ -380,11 +479,9 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(createdAppointment);
 
-            // Act
             AppointmentReadDto result =
                 await _appointmentService.CreateAsync(createDto);
 
-            // Assert
             Assert.Equal(100, result.AppointmentId);
             Assert.Equal(createDto.PatientId, result.PatientId);
             Assert.Equal(patient.FullName, result.PatientName);
@@ -401,14 +498,33 @@ namespace HealthAxis.API.Tests.Services
                         appointment.Status == AppointmentStatus.Scheduled),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
+
+            _cacheMock.Verify(
+                cache => cache.RemoveAsync(
+                    $"doctors:{createDto.DoctorId}:availability:{createDto.ScheduledDate:yyyy-MM-dd}",
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            _publishEndpointMock.Verify(
+                publisher => publisher.Publish(
+                    It.Is<AppointmentBookedEvent>(appointmentEvent =>
+                        appointmentEvent.AppointmentId == createdAppointment.AppointmentId &&
+                        appointmentEvent.PatientName == patient.FullName &&
+                        appointmentEvent.DoctorId == createDto.DoctorId &&
+                        appointmentEvent.ScheduledDate == createDto.ScheduledDate.Date &&
+                        appointmentEvent.TimeSlot == createDto.TimeSlot),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
         public async Task GetAllWithDetailsAsync_WhenAppointmentsExist_ReturnsAppointmentsWithDoctorAndPatientNamesOrderedByDateDescending()
         {
-            // Arrange
-            DateTime olderDate = DateTime.Today.AddDays(1);
-            DateTime newerDate = DateTime.Today.AddDays(3);
+            DateTime olderDate =
+                DateTime.Today.AddDays(1);
+
+            DateTime newerDate =
+                DateTime.Today.AddDays(3);
 
             List<Appointment> appointments = new()
             {
@@ -459,11 +575,9 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patients);
 
-            // Act
             List<AppointmentReadDto> result =
                 await _appointmentService.GetAllWithDetailsAsync();
 
-            // Assert
             Assert.Equal(2, result.Count);
 
             Assert.Equal(2, result[0].AppointmentId);
@@ -480,7 +594,6 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAllWithDetailsAsync_WhenDoctorOrPatientMissing_ReturnsUnknownNames()
         {
-            // Arrange
             List<Appointment> appointments = new()
             {
                 new Appointment
@@ -509,11 +622,9 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Patient>());
 
-            // Act
             List<AppointmentReadDto> result =
                 await _appointmentService.GetAllWithDetailsAsync();
 
-            // Assert
             Assert.Single(result);
             Assert.Equal("Unknown Doctor", result[0].DoctorName);
             Assert.Equal("Unknown Patient", result[0].PatientName);
@@ -522,11 +633,13 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAppointmentsByPatientIdAsync_WhenAppointmentsExist_ReturnsOnlyPatientAppointmentsOrderedByDateDescending()
         {
-            // Arrange
             const int patientId = 1;
 
-            DateTime olderDate = DateTime.Today.AddDays(1);
-            DateTime newerDate = DateTime.Today.AddDays(4);
+            DateTime olderDate =
+                DateTime.Today.AddDays(1);
+
+            DateTime newerDate =
+                DateTime.Today.AddDays(4);
 
             List<Appointment> appointments = new()
             {
@@ -566,27 +679,30 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(appointments);
 
-            // Act
             List<AppointmentReadDto> result =
                 await _appointmentService.GetAppointmentsByPatientIdAsync(patientId);
 
-            // Assert
             Assert.Equal(2, result.Count);
             Assert.Equal(3, result[0].AppointmentId);
             Assert.Equal(newerDate, result[0].ScheduledDate);
             Assert.Equal(1, result[1].AppointmentId);
             Assert.Equal(olderDate, result[1].ScheduledDate);
-            Assert.All(result, item => Assert.Equal(patientId, item.PatientId));
+
+            Assert.All(
+                result,
+                item => Assert.Equal(patientId, item.PatientId));
         }
 
         [Fact]
         public async Task GetAppointmentsByDoctorIdAsync_WhenAppointmentsExist_ReturnsOnlyDoctorAppointmentsOrderedByDateDescending()
         {
-            // Arrange
             const int doctorId = 1;
 
-            DateTime olderDate = DateTime.Today.AddDays(1);
-            DateTime newerDate = DateTime.Today.AddDays(5);
+            DateTime olderDate =
+                DateTime.Today.AddDays(1);
+
+            DateTime newerDate =
+                DateTime.Today.AddDays(5);
 
             List<Appointment> appointments = new()
             {
@@ -626,23 +742,23 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(appointments);
 
-            // Act
             List<AppointmentReadDto> result =
                 await _appointmentService.GetAppointmentsByDoctorIdAsync(doctorId);
 
-            // Assert
             Assert.Equal(2, result.Count);
             Assert.Equal(3, result[0].AppointmentId);
             Assert.Equal(newerDate, result[0].ScheduledDate);
             Assert.Equal(1, result[1].AppointmentId);
             Assert.Equal(olderDate, result[1].ScheduledDate);
-            Assert.All(result, item => Assert.Equal(doctorId, item.DoctorId));
+
+            Assert.All(
+                result,
+                item => Assert.Equal(doctorId, item.DoctorId));
         }
 
         [Fact]
         public async Task UpdateStatusAsync_WhenAppointmentDoesNotExist_ReturnsNull()
         {
-            // Arrange
             const int appointmentId = 404;
 
             AppointmentStatusUpdateDto statusUpdateDto = new()
@@ -656,13 +772,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Appointment?)null);
 
-            // Act
             AppointmentReadDto? result =
                 await _appointmentService.UpdateStatusAsync(
                     appointmentId,
                     statusUpdateDto);
 
-            // Assert
             Assert.Null(result);
 
             _appointmentRepositoryMock.Verify(
@@ -674,26 +788,28 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task UpdateStatusAsync_WhenStatusIsConfirmed_ConfirmsAppointmentAndReturnsDto()
         {
-            // Arrange
             const int appointmentId = 1;
 
-            Appointment appointment = CreateAppointment(appointmentId);
-            appointment.Status = AppointmentStatus.Scheduled;
+            Appointment appointment =
+                CreateAppointment(appointmentId);
+
+            appointment.Status =
+                AppointmentStatus.Scheduled;
 
             AppointmentStatusUpdateDto statusUpdateDto = new()
             {
                 Status = AppointmentStatus.Confirmed
             };
 
-            SetupAppointmentStatusUpdate(appointmentId, appointment);
+            SetupAppointmentStatusUpdate(
+                appointmentId,
+                appointment);
 
-            // Act
             AppointmentReadDto? result =
                 await _appointmentService.UpdateStatusAsync(
                     appointmentId,
                     statusUpdateDto);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal(AppointmentStatus.Confirmed, result.Status);
 
@@ -706,11 +822,13 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task UpdateStatusAsync_WhenStatusIsCancelled_CancelsAppointmentWithReasonAndReturnsDto()
         {
-            // Arrange
             const int appointmentId = 1;
 
-            Appointment appointment = CreateAppointment(appointmentId);
-            appointment.Status = AppointmentStatus.Scheduled;
+            Appointment appointment =
+                CreateAppointment(appointmentId);
+
+            appointment.Status =
+                AppointmentStatus.Scheduled;
 
             AppointmentStatusUpdateDto statusUpdateDto = new()
             {
@@ -718,15 +836,15 @@ namespace HealthAxis.API.Tests.Services
                 CancellationReason = "Patient unavailable"
             };
 
-            SetupAppointmentStatusUpdate(appointmentId, appointment);
+            SetupAppointmentStatusUpdate(
+                appointmentId,
+                appointment);
 
-            // Act
             AppointmentReadDto? result =
                 await _appointmentService.UpdateStatusAsync(
                     appointmentId,
                     statusUpdateDto);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal(AppointmentStatus.Cancelled, result.Status);
             Assert.Equal("Patient unavailable", result.CancellationReason);
@@ -740,26 +858,28 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task UpdateStatusAsync_WhenStatusIsCompleted_CompletesAppointmentAndReturnsDto()
         {
-            // Arrange
             const int appointmentId = 1;
 
-            Appointment appointment = CreateAppointment(appointmentId);
-            appointment.Status = AppointmentStatus.Confirmed;
+            Appointment appointment =
+                CreateAppointment(appointmentId);
+
+            appointment.Status =
+                AppointmentStatus.Confirmed;
 
             AppointmentStatusUpdateDto statusUpdateDto = new()
             {
                 Status = AppointmentStatus.Completed
             };
 
-            SetupAppointmentStatusUpdate(appointmentId, appointment);
+            SetupAppointmentStatusUpdate(
+                appointmentId,
+                appointment);
 
-            // Act
             AppointmentReadDto? result =
                 await _appointmentService.UpdateStatusAsync(
                     appointmentId,
                     statusUpdateDto);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal(AppointmentStatus.Completed, result.Status);
 
@@ -772,26 +892,28 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task UpdateStatusAsync_WhenStatusIsOtherStatus_UpdatesStatusDirectlyAndReturnsDto()
         {
-            // Arrange
             const int appointmentId = 1;
 
-            Appointment appointment = CreateAppointment(appointmentId);
-            appointment.Status = AppointmentStatus.Confirmed;
+            Appointment appointment =
+                CreateAppointment(appointmentId);
+
+            appointment.Status =
+                AppointmentStatus.Confirmed;
 
             AppointmentStatusUpdateDto statusUpdateDto = new()
             {
                 Status = AppointmentStatus.Scheduled
             };
 
-            SetupAppointmentStatusUpdate(appointmentId, appointment);
+            SetupAppointmentStatusUpdate(
+                appointmentId,
+                appointment);
 
-            // Act
             AppointmentReadDto? result =
                 await _appointmentService.UpdateStatusAsync(
                     appointmentId,
                     statusUpdateDto);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal(AppointmentStatus.Scheduled, result.Status);
 
@@ -804,10 +926,11 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task UpdateStatusAsync_WhenDoctorOrPatientMissing_ReturnsUnknownNames()
         {
-            // Arrange
             const int appointmentId = 1;
 
-            Appointment appointment = CreateAppointment(appointmentId);
+            Appointment appointment =
+                CreateAppointment(appointmentId);
+
             appointment.DoctorId = 88;
             appointment.PatientId = 99;
 
@@ -839,13 +962,11 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Patient?)null);
 
-            // Act
             AppointmentReadDto? result =
                 await _appointmentService.UpdateStatusAsync(
                     appointmentId,
                     statusUpdateDto);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("Unknown Doctor", result.DoctorName);
             Assert.Equal("Unknown Patient", result.PatientName);
@@ -854,9 +975,11 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAppointmentReportAsync_WhenAppointmentsExist_ReturnsGroupedReportOrderedByDate()
         {
-            // Arrange
-            DateTime firstDate = DateTime.Today.AddDays(1);
-            DateTime secondDate = DateTime.Today.AddDays(2);
+            DateTime firstDate =
+                DateTime.Today.AddDays(1);
+
+            DateTime secondDate =
+                DateTime.Today.AddDays(2);
 
             List<Appointment> appointments = new()
             {
@@ -897,11 +1020,9 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(appointments);
 
-            // Act
             List<AppointmentReportDto> result =
                 await _appointmentService.GetAppointmentReportAsync();
 
-            // Assert
             Assert.Equal(2, result.Count);
 
             Assert.Equal(firstDate.Date, result[0].Date);
@@ -922,17 +1043,14 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAppointmentReportAsync_WhenNoAppointmentsExist_ReturnsEmptyReport()
         {
-            // Arrange
             _appointmentRepositoryMock
                 .Setup(repository => repository.GetAllAsync(
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Appointment>());
 
-            // Act
             List<AppointmentReportDto> result =
                 await _appointmentService.GetAppointmentReportAsync();
 
-            // Assert
             Assert.Empty(result);
         }
 
@@ -947,7 +1065,8 @@ namespace HealthAxis.API.Tests.Services
             };
         }
 
-        private static Doctor CreateActiveDoctor(int doctorId)
+        private static Doctor CreateActiveDoctor(
+            int doctorId)
         {
             return new Doctor
             {
@@ -957,7 +1076,8 @@ namespace HealthAxis.API.Tests.Services
             };
         }
 
-        private static Patient CreatePatient(int patientId)
+        private static Patient CreatePatient(
+            int patientId)
         {
             return new Patient
             {
@@ -966,7 +1086,8 @@ namespace HealthAxis.API.Tests.Services
             };
         }
 
-        private static Appointment CreateAppointment(int appointmentId)
+        private static Appointment CreateAppointment(
+            int appointmentId)
         {
             return new Appointment
             {
