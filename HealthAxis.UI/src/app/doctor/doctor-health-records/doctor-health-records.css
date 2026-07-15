@@ -200,7 +200,6 @@ textarea {
 .stat-icon svg,
 .search-icon svg,
 .empty-icon svg,
-.record-icon svg,
 .success-icon svg {
   width: 100%;
   height: 100%;
@@ -411,102 +410,109 @@ textarea {
   min-height: 120px;
 }
 
-.records-grid {
-  display: grid;
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-  gap: 14px;
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
-.record-card {
-  min-width: 0;
-  position: relative;
-  padding: 17px;
-  border: 1px solid var(--border);
-  border-radius: 19px;
-  display: grid;
-  gap: 13px;
-  background:
-    linear-gradient(
-      135deg,
-      #ffffff,
-      #fafbfe
-    );
-  box-shadow:
-    0 9px 24px rgba(16, 33, 61, 0.045);
-  transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+.records-table {
+  width: 100%;
+  min-width: 1040px;
+  border-collapse: collapse;
 }
 
-.record-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--primary-border);
-  box-shadow:
-    0 15px 32px rgba(16, 33, 61, 0.08);
+.records-table th,
+.records-table td {
+  padding: 14px 13px;
+  border-bottom: 1px solid #e5e9f0;
+  text-align: left;
+  vertical-align: middle;
 }
 
-.record-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
+.records-table th {
+  color: #3b4e69;
+  background: #f4f2ff;
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
-.record-top {
+.records-table th:first-child {
+  border-radius: 11px 0 0 11px;
+}
+
+.records-table th:last-child {
+  border-radius: 0 11px 11px 0;
+}
+
+.records-table td {
+  color: var(--heading);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.records-table tbody tr:hover {
+  background: #faf9ff;
+}
+
+.patient-cell {
   min-width: 0;
   display: flex;
   align-items: center;
   gap: 11px;
 }
 
-.record-icon {
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  padding: 10px;
-  border-radius: 13px;
-  color: var(--primary);
-  background: var(--primary-light);
+.patient-avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background:
+    linear-gradient(
+      135deg,
+      #7454f7,
+      #4924df
+    );
+  font-size: 14px;
+  font-weight: 900;
 }
 
-.record-top h3 {
-  max-width: 180px;
-  margin: 0;
+.patient-cell strong,
+.patient-cell small {
+  display: block;
+}
+
+.patient-cell strong {
+  max-width: 175px;
   overflow: hidden;
   color: var(--heading);
-  font-size: 15px;
-  font-weight: 900;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.record-top p {
-  margin: 4px 0 0;
+.patient-cell small {
+  margin-top: 4px;
   color: var(--body);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 650;
 }
 
-.updated-chip {
-  width: fit-content;
-  padding: 6px 9px;
-  border: 1px solid var(--warning-border);
-  border-radius: 999px;
-  color: var(--warning);
-  background: var(--warning-light);
-  font-size: 9px;
-  font-weight: 850;
+.visit-date {
   white-space: nowrap;
 }
 
-.record-specialisation {
+.specialisation-badge {
   width: fit-content;
-  max-width: 100%;
+  max-width: 150px;
   padding: 6px 9px;
   border: 1px solid var(--blue-border);
   border-radius: 999px;
+  display: block;
   overflow: hidden;
   color: var(--blue);
   background: var(--blue-light);
@@ -516,76 +522,56 @@ textarea {
   white-space: nowrap;
 }
 
-.record-info {
-  display: grid;
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.record-info > div {
-  min-width: 0;
-  min-height: 72px;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 11px;
-  background: #ffffff;
-}
-
-.record-info span,
-.record-summary > span,
-.record-details-grid span,
-.readonly-record-grid span {
-  display: block;
-  color: var(--body);
-  font-size: 8px;
-  font-weight: 850;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.record-info strong {
-  display: block;
-  margin-top: 6px;
-  overflow-wrap: anywhere;
-  color: var(--heading);
-  font-size: 9px;
-  line-height: 1.45;
-  font-weight: 800;
-}
-
-.record-summary {
-  min-height: 88px;
-  padding: 12px;
-  border: 1px solid #eceaf8;
-  border-radius: 13px;
-  background: #faf9ff;
-}
-
-.record-summary p {
-  display: -webkit-box;
-  margin: 7px 0 0;
+.diagnosis-preview {
+  max-width: 250px;
+  margin: 0;
   overflow: hidden;
   color: #35435e;
   font-size: 11px;
-  line-height: 1.55;
-  font-weight: 650;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.record-actions {
-  display: grid;
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-  gap: 8px;
+.record-state {
+  width: fit-content;
+  padding: 6px 9px;
+  border: 1px solid;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 9px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.updated-state {
+  border-color: var(--warning-border);
+  color: var(--warning);
+  background: var(--warning-light);
+}
+
+.original-state {
+  border-color: var(--mint-border);
+  color: var(--mint);
+  background: var(--mint-light);
+}
+
+.action-column {
+  text-align: right !important;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
 }
 
 .view-record-button,
 .edit-record-button,
 .pdf-record-button {
-  min-height: 37px;
+  min-width: 58px;
+  min-height: 34px;
   padding: 0 10px;
   border-radius: 9px;
   font-size: 10px;
@@ -752,7 +738,7 @@ textarea {
   margin-bottom: 16px;
   display: grid;
   grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+    repeat(4, minmax(0, 1fr));
   gap: 11px;
 }
 
@@ -763,6 +749,16 @@ textarea {
   border: 1px solid var(--border);
   border-radius: 13px;
   background: #fafbfe;
+}
+
+.record-details-grid span,
+.readonly-record-grid span {
+  display: block;
+  color: var(--body);
+  font-size: 8px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .record-details-grid strong,
@@ -982,21 +978,16 @@ textarea {
   }
 }
 
-@media (max-width: 1150px) {
-  .records-grid {
+@media (max-width: 1000px) {
+  .record-details-grid,
+  .readonly-record-grid {
     grid-template-columns:
       repeat(2, minmax(0, 1fr));
-  }
-
-  .record-info {
-    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 850px) {
-  .stats-grid,
-  .record-details-grid,
-  .readonly-record-grid {
+  .stats-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -1014,16 +1005,12 @@ textarea {
     width: 100%;
   }
 
-  .toolbar-card,
-  .records-grid {
+  .toolbar-card {
     grid-template-columns: 1fr;
   }
 
-  .record-info {
-    grid-template-columns: 1fr;
-  }
-
-  .record-actions {
+  .record-details-grid,
+  .readonly-record-grid {
     grid-template-columns: 1fr;
   }
 

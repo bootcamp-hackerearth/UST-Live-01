@@ -1,66 +1,121 @@
 <section class="profile-page">
   <section class="profile-hero">
     <div>
-      <a routerLink="/doctor/dashboard" class="back-link">
-        ← Back to Dashboard
+      <a
+        routerLink="/doctor/dashboard"
+        class="back-link"
+      >
+        Back to Dashboard
       </a>
+
+      <span class="page-label">
+        Doctor Account
+      </span>
 
       <h1>My Profile</h1>
 
-      <span>
-        View your doctor information and manage your availability.
-      </span>
+      <p>
+        Review your professional information, manage
+        appointment availability, and secure your account.
+      </p>
     </div>
+
+    <button
+      type="button"
+      class="refresh-button"
+      [disabled]="loading()"
+      (click)="loadProfile()"
+    >
+      {{ loading() ? 'Refreshing...' : 'Refresh Profile' }}
+    </button>
   </section>
 
   @if (loading()) {
-    <div class="alert loading">
-      Loading doctor profile...
+    <div
+      class="page-alert loading-alert"
+      role="status"
+    >
+      <span class="loader" aria-hidden="true"></span>
+      <span>Loading doctor profile...</span>
     </div>
   }
 
   @if (errorMessage()) {
-    <div class="alert error">
-      {{ errorMessage() }}
+    <div
+      class="page-alert error-alert"
+      role="alert"
+    >
+      <span class="alert-icon" aria-hidden="true">!</span>
+      <span>{{ errorMessage() }}</span>
     </div>
   }
 
   @if (successMessage()) {
-    <div class="alert success">
-      {{ successMessage() }}
+    <div
+      class="page-alert success-alert"
+      role="status"
+    >
+      <span class="alert-icon" aria-hidden="true">✓</span>
+      <span>{{ successMessage() }}</span>
     </div>
   }
 
   @if (statusErrorMessage()) {
-    <div class="alert error">
-      {{ statusErrorMessage() }}
+    <div
+      class="page-alert error-alert"
+      role="alert"
+    >
+      <span class="alert-icon" aria-hidden="true">!</span>
+      <span>{{ statusErrorMessage() }}</span>
     </div>
   }
 
   <section class="profile-grid">
     <article class="doctor-summary-card">
-      <div class="avatar-circle">
-        {{ doctor()?.fullName?.charAt(0) || 'D' }}
-      </div>
+      <span
+        class="avatar-circle"
+        aria-hidden="true"
+      >
+        {{ getDoctorInitial() }}
+      </span>
 
-      <h2>Dr. {{ doctor()?.fullName || 'Doctor' }}</h2>
+      <h2>{{ getDoctorDisplayName() }}</h2>
 
       <p class="doctor-specialisation">
-        {{ doctor()?.specialisation || 'Specialist' }}
+        {{
+          doctor()?.specialisation ||
+          'Medical Specialist'
+        }}
       </p>
 
       <span
         class="status-badge"
-        [class.inactive]="doctorStatusState.isActive() === false"
+        [class.unavailable]="
+          doctorStatusState.isActive() === false
+        "
       >
+        <span class="status-dot"></span>
         {{ getDoctorStatusText() }}
       </span>
+
+      <p class="availability-note">
+        Patients can book appointments only while
+        your profile is available.
+      </p>
 
       <button
         type="button"
         class="status-toggle-button"
-        [class.inactive]="doctorStatusState.isActive() === true"
-        [disabled]="updatingStatus() || doctorStatusState.isActive() === null"
+        [class.deactivate]="
+          doctorStatusState.isActive() === true
+        "
+        [class.activate]="
+          doctorStatusState.isActive() === false
+        "
+        [disabled]="
+          updatingStatus() ||
+          doctorStatusState.isActive() === null
+        "
         (click)="toggleDoctorStatus()"
       >
         @if (updatingStatus()) {
@@ -75,42 +130,76 @@
       <div class="section-title">
         <span>Professional Details</span>
         <h2>Doctor Information</h2>
+
+        <p>
+          These details are maintained by the
+          hospital administration.
+        </p>
       </div>
 
       <div class="readonly-grid">
         <div>
           <span>Doctor ID</span>
-          <strong>#{{ doctor()?.doctorId || '-' }}</strong>
+
+          <strong>
+            #{{ doctor()?.doctorId || '-' }}
+          </strong>
         </div>
 
         <div>
           <span>Full Name</span>
-          <strong>Dr. {{ doctor()?.fullName || '-' }}</strong>
+
+          <strong>
+            {{ getDoctorDisplayName() }}
+          </strong>
         </div>
 
         <div>
           <span>Specialisation</span>
-          <strong>{{ doctor()?.specialisation || '-' }}</strong>
+
+          <strong>
+            {{ doctor()?.specialisation || '-' }}
+          </strong>
         </div>
 
         <div>
-          <span>Years of Experience</span>
-          <strong>{{ doctor()?.yearsOfExperience || 0 }} years</strong>
+          <span>Experience</span>
+
+          <strong>
+            {{ doctor()?.yearsOfExperience || 0 }}
+            years
+          </strong>
         </div>
 
         <div>
           <span>Consultation Fee</span>
-          <strong>₹{{ doctor()?.consultationFee || 0 }}</strong>
+
+          <strong>
+            ₹{{ doctor()?.consultationFee || 0 }}
+          </strong>
         </div>
 
         <div>
-          <span>Account Status</span>
+          <span>Booking Status</span>
 
-          <strong>
-            @if (doctorStatusState.isActive() === null) {
+          <strong
+            [class.available-text]="
+              doctorStatusState.isActive() === true
+            "
+            [class.unavailable-text]="
+              doctorStatusState.isActive() === false
+            "
+          >
+            @if (
+              doctorStatusState.isActive() === null
+            ) {
               Loading
             } @else {
-              {{ doctorStatusState.isActive() ? 'Active' : 'Inactive' }}
+              {{
+                doctorStatusState.isActive()
+                  ? 'Available'
+                  : 'Unavailable'
+              }}
             }
           </strong>
         </div>
@@ -118,77 +207,215 @@
     </article>
   </section>
 
-  <section class="password-card" id="change-password">
-    <div class="section-title">
-      <h2>Change Password</h2>
+  <section
+    class="password-card"
+    id="change-password"
+  >
+    <div class="password-heading">
+      <div class="section-title">
+        <span>Account Security</span>
+        <h2>Change Password</h2>
 
-      <p>
-        Use the temporary password given by admin as your current password,
-        then set a strong new password.
-      </p>
+        <p>
+          Enter your current password and create a
+          strong new password for your Doctor account.
+        </p>
+      </div>
+
+      <div class="security-note">
+        <span class="security-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <rect
+              x="5"
+              y="10"
+              width="14"
+              height="11"
+              rx="2"
+            ></rect>
+
+            <path
+              d="M8 10V7a4 4 0 018 0v3"
+            ></path>
+          </svg>
+        </span>
+
+        <p>
+          The new password must be different from
+          your current password.
+        </p>
+      </div>
     </div>
 
     @if (passwordErrorMessage()) {
-      <div class="alert error">
-        {{ passwordErrorMessage() }}
+      <div
+        class="page-alert error-alert"
+        role="alert"
+      >
+        <span class="alert-icon" aria-hidden="true">!</span>
+        <span>{{ passwordErrorMessage() }}</span>
       </div>
     }
 
     @if (passwordSuccessMessage()) {
-      <div class="alert success">
-        {{ passwordSuccessMessage() }}
+      <div
+        class="page-alert success-alert"
+        role="status"
+      >
+        <span class="alert-icon" aria-hidden="true">✓</span>
+        <span>{{ passwordSuccessMessage() }}</span>
       </div>
     }
 
-    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+    <form
+      [formGroup]="passwordForm"
+      (ngSubmit)="changePassword()"
+    >
       <div class="form-grid">
         <div class="form-group">
-          <label for="currentPassword">Current Password</label>
+          <label for="currentPassword">
+            Current Password
+          </label>
 
-          <input
-            id="currentPassword"
-            type="password"
-            formControlName="currentPassword"
-            placeholder="Enter current password"
-          />
+          <div class="password-input">
+            <input
+              id="currentPassword"
+              [type]="
+                showCurrentPassword()
+                  ? 'text'
+                  : 'password'
+              "
+              autocomplete="current-password"
+              formControlName="currentPassword"
+              placeholder="Enter current password"
+            />
 
-          @if (currentPassword.invalid && currentPassword.touched) {
-            <small>Current password is required.</small>
-          }
-        </div>
+            <button
+              type="button"
+              aria-label="Show or hide current password"
+              (click)="toggleCurrentPasswordVisibility()"
+            >
+              {{
+                showCurrentPassword()
+                  ? 'Hide'
+                  : 'Show'
+              }}
+            </button>
+          </div>
 
-        <div class="form-group">
-          <label for="newPassword">New Password</label>
-
-          <input
-            id="newPassword"
-            type="password"
-            formControlName="newPassword"
-            placeholder="Enter new password"
-          />
-
-          @if (newPassword.invalid && newPassword.touched) {
-            <small>
-              Password must contain uppercase, lowercase, number, special character,
-              and at least 8 characters.
+          @if (getCurrentPasswordError()) {
+            <small class="field-error">
+              {{ getCurrentPasswordError() }}
             </small>
           }
         </div>
 
         <div class="form-group">
-          <label for="confirmPassword">Confirm New Password</label>
+          <label for="newPassword">
+            New Password
+          </label>
 
-          <input
-            id="confirmPassword"
-            type="password"
-            formControlName="confirmPassword"
-            placeholder="Re-enter new password"
-          />
+          <div class="password-input">
+            <input
+              id="newPassword"
+              [type]="
+                showNewPassword()
+                  ? 'text'
+                  : 'password'
+              "
+              autocomplete="new-password"
+              formControlName="newPassword"
+              placeholder="Enter new password"
+            />
 
-          @if (passwordForm.errors?.['passwordMismatch'] && confirmPassword.touched) {
-            <small>New password and confirm password do not match.</small>
+            <button
+              type="button"
+              aria-label="Show or hide new password"
+              (click)="toggleNewPasswordVisibility()"
+            >
+              {{
+                showNewPassword()
+                  ? 'Hide'
+                  : 'Show'
+              }}
+            </button>
+          </div>
+
+          @if (getNewPasswordError()) {
+            <small class="field-error">
+              {{ getNewPasswordError() }}
+            </small>
           }
         </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">
+            Confirm New Password
+          </label>
+
+          <div class="password-input">
+            <input
+              id="confirmPassword"
+              [type]="
+                showConfirmPassword()
+                  ? 'text'
+                  : 'password'
+              "
+              autocomplete="new-password"
+              formControlName="confirmPassword"
+              placeholder="Re-enter new password"
+            />
+
+            <button
+              type="button"
+              aria-label="Show or hide password confirmation"
+              (click)="toggleConfirmPasswordVisibility()"
+            >
+              {{
+                showConfirmPassword()
+                  ? 'Hide'
+                  : 'Show'
+              }}
+            </button>
+          </div>
+
+          @if (getConfirmPasswordError()) {
+            <small class="field-error">
+              {{ getConfirmPasswordError() }}
+            </small>
+          }
+        </div>
+      </div>
+
+      <div class="password-requirements">
+        <span
+          [class.valid]="hasMinimumLength()"
+        >
+          At least 8 characters
+        </span>
+
+        <span
+          [class.valid]="hasUppercaseLetter()"
+        >
+          Uppercase letter
+        </span>
+
+        <span
+          [class.valid]="hasLowercaseLetter()"
+        >
+          Lowercase letter
+        </span>
+
+        <span
+          [class.valid]="hasNumber()"
+        >
+          Number
+        </span>
+
+        <span
+          [class.valid]="hasSpecialCharacter()"
+        >
+          Special character
+        </span>
       </div>
 
       <button
@@ -196,7 +423,11 @@
         class="password-button"
         [disabled]="changingPassword()"
       >
-        {{ changingPassword() ? 'Changing Password...' : 'Change Password' }}
+        {{
+          changingPassword()
+            ? 'Changing Password...'
+            : 'Change Password'
+        }}
       </button>
     </form>
   </section>

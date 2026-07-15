@@ -138,27 +138,54 @@ export class Topbar implements OnDestroy {
   }
 
   goToChangePassword(): void {
-    this.isProfileMenuOpen.set(false);
+  this.isProfileMenuOpen.set(false);
 
-    const role = this.authService.role();
+  const role = this.authService.role();
 
-    if (role === 'Doctor') {
-      void this.router.navigate([
-        '/doctor/change-password'
-      ]);
-      return;
-    }
+  if (role === 'Doctor') {
+    void this.router
+      .navigate(['/doctor/profile'])
+      .then((navigated) => {
+        if (!navigated) {
+          return;
+        }
 
-    if (role === 'Patient') {
-      void this.router.navigate([
-        '/patient/change-password'
-      ]);
-      return;
-    }
+        window.setTimeout(() => {
+          document
+            .getElementById('change-password')
+            ?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+        });
+      });
 
-    void this.router.navigate(['/login']);
+    return;
   }
 
+  if (role === 'Patient') {
+    void this.router
+      .navigate(['/patient/profile'])
+      .then((navigated) => {
+        if (!navigated) {
+          return;
+        }
+
+        window.setTimeout(() => {
+          document
+            .getElementById('change-password')
+            ?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+        });
+      });
+
+    return;
+  }
+
+  void this.router.navigate(['/login']);
+}
   requestLogout(): void {
     this.isProfileMenuOpen.set(false);
     this.logoutRequested.emit();

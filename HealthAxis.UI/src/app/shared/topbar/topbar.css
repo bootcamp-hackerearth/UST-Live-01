@@ -258,30 +258,57 @@
 .doctor-status-button {
   min-width: 125px;
   padding: 0 15px;
+  border: 1px solid #aee7d5;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: #148667;
+  color: #087254;
+  background:
+    linear-gradient(
+      135deg,
+      #e5f8f1,
+      #d5f3e8
+    );
   font: inherit;
   font-size: 12px;
   font-weight: 850;
   cursor: pointer;
+  box-shadow:
+    0 8px 20px rgba(21, 155, 120, 0.12);
 }
 
 .status-dot {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: #2dc9a5;
+  background: #20b88b;
+  box-shadow:
+    0 0 0 4px rgba(32, 184, 139, 0.13);
+}
+
+.doctor-status-button:hover:not(:disabled) {
+  border-color: #86d9bf;
+  background: #d9f5eb;
 }
 
 .doctor-status-button.unavailable {
-  color: #ef3340;
+  border-color: #ffc9ce;
+  color: #b42331;
+  background:
+    linear-gradient(
+      135deg,
+      #fff0f1,
+      #ffe2e5
+    );
+  box-shadow:
+    0 8px 20px rgba(214, 47, 61, 0.1);
 }
 
 .doctor-status-button.unavailable .status-dot {
   background: #ef3340;
+  box-shadow:
+    0 0 0 4px rgba(239, 51, 64, 0.12);
 }
 
 .doctor-status-button:disabled {

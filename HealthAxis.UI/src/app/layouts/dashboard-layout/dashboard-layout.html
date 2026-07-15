@@ -3,6 +3,13 @@
   [class.sidebar-closed]="isSidebarClosed()"
 >
   @if (!isSidebarClosed()) {
+    <button
+      type="button"
+      class="mobile-sidebar-backdrop"
+      aria-label="Close navigation menu"
+      (click)="closeSidebar()"
+    ></button>
+
     <aside class="sidebar-area">
       <app-sidebar
         (logoutRequested)="openLogoutDialog()"
@@ -12,7 +19,7 @@
         type="button"
         class="sidebar-toggle close-sidebar"
         aria-label="Close sidebar"
-        (click)="toggleSidebar()"
+        (click)="closeSidebar()"
       >
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
@@ -70,7 +77,9 @@
         <svg viewBox="0 0 24 24">
           <path d="M10 17l5-5-5-5"></path>
           <path d="M15 12H3"></path>
-          <path d="M14 4h5a2 2 0 012 2v12a2 2 0 01-2 2h-5"></path>
+          <path
+            d="M14 4h5a2 2 0 012 2v12a2 2 0 01-2 2h-5"
+          ></path>
         </svg>
       </span>
 
@@ -79,7 +88,8 @@
       </h2>
 
       <p id="logoutDialogDescription">
-        Are you sure you want to logout from your HealthAxis account?
+        Are you sure you want to log out of your
+        HealthAxis account?
       </p>
 
       <div class="logout-dialog-actions">

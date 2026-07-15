@@ -1,27 +1,27 @@
 import { Routes } from '@angular/router';
 
-import { PublicLayout } from './layouts/public-layout/public-layout';
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
+
 import { DashboardLayout } from './layouts/dashboard-layout/dashboard-layout';
+import { PublicLayout } from './layouts/public-layout/public-layout';
 
 import { Landing } from './pages/landing/landing';
 import { Login } from './pages/login/login';
 import { PatientRegister } from './pages/patient-register/patient-register';
 
-import { PatientDashboard } from './patient/patient-dashboard/patient-dashboard';
 import { BookAppointment } from './patient/book-appointment/book-appointment';
-import { MyAppointments } from './patient/my-appointments/my-appointments';
-import { HealthRecords } from './patient/health-records/health-records';
-import { PatientProfile } from './patient/patient-profile/patient-profile';
-import { DoctorProfile } from './doctor/doctor-profile/doctor-profile';
 import { ContactUs } from './patient/contact-us/contact-us';
+import { HealthRecords } from './patient/health-records/health-records';
+import { MyAppointments } from './patient/my-appointments/my-appointments';
+import { PatientDashboard } from './patient/patient-dashboard/patient-dashboard';
+import { PatientProfile } from './patient/patient-profile/patient-profile';
 
-import { DoctorDashboard } from './doctor/doctor-dashboard/doctor-dashboard';
-import { UpcomingAppointments } from './doctor/upcoming-appointments/upcoming-appointments';
 import { CompletedAppointments } from './doctor/completed-appointments/completed-appointments';
+import { DoctorDashboard } from './doctor/doctor-dashboard/doctor-dashboard';
 import { DoctorHealthRecords } from './doctor/doctor-health-records/doctor-health-records';
-
-import { authGuard } from './core/guards/auth.guard';
-import { roleGuard } from './core/guards/role.guard';
+import { DoctorProfile } from './doctor/doctor-profile/doctor-profile';
+import { UpcomingAppointments } from './doctor/upcoming-appointments/upcoming-appointments';
 
 export const routes: Routes = [
   {
@@ -45,7 +45,10 @@ export const routes: Routes = [
   {
     path: 'patient',
     component: DashboardLayout,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [
+      authGuard,
+      roleGuard
+    ],
     data: {
       roles: ['Patient']
     },
@@ -71,6 +74,11 @@ export const routes: Routes = [
         component: PatientProfile
       },
       {
+        path: 'change-password',
+        redirectTo: 'profile',
+        pathMatch: 'full'
+      },
+      {
         path: 'contact-us',
         component: ContactUs
       },
@@ -84,7 +92,10 @@ export const routes: Routes = [
   {
     path: 'doctor',
     component: DashboardLayout,
-    canActivate: [authGuard, roleGuard],
+    canActivate: [
+      authGuard,
+      roleGuard
+    ],
     data: {
       roles: ['Doctor']
     },
@@ -110,9 +121,14 @@ export const routes: Routes = [
         component: DoctorProfile
       },
       {
+        path: 'change-password',
+        redirectTo: 'profile',
+        pathMatch: 'full'
+      },
+      {
         path: 'contact-us',
         component: ContactUs
-      },  
+      },
       {
         path: '',
         redirectTo: 'dashboard',

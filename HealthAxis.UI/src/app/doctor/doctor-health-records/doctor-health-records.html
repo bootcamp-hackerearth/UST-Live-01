@@ -15,8 +15,8 @@
       <h1>Health Records</h1>
 
       <p>
-        Review and update treatment records created for
-        patients handled through your completed appointments.
+        Review treatment records created for patients
+        handled through your completed appointments.
       </p>
     </div>
 
@@ -104,7 +104,7 @@
         type="search"
         maxlength="80"
         aria-label="Search doctor health records"
-        placeholder="Search patient, diagnosis, prescription, date, or record ID"
+        placeholder="Search patient, diagnosis, specialisation, date, or record ID"
         [value]="searchText()"
         (input)="onSearchInput($event)"
       />
@@ -126,8 +126,8 @@
         <h2>Patient Health Records</h2>
 
         <p>
-          Created and updated timestamps are shown for
-          every available treatment record.
+          The table shows only important information.
+          Open View to see the complete medical record.
         </p>
       </div>
 
@@ -163,8 +163,8 @@
         <h3>No health records available</h3>
 
         <p>
-          Completed appointments exist, but their records
-          could not be found.
+          Completed appointments exist, but their
+          records could not be found.
         </p>
       </div>
     } @else if (filteredRecords().length === 0) {
@@ -176,114 +176,122 @@
         </p>
       </div>
     } @else {
-      <div class="records-grid">
-        @for (
-          record of pagedRecords();
-          track getRecordId(record)
-        ) {
-          <article class="record-card">
-            <div class="record-card-header">
-              <div class="record-top">
-                <span class="record-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M7 3h10v18H7z"></path>
-                    <path d="M9 3V1h6v2"></path>
-                    <path d="M10 9h4M10 13h4M10 17h4"></path>
-                  </svg>
-                </span>
+      <div class="table-wrapper">
+        <table class="records-table">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Visit Date</th>
+              <th>Specialisation</th>
+              <th>Diagnosis</th>
+              <th>Record Status</th>
+              <th class="action-column">Actions</th>
+            </tr>
+          </thead>
 
-                <div>
-                  <h3>{{ getPatientName(record) }}</h3>
+          <tbody>
+            @for (
+              record of pagedRecords();
+              track getRecordId(record)
+            ) {
+              <tr>
+                <td>
+                  <div class="patient-cell">
+                    <span
+                      class="patient-avatar"
+                      aria-hidden="true"
+                    >
+                      {{
+                        getPatientName(record)
+                          .charAt(0)
+                          .toUpperCase()
+                      }}
+                    </span>
 
-                  <p>
-                    Appointment #{{ record.appointmentId }}
+                    <div>
+                      <strong>
+                        {{ getPatientName(record) }}
+                      </strong>
+
+                      <small>
+                        Appointment #{{ record.appointmentId }}
+                      </small>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <strong class="visit-date">
+                    {{ record.visitDate | date: 'dd MMM yyyy' }}
+                  </strong>
+                </td>
+
+                <td>
+                  <span class="specialisation-badge">
+                    {{
+                      getSafeText(
+                        record.specialisation,
+                        'Not assigned'
+                      )
+                    }}
+                  </span>
+                </td>
+
+                <td>
+                  <p class="diagnosis-preview">
+                    {{
+                      getSafeText(
+                        record.diagnosis,
+                        'Diagnosis not provided.'
+                      )
+                    }}
                   </p>
-                </div>
-              </div>
+                </td>
 
-              @if (hasUpdated(record)) {
-                <span class="updated-chip">
-                  Updated
-                </span>
-              }
-            </div>
+                <td>
+                  @if (hasUpdated(record)) {
+                    <span class="record-state updated-state">
+                      Updated
+                    </span>
+                  } @else {
+                    <span class="record-state original-state">
+                      Created
+                    </span>
+                  }
+                </td>
 
-            <div class="record-specialisation">
-              {{
-                getSafeText(
-                  record.specialisation,
-                  'Specialisation not assigned'
-                )
-              }}
-            </div>
+                <td class="action-column">
+                  <div class="table-actions">
+                    <button
+                      type="button"
+                      class="view-record-button"
+                      (click)="openRecord(record)"
+                    >
+                      View
+                    </button>
 
-            <div class="record-info">
-              <div>
-                <span>Visit Date</span>
+                    <button
+                      type="button"
+                      class="edit-record-button"
+                      [disabled]="!canEditRecord(record)"
+                      (click)="openEditDialog(record)"
+                    >
+                      Edit
+                    </button>
 
-                <strong>
-                  {{ record.visitDate | date: 'dd MMM yyyy' }}
-                </strong>
-              </div>
-
-              <div>
-                <span>Created At</span>
-
-                <strong>
-                  {{ getCreatedDateText(record) }}
-                </strong>
-              </div>
-
-              <div>
-                <span>Updated At</span>
-
-                <strong>
-                  {{ getUpdatedDateText(record) }}
-                </strong>
-              </div>
-            </div>
-
-            <div class="record-summary">
-              <span>Diagnosis</span>
-
-              <p>
-                {{
-                  getSafeText(
-                    record.diagnosis,
-                    'Diagnosis not provided.'
-                  )
-                }}
-              </p>
-            </div>
-
-            <div class="record-actions">
-              <button
-                type="button"
-                class="view-record-button"
-                (click)="openRecord(record)"
-              >
-                View
-              </button>
-
-              <button
-                type="button"
-                class="edit-record-button"
-                [disabled]="!canEditRecord(record)"
-                (click)="openEditDialog(record)"
-              >
-                Edit
-              </button>
-
-              <button
-                type="button"
-                class="pdf-record-button"
-                (click)="printHealthRecordPdf(record)"
-              >
-                PDF
-              </button>
-            </div>
-          </article>
-        }
+                    <button
+                      type="button"
+                      class="pdf-record-button"
+                      (click)="printHealthRecordPdf(record)"
+                    >
+                      PDF
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
 
       <div class="pagination-row">
@@ -314,16 +322,21 @@
 </section>
 
 @if (selectedRecord(); as record) {
-  <div class="modal-backdrop">
+  <div
+    class="modal-backdrop"
+    role="presentation"
+    (click)="closeRecord()"
+  >
     <section
       class="record-modal"
       role="dialog"
       aria-modal="true"
       aria-labelledby="healthRecordTitle"
+      (click)="$event.stopPropagation()"
     >
       <div class="modal-header">
         <div>
-          <span>Health Record</span>
+          <span>Complete Health Record</span>
 
           <h2 id="healthRecordTitle">
             {{ getPatientName(record) }}
@@ -357,23 +370,21 @@
       <div class="record-details-grid">
         <div>
           <span>Record ID</span>
-
-          <strong>
-            #{{ getRecordId(record) }}
-          </strong>
+          <strong>#{{ getRecordId(record) }}</strong>
         </div>
 
         <div>
           <span>Appointment ID</span>
+          <strong>#{{ record.appointmentId }}</strong>
+        </div>
 
-          <strong>
-            #{{ record.appointmentId }}
-          </strong>
+        <div>
+          <span>Patient</span>
+          <strong>{{ getPatientName(record) }}</strong>
         </div>
 
         <div>
           <span>Visit Date</span>
-
           <strong>
             {{ record.visitDate | date: 'mediumDate' }}
           </strong>
@@ -381,7 +392,6 @@
 
         <div>
           <span>Doctor</span>
-
           <strong>
             {{ getDoctorDisplayName(record.doctorName) }}
           </strong>
@@ -389,7 +399,6 @@
 
         <div>
           <span>Specialisation</span>
-
           <strong>
             {{
               getSafeText(
@@ -402,18 +411,12 @@
 
         <div>
           <span>Created At</span>
-
-          <strong>
-            {{ getCreatedDateText(record) }}
-          </strong>
+          <strong>{{ getCreatedDateText(record) }}</strong>
         </div>
 
         <div>
           <span>Updated At</span>
-
-          <strong>
-            {{ getUpdatedDateText(record) }}
-          </strong>
+          <strong>{{ getUpdatedDateText(record) }}</strong>
         </div>
       </div>
 
@@ -479,7 +482,10 @@
 }
 
 @if (editingRecord(); as record) {
-  <div class="modal-backdrop">
+  <div
+    class="modal-backdrop"
+    role="presentation"
+  >
     <section
       class="record-modal edit-modal"
       role="dialog"
