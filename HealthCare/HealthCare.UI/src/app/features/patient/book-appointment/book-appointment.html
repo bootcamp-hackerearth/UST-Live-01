@@ -66,15 +66,15 @@
 
          <option value="">Select Doctor</option>
 
-         @for(doc of doctors; track doc.doctorId){
+         @for(doc of doctors(); track doc.doctorId){
          <option [value]="doc.doctorId">
-           Dr. {{doc.fullName}}
+            {{doc.fullName}}
          </option>
         }
         </select>
 
 
-         @if(!doctors.length && form.get('specialization')?.value){
+         @if(!doctors().length && form.get('specialization')?.value){
             <p class="text-xs text-gray-400 mt-1">
               No doctors available
             </p>
@@ -94,17 +94,17 @@
 
             <option value="">Select Time Slot</option>
 
-            @for(slot of slots; track slot){
+            @for(slot of slots(); track slot){
               <option [value]="slot">{{slot}}</option>
             }
           </select>
 
-          @if(!slots.length && form.get('doctorId')?.value){
+          @if(!slots().length && form.get('doctorId')?.value){
             <p class="text-xs text-gray-400 mt-1">
               No slots available
             </p>
           }
-          @if(form.get('doctorId')?.value && !slots.length){
+          @if(form.get('doctorId')?.value && !slots().length){
            <p class="text-sm text-red-500 mt-2">
             No available time slots for the selected date.
           </p>

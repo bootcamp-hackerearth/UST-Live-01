@@ -48,6 +48,8 @@ namespace HealthCare.Api.Services.Implementations
             await IsAvailable(dto.ScheduledDate,dto.DoctorId,dto.TimeSlot);
 
             var appointment = _mapper.Map<Appointment>(dto);
+            var patient = await _context.Patients.FindAsync(patientId);
+            var doctor = await _context.Doctors.FindAsync(appointment.DoctorId);
 
             appointment.PatientId = patientId;
 
@@ -56,20 +58,15 @@ namespace HealthCare.Api.Services.Implementations
             await _repository.AddAsync(appointment);
 
             await _context.SaveChangesAsync();
-
+            await InvalidateAvailabilityCache(appointment.Doctor.Specialisation, appointment.ScheduledDate);
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Appointment created. AppointmentId={AppointmentId}, PatientId={PatientId}, DoctorId={DoctorId}",appointment.AppointmentId,patientId, appointment.DoctorId);
 
             // Publish AppointmentBookedEvent
             try
             {
-
-                var patient = await _context.Patients.FindAsync(patientId);
-                var doctor = await _context.Doctors.FindAsync(appointment.DoctorId);
-
                 if (patient != null && doctor != null)
                 {
-                    await InvalidateAvailabilityCache(appointment.Doctor.Specialisation, appointment.ScheduledDate);
 
                     var appointmentBookedEvent = new AppointmentBookedEvent
                     {

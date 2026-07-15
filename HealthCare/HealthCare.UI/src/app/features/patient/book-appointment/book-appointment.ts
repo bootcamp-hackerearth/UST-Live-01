@@ -1,9 +1,16 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import {Component,EventEmitter,Output,OnInit,signal,inject,DestroyRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup,ReactiveFormsModule,Validators} from '@angular/forms';
+
+import {FormBuilder,FormGroup,ReactiveFormsModule,Validators} from '@angular/forms';
+
 import { ToastrService } from 'ngx-toastr';
+
 import { DoctorService } from '../../../core/services/doctor.service';
 import { AppointmentService } from '../../../core/services/appointment.service';
+
+import {combineLatest,of,startWith,switchMap} from 'rxjs';
+
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-book-appointment',
@@ -13,29 +20,16 @@ import { AppointmentService } from '../../../core/services/appointment.service';
 })
 export class BookAppointmentComponent implements OnInit {
 
- ngOnInit(): void {
-
-  this.minDate = this.formatDateForApi(new Date());
-
-  this.form.get('specialization')?.valueChanges.subscribe(() => {
-    this.loadDoctors();
-  });
-
-  this.form.get('doctorId')?.valueChanges.subscribe(value => {
-
-    if (value) {
-      this.loadSlots();
-    }
-  });
-  }
+  private destroyRef = inject(DestroyRef);
 
   @Output() appointmentClosed = new EventEmitter<void>();
 
   form: FormGroup;
 
-  doctors: any[] = [];
-  slots: string[] = [];
-  minDate: string = '';
+  doctors = signal<any[]>([]);
+  slots = signal<string[]>([]);
+
+  minDate = '';
   showSuccessPopup = false;
   isLoading = false;
 
@@ -47,7 +41,6 @@ export class BookAppointmentComponent implements OnInit {
     'Neurologist',
     'Orthopedic',
     'Dermatologist',
-    'General Medicine'
   ];
 
   constructor(
@@ -56,175 +49,280 @@ export class BookAppointmentComponent implements OnInit {
     private doctorService: DoctorService,
     private appointmentService: AppointmentService
   ) {
+
     this.form = this.fb.group({
-  scheduledDate: ['', Validators.required],
-  specialization: ['', Validators.required],
+      scheduledDate: ['', Validators.required],
+      specialization: ['', Validators.required],
 
-  doctorId: [
-    { value: '', disabled: true },
-    Validators.required
-  ],
+      doctorId: [
+        { value: '', disabled: true },
+        Validators.required
+      ],
 
-  timeSlot: [
-    { value: '', disabled: true },
-    Validators.required
-  ]
-});
-
+      timeSlot: [
+        { value: '', disabled: true },
+        Validators.required
+      ]
+    });
   }
 
- loadDoctors() {
+  ngOnInit(): void {
 
-  const spec = this.form.value.specialization;
-  const date = this.form.value.scheduledDate;
+    this.minDate = this.formatDateForApi(new Date());
 
-  if (!spec || !date) return;
+    const specialization$ =
+      this.form.get('specialization')!
+        .valueChanges
+        .pipe(
+          startWith(
+            this.form.get('specialization')!.value
+          )
+        );
 
-  const formatted = this.formatDateForApi(date);
+    const date$ =
+      this.form.get('scheduledDate')!
+        .valueChanges
+        .pipe(
+          startWith(
+            this.form.get('scheduledDate')!.value
+          )
+        );
 
-  this.doctorService
-    .getAvailableDoctors(spec, formatted)
-   .subscribe(res => {
+    combineLatest([
+      specialization$,
+      date$
+    ])
+      .pipe(
+        switchMap(([spec, date]) => {
 
-  this.doctors = res;
+          this.form.patchValue({
+            doctorId: '',
+            timeSlot: ''
+          });
 
-  this.form.patchValue({
-    doctorId: '',
-    timeSlot: ''
-  });
-
-  this.slots = [];
-
-  if (res.length > 0) {
-    this.form.get('doctorId')?.enable();
-  }
-  else {
-    this.form.get('doctorId')?.disable();
-  }
-
-  this.form.get('timeSlot')?.disable();
-
-});
-}
-
-loadSlots(): void {
-
-  const doctorId = Number(this.form.get('doctorId')?.value);
-  const date = this.form.get('scheduledDate')?.value;
-
-  if (!doctorId || !date) {
-    this.slots = [];
-    this.form.get('timeSlot')?.disable();
-    return;
-  }
-
-  const formatted = this.formatDateForApi(date);
-  const today = this.formatDateForApi(new Date());
-  const currentMinutes = this.getCurrentTimeInMinutes();
-
-  // Clear previous selection
-  this.form.patchValue({
-    timeSlot: ''
-  });
-
-  this.form.get('timeSlot')?.disable();
-
-  this.appointmentService
-    .getAvailableSlots(doctorId, formatted)
-    .subscribe({
-      next: (res) => {
-
-        if (formatted === today) {
-          // Show only future time slots for today
-          this.slots = res.filter(slot =>
-            this.parseSlotToMinutes(slot) > currentMinutes
-          );
-        } else {
-          // Show all slots for future dates
-          this.slots = res;
-        }
-
-        if (this.slots.length > 0) {
-          this.form.get('timeSlot')?.enable();
-        } else {
+          this.form.get('doctorId')?.disable();
           this.form.get('timeSlot')?.disable();
-        }
-      },
 
-      error: () => {
-        this.slots = [];
-        this.form.get('timeSlot')?.disable();
-      }
+          this.slots.set([]);
+          this.doctors.set([]);
+
+          if (!spec || !date) {
+            return of([]);
+          }
+
+          return this.doctorService.getAvailableDoctors(
+            spec,
+            this.formatDateForApi(date)
+          );
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(res => {
+
+        this.doctors.set(res);
+
+        if (res.length > 0) {
+          this.form.get('doctorId')?.enable();
+        }
+      });
+
+    this.form.get('doctorId')!
+      .valueChanges
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(id => {
+
+        if (id) {
+          this.loadSlots();
+        }
+      });
+  }
+
+  loadSlots(): void {
+
+    const doctorId =
+      Number(this.form.get('doctorId')?.value);
+
+    const date =
+      this.form.get('scheduledDate')?.value;
+
+    if (!doctorId || !date) {
+
+      this.slots.set([]);
+
+      this.form.get('timeSlot')?.disable();
+
+      return;
+    }
+
+    const formatted =
+      this.formatDateForApi(date);
+
+    const today =
+      this.formatDateForApi(new Date());
+
+    const currentMinutes =
+      this.getCurrentTimeInMinutes();
+
+    this.form.patchValue({
+      timeSlot: ''
     });
 
-}
+    this.form.get('timeSlot')?.disable();
 
- bookAppointment() {
+    this.appointmentService
+      .getAvailableSlots(
+        doctorId,
+        formatted
+      )
+      .pipe(
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
 
-  if (this.form.invalid || this.isLoading) {
-    return;
+        next: (res) => {
+
+          const filteredSlots =
+            formatted === today
+              ? res.filter(slot =>
+                  this.parseSlotToMinutes(slot) >
+                  currentMinutes
+                )
+              : res;
+
+          this.slots.set(filteredSlots);
+
+          if (filteredSlots.length > 0) {
+            this.form.get('timeSlot')?.enable();
+          }
+        },
+
+        error: () => {
+
+          this.slots.set([]);
+
+          this.form.get('timeSlot')?.disable();
+        }
+      });
   }
 
-  this.isLoading = true;
+  bookAppointment() {
 
-  const data = this.form.getRawValue();
-
-  this.appointmentService.bookAppointment(data).subscribe({
-    next: () => {
-
-      this.toastr.success('Appointment booked successfully', 'Success');
-
-      this.showSuccessPopup = true;
-
-      setTimeout(() => {
-        this.showSuccessPopup = false;
-        this.appointmentClosed.emit();
-      }, 2000);
-    },
-    error: () => {
-      this.toastr.error('Unable to book appointment', 'Error');
-      this.isLoading = false;
-    },
-    complete: () => {
-      this.isLoading = false;
+    if (this.form.invalid || this.isLoading) {
+      return;
     }
-  });
-}
 
-private formatDateForApi(value: string | Date): string {
-  const date = value instanceof Date ? value : new Date(value);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+    this.isLoading = true;
 
-  return `${year}-${month}-${day}`;
-}
+    const data = this.form.getRawValue();
 
-private parseSlotToMinutes(slot: string): number {
-  const normalized = slot.trim().toUpperCase();
+    this.appointmentService
+      .bookAppointment(data)
+      .subscribe({
 
-  const regex = /^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/;
-  const match = regex.exec(normalized);
+        next: () => {
 
-  if (!match) {
-    return Number.MAX_SAFE_INTEGER;
+          this.toastr.success(
+            'Appointment booked successfully',
+            'Success'
+          );
+
+          this.showSuccessPopup = true;
+
+          setTimeout(() => {
+
+            this.showSuccessPopup = false;
+
+            this.appointmentClosed.emit();
+
+          }, 2000);
+        },
+
+        error: () => {
+
+          this.toastr.error(
+            'Unable to book appointment',
+            'Error'
+          );
+
+          this.isLoading = false;
+        },
+
+        complete: () => {
+
+          this.isLoading = false;
+        }
+      });
   }
 
-  let hours = Number(match[1]);
-  const minutes = Number(match[2] ?? '0');
-  const suffix = match[3];
+  private formatDateForApi(
+    value: string | Date
+  ): string {
 
-  if (suffix === 'PM' && hours < 12) {
-    hours += 12;
-  } else if (suffix === 'AM' && hours === 12) {
-    hours = 0;
+    const date =
+      value instanceof Date
+        ? value
+        : new Date(value);
+
+    return `${date.getFullYear()}-${
+      String(date.getMonth() + 1)
+        .padStart(2, '0')
+    }-${
+      String(date.getDate())
+        .padStart(2, '0')
+    }`;
   }
 
-  return hours * 60 + minutes;
-}
+  private parseSlotToMinutes(
+    slot: string
+  ): number {
 
-private getCurrentTimeInMinutes(): number {
-  const now = new Date();
-  return now.getHours() * 60 + now.getMinutes();
-}
+    const normalized =
+      slot.trim().toUpperCase();
+
+    const regex =
+      /^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/;
+
+    const match =
+      regex.exec(normalized);
+
+    if (!match) {
+      return Number.MAX_SAFE_INTEGER;
+    }
+
+    let hours =
+      Number(match[1]);
+
+    const minutes =
+      Number(match[2] ?? '0');
+
+    const suffix =
+      match[3];
+
+    if (
+      suffix === 'PM' &&
+      hours < 12
+    ) {
+      hours += 12;
+    }
+    else if (
+      suffix === 'AM' &&
+      hours === 12
+    ) {
+      hours = 0;
+    }
+
+    return hours * 60 + minutes;
+  }
+
+  private getCurrentTimeInMinutes(): number {
+
+    const now = new Date();
+
+    return (
+      now.getHours() * 60 +
+      now.getMinutes()
+    );
+  }
 }

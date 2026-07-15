@@ -9,8 +9,6 @@ using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
 using  Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-using StackExchange.Redis;
-using System.Linq.Expressions;
 using System.Text.Json;
 
 namespace HealthCare.Api.Services.Implementations
@@ -240,36 +238,57 @@ namespace HealthCare.Api.Services.Implementations
         public async Task<List<DoctorListDto>> AvailableDoctors(string specialisation, DateOnly date)
         {
             var cachedKey = $"doctor-availability:{specialisation}:{date.ToString("yyyy-MM-dd")}";
-            var cachedData = await _cache.GetStringAsync(cachedKey);
 
-            if (!string.IsNullOrEmpty(cachedData))
+            try
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                    _logger.LogInformation("CACHE HIT: {CacheKey}", cachedKey);
+                var cachedData = await _cache.GetStringAsync(cachedKey);
 
-                return JsonSerializer.Deserialize<List<DoctorListDto>>(cachedData)!;
+                if (!string.IsNullOrEmpty(cachedData))
+                {
+                    if (_logger.IsEnabled(LogLevel.Information))
+                        _logger.LogInformation("CACHE HIT: {CacheKey}", cachedKey);
+
+                    return JsonSerializer.Deserialize<List<DoctorListDto>>(cachedData)!;
+                }
             }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Cache unavailable");
+            }
+                
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("CACHE MISS: {CacheKey}", cachedKey);
 
             var doctors= await _repository.AvailableDoctors(specialisation, date);
+            _logger.LogInformation("AvailableDoctors returned {Count} doctors",doctors.Count);
 
-            await _cache.SetStringAsync(cachedKey, JsonSerializer.Serialize(doctors), new DistributedCacheEntryOptions
+            try
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-            });
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("CACHE SET: {CacheKey}", cachedKey);
-
+                await _cache.SetStringAsync(cachedKey, JsonSerializer.Serialize(doctors), new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+                });
+                if (_logger.IsEnabled(LogLevel.Information))
+                    _logger.LogInformation("CACHE SET: {CacheKey}", cachedKey);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Cache unavailable");
+            }
             return doctors;
         }
 
-        private async Task InvalidateAvailabilityCache(string specialisation,DateOnly date)
-        { 
-            await _cache.RemoveAsync($"doctor-availability:{specialisation}:{date:yyyy-MM-dd}");
-
+        private async Task InvalidateAvailabilityCache(string specialisation, DateOnly date)
+        {
+            var cacheKey = $"doctor-availability:{specialisation}:{date:yyyy-MM-dd}";
+            try
+            {
+                await _cache.RemoveAsync(cacheKey);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Cache invalidation failed for {CacheKey}", cacheKey);
+            }
         }
-
     }          
-    
 }

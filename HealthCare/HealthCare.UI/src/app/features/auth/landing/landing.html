@@ -30,12 +30,12 @@
 
 @if(showLogin){
     <app-login-modal
-        (close)="closeModal()">
+        (modalClosed)="closeModal()">
     </app-login-modal>
 }
 
 @if(showRegister){
     <app-register-modal
-        (close)="closeModal()">
+        (registerModalClosed)="closeModal()">
     </app-register-modal>
 }

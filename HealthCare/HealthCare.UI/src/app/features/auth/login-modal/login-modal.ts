@@ -1,5 +1,10 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { ReactiveFormsModule,FormBuilder,FormGroup,Validators } from '@angular/forms';
+import { Component, EventEmitter, Output, signal } from '@angular/core';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
@@ -18,8 +23,7 @@ export class LoginModal {
 
   loginForm: FormGroup;
 
-  // Error message shown inside popup
-  serverError = '';
+  serverError = signal('');
 
   constructor(
     private readonly fb: FormBuilder,
@@ -33,7 +37,6 @@ export class LoginModal {
         '',
         [Validators.required, Validators.email]
       ],
-
       password: [
         '',
         Validators.required
@@ -43,7 +46,7 @@ export class LoginModal {
 
   onSubmit(): void {
 
-    this.serverError = '';
+    this.serverError.set('');
 
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
@@ -80,33 +83,23 @@ export class LoginModal {
           }
         },
 
- error: (err: any) => {
+        error: (err: any) => {
 
-  console.error(err);
+         if (err?.error?.message) {
+          this.serverError.set(err.error.message);
+        } 
+        else {
+           this.serverError.set('Login failed.');
+          }
 
-  const status = err?.status;
-
-  if (status === 0) {
-    this.serverError =
-      'Unable to connect to server.';
-  }
-  else if (status === 401 || status === 400) {
-    this.serverError =
-      'Invalid email or password.';
-  }
-  else if (status === 500) {
-    this.serverError =
-      'Server error. Please try again later.';
-  }
-  else {
-    this.serverError =
-      'Login failed.';
-  }
-
-  this.toastr.error(this.serverError); 
-}
-
-});
+          queueMicrotask(() => {
+            this.toastr.error(
+              this.serverError(),
+              'Error'
+            );
+          });
+        }
+      });
   }
 
   closeModal(): void {

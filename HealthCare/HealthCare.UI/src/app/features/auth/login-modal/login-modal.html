@@ -19,11 +19,11 @@
     </p>
 
     <!-- Server Error -->
-    @if(serverError){
+    @if(serverError()){
       <div
         class="mb-5 rounded-xl border-l-4 border-red-500 bg-red-50 p-4 text-red-600">
 
-        {{ serverError }}
+        {{ serverError() }}
 
       </div>
     }
