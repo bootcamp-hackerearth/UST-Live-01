@@ -1,79 +1,164 @@
 <section class="appointments-page">
   <section class="page-header">
     <div>
-      <a routerLink="/doctor/dashboard" class="back-link">
+      <a
+        routerLink="/doctor/dashboard"
+        class="back-link"
+      >
         Back to Dashboard
       </a>
 
-      <p>Doctor Workspace</p>
+      <span class="page-label">
+        Doctor Workspace
+      </span>
 
       <h1>Patient Appointments</h1>
 
-      <span>
-        View assigned patient appointments, confirm pending visits, complete
-        confirmed visits by adding health records, and review cancelled appointments.
-      </span>
+      <p>
+        Review assigned visits, confirm pending appointments,
+        manage cancellations, and create medical records after
+        completed consultations.
+      </p>
     </div>
 
-    <button type="button" class="refresh-button" (click)="loadAppointments()">
-      Refresh
+    <button
+      type="button"
+      class="refresh-button"
+      [disabled]="loading()"
+      (click)="loadAppointments()"
+    >
+      {{ loading() ? 'Refreshing...' : 'Refresh' }}
     </button>
   </section>
 
   @if (errorMessage()) {
-    <div class="alert error">{{ errorMessage() }}</div>
+    <div class="page-alert error-alert" role="alert">
+      <span class="alert-icon" aria-hidden="true">!</span>
+      <span>{{ errorMessage() }}</span>
+    </div>
   }
 
   @if (successMessage()) {
-    <div class="alert success">{{ successMessage() }}</div>
+    <div class="page-alert success-alert" role="status">
+      <span class="alert-icon" aria-hidden="true">✓</span>
+      <span>{{ successMessage() }}</span>
+    </div>
   }
 
-  <section class="stats-grid">
-    <article class="stat-card today">
-      <div>
+  <section
+    class="stats-grid"
+    aria-label="Appointment filters"
+  >
+    <button
+      type="button"
+      class="stat-card today-card"
+      [class.selected]="isFilterSelected('Today')"
+      [attr.aria-pressed]="isFilterSelected('Today')"
+      (click)="selectFilter('Today')"
+    >
+      <span class="stat-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+          <path d="M8 3v4M16 3v4M3 10h18"></path>
+        </svg>
+      </span>
+
+      <span class="stat-content">
         <strong>{{ todayCount() }}</strong>
-        <p>Today</p>
-      </div>
-    </article>
+        <span>Today</span>
+      </span>
+    </button>
 
-    <article class="stat-card pending">
-      <div>
+    <button
+      type="button"
+      class="stat-card pending-card"
+      [class.selected]="isFilterSelected('Pending')"
+      [attr.aria-pressed]="isFilterSelected('Pending')"
+      (click)="selectFilter('Pending')"
+    >
+      <span class="stat-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 7v5l3 2"></path>
+        </svg>
+      </span>
+
+      <span class="stat-content">
         <strong>{{ pendingCount() }}</strong>
-        <p>Pending</p>
-      </div>
-    </article>
+        <span>Pending</span>
+      </span>
+    </button>
 
-    <article class="stat-card confirmed">
-      <div>
+    <button
+      type="button"
+      class="stat-card confirmed-card"
+      [class.selected]="isFilterSelected('Confirmed')"
+      [attr.aria-pressed]="isFilterSelected('Confirmed')"
+      (click)="selectFilter('Confirmed')"
+    >
+      <span class="stat-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M8 12l3 3 5-6"></path>
+        </svg>
+      </span>
+
+      <span class="stat-content">
         <strong>{{ confirmedCount() }}</strong>
-        <p>Confirmed</p>
-      </div>
-    </article>
+        <span>Confirmed</span>
+      </span>
+    </button>
 
-    <article class="stat-card cancelled">
-      <div>
+    <button
+      type="button"
+      class="stat-card cancelled-card"
+      [class.selected]="isFilterSelected('Cancelled')"
+      [attr.aria-pressed]="isFilterSelected('Cancelled')"
+      (click)="selectFilter('Cancelled')"
+    >
+      <span class="stat-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M9 9l6 6M15 9l-6 6"></path>
+        </svg>
+      </span>
+
+      <span class="stat-content">
         <strong>{{ cancelledCount() }}</strong>
-        <p>Cancelled</p>
-      </div>
-    </article>
+        <span>Cancelled</span>
+      </span>
+    </button>
   </section>
 
   <section class="toolbar-card">
     <div class="search-box">
+      <span class="search-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="M16 16l5 5"></path>
+        </svg>
+      </span>
+
       <input
         type="search"
         maxlength="80"
-        placeholder="Search patient, date, time, status..."
+        aria-label="Search doctor appointments"
+        placeholder="Search patient, date, time, status, or appointment ID"
         [value]="searchText()"
         (input)="onSearchInput($event)"
       />
     </div>
 
-    <div class="filter-pills">
+    <div
+      class="filter-pills"
+      aria-label="Filter appointments"
+    >
       @for (filter of filters; track filter) {
         <button
           type="button"
-          [class.active]="selectedFilter() === filter"
+          [class.active]="
+            selectedFilter() === filter
+          "
           (click)="selectFilter(filter)"
         >
           {{ filter }}
@@ -81,7 +166,11 @@
       }
     </div>
 
-    <button type="button" class="clear-button" (click)="clearFilters()">
+    <button
+      type="button"
+      class="clear-button"
+      (click)="clearFilters()"
+    >
       Clear
     </button>
   </section>
@@ -89,35 +178,50 @@
   <section class="list-card">
     <div class="list-heading-row">
       <div class="section-title">
-        <p>Assigned Visits</p>
+        <span>Assigned Visits</span>
         <h2>Patient Appointments</h2>
+
+        <p>
+          Confirm future pending appointments and add a
+          health record after a confirmed consultation begins.
+        </p>
       </div>
 
       <span class="result-count">
-        Showing {{ filteredAppointments().length }} appointments
+        {{ filteredAppointments().length }} appointments
       </span>
     </div>
 
     @if (loading()) {
-      <div class="empty-box">
+      <div class="loading-box">
+        <span class="loader" aria-hidden="true"></span>
         Loading appointments...
       </div>
-    }
-
-    @if (!loading() && doctorAppointments().length === 0) {
+    } @else if (doctorAppointments().length === 0) {
       <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+            <path d="M8 3v4M16 3v4M3 10h18"></path>
+          </svg>
+        </span>
+
         <h3>No appointments available</h3>
-        <p>Pending, confirmed, and cancelled appointments assigned to you will appear here.</p>
-      </div>
-    }
 
-    @if (!loading() && doctorAppointments().length > 0 && filteredAppointments().length === 0) {
-      <div class="empty-box">
-        No appointments found for the selected filter.
+        <p>
+          Pending, confirmed, and cancelled appointments
+          assigned to you will appear here.
+        </p>
       </div>
-    }
+    } @else if (filteredAppointments().length === 0) {
+      <div class="empty-state compact-empty">
+        <h3>No matching appointments</h3>
 
-    @if (!loading() && filteredAppointments().length > 0) {
+        <p>
+          Change the selected filter or search text.
+        </p>
+      </div>
+    } @else {
       <div class="table-wrapper">
         <table class="appointment-table">
           <thead>
@@ -126,81 +230,153 @@
               <th>Date</th>
               <th>Time Slot</th>
               <th>Status</th>
-              <th class="action-column">Doctor Action</th>
+              <th class="action-column">
+                Doctor Action
+              </th>
             </tr>
           </thead>
 
           <tbody>
-            @for (appointment of pagedAppointments(); track appointment.appointmentId) {
+            @for (
+              appointment of pagedAppointments();
+              track appointment.appointmentId
+            ) {
               <tr>
                 <td>
                   <div class="patient-cell">
+                    <span
+                      class="patient-avatar"
+                      aria-hidden="true"
+                    >
+                      {{
+                        getPatientName(appointment)
+                          .charAt(0)
+                          .toUpperCase()
+                      }}
+                    </span>
+
                     <div>
-                      <strong>{{ getPatientName(appointment) }}</strong>
-                      <small>Appointment #{{ appointment.appointmentId }}</small>
+                      <strong>
+                        {{ getPatientName(appointment) }}
+                      </strong>
+
+                      <small>
+                        Appointment
+                        #{{ appointment.appointmentId }}
+                      </small>
                     </div>
                   </div>
                 </td>
 
-                <td>{{ appointment.scheduledDate | date: 'mediumDate' }}</td>
-
-                <td>{{ getSafeText(appointment.timeSlot, 'Not assigned') }}</td>
+                <td>
+                  {{
+                    appointment.scheduledDate
+                      | date: 'dd MMM yyyy'
+                  }}
+                </td>
 
                 <td>
-                  <span [class]="'status-badge ' + getStatusClass(appointment.status)">
-                    {{ getStatusLabel(appointment.status) }}
+                  {{
+                    getSafeText(
+                      appointment.timeSlot,
+                      'Not assigned'
+                    )
+                  }}
+                </td>
+
+                <td>
+                  <span
+                    [class]="
+                      'status-badge ' +
+                      getAppointmentStatusClass(
+                        appointment
+                      )
+                    "
+                  >
+                    {{
+                      getAppointmentStatusLabel(
+                        appointment
+                      )
+                    }}
                   </span>
                 </td>
 
                 <td class="action-column">
-  <div class="action-buttons">
-    <button
-      type="button"
-      class="view-button"
-      (click)="openAppointmentDetails(appointment)"
-    >
-      View
-    </button>
+                  <div class="action-buttons">
+                    <button
+                      type="button"
+                      class="action-button view-button"
+                      (click)="
+                        openAppointmentDetails(
+                          appointment
+                        )
+                      "
+                    >
+                      View
+                    </button>
 
-    @if (canConfirm(appointment)) {
-      <button
-        type="button"
-        class="confirm-button"
-        [disabled]="isProcessing(appointment)"
-        (click)="confirmAppointment(appointment)"
-      >
-        @if (isProcessing(appointment)) {
-          Confirming...
-        } @else {
-          Confirm
-        }
-      </button>
-    }
+                    @if (canConfirm(appointment)) {
+                      <button
+                        type="button"
+                        class="action-button confirm-button"
+                        [disabled]="
+                          isProcessing(appointment)
+                        "
+                        (click)="
+                          confirmAppointment(
+                            appointment
+                          )
+                        "
+                      >
+                        @if (isProcessing(appointment)) {
+                          Confirming...
+                        } @else {
+                          Confirm
+                        }
+                      </button>
+                    }
 
-    @if (canAddHealthRecord(appointment)) {
-      <a
-        class="complete-button"
-        [routerLink]="['/doctor/completed-appointments']"
-        [queryParams]="{ appointmentId: appointment.appointmentId }"
-        title="Add health record to complete this appointment"
-      >
-        Complete
-      </a>
-    }
+                    @if (canAddHealthRecord(appointment)) {
+                      <a
+                        class="action-button complete-button"
+                        [routerLink]="[
+                          '/doctor/completed-appointments'
+                        ]"
+                        [queryParams]="{
+                          appointmentId:
+                            appointment.appointmentId
+                        }"
+                      >
+                        Add Record
+                      </a>
+                    }
 
-    @if (shouldShowCancelButton(appointment)) {
-      <button
-        type="button"
-        class="cancel-action-button"
-        [disabled]="isProcessing(appointment) || !canCancel(appointment)"
-        [title]="canCancel(appointment) ? 'Cancel appointment' : getCancelRestrictionMessage(appointment)"
-        (click)="openCancelDialog(appointment)"
-      >
-        Cancel
-      </button>
-    }
-  </div>
-</td>
+                    @if (shouldShowCancelButton(appointment)) {
+                      <button
+                        type="button"
+                        class="action-button cancel-action-button"
+                        [disabled]="
+                          isProcessing(appointment) ||
+                          !canCancel(appointment)
+                        "
+                        [title]="
+                          canCancel(appointment)
+                            ? 'Cancel appointment'
+                            : getCancelRestrictionMessage(
+                                appointment
+                              )
+                        "
+                        (click)="
+                          openCancelDialog(
+                            appointment
+                          )
+                        "
+                      >
+                        Cancel
+                      </button>
+                    }
+                  </div>
+                </td>
               </tr>
             }
           </tbody>
@@ -217,12 +393,16 @@
           Previous
         </button>
 
-        <span>Page {{ currentPage() }} of {{ totalPages() }}</span>
+        <span>
+          Page {{ currentPage() }} of {{ totalPages() }}
+        </span>
 
         <button
           type="button"
           class="page-button"
-          [disabled]="currentPage() === totalPages()"
+          [disabled]="
+            currentPage() === totalPages()
+          "
           (click)="goToNextPage()"
         >
           Next
@@ -230,221 +410,325 @@
       </div>
     }
   </section>
+</section>
 
-  @if (selectedAppointment(); as appointment) {
-    <div
-      class="modal-backdrop"
-      role="button"
-      tabindex="0"
-      aria-label="Close appointment details"
-      (click)="closeAppointmentDetails()"
-      (keydown.enter)="closeAppointmentDetails()"
-      (keydown.space)="closeAppointmentDetails(); $event.preventDefault()"
+@if (selectedAppointment(); as appointment) {
+  <div
+    class="modal-backdrop"
+    role="presentation"
+    (click)="closeAppointmentDetails()"
+  >
+    <section
+      class="modal-card details-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="appointmentDetailsTitle"
+      (click)="$event.stopPropagation()"
     >
-      <section
-        class="details-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="appointmentDetailsTitle"
-        tabindex="-1"
-        (click)="$event.stopPropagation()"
-        (keydown)="$event.stopPropagation()"
-      >
-        <div class="modal-header">
-          <div>
-            <p>Appointment Details</p>
-            <h2 id="appointmentDetailsTitle">
-              Appointment #{{ appointment.appointmentId }}
-            </h2>
-          </div>
+      <div class="modal-header">
+        <div>
+          <span>Appointment Details</span>
 
-          <button
-            type="button"
-            class="close-button"
-            aria-label="Close appointment details"
-            (click)="closeAppointmentDetails()"
-          >
-            ×
-          </button>
+          <h2 id="appointmentDetailsTitle">
+            Appointment #{{ appointment.appointmentId }}
+          </h2>
         </div>
 
-        <div class="details-grid">
-          <div>
-            <span>Patient</span>
-            <strong>{{ getPatientName(appointment) }}</strong>
-          </div>
+        <button
+          type="button"
+          class="close-button"
+          aria-label="Close appointment details"
+          (click)="closeAppointmentDetails()"
+        >
+          ×
+        </button>
+      </div>
 
-          <div>
-            <span>Date</span>
-            <strong>{{ appointment.scheduledDate | date: 'fullDate' }}</strong>
-          </div>
+      <div class="details-grid">
+        <div>
+          <span>Patient</span>
 
-          <div>
-            <span>Time Slot</span>
-            <strong>{{ getSafeText(appointment.timeSlot, 'Not assigned') }}</strong>
-          </div>
+          <strong>
+            {{ getPatientName(appointment) }}
+          </strong>
+        </div>
 
-          <div>
-            <span>Status</span>
-            <strong>{{ getStatusLabel(appointment.status) }}</strong>
-          </div>
+        <div>
+          <span>Date</span>
 
-          <div>
-            <span>Appointment ID</span>
-            <strong>#{{ appointment.appointmentId }}</strong>
-          </div>
+          <strong>
+            {{
+              appointment.scheduledDate
+                | date: 'fullDate'
+            }}
+          </strong>
+        </div>
 
-          <div>
+        <div>
+          <span>Time Slot</span>
+
+          <strong>
+            {{
+              getSafeText(
+                appointment.timeSlot,
+                'Not assigned'
+              )
+            }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+
+          <strong
+            [class]="
+              'status-badge ' +
+              getAppointmentStatusClass(
+                appointment
+              )
+            "
+          >
+            {{
+              getAppointmentStatusLabel(
+                appointment
+              )
+            }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Appointment ID</span>
+
+          <strong>
+            #{{ appointment.appointmentId }}
+          </strong>
+        </div>
+
+        @if (isCancelled(appointment)) {
+          <div class="cancellation-detail">
             <span>Cancellation Reason</span>
-            <strong>{{ appointment.cancellationReason || '-' }}</strong>
-          </div>
-        </div>
 
-        @if (!canConfirm(appointment) && !canCancel(appointment) && shouldShowCancelButton(appointment)) {
-          <div class="rule-note">
-            {{ getCancelRestrictionMessage(appointment) }}
+            <strong>
+              {{
+                appointment.cancellationReason ||
+                'No reason was recorded.'
+              }}
+            </strong>
           </div>
         }
+      </div>
 
-        <div class="modal-actions">
-          @if (canConfirm(appointment)) {
-            <button
-              type="button"
-              class="confirm-modal-button"
-              [disabled]="isProcessing(appointment)"
-              (click)="confirmAppointment(appointment)"
-            >
-              Confirm Appointment
-            </button>
-          }
-
-          @if (canAddHealthRecord(appointment)) {
-            <a
-              class="complete-modal-button"
-              [routerLink]="['/doctor/completed-appointments']"
-              [queryParams]="{ appointmentId: appointment.appointmentId }"
-            >
-              Complete by Adding Record
-            </a>
-          }
-
-          @if (shouldShowCancelButton(appointment)) {
-            <button
-              type="button"
-              class="danger-modal-button"
-              [disabled]="isProcessing(appointment) || !canCancel(appointment)"
-              (click)="openCancelDialog(appointment)"
-            >
-              Cancel Appointment
-            </button>
-          }
+      @if (
+        isPastPending(appointment)
+      ) {
+        <div class="rule-note warning-note">
+          The scheduled time has passed. This appointment
+          can no longer be confirmed, but it may be cancelled.
         </div>
-      </section>
-    </div>
-  }
+      }
 
-  @if (cancelTarget(); as appointment) {
-    <div
-      class="modal-backdrop"
-      role="button"
-      tabindex="0"
-      aria-label="Close cancellation dialog"
-      (click)="closeCancelDialog()"
-      (keydown.enter)="closeCancelDialog()"
-      (keydown.space)="closeCancelDialog(); $event.preventDefault()"
-    >
-      <section
-        class="cancel-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="cancelDialogTitle"
-        tabindex="-1"
-        (click)="$event.stopPropagation()"
-        (keydown)="$event.stopPropagation()"
-      >
-        <div class="modal-header">
-          <div>
-            <p>Cancel Appointment</p>
-            <h2 id="cancelDialogTitle">Confirm Cancellation</h2>
-          </div>
+      @if (
+        getStatusLabel(appointment.status) === 'Confirmed' &&
+        !canAddHealthRecord(appointment)
+      ) {
+        <div class="rule-note information-note">
+          {{
+            getHealthRecordRestrictionMessage(
+              appointment
+            )
+          }}
+        </div>
+      }
 
+      @if (
+        shouldShowCancelButton(appointment) &&
+        !canCancel(appointment)
+      ) {
+        <div class="rule-note danger-note">
+          {{
+            getCancelRestrictionMessage(
+              appointment
+            )
+          }}
+        </div>
+      }
+
+      <div class="modal-actions">
+        @if (canConfirm(appointment)) {
           <button
             type="button"
-            class="close-button"
-            aria-label="Close cancellation dialog"
-            (click)="closeCancelDialog()"
+            class="confirm-modal-button"
+            [disabled]="isProcessing(appointment)"
+            (click)="
+              confirmAppointment(appointment)
+            "
           >
-            ×
+            Confirm Appointment
           </button>
-        </div>
-
-        <div class="details-grid">
-          <div>
-            <span>Patient</span>
-            <strong>{{ getPatientName(appointment) }}</strong>
-          </div>
-
-          <div>
-            <span>Date</span>
-            <strong>{{ appointment.scheduledDate | date: 'mediumDate' }}</strong>
-          </div>
-
-          <div>
-            <span>Time Slot</span>
-            <strong>{{ getSafeText(appointment.timeSlot, 'Not assigned') }}</strong>
-          </div>
-        </div>
-
-        <div class="warning-box">
-          A confirmed appointment cannot be cancelled within 2 hours of the
-          scheduled time. Please provide a clear reason so the patient can
-          understand why the appointment was cancelled.
-        </div>
-
-        <label for="cancelReason">
-          Cancellation Reason <span>Required</span>
-        </label>
-
-        <textarea
-          id="cancelReason"
-          rows="4"
-          maxlength="200"
-          placeholder="Example: Doctor emergency, schedule conflict, or hospital emergency."
-          [value]="cancellationReason()"
-          (input)="onCancellationReasonInput($event)"
-          (blur)="cancellationReasonTouched.set(true)"
-        ></textarea>
-
-        @if (getCancellationReasonErrorMessage()) {
-          <small class="field-error">
-            {{ getCancellationReasonErrorMessage() }}
-          </small>
         }
 
-        <div class="modal-actions">
+        @if (canAddHealthRecord(appointment)) {
+          <a
+            class="complete-modal-button"
+            [routerLink]="[
+              '/doctor/completed-appointments'
+            ]"
+            [queryParams]="{
+              appointmentId:
+                appointment.appointmentId
+            }"
+          >
+            Add Health Record
+          </a>
+        }
+
+        @if (shouldShowCancelButton(appointment)) {
           <button
             type="button"
             class="danger-modal-button"
-            [disabled]="isProcessing(appointment) || !canSubmitCancellation()"
-            (click)="confirmCancelAppointment()"
+            [disabled]="
+              isProcessing(appointment) ||
+              !canCancel(appointment)
+            "
+            (click)="
+              openCancelDialog(appointment)
+            "
           >
-            @if (isProcessing(appointment)) {
-              Cancelling...
-            } @else {
-              Cancel Appointment
-            }
+            Cancel Appointment
           </button>
+        }
+      </div>
+    </section>
+  </div>
+}
 
-          <button
-            type="button"
-            class="keep-button"
-            [disabled]="isProcessing(appointment)"
-            (click)="closeCancelDialog()"
-          >
-            Keep Appointment
-          </button>
+@if (cancelTarget(); as appointment) {
+  <div
+    class="modal-backdrop"
+    role="presentation"
+    (click)="closeCancelDialog()"
+  >
+    <section
+      class="modal-card cancel-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cancelDialogTitle"
+      (click)="$event.stopPropagation()"
+    >
+      <div
+        class="warning-symbol"
+        aria-hidden="true"
+      >
+        !
+      </div>
+
+      <div class="cancel-heading">
+        <span>Cancel Appointment</span>
+
+        <h2 id="cancelDialogTitle">
+          Confirm Cancellation
+        </h2>
+
+        <p>
+          A clear cancellation reason is required
+          and will be visible to the patient.
+        </p>
+      </div>
+
+      <div class="cancel-details">
+        <div>
+          <span>Patient</span>
+
+          <strong>
+            {{ getPatientName(appointment) }}
+          </strong>
         </div>
-      </section>
-    </div>
-  }
-</section>
+
+        <div>
+          <span>Date</span>
+
+          <strong>
+            {{
+              appointment.scheduledDate
+                | date: 'dd MMM yyyy'
+            }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Time</span>
+
+          <strong>
+            {{
+              getSafeText(
+                appointment.timeSlot,
+                'Not assigned'
+              )
+            }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        Confirmed appointments cannot be cancelled
+        within 2 hours of the scheduled time.
+      </div>
+
+      <label for="cancelReason">
+        Cancellation Reason
+        <span>Required</span>
+      </label>
+
+      <textarea
+        id="cancelReason"
+        rows="4"
+        maxlength="200"
+        placeholder="Example: Doctor emergency, schedule conflict, or hospital emergency."
+        [value]="cancellationReason()"
+        (input)="onCancellationReasonInput($event)"
+        (blur)="markCancellationReasonTouched()"
+      ></textarea>
+
+      <div class="reason-meta">
+        <span>
+          {{ cancellationReasonLength() }}/200
+        </span>
+
+        @if (getCancellationReasonErrorMessage()) {
+          <small class="field-error">
+            {{
+              getCancellationReasonErrorMessage()
+            }}
+          </small>
+        }
+      </div>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="danger-modal-button"
+          [disabled]="
+            isProcessing(appointment) ||
+            !canSubmitCancellation()
+          "
+          (click)="confirmCancelAppointment()"
+        >
+          @if (isProcessing(appointment)) {
+            Cancelling...
+          } @else {
+            Cancel Appointment
+          }
+        </button>
+
+        <button
+          type="button"
+          class="keep-button"
+          [disabled]="isProcessing(appointment)"
+          (click)="closeCancelDialog()"
+        >
+          Keep Appointment
+        </button>
+      </div>
+    </section>
+  </div>
+}
