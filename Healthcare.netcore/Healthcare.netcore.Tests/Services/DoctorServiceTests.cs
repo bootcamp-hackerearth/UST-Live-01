@@ -526,5 +526,208 @@ namespace Healthcare.netcore.Tests.Services
                 .ThrowAsync<Exception>()
                 .WithMessage("Database Error");
         }
+        [Fact]
+        public async Task GetByUserIdAsync_WhenDoctorExists_ReturnsDoctor()
+        {
+            var doctor = GetDoctor();
+            doctor.UserId = "user1";
+
+            var dto = GetDoctorDto();
+
+            _doctorRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<Doctor> { doctor });
+
+            _mapperMock
+                .Setup(x => x.Map<DoctorDto>(doctor))
+                .Returns(dto);
+
+            var result = await _service.GetByUserIdAsync("user1");
+
+            result.Should().NotBeNull();
+            result!.DoctorId.Should().Be(6);
+        }
+        [Fact]
+        public async Task GetByUserIdAsync_WhenDoctorDoesNotExist_ThrowsException()
+        {
+            _doctorRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<Doctor>());
+
+            Func<Task> act = async () =>
+                await _service.GetByUserIdAsync("xyz");
+
+            await act.Should()
+                .ThrowAsync<NotFoundException>()
+                .WithMessage("Doctor profile not found.");
+        }
+        [Fact]
+        public async Task GetAllAsync_WithPagination_ReturnsPagedDoctors()
+        {
+            var doctors = Enumerable.Range(1, 20)
+                .Select(i => new Doctor
+                {
+                    DoctorId = i,
+                    FullName = "Doctor" + i
+                }).ToList();
+
+            var dtos = doctors.Select(d => new DoctorDto
+            {
+                DoctorId = d.DoctorId,
+                FullName = d.FullName
+            });
+
+            _doctorRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(doctors);
+
+            _mapperMock
+                .Setup(x => x.Map<IEnumerable<DoctorDto>>(doctors))
+                .Returns(dtos);
+
+            var result = await _service.GetAllAsync(
+                new PaginationParams
+                {
+                    PageNumber = 2,
+                    PageSize = 5
+                });
+
+            result.Should().NotBeNull();
+            result.Items.Count().Should().Be(5);
+            result.PageNumber.Should().Be(2);
+        }
+        [Fact]
+        public async Task GetAllAsync_WithZeroPagination_UsesDefaults()
+        {
+            var doctors = new List<Doctor>
+    {
+        GetDoctor()
+    };
+
+            var dtos = new List<DoctorDto>
+    {
+        GetDoctorDto()
+    };
+
+            _doctorRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(doctors);
+
+            _mapperMock
+                .Setup(x => x.Map<IEnumerable<DoctorDto>>(doctors))
+                .Returns(dtos);
+
+            var result = await _service.GetAllAsync(
+                new PaginationParams
+                {
+                    PageNumber = 0,
+                    PageSize = 0
+                });
+
+            result.PageNumber.Should().Be(1);
+            result.PageSize.Should().Be(10);
+        }
+        [Fact]
+        public async Task GetAvailabilityAsync_WhenDoctorInactive_ReturnsNoSlots()
+        {
+            var doctor = GetDoctor(false);
+
+            _doctorRepositoryMock
+                .Setup(x => x.GetByIdAsync(6))
+                .ReturnsAsync(doctor);
+
+            var result = await _service.GetAvailabilityAsync(
+                6,
+                DateTime.Today);
+
+            result.Should().NotBeNull();
+            result.AvailableSlots.Should().BeEmpty();
+        }
+        [Fact]
+        public async Task GetAvailabilityAsync_WithFutureDate_ReturnsAvailability()
+        {
+            var doctor = GetDoctor();
+
+            _doctorRepositoryMock
+                .Setup(x => x.GetByIdAsync(6))
+                .ReturnsAsync(doctor);
+
+            var result = await _service.GetAvailabilityAsync(
+                6,
+                DateTime.Today.AddDays(5));
+
+            result.Should().NotBeNull();
+            result.Date.Date.Should().Be(DateTime.Today.AddDays(5).Date);
+        }
+        [Fact]
+        public async Task GetAvailabilityAsync_WhenRepositoryThrows_ExceptionIsThrown()
+        {
+            _doctorRepositoryMock
+                .Setup(x => x.GetByIdAsync(6))
+                .ThrowsAsync(new Exception("Database Error"));
+
+            Func<Task> act = async () =>
+                await _service.GetAvailabilityAsync(
+                    6,
+                    DateTime.Today);
+
+            await act.Should()
+                .ThrowAsync<Exception>()
+                .WithMessage("Database Error");
+        }
+        [Fact]
+        public async Task AddAsync_ShouldCallRepositoryOnce()
+        {
+            var dto = GetCreateDoctorDto();
+
+            _userManagerMock
+                .Setup(x => x.FindByEmailAsync(dto.Email))
+                .ReturnsAsync((ApplicationUser?)null);
+
+            _userManagerMock
+                .Setup(x => x.CreateAsync(
+                    It.IsAny<ApplicationUser>(),
+                    dto.TemporaryPassword))
+                .ReturnsAsync(IdentityResult.Success);
+
+            _userManagerMock
+                .Setup(x => x.AddToRoleAsync(
+                    It.IsAny<ApplicationUser>(),
+                    "Doctor"))
+                .ReturnsAsync(IdentityResult.Success);
+
+            _doctorRepositoryMock
+                .Setup(x => x.AddAsync(It.IsAny<Doctor>()))
+                .ReturnsAsync(GetDoctor());
+
+            _mapperMock
+                .Setup(x => x.Map<DoctorDto>(It.IsAny<Doctor>()))
+                .Returns(GetDoctorDto());
+
+            await _service.AddAsync(dto);
+
+            _doctorRepositoryMock.Verify(
+                x => x.AddAsync(It.IsAny<Doctor>()),
+                Times.Once);
+        }
+        [Fact]
+        public async Task GetAllAsync_ShouldCallRepositoryOnce()
+        {
+            _doctorRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<Doctor>());
+
+            _mapperMock
+                .Setup(x => x.Map<IEnumerable<DoctorDto>>(It.IsAny<IEnumerable<Doctor>>()))
+                .Returns(new List<DoctorDto>());
+
+            await _service.GetAllAsync();
+
+            _doctorRepositoryMock.Verify(
+                x => x.GetAllAsync(),
+                Times.Once);
+        }
+
+
     }
 }

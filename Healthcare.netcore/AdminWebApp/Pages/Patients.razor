@@ -484,7 +484,7 @@
     private readonly DateTime MinimumDateOfBirth =
     new(1900, 1, 1, 0, 0, 0, DateTimeKind.Unspecified);
 
-    private DateTime MaximumDateOfBirth =>
+    private static DateTime MaximumDateOfBirth =>
         DateTime.Today;
 
     private string MinimumDateOfBirthString =>

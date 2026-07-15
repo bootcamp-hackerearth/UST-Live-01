@@ -1,1 +1,1 @@
-RhC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore\Healthcare.netcore.csproj¢net10.0òCSharp14
+…RnC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\HealthcareAxis.Shared.csproj¢net10.0òCSharp14

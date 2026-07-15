@@ -7,11 +7,11 @@ namespace HealthAxis.API.Repositories.Implementations
 {
     public class DoctorRepository : Repository<Doctor>, IDoctorRepository
     {
-        private readonly HealthAxisDbContext _context;
+       
 
         public DoctorRepository(HealthAxisDbContext context) : base(context)
         {
-            _context = context;
+            
         }
 
         public async Task<IEnumerable<Doctor>> SearchByNameAsync(string name)

@@ -38,7 +38,7 @@ namespace HealthAxis.API.Services.Implementations
             var pageNumber = paginationParams.PageNumber <= 0 ? 1 : paginationParams.PageNumber;
             var pageSize = paginationParams.PageSize <= 0 ? 10 : paginationParams.PageSize;
 
-            var totalRecords = patients.Count();
+            var totalRecords = patients.Count;
 
             var pagedPatients = patients
                 .Skip((pageNumber - 1) * pageSize)
@@ -135,7 +135,7 @@ namespace HealthAxis.API.Services.Implementations
                 throw new ValidationException("Date of birth cannot be in the future.");
             }
 
-            if (dto.DateOfBirth.Date < new DateTime(1900, 1, 1))
+            if (dto.DateOfBirth.Date < new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Unspecified))
             {
                 throw new ValidationException("Date of birth must be after 01 Jan 1900.");
             }
@@ -182,7 +182,7 @@ namespace HealthAxis.API.Services.Implementations
                 throw new ValidationException("Date of birth cannot be in the future.");
             }
 
-            if (dto.DateOfBirth.Date < new DateTime(1900, 1, 1))
+            if (dto.DateOfBirth.Date < new DateTime(1900, 1, 1,0,0,0,DateTimeKind.Unspecified))
             {
                 throw new ValidationException("Date of birth must be after 01 Jan 1900.");
             }

@@ -15,21 +15,37 @@
     <div class="filter-grid">
 
       <div class="field">
-        <label>Search</label>
+        <label for="searchText">
+          Search
+        </label>
+
         <input
+          id="searchText"
           type="text"
           [(ngModel)]="searchText"
           placeholder="Search patient, diagnosis or prescription">
       </div>
 
       <div class="field">
-        <label>From</label>
-        <input type="date" [(ngModel)]="fromDate">
+        <label for="fromDate">
+          From
+        </label>
+
+        <input
+          id="fromDate"
+          type="date"
+          [(ngModel)]="fromDate">
       </div>
 
       <div class="field">
-        <label>To</label>
-        <input type="date" [(ngModel)]="toDate">
+        <label for="toDate">
+          To
+        </label>
+
+        <input
+          id="toDate"
+          type="date"
+          [(ngModel)]="toDate">
       </div>
 
       <button
@@ -47,19 +63,31 @@
   <div class="records-card">
 
     <div class="card-header">
+
       <div>
         <h3>Records Created by You</h3>
-        <p>Health records created after completed consultations.</p>
+        <p>
+          Health records created after completed consultations.
+        </p>
       </div>
 
-      <span>Showing {{ filteredCreatedRecords().length }} record(s)</span>
+      <span>
+        Showing {{ filteredCreatedRecords().length }} record(s)
+      </span>
+
     </div>
 
-    <div class="empty-state" *ngIf="filteredCreatedRecords().length === 0">
+    <div
+      class="empty-state"
+      *ngIf="filteredCreatedRecords().length === 0">
+
       No health records found.
+
     </div>
 
-    <div class="table" *ngIf="filteredCreatedRecords().length > 0">
+    <div
+      class="table"
+      *ngIf="filteredCreatedRecords().length > 0">
 
       <div class="table-head created-head">
         <span>Date</span>
@@ -68,21 +96,29 @@
         <span>Action</span>
       </div>
 
-      <div class="table-row created-row" *ngFor="let record of filteredCreatedRecords()">
+      <div
+        class="table-row created-row"
+        *ngFor="let record of filteredCreatedRecords()">
 
         <span>{{ record.date }}</span>
 
-        <span class="patient-name">{{ record.patient }}</span>
-
-        <span>{{ record.diagnosis }}</span>
+        <span class="patient-name">
+          {{ record.patient }}
+        </span>
 
         <span>
+          {{ record.diagnosis }}
+        </span>
+
+        <span>
+
           <button
             type="button"
             class="view-btn"
             (click)="viewRecord(record)">
             View Details
           </button>
+
         </span>
 
       </div>
@@ -92,14 +128,22 @@
   </div>
 
   <!-- RECORD DETAILS MODAL -->
-  <div class="modal-backdrop" *ngIf="showRecordDetailsModal && selectedRecord">
+  <div
+    class="modal-backdrop"
+    *ngIf="showRecordDetailsModal && selectedRecord">
 
     <div class="modal-card">
 
       <div class="modal-header">
+
         <div>
           <h3>Health Record Details</h3>
-          <p>{{ selectedRecord?.patient }} · {{ selectedRecord?.date }}</p>
+
+          <p>
+            {{ selectedRecord?.patient }}
+            ·
+            {{ selectedRecord?.date }}
+          </p>
         </div>
 
         <button
@@ -108,39 +152,72 @@
           (click)="closeRecordDetailsModal()">
           ×
         </button>
+
       </div>
 
       <div class="record-detail-box">
 
         <div class="detail-row">
-          <label>Patient</label>
-          <p>{{ selectedRecord?.patient }}</p>
+
+          <div class="detail-label">
+            Patient
+          </div>
+
+          <p>
+            {{ selectedRecord?.patient }}
+          </p>
+
         </div>
 
         <div class="detail-row">
-          <label>Diagnosis</label>
-          <p>{{ selectedRecord?.diagnosis }}</p>
+
+          <div class="detail-label">
+            Diagnosis
+          </div>
+
+          <p>
+            {{ selectedRecord?.diagnosis }}
+          </p>
+
         </div>
 
         <div class="detail-row">
-          <label>Prescription</label>
-          <p>{{ selectedRecord?.prescription }}</p>
+
+          <div class="detail-label">
+            Prescription
+          </div>
+
+          <p>
+            {{ selectedRecord?.prescription }}
+          </p>
+
         </div>
 
         <div class="detail-row">
-          <label>Notes</label>
-          <p>{{ selectedRecord?.notes }}</p>
+
+          <div class="detail-label">
+            Notes
+          </div>
+
+          <p>
+            {{ selectedRecord?.notes }}
+          </p>
+
         </div>
 
       </div>
 
       <div class="modal-actions">
+
         <button
           type="button"
           class="close-detail-btn"
           (click)="closeRecordDetailsModal()">
+
           Close
+
         </button>
+
       </div>
 
     </div>

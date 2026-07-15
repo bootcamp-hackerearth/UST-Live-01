@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>93bae078-de1a-498f-a9c0-2872f8e61022</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +26,9 @@
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.19.1" />
+	<PackageReference Include="Elastic.Serilog.Sinks" Version="9.0.0" />
+	<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
+	<PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />  
   </ItemGroup>
 
   <ItemGroup>

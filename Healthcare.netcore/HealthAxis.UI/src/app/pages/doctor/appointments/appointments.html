@@ -4,50 +4,113 @@
   <h1>Appointments</h1>
 
   <!-- FILTER CARD -->
+
   <div class="filter-card">
 
     <div class="filter-header">
+
       <div>
         <h3>Appointment Filters</h3>
-        <p>Filter appointments by patient, status, and date range.</p>
+
+        <p>
+          Filter appointments by patient, status,
+          and date range.
+        </p>
       </div>
+
     </div>
 
     <div class="filter-body">
+
       <div class="filter-grid">
 
         <div class="field">
-          <label>Search Patient</label>
+
+          <label for="searchPatient">Search Patient</label>
+
           <input
+            id="searchPatient"
             type="text"
             [(ngModel)]="searchText"
+            (ngModelChange)="onFiltersChanged()"
             placeholder="Enter patient name">
+
         </div>
 
         <div class="field">
-          <label>Status</label>
-          <select [(ngModel)]="selectedStatus">
-            <option value="">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
+
+          <label for="statusFilter">Status</label>
+
+          <select
+            id="statusFilter"
+            [(ngModel)]="selectedStatus"
+            (ngModelChange)="onFiltersChanged()">
+
+            <option value="">
+              All Status
+            </option>
+
+            <option value="Pending">
+              Pending
+            </option>
+
+            <option value="Confirmed">
+              Confirmed
+            </option>
+
+            <option value="Completed">
+              Completed
+            </option>
+
+            <option value="Cancelled">
+              Cancelled
+            </option>
+
           </select>
+
         </div>
 
         <div class="field">
-          <label>Date Filter</label>
-          <select [(ngModel)]="selectedDateFilter">
-            <option value="All">All</option>
-            <option value="Upcoming">Upcoming</option>
-            <option value="Past">Past</option>
-            <option value="Custom">Custom</option>
+
+          <label for="dateFilter">Date Filter</label>
+
+          <select
+            id="dateFilter"
+            [(ngModel)]="selectedDateFilter"
+            (ngModelChange)="onFiltersChanged()">
+
+            <option value="All">
+              All
+            </option>
+
+            <option value="Upcoming">
+              Upcoming
+            </option>
+
+            <option value="Past">
+              Past
+            </option>
+
+            <option value="Custom">
+              Custom
+            </option>
+
           </select>
+
         </div>
 
-        <div class="field" *ngIf="selectedDateFilter === 'Custom'">
-          <label>Custom Date</label>
-          <input type="date" [(ngModel)]="customDate">
+        <div
+          class="field"
+          *ngIf="selectedDateFilter === 'Custom'">
+
+          <label for="customDate">Custom Date</label>
+
+          <input
+            id="customDate"
+            type="date"
+            [(ngModel)]="customDate"
+            (ngModelChange)="onFiltersChanged()">
+
         </div>
 
         <button
@@ -58,44 +121,71 @@
         </button>
 
       </div>
+
     </div>
 
   </div>
 
   <!-- APPOINTMENT LIST -->
+
   <div class="appointment-card">
 
     <div class="card-header">
-      <h3>Appointment list</h3>
+
+      <h3>Appointment List</h3>
+
       <span>
-        Showing {{ filteredAppointments().length }} of {{ appointments.length }} appointment(s)
+        Showing {{ pagedAppointments().length }} of
+        {{ filteredAppointments().length }}
+        appointment(s)
       </span>
+
     </div>
 
-    <div class="empty-state" *ngIf="filteredAppointments().length === 0">
-      No appointments found for selected filters.
+    <div
+      class="empty-state"
+      *ngIf="filteredAppointments().length === 0">
+      No appointments found for the selected filters.
     </div>
 
-    <div class="table" *ngIf="filteredAppointments().length > 0">
+    <div
+      class="table"
+      *ngIf="filteredAppointments().length > 0">
 
       <div class="table-head">
+
         <span>Date</span>
         <span>Time</span>
         <span>Patient</span>
         <span>Status</span>
         <span>Actions</span>
+
       </div>
 
-      <div class="table-row" *ngFor="let a of filteredAppointments()">
+      <div
+        class="table-row"
+        *ngFor="let appointment of pagedAppointments()">
 
-        <span class="date-text">{{ a.date }}</span>
-        <span>{{ a.time }}</span>
-        <span class="patient-name">{{ a.patient }}</span>
+        <span class="date-text">
+          {{ appointment.date }}
+        </span>
 
         <span>
-          <span class="status" [ngClass]="a.status.toLowerCase()">
-            {{ a.status }}
+          {{ appointment.time }}
+        </span>
+
+        <span class="patient-name">
+          {{ appointment.patient }}
+        </span>
+
+        <span>
+
+          <span
+            class="status"
+            [ngClass]="appointment.status.toLowerCase()">
+            {{ appointment.status }}
           </span>
+
         </span>
 
         <span class="actions">
@@ -103,49 +193,54 @@
           <button
             type="button"
             class="blue-btn"
-            *ngIf="a.status === 'Completed' && a.hasRecord"
-            (click)="viewRecord(a)">
+            *ngIf="
+              appointment.status === 'Completed' &&
+              appointment.hasRecord
+            "
+            (click)="viewRecord(appointment)">
             View Record
           </button>
 
           <button
             type="button"
             class="green-btn"
-            *ngIf="a.status === 'Completed' && !a.hasRecord"
-            (click)="openAddRecord(a)">
+            *ngIf="
+              appointment.status === 'Completed' &&
+              !appointment.hasRecord
+            "
+            (click)="openAddRecord(appointment)">
             Add Record
           </button>
-
 
           <button
             type="button"
             class="green-btn"
-            *ngIf="a.status === 'Confirmed'"
-            (click)="completeAppointment(a)">
+            *ngIf="appointment.status === 'Confirmed'"
+            (click)="completeAppointment(appointment)">
             Complete
           </button>
 
           <button
             type="button"
             class="red-btn"
-            *ngIf="a.status === 'Confirmed'"
-            (click)="cancelAppointment(a)">
+            *ngIf="appointment.status === 'Confirmed'"
+            (click)="cancelAppointment(appointment)">
             Cancel
           </button>
 
           <button
             type="button"
             class="green-btn"
-            *ngIf="a.status === 'Pending'"
-            (click)="confirmAppointment(a)">
+            *ngIf="appointment.status === 'Pending'"
+            (click)="confirmAppointment(appointment)">
             Confirm
           </button>
 
           <button
             type="button"
             class="red-btn"
-            *ngIf="a.status === 'Pending'"
-            (click)="cancelAppointment(a)">
+            *ngIf="appointment.status === 'Pending'"
+            (click)="cancelAppointment(appointment)">
             Cancel
           </button>
 
@@ -155,165 +250,297 @@
 
     </div>
 
+    <!-- PAGINATION -->
+
+    <div
+      class="pagination"
+      *ngIf="totalPages > 1">
+
+      <button
+        type="button"
+        class="page-btn"
+        (click)="previousPage()"
+        [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <button
+        type="button"
+        class="page-number"
+        *ngFor="let page of pageNumbers"
+        [class.active]="page === currentPage"
+        (click)="goToPage(page)">
+        {{ page }}
+      </button>
+
+      <button
+        type="button"
+        class="page-btn"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages">
+        Next
+      </button>
+
+    </div>
+
   </div>
 
   <!-- ADD HEALTH RECORD MODAL -->
-  <div class="modal-backdrop" *ngIf="showRecordModal && selectedAppointment">
+
+  <div
+    class="modal-backdrop"
+    *ngIf="
+      showRecordModal &&
+      selectedAppointment
+    ">
 
     <div class="modal-card">
 
       <div class="modal-header">
+
         <div>
+
           <h3>Add Health Record</h3>
+
           <p>
             {{ selectedAppointment?.patient }} ·
             {{ selectedAppointment?.date }} ·
             {{ selectedAppointment?.time }}
           </p>
+
         </div>
 
-        <button type="button" class="close-btn" (click)="closeRecordModal()">×</button>
+        <button
+          type="button"
+          class="close-btn"
+          (click)="closeRecordModal()">
+          ×
+        </button>
+
       </div>
 
       <div class="modal-body">
 
         <div class="field">
-          <label>Diagnosis</label>
+
+          <label for="diagnosis">Diagnosis</label>
+
           <input
+            id="diagnosis"
             type="text"
             [(ngModel)]="recordForm.diagnosis"
             placeholder="Enter diagnosis">
+
         </div>
 
         <div class="field">
-          <label>Prescription</label>
+
+          <label for="prescription">Prescription</label>
+
           <textarea
+            id="prescription"
             [(ngModel)]="recordForm.prescription"
-            placeholder="Enter prescription"></textarea>
+            placeholder="Enter prescription">
+          </textarea>
+
         </div>
 
         <div class="field">
-          <label>Notes</label>
+
+          <label for="notes">Notes</label>
+
           <textarea
+              id="notes"
             [(ngModel)]="recordForm.notes"
-            placeholder="Enter consultation notes"></textarea>
+            placeholder="Enter consultation notes">
+          </textarea>
+
         </div>
 
       </div>
 
       <div class="modal-actions">
-        <button type="button" class="cancel-modal-btn" (click)="closeRecordModal()">
+
+        <button
+          type="button"
+          class="cancel-modal-btn"
+          (click)="closeRecordModal()">
           Cancel
         </button>
 
         <button
-  type="button"
-  class="save-modal-btn"
-  (click)="saveHealthRecord()"
-  [disabled]="isSavingRecord">
-  {{ isSavingRecord ? 'Saving...' : 'Save Record' }}
-</button>
+          type="button"
+          class="save-modal-btn"
+          (click)="saveHealthRecord()"
+          [disabled]="isSavingRecord">
+
+          {{
+            isSavingRecord
+              ? 'Saving...'
+              : 'Save Record'
+          }}
+
+        </button>
+
       </div>
 
     </div>
 
   </div>
 
-  <!-- CANCEL REASON MODAL -->
-  <div class="modal-backdrop" *ngIf="showCancelModal && selectedCancelAppointment">
+  <!-- CANCEL APPOINTMENT MODAL -->
+
+  <div
+    class="modal-backdrop"
+    *ngIf="
+      showCancelModal &&
+      selectedCancelAppointment
+    ">
 
     <div class="modal-card">
 
       <div class="modal-header">
+
         <div>
+
           <h3>Cancel Appointment</h3>
+
           <p>
             {{ selectedCancelAppointment?.patient }} ·
             {{ selectedCancelAppointment?.date }} ·
             {{ selectedCancelAppointment?.time }}
           </p>
+
         </div>
 
-        <button type="button" class="close-btn" (click)="closeCancelModal()">×</button>
+        <button
+          type="button"
+          class="close-btn"
+          (click)="closeCancelModal()">
+          ×
+        </button>
+
       </div>
 
       <div class="modal-body">
 
         <div class="field">
-          <label>Cancellation Reason</label>
+
+          <label for="cancellation reason">Cancellation Reason</label>
+
           <textarea
+            id="cancellation reason"
             [(ngModel)]="cancelReason"
-            placeholder="Enter reason for cancelling this appointment"></textarea>
+            placeholder="Enter reason for cancelling this appointment">
+          </textarea>
+
         </div>
 
       </div>
 
       <div class="modal-actions">
-        <button type="button" class="cancel-modal-btn" (click)="closeCancelModal()">
+
+        <button
+          type="button"
+          class="cancel-modal-btn"
+          (click)="closeCancelModal()">
           Close
         </button>
 
-        <button type="button" class="danger-modal-btn" (click)="submitCancellation()">
+        <button
+          type="button"
+          class="danger-modal-btn"
+          (click)="submitCancellation()">
           Cancel Appointment
         </button>
+
       </div>
 
     </div>
 
   </div>
+
   <!-- VIEW HEALTH RECORD MODAL -->
-<div class="modal-backdrop" *ngIf="showViewRecordModal && selectedHealthRecord">
 
-  <div class="modal-card">
+  <div
+    class="modal-backdrop"
+    *ngIf="
+      showViewRecordModal &&
+      selectedHealthRecord
+    ">
 
-    <div class="modal-header">
-      <div>
-        <h3>Health Record Details</h3>
-        <p>
-          {{ selectedHealthRecord?.patient }} ·
-          {{ selectedHealthRecord?.date }} ·
-          {{ selectedHealthRecord?.time }}
-        </p>
+    <div class="modal-card">
+
+      <div class="modal-header">
+
+        <div>
+
+          <h3>Health Record Details</h3>
+
+          <p>
+            {{ selectedHealthRecord?.patient }} ·
+            {{ selectedHealthRecord?.date }} ·
+            {{ selectedHealthRecord?.time }}
+          </p>
+
+        </div>
+
+        <button
+          type="button"
+          class="close-btn"
+          (click)="closeViewRecordModal()">
+          ×
+        </button>
+
       </div>
 
-      <button
-        type="button"
-        class="close-btn"
-        (click)="closeViewRecordModal()">
-        ×
-      </button>
-    </div>
+      <div class="record-detail-box">
 
-    <div class="record-detail-box">
+        <div class="detail-row">
 
-      <div class="detail-row">
-        <label>Diagnosis</label>
-        <p>{{ selectedHealthRecord?.diagnosis }}</p>
+          <div class="detail-label">Diagnosis</div>
+
+          <p>
+            {{ selectedHealthRecord?.diagnosis }}
+          </p>
+
+        </div>
+
+        <div class="detail-row">
+
+          <div class="detail-label">Prescription</div>
+
+          <p>
+            {{ selectedHealthRecord?.prescription }}
+          </p>
+
+        </div>
+
+        <div class="detail-row">
+
+         <div class="detail-label">Notes</div>
+
+          <p>
+            {{ selectedHealthRecord?.notes }}
+          </p>
+
+        </div>
+
       </div>
 
-      <div class="detail-row">
-        <label>Prescription</label>
-        <p>{{ selectedHealthRecord?.prescription }}</p>
+      <div class="modal-actions">
+
+        <button
+          type="button"
+          class="cancel-modal-btn"
+          (click)="closeViewRecordModal()">
+          Close
+        </button>
+
       </div>
 
-      <div class="detail-row">
-        <label>Notes</label>
-        <p>{{ selectedHealthRecord?.notes }}</p>
-      </div>
-
-    </div>
-
-    <div class="modal-actions">
-      <button
-        type="button"
-        class="cancel-modal-btn"
-        (click)="closeViewRecordModal()">
-        Close
-      </button>
     </div>
 
   </div>
-
-</div>
 
 </div>

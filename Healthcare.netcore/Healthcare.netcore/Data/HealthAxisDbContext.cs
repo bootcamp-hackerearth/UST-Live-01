@@ -106,24 +106,47 @@ namespace HealthAxis.API.Data
                     PatientId = 1,
                     UserId = null,
                     FullName = "Hima",
-                    DateOfBirth = new DateTime(1998, 5, 12),
+
+                    DateOfBirth = new DateTime(1998,5,12,0,0,0,DateTimeKind.Unspecified),
+
                     Gender = Gender.Female,
                     PhoneNumber = "9876543210",
                     Email = "ananya@example.com",
                     InsuranceId = "INS1001",
-                    CreatedDate = new DateTime(2026, 1, 1)
+
+                    CreatedDate = new DateTime(2026,1,1,0,0,0,
+            DateTimeKind.Utc)
+
                 },
                 new Patient
                 {
                     PatientId = 2,
                     UserId = null,
                     FullName = "Rahul",
-                    DateOfBirth = new DateTime(1992, 9, 25),
+
+                    DateOfBirth = new DateTime(
+            1992,
+            9,
+            25,
+            0,
+            0,
+            0,
+            DateTimeKind.Unspecified),
+
                     Gender = Gender.Male,
                     PhoneNumber = "9876543211",
                     Email = "rahul@example.com",
                     InsuranceId = "INS1002",
-                    CreatedDate = new DateTime(2026, 1, 1)
+
+                    CreatedDate = new DateTime(
+            2026,
+            1,
+            1,
+            0,
+            0,
+            0,
+            DateTimeKind.Utc)
+
                 }
             );
         }

@@ -1,4 +1,11 @@
-import { Component, OnInit, inject, ChangeDetectorRef, NgZone } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  ChangeDetectorRef,
+  NgZone
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -17,10 +24,17 @@ export class Appointments implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly zone = inject(NgZone);
 
-  private readonly doctorsUrl = 'https://localhost:7130/api/doctors';
-  private readonly appointmentsUrl = 'https://localhost:7130/api/appointments';
-  private readonly patientsUrl = 'https://localhost:7130/api/patients';
-  private readonly healthRecordsUrl = 'https://localhost:7130/api/health-records';
+  private readonly doctorsUrl =
+    'https://localhost:7130/api/doctors';
+
+  private readonly appointmentsUrl =
+    'https://localhost:7130/api/appointments';
+
+  private readonly patientsUrl =
+    'https://localhost:7130/api/patients';
+
+  private readonly healthRecordsUrl =
+    'https://localhost:7130/api/health-records';
 
   searchText = '';
   selectedStatus = '';
@@ -29,6 +43,9 @@ export class Appointments implements OnInit {
 
   appointments: any[] = [];
   patients: any[] = [];
+
+  currentPage = 1;
+  pageSize = 5;
 
   showRecordModal = false;
   selectedAppointment: any = null;
@@ -47,7 +64,7 @@ export class Appointments implements OnInit {
     notes: ''
   };
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (typeof window !== 'undefined') {
       this.loadAppointments();
     }
@@ -61,169 +78,342 @@ export class Appointments implements OnInit {
     });
   }
 
-  loadAppointments() {
+  loadAppointments(): void {
     const headers = this.getHeaders();
 
     forkJoin({
-      doctor: this.http.get<any>(`${this.doctorsUrl}/me`, { headers }),
-      appointments: this.http.get<any[]>(this.appointmentsUrl, { headers }),
+      doctor: this.http.get<any>(
+        `${this.doctorsUrl}/me`,
+        { headers }
+      ),
+
+      appointments: this.http.get<any[]>(
+        this.appointmentsUrl,
+        { headers }
+      ),
+
       patients: this.http.get<any>(
         `${this.patientsUrl}/doctor?pageNumber=1&pageSize=100`,
         { headers }
       )
     }).subscribe({
       next: (result: any) => {
-        console.log('Doctor me ✅:', result.doctor);
-        console.log('Appointments API ✅:', result.appointments);
-        console.log('Doctor patients API ✅:', result.patients);
+        console.log('Doctor profile:', result.doctor);
+        console.log('Appointments API:', result.appointments);
+        console.log('Doctor patients API:', result.patients);
 
         const doctorId = Number(result.doctor.doctorId);
-        localStorage.setItem('doctorId', String(doctorId));
 
-        this.patients = result.patients.items || result.patients.data || [];
+        localStorage.setItem(
+          'doctorId',
+          String(doctorId)
+        );
 
-        const mappedAppointments = (result.appointments || [])
-          .filter((a: any) => Number(a.doctorId) === doctorId)
-          .map((a: any) => {
-            const patient = this.patients.find(
-              (p: any) => Number(p.patientId) === Number(a.patientId)
-            );
+        this.patients =
+          result.patients?.items ||
+          result.patients?.data ||
+          [];
 
-            return {
-              id: a.appointmentId,
-              appointmentId: a.appointmentId,
-              patientId: a.patientId,
-              doctorId: a.doctorId,
-              rawDate: this.toInputDate(a.scheduledDate),
-              date: this.toDisplayDate(a.scheduledDate),
-              time: a.timeSlot,
-              patient: patient ? patient.fullName : `Patient #${a.patientId}`,
-              status: this.getStatusName(a.status),
-              cancellationReason: a.cancellationReason || '',
-              hasRecord: false,
-              healthRecord: null
-            };
-          });
+        const mappedAppointments =
+          (result.appointments || [])
+            .filter(
+              (appointment: any) =>
+                Number(appointment.doctorId) === doctorId
+            )
+            .map((appointment: any) => {
+              const patient = this.patients.find(
+                (currentPatient: any) =>
+                  Number(currentPatient.patientId) ===
+                  Number(appointment.patientId)
+              );
 
-        this.loadHealthRecordFlags(mappedAppointments, headers);
+              return {
+                id: appointment.appointmentId,
+                appointmentId: appointment.appointmentId,
+                patientId: appointment.patientId,
+                doctorId: appointment.doctorId,
+
+                rawDate: this.toInputDate(
+                  appointment.scheduledDate
+                ),
+
+                date: this.toDisplayDate(
+                  appointment.scheduledDate
+                ),
+
+                time: appointment.timeSlot,
+
+                patient: patient
+                  ? patient.fullName
+                  : `Patient #${appointment.patientId}`,
+
+                status: this.getStatusName(
+                  appointment.status
+                ),
+
+                cancellationReason:
+                  appointment.cancellationReason || '',
+
+                hasRecord: false,
+                healthRecord: null
+              };
+            });
+
+        this.loadHealthRecordFlags(
+          mappedAppointments,
+          headers
+        );
       },
-      error: (err: any) => {
-        console.error('Doctor appointments load failed ❌:', err);
+
+      error: (error: any) => {
+        console.error(
+          'Doctor appointments load failed:',
+          error
+        );
+
         alert('Failed to load doctor appointments.');
       }
     });
   }
 
-  private loadHealthRecordFlags(mappedAppointments: any[], headers: HttpHeaders) {
+  private loadHealthRecordFlags(
+    mappedAppointments: any[],
+    headers: HttpHeaders
+  ): void {
+
     const patientIds: number[] = Array.from(
       new Set<number>(
-        mappedAppointments.map((a: any) => Number(a.patientId))
+        mappedAppointments.map(
+          (appointment: any) =>
+            Number(appointment.patientId)
+        )
       )
     );
 
     if (patientIds.length === 0) {
       this.appointments = mappedAppointments;
+      this.adjustCurrentPage();
       this.cdr.detectChanges();
       return;
     }
 
     forkJoin(
-      patientIds.map((patientId: number) =>
-        this.http.get<any[]>(
-          `${this.healthRecordsUrl}/patient/${patientId}`,
-          { headers }
-        )
+      patientIds.map(
+        (patientId: number) =>
+          this.http.get<any[]>(
+            `${this.healthRecordsUrl}/patient/${patientId}`,
+            { headers }
+          )
       )
     ).subscribe({
       next: (recordGroups: any[]) => {
         const allRecords = recordGroups.flat();
 
-        this.appointments = mappedAppointments.map((appointment: any) => {
-          const record = allRecords.find(
-            (r: any) => Number(r.appointmentId) === Number(appointment.appointmentId)
-          );
+        this.appointments = mappedAppointments.map(
+          (appointment: any) => {
+            const record = allRecords.find(
+              (currentRecord: any) =>
+                Number(currentRecord.appointmentId) ===
+                Number(appointment.appointmentId)
+            );
 
-          return {
-            ...appointment,
-            hasRecord: !!record,
-            healthRecord: record || null
-          };
-        });
+            return {
+              ...appointment,
+              hasRecord: Boolean(record),
+              healthRecord: record || null
+            };
+          }
+        );
 
-        console.log('Mapped doctor appointments with records ✅:', this.appointments);
+        this.adjustCurrentPage();
+
+        console.log(
+          'Mapped doctor appointments with records:',
+          this.appointments
+        );
+
         this.cdr.detectChanges();
       },
-      error: (err: any) => {
-        console.error('Health record flag load failed ❌:', err);
+
+      error: (error: any) => {
+        console.error(
+          'Health record flag load failed:',
+          error
+        );
 
         this.appointments = mappedAppointments;
+        this.adjustCurrentPage();
         this.cdr.detectChanges();
       }
     });
   }
 
-  clearFilters() {
+  clearFilters(): void {
     this.searchText = '';
     this.selectedStatus = '';
     this.selectedDateFilter = 'All';
     this.customDate = '';
+    this.currentPage = 1;
   }
 
-  filteredAppointments() {
+  onFiltersChanged(): void {
+    this.currentPage = 1;
+  }
+
+  filteredAppointments(): any[] {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    return this.appointments.filter((a: any) => {
-      const appointmentDate = new Date(a.rawDate);
-      appointmentDate.setHours(0, 0, 0, 0);
+    return this.appointments.filter(
+      (appointment: any) => {
 
-      const matchesSearch =
-        !this.searchText ||
-        a.patient.toLowerCase().includes(this.searchText.toLowerCase());
+        const appointmentDate =
+          new Date(appointment.rawDate);
 
-      const matchesStatus =
-        this.selectedStatus === '' ||
-        a.status === this.selectedStatus;
+        appointmentDate.setHours(0, 0, 0, 0);
 
-      let matchesDate = true;
+        const normalizedSearchText =
+          this.searchText.trim().toLowerCase();
 
-      if (this.selectedDateFilter === 'Upcoming') {
-        matchesDate = appointmentDate >= today;
+        const patientName =
+          String(appointment.patient || '')
+            .toLowerCase();
+
+        const matchesSearch =
+          normalizedSearchText === '' ||
+          patientName.includes(normalizedSearchText);
+
+        const matchesStatus =
+          this.selectedStatus === '' ||
+          appointment.status === this.selectedStatus;
+
+        let matchesDate = true;
+
+        if (this.selectedDateFilter === 'Upcoming') {
+          matchesDate = appointmentDate >= today;
+        }
+
+        if (this.selectedDateFilter === 'Past') {
+          matchesDate = appointmentDate < today;
+        }
+
+        if (this.selectedDateFilter === 'Custom') {
+          matchesDate =
+            this.customDate === '' ||
+            appointment.rawDate === this.customDate;
+        }
+
+        return (
+          matchesSearch &&
+          matchesStatus &&
+          matchesDate
+        );
       }
-
-      if (this.selectedDateFilter === 'Past') {
-        matchesDate = appointmentDate < today;
-      }
-
-      if (this.selectedDateFilter === 'Custom') {
-        matchesDate = !this.customDate || a.rawDate === this.customDate;
-      }
-
-      return matchesSearch && matchesStatus && matchesDate;
-    });
+    );
   }
 
-  confirmAppointment(appointment: any) {
-    this.updateAppointmentStatus(appointment, 1, '');
+  pagedAppointments(): any[] {
+    const filteredAppointments =
+      this.filteredAppointments();
+
+    const startIndex =
+      (this.currentPage - 1) * this.pageSize;
+
+    const endIndex =
+      startIndex + this.pageSize;
+
+    return filteredAppointments.slice(
+      startIndex,
+      endIndex
+    );
   }
 
-  completeAppointment(appointment: any) {
-    this.updateAppointmentStatus(appointment, 2, '');
+  get totalPages(): number {
+    const filteredCount =
+      this.filteredAppointments().length;
+
+    if (filteredCount === 0) {
+      return 0;
+    }
+
+    return Math.ceil(
+      filteredCount / this.pageSize
+    );
   }
 
-  cancelAppointment(appointment: any) {
+  get pageNumbers(): number[] {
+    return Array.from(
+      { length: this.totalPages },
+      (_, index) => index + 1
+    );
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) {
+      return;
+    }
+
+    this.currentPage = page;
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  private adjustCurrentPage(): void {
+    const availablePages = this.totalPages;
+
+    if (availablePages === 0) {
+      this.currentPage = 1;
+      return;
+    }
+
+    if (this.currentPage > availablePages) {
+      this.currentPage = availablePages;
+    }
+
+    if (this.currentPage < 1) {
+      this.currentPage = 1;
+    }
+  }
+
+  confirmAppointment(appointment: any): void {
+    this.updateAppointmentStatus(
+      appointment,
+      1,
+      ''
+    );
+  }
+
+  completeAppointment(appointment: any): void {
+    this.updateAppointmentStatus(
+      appointment,
+      2,
+      ''
+    );
+  }
+
+  cancelAppointment(appointment: any): void {
     this.selectedCancelAppointment = appointment;
     this.cancelReason = '';
     this.showCancelModal = true;
   }
 
-  closeCancelModal() {
+  closeCancelModal(): void {
     this.showCancelModal = false;
     this.selectedCancelAppointment = null;
     this.cancelReason = '';
   }
 
-  submitCancellation() {
+  submitCancellation(): void {
     if (!this.cancelReason.trim()) {
       alert('Cancellation reason is required.');
       return;
@@ -242,7 +432,8 @@ export class Appointments implements OnInit {
     appointment: any,
     statusValue: number,
     cancellationReason: string
-  ) {
+  ): void {
+
     if (!appointment) {
       alert('Please select an appointment.');
       return;
@@ -252,35 +443,58 @@ export class Appointments implements OnInit {
 
     const payload = {
       status: statusValue,
-      cancellationReason: cancellationReason
+      cancellationReason
     };
 
-    console.log('Status update payload ✅:', {
-      appointmentId: appointment.appointmentId,
-      payload
-    });
+    console.log(
+      'Status update payload:',
+      {
+        appointmentId:
+          appointment.appointmentId,
+        payload
+      }
+    );
 
     this.http.put<any>(
       `${this.appointmentsUrl}/${appointment.appointmentId}/status`,
       payload,
       { headers }
     ).subscribe({
-      next: (res: any) => {
-        console.log('Appointment status updated ✅:', res);
+      next: (response: any) => {
+        console.log(
+          'Appointment status updated:',
+          response
+        );
 
-        alert('Appointment status updated successfully ✅');
+        alert(
+          'Appointment status updated successfully.'
+        );
+
         this.loadAppointments();
       },
-      error: (err: any) => {
-        console.error('Status update failed ❌:', err);
-        alert(this.getErrorMessage(err, 'Failed to update appointment status.'));
+
+      error: (error: any) => {
+        console.error(
+          'Status update failed:',
+          error
+        );
+
+        alert(
+          this.getErrorMessage(
+            error,
+            'Failed to update appointment status.'
+          )
+        );
       }
     });
   }
 
-  viewRecord(appointment: any) {
+  viewRecord(appointment: any): void {
     if (!appointment.healthRecord) {
-      alert('Health record details not available.');
+      alert(
+        'Health record details are not available.'
+      );
+
       return;
     }
 
@@ -288,33 +502,44 @@ export class Appointments implements OnInit {
       patient: appointment.patient,
       date: appointment.date,
       time: appointment.time,
-      diagnosis: appointment.healthRecord.diagnosis,
-      prescription: appointment.healthRecord.prescription,
-      notes: appointment.healthRecord.notes
+      diagnosis:
+        appointment.healthRecord.diagnosis,
+      prescription:
+        appointment.healthRecord.prescription,
+      notes:
+        appointment.healthRecord.notes
     };
 
     this.showViewRecordModal = true;
     this.cdr.detectChanges();
   }
 
-  closeViewRecordModal() {
+  closeViewRecordModal(): void {
     this.showViewRecordModal = false;
     this.selectedHealthRecord = null;
     this.cdr.detectChanges();
   }
 
-  viewHistory(appointment: any) {
-    alert(`Patient history for ${appointment.patient} will be connected later.`);
+  viewHistory(appointment: any): void {
+    alert(
+      `Patient history for ${appointment.patient} will be connected later.`
+    );
   }
 
-  openAddRecord(appointment: any) {
+  openAddRecord(appointment: any): void {
     if (appointment.status !== 'Completed') {
-      alert('Health record can be added only after appointment is completed.');
+      alert(
+        'Health record can be added only after the appointment is completed.'
+      );
+
       return;
     }
 
     if (appointment.hasRecord) {
-      alert('Health record already exists for this appointment.');
+      alert(
+        'Health record already exists for this appointment.'
+      );
+
       return;
     }
 
@@ -330,7 +555,7 @@ export class Appointments implements OnInit {
     this.cdr.detectChanges();
   }
 
-  closeRecordModal() {
+  closeRecordModal(): void {
     this.showRecordModal = false;
     this.selectedAppointment = null;
     this.isSavingRecord = false;
@@ -344,7 +569,7 @@ export class Appointments implements OnInit {
     this.cdr.detectChanges();
   }
 
-  saveHealthRecord() {
+  saveHealthRecord(): void {
     if (this.isSavingRecord) {
       return;
     }
@@ -354,8 +579,14 @@ export class Appointments implements OnInit {
       return;
     }
 
-    if (this.selectedAppointment.status !== 'Completed') {
-      alert('Health records can only be created for completed appointments.');
+    if (
+      this.selectedAppointment.status !==
+      'Completed'
+    ) {
+      alert(
+        'Health records can only be created for completed appointments.'
+      );
+
       return;
     }
 
@@ -369,18 +600,29 @@ export class Appointments implements OnInit {
       return;
     }
 
-    const appointmentToUpdate = this.selectedAppointment;
+    const appointmentToUpdate =
+      this.selectedAppointment;
 
     const headers = this.getHeaders();
 
     const payload = {
-      appointmentId: appointmentToUpdate.appointmentId,
-      diagnosis: this.recordForm.diagnosis,
-      prescription: this.recordForm.prescription,
-      notes: this.recordForm.notes
+      appointmentId:
+        appointmentToUpdate.appointmentId,
+
+      diagnosis:
+        this.recordForm.diagnosis.trim(),
+
+      prescription:
+        this.recordForm.prescription.trim(),
+
+      notes:
+        this.recordForm.notes.trim()
     };
 
-    console.log('Create health record payload ✅:', payload);
+    console.log(
+      'Create health record payload:',
+      payload
+    );
 
     this.isSavingRecord = true;
     this.cdr.detectChanges();
@@ -390,17 +632,27 @@ export class Appointments implements OnInit {
       payload,
       { headers }
     ).subscribe({
-      next: (res: any) => {
-        console.log('Health record created ✅:', res);
+      next: (response: any) => {
+        console.log(
+          'Health record created:',
+          response
+        );
 
         this.zone.run(() => {
-          const appointment = this.appointments.find(
-            (a: any) => Number(a.appointmentId) === Number(appointmentToUpdate.appointmentId)
-          );
+          const appointment =
+            this.appointments.find(
+              (currentAppointment: any) =>
+                Number(
+                  currentAppointment.appointmentId
+                ) ===
+                Number(
+                  appointmentToUpdate.appointmentId
+                )
+            );
 
           if (appointment) {
             appointment.hasRecord = true;
-            appointment.healthRecord = res;
+            appointment.healthRecord = response;
           }
 
           this.showRecordModal = false;
@@ -417,37 +669,56 @@ export class Appointments implements OnInit {
         });
 
         setTimeout(() => {
-          alert('Health record added successfully ✅');
+          alert(
+            'Health record added successfully.'
+          );
         }, 0);
       },
-      error: (err: any) => {
-        console.error('Health record create failed ❌:', err);
+
+      error: (error: any) => {
+        console.error(
+          'Health record creation failed:',
+          error
+        );
 
         this.zone.run(() => {
           this.isSavingRecord = false;
           this.cdr.detectChanges();
         });
 
-        alert(this.getErrorMessage(err, 'Failed to create health record.'));
+        alert(
+          this.getErrorMessage(
+            error,
+            'Failed to create health record.'
+          )
+        );
       }
     });
   }
 
-  private getErrorMessage(err: any, fallbackMessage: string): string {
-    if (err?.error?.message) {
-      return err.error.message;
+  private getErrorMessage(
+    error: any,
+    fallbackMessage: string
+  ): string {
+
+    if (error?.error?.message) {
+      return error.error.message;
     }
 
-    if (err?.error?.title) {
-      return err.error.title;
+    if (error?.error?.title) {
+      return error.error.title;
     }
 
-    if (typeof err?.error === 'string') {
-      return err.error;
+    if (typeof error?.error === 'string') {
+      return error.error;
     }
 
-    if (err?.error?.errors) {
-      return Object.values(err.error.errors).flat().join('\n');
+    if (error?.error?.errors) {
+      return Object.values(
+        error.error.errors
+      )
+        .flat()
+        .join('\n');
     }
 
     return fallbackMessage;
@@ -459,15 +730,27 @@ export class Appointments implements OnInit {
     }
 
     switch (Number(value)) {
-      case 0: return 'Pending';
-      case 1: return 'Confirmed';
-      case 2: return 'Completed';
-      case 3: return 'Cancelled';
-      default: return 'Pending';
+      case 0:
+        return 'Pending';
+
+      case 1:
+        return 'Confirmed';
+
+      case 2:
+        return 'Completed';
+
+      case 3:
+        return 'Cancelled';
+
+      default:
+        return 'Pending';
     }
   }
 
-  private toInputDate(dateValue: string): string {
+  private toInputDate(
+    dateValue: string
+  ): string {
+
     if (!dateValue) {
       return '';
     }
@@ -475,17 +758,23 @@ export class Appointments implements OnInit {
     return dateValue.split('T')[0];
   }
 
-  private toDisplayDate(dateValue: string): string {
+  private toDisplayDate(
+    dateValue: string
+  ): string {
+
     if (!dateValue) {
       return '';
     }
 
     const date = new Date(dateValue);
 
-    return date.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
+    return date.toLocaleDateString(
+      'en-IN',
+      {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }
+    );
   }
 }

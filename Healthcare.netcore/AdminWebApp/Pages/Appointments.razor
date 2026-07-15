@@ -482,7 +482,7 @@
         return patient?.FullName ?? $"Patient #{patientId}";
     }
 
-    private class AppointmentReportRow
+    private sealed class AppointmentReportRow
     {
         public DateTime Date { get; set; }
 

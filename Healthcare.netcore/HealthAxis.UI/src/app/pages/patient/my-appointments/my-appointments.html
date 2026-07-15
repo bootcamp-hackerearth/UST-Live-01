@@ -17,36 +17,62 @@
     <div class="filter-body" *ngIf="showFilters">
 
       <div class="field">
-        <label>Search</label>
+
+        <label for="searchText">
+          Search
+        </label>
+
         <input
+          id="searchText"
           type="text"
           [(ngModel)]="searchText"
           (ngModelChange)="onFilterChanged()"
           placeholder="Search doctor or specialisation">
+
       </div>
 
       <div class="field">
-        <label>Status</label>
+
+        <label for="statusFilter">
+          Status
+        </label>
+
         <select
+          id="statusFilter"
           [(ngModel)]="selectedStatus"
           (ngModelChange)="onFilterChanged()">
+
           <option value="">All</option>
           <option value="Pending">Pending</option>
           <option value="Confirmed">Confirmed</option>
           <option value="Completed">Completed</option>
           <option value="Cancelled">Cancelled</option>
+
         </select>
+
       </div>
 
       <div class="field">
-        <label>Date</label>
+
+        <label for="appointmentDate">
+          Date
+        </label>
+
         <input
+          id="appointmentDate"
           type="date"
           [(ngModel)]="selectedDate"
           (ngModelChange)="onFilterChanged()">
+
       </div>
 
-      <button class="clear-btn" (click)="clearFilters()">Clear</button>
+      <button
+        class="clear-btn"
+        (click)="clearFilters()">
+
+        Clear
+
+      </button>
 
     </div>
 
@@ -56,42 +82,65 @@
   <div class="appointment-card">
 
     <div class="card-header">
-      <h3>Appointment list</h3>
+
+      <h3>Appointment List</h3>
 
       <span>
-        Showing {{ pagedAppointments().length }} of {{ filteredAppointments().length }} appointment(s)
+        Showing {{ pagedAppointments().length }}
+        of
+        {{ filteredAppointments().length }}
+        appointment(s)
       </span>
+
     </div>
 
-    <div class="empty-state" *ngIf="filteredAppointments().length === 0">
+    <div
+      class="empty-state"
+      *ngIf="filteredAppointments().length === 0">
+
       No appointments found for selected filters.
+
     </div>
 
-    <div class="table" *ngIf="filteredAppointments().length > 0">
+    <div
+      class="table"
+      *ngIf="filteredAppointments().length > 0">
 
       <div class="table-head">
+
         <span>Date</span>
         <span>Time</span>
         <span>Doctor</span>
         <span>Specialisation</span>
         <span>Status</span>
         <span>Action</span>
+
       </div>
 
-      <div class="table-row" *ngFor="let a of pagedAppointments()">
+      <div
+        class="table-row"
+        *ngFor="let a of pagedAppointments()">
 
         <span>{{ a.displayDate }}</span>
 
         <span>{{ a.time }}</span>
 
-        <span class="doctor-name">{{ a.doctorName }}</span>
+        <span class="doctor-name">
+          {{ a.doctorName }}
+        </span>
 
         <span>{{ a.specialisation }}</span>
 
         <span>
-          <span class="status" [ngClass]="a.status.toLowerCase()">
+
+          <span
+            class="status"
+            [ngClass]="a.status.toLowerCase()">
+
             {{ a.status }}
+
           </span>
+
         </span>
 
         <span class="actions">
@@ -101,7 +150,9 @@
             *ngIf="a.status === 'Completed'"
             class="record-btn"
             (click)="viewRecord(a.appointmentId)">
+
             View record
+
           </button>
 
           <button
@@ -109,13 +160,20 @@
             *ngIf="a.status === 'Cancelled'"
             class="reason-btn"
             (click)="viewReason(a.appointmentId)">
+
             View reason
+
           </button>
 
           <span
-            *ngIf="a.status === 'Pending' || a.status === 'Confirmed'"
+            *ngIf="
+              a.status === 'Pending' ||
+              a.status === 'Confirmed'
+            "
             class="muted-action">
+
             Record not available
+
           </span>
 
         </span>
@@ -125,13 +183,17 @@
     </div>
 
     <!-- PAGINATION -->
-    <div class="pagination" *ngIf="totalPages > 1">
+    <div
+      class="pagination"
+      *ngIf="totalPages > 1">
 
       <button
         class="page-btn"
         (click)="previousPage()"
         [disabled]="currentPage === 1">
+
         Previous
+
       </button>
 
       <button
@@ -139,14 +201,18 @@
         *ngFor="let page of pageNumbers"
         [class.active]="page === currentPage"
         (click)="goToPage(page)">
+
         {{ page }}
+
       </button>
 
       <button
         class="page-btn"
         (click)="nextPage()"
         [disabled]="currentPage === totalPages">
+
         Next
+
       </button>
 
     </div>
@@ -154,54 +220,88 @@
   </div>
 
   <!-- HEALTH RECORD DETAILS MODAL -->
-  <div class="modal-backdrop" *ngIf="showRecordModal && selectedHealthRecord">
+  <div
+    class="modal-backdrop"
+    *ngIf="showRecordModal && selectedHealthRecord">
 
     <div class="modal-card">
 
       <div class="modal-header">
+
         <div>
+
           <h3>Health Record Details</h3>
+
           <p>
             {{ selectedHealthRecord?.doctorName }} ·
             {{ selectedHealthRecord?.date }} ·
             {{ selectedHealthRecord?.time }}
           </p>
+
         </div>
 
         <button
           type="button"
           class="close-btn"
           (click)="closeRecordModal()">
+
           ×
+
         </button>
+
       </div>
 
       <div class="record-detail-box">
 
         <div class="detail-row">
-          <label>Diagnosis</label>
-          <p>{{ selectedHealthRecord?.diagnosis }}</p>
+
+          <div class="detail-label">
+            Diagnosis
+          </div>
+
+          <p>
+            {{ selectedHealthRecord?.diagnosis }}
+          </p>
+
         </div>
 
         <div class="detail-row">
-          <label>Prescription</label>
-          <p>{{ selectedHealthRecord?.prescription }}</p>
+
+          <div class="detail-label">
+            Prescription
+          </div>
+
+          <p>
+            {{ selectedHealthRecord?.prescription }}
+          </p>
+
         </div>
 
         <div class="detail-row">
-          <label>Notes</label>
-          <p>{{ selectedHealthRecord?.notes }}</p>
+
+          <div class="detail-label">
+            Notes
+          </div>
+
+          <p>
+            {{ selectedHealthRecord?.notes }}
+          </p>
+
         </div>
 
       </div>
 
       <div class="modal-actions">
+
         <button
           type="button"
           class="close-detail-btn"
           (click)="closeRecordModal()">
+
           Close
+
         </button>
+
       </div>
 
     </div>

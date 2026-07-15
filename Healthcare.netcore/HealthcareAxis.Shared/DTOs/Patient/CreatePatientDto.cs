@@ -6,7 +6,16 @@ namespace HealthAxis.Shared.DTOs.Patient
 {
     public class CreatePatientDto : IValidatableObject
     {
-        private static readonly DateTime MinimumDateOfBirth = new(1900, 1, 1);
+        private static readonly DateTime MinimumDateOfBirth = new
+DateTime(
+            1900,
+            1,
+            1,
+            0,
+            0,
+            0,
+            DateTimeKind.Unspecified);
+
 
         [Required(ErrorMessage = ValidationMessages.FullNameRequired)]
         [StringLength(ValidationLimits.FullNameLength)]

@@ -34,14 +34,14 @@
         Nav.NavigateTo("/dashboard", true);
     }
 
-    private string GetQueryValue(string query, string key)
+    private static string? GetQueryValue(string query, string key)
     {
         if (string.IsNullOrWhiteSpace(query))
         {
             return string.Empty;
         }
 
-        if (query.StartsWith("?"))
+        if (query.StartsWith('?'))
         {
             query = query.Substring(1);
         }

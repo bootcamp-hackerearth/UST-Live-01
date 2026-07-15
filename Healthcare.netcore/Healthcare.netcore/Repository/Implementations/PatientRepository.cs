@@ -7,11 +7,11 @@ namespace HealthAxis.API.Repositories.Implementations
 {
     public class PatientRepository : Repository<Patient>, IPatientRepository
     {
-        private readonly HealthAxisDbContext _context;
+       
 
         public PatientRepository(HealthAxisDbContext context) : base(context)
         {
-            _context = context;
+           
         }
 
         // ✅ Get by Email

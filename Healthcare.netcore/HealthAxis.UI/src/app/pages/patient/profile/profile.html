@@ -3,13 +3,19 @@
   <p class="portal-text">PATIENT PORTAL</p>
   <h1>Profile</h1>
 
-  <div class="success-banner" *ngIf="successMessage">
+  <div
+    class="success-banner"
+    *ngIf="successMessage">
     {{ successMessage }}
   </div>
 
-  <div class="error-banner" *ngIf="errorMessage">
+  <div
+    class="error-banner"
+    *ngIf="errorMessage">
     {{ errorMessage }}
   </div>
+
+  <!-- PROFILE HEADER -->
 
   <div class="profile-hero">
 
@@ -18,13 +24,21 @@
     </div>
 
     <div class="hero-info">
+
       <h2>{{ patient.fullName }}</h2>
+
       <p>{{ patient.email }}</p>
-      <span class="status-badge">{{ patient.status }}</span>
+
+      <span class="status-badge">
+        {{ patient.status }}
+      </span>
+
     </div>
 
     <div class="hero-actions">
+
       <button
+        type="button"
         class="edit-btn"
         *ngIf="!isEditMode && !isPasswordMode"
         (click)="enableEdit()">
@@ -32,193 +46,338 @@
       </button>
 
       <button
+        type="button"
         class="password-btn"
         *ngIf="!isEditMode && !isPasswordMode"
         (click)="enablePasswordChange()">
         Change Password
       </button>
+
     </div>
 
   </div>
 
+  <!-- PERSONAL INFORMATION -->
+
   <div class="details-card">
 
     <div class="card-header">
+
       <h3>Personal Information</h3>
-      <p>Basic patient profile and contact details.</p>
+
+      <p>
+        Basic patient profile and contact details.
+      </p>
+
     </div>
 
     <div class="details-grid">
 
+      <!-- FULL NAME -->
+
       <div class="detail-item">
-        <label>Full Name</label>
+
+        <label for="fullName">
+          Full Name
+        </label>
 
         <input
           *ngIf="isEditMode"
+          id="fullName"
           type="text"
           [(ngModel)]="patient.fullName"
           [class.invalid-field]="fullNameError"
           placeholder="Enter full name" />
 
-        <p *ngIf="!isEditMode">{{ patient.fullName }}</p>
+        <p *ngIf="!isEditMode">
+          {{ patient.fullName }}
+        </p>
 
-        <small class="error-text" *ngIf="fullNameError">
+        <small
+          class="error-text"
+          *ngIf="fullNameError">
           {{ fullNameError }}
         </small>
+
       </div>
 
+      <!-- EMAIL ADDRESS -->
+
       <div class="detail-item">
-        <label>Email Address</label>
+
+        <label for="emailAddress">
+          Email Address
+        </label>
 
         <input
           *ngIf="isEditMode"
+          id="emailAddress"
           type="email"
           [(ngModel)]="patient.email"
           [class.invalid-field]="emailError"
           placeholder="example@gmail.com" />
 
-        <p *ngIf="!isEditMode">{{ patient.email }}</p>
+        <p *ngIf="!isEditMode">
+          {{ patient.email }}
+        </p>
 
-        <small class="error-text" *ngIf="emailError">
+        <small
+          class="error-text"
+          *ngIf="emailError">
           {{ emailError }}
         </small>
+
       </div>
 
+      <!-- PHONE NUMBER -->
+
       <div class="detail-item">
-        <label>Phone Number</label>
+
+        <label for="phoneNumber">
+          Phone Number
+        </label>
 
         <input
           *ngIf="isEditMode"
+          id="phoneNumber"
           type="text"
           maxlength="10"
           [(ngModel)]="patient.phoneNumber"
           [class.invalid-field]="phoneError"
           placeholder="10 digit phone number" />
 
-        <p *ngIf="!isEditMode">{{ patient.phoneNumber }}</p>
+        <p *ngIf="!isEditMode">
+          {{ patient.phoneNumber }}
+        </p>
 
-        <small class="error-text" *ngIf="phoneError">
+        <small
+          class="error-text"
+          *ngIf="phoneError">
           {{ phoneError }}
         </small>
+
       </div>
 
+      <!-- DATE OF BIRTH -->
+
       <div class="detail-item">
-        <label>Date of Birth</label>
+
+        <label for="dateOfBirth">
+          Date of Birth
+        </label>
 
         <input
           *ngIf="isEditMode"
+          id="dateOfBirth"
           type="date"
           [min]="minDateOfBirth"
           [max]="todayDate"
           [(ngModel)]="patient.dateOfBirth"
           [class.invalid-field]="dobError" />
 
-        <p *ngIf="!isEditMode">{{ patient.dateOfBirth }}</p>
+        <p *ngIf="!isEditMode">
+          {{ patient.dateOfBirth }}
+        </p>
 
-        <small class="error-text" *ngIf="dobError">
+        <small
+          class="error-text"
+          *ngIf="dobError">
           {{ dobError }}
         </small>
+
       </div>
 
+      <!-- GENDER -->
+
       <div class="detail-item">
-        <label>Gender</label>
+
+        <label for="gender">
+          Gender
+        </label>
 
         <select
           *ngIf="isEditMode"
+          id="gender"
           [(ngModel)]="patient.gender"
           [class.invalid-field]="genderError">
-          <option [ngValue]="0">Male</option>
-          <option [ngValue]="1">Female</option>
-          <option [ngValue]="2">Other</option>
+
+          <option [ngValue]="0">
+            Male
+          </option>
+
+          <option [ngValue]="1">
+            Female
+          </option>
+
+          <option [ngValue]="2">
+            Other
+          </option>
+
         </select>
 
-        <p *ngIf="!isEditMode">{{ getGenderName(patient.gender) }}</p>
+        <p *ngIf="!isEditMode">
+          {{ getGenderName(patient.gender) }}
+        </p>
 
-        <small class="error-text" *ngIf="genderError">
+        <small
+          class="error-text"
+          *ngIf="genderError">
           {{ genderError }}
         </small>
+
       </div>
 
     </div>
 
-    <div class="action-buttons" *ngIf="isEditMode">
-      <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+    <!-- EDIT PROFILE ACTIONS -->
 
-      <button class="save-btn" (click)="saveProfile()" [disabled]="isSaving">
+    <div
+      class="action-buttons"
+      *ngIf="isEditMode">
+
+      <button
+        type="button"
+        class="cancel-btn"
+        (click)="cancelEdit()">
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="save-btn"
+        (click)="saveProfile()"
+        [disabled]="isSaving">
         {{ isSaving ? 'Saving...' : 'Save Changes' }}
       </button>
+
     </div>
 
   </div>
 
-  <div class="details-card" *ngIf="isPasswordMode">
+  <!-- CHANGE PASSWORD -->
+
+  <div
+    class="details-card"
+    *ngIf="isPasswordMode">
 
     <div class="card-header">
+
       <h3>Change Password</h3>
-      <p>Update your account password securely.</p>
+
+      <p>
+        Update your account password securely.
+      </p>
+
     </div>
 
     <div class="details-grid">
 
+      <!-- OLD PASSWORD -->
+
       <div class="detail-item">
-        <label>Old Password</label>
+
+        <label for="oldPassword">
+          Old Password
+        </label>
 
         <input
+          id="oldPassword"
           type="password"
           [(ngModel)]="passwordModel.oldPassword"
           [class.invalid-field]="oldPasswordError"
           placeholder="Enter old password" />
 
-        <small class="error-text" *ngIf="oldPasswordError">
+        <small
+          class="error-text"
+          *ngIf="oldPasswordError">
           {{ oldPasswordError }}
         </small>
+
       </div>
 
+      <!-- NEW PASSWORD -->
+
       <div class="detail-item">
-        <label>New Password</label>
+
+        <label for="newPassword">
+          New Password
+        </label>
 
         <input
+          id="newPassword"
           type="password"
           [(ngModel)]="passwordModel.newPassword"
           [class.invalid-field]="newPasswordError"
           placeholder="Enter new password" />
 
-        <small class="error-text" *ngIf="newPasswordError">
+        <small
+          class="error-text"
+          *ngIf="newPasswordError">
           {{ newPasswordError }}
         </small>
+
       </div>
 
+      <!-- CONFIRM PASSWORD -->
+
       <div class="detail-item">
-        <label>Confirm Password</label>
+
+        <label for="confirmPassword">
+          Confirm Password
+        </label>
 
         <input
+          id="confirmPassword"
           type="password"
           [(ngModel)]="passwordModel.confirmPassword"
           [class.invalid-field]="confirmPasswordError"
           placeholder="Confirm new password" />
 
-        <small class="error-text" *ngIf="confirmPasswordError">
+        <small
+          class="error-text"
+          *ngIf="confirmPasswordError">
           {{ confirmPasswordError }}
         </small>
+
       </div>
 
     </div>
 
-    <div class="action-buttons">
-      <button class="cancel-btn" (click)="cancelPasswordChange()">Cancel</button>
+    <!-- PASSWORD ACTIONS -->
 
-      <button class="save-btn" (click)="changePassword()" [disabled]="isChangingPassword">
+    <div class="action-buttons">
+
+      <button
+        type="button"
+        class="cancel-btn"
+        (click)="cancelPasswordChange()">
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="save-btn"
+        (click)="changePassword()"
+        [disabled]="isChangingPassword">
         {{ isChangingPassword ? 'Updating...' : 'Update Password' }}
       </button>
+
     </div>
 
   </div>
 
+  <!-- ACCOUNT SUMMARY -->
+
   <div class="account-card">
 
     <div>
+
       <h3>Account Summary</h3>
-      <p>Your patient account is active and ready for appointment booking.</p>
+
+      <p>
+        Your patient account is active and ready for appointment booking.
+      </p>
+
     </div>
 
   </div>

@@ -4,55 +4,55 @@
 }
 
 .portal-text {
+  margin: 0;
   color: #2563eb;
   font-size: 13px;
   font-weight: 800;
-  margin: 0;
   letter-spacing: 1px;
 }
 
-/* This replaces old h1 styling */
 .page-title {
   margin: 6px 0 22px;
+  color: #243044;
   font-size: 34px;
   font-weight: 800;
-  color: #243044;
 }
 
-/* SUCCESS / ERROR BANNERS */
+/* SUCCESS AND ERROR BANNERS */
+
 .success-banner {
+  margin-bottom: 18px;
+  padding: 14px 18px;
+  border: 1px solid #86efac;
+  border-radius: 14px;
   background: #dcfce7;
   color: #15803d;
-  border: 1px solid #86efac;
-  padding: 14px 18px;
-  border-radius: 14px;
   font-weight: 800;
-  margin-bottom: 18px;
   box-shadow: 0 8px 18px rgba(22, 163, 74, 0.12);
 }
 
 .error-banner {
+  margin-bottom: 18px;
+  padding: 14px 18px;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
   background: #fee2e2;
   color: #b91c1c;
-  border: 1px solid #fecaca;
-  padding: 14px 18px;
-  border-radius: 14px;
   font-weight: 800;
-  margin-bottom: 18px;
   box-shadow: 0 8px 18px rgba(220, 38, 38, 0.12);
 }
 
-/* FILTER CARD */
+/* SEARCH CARD */
+
 .search-card {
-  background: rgba(255, 255, 255, 0.95);
+  margin-bottom: 24px;
+  padding: 22px;
   border: 1px solid #dbe4ee;
   border-radius: 22px;
-  padding: 22px;
-  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
 }
 
-/* This replaces old h3 styling */
 .section-title {
   margin: 0 0 18px;
   color: #2563eb;
@@ -74,19 +74,23 @@
 }
 
 .field label {
+  color: #334155;
   font-size: 13px;
   font-weight: 800;
-  color: #334155;
 }
 
 .field input,
 .field select {
+  width: 100%;
   height: 44px;
-  border-radius: 14px;
-  border: 1px solid #cbd5e1;
+  box-sizing: border-box;
   padding: 0 14px;
-  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
   outline: none;
+  background: #ffffff;
+  color: #0f172a;
+  font-family: "Segoe UI", sans-serif;
   font-size: 14px;
 }
 
@@ -96,40 +100,63 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
+.field input.invalid-input {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
 .clear-btn {
-  height: 54px;
+  height: 44px;
+  margin-top: 21px;
   padding: 0 22px;
   border: none;
-  border-radius: 16px;
+  border-radius: 14px;
   background: #eef2f7;
   color: #334155;
   font-weight: 900;
   cursor: pointer;
-  margin-top: 24px;
 }
 
-/* ERRORS */
+.clear-btn:hover {
+  background: #e2e8f0;
+}
+
+/* VALIDATION MESSAGES */
+
 .error-text {
+  display: block;
+  margin: 0;
   color: #dc2626;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.validation-message {
+  margin: 0;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.5;
 }
 
 .page-error {
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
   background: #fee2e2;
   color: #b91c1c;
-  padding: 12px 16px;
-  border-radius: 14px;
   font-weight: 800;
-  margin-bottom: 18px;
 }
 
-/* AVAILABLE DOCTORS */
+/* AVAILABLE DOCTORS CARD */
+
 .available-card {
-  background: rgba(255, 255, 255, 0.96);
+  padding: 22px;
   border: 1px solid #dbe4ee;
   border-radius: 22px;
-  padding: 22px;
+  background: rgba(255, 255, 255, 0.96);
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
 }
 
@@ -153,6 +180,18 @@
   font-weight: 700;
 }
 
+.empty-state {
+  padding: 24px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: #64748b;
+  text-align: center;
+  font-weight: 800;
+}
+
+/* DOCTOR LIST AND CARDS */
+
 .doctor-list {
   display: flex;
   flex-direction: column;
@@ -160,49 +199,50 @@
 }
 
 .doctor-card {
-  background: #ffffff;
+  padding: 20px 24px;
   border: 1px solid #eef2f7;
   border-radius: 18px;
-  padding: 20px 24px;
+  background: #ffffff;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
 }
 
 .doctor-top {
   display: flex;
   justify-content: space-between;
-  gap: 18px;
   align-items: flex-start;
+  gap: 18px;
 }
 
-/* This replaces old h2 styling */
 .doctor-name-title {
   margin: 0;
+  color: #243044;
   font-size: 22px;
   font-weight: 800;
-  color: #243044;
 }
 
 .spec {
-  color: #2563eb;
-  font-weight: 800;
   margin: 6px 0;
+  color: #2563eb;
   font-size: 16px;
+  font-weight: 800;
 }
 
 .meta {
-  color: #64748b;
   margin: 0;
+  color: #64748b;
   font-size: 14px;
+  line-height: 1.5;
 }
 
-/* BADGE */
+/* DOCTOR AVAILABILITY BADGE */
+
 .badge {
   padding: 7px 12px;
   border-radius: 999px;
-  font-size: 12px;
-  font-weight: 900;
   background: #fee2e2;
   color: #b91c1c;
+  font-size: 12px;
+  font-weight: 900;
   white-space: nowrap;
 }
 
@@ -211,12 +251,12 @@
   color: #15803d;
 }
 
-/* SLOTS */
+/* APPOINTMENT SLOTS */
+
 .slot-section {
   margin-top: 18px;
 }
 
-/* This replaces old h4 styling */
 .slot-title {
   margin: 0 0 10px;
   color: #334155;
@@ -226,18 +266,22 @@
 
 .slots {
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 10px;
 }
 
 .slots button {
+  padding: 10px 16px;
   border: none;
   border-radius: 12px;
-  padding: 10px 16px;
   background: #60a5fa;
   color: #ffffff;
   font-weight: 800;
   cursor: pointer;
+}
+
+.slots button:hover {
+  background: #3b82f6;
 }
 
 .slots button.active {
@@ -247,17 +291,19 @@
 
 .slots button:disabled {
   background: #cbd5e1;
+  color: #64748b;
   cursor: not-allowed;
 }
 
-/* REQUEST BUTTON */
+/* REQUEST APPOINTMENT BUTTON */
+
 .request-btn {
   margin-top: 18px;
+  padding: 12px 28px;
   border: none;
   border-radius: 14px;
-  padding: 12px 28px;
   background: #2563eb;
-  color: white;
+  color: #ffffff;
   font-weight: 900;
   cursor: pointer;
 }
@@ -268,27 +314,36 @@
 
 .request-btn:disabled {
   background: #94a3b8;
+  color: #ffffff;
   cursor: not-allowed;
 }
 
 /* PAGINATION */
+
 .pagination {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 22px;
 }
 
 .page-btn,
 .page-number {
+  padding: 9px 14px;
   border: none;
   border-radius: 10px;
-  padding: 9px 14px;
   background: #eef2f7;
   color: #334155;
   font-weight: 800;
   cursor: pointer;
+}
+
+.page-btn:hover,
+.page-number:hover {
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
 .page-number.active {
@@ -300,4 +355,38 @@
   background: #cbd5e1;
   color: #64748b;
   cursor: not-allowed;
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 900px) {
+  .search-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .clear-btn {
+    width: 100%;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .search-row {
+    grid-template-columns: 1fr;
+  }
+
+  .available-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .doctor-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pagination {
+    justify-content: center;
+  }
 }

@@ -8,11 +8,11 @@ namespace HealthAxis.API.Repositories.Implementations
 {
     public class AppointmentRepository : Repository<Appointment>, IAppointmentRepository
     {
-        private readonly HealthAxisDbContext _context;
+
 
         public AppointmentRepository(HealthAxisDbContext context) : base(context)
         {
-            _context = context;
+           
         }
 
         // ✅ Get appointments by patient

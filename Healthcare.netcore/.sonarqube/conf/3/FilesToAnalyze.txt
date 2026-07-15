@@ -1,0 +1,14 @@
+﻿C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\GlobalUsings.cs
+C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\AdminServiceTests.cs
+C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\AppointmentBookedEventTests.cs
+C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\AppointmentServiceTests.cs
+C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\AuthServiceTests.cs
+C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\DoctorServiceDatabaseTests.cs
+C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\DoctorServiceTests.cs
+C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\HealthRecordServiceTests.cs
+C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\PatientServiceTests.cs
+C:\Users\310481\.nuget\packages\microsoft.net.test.sdk\17.14.1\build\net8.0\Microsoft.NET.Test.Sdk.Program.cs
+C:\Users\310481\.nuget\packages\microsoft.testplatform.testhost\17.14.1\build\net8.0\x64\testhost.exe
+C:\Users\310481\.nuget\packages\microsoft.testplatform.testhost\17.14.1\build\net8.0\x64\testhost.dll
+C:\Users\310481\.nuget\packages\xunit.runner.visualstudio\3.1.4\build\net8.0\xunit.abstractions.dll
+C:\Users\310481\.nuget\packages\xunit.runner.visualstudio\3.1.4\build\net8.0\xunit.runner.visualstudio.testadapter.dll

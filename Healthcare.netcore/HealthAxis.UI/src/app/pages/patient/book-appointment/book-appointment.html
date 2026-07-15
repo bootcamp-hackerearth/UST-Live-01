@@ -3,51 +3,99 @@
   <div class="portal-text">PATIENT PORTAL</div>
   <div class="page-title">Book Appointment</div>
 
-  <div class="success-banner" *ngIf="successMessage">
+  <div
+    class="success-banner"
+    *ngIf="successMessage">
     {{ successMessage }}
   </div>
 
-  <div class="error-banner" *ngIf="errorMessage">
+  <div
+    class="error-banner"
+    *ngIf="errorMessage">
     {{ errorMessage }}
   </div>
 
   <div class="search-card">
 
-    <div class="section-title">Search available slots</div>
+    <div class="section-title">
+      Search available slots
+    </div>
 
     <div class="search-row">
 
       <div class="field">
-        <label>Date</label>
+
+        <label for="appointmentDate">
+          Date
+        </label>
+
         <input
+          id="appointmentDate"
           type="date"
           [min]="todayDate"
           [(ngModel)]="appointmentDate"
-          (ngModelChange)="onSearchCriteriaChanged()" />
+          (ngModelChange)="onSearchCriteriaChanged()"
+          [class.invalid-input]="
+            appointmentDate !== '' &&
+            !isValidAppointmentDate
+          " />
 
-        <small class="error-text" *ngIf="dateError">
+        <small
+          class="error-text"
+          *ngIf="
+            appointmentDate !== '' &&
+            !isValidAppointmentDate
+          ">
+          Past date is not allowed. Please select today or a future date.
+        </small>
+
+        <small
+          class="error-text"
+          *ngIf="
+            dateError &&
+            (appointmentDate === '' || isValidAppointmentDate)
+          ">
           {{ dateError }}
         </small>
+
       </div>
 
       <div class="field">
-        <label>Specialisation</label>
+
+        <label for="specialisation">
+          Specialisation
+        </label>
+
         <select
+          id="specialisation"
           [(ngModel)]="selectedSpecialisation"
           (ngModelChange)="onSearchCriteriaChanged()">
-          <option *ngFor="let s of specialisations" [value]="s.value">
-            {{ s.label }}
+
+          <option
+            *ngFor="let specialisation of specialisations"
+            [value]="specialisation.value">
+
+            {{ specialisation.label }}
+
           </option>
+
         </select>
+
       </div>
 
       <div class="field">
-        <label>Search</label>
+
+        <label for="doctorSearch">
+          Search
+        </label>
+
         <input
+          id="doctorSearch"
           type="text"
           [(ngModel)]="searchText"
           (ngModelChange)="onSearchCriteriaChanged()"
           placeholder="Enter doctor name" />
+
       </div>
 
       <button
@@ -61,40 +109,66 @@
 
   </div>
 
-  <div class="page-error" *ngIf="slotError">
+  <div
+    class="page-error"
+    *ngIf="slotError">
     {{ slotError }}
   </div>
 
   <div class="available-card">
 
     <div class="available-header">
-      <div class="section-title">Available doctors</div>
+
+      <div class="section-title">
+        Available doctors
+      </div>
 
       <span>
-        Showing {{ pagedDoctors().length }} of {{ filteredDoctors().length }} doctor(s)
+        Showing {{ pagedDoctors().length }} of
+        {{ filteredDoctors().length }} doctor(s)
       </span>
+
     </div>
 
-    <div class="doctor-list">
+    <div
+      class="empty-state"
+      *ngIf="filteredDoctors().length === 0">
+      No doctors found for the selected filters.
+    </div>
 
-      <div class="doctor-card" *ngFor="let d of pagedDoctors()">
+    <div
+      class="doctor-list"
+      *ngIf="filteredDoctors().length > 0">
+
+      <div
+        class="doctor-card"
+        *ngFor="let doctor of pagedDoctors()">
 
         <div class="doctor-top">
 
           <div>
-            <div class="doctor-name-title">{{ d.fullName }}</div>
+
+            <div class="doctor-name-title">
+              {{ doctor.fullName }}
+            </div>
 
             <div class="spec">
-              {{ getSpecialisationName(d.specialisation) }}
+              {{ getSpecialisationName(doctor.specialisation) }}
             </div>
 
             <div class="meta">
-              {{ d.yearsOfExperience }} years experience · ₹{{ d.consultationFee }} consultation
+              {{ doctor.yearsOfExperience }} years experience ·
+              ₹{{ doctor.consultationFee }} consultation
             </div>
+
           </div>
 
-          <span class="badge" [class.available]="d.isActive">
-            {{ d.isActive ? 'Available' : 'Not Available' }}
+          <span
+            class="badge"
+            [class.available]="doctor.isActive">
+
+            {{ doctor.isActive ? 'Available' : 'Not Available' }}
+
           </span>
 
         </div>
@@ -107,31 +181,73 @@
 
           <div
             class="slots"
-            *ngIf="isValidAppointmentDate && d.availableSlots?.length > 0">
+            *ngIf="
+              isValidAppointmentDate &&
+              doctor.availableSlots?.length > 0
+            ">
 
             <button
               type="button"
-              *ngFor="let slot of d.availableSlots"
-              [class.active]="selectedDoctor?.doctorId === d.doctorId && selectedSlot === slot"
-              (click)="selectSlot(d, slot)"
-              [disabled]="!d.isActive || !isValidAppointmentDate">
+              *ngFor="let slot of doctor.availableSlots"
+              [class.active]="
+                selectedDoctor?.doctorId === doctor.doctorId &&
+                selectedSlot === slot
+              "
+              (click)="selectSlot(doctor, slot)"
+              [disabled]="
+                !doctor.isActive ||
+                !isValidAppointmentDate
+              ">
+
               {{ slot }}
+
             </button>
 
           </div>
 
-          <div class="meta" *ngIf="!isValidAppointmentDate">
+          <div
+            class="meta"
+            *ngIf="appointmentDate === ''">
+            Select a date to view slots.
+          </div>
+
+          <div
+            class="validation-message"
+            *ngIf="
+              appointmentDate !== '' &&
+              !isValidAppointmentDate
+            ">
             Select a valid date to view slots.
           </div>
 
-          <div class="meta" *ngIf="isValidAppointmentDate && selectedSpecialisation === ''">
+          <div
+            class="meta"
+            *ngIf="
+              isValidAppointmentDate &&
+              selectedSpecialisation === ''
+            ">
             Select specialisation to load available slots.
           </div>
 
           <div
             class="meta"
-            *ngIf="isValidAppointmentDate && selectedSpecialisation !== '' && d.isActive && d.availableSlots?.length === 0">
+            *ngIf="
+              isValidAppointmentDate &&
+              selectedSpecialisation !== '' &&
+              doctor.isActive &&
+              doctor.availableSlots?.length === 0
+            ">
             No slots available for this date.
+          </div>
+
+          <div
+            class="validation-message"
+            *ngIf="
+              isValidAppointmentDate &&
+              selectedSpecialisation !== '' &&
+              !doctor.isActive
+            ">
+            This doctor is not available on the selected date.
           </div>
 
         </div>
@@ -139,16 +255,20 @@
         <button
           type="button"
           class="request-btn"
-          (click)="confirmAppointment(d)"
-          [disabled]="!d.isActive || isBooking">
+          (click)="confirmAppointment(doctor)"
+          [disabled]="!doctor.isActive || isBooking">
+
           {{ isBooking ? 'Booking...' : 'Request Appointment' }}
+
         </button>
 
       </div>
 
     </div>
 
-    <div class="pagination" *ngIf="totalPages > 1">
+    <div
+      class="pagination"
+      *ngIf="totalPages > 1">
 
       <button
         type="button"
@@ -164,7 +284,9 @@
         *ngFor="let page of pageNumbers"
         [class.active]="page === currentPage"
         (click)="goToPage(page)">
+
         {{ page }}
+
       </button>
 
       <button

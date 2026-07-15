@@ -149,13 +149,13 @@
     <Property Name="sonar.java.jvmframeworkconfig.activate">true</Property>
     <Property Name="sonar.updatecenter.url">https://downloads.sonarsource.com/sonarqube/update/update-center.properties</Property>
     <Property Name="sonar.core.id">147B411E-AZ5PHDKN8faUZ64erjyl</Property>
-    <Property Name="sonar.core.startTime">19-06-2026 16:48:15</Property>
+    <Property Name="sonar.core.startTime">15-07-2026 09:34:11</Property>
   </ServerSettings>
   <LocalSettings>
     <Property Name="sonar.host.url">http://localhost:9000</Property>
-    <Property Name="sonar.coverage.exclusions">**/Controllers/**,**/Repository/**,**/Repositories/**,**/Models/**,**/DTOs/**,**/Dtos/**,**/Data/**,**/Mappings/**,**/Middleware/**,**/Middlewares/**,**/Exceptions/**,**/Constants/**,**/Validation/**,**/Utilities/**,**/Migrations/**,**/Program.cs</Property>
+    <Property Name="sonar.coverage.exclusions">**/bin/**,**/obj/**,**/Migrations/**,**/Middleware/**,**/Options/**,**/Controllers/**,**/Exceptions/**,**/Data/**,**/Consumers/**,**/DTOs/**,**/Mapping/**,**/Mappings/**,**/Models/**,**/Properties/**,**/Repository/**,**/HealthcareAxis.Shared/**,**/HealthAxis.UI/**,**/AdminWebApp/**,**/Program.cs,**/BackgroundServices/HeartbeatService.cs,**/BackgroundServices/NotificationCleanupService.cs,**/Mappings/MappingProfile.cs</Property>
     <Property Name="sonar.cs.opencover.reportsPaths">TestResults/**/coverage.opencover.xml</Property>
-    <Property Name="sonar.exclusions">**/bin/**,**/obj/**,**/Migrations/**,**/wwwroot/**,**/*.Designer.cs,**/*.g.cs,**/*.generated.cs,**/Mappings/MappingProfile.cs,**/Healthcare.netcore.Tests/**,TestResults/**/coverage.opencover.xml</Property>
+    <Property Name="sonar.exclusions">**/bin/**,**/obj/**,**/Migrations/**,**/*.css,TestResults/**/coverage.opencover.xml</Property>
   </LocalSettings>
   <ScannerOptsSettings />
   <AnalyzersSettings>
@@ -167,9 +167,6 @@
         <AnalyzerPlugin Key="csharp" Version="10.17.0.131074" StaticResourceName="SonarAnalyzer-csharp-10.17.0.131074.zip">
           <AssemblyPaths>
             <Path>C:\Users\310481\AppData\Local\Temp\.sonarqube\resources\0\SonarAnalyzer.CSharp.dll</Path>
-            <Path>C:\Users\310481\AppData\Local\Temp\.sonarqube\resources\0\licenses\LICENSE.txt</Path>
-            <Path>C:\Users\310481\AppData\Local\Temp\.sonarqube\resources\0\licenses\THIRD_PARTY_LICENSES\Google.Protobuf-LICENSE.txt</Path>
-            <Path>C:\Users\310481\AppData\Local\Temp\.sonarqube\resources\0\licenses\THIRD_PARTY_LICENSES\StyleCop.Analyzers-LICENSE.txt</Path>
           </AssemblyPaths>
         </AnalyzerPlugin>
       </AnalyzerPlugins>

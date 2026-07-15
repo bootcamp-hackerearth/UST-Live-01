@@ -21,20 +21,15 @@ using HealthAxis.API.Consumers;
 using MassTransit;
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
     .WriteTo.Console()
-    .WriteTo.File(
-        path: "Logs/healthaxis-api-.log",
-        rollingInterval: RollingInterval.Day)
-    .CreateLogger();
+    .CreateBootstrapLogger();
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Host.UseSerilog();
+builder.Services.AddSerilog((services, configuration) =>
+    configuration
+        .ReadFrom.Configuration(builder.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext());
 
 
 // ✅ Controllers
@@ -42,8 +37,7 @@ builder.Services.AddControllers();
 //heartbeatservices
 builder.Services.AddHostedService<HeartbeatService>();
 builder.Services.AddHostedService<NotificationCleanupService>();
-builder.Services.AddHostedService<HeartbeatService>();
-builder.Services.AddHostedService<NotificationCleanupService>();
+
 
 
 // ✅ Global Exception Handler
@@ -193,6 +187,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 
 var app = builder.Build();
 app.UseSerilogRequestLogging();
+
 
 app.UseCors("AllowAll");
 
