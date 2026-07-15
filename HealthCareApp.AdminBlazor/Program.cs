@@ -1,6 +1,7 @@
 using HealthCareApp.AdminBlazor;
 using HealthCareApp.AdminBlazor.Auth;
 using HealthCareApp.AdminBlazor.Services.Impl;
+using HealthCareApp.AdminBlazor.Services.Implementations;
 using HealthCareApp.AdminBlazor.Services.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
@@ -38,5 +39,6 @@ builder.Services.AddScoped<IDoctorAdminService, DoctorAdminService>();
 builder.Services.AddScoped<IPatientAdminService, PatientAdminService>();
 builder.Services.AddScoped<IAppointmentAdminService, AppointmentAdminService>();
 builder.Services.AddScoped<IToastService, ToastService>();
+builder.Services.AddScoped<IDoctorLeaveAdminService, DoctorLeaveAdminService>();
 
 await builder.Build().RunAsync();

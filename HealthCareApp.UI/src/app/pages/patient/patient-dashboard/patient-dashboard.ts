@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { forkJoin,timeout} from 'rxjs';
+import { forkJoin, timeout } from 'rxjs';
 
 import { AppointmentDto } from '../../../shared/models/appointment.models';
 import { HealthRecordDto } from '../../../shared/models/health-record.models';
@@ -252,88 +252,90 @@ export class PatientDashboard implements OnInit, OnDestroy {
   }
 
   loadUnreadNotifications(): void {
-  this.patientNotificationApiService.getMyUnreadNotifications().pipe(
-    timeout(15000)
-  ).subscribe({
-    next: (notifications: PatientNotificationDto[]) => {
-      this.unreadNotifications = notifications ?? [];
-    },
-    error: (error: unknown) => {
-      console.log('Patient notifications API error:', error);
-    }
-  });
-}
-
-markNotificationAsRead(notification: PatientNotificationDto): void {
-  if (this.isNotificationProcessing) {
-    return;
+    this.patientNotificationApiService.getMyUnreadNotifications().pipe(
+      timeout(15000)
+    ).subscribe({
+      next: (notifications: PatientNotificationDto[]) => {
+        this.unreadNotifications = notifications ?? [];
+      },
+      error: (error: unknown) => {
+        console.log('Patient notifications API error:', error);
+      }
+    });
   }
 
-  this.isNotificationProcessing = true;
-
-  this.patientNotificationApiService.markAsRead(
-    notification.patientNotificationId
-  ).pipe(
-    timeout(15000)
-  ).subscribe({
-    next: () => {
-      this.isNotificationProcessing = false;
-
-      this.unreadNotifications = this.unreadNotifications.filter(
-        item => item.patientNotificationId !== notification.patientNotificationId
-      );
-    },
-    error: (error: unknown) => {
-      console.log('Mark patient notification read API error:', error);
-
-      this.isNotificationProcessing = false;
-
-      this.showToast(
-        'Unable to update notification. Please try again.',
-        'warning'
-      );
+  markNotificationAsRead(notification: PatientNotificationDto): void {
+    if (this.isNotificationProcessing) {
+      return;
     }
-  });
-}
 
-rebookFromNotification(notification: PatientNotificationDto): void {
-  if (this.isNotificationProcessing) {
-    return;
+    this.isNotificationProcessing = true;
+
+    this.patientNotificationApiService.markAsRead(
+      notification.patientNotificationId
+    ).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: () => {
+        this.isNotificationProcessing = false;
+
+        this.unreadNotifications = this.unreadNotifications.filter(
+          item => item.patientNotificationId !== notification.patientNotificationId
+        );
+      },
+      error: (error: unknown) => {
+        console.log('Mark patient notification read API error:', error);
+
+        this.isNotificationProcessing = false;
+
+        this.showToast(
+          'Unable to update notification. Please try again.',
+          'warning'
+        );
+      }
+    });
   }
 
-  this.isNotificationProcessing = true;
-
-  this.patientNotificationApiService.markAsRead(
-    notification.patientNotificationId
-  ).pipe(
-    timeout(15000)
-  ).subscribe({
-    next: () => {
-      this.isNotificationProcessing = false;
-
-      this.unreadNotifications = this.unreadNotifications.filter(
-        item => item.patientNotificationId !== notification.patientNotificationId
-      );
-
-      this.setActiveSection('book');
-
-      this.showToast(
-        'Please choose a new doctor/date/slot for rebooking.',
-        'info'
-      );
-    },
-    error: (error: unknown) => {
-      console.log('Rebook notification API error:', error);
-
-      this.isNotificationProcessing = false;
-
-      this.showToast(
-        'Unable to open rebooking. Please try again.',
-        'warning'
-      );
+  rebookFromNotification(notification: PatientNotificationDto): void {
+    if (this.isNotificationProcessing) {
+      return;
     }
-  });
-}
+
+    this.isNotificationProcessing = true;
+
+    this.patientNotificationApiService.markAsRead(
+      notification.patientNotificationId
+    ).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: () => {
+        this.isNotificationProcessing = false;
+
+        this.unreadNotifications = this.unreadNotifications.filter(
+          item => item.patientNotificationId !== notification.patientNotificationId
+        );
+
+        this.loadDashboardData();
+
+        this.setActiveSection('book');
+
+        this.showToast(
+          'Please choose a new doctor/date/slot for rebooking.',
+          'info'
+        );
+      },
+      error: (error: unknown) => {
+        console.log('Rebook notification API error:', error);
+
+        this.isNotificationProcessing = false;
+
+        this.showToast(
+          'Unable to open rebooking. Please try again.',
+          'warning'
+        );
+      }
+    });
+  }
 
   private calculatePercentage(value: number): number {
     return Math.round((value / this.chartTotalCount) * 100);

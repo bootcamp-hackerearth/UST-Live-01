@@ -5096,3 +5096,1201 @@ body {
         grid-template-columns: 1fr !important;
     }
 }
+
+
+/* ============================================================
+   FIX ADMIN FORM INPUT READABILITY IN DARK THEME
+   Prevent browser/autofill/focus from turning inputs white
+============================================================ */
+
+.hc-form-control,
+.hc-form-control:focus,
+.hc-form-control:active, .hc-form-control:hover,
+input.hc-form-control,
+select.hc-form-control
+textarea.hc-form-control {
+    background: rgba(3, 7, 18, 0.72) !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(148,*163, 184, 0.24) !important;
+    caret-color: #facc15 !important;
+    box-shadow: inset 0 1px 0 rgb(255, 255, 255, 0.06), 0 0 0 0 transparent !important;
+}
+
+.hc-form-control:focus {
+    border-color: rgba(250, 204, 21, 0.58) !important;
+    background: rgba(3, 7,*18, 0.92) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 4px rgba(250, 204, 21, 0.14) !important;
+}
+
+    .hc-form-control::placeholder {
+        color: #94a3b8 !important;
+        opacity: 1 !important;
+    }
+    .hc-form-control:disabled, .hc-form-control[disabled]
+
+{
+    background: rgba(15, 23, 42, 0.62) !important;
+    color: #94a3b8 !important;
+    border-color: rgba(148, 163, 184, 0.16) !important;
+    opacity: 0.75 !important;
+}
+
+/* Chrome / Edge autofill fix */
+input.hc-form-control:-webkit-autofill,
+input.hc-form-control:-webkit-autofill:hover,
+input.hc-form-control:-webkit-autofill:focus,
+textarea.hc-form-control:-webkit-autofill,
+textarea.hc-form-control:-webkit-autofill:hover,
+textarea.hc-form-control:-webkit-autofill:focus,
+select.hc-form-control:-webkit-autofill,
+select.hc-form-control:-webkit-autofill:hover,
+select.hc-form-control:-webkit-autofill:focus {
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #facc15 !important;
+    box-shadow: 0 0 0 1000px #030712 inset !important;
+    border: 1px solid rgba(250, 204, 21, 0.58) !important;
+    transition: background-color 9999s ease-in-out 0s !important;
+}
+
+/* Date input icon visibility in dark theme */
+input[type="date"].hc-form-control {
+    color-scheme: dark !important;
+}
+
+/* Select dropdown dark consistency */
+select.hc-form-control option {
+    color: #f8fafc !important;
+    background: #020617 !important;
+}
+
+
+
+/* ============================================================
+   FIX ADD DOCTOR CREATED MODAL - DARK ADMIN THEME
+============================================================ */
+
+.ha-modal-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 24px !important;
+    background: rgba(2, 6, 23, 0.72) !important;
+    backdrop-filter: blur(16px) saturate(1.1) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(1.1) !important;
+}
+
+.ha-doctor-created-modal {
+    width: min(560px, calc(100vw - 32px)) !important;
+    padding: 34px 32px !important;
+    border-radius: 34px !important;
+    text-align: center !important;
+    color: #f8fafc !important;
+    background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.14), transparent 36%), radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.10), transparent 34%), linear-gradient(145deg, rgba(12, 20, 35, 0.98), rgba(3, 7, 18, 0.96)) !important;
+    border: 1px solid rgba(250, 204, 21, 0.18) !important;
+    box-shadow: 0 38px 110px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(24px) saturate(1.15) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.15) !important;
+}
+
+    .ha-doctor-created-modal .ha-logout-icon {
+        width: 74px !important;
+        height: 74px !important;
+        margin: 0 auto 18px !important;
+        border-radius: 26px !important;
+        display: grid !important;
+        place-items: center !important;
+        color: #030712 !important;
+        font-size: 24px !important;
+        font-weight: 1000 !important;
+        background: linear-gradient(135deg, #facc15 0%, #f97316 56%, #22d3ee 100%) !important;
+        box-shadow: 0 22px 48px rgba(250, 204, 21, 0.26) !important;
+    }
+
+    .ha-doctor-created-modal h3 {
+        margin: 0 !important;
+        color: #ffffff !important;
+        font-size: 28px !important;
+        line-height: 1.12 !important;
+        font-weight: 1000 !important;
+        letter-spacing: -0.045em !important;
+    }
+
+    .ha-doctor-created-modal > p {
+        max-width: 390px !important;
+        margin: 12px auto 24px !important;
+        color: #cbd5e1 !important;
+        font-size: 14px !important;
+        line-height: 1.65 !important;
+        font-weight: 750 !important;
+    }
+
+.ha-created-doctor-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    margin: 20px 0 !important;
+}
+
+.ha-created-doctor-card {
+    min-width: 0 !important;
+    padding: 16px !important;
+    border-radius: 20px !important;
+    text-align: left !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+    .ha-created-doctor-card span {
+        display: block !important;
+        color: #facc15 !important;
+        font-size: 11px !important;
+        font-weight: 1000 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.08em !important;
+    }
+
+    .ha-created-doctor-card strong {
+        display: block !important;
+        margin-top: 8px !important;
+        color: #ffffff !important;
+        font-size: 14px !important;
+        line-height: 1.4 !important;
+        font-weight: 950 !important;
+        word-break: break-word !important;
+    }
+
+.ha-temp-password-box {
+    margin: 18px 0 20px !important;
+    padding: 18px !important;
+    border-radius: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 14px !important;
+    text-align: left !important;
+    background: radial-gradient(circle at top right, rgba(250, 204, 21, 0.14), transparent 36%), rgba(250, 204, 21, 0.08) !important;
+    border: 1px solid rgba(250, 204, 21, 0.26) !important;
+}
+
+    .ha-temp-password-box div {
+        min-width: 0 !important;
+    }
+
+    .ha-temp-password-box span {
+        display: block !important;
+        color: #facc15 !important;
+        font-size: 11px !important;
+        font-weight: 1000 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.08em !important;
+    }
+
+    .ha-temp-password-box strong {
+        display: block !important;
+        margin-top: 7px !important;
+        color: #ffffff !important;
+        font-size: 18px !important;
+        line-height: 1.35 !important;
+        font-weight: 1000 !important;
+        letter-spacing: 0.02em !important;
+        word-break: break-all !important;
+    }
+
+    .ha-temp-password-box .hc-secondary-btn {
+        min-width: 82px !important;
+        color: #030712 !important;
+        background: linear-gradient(135deg, #facc15, #f97316) !important;
+        border: 0 !important;
+        box-shadow: 0 14px 30px rgba(249, 115, 22, 0.24) !important;
+    }
+
+.ha-doctor-created-modal .hc-details-note {
+    margin: 18px 0 0 !important;
+    padding: 18px !important;
+    border-radius: 22px !important;
+    text-align: left !important;
+    background: rgba(249, 115, 22, 0.10) !important;
+    border: 1px solid rgba(249, 115, 22, 0.26) !important;
+}
+
+    .ha-doctor-created-modal .hc-details-note span {
+        display: block !important;
+        color: #fdba74 !important;
+        font-size: 12px !important;
+        font-weight: 1000 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.08em !important;
+    }
+
+    .ha-doctor-created-modal .hc-details-note p {
+        margin: 8px 0 0 !important;
+        color: #fed7aa !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+        font-weight: 750 !important;
+    }
+
+.ha-doctor-created-modal .ha-logout-actions {
+    margin-top: 24px !important;
+    display: flex !important;
+    justify-content: center !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+}
+
+.ha-doctor-created-modal .ha-modal-secondary-btn {
+    min-height: 46px !important;
+    padding: 0 18px !important;
+    border-radius: 16px !important;
+    color: #f8fafc !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    font-size: 13px !important;
+    font-weight: 1000 !important;
+}
+
+.ha-doctor-created-modal .hc-page-primary-btn {
+    min-height: 46px !important;
+    padding: 0 18px !important;
+    border-radius: 16px !important;
+    color: #030712 !important;
+    background: linear-gradient(135deg, #facc15 0%, #f97316 58%, #22d3ee 100%) !important;
+    border: 0 !important;
+    font-size: 13px !important;
+    font-weight: 1000 !important;
+    box-shadow: 0 16px 34px rgba(249, 115, 22, 0.24) !important;
+}
+
+.ha-doctor-created-modal ::selection {
+    color: #030712 !important;
+    background: #facc15 !important;
+}
+
+@media (max-width: 620px) {
+    .ha-doctor-created-modal {
+        padding: 26px 22px !important;
+        border-radius: 28px !important;
+    }
+
+    .ha-created-doctor-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .ha-temp-password-box {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+        .ha-temp-password-box .hc-secondary-btn,
+        .ha-doctor-created-modal .ha-modal-secondary-btn,
+        .ha-doctor-created-modal .hc-page-primary-btn {
+            width: 100% !important;
+        }
+}
+
+
+/* ============================================================
+   FIX ADMIN DOCTOR LEAVES PAGE DARK THEME
+   Applies to /admin/doctors/leaves/{doctorId}
+============================================================ */
+
+/* Main details shell for Doctor Leaves page */
+.hc-details-shell.ha-profile-details-shell {
+    background: linear-gradient(145deg, rgba(12, 20, 35, 0.94), rgba(17, 27, 46, 0.92)) !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    border-radius: 26px !important;
+    box-shadow: 0 28px 72px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    backdrop-filter: blur(22px) saturate(1.12) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(1.12) !important;
+}
+
+/* Doctor name / profile hero card */
+.hc-details-hero.ha-profile-hero {
+    background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.14), transparent 34%), radial-gradient(circle at top right, rgba(34, 211, 238, 0.10), transparent 32%), linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(3, 7, 18, 0.92)) !important;
+    border: 1px solid rgba(250, 204, 21, 0.16) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 28px 72px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Avatar inside Doctor Leaves hero */
+.hc-details-avatar.ha-profile-avatar {
+    color: #030712 !important;
+    background: linear-gradient(*35deg, #facc15 0%, #f97316 56%, #22d3ee 100%) !important;
+    box-shadow: 0 18px 42px rgba(250, 204, 21, 0.24) !important;
+}
+
+/* Hero text */
+.ha-profile-hero-content .ha-profile-kicker {
+    color: #facc15 !important;
+    font-size: 12px !important;
+    font-weight: 1000 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.09em !important;
+}
+
+.hc-details-hero.ha-profile-hero h2 {
+    color: #ffffff !important;
+    font-weight: 1000 !important;
+}
+
+.hc-details-hero.ha-profile-hero p {
+    color: #cbd5e1 !important;
+    font-weight: 750 !important;
+}
+
+/* Badges inside Doctor Leaves hero */
+.ha-profile-badge,
+.hc-details-hero.ha-profile-hero .hc-status-badge {
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+    .hc-details-hero.ha-profile-hero .hc-status-badge.active,
+    .hc-details-hero.ha-profile-hero .hc-status-badge.completed {
+        color: #86efac !important;
+        background: rgba(34, 197, 94, 0.14) !important;
+    }
+
+    .hc-details-hero.ha-profile-hero .hc-status-badge.pending {
+        color: #fde68a !important;
+        background: rgba(250, 204, 21, 0.14) !important;
+    }
+
+    .hc-details-hero.ha-profile-hero .hc-status-badge.confirmed {
+        color: #67e8f9 !important;
+        background: rgba(34, 211, 238, 0.14) !important;
+    }
+
+    .hc-details-hero.ha-profile-hero .hc-status-badge.cancelled {
+        color: #fca5a5 !important;
+        background: rgba(239, 68, 68, 0.14) !important;
+    }
+
+/* Leave Directory panel */
+.hc-list-panel.ha-management-panel {
+    background: linear-gradient(145deg, rgba(12, 20, 35, 0.94), rgba(17, 27, 46, 0.92)) !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    border-radius: 26px !important;
+    box-shadow: 0 28px 72px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+    /* Leave Directory header */
+    .hc-list-panel.ha-management-panel .ha-list-panel-header h3 {
+        color: #ffffff !important;
+        font-weight: 1000 !important;
+    }
+
+    .hc-list-panel.ha-management-panel .ha-list-panel-header p {
+        color: #94a3b8 !important;
+        font-weight: 750 !important;
+    }
+
+    .hc-list-panel.ha-management-panel .ha-result-count {
+        color: #030712 !important;
+        background: linear-gradient(135deg, #facc15, #f97316) !important;
+        border: 0 !important;
+    }
+
+/* Empty state on Doctor Leaves page */
+.hc-empty-state.ha-empty-state {
+    background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.10), transparent 32%), radial-gradient(circle at bottom right, rgba(239, 68, 68, 0.10), transparent 34%), linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(3, 7, 18, 0.88)) !important;
+    border: 1px dashed rgba(250, 204, 21, 0.24) !important;
+    border-radius: 26px !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 20px 50px rgba(0, 0, 0, 0.28) !important;
+}
+
+    /* Empty icon */
+    .hc-empty-state.ha-empty-state .hc-empty-icon {
+        color: #030712 !important;
+        background: linear-gradient(135deg, #facc15 0%, #f97316 58%, #22d3ee 100%) !important;
+        box-shadow: 0 16px 36px rgba(249, 115, 22, 0.24) !important;
+    }
+
+    /* Empty state text */
+    .hc-empty-state.ha-empty-state h3 {
+        color: #ffffff !important;
+        font-weight: 1000 !important;
+    }
+
+    .hc-empty-state.ha-empty-state p {
+        color: #94a3b8 !important;
+        font-weight: 750 !important;
+    }
+
+/* Leave table row/card details */
+.ha-appointment-id-card {
+    padding: 12px 14px !important;
+    border-radius: 18px !important;
+    background: rgba(255, 255, 255, 0.055) !important;
+    border: 1px solid rgba(148, 163, 184, 0.14) !important;
+}
+
+    .ha-appointment-id-card strong {
+        color: #ffffff !important;
+        font-size: 14px !important;
+        font-weight: 1000 !important;
+    }
+
+    .ha-appointment-id-card span {
+        display: block !important;
+        margin-top: 5px !important;
+        color: #facc15 !important;
+        font-size: 12px !important;
+        font-weight: 850 !important;
+    }
+
+/* Leave reason text */
+.ha-table-strong-text {
+    color: #f8fafc !important;
+    font-weight: 900 !important;
+}
+
+/* Created date pill */
+.ha-time-pill {
+    color: #67e8f9 !important;
+    background: rgba(34, 211, 238, 0.12) !important;
+    border: 1px solid rgba(34, 211, 238, 0.18) !important;
+}
+
+/* Back button area */
+.hc-details-actions .hc-secondary-btn {
+    color: #f8fafc !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+}
+
+/* Responsive polish */
+@media (max-width: 760px) {
+    .hc-details-hero.ha-profile-hero {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .hc-details-avatar.ha-profile-avatar {
+        width: 76px !important;
+        height: 76px !important;
+        border-radius: 24px !important;
+        font-size: 24px !important;
+    }
+}
+
+
+/* ============================================================
+   FIX DOCTOR LEAVES PROFILE AVATAR THEME
+   Matches current Gotham admin theme
+============================================================ */
+
+.hc-details-hero.ha-profile-hero .hc-details-avatar,
+.hc-details-hero.ha-profile-hero .ha-profile-avatar {
+    width: 84px !important;
+    height: 84px !important;
+    min-width: 84px !important;
+    border-radius: 28px !important;
+    display: grid !important;
+    place-items : center !important;
+    color: #000712 !important;
+    background: radial-gradient(circle at 30* 20%, rgba(255, 255, 255, 0.34), t*ansparent 28%), linear-gradient(135deg, #facc15 0%, #f97316 5*%, #22d3ee 100%) !important;
+    border: 1px solid rgba(250, 204, 21, 0.28) !important;
+    box-shadow: 0 20px 44px rgba(250, 204, 21, 0.22), 0 0 0 6px rgba(250, 204, 21, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+    font-size: 28px !important;
+    font-weight: 1000 !important;
+    letter-spacing: -0.04em !important;
+}
+
+/* Optional hover polish */
+.hc-details-hero.ha-profile-hero .hc-details-avatar:hover,
+.hc-details-hero.ha-profile-hero .ha-profile-avatar:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 24px 54px rgba(249, 115, 22, 0.28), 0 0 0 6px rgba(250, 204, 21, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.42) !important;
+}
+
+/* Mobile sizing */
+@media (max-width: 760px) {
+    .hc-details-hero.ha-profile-hero .hc-details-avatar,
+    .hc-details-hero.ha-profile-hero .ha-profile-avatar {
+        width: 76px !important;
+        height: 76px !important;
+        min-width: 76px !important;
+        border-radius: 24px !important;
+        font-size: 24px !important;
+    }
+}
+
+
+/* ============================================================
+   FIX ADMIN PATIENT DETAILS PAGE - DARK GOTHAM THEME
+   Applies to /admin/patients/details/{patientId}
+============================================================ */
+
+/* Main patient details shell */
+.hc-details-shell.ha-profile-details-shell {
+    background: linear-gradient(145deg, rgba(12, *0, 35, 0.94), rgba(17, *7,*46, 0.92)) !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 28px 72px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    backdrop-filter: blur(22px) saturate(1.12) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(1.12) !important;
+}
+
+/* Patient hero card */
+.hc-details-hero.ha-profile-hero {
+    background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.15), transparent 34%), radial-gradient(circle at top right, rgba(34, 211, 238, 0.12), transparent 32%), linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(3, 7, 18, 0.92)) !important;
+    border: 1px solid rgba(250, 204, 21, 0.16) !important;
+    border-radius: 30px !important;
+    box-shadow: 0 28px 72px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+    /* Patient avatar */
+    .hc-details-hero.ha-profile-hero.hc-details-avatar,
+    .hc-details-hero.ha-profile-hero .ha-profile-avatar {
+        width: 84px !important;
+        height: 84px !important;
+        min-width: 84px !important;
+        border-radius: 28px !important;
+        display: grid !important;
+        place-items: center !important;
+        color: #030712 !important;
+        background: radial-gradient(circle at 30%*20%, rgba(255, 255, 255, 0.34), tr*nsparent 28%), linear-gradient(135deg, #facc15 0%, #f97316 58%, #22d3ee 100%) !important;
+        border: 1px solid rgba(250, 204, 21, 0.28) !important;
+        box-shadow: 0 20px 44px rgba(250, 204, 21, 0.22), 0 0 0 6px rgba(250, 204, 21, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+        font-size: 28px !important;
+        font-weight: 1000 !important;
+        letter-spacing: -0.04em !important;
+    }
+
+/* Hero text */
+.ha-profile-hero-content .ha-profile-kicker {
+    color: #facc15 !important;
+    font-size: 12px !important;
+    font-weight: 1000 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.09em !important;
+}
+
+.hc-details-hero.ha-profile-hero{
+    color: #ffffff !important;
+    font-weight: 1000 !important;
+}
+
+.hc-details-hero.ha-profile-hero p {
+    color: #cbd5e1 !important;
+    font-weight: 750 !important;
+}
+
+/* Hero badges */
+.ha-profile-badge,
+.hc-details-hero.ha-profile-hero .hc-status-badge,
+.ha-profile-id-pill {
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+    .hc-details-hero.ha-profile-hero .hc-status-badge.active {
+        color: #86efac !important;
+        background: rgba(34, 197, 94, 0.14) !important;
+    }
+
+    .hc-details-hero.ha-profile-hero .hc-status-badge.inactive {
+        color: #fca5a5 !important;
+        background: rgba(239, 68, 68, 0.14) !important;
+    }
+
+.ha-profile-id-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 32px !important;
+    padding: 7px 12px !important;
+    border-radius: 999px !important;
+    color: #67e8f9 !important;
+    background: rgba(34, 211, 238, 0.14) !important;
+    font-size: 12px !important;
+    font-weight: 950 !important;
+}
+
+/* Patient detail cards grid */
+.hc-details-grid.ha-profile-details-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(180px, 1fr)) !important;
+    gap: 16px !important;
+}
+
+/* Patient detail cards */
+.hc-details-card.ha-profile-detail-card {
+    position: relative !important;
+    overflow: hidden !important;
+    min-height: 138px !important;
+    padding: 22px !important;
+    border-radius: 24px !important;
+    background: radial-gradient(circle at top right, rgba(34, 211, 238, 0.08), transparent 34%), linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(3, 7, 18, 0.88)) !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+    .hc-details-card.ha-profile-detail-card::after {
+        content: "" !important;
+        position: absolute !important;
+        right: -34px !important;
+        bottom: -38px !important;
+        width: 110px !important;
+        height: 110px !important;
+        border-radius: 999px !important;
+        background: rgba(250, 204, 21, 0.06) !important;
+    }
+
+    .hc-details-card.ha-profile-detail-card span {
+        position: relative !important;
+        z-index: 1 !important;
+        display: block !important;
+        color: #facc15 !important;
+        font-size: 12px !important;
+        font-weight: 1000 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.07em !important;
+    }
+
+    .hc-details-card.ha-profile-detail-card strong {
+        position: relative !important;
+        z-index: 1 !important;
+        display: block !important;
+        margin-top: 10px !important;
+        color: #ffffff !important;
+        font-size: 16px !important;
+        line-height: 1.35 !important;
+        font-weight: 1000 !important;
+        word-break: break-word !important;
+    }
+
+    .hc-details-card.ha-profile-detail-card p {
+        position: relative !important;
+        z-index: 1 !important;
+        margin: 10px 0 0 !important;
+        color: #94a3b8 !important;
+        font-size: 13px !important;
+        line-height: 1.55 !important;
+        font-weight: 750 !important;
+    }
+
+/* Profile summary card */
+.ha-profile-summary-card {
+    margin-top: 22px !important;
+    padding: 26px !important;
+    border-radius: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 22px !important;
+    background: radial-gradient(circle at top right, rgba(250, 204, 21, 0.12), transparent 34%), radial-gradient(circle at bottom left, rgba(34, 211, 238, 0.10), transparent 34%), linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(3, 7, 18, 0.90)) !important;
+    border: 1px solid rgba(250, 204, 21, 0.16) !important;
+    box-shadow: 0 28px 72px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+    .ha-profile-summary-card > div:first-child {
+        min-width: 0 !important;
+    }
+
+    .ha-profile-summary-card span {
+        display: block !important;
+        color: #facc15 !important;
+        font-size: 12px !important;
+        font-weight: 1000 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.08em !important;
+    }
+
+    .ha-profile-summary-card h3 {
+        margin: 9px 0 0 !important;
+        color: #ffffff !important;
+        font-size: 28px !important;
+        line-height: 1.1 !important;
+        font-weight: 1000 !important;
+        letter-spacing: -0.04em !important;
+    }
+
+    .ha-profile-summary-card p {
+        max-width: 720px !important;
+        margin: 12px 0 0 !important;
+        color: #cbd5e1 !important;
+        font-size: 14px !important;
+        line-height: 1.65 !important;
+        font-weight: 750 !important;
+    }
+
+/* Summary badge should be square/avatar, not full-width bar */
+.ha-profile-summary-badge {
+    width: 78px !important;
+    height: 78px !important;
+    min-width: 78px !important;
+    border-radius: 26px !important;
+    display: grid !important;
+    place-items: center !important;
+    color: #030712 !important;
+    background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.34), transparent 28%), linear-gradient(135deg, #facc15 0%, #f97316 58%, #22d3ee 100%) !important;
+    border: 1px solid rgba(250, 204, 21, 0.28) !important;
+    box-shadow: 0 20px 44px rgba(250, 204, 21, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+    font-size: 24px !important;
+    font-weight: 1000 !important;
+}
+
+/* Details action buttons */
+.hc-details-actions .hc-secondary-btn {
+    color: #f8fafc !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+}
+
+/* Responsive layout */
+@media (max-width: 980px) {
+    .hc-details-grid.ha-profile-details-grid {
+        grid-template-columns: repeat(2, minmax(180px, 1fr)) !important;
+    }
+}
+
+@media (max-width: 760px) {
+    .hc-details-hero.ha-profile-hero {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .hc-details-grid.ha-profile-details-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .ha-profile-summary-card {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .hc-details-hero.ha-profile-hero .hc-details-avatar,
+    .hc-details-hero.ha-profile-hero .ha-profile-avatar,
+    .ha-profile-summary-badge {
+        width: 76px !important;
+        height: 76px !important;
+        min-width: 76px !important;
+        border-radius: 24px !important;
+        font-size: 24px !important;
+    }
+}
+
+
+/* ============================================================
+   APPOINTMENT DETAILS PAGE - FINAL GOTHAM DARK THEME
+   Targeted by .ha-appointment-details-page
+============================================================ */
+
+.ha-appointment-details-page.hc-details-shell {
+    padding: 30px !important;
+    border-radius: 32px !important;
+    background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.08), transparent 34%), radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.07), transparent 34%), linear-gradient(145deg, rgba(12, 20, 35, 0.96), rgba(3, 7, 18, 0.94)) !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Hero card */
+.ha-appointment-details-page .hc-details-hero {
+    padding: 28px !important;
+    border-radius: 30px !important;
+    background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.16), transparent 34%), radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.12), transparent 34%), linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(3, 7, 18, 0.94)) !important;
+    border: 1px solid rgba(250, 204, 21, 0.18) !important;
+    box-shadow: 0 28px 72px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Appointment icon/avatar */
+.ha-appointment-details-page .hc-details-avatar.appointment,
+.ha-appointment-details-page .hc-details-avatar {
+    width: 84px !important;
+    height: 84px !important;
+    min-width: 84px !important;
+    border-radius: 28px !important;
+    display: grid !important;
+    place-items: center !important;
+    color: #030712 !important;
+    background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.36), transparent 28%), linear-gradient(135deg, #facc15 0%, #f97316 58%, #22d3ee 100%) !important;
+    border: 1px solid rgba(250, 204, 21, 0.30) !important;
+    box-shadow: 0 20px 44px rgba(250, 204, 21, 0.22), 0 0 0 6px rgba(250, 204, 21, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+    font-size: 30px !important;
+    font-weight: 1000 !important;
+}
+
+/* Hero text */
+.ha-appointment-details-page .hc-details-hero h2 {
+    color: #ffffff !important;
+    font-weight: 1000 !important;
+    letter-spacing: -0.04em !important;
+}
+
+.ha-appointment-details-page .hc-details-hero p {
+    color: #cbd5e1 !important;
+    font-weight: 750 !important;
+}
+
+/* Status badges */
+.ha-appointment-details-page .hc-details-hero .hc-status-badge {
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+.ha-appointment-details-page .hc-status-badge.pending {
+    color: #fde68a !important;
+    background: rgba(250, 204, 21, 0.14) !important;
+}
+
+.ha-appointment-details-page .hc-status-badge.confirmed {
+    color: #67e8f9 !important;
+    background: rgba(34, 211, 238, 0.14) !important;
+}
+
+.ha-appointment-details-page .hc-status-badge.completed {
+    color: #86efac !important;
+    background: rgba(34, 197, 94, 0.14) !important;
+}
+
+.ha-appointment-details-page .hc-status-badge.cancelled {
+    color: #fca5a5 !important;
+    background: rgba(239, 68, 68, 0.14) !important;
+}
+
+/* Details grid */
+.ha-appointment-details-page .hc-details-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(180px, 1fr)) !important;
+    gap: 16px !important;
+}
+
+/* Details cards */
+.ha-appointment-details-page .hc-details-card {
+    position: relative !important;
+    overflow: hidden !important;
+    min-height: 118px !important;
+    padding: 22px !important;
+    border-radius: 24px !important;
+    background: radial-gradient(circle at top right, rgba(34, 211, 238, 0.08), transparent 34%), linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(3, 7, 18, 0.90)) !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+    .ha-appointment-details-page .hc-details-card::after {
+        content: "" !important;
+        position: absolute !important;
+        right: -34px !important;
+        bottom: -38px !important;
+        width: 110px !important;
+        height: 110px !important;
+        border-radius: 999px !important;
+        background: rgba(250, 204, 21, 0.06) !important;
+    }
+
+    .ha-appointment-details-page .hc-details-card span {
+        position: relative !important;
+        z-index: 1 !important;
+        display: block !important;
+        color: #facc15 !important;
+        font-size: 12px !important;
+        font-weight: 1000 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.07em !important;
+    }
+
+    .ha-appointment-details-page .hc-details-card strong {
+        position: relative !important;
+        z-index: 1 !important;
+        display: block !important;
+        margin-top: 10px !important;
+        color: #ffffff !important;
+        font-size: 15px !important;
+        line-height: 1.35 !important;
+        font-weight: 1000 !important;
+        word-break: break-word !important;
+    }
+
+/* Cancellation reason */
+.ha-appointment-details-page .hc-details-note {
+    margin-top: 22px !important;
+    padding: 22px !important;
+    border-radius: 24px !important;
+    background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.16), transparent 34%), linear-gradient(145deg, rgba(127, 29, 29, 0.26), rgba(3, 7, 18, 0.90)) !important;
+    border: 1px solid rgba(239, 68, 68, 0.28) !important;
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+    .ha-appointment-details-page .hc-details-note span {
+        display: block !important;
+        color: #fca5a5 !important;
+        font-size: 12px !important;
+        font-weight: 1000 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.08em !important;
+    }
+
+    .ha-appointment-details-page .hc-details-note p {
+        margin: 10px 0 0 !important;
+        color: #fecaca !important;
+        font-size: 14px !important;
+        line-height: 1.65 !important;
+        font-weight: 800 !important;
+    }
+
+/* Back button inside appointment details */
+.ha-appointment-details-page .hc-details-actions .hc-secondary-btn {
+    color: #f8fafc !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+}
+
+/* Responsive */
+@media (max-width: 980px) {
+    .ha-appointment-details-page .hc-details-grid {
+        grid-template-columns: repeat(2, minmax(180px, 1fr)) !important;
+    }
+}
+
+@media (max-width: 760px) {
+    .ha-appointment-details-page .hc-details-hero {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .ha-appointment-details-page .hc-details-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .ha-appointment-details-page .hc-details-avatar.appointment,
+    .ha-appointment-details-page .hc-details-avatar {
+        width: 76px !important;
+        height: 76px !important;
+        min-width: 76px !important;
+        border-radius: 24px !important;
+        font-size: 26px !important;
+    }
+}
+
+
+/* ============================================================
+   FIX ADMIN DASHBOARD TODAY OVERVIEW + QUICK ACTIONS
+   Dark Gotham theme override
+============================================================ */
+
+/* Dashboard section panels */
+.hc-dashboard-section.ha-dashboard-panel {
+    background: radial-gradient(circle at top right, rgba(34, 211, 238, 0.08), transparent 34%), linear-gradient(145deg, rgba(12, 20, 35, 0.96), rgba(3, 7, 18, 0.94)) !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    border-radius: 28px !important;
+    box-shadow: 0 28px 72px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    backdrop-filter: blur(22px) saturate(1.12) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(1.12) !important;
+}
+
+    /* Section headings */
+    .hc-dashboard-section.ha-dashboard-panel .hc-section-header h3 {
+        color: #ffffff !important;
+        font-weight: 1000 !important;
+    }
+
+    .hc-dashboard-section.ha-dashboard-panel .hc-section-header p {
+        color: #94a3b8 !important;
+        font-weight: 750 !important;
+    }
+
+/* Today overview mini cards */
+.hc-mini-card.ha-mini-card {
+    position: relative !important;
+    overflow: hidden !important;
+    min-height: 150px !important;
+    padding: 22px !important;
+    border-radius: 24px !important;
+    background: radial-gradient(circle at top right, rgba(34, 211, 238, 0.08), transparent 34%), linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(3, 7, 18, 0.90)) !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+    .hc-mini-card.ha-mini-card::after {
+        content: "" !important;
+        position: absolute !important;
+        right: -34px !important;
+        bottom: -38px !important;
+        width: 110px !important;
+        height: 110px !important;
+        border-radius: 999px !important;
+        background: rgba(250, 204, 21, 0.06) !important;
+    }
+
+    .hc-mini-card.ha-mini-card .hc-mini-label,
+    .hc-mini-card.ha-mini-card span {
+        position: relative !important;
+        z-index: 1 !important;
+        display: block !important;
+        color: #facc15 !important;
+        font-size: 12px !important;
+        font-weight: 1000 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.07em !important;
+    }
+
+    .hc-mini-card.ha-mini-card strong {
+        position: relative !important;
+        z-index: 1 !important;
+        display: block !important;
+        margin-top: 14px !important;
+        color: #38bdf8 !important;
+        font-size: 42px !important;
+        line-height: 1 !important;
+        font-weight: 1000 !important;
+    }
+
+    .hc-mini-card.ha-mini-card p {
+        position: relative !important;
+        z-index: 1 !important;
+        margin: 14px 0 0 !important;
+        color: #94a3b8 !important;
+        font-size: 13px !important;
+        line-height: 1.55 !important;
+        font-weight: 750 !important;
+    }
+
+    /* Today overview color variants */
+    .hc-mini-card.ha-mini-card.success strong {
+        color: #22c55e !important;
+    }
+
+    .hc-mini-card.ha-mini-card.warning strong {
+        color: #f59e0b !important;
+    }
+
+    .hc-mini-card.ha-mini-card.danger strong {
+        color: #ef4444 !important;
+    }
+
+    .hc-mini-card.ha-mini-card.success {
+        background: radial-gradient(circle at top right, rgba(34, 197, 94, 0.10), transparent 34%), linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(3, 7, 18, 0.90)) !important;
+    }
+
+    .hc-mini-card.ha-mini-card.warning {
+        background: radial-gradient(circle at top right, rgba(245, 158, 11, 0.12), transparent 34%), linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(3, 7, 18, 0.90)) !important;
+    }
+
+    .hc-mini-card.ha-mini-card.danger {
+        background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.12), transparent 34%), linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(3, 7, 18, 0.90)) !important;
+    }
+
+/* Quick action cards */
+.hc-action-card.ha-action-card {
+    position: relative !important;
+    overflow: hidden !important;
+    min-height: 88px !important;
+    padding: 18px 20px !important;
+    border-radius: 24px !important;
+    color: #ffffff !important;
+    text-align: left !important;
+    background: radial-gradient(circle at top right, rgba(34, 211, 238, 0.08), transparent 34%), linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(3, 7, 18, 0.90)) !important;
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+}
+
+    .hc-action-card.ha-action-card:hover {
+        transform: translateY(-4px) !important;
+        border-color: rgba(250, 204, 21, 0.28) !important;
+        background: radial-gradient(circle at top right, rgba(250, 204, 21, 0.12), transparent 34%), linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(3, 7, 18, 0.94)) !important;
+        box-shadow: 0 30px 72px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    }
+
+    /* Quick action icon */
+    .hc-action-card.ha-action-card > span {
+        width: 52px !important;
+        height: 52px !important;
+        min-width: 52px !important;
+        border-radius: 18px !important;
+        display: grid !important;
+        place-items: center !important;
+        color: #030712 !important;
+        background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.34), transparent 28%), linear-gradient(135deg, #facc15 0%, #f97316 58%, #22d3ee 100%) !important;
+        box-shadow: 0 16px 36px rgba(250, 204, 21, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.38) !important;
+        font-size: 22px !important;
+        font-weight: 1000 !important;
+    }
+
+    /* Quick action text */
+    .hc-action-card.ha-action-card strong {
+        display: block !important;
+        color: #ffffff !important;
+        font-size: 15px !important;
+        font-weight: 1000 !important;
+    }
+
+    .hc-action-card.ha-action-card p {
+        margin: 6px 0 0 !important;
+        color: #94a3b8 !important;
+        font-size: 13px !important;
+        line-height: 1.5 !important;
+        font-weight: 750 !important;
+    }
+
+/* Quick action layout */
+.hc-quick-actions {
+    display: grid !important;
+    gap: 16px !important;
+}
+
+/* Mini report grid spacing */
+.hc-mini-report-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+}
+
+    /* Last odd mini card should not look stretched awkwardly */
+    .hc-mini-report-grid .hc-mini-card.ha-mini-card:last-child:nth-child(odd) {
+        max-width: calc(50% - 8px) !important;
+    }
+
+/* Responsive dashboard panels */
+@media (max-width: 980px) {
+    .hc-mini-report-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+        .hc-mini-report-grid .hc-mini-card.ha-mini-card:last-child:nth-child(odd) {
+            max-width: none !important;
+        }
+}
+
+@media (max-width: 640px) {
+    .hc-action-card.ha-action-card {
+        align-items: flex-start !important;
+        gap: 14px !important;
+    }
+
+        .hc-action-card.ha-action-card > span {
+            width: 46px !important;
+            height: 46px !important;
+            min-width: 46px !important;
+            border-radius: 16px !important;
+            font-size: 20px !important;
+        }
+}
+
+/* ============================================================
+   FIX DASHBOARD TODAY OVERVIEW CANCELLED CARD SIZE
+   Make last odd mini-card same width as other cards
+============================================================ */
+
+.hc-mini-report-grid .hc-mini-card.ha-mini-card:last-child:nth-child(odd) {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+/* Keep Today Overview cards consistent */
+.hc-mini-report-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+    align-items: stretch !important;
+}
+
+.hc-mini-card.ha-mini-card {
+    width: 100% !important;
+    height: 100% !important;
+}

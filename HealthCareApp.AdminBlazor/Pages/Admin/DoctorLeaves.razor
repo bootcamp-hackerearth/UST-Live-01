@@ -1,0 +1,457 @@
+﻿@page "/admin/doctors/leaves/{doctorId:int}"
+@layout AdminLayout
+
+@using HealthCareApp.Shared.Dtos.DoctorLeaves
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@using System.Globalization
+
+@inject IAuthService AuthService
+@inject IDoctorAdminService DoctorService
+@inject IDoctorLeaveAdminService DoctorLeaveService
+@inject NavigationManager Navigation
+
+<PageTitle>Doctor Leaves | HealthAxis Admin</PageTitle>
+
+<div class="hc-page-heading">
+    <div>
+        <h1>Doctor Leave History</h1>
+
+        <p>
+            Review doctor unavailability records and leave date ranges.
+        </p>
+    </div>
+
+    <button class="hc-secondary-btn" @onclick="BackToDoctors">
+        Back to Doctors
+    </button>
+</div>
+
+@if (isLoading)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+
+            <p>Loading doctor leave history...</p>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="hc-alert-error">
+        @errorMessage
+    </div>
+
+    <button class="hc-secondary-btn mt-3" @onclick="BackToDoctors">
+        Back to Doctors
+    </button>
+}
+else
+{
+    <section class="hc-details-shell ha-profile-details-shell">
+        <div class="hc-details-hero ha-profile-hero">
+            <div class="hc-details-avatar ha-profile-avatar">
+                @GetInitials(doctorName)
+            </div>
+
+            <div class="ha-profile-hero-content">
+                <div class="ha-profile-kicker">
+                    HealthAxis Doctor Leave Profile
+                </div>
+
+                <h2>@doctorName</h2>
+
+                <p>
+                    Doctor ID: @doctorId
+                </p>
+
+                <div class="hc-details-badge-row">
+                    <span class="hc-status-badge confirmed ha-profile-badge">
+                        Total Leaves: @leaves.Count
+                    </span>
+
+                    @if (UpcomingLeavesCount > 0)
+                    {
+                        <span class="hc-status-badge pending ha-profile-badge">
+                            Upcoming: @UpcomingLeavesCount
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="hc-status-badge active ha-profile-badge">
+                            No Upcoming Leave
+                        </span>
+                    }
+
+                    @if (IsCurrentlyOnLeave)
+                    {
+                        <span class="hc-status-badge cancelled ha-profile-badge">
+                            Currently On Leave
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="hc-status-badge completed ha-profile-badge">
+                            Available Today
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="hc-doctor-stat-grid ha-management-stat-grid">
+            <div class="hc-doctor-stat-card blue ha-management-stat-card">
+                <div class="ha-stat-card-content">
+                    <span>Total Leave Records</span>
+
+                    <strong>@leaves.Count</strong>
+
+                    <small>All recorded unavailable ranges</small>
+                </div>
+
+                <div class="ha-stat-card-icon">⛔</div>
+            </div>
+
+            <div class="hc-doctor-stat-card green ha-management-stat-card">
+                <div class="ha-stat-card-content">
+                    <span>Upcoming Leaves</span>
+
+                    <strong>@UpcomingLeavesCount</strong>
+
+                    <small>Leave ranges starting today or later</small>
+                </div>
+
+                <div class="ha-stat-card-icon">→</div>
+            </div>
+
+            <div class="hc-doctor-stat-card purple ha-management-stat-card">
+                <div class="ha-stat-card-content">
+                    <span>Past Leaves</span>
+
+                    <strong>@PastLeavesCount</strong>
+
+                    <small>Leave ranges already completed</small>
+                </div>
+
+                <div class="ha-stat-card-icon">◷</div>
+            </div>
+
+            <div class="hc-doctor-stat-card red ha-management-stat-card">
+                <div class="ha-stat-card-content">
+                    <span>Today Status</span>
+
+                    <strong>@TodayStatusText</strong>
+
+                    <small>Based on today's date</small>
+                </div>
+
+                <div class="ha-stat-card-icon">!</div>
+            </div>
+        </div>
+
+        <section class="hc-list-panel ha-management-panel">
+            <div class="ha-list-panel-header">
+                <div>
+                    <h3>Leave Directory</h3>
+
+                    <p>
+                        Date ranges where this doctor marked themselves unavailable.
+                    </p>
+                </div>
+
+                <span class="ha-result-count">
+                    @leaves.Count record(s)
+                </span>
+            </div>
+
+            @if (!leaves.Any())
+            {
+                <div class="hc-empty-state ha-empty-state">
+                    <div class="hc-empty-icon">⛔</div>
+
+                    <h3>No leave history found</h3>
+
+                    <p>
+                        This doctor has not created any leave or unavailability records yet.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="hc-table-wrapper">
+                    <table class="hc-admin-table ha-management-table">
+                        <thead>
+                            <tr>
+                                <th>Leave Range</th>
+
+                                <th>Reason</th>
+
+                                <th>Created Date</th>
+
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var leave in leaves)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="ha-appointment-id-card">
+                                            <strong>
+                                                @FormatDate(leave.StartDate)
+                                                -
+                                                @FormatDate(leave.EndDate)
+                                            </strong>
+
+                                            <span>
+                                                @GetLeaveDurationText(leave)
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="ha-table-strong-text">
+                                            @leave.Reason
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="ha-time-pill">
+                                            @FormatDateTime(leave.CreatedDateUtc)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="@GetLeaveStatusClass(leave)">
+                                            @GetLeaveStatusText(leave)
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <div class="hc-details-actions">
+            <button class="hc-secondary-btn" @onclick="BackToDoctors">
+                Back
+            </button>
+        </div>
+    </section>
+}
+
+@code {
+    [Parameter]
+    public int doctorId { get; set; }
+
+    private List<DoctorLeaveDto> leaves = new();
+
+    private string doctorName = "Doctor";
+
+    private bool isLoading = true;
+
+    private string? errorMessage;
+
+    private int UpcomingLeavesCount
+    {
+        get
+        {
+            return leaves.Count(leave =>
+                ToDateTime(leave.EndDate).Date >= DateTime.Today);
+        }
+    }
+
+    private int PastLeavesCount
+    {
+        get
+        {
+            return leaves.Count(leave =>
+                ToDateTime(leave.EndDate).Date < DateTime.Today);
+        }
+    }
+
+    private bool IsCurrentlyOnLeave
+    {
+        get
+        {
+            return leaves.Any(leave =>
+                DateTime.Today >= ToDateTime(leave.StartDate).Date &&
+                DateTime.Today <= ToDateTime(leave.EndDate).Date);
+        }
+    }
+
+    private string TodayStatusText
+    {
+        get
+        {
+            return IsCurrentlyOnLeave
+                ? "On Leave"
+                : "Available";
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo(
+                "/login?sessionExpired=true",
+                replace: true);
+
+            return;
+        }
+
+        await LoadDoctorLeavesAsync();
+    }
+
+    private async Task LoadDoctorLeavesAsync()
+    {
+        try
+        {
+            isLoading = true;
+
+            errorMessage = null;
+
+            var doctor = await DoctorService.GetDoctorByIdAsync(doctorId);
+
+            if (doctor is null)
+            {
+                errorMessage = "Doctor profile was not found.";
+
+                return;
+            }
+
+            doctorName = doctor.FullName;
+
+            leaves = await DoctorLeaveService.GetDoctorLeavesAsync(doctorId);
+
+            leaves = leaves
+                .OrderByDescending(leave => ToDateTime(leave.CreatedDateUtc))
+                .ToList();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            errorMessage = "Unable to load doctor leave history. Please check whether the API is running.";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Unable to load doctor leave history. {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void BackToDoctors()
+    {
+        Navigation.NavigateTo("/admin/doctors");
+    }
+
+    private static string FormatDate(DateOnly date)
+    {
+        return date.ToString("dd MMM yyyy", CultureInfo.InvariantCulture);
+    }
+
+    private static string FormatDateTime(DateTime date)
+    {
+        if (date == DateTime.MinValue)
+        {
+            return "Not Available";
+        }
+
+        return date.ToString("dd MMM yyyy HH:mm", CultureInfo.InvariantCulture);
+    }
+
+    private static DateTime ToDateTime(DateOnly date)
+    {
+        return date.ToDateTime(TimeOnly.MinValue);
+    }
+
+    private static DateTime ToDateTime(DateTime date)
+    {
+        return date;
+    }
+
+    private static string GetLeaveDurationText(DoctorLeaveDto leave)
+    {
+        var startDate = ToDateTime(leave.StartDate);
+
+        var endDate = ToDateTime(leave.EndDate);
+
+        var totalDays = (endDate.Date - startDate.Date).Days + 1;
+
+        return totalDays == 1
+            ? "1 day unavailable"
+            : $"{totalDays} days unavailable";
+    }
+
+    private static string GetLeaveStatusText(DoctorLeaveDto leave)
+    {
+        var today = DateTime.Today;
+
+        var startDate = ToDateTime(leave.StartDate).Date;
+
+        var endDate = ToDateTime(leave.EndDate).Date;
+
+        if (today < startDate)
+        {
+            return "Upcoming";
+        }
+
+        if (today > endDate)
+        {
+            return "Completed";
+        }
+
+        return "Active Leave";
+    }
+
+    private static string GetLeaveStatusClass(DoctorLeaveDto leave)
+    {
+        var status = GetLeaveStatusText(leave);
+
+        return status switch
+        {
+            "Upcoming" =>
+                "hc-status-badge pending ha-appointment-status",
+
+            "Completed" =>
+                "hc-status-badge completed ha-appointment-status",
+
+            "Active Leave" =>
+                "hc-status-badge cancelled ha-appointment-status",
+
+            _ =>
+                "hc-status-badge ha-appointment-status"
+        };
+    }
+
+    private static string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return "DR";
+        }
+
+        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length == 1)
+        {
+            return parts[0].Length >= 2
+                ? parts[0][..2].ToUpper(CultureInfo.InvariantCulture)
+                : parts[0].ToUpper(CultureInfo.InvariantCulture);
+        }
+
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper(CultureInfo.InvariantCulture);
+    }
+}

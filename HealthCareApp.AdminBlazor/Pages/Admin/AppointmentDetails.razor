@@ -46,7 +46,7 @@ else if (!string.IsNullOrWhiteSpace(errorMessage))
 }
 else if (appointment is not null)
 {
-    <section class="hc-details-shell">
+    <section class="hc-details-shell ha-appointment-details-page">
         <div class="hc-details-hero">
             <div class="hc-details-avatar appointment">
                 ◷
@@ -84,50 +84,50 @@ else if (appointment is not null)
             </div>
         </div>
 
-        <div class="hc-details-grid">
-            <div class="hc-details-card">
+        <div class="hc-details-grid ha-appointment-details-grid">
+            <div class="hc-details-card ha-appointment-detail-card">
                 <span>Appointment ID</span>
 
                 <strong>@appointment.AppointmentId</strong>
             </div>
 
-            <div class="hc-details-card">
+            <div class="hc-details-card ha-appointment-detail-card">
                 <span>Patient</span>
 
                 <strong>@appointment.PatientName</strong>
             </div>
 
-            <div class="hc-details-card">
+            <div class="hc-details-card ha-appointment-detail-card">
                 <span>Patient ID</span>
 
                 <strong>@appointment.PatientId</strong>
             </div>
 
-            <div class="hc-details-card">
+            <div class="hc-details-card ha-appointment-detail-card">
                 <span>Doctor</span>
 
                 <strong>@appointment.DoctorName</strong>
             </div>
 
-            <div class="hc-details-card">
+            <div class="hc-details-card ha-appointment-detail-card">
                 <span>Doctor ID</span>
 
                 <strong>@appointment.DoctorId</strong>
             </div>
 
-            <div class="hc-details-card">
+            <div class="hc-details-card ha-appointment-detail-card">
                 <span>Scheduled Date</span>
 
                 <strong>@FormatDate(scheduledDate)</strong>
             </div>
 
-            <div class="hc-details-card">
+            <div class="hc-details-card ha-appointment-detail-card">
                 <span>Time Slot</span>
 
                 <strong>@appointment.TimeSlot</strong>
             </div>
 
-            <div class="hc-details-card">
+            <div class="hc-details-card ha-appointment-detail-card">
                 <span>Status</span>
 
                 <strong>@appointment.Status</strong>
@@ -136,7 +136,7 @@ else if (appointment is not null)
 
         @if (appointment.Status == AppointmentStatus.Cancelled)
         {
-            <div class="hc-details-note">
+            <div class="hc-details-note ha-appointment-cancellation-note">
                 <span>Cancellation Reason</span>
 
                 <p>

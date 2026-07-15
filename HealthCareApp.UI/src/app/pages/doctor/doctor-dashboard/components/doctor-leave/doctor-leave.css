@@ -578,3 +578,111 @@
     flex-direction: column;
   }
 }
+
+
+/* ============================================================
+   FIX DOCTOR LEAVE FORM FIELD OVERFLOW + DATE PICKER VISIBILITY
+   Start Date, End Date, Reason textarea
+============================================================ */
+
+/* Ensure all Doctor Leave component elements calculate width safely */
+.dl-command-page,
+.dl-command-page *,
+.dl-command-page *::before,
+.dl-command-page *::after {
+  box-sizing: border-box;
+}
+
+/* Keep create leave panel content inside the card */
+.dl-form-panel {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Keep form grid and cards from overflowing */
+.dl-form-grid {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.dl-field-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dl-field-card label {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: block;
+}
+
+/* Fix input and textarea protruding from cards */
+.dl-field-card input,
+.dl-field-card textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Date input specific fix */
+.dl-field-card input[type="date"] {
+  color-scheme: light;
+  padding-right: 44px;
+}
+
+/* Make calendar picker icon visible in dark theme */
+.dl-field-card input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
+  filter: invert(1) brightness(1.7);
+}
+
+/* Date text visibility */
+.dl-field-card input[type="date"]::-webkit-datetime-edit,
+.dl-field-card input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+.dl-field-card input[type="date"]::-webkit-datetime-edit-text,
+.dl-field-card input[type="date"]::-webkit-datetime-edit-day-field,
+.dl-field-card input[type="date"]::-webkit-datetime-edit-month-field,
+.dl-field-card input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #f8fafc;
+}
+
+/* Reason textarea safety */
+.dl-field-card textarea {
+  max-width: 100%;
+  min-height: 130px;
+  resize: vertical;
+  overflow-x: hidden;
+}
+
+/* Placeholder visibility */
+.dl-field-card input::placeholder,
+.dl-field-card textarea::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+/* Keep reason counter aligned inside card */
+.dl-counter {
+  width: 100%;
+  max-width: 100%;
+  text-align: right;
+}
+
+/* Responsive field layout safety */
+@media (max-width: 760px) {
+  .dl-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dl-field-card input[type="date"] {
+    padding-right: 40px;
+  }
+}

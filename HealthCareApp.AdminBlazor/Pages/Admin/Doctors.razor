@@ -214,6 +214,10 @@ else
 
                                 <td>
                                     <div class="hc-table-actions">
+                                        <button class="hc-action-btn view"
+                                             @onclick="() => GoToDoctorLeaves(doctor.DoctorId)">
+                                            Leaves
+                                        </button>
                                         <button class="hc-action-btn edit"
                                                 @onclick="() => GoToEditDoctor(doctor.DoctorId)">
                                             Edit
@@ -702,5 +706,10 @@ else
             await searchCancellationTokenSource.CancelAsync();
             searchCancellationTokenSource.Dispose();
         }
+    }
+
+    private void GoToDoctorLeaves(int doctorId)
+    {
+        Navigation.NavigateTo($"/admin/doctors/leaves/{doctorId}");
     }
 }

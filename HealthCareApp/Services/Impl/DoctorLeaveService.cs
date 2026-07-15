@@ -187,7 +187,7 @@ namespace HealthCareApp.Services.Impl
                 leave.StartDate,
                 leave.EndDate);
 
-            await NotifyAffectedPatientsForLeaveAsync(doctor,leave.StartDate,leave.EndDate);
+            await CancelAffectedAppointmentsAndNotifyPatientsAsync(doctor,leave.StartDate,leave.EndDate,leave.Reason);
 
             return new DoctorLeaveDto
             {
@@ -329,6 +329,99 @@ namespace HealthCareApp.Services.Impl
                 _logger.LogWarning(
                     ex,
                     "Failed to create patient notifications for doctor leave. DoctorId: {DoctorId}",
+                    doctor.DoctorId);
+            }
+        }
+
+        private async Task CancelAffectedAppointmentsAndNotifyPatientsAsync(
+    Doctor doctor,
+    DateOnly startDate,
+    DateOnly endDate,
+    string leaveReason)
+        {
+            if (doctor is null)
+            {
+                _logger.LogWarning(
+                    "Affected appointment cancellation skipped because doctor object was null.");
+
+                return;
+            }
+
+            try
+            {
+                var startDateTime = startDate.ToDateTime(TimeOnly.MinValue);
+
+                var endDateTime = endDate.ToDateTime(TimeOnly.MaxValue);
+
+                var affectedAppointments = await _context.Appointments
+                    .Where(appointment =>
+                        appointment.DoctorId == doctor.DoctorId &&
+                        appointment.ScheduledDate >= startDateTime &&
+                        appointment.ScheduledDate <= endDateTime &&
+                        (
+                            appointment.Status == AppointmentStatus.Pending ||
+                            appointment.Status == AppointmentStatus.Confirmed
+                        ))
+                    .ToListAsync();
+
+                if (affectedAppointments.Count == 0)
+                {
+                    _logger.LogInformation(
+                        "No pending or confirmed appointments found for doctor leave. DoctorId: {DoctorId}",
+                        doctor.DoctorId);
+
+                    return;
+                }
+
+                var doctorName = string.IsNullOrWhiteSpace(doctor.DoctorName)
+                    ? "your doctor"
+                    : doctor.DoctorName;
+
+                var notifications = new List<PatientNotification>();
+
+                foreach (var appointment in affectedAppointments)
+                {
+                    string formattedDate =
+                        appointment.ScheduledDate.ToString("dd MMM yyyy");
+
+                    string timeSlot = string.IsNullOrWhiteSpace(appointment.TimeSlot)
+                        ? "the scheduled time"
+                        : appointment.TimeSlot;
+
+                    appointment.Status = AppointmentStatus.Cancelled;
+
+                    appointment.CancellationReason =
+                        $"Doctor unavailable due to leave from {startDate:dd MMM yyyy} to {endDate:dd MMM yyyy}. Reason: {leaveReason}";
+
+                    notifications.Add(new PatientNotification
+                    {
+                        PatientId = appointment.PatientId,
+                        DoctorId = doctor.DoctorId,
+                        AppointmentId = appointment.AppointmentId,
+                        Title = "Appointment Cancelled - Doctor Unavailable",
+                        Message =
+                            $"Dr. {doctorName} is unavailable on {formattedDate}. Your appointment at {timeSlot} has been cancelled. Please use Rebook Now to select another date or slot.",
+                        NotificationType = NotificationTypes.DoctorLeave,
+                        IsRead = false,
+                        CreatedDateUtc = DateTime.UtcNow
+                    });
+                }
+
+                _context.PatientNotifications.AddRange(notifications);
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation(
+                    "Cancelled {AppointmentCount} appointment(s) and created {NotificationCount} patient notification(s) for DoctorId: {DoctorId}",
+                    affectedAppointments.Count,
+                    notifications.Count,
+                    doctor.DoctorId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "Failed to cancel affected appointments or create notifications for doctor leave. DoctorId: {DoctorId}",
                     doctor.DoctorId);
             }
         }

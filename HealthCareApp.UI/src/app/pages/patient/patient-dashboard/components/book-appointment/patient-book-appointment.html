@@ -258,14 +258,13 @@
           </strong>
 
           <p>
-            {{ doctorLeaveMessage || 'The selected doctor is unavailable on this date. Please choose another appointment
-            date.' }}
+            {{ doctorLeaveMessage || 'The selected doctor is unavailable on this date. Please choose another appointment date.' }}
           </p>
         </div>
       </div>
       }
 
-      @if (!isLoadingSlots && timeSlots.length === 0) {
+      @if (!isLoadingSlots && timeSlots.length === 0 && !isDoctorOnLeave) {
       <div class="ba-info-card">
         No slots available for this doctor.
       </div>

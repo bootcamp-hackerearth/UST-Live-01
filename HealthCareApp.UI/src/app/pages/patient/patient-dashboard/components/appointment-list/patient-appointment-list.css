@@ -721,3 +721,173 @@
     width: 100%;
   }
 }
+
+
+/* ============================================================
+   FIX PATIENT APPOINTMENT LIST FILTER LAYOUT
+   Search input overflow, date picker visibility, page size overlap
+============================================================ */
+
+/* Ensure all appointment list elements calculate width correctly */
+.al-command-page,
+.al-command-page *,
+.al-command-page *::before,
+.al-command-page *::after {
+  box-sizing: border-box;
+}
+
+/* Keep filter panel content inside card */
+.al-filter-panel {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Search box should never protrude */
+.al-search-box {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.al-search-box label {
+  width: 100%;
+  min-width: 0;
+}
+
+.al-search-box input {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Safer filter row layout */
+.al-filter-row {
+  width: 100%;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns:
+    minmax(180px, 1fr)
+    minmax(220px, 1fr)
+    minmax(130px, 160px)
+    auto;
+  gap: 14px;
+  align-items: end;
+}
+
+/* Prevent labels/select/input from overflowing their grid columns */
+.al-filter-row label {
+  min-width: 0;
+  width: 100%;
+}
+
+.al-filter-row input,
+.al-filter-row select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Page size selector should not overlap date picker */
+.al-filter-row label:nth-child(3) {
+  min-width: 130px;
+}
+
+/* Clear filters button alignment */
+.al-clear-btn {
+  width: auto;
+  min-width: 118px;
+  height: 50px;
+  align-self: end;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Make status/page-size dropdowns visually consistent */
+.al-filter-row select {
+  appearance: auto;
+  color-scheme: dark;
+  padding-right: 38px;
+}
+
+/* Date picker dark theme visibility */
+.al-filter-row input[type="date"] {
+  color-scheme: light;
+  padding-right: 44px;
+}
+
+.al-filter-row input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
+  filter: invert(1) brightness(1.7);
+}
+
+.al-filter-row input[type="date"]::-webkit-datetime-edit {
+  color: #f8fafc;
+}
+
+.al-filter-row input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  color: #f8fafc;
+}
+
+.al-filter-row input[type="date"]::-webkit-datetime-edit-text,
+.al-filter-row input[type="date"]::-webkit-datetime-edit-day-field,
+.al-filter-row input[type="date"]::-webkit-datetime-edit-month-field,
+.al-filter-row input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #f8fafc;
+}
+
+/* Placeholder visibility */
+.al-search-box input::placeholder,
+.al-filter-row input::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
+/* Responsive layout */
+@media (max-width: 1180px) {
+  .al-filter-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+ }
+
+  .al-clear-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .al-filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .al-filter-row label:nth-child(3) {
+    min-width: 0;
+  }
+
+  .al-clear-btn {
+   width: 100%;
+  }
+
+  .al-filter-panel {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 520px) {
+  .al-search-box input,
+  .al-filter-row input,
+  .al-filter-row select {
+   height: 48px;
+    font-size: 13px;
+ }
+
+}
+
+  .al-filter-row input[type="date"] {
+    padding-right: 40px;
+  
+}
