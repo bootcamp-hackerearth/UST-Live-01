@@ -6,7 +6,7 @@
             TimeSpan.FromSeconds(2);
 
         private static readonly TimeSpan HeartbeatDelay =
-            TimeSpan.FromSeconds(10);
+            TimeSpan.FromMinutes(1);
 
         private readonly ILogger<HeartbeatService> _logger;
 
@@ -19,74 +19,60 @@
         protected override async Task ExecuteAsync(
             CancellationToken stoppingToken)
         {
-            var heartbeatCount = 0;
+            var heartbeatCount = 0L;
+            var serviceStartedAtUtc = DateTime.UtcNow;
 
             try
             {
-                await Task.Delay(
-                    InitialDelay,
-                    stoppingToken);
+                await Task.Delay(InitialDelay, stoppingToken);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation(
-                    "\n" +
-                    "==================================================\n" +
-                    " HEARTBEAT SERVICE STARTED\n" +
-                    " Interval       : {IntervalSeconds} seconds\n" +
-                    " Started At UTC : {StartedAtUtc}\n" +
-                    "==================================================",
-                    HeartbeatDelay.TotalSeconds,
-                    DateTime.UtcNow);
-                }
+                serviceStartedAtUtc = DateTime.UtcNow;
+
+                _logger.LogInformation(
+                    "Heartbeat service started with an interval of {HeartbeatIntervalMinutes} minute(s). {EventType}",
+                    HeartbeatDelay.TotalMinutes,
+                    "HeartbeatServiceStarted");
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     heartbeatCount++;
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogInformation(
-                        "\n" +
-                        "-------------------- HEARTBEAT --------------------\n" +
-                        " Status          : API is alive\n" +
-                        " Heartbeat Count : {HeartbeatCount}\n" +
-                        " Checked At UTC  : {CheckedAtUtc}\n" +
-                        "---------------------------------------------------",
+
+                    _logger.LogDebug(
+                        "API heartbeat {HeartbeatCount} completed successfully. Service uptime is {ServiceUptimeSeconds} seconds. {EventType}",
                         heartbeatCount,
-                        DateTime.UtcNow);
-                    }
+                        (DateTime.UtcNow - serviceStartedAtUtc).TotalSeconds,
+                        "ApiHeartbeatCompleted");
 
                     await Task.Delay(
                         HeartbeatDelay,
                         stoppingToken);
                 }
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
+                when (stoppingToken.IsCancellationRequested)
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation(
-                        ex,
-                        "\n" +
-                        "---------------------------------------------------\n" +
-                        " HEARTBEAT SERVICE SHUTDOWN SIGNAL RECEIVED\n" +
-                        "---------------------------------------------------");
-                }
+                _logger.LogInformation(
+                    "Heartbeat service received a shutdown signal after {HeartbeatCount} heartbeat(s). {EventType}",
+                    heartbeatCount,
+                    "HeartbeatServiceStopping");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Heartbeat service stopped because of an unexpected error after {HeartbeatCount} heartbeat(s). {EventType}",
+                    heartbeatCount,
+                    "HeartbeatServiceFailed");
+
+                throw;
             }
             finally
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation(
-                    "\n" +
-                    "==================================================\n" +
-                    " HEARTBEAT SERVICE STOPPED GRACEFULLY\n" +
-                    " Total Heartbeats : {HeartbeatCount}\n" +
-                    " Stopped At UTC   : {StoppedAtUtc}\n" +
-                    "==================================================",
+                _logger.LogInformation(
+                    "Heartbeat service stopped after {HeartbeatCount} heartbeat(s) and {ServiceUptimeSeconds} seconds of uptime. {EventType}",
                     heartbeatCount,
-                    DateTime.UtcNow);
-                }
+                    (DateTime.UtcNow - serviceStartedAtUtc).TotalSeconds,
+                    "HeartbeatServiceStopped");
             }
         }
     }

@@ -24,45 +24,52 @@ namespace HealthApp.Api.Consumers
         {
             var appointment = context.Message;
 
-            await _notificationService.CreateNotificationAsync(
-                new CreateNotificationDto
-                {
-                    RecipientUserId = appointment.PatientUserId,
-                    NotificationType = "AppointmentBooked",
-                    Title = "Appointment Booked",
-                    Message =
-                        $"Your appointment with {appointment.DoctorName} " +
-                        $"on {appointment.ScheduledDate:dd-MMM-yyyy} " +
-                        $"at {appointment.TimeSlot} has been booked successfully.",
-                    RelatedEntityId = appointment.AppointmentId,
-                    RelatedEntityType = "Appointment"
-                });
-
-            if (_logger.IsEnabled(LogLevel.Information))
+            try
             {
-                _logger.LogInformation(
-                "\n" +
-                "================ NOTIFICATION CREATED FROM EVENT ================\n" +
-                " Event Type      : AppointmentBookedEvent\n" +
-                " Appointment Id  : {AppointmentId}\n" +
-                " Patient Id      : {PatientId}\n" +
-                " Patient User Id : {PatientUserId}\n" +
-                " Patient Name    : {PatientName}\n" +
-                " Doctor Id       : {DoctorId}\n" +
-                " Doctor Name     : {DoctorName}\n" +
-                " Scheduled Date  : {ScheduledDate}\n" +
-                " Time Slot       : {TimeSlot}\n" +
-                " Message Id      : {MessageId}\n" +
-                "===============================================================",
-                appointment.AppointmentId,
-                appointment.PatientId,
-                appointment.PatientUserId,
-                appointment.PatientName,
-                appointment.DoctorId,
-                appointment.DoctorName,
-                appointment.ScheduledDate,
-                appointment.TimeSlot,
-                context.MessageId);
+                await _notificationService.CreateNotificationAsync(
+                    new CreateNotificationDto
+                    {
+                        RecipientUserId = appointment.PatientUserId,
+                        NotificationType = "AppointmentBooked",
+                        Title = "Appointment Booked",
+                        Message =
+                            $"Your appointment with {appointment.DoctorName} " +
+                            $"on {appointment.ScheduledDate:dd MMM yyyy} " +
+                            $"at {appointment.TimeSlot} has been booked " +
+                            "successfully.",
+                        RelatedEntityId = appointment.AppointmentId,
+                        RelatedEntityType = "Appointment"
+                    },
+                    context.CancellationToken);
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
+                        "Appointment booking notification created for appointment {AppointmentId}, patient {PatientId}, doctor {DoctorId}, and message {MessageId}. Event type: {EventType}",
+                        appointment.AppointmentId,
+                        appointment.PatientId,
+                        appointment.DoctorId,
+                        context.MessageId,
+                        "AppointmentBookingNotificationCreated");
+                }
+            }
+            catch (OperationCanceledException)
+                when (context.CancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Failed to create appointment booking notification for appointment {AppointmentId}, patient {PatientId}, doctor {DoctorId}, and message {MessageId}. Event type: {EventType}",
+                    appointment.AppointmentId,
+                    appointment.PatientId,
+                    appointment.DoctorId,
+                    context.MessageId,
+                    "AppointmentBookingNotificationFailed");
+
+                throw;
             }
         }
     }

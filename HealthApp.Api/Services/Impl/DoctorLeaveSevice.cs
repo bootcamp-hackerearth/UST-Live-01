@@ -82,6 +82,19 @@ namespace HealthApp.Api.Services.Impl
                 ? $"{totalCount} active appointment(s) will be cancelled if this leave is confirmed."
                 : "No active appointments will be affected by this leave.";
 
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    "Doctor leave preview completed for doctor {DoctorId} from {StartDate} to {EndDate}. Pending {PendingAppointmentCount}, confirmed {ConfirmedAppointmentCount}, total affected {AffectedAppointmentCount}. Event type: {EventType}",
+                    doctorId,
+                    dto.StartDate,
+                    dto.EndDate,
+                    pendingCount,
+                    confirmedCount,
+                    totalCount,
+                    "DoctorLeavePreviewed");
+            }
+
             return new DoctorLeavePreviewDto
             {
                 DoctorId = doctorId,
@@ -146,14 +159,38 @@ namespace HealthApp.Api.Services.Impl
 
                 await transaction.CommitAsync(ct);
 
+                var cancelledAppointmentIds = affectedAppointments
+                    .Select(appointment => appointment.AppointmentId)
+                    .ToList();
+
                 var result = new DoctorLeaveCreationResultDto
                 {
                     Leave = _mapper.Map<DoctorLeaveDto>(createdLeave),
-                    CancelledAppointmentCount = affectedAppointments.Count,
-                    CancelledAppointmentIds = affectedAppointments
-                        .Select(appointment => appointment.AppointmentId)
-                        .ToList()
+                    CancelledAppointmentCount = cancelledAppointmentIds.Count,
+                    CancelledAppointmentIds = cancelledAppointmentIds
                 };
+
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
+                        "Doctor leave {DoctorLeaveId} created for doctor {DoctorId} from {StartDate} to {EndDate}. Cancelled {CancelledAppointmentCount} appointment(s). Event type: {EventType}",
+                        createdLeave.DoctorLeaveId,
+                        doctorId,
+                        createdLeave.StartDate,
+                        createdLeave.EndDate,
+                        cancelledAppointmentIds.Count,
+                        "DoctorLeaveCreated");
+                }
+
+                if (_logger.IsEnabled(LogLevel.Debug) &&
+                    cancelledAppointmentIds.Count > 0)
+                {
+                    _logger.LogDebug(
+                        "Appointments cancelled for doctor leave {DoctorLeaveId}: {@CancelledAppointmentIds}. Event type: {EventType}",
+                        createdLeave.DoctorLeaveId,
+                        cancelledAppointmentIds,
+                        "AppointmentsCancelledByDoctorLeave");
+                }
 
                 await InvalidateLeaveDateCachesAsync(
                     doctorId,
@@ -169,9 +206,18 @@ namespace HealthApp.Api.Services.Impl
 
                 return result;
             }
-            catch
+            catch (Exception exception)
             {
                 await transaction.RollbackAsync(ct);
+
+                _logger.LogError(
+                    exception,
+                    "Failed to create doctor leave for doctor {DoctorId} from {StartDate} to {EndDate}. Event type: {EventType}",
+                    doctorId,
+                    dto.StartDate,
+                    dto.EndDate,
+                    "DoctorLeaveCreationFailed");
+
                 throw;
             }
         }
@@ -234,11 +280,20 @@ namespace HealthApp.Api.Services.Impl
                     dto.EndDate,
                     ct);
 
-            if (hasOverlap)
+            if (!hasOverlap)
             {
-                throw new BusinessRuleViolationException(
-                    "The selected leave dates overlap with an existing leave record.");
+                return;
             }
+
+            _logger.LogWarning(
+                "Doctor leave request rejected because doctor {DoctorId} has an overlapping leave from {StartDate} to {EndDate}. Event type: {EventType}",
+                doctorId,
+                dto.StartDate,
+                dto.EndDate,
+                "DoctorLeaveOverlapRejected");
+
+            throw new BusinessRuleViolationException(
+                "The selected leave dates overlap with an existing leave record.");
         }
 
         private async Task PublishCancellationEventsAsync(
@@ -252,15 +307,18 @@ namespace HealthApp.Api.Services.Impl
                 try
                 {
                     var patientUserId = await _patientRepository
-                        .GetPatientUserIdAsync(appointment.PatientId);
+                        .GetPatientUserIdAsync(
+                            appointment.PatientId,
+                            ct);
 
                     if (string.IsNullOrWhiteSpace(patientUserId))
                     {
                         _logger.LogWarning(
-                            "Patient user account is not linked for patient {PatientId}. " +
-                            "Doctor-leave notification was not published for appointment {AppointmentId}.",
+                            "Doctor-leave notification was not published because patient {PatientId} has no linked user account. Appointment {AppointmentId}, leave {DoctorLeaveId}. Event type: {EventType}",
                             appointment.PatientId,
-                            appointment.AppointmentId);
+                            appointment.AppointmentId,
+                            leave.DoctorLeaveId,
+                            "DoctorLeaveNotificationSkipped");
 
                         continue;
                     }
@@ -273,20 +331,36 @@ namespace HealthApp.Api.Services.Impl
                             appointment.Patient?.FullName ?? string.Empty,
                             appointment.DoctorId,
                             doctor.FullName ?? string.Empty,
-                            appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue),
+                            appointment.ScheduledDate.ToDateTime(
+                                TimeOnly.MinValue),
                             appointment.TimeSlot ?? string.Empty,
                             leave.StartDate.ToDateTime(TimeOnly.MinValue),
                             leave.EndDate.ToDateTime(TimeOnly.MinValue),
                             leave.Reason),
                         ct);
+
+                    _logger.LogInformation(
+                        "Doctor-leave cancellation event published for appointment {AppointmentId}, patient {PatientId}, doctor {DoctorId}, and leave {DoctorLeaveId}. Event type: {EventType}",
+                        appointment.AppointmentId,
+                        appointment.PatientId,
+                        appointment.DoctorId,
+                        leave.DoctorLeaveId,
+                        "DoctorLeaveCancellationEventPublished");
+                }
+                catch (OperationCanceledException)
+                    when (ct.IsCancellationRequested)
+                {
+                    throw;
                 }
                 catch (Exception exception)
                 {
                     _logger.LogError(
                         exception,
-                        "Doctor leave was created, but the cancellation notification event " +
-                        "could not be published for appointment {AppointmentId}.",
-                        appointment.AppointmentId);
+                        "Doctor leave {DoctorLeaveId} was created, but the cancellation event could not be published for appointment {AppointmentId} and patient {PatientId}. Event type: {EventType}",
+                        leave.DoctorLeaveId,
+                        appointment.AppointmentId,
+                        appointment.PatientId,
+                        "DoctorLeaveCancellationEventFailed");
                 }
             }
         }
@@ -297,32 +371,46 @@ namespace HealthApp.Api.Services.Impl
             DateOnly endDate,
             CancellationToken ct)
         {
-            for (var date = startDate; date <= endDate; date = date.AddDays(1))
+            var invalidatedDateCount = 0;
+
+            for (var date = startDate;
+                 date <= endDate;
+                 date = date.AddDays(1))
             {
                 var cacheKey = GetDoctorSlotsCacheKey(doctorId, date);
 
                 try
                 {
                     await _cache.RemoveAsync(cacheKey, ct);
+                    invalidatedDateCount++;
 
-                    _logger.LogInformation(
-                        "Doctor availability cache invalidated for doctor {DoctorId} " +
-                        "on {Date}. Cache key: {CacheKey}",
-                        doctorId,
-                        date,
-                        cacheKey);
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug(
+                            "Doctor availability cache invalidated for doctor {DoctorId} on {AvailabilityDate}. Event type: {EventType}",
+                            doctorId,
+                            date,
+                            "DoctorAvailabilityCacheInvalidated");
+                    }
                 }
                 catch (Exception exception)
                 {
                     _logger.LogWarning(
                         exception,
-                        "Doctor leave was created, but availability cache invalidation " +
-                        "failed for doctor {DoctorId} on {Date}. Cache key: {CacheKey}",
+                        "Doctor leave was created, but availability cache invalidation failed for doctor {DoctorId} on {AvailabilityDate}. Event type: {EventType}",
                         doctorId,
                         date,
-                        cacheKey);
+                        "DoctorAvailabilityCacheInvalidationFailed");
                 }
             }
+
+            _logger.LogInformation(
+                "Doctor availability cache invalidated for {InvalidatedDateCount} date(s) for doctor {DoctorId}, from {StartDate} to {EndDate}. Event type: {EventType}",
+                invalidatedDateCount,
+                doctorId,
+                startDate,
+                endDate,
+                "DoctorLeaveCacheInvalidationCompleted");
         }
 
         private async Task<Doctor> GetDoctorAsync(

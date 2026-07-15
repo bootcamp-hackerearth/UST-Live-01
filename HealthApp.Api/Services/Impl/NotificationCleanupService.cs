@@ -8,7 +8,8 @@ namespace HealthApp.Api.Services.Impl
         private static readonly TimeSpan InitialDelay =
             TimeSpan.FromSeconds(3);
 
-        private static readonly TimeSpan CleanupInterval = TimeSpan.FromHours(1);
+        private static readonly TimeSpan CleanupInterval =
+            TimeSpan.FromHours(1);
 
         private const int RetentionDays = 30;
 
@@ -28,24 +29,13 @@ namespace HealthApp.Api.Services.Impl
         {
             try
             {
-                await Task.Delay(
-                    InitialDelay,
-                    stoppingToken);
+                await Task.Delay(InitialDelay, stoppingToken);
 
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation(
-                    "\n" +
-                    "==================================================\n" +
-                    " NOTIFICATION CLEANUP SERVICE STARTED\n" +
-                    " Interval       : {IntervalMinutes} minute(s)\n" +
-                    " Retention Days : {RetentionDays} days\n" +
-                    " Started At UTC : {StartedAtUtc}\n" +
-                    "==================================================",
-                    CleanupInterval.TotalMinutes,
+                _logger.LogInformation(
+                    "Notification cleanup service started with a cleanup interval of {CleanupIntervalHours} hour(s) and a retention period of {RetentionDays} days. {EventType}",
+                    CleanupInterval.TotalHours,
                     RetentionDays,
-                    DateTime.UtcNow);
-                }
+                    "NotificationCleanupServiceStarted");
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
@@ -56,82 +46,86 @@ namespace HealthApp.Api.Services.Impl
                         stoppingToken);
                 }
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
+                when (stoppingToken.IsCancellationRequested)
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation(
-                        ex,
-                        "\n" +
-                        "---------------------------------------------------\n" +
-                        " HEARTBEAT SERVICE SHUTDOWN SIGNAL RECEIVED\n" +
-                        "---------------------------------------------------");
-                }
+                _logger.LogInformation(
+                    "Notification cleanup service received a shutdown signal. {EventType}",
+                    "NotificationCleanupServiceStopping");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Notification cleanup service stopped because of an unexpected error. {EventType}",
+                    "NotificationCleanupServiceFailed");
+
+                throw;
             }
             finally
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation(
-                    "\n" +
-                    "==================================================\n" +
-                    " NOTIFICATION CLEANUP SERVICE STOPPED GRACEFULLY\n" +
-                    " Stopped At UTC : {StoppedAtUtc}\n" +
-                    "==================================================",
-                    DateTime.UtcNow);
-                }
+                _logger.LogInformation(
+                    "Notification cleanup service stopped. {EventType}",
+                    "NotificationCleanupServiceStopped");
             }
         }
 
         private async Task DeleteOldNotificationsAsync(
             CancellationToken stoppingToken)
         {
-            using var scope = _scopeFactory.CreateScope();
+            var cleanupStartedAtUtc = DateTime.UtcNow;
+            var cutoffDateUtc = cleanupStartedAtUtc.AddDays(-RetentionDays);
 
-            var dbContext = scope.ServiceProvider
-                .GetRequiredService<HealthAppDbContext>();
-
-            var cutoffDate = DateTime.UtcNow.AddDays(-RetentionDays);
-
-            var oldNotifications = await dbContext.Notifications
-                .Where(notification => notification.CreatedAt < cutoffDate)
-                .ToListAsync(stoppingToken);
-
-            if (oldNotifications.Count == 0)
+            try
             {
-                if (_logger.IsEnabled(LogLevel.Information))
+                using var scope = _scopeFactory.CreateScope();
+
+                var dbContext = scope.ServiceProvider
+                    .GetRequiredService<HealthAppDbContext>();
+
+                var oldNotifications = await dbContext.Notifications
+                    .Where(notification =>
+                        notification.CreatedAt < cutoffDateUtc)
+                    .ToListAsync(stoppingToken);
+
+                if (oldNotifications.Count == 0)
                 {
-                    _logger.LogInformation(
-                    "\n" +
-                    "---------------- NOTIFICATION CLEANUP ----------------\n" +
-                    " Status         : No old notifications found\n" +
-                    " Cutoff Date UTC: {CutoffDateUtc}\n" +
-                    " Checked At UTC : {CheckedAtUtc}\n" +
-                    "------------------------------------------------------",
-                    cutoffDate,
-                    DateTime.UtcNow);
+                    _logger.LogDebug(
+                        "Notification cleanup completed with no expired notifications found before {CutoffDateUtc}. {EventType}",
+                        cutoffDateUtc,
+                        "NotificationCleanupCompleted");
+
+                    return;
                 }
 
-                return;
-            }
+                dbContext.Notifications.RemoveRange(oldNotifications);
 
-            dbContext.Notifications.RemoveRange(oldNotifications);
+                await dbContext.SaveChangesAsync(stoppingToken);
 
-            await dbContext.SaveChangesAsync(stoppingToken);
+                var elapsedMilliseconds =
+                    (DateTime.UtcNow - cleanupStartedAtUtc).TotalMilliseconds;
 
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
                 _logger.LogInformation(
-                "\n" +
-                "---------------- NOTIFICATION CLEANUP ----------------\n" +
-                " Status         : Old notifications deleted\n" +
-                " Deleted Count  : {DeletedCount}\n" +
-                " Cutoff Date UTC: {CutoffDateUtc}\n" +
-                " Cleaned At UTC : {CleanedAtUtc}\n" +
-                "------------------------------------------------------",
-                oldNotifications.Count,
-                cutoffDate,
-                DateTime.UtcNow);
+                    "Notification cleanup deleted {DeletedNotificationCount} notification(s) created before {CutoffDateUtc} in {ElapsedMilliseconds} ms. {EventType}",
+                    oldNotifications.Count,
+                    cutoffDateUtc,
+                    elapsedMilliseconds,
+                    "ExpiredNotificationsDeleted");
+            }
+            catch (OperationCanceledException)
+                when (stoppingToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Notification cleanup failed for notifications created before {CutoffDateUtc}. {EventType}",
+                    cutoffDateUtc,
+                    "NotificationCleanupFailed");
+
+                throw;
             }
         }
     }

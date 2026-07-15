@@ -9,7 +9,8 @@ namespace HealthApp.Api.Consumers
         : IConsumer<AppointmentCancelledByDoctorLeaveEvent>
     {
         private readonly INotificationService _notificationService;
-        private readonly ILogger<AppointmentCancelledByDoctorLeaveConsumer> _logger;
+        private readonly ILogger<AppointmentCancelledByDoctorLeaveConsumer>
+            _logger;
 
         public AppointmentCancelledByDoctorLeaveConsumer(
             INotificationService notificationService,
@@ -24,27 +25,56 @@ namespace HealthApp.Api.Consumers
         {
             var message = context.Message;
 
-            await _notificationService.CreateNotificationAsync(
-                new CreateNotificationDto
-                {
-                    RecipientUserId = message.PatientUserId,
-                    NotificationType = "DoctorLeave",
-                    Title = "Appointment Cancelled - Doctor Unavailable",
-                    Message =
-                        $"Your appointment with {message.DoctorName} " +
-                        $"on {message.ScheduledDate:dd-MMM-yyyy} at {message.TimeSlot} " +
-                        $"was cancelled because the doctor is unavailable from " +
-                        $"{message.LeaveStartDate:dd-MMM-yyyy} to " +
-                        $"{message.LeaveEndDate:dd-MMM-yyyy}. " +
-                        "Please book another available date.",
-                    RelatedEntityId = message.AppointmentId,
-                    RelatedEntityType = "Appointment"
-                });
+            try
+            {
+                await _notificationService.CreateNotificationAsync(
+                    new CreateNotificationDto
+                    {
+                        RecipientUserId = message.PatientUserId,
+                        NotificationType = "DoctorLeave",
+                        Title = "Appointment Cancelled - Doctor Unavailable",
+                        Message =
+                            $"Your appointment with {message.DoctorName} " +
+                            $"on {message.ScheduledDate:dd MMM yyyy} at " +
+                            $"{message.TimeSlot} was cancelled because the " +
+                            "doctor is unavailable from " +
+                            $"{message.LeaveStartDate:dd MMM yyyy} to " +
+                            $"{message.LeaveEndDate:dd MMM yyyy}. " +
+                            "Please book another available date.",
+                        RelatedEntityId = message.AppointmentId,
+                        RelatedEntityType = "Appointment"
+                    },
+                    context.CancellationToken);
 
-            _logger.LogInformation(
-                "Doctor-leave cancellation notification created for appointment {AppointmentId} and patient {PatientId}.",
-                message.AppointmentId,
-                message.PatientId);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
+                        "Doctor-leave cancellation notification created for appointment {AppointmentId}, patient {PatientId}, doctor {DoctorId}, and message {MessageId}. Event type: {EventType}",
+                        message.AppointmentId,
+                        message.PatientId,
+                        message.DoctorId,
+                        context.MessageId,
+                        "DoctorLeaveCancellationNotificationCreated");
+                }
+            }
+            catch (OperationCanceledException)
+                when (context.CancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(
+                    exception,
+                    "Failed to create doctor-leave cancellation notification for appointment {AppointmentId}, patient {PatientId}, doctor {DoctorId}, and message {MessageId}. Event type: {EventType}",
+                    message.AppointmentId,
+                    message.PatientId,
+                    message.DoctorId,
+                    context.MessageId,
+                    "DoctorLeaveCancellationNotificationFailed");
+
+                throw;
+            }
         }
     }
 }
