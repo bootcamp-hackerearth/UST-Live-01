@@ -3,22 +3,20 @@
 
   <main class="main-panel">
 
-    <!-- TOP HEADER -->
     <header class="page-header">
       <div>
         <p class="eyebrow">Patient Portal</p>
-        <h1 *ngIf="patient as p">Welcome back, {{ p.fullName }}</h1>
+        <h1 *ngIf="patient() as p">Welcome back, {{ p.fullName }}</h1>
         <p class="subtext">
           Manage appointments, records, and profile details from one secure workspace.
         </p>
       </div>
 
-      <button class="profile-btn" (click)="openProfile()">
+      <button class="profile-btn" type="button" (click)="openProfile()">
         Manage Profile
       </button>
     </header>
 
-    <!-- HERO / SUMMARY SECTION -->
     <section class="hero-card">
       <div class="hero-left">
         <p class="hero-label">Care Overview</p>
@@ -34,13 +32,12 @@
       </div>
     </section>
 
-    <!-- STATS -->
     <section class="stats-grid">
       <article class="stat-card">
         <div class="stat-icon blue">📅</div>
         <div>
           <h3>Total Appointments</h3>
-          <p class="number">{{ upcomingCount }}</p>
+          <p class="number">{{ upcomingCount() }}</p>
         </div>
       </article>
 
@@ -48,7 +45,7 @@
         <div class="stat-icon amber">⏳</div>
         <div>
           <h3>Pending</h3>
-          <p class="number">{{ pendingCount }}</p>
+          <p class="number">{{ pendingCount() }}</p>
         </div>
       </article>
 
@@ -56,15 +53,13 @@
         <div class="stat-icon green">📄</div>
         <div>
           <h3>Health Records</h3>
-          <p class="number">{{ records.length }}</p>
+          <p class="number">{{ records().length }}</p>
         </div>
       </article>
     </section>
 
-    <!-- MAIN CONTENT GRID -->
     <section class="dashboard-grid">
 
-      <!-- UPCOMING CARE -->
       <section class="content-card appointments-card">
         <div class="section-heading">
           <div>
@@ -75,8 +70,8 @@
           <span class="section-badge">Today’s priorities</span>
         </div>
 
-        <div *ngIf="appointments.length; else emptyState" class="appointment-list">
-          <div *ngFor="let a of paginatedAppointments" class="appointment-item">
+        <div *ngIf="appointments().length; else emptyState" class="appointment-list">
+          <div *ngFor="let a of paginatedAppointments()" class="appointment-item">
 
             <div class="appointment-main">
               <div class="doctor-avatar">
@@ -85,10 +80,12 @@
 
               <div>
                 <strong>{{ a.doctorName }}</strong>
-                <p class="status-pill" [ngClass]="{
-                  'pending': a.status === 'Pending',
-                  'confirmed': a.status === 'Confirmed'
-                }">
+                <p
+                  class="status-pill"
+                  [ngClass]="{
+                    'pending': a.status === 'Pending',
+                    'confirmed': a.status === 'Confirmed'
+                  }">
                   {{ a.status }}
                 </p>
               </div>
@@ -103,11 +100,13 @@
 
               <button
                 class="cancel-btn"
+                type="button"
                 *ngIf="a.status === 'Pending'"
                 (click)="cancel(a.appointmentId)">
                 Cancel
               </button>
             </div>
+
           </div>
         </div>
 
@@ -119,24 +118,22 @@
           </div>
         </ng-template>
 
-        <!-- PAGINATION -->
-        <div class="pagination" *ngIf="totalPages > 1">
-          <button (click)="prevPage()" [disabled]="pageNumber === 1">
+        <div class="pagination" *ngIf="totalPages() > 1">
+          <button type="button" (click)="prevPage()" [disabled]="pageNumber() === 1">
             Prev
           </button>
 
           <span>
-            Page {{ pageNumber }} of {{ totalPages }}
+            Page {{ pageNumber() }} of {{ totalPages() }}
           </span>
 
-          <button (click)="nextPage()" [disabled]="pageNumber === totalPages">
+          <button type="button" (click)="nextPage()" [disabled]="pageNumber() === totalPages()">
             Next
           </button>
         </div>
       </section>
 
-      <!-- PROFILE SNAPSHOT -->
-      <aside class="side-card" *ngIf="patient as p">
+      <aside class="side-card" *ngIf="patient() as p">
         <h2>Profile Snapshot</h2>
 
         <div class="profile-mini">
@@ -167,7 +164,7 @@
           </div>
         </div>
 
-        <button class="outline-btn" (click)="openProfile()">
+        <button class="outline-btn" type="button" (click)="openProfile()">
           View Full Profile
         </button>
       </aside>
@@ -177,8 +174,7 @@
   </main>
 </div>
 
-<!-- PROFILE MODAL -->
-<div class="profile-modal" *ngIf="showProfile && patient as p">
+<div class="profile-modal" *ngIf="showProfile && patient() as p">
   <div class="modal-content">
 
     <div class="modal-header">
@@ -187,10 +183,9 @@
         <h2>My Profile</h2>
       </div>
 
-      <button class="icon-close" (click)="closeProfile()">×</button>
+      <button class="icon-close" type="button" (click)="closeProfile()">×</button>
     </div>
 
-    <!-- VIEW MODE -->
     <div *ngIf="!editMode" class="profile-grid">
 
       <div class="profile-item">
@@ -219,36 +214,67 @@
       </div>
 
       <div class="modal-actions full">
-        <button class="btn-secondary" (click)="toggleEdit()">Edit Profile</button>
-        <button class="btn-primary" (click)="closeProfile()">Close</button>
+        <button class="btn-secondary" type="button" (click)="toggleEdit()">
+          Edit Profile
+        </button>
+
+        <button class="btn-primary" type="button" (click)="closeProfile()">
+          Close
+        </button>
       </div>
+
     </div>
 
-    <!-- EDIT MODE -->
-    <div *ngIf="editMode" class="edit-form">
+    <div *ngIf="editMode && editPatient as ep" class="edit-form">
+
       <div class="form-group">
         <label>Name</label>
-        <input [(ngModel)]="patient!.fullName" placeholder="Name">
+        <input
+          [(ngModel)]="ep.fullName"
+          placeholder="Name"
+          [disabled]="isSavingProfile">
       </div>
 
       <div class="form-group">
         <label>Phone</label>
-        <input [(ngModel)]="patient!.phoneNumber" placeholder="Phone">
+        <input
+          [(ngModel)]="ep.phoneNumber"
+          placeholder="Phone"
+          [disabled]="isSavingProfile">
       </div>
 
       <div class="form-group">
         <label>Date of Birth</label>
-        <input type="date" [(ngModel)]="patient!.dateOfBirth">
+        <input
+          type="date"
+          [(ngModel)]="ep.dateOfBirth"
+          [disabled]="isSavingProfile">
       </div>
 
       <div class="form-group">
         <label>Insurance</label>
-        <input [(ngModel)]="patient!.insuranceId" placeholder="Insurance">
+        <input
+          [(ngModel)]="ep.insuranceId"
+          placeholder="Insurance"
+          [disabled]="isSavingProfile">
       </div>
 
       <div class="modal-actions">
-        <button class="btn-secondary" (click)="toggleEdit()">Cancel</button>
-        <button class="btn-primary" (click)="update()">Save Changes</button>
+        <button
+          class="btn-secondary"
+          type="button"
+          [disabled]="isSavingProfile"
+          (click)="cancelEdit()">
+          Cancel
+        </button>
+
+        <button
+          class="btn-primary"
+          type="button"
+          [disabled]="isSavingProfile"
+          (click)="update()">
+          {{ isSavingProfile ? 'Saving...' : 'Save Changes' }}
+        </button>
       </div>
 
       <div class="divider"></div>
@@ -272,12 +298,39 @@
         </div>
 
         <div class="modal-actions">
-          <button class="btn-primary" (click)="changePassword()">
+          <button
+            class="btn-primary"
+            type="button"
+            (click)="changePassword()">
             Update Password
           </button>
         </div>
       </div>
+
     </div>
+
+  </div>
+</div>
+
+<div class="app-popup-backdrop" *ngIf="showAppPopup()">
+  <div class="app-popup" [ngClass]="popupType()">
+
+    <div class="popup-icon" [ngClass]="popupType()">
+      <span *ngIf="popupType() === 'success'">✓</span>
+      <span *ngIf="popupType() === 'error'">!</span>
+      <span *ngIf="popupType() === 'warning'">⚠</span>
+    </div>
+
+    <h2>{{ popupTitle() }}</h2>
+
+    <p>{{ popupMessage() }}</p>
+
+    <button
+      class="popup-ok-btn"
+      type="button"
+      (click)="closeAppPopup()">
+      OK
+    </button>
 
   </div>
 </div>

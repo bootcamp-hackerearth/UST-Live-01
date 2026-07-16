@@ -43,3 +43,11 @@
     </div>
   </div>
 </div>
+
+<app-popup
+  [visible]="popupVisible"
+  [title]="popupTitle"
+  [message]="popupMessage"
+  [type]="popupType"
+  (closed)="closePopup()">
+</app-popup>

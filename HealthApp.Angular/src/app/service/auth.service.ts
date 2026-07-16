@@ -10,7 +10,7 @@ import { LoginRequest } from '../login/login-request.model';
 })
 export class AuthService {
 
-  private baseUrl = 'https://localhost:7066/api/auth';
+  private baseUrl = 'http://localhost:5066/api/auth';
 
   constructor(private http: HttpClient) {}
 
@@ -58,6 +58,6 @@ export class AuthService {
 
 
   changePassword(data: any) {
-  return this.http.post('https://localhost:7066/api/Auth/change-password', data);
+  return this.http.post('http://localhost:5066/api/Auth/change-password', data);
 }
 }

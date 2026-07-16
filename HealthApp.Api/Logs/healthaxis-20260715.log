@@ -1,0 +1,673 @@
+2026-07-15 10:22:18.232 +05:30 [INF] Executed DbCommand (132ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-15 10:22:18.965 +05:30 [INF] Executed DbCommand (45ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-15 10:22:18.986 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-15 10:22:19.115 +05:30 [INF] User profile is available. Using 'C:\Users\310208\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-07-15 10:22:19.838 +05:30 [INF] HealthAxis Heartbeat Background Service started.+++++++++++++
+2026-07-15 10:22:19.841 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:22:19.8407164+05:30"------------
+2026-07-15 10:22:20.147 +05:30 [INF] Now listening on: http://localhost:5066
+2026-07-15 10:22:20.250 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-15 10:22:20.307 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-15 10:22:20.310 +05:30 [INF] Hosting environment: Development
+2026-07-15 10:22:20.312 +05:30 [INF] Content root path: C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api
+2026-07-15 10:22:22.591 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/doctors/activedoctors?pageNumber=1&pageSize=1000 - null null
+2026-07-15 10:22:22.779 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:22.791 +05:30 [INF] HTTP OPTIONS /api/doctors/activedoctors responded 204 in 40.2054 ms
+2026-07-15 10:22:22.843 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/doctors/activedoctors?pageNumber=1&pageSize=1000 - 204 null null 282.6388ms
+2026-07-15 10:22:22.873 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/doctors/activedoctors?pageNumber=1&pageSize=1000 - null null
+2026-07-15 10:22:22.938 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:22.985 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-07-15 10:22:23.051 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.DoctorApiController.GetActiveDoctors (HealthApp.Api)'
+2026-07-15 10:22:23.140 +05:30 [INF] Route matched with {action = "GetActiveDoctors", controller = "DoctorApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetActiveDoctors(Int32, Int32) on controller HealthApp.Api.Controllers.DoctorApiController (HealthApp.Api).
+2026-07-15 10:22:23.606 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-15 10:22:24.891 +05:30 [INF] Executed DbCommand (27ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Doctors] AS [d]
+WHERE [d].[IsActive] = CAST(1 AS bit)
+2026-07-15 10:22:25.055 +05:30 [INF] Executed DbCommand (29ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [d].[DoctorId], [d].[ConsultationFee], [d].[DoctorPhoneNumber], [d].[Email], [d].[FullName], [d].[IdentityUserId], [d].[IsActive], [d].[PracticeStartDate], [d].[Specialisation]
+FROM [Doctors] AS [d]
+WHERE [d].[IsActive] = CAST(1 AS bit)
+ORDER BY [d].[DoctorId]
+OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+2026-07-15 10:22:25.086 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/PatientApi/me - null null
+2026-07-15 10:22:25.172 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:25.181 +05:30 [INF] HTTP OPTIONS /api/PatientApi/me responded 204 in 11.0533 ms
+2026-07-15 10:22:25.201 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/PatientApi/me - 204 null null 115.2936ms
+2026-07-15 10:22:25.370 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/PatientApi/me - application/json null
+2026-07-15 10:22:25.381 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:25.480 +05:30 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`4[[System.Collections.Generic.List`1[[HealthApp.Shared.Dto.DoctorDto, HealthApp.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-07-15 10:22:25.567 +05:30 [INF] Executed action HealthApp.Api.Controllers.DoctorApiController.GetActiveDoctors (HealthApp.Api) in 2387.5243ms
+2026-07-15 10:22:25.573 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.DoctorApiController.GetActiveDoctors (HealthApp.Api)'
+2026-07-15 10:22:25.583 +05:30 [INF] HTTP GET /api/doctors/activedoctors responded 200 in 2660.7373 ms
+2026-07-15 10:22:25.607 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/doctors/activedoctors?pageNumber=1&pageSize=1000 - 200 null application/json; charset=utf-8 2734.699ms
+2026-07-15 10:22:25.735 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.PatientApiController.GetMyProfile (HealthApp.Api)'
+2026-07-15 10:22:25.759 +05:30 [INF] Route matched with {action = "GetMyProfile", controller = "PatientApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller HealthApp.Api.Controllers.PatientApiController (HealthApp.Api).
+2026-07-15 10:22:25.843 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:22:25.956 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthApp.Shared.Dto.PatientDto'.
+2026-07-15 10:22:25.991 +05:30 [INF] Executed action HealthApp.Api.Controllers.PatientApiController.GetMyProfile (HealthApp.Api) in 226.3388ms
+2026-07-15 10:22:26.034 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.PatientApiController.GetMyProfile (HealthApp.Api)'
+2026-07-15 10:22:26.037 +05:30 [INF] HTTP GET /api/PatientApi/me responded 200 in 656.0085 ms
+2026-07-15 10:22:26.043 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/PatientApi/me - 200 null application/json; charset=utf-8 672.5348ms
+2026-07-15 10:22:26.053 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/HealthRecordApi/me - null null
+2026-07-15 10:22:26.062 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/appointments/me - null null
+2026-07-15 10:22:26.073 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:26.078 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:26.086 +05:30 [INF] HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 13.0592 ms
+2026-07-15 10:22:26.087 +05:30 [INF] HTTP OPTIONS /api/appointments/me responded 204 in 9.0785 ms
+2026-07-15 10:22:26.091 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/HealthRecordApi/me - 204 null null 43.3043ms
+2026-07-15 10:22:26.093 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/appointments/me - 204 null null 31.2466ms
+2026-07-15 10:22:26.161 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/HealthRecordApi/me - null null
+2026-07-15 10:22:26.175 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/appointments/me - null null
+2026-07-15 10:22:26.181 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:26.196 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:26.206 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api)'
+2026-07-15 10:22:26.206 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api)'
+2026-07-15 10:22:26.228 +05:30 [INF] Route matched with {action = "GetMyRecords", controller = "HealthRecordApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyRecords() on controller HealthApp.Api.Controllers.HealthRecordApiController (HealthApp.Api).
+2026-07-15 10:22:26.230 +05:30 [INF] Route matched with {action = "GetMyAppointments", controller = "AppointmentApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyAppointments() on controller HealthApp.Api.Controllers.AppointmentApiController (HealthApp.Api).
+2026-07-15 10:22:26.261 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:22:26.544 +05:30 [INF] Executed DbCommand (20ms) [Parameters=[@patientId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [h].[RecordId], [h].[Diagnosis], [h].[DoctorId], [h].[Notes], [h].[PatientId], [h].[Prescription], [h].[VisitDate], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber], [d].[DoctorId], [d].[ConsultationFee], [d].[DoctorPhoneNumber], [d].[Email], [d].[FullName], [d].[IdentityUserId], [d].[IsActive], [d].[PracticeStartDate], [d].[Specialisation]
+FROM [HealthRecords] AS [h]
+INNER JOIN [Patients] AS [p] ON [h].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [h].[DoctorId] = [d].[DoctorId]
+WHERE [h].[PatientId] = @patientId
+2026-07-15 10:22:26.697 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthApp.Shared.Dto.HealthRecordDto, HealthApp.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-15 10:22:26.834 +05:30 [INF] Executed action HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api) in 597.5467ms
+2026-07-15 10:22:26.859 +05:30 [INF] Executed DbCommand (10ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:22:26.880 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api)'
+2026-07-15 10:22:26.926 +05:30 [INF] HTTP GET /api/HealthRecordApi/me responded 200 in 744.6789 ms
+2026-07-15 10:22:26.962 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/HealthRecordApi/me - 200 null application/json; charset=utf-8 800.7621ms
+2026-07-15 10:22:26.974 +05:30 [INF] Executed DbCommand (19ms) [Parameters=[@patientId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlot], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber], [d].[DoctorId], [d].[ConsultationFee], [d].[DoctorPhoneNumber], [d].[Email], [d].[FullName], [d].[IdentityUserId], [d].[IsActive], [d].[PracticeStartDate], [d].[Specialisation]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[DoctorId]
+WHERE [a].[PatientId] = @patientId
+2026-07-15 10:22:27.038 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthApp.Shared.Dto.AppointmentDto, HealthApp.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-15 10:22:27.055 +05:30 [INF] Executed action HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api) in 814.1091ms
+2026-07-15 10:22:27.077 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api)'
+2026-07-15 10:22:27.080 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 884.7539 ms
+2026-07-15 10:22:27.088 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/appointments/me - 200 null application/json; charset=utf-8 912.9562ms
+2026-07-15 10:22:29.860 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:22:29.8603234+05:30"------------
+2026-07-15 10:22:39.874 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:22:39.8737458+05:30"------------
+2026-07-15 10:22:49.890 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:22:49.8906132+05:30"------------
+2026-07-15 10:22:52.179 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/auth/login - null null
+2026-07-15 10:22:52.183 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:52.185 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 1.8194 ms
+2026-07-15 10:22:52.188 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/auth/login - 204 null null 9.1373ms
+2026-07-15 10:22:52.192 +05:30 [INF] Request starting HTTP/1.1 POST http://localhost:5066/api/auth/login - application/json 49
+2026-07-15 10:22:52.197 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:52.199 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.AuthController.Login (HealthApp.Api)'
+2026-07-15 10:22:52.210 +05:30 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(HealthApp.Shared.Dto.LoginDto) on controller HealthApp.Api.Controllers.AuthController (HealthApp.Api).
+2026-07-15 10:22:52.288 +05:30 [INF] Executed DbCommand (18ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-15 10:22:52.596 +05:30 [INF] Executed DbCommand (7ms) [Parameters=[@userId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a0].[Name]
+FROM [AspNetUserRoles] AS [a]
+INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+WHERE [a].[UserId] = @userId
+2026-07-15 10:22:52.605 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@userId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a0].[Name]
+FROM [AspNetUserRoles] AS [a]
+INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+WHERE [a].[UserId] = @userId
+2026-07-15 10:22:52.632 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthApp.Shared.Dto.LoginResponseDto'.
+2026-07-15 10:22:52.636 +05:30 [INF] Executed action HealthApp.Api.Controllers.AuthController.Login (HealthApp.Api) in 424.6215ms
+2026-07-15 10:22:52.639 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.AuthController.Login (HealthApp.Api)'
+2026-07-15 10:22:52.641 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 444.6914 ms
+2026-07-15 10:22:52.645 +05:30 [INF] Request finished HTTP/1.1 POST http://localhost:5066/api/auth/login - 200 null application/json; charset=utf-8 453.2342ms
+2026-07-15 10:22:52.656 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/PatientApi/me - null null
+2026-07-15 10:22:52.659 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:52.661 +05:30 [INF] HTTP OPTIONS /api/PatientApi/me responded 204 in 1.2466 ms
+2026-07-15 10:22:52.663 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/PatientApi/me - 204 null null 6.7808ms
+2026-07-15 10:22:52.669 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/PatientApi/me - application/json null
+2026-07-15 10:22:52.695 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:52.702 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.PatientApiController.GetMyProfile (HealthApp.Api)'
+2026-07-15 10:22:52.704 +05:30 [INF] Route matched with {action = "GetMyProfile", controller = "PatientApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller HealthApp.Api.Controllers.PatientApiController (HealthApp.Api).
+2026-07-15 10:22:52.709 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:22:52.713 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthApp.Shared.Dto.PatientDto'.
+2026-07-15 10:22:52.714 +05:30 [INF] Executed action HealthApp.Api.Controllers.PatientApiController.GetMyProfile (HealthApp.Api) in 9.2839ms
+2026-07-15 10:22:52.717 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.PatientApiController.GetMyProfile (HealthApp.Api)'
+2026-07-15 10:22:52.718 +05:30 [INF] HTTP GET /api/PatientApi/me responded 200 in 22.8869 ms
+2026-07-15 10:22:52.720 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/PatientApi/me - 200 null application/json; charset=utf-8 51.7418ms
+2026-07-15 10:22:52.723 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/HealthRecordApi/me - null null
+2026-07-15 10:22:52.726 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/appointments/me - null null
+2026-07-15 10:22:52.728 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:52.730 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:52.733 +05:30 [INF] HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 4.8122 ms
+2026-07-15 10:22:52.734 +05:30 [INF] HTTP OPTIONS /api/appointments/me responded 204 in 3.9772 ms
+2026-07-15 10:22:52.736 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/HealthRecordApi/me - 204 null null 13.0548ms
+2026-07-15 10:22:52.738 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/appointments/me - 204 null null 12.3445ms
+2026-07-15 10:22:52.742 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/appointments/me - null null
+2026-07-15 10:22:52.746 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/HealthRecordApi/me - null null
+2026-07-15 10:22:52.749 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:52.753 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:52.754 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api)'
+2026-07-15 10:22:52.754 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api)'
+2026-07-15 10:22:52.755 +05:30 [INF] Route matched with {action = "GetMyAppointments", controller = "AppointmentApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyAppointments() on controller HealthApp.Api.Controllers.AppointmentApiController (HealthApp.Api).
+2026-07-15 10:22:52.757 +05:30 [INF] Route matched with {action = "GetMyRecords", controller = "HealthRecordApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyRecords() on controller HealthApp.Api.Controllers.HealthRecordApiController (HealthApp.Api).
+2026-07-15 10:22:52.797 +05:30 [INF] Executed DbCommand (36ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:22:52.802 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:22:52.818 +05:30 [INF] Executed DbCommand (12ms) [Parameters=[@patientId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlot], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber], [d].[DoctorId], [d].[ConsultationFee], [d].[DoctorPhoneNumber], [d].[Email], [d].[FullName], [d].[IdentityUserId], [d].[IsActive], [d].[PracticeStartDate], [d].[Specialisation]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[DoctorId]
+WHERE [a].[PatientId] = @patientId
+2026-07-15 10:22:52.820 +05:30 [INF] Executed DbCommand (12ms) [Parameters=[@patientId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [h].[RecordId], [h].[Diagnosis], [h].[DoctorId], [h].[Notes], [h].[PatientId], [h].[Prescription], [h].[VisitDate], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber], [d].[DoctorId], [d].[ConsultationFee], [d].[DoctorPhoneNumber], [d].[Email], [d].[FullName], [d].[IdentityUserId], [d].[IsActive], [d].[PracticeStartDate], [d].[Specialisation]
+FROM [HealthRecords] AS [h]
+INNER JOIN [Patients] AS [p] ON [h].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [h].[DoctorId] = [d].[DoctorId]
+WHERE [h].[PatientId] = @patientId
+2026-07-15 10:22:52.823 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthApp.Shared.Dto.AppointmentDto, HealthApp.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-15 10:22:52.825 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthApp.Shared.Dto.HealthRecordDto, HealthApp.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-15 10:22:52.827 +05:30 [INF] Executed action HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api) in 68.2821ms
+2026-07-15 10:22:52.828 +05:30 [INF] Executed action HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api) in 31.3549ms
+2026-07-15 10:22:52.829 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api)'
+2026-07-15 10:22:52.831 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api)'
+2026-07-15 10:22:52.833 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 83.2999 ms
+2026-07-15 10:22:52.834 +05:30 [INF] HTTP GET /api/HealthRecordApi/me responded 200 in 81.5010 ms
+2026-07-15 10:22:52.837 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/appointments/me - 200 null application/json; charset=utf-8 94.9002ms
+2026-07-15 10:22:52.839 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/HealthRecordApi/me - 200 null application/json; charset=utf-8 93.4694ms
+2026-07-15 10:22:55.137 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/appointments/me - null null
+2026-07-15 10:22:55.141 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:22:55.145 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api)'
+2026-07-15 10:22:55.146 +05:30 [INF] Route matched with {action = "GetMyAppointments", controller = "AppointmentApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyAppointments() on controller HealthApp.Api.Controllers.AppointmentApiController (HealthApp.Api).
+2026-07-15 10:22:55.165 +05:30 [INF] Executed DbCommand (2ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:22:55.179 +05:30 [INF] Executed DbCommand (5ms) [Parameters=[@patientId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlot], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber], [d].[DoctorId], [d].[ConsultationFee], [d].[DoctorPhoneNumber], [d].[Email], [d].[FullName], [d].[IdentityUserId], [d].[IsActive], [d].[PracticeStartDate], [d].[Specialisation]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[DoctorId]
+WHERE [a].[PatientId] = @patientId
+2026-07-15 10:22:55.187 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthApp.Shared.Dto.AppointmentDto, HealthApp.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-15 10:22:55.189 +05:30 [INF] Executed action HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api) in 40.4413ms
+2026-07-15 10:22:55.196 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api)'
+2026-07-15 10:22:55.200 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 59.2792 ms
+2026-07-15 10:22:55.202 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/appointments/me - 200 null application/json; charset=utf-8 65.5475ms
+2026-07-15 10:22:59.908 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:22:59.9085971+05:30"------------
+2026-07-15 10:23:09.927 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:23:09.9273416+05:30"------------
+2026-07-15 10:23:19.945 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:23:19.9452645+05:30"------------
+2026-07-15 10:23:29.996 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:23:29.9967088+05:30"------------
+2026-07-15 10:23:40.005 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:23:40.0056628+05:30"------------
+2026-07-15 10:23:50.016 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:23:50.0159833+05:30"------------
+2026-07-15 10:24:00.027 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:24:00.0266053+05:30"------------
+2026-07-15 10:24:10.049 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:24:10.0489514+05:30"------------
+2026-07-15 10:24:20.061 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:24:20.0617145+05:30"------------
+2026-07-15 10:24:30.078 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:24:30.0779828+05:30"------------
+2026-07-15 10:24:40.086 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:24:40.0865510+05:30"------------
+2026-07-15 10:24:50.101 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:24:50.1018369+05:30"------------
+2026-07-15 10:25:00.113 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:25:00.1135612+05:30"------------
+2026-07-15 10:25:10.150 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:25:10.1473189+05:30"------------
+2026-07-15 10:25:20.160 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:25:20.1603902+05:30"------------
+2026-07-15 10:25:30.167 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:25:30.1673992+05:30"------------
+2026-07-15 10:25:40.189 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:25:40.1882303+05:30"------------
+2026-07-15 10:25:50.204 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:25:50.2048128+05:30"------------
+2026-07-15 10:26:00.232 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:26:00.2321619+05:30"------------
+2026-07-15 10:26:10.252 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:26:10.2520707+05:30"------------
+2026-07-15 10:26:20.261 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:26:20.2615678+05:30"------------
+2026-07-15 10:26:30.273 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:26:30.2730793+05:30"------------
+2026-07-15 10:26:40.282 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:26:40.2828958+05:30"------------
+2026-07-15 10:26:50.297 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:26:50.2972102+05:30"------------
+2026-07-15 10:27:00.307 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:27:00.3068662+05:30"------------
+2026-07-15 10:27:10.327 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:27:10.3227217+05:30"------------
+2026-07-15 10:27:20.336 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:27:20.3366642+05:30"------------
+2026-07-15 10:27:30.372 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:27:30.3727773+05:30"------------
+2026-07-15 10:27:40.388 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:27:40.3884635+05:30"------------
+2026-07-15 10:27:50.399 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:27:50.3992655+05:30"------------
+2026-07-15 10:28:00.415 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:28:00.4158700+05:30"------------
+2026-07-15 10:28:10.427 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:28:10.4276402+05:30"------------
+2026-07-15 10:28:20.431 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:28:20.4313207+05:30"------------
+2026-07-15 10:28:30.448 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:28:30.4489599+05:30"------------
+2026-07-15 10:28:40.459 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:28:40.4594774+05:30"------------
+2026-07-15 10:28:50.477 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:28:50.4771404+05:30"------------
+2026-07-15 10:29:00.495 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:29:00.4952764+05:30"------------
+2026-07-15 10:29:06.353 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/doctors/activedoctors?pageNumber=1&pageSize=1000 - null null
+2026-07-15 10:29:06.358 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:29:06.359 +05:30 [INF] HTTP OPTIONS /api/doctors/activedoctors responded 204 in 1.4581 ms
+2026-07-15 10:29:06.366 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/doctors/activedoctors?pageNumber=1&pageSize=1000 - 204 null null 12.6271ms
+2026-07-15 10:29:06.369 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/doctors/activedoctors?pageNumber=1&pageSize=1000 - null null
+2026-07-15 10:29:06.374 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:29:06.378 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.DoctorApiController.GetActiveDoctors (HealthApp.Api)'
+2026-07-15 10:29:06.383 +05:30 [INF] Route matched with {action = "GetActiveDoctors", controller = "DoctorApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetActiveDoctors(Int32, Int32) on controller HealthApp.Api.Controllers.DoctorApiController (HealthApp.Api).
+2026-07-15 10:29:06.671 +05:30 [INF] Executed DbCommand (13ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*)
+FROM [Doctors] AS [d]
+WHERE [d].[IsActive] = CAST(1 AS bit)
+2026-07-15 10:29:06.682 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [d].[DoctorId], [d].[ConsultationFee], [d].[DoctorPhoneNumber], [d].[Email], [d].[FullName], [d].[IdentityUserId], [d].[IsActive], [d].[PracticeStartDate], [d].[Specialisation]
+FROM [Doctors] AS [d]
+WHERE [d].[IsActive] = CAST(1 AS bit)
+ORDER BY [d].[DoctorId]
+OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+2026-07-15 10:29:06.687 +05:30 [INF] Executing OkObjectResult, writing value of type '<>f__AnonymousType1`4[[System.Collections.Generic.List`1[[HealthApp.Shared.Dto.DoctorDto, HealthApp.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]'.
+2026-07-15 10:29:06.690 +05:30 [INF] Executed action HealthApp.Api.Controllers.DoctorApiController.GetActiveDoctors (HealthApp.Api) in 304.7228ms
+2026-07-15 10:29:06.692 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.DoctorApiController.GetActiveDoctors (HealthApp.Api)'
+2026-07-15 10:29:06.694 +05:30 [INF] HTTP GET /api/doctors/activedoctors responded 200 in 321.6660 ms
+2026-07-15 10:29:06.697 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/doctors/activedoctors?pageNumber=1&pageSize=1000 - 200 null application/json; charset=utf-8 327.3259ms
+2026-07-15 10:29:10.506 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:29:10.5066808+05:30"------------
+2026-07-15 10:29:11.802 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/HealthRecordApi/me - null null
+2026-07-15 10:29:11.808 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:29:11.809 +05:30 [INF] HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 1.3190 ms
+2026-07-15 10:29:11.815 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/HealthRecordApi/me - 204 null null 13.3377ms
+2026-07-15 10:29:11.819 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/HealthRecordApi/me - null null
+2026-07-15 10:29:11.822 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:29:11.824 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api)'
+2026-07-15 10:29:11.826 +05:30 [INF] Route matched with {action = "GetMyRecords", controller = "HealthRecordApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyRecords() on controller HealthApp.Api.Controllers.HealthRecordApiController (HealthApp.Api).
+2026-07-15 10:29:11.837 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:29:11.866 +05:30 [INF] Executed DbCommand (12ms) [Parameters=[@patientId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [h].[RecordId], [h].[Diagnosis], [h].[DoctorId], [h].[Notes], [h].[PatientId], [h].[Prescription], [h].[VisitDate], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber], [d].[DoctorId], [d].[ConsultationFee], [d].[DoctorPhoneNumber], [d].[Email], [d].[FullName], [d].[IdentityUserId], [d].[IsActive], [d].[PracticeStartDate], [d].[Specialisation]
+FROM [HealthRecords] AS [h]
+INNER JOIN [Patients] AS [p] ON [h].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [h].[DoctorId] = [d].[DoctorId]
+WHERE [h].[PatientId] = @patientId
+2026-07-15 10:29:11.870 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthApp.Shared.Dto.HealthRecordDto, HealthApp.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-15 10:29:11.873 +05:30 [INF] Executed action HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api) in 43.813ms
+2026-07-15 10:29:11.875 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api)'
+2026-07-15 10:29:11.876 +05:30 [INF] HTTP GET /api/HealthRecordApi/me responded 200 in 54.0979 ms
+2026-07-15 10:29:11.884 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/HealthRecordApi/me - 200 null application/json; charset=utf-8 65.3704ms
+2026-07-15 10:29:13.682 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/PatientApi/me - null null
+2026-07-15 10:29:13.706 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:29:13.707 +05:30 [INF] HTTP OPTIONS /api/PatientApi/me responded 204 in 1.5062 ms
+2026-07-15 10:29:13.709 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/PatientApi/me - 204 null null 27.5958ms
+2026-07-15 10:29:13.714 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/PatientApi/me - application/json null
+2026-07-15 10:29:13.718 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:29:13.720 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.PatientApiController.GetMyProfile (HealthApp.Api)'
+2026-07-15 10:29:13.723 +05:30 [INF] Route matched with {action = "GetMyProfile", controller = "PatientApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller HealthApp.Api.Controllers.PatientApiController (HealthApp.Api).
+2026-07-15 10:29:13.731 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:29:13.734 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthApp.Shared.Dto.PatientDto'.
+2026-07-15 10:29:13.736 +05:30 [INF] Executed action HealthApp.Api.Controllers.PatientApiController.GetMyProfile (HealthApp.Api) in 9.8465ms
+2026-07-15 10:29:13.738 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.PatientApiController.GetMyProfile (HealthApp.Api)'
+2026-07-15 10:29:13.739 +05:30 [INF] HTTP GET /api/PatientApi/me responded 200 in 20.3528 ms
+2026-07-15 10:29:13.741 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/PatientApi/me - 200 null application/json; charset=utf-8 26.6601ms
+2026-07-15 10:29:13.745 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/appointments/me - null null
+2026-07-15 10:29:13.746 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/HealthRecordApi/me - null null
+2026-07-15 10:29:13.748 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:29:13.751 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:29:13.751 +05:30 [INF] HTTP OPTIONS /api/appointments/me responded 204 in 2.9458 ms
+2026-07-15 10:29:13.752 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api)'
+2026-07-15 10:29:13.754 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/appointments/me - 204 null null 9.0227ms
+2026-07-15 10:29:13.755 +05:30 [INF] Route matched with {action = "GetMyRecords", controller = "HealthRecordApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyRecords() on controller HealthApp.Api.Controllers.HealthRecordApiController (HealthApp.Api).
+2026-07-15 10:29:13.758 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/appointments/me - null null
+2026-07-15 10:29:13.763 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:29:13.763 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:29:13.767 +05:30 [INF] Executed DbCommand (0ms) [Parameters=[@patientId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [h].[RecordId], [h].[Diagnosis], [h].[DoctorId], [h].[Notes], [h].[PatientId], [h].[Prescription], [h].[VisitDate], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber], [d].[DoctorId], [d].[ConsultationFee], [d].[DoctorPhoneNumber], [d].[Email], [d].[FullName], [d].[IdentityUserId], [d].[IsActive], [d].[PracticeStartDate], [d].[Specialisation]
+FROM [HealthRecords] AS [h]
+INNER JOIN [Patients] AS [p] ON [h].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [h].[DoctorId] = [d].[DoctorId]
+WHERE [h].[PatientId] = @patientId
+2026-07-15 10:29:13.768 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api)'
+2026-07-15 10:29:13.770 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthApp.Shared.Dto.HealthRecordDto, HealthApp.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-15 10:29:13.770 +05:30 [INF] Route matched with {action = "GetMyAppointments", controller = "AppointmentApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyAppointments() on controller HealthApp.Api.Controllers.AppointmentApiController (HealthApp.Api).
+2026-07-15 10:29:13.772 +05:30 [INF] Executed action HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api) in 11.4624ms
+2026-07-15 10:29:13.774 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api)'
+2026-07-15 10:29:13.775 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:29:13.776 +05:30 [INF] HTTP GET /api/HealthRecordApi/me responded 200 in 24.9444 ms
+2026-07-15 10:29:13.780 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/HealthRecordApi/me - 200 null application/json; charset=utf-8 33.7358ms
+2026-07-15 10:29:13.787 +05:30 [INF] Executed DbCommand (8ms) [Parameters=[@patientId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlot], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber], [d].[DoctorId], [d].[ConsultationFee], [d].[DoctorPhoneNumber], [d].[Email], [d].[FullName], [d].[IdentityUserId], [d].[IsActive], [d].[PracticeStartDate], [d].[Specialisation]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[DoctorId]
+WHERE [a].[PatientId] = @patientId
+2026-07-15 10:29:13.792 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthApp.Shared.Dto.AppointmentDto, HealthApp.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-15 10:29:13.795 +05:30 [INF] Executed action HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api) in 21.8131ms
+2026-07-15 10:29:13.797 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api)'
+2026-07-15 10:29:13.798 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 34.7855 ms
+2026-07-15 10:29:13.800 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/appointments/me - 200 null application/json; charset=utf-8 41.8279ms
+2026-07-15 10:29:19.664 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/PatientApi/me - null null
+2026-07-15 10:29:19.667 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:29:19.670 +05:30 [INF] HTTP OPTIONS /api/PatientApi/me responded 204 in 2.2983 ms
+2026-07-15 10:29:19.673 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/PatientApi/me - 204 null null 9.4291ms
+2026-07-15 10:29:19.688 +05:30 [INF] Request starting HTTP/1.1 PUT http://localhost:5066/api/PatientApi/me - application/json 97
+2026-07-15 10:29:19.692 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:29:19.700 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.PatientApiController.UpdateMyProfile (HealthApp.Api)'
+2026-07-15 10:29:19.717 +05:30 [INF] Route matched with {action = "UpdateMyProfile", controller = "PatientApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UpdateMyProfile(HealthApp.Shared.Dto.PatientUpdateDto) on controller HealthApp.Api.Controllers.PatientApiController (HealthApp.Api).
+2026-07-15 10:29:19.746 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:29:20.013 +05:30 [INF] Executed DbCommand (21ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+UPDATE [Patients] SET [InsuranceId] = @p0
+OUTPUT 1
+WHERE [PatientId] = @p1;
+2026-07-15 10:29:20.033 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthApp.Shared.Dto.PatientDto'.
+2026-07-15 10:29:20.035 +05:30 [INF] Executed action HealthApp.Api.Controllers.PatientApiController.UpdateMyProfile (HealthApp.Api) in 314.6786ms
+2026-07-15 10:29:20.037 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.PatientApiController.UpdateMyProfile (HealthApp.Api)'
+2026-07-15 10:29:20.039 +05:30 [INF] HTTP PUT /api/PatientApi/me responded 200 in 347.7371 ms
+2026-07-15 10:29:20.042 +05:30 [INF] Request finished HTTP/1.1 PUT http://localhost:5066/api/PatientApi/me - 200 null application/json; charset=utf-8 353.9665ms
+2026-07-15 10:29:20.513 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:29:20.5130621+05:30"------------
+2026-07-15 10:29:30.519 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:29:30.5197274+05:30"------------
+2026-07-15 10:29:40.533 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:29:40.5334082+05:30"------------
+2026-07-15 10:29:50.543 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:29:50.5434823+05:30"------------
+2026-07-15 10:30:00.548 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:30:00.5480075+05:30"------------
+2026-07-15 10:30:10.558 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:30:10.5582099+05:30"------------
+2026-07-15 10:30:20.567 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:30:20.5670042+05:30"------------
+2026-07-15 10:30:30.576 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:30:30.5765938+05:30"------------
+2026-07-15 10:30:40.593 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:30:40.5930023+05:30"------------
+2026-07-15 10:30:50.606 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:30:50.6067137+05:30"------------
+2026-07-15 10:31:00.627 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:31:00.6276650+05:30"------------
+2026-07-15 10:31:10.636 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:31:10.6360179+05:30"------------
+2026-07-15 10:31:20.641 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:31:20.6409850+05:30"------------
+2026-07-15 10:31:30.655 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:31:30.6554449+05:30"------------
+2026-07-15 10:31:40.668 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:31:40.6679959+05:30"------------
+2026-07-15 10:31:50.672 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:31:50.6728705+05:30"------------
+2026-07-15 10:32:00.684 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:32:00.6848237+05:30"------------
+2026-07-15 10:32:10.691 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:32:10.6903201+05:30"------------
+2026-07-15 10:32:20.700 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:32:20.7000772+05:30"------------
+2026-07-15 10:32:30.713 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:32:30.7138527+05:30"------------
+2026-07-15 10:32:40.730 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:32:40.7307131+05:30"------------
+2026-07-15 10:32:50.745 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:32:50.7452519+05:30"------------
+2026-07-15 10:33:00.758 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:33:00.7584830+05:30"------------
+2026-07-15 10:33:10.766 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:33:10.7663103+05:30"------------
+2026-07-15 10:33:20.782 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:33:20.7826068+05:30"------------
+2026-07-15 10:33:30.790 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:33:30.7905467+05:30"------------
+2026-07-15 10:33:40.804 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:33:40.8047004+05:30"------------
+2026-07-15 10:33:50.816 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:33:50.8165396+05:30"------------
+2026-07-15 10:34:00.832 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:34:00.8321636+05:30"------------
+2026-07-15 10:34:10.838 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:34:10.8388647+05:30"------------
+2026-07-15 10:34:20.844 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:34:20.8445222+05:30"------------
+2026-07-15 10:34:30.856 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:34:30.8561917+05:30"------------
+2026-07-15 10:34:40.872 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:34:40.8724435+05:30"------------
+2026-07-15 10:34:50.889 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:34:50.8893667+05:30"------------
+2026-07-15 10:35:00.907 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:35:00.9075408+05:30"------------
+2026-07-15 10:35:10.916 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:35:10.9162285+05:30"------------
+2026-07-15 10:35:20.931 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:35:20.9311117+05:30"------------
+2026-07-15 10:35:30.939 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:35:30.9393511+05:30"------------
+2026-07-15 10:35:40.950 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:35:40.9502360+05:30"------------
+2026-07-15 10:35:50.962 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:35:50.9623128+05:30"------------
+2026-07-15 10:36:00.969 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:36:00.9699162+05:30"------------
+2026-07-15 10:36:10.982 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:36:10.9823533+05:30"------------
+2026-07-15 10:36:20.996 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:36:20.9965815+05:30"------------
+2026-07-15 10:36:31.014 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:36:31.0142873+05:30"------------
+2026-07-15 10:36:41.029 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:36:41.0290497+05:30"------------
+2026-07-15 10:36:51.031 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:36:51.0316711+05:30"------------
+2026-07-15 10:37:01.044 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:37:01.0446761+05:30"------------
+2026-07-15 10:37:11.061 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:37:11.0612341+05:30"------------
+2026-07-15 10:37:21.076 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:37:21.0760378+05:30"------------
+2026-07-15 10:37:31.080 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:37:31.0805227+05:30"------------
+2026-07-15 10:37:41.088 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:37:41.0887255+05:30"------------
+2026-07-15 10:37:51.100 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:37:51.1003159+05:30"------------
+2026-07-15 10:38:01.104 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:38:01.1047110+05:30"------------
+2026-07-15 10:38:11.145 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:38:11.1451701+05:30"------------
+2026-07-15 10:38:21.163 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:38:21.1630272+05:30"------------
+2026-07-15 10:38:31.171 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:38:31.1718646+05:30"------------
+2026-07-15 10:38:41.184 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:38:41.1841121+05:30"------------
+2026-07-15 10:38:51.201 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:38:51.2017895+05:30"------------
+2026-07-15 10:39:01.210 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:39:01.2102200+05:30"------------
+2026-07-15 10:39:11.223 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:39:11.2238454+05:30"------------
+2026-07-15 10:39:21.236 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:39:21.2360969+05:30"------------
+2026-07-15 10:39:31.244 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:39:31.2440845+05:30"------------
+2026-07-15 10:39:41.254 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:39:41.2549647+05:30"------------
+2026-07-15 10:39:51.275 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:39:51.2750135+05:30"------------
+2026-07-15 10:40:01.278 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:40:01.2788783+05:30"------------
+2026-07-15 10:40:11.282 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:40:11.2827688+05:30"------------
+2026-07-15 10:40:21.297 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:40:21.2978360+05:30"------------
+2026-07-15 10:40:31.310 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:40:31.3109665+05:30"------------
+2026-07-15 10:40:41.319 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:40:41.3198623+05:30"------------
+2026-07-15 10:40:51.333 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:40:51.3329601+05:30"------------
+2026-07-15 10:41:01.339 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:41:01.3397253+05:30"------------
+2026-07-15 10:41:11.357 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:41:11.3574385+05:30"------------
+2026-07-15 10:41:21.374 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:41:21.3744199+05:30"------------
+2026-07-15 10:41:31.385 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:41:31.3853917+05:30"------------
+2026-07-15 10:41:41.389 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:41:41.3895172+05:30"------------
+2026-07-15 10:41:51.407 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:41:51.4076901+05:30"------------
+2026-07-15 10:42:01.412 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:42:01.4127475+05:30"------------
+2026-07-15 10:42:11.428 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:42:11.4288120+05:30"------------
+2026-07-15 10:42:21.448 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:42:21.4487913+05:30"------------
+2026-07-15 10:42:31.454 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:42:31.4546412+05:30"------------
+2026-07-15 10:42:41.468 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:42:41.4680984+05:30"------------
+2026-07-15 10:42:51.474 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:42:51.4742133+05:30"------------
+2026-07-15 10:43:01.481 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:43:01.4815452+05:30"------------
+2026-07-15 10:43:11.489 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:43:11.4891155+05:30"------------
+2026-07-15 10:43:21.500 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:43:21.5008507+05:30"------------
+2026-07-15 10:43:31.504 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:43:31.5042878+05:30"------------
+2026-07-15 10:43:41.508 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:43:41.5083069+05:30"------------
+2026-07-15 10:43:51.517 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:43:51.5176907+05:30"------------
+2026-07-15 10:44:01.524 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:44:01.5243781+05:30"------------
+2026-07-15 10:44:11.536 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:44:11.5366382+05:30"------------
+2026-07-15 10:44:21.550 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:44:21.5504850+05:30"------------
+2026-07-15 10:44:31.565 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:44:31.5653403+05:30"------------
+2026-07-15 10:44:41.581 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:44:41.5814492+05:30"------------
+2026-07-15 10:44:51.594 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:44:51.5948652+05:30"------------
+2026-07-15 10:45:01.605 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:45:01.6056585+05:30"------------
+2026-07-15 10:45:11.609 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:45:11.6097357+05:30"------------
+2026-07-15 10:45:21.616 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:45:21.6163779+05:30"------------
+2026-07-15 10:45:31.630 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:45:31.6306380+05:30"------------
+2026-07-15 10:45:41.645 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:45:41.6455993+05:30"------------
+2026-07-15 10:45:51.688 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:45:51.6887052+05:30"------------
+2026-07-15 10:46:01.702 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:46:01.7021989+05:30"------------
+2026-07-15 10:46:11.711 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:46:11.7115089+05:30"------------
+2026-07-15 10:46:21.715 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:46:21.7155594+05:30"------------
+2026-07-15 10:46:31.725 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:46:31.7250734+05:30"------------
+2026-07-15 10:46:41.729 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:46:41.7299088+05:30"------------
+2026-07-15 10:46:51.740 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:46:51.7408631+05:30"------------
+2026-07-15 10:47:01.752 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:47:01.7520916+05:30"------------
+2026-07-15 10:47:11.771 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:47:11.7715617+05:30"------------
+2026-07-15 10:47:21.788 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:47:21.7888201+05:30"------------
+2026-07-15 10:47:31.793 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:47:31.7934186+05:30"------------
+2026-07-15 10:47:41.805 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:47:41.8050609+05:30"------------
+2026-07-15 10:47:51.811 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:47:51.8118551+05:30"------------
+2026-07-15 10:48:01.820 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:48:01.8204846+05:30"------------
+2026-07-15 10:48:11.833 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:48:11.8332581+05:30"------------
+2026-07-15 10:48:21.840 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:48:21.8406220+05:30"------------
+2026-07-15 10:48:31.858 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:48:31.8584404+05:30"------------
+2026-07-15 10:48:41.872 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:48:41.8722358+05:30"------------
+2026-07-15 10:48:51.891 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:48:51.8913414+05:30"------------
+2026-07-15 10:49:01.901 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:49:01.9015877+05:30"------------
+2026-07-15 10:49:11.915 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:49:11.9154901+05:30"------------
+2026-07-15 10:49:21.920 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:49:21.9206835+05:30"------------
+2026-07-15 10:49:31.937 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:49:31.9379128+05:30"------------
+2026-07-15 10:49:41.953 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:49:41.9537879+05:30"------------
+2026-07-15 10:49:51.969 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:49:51.9694267+05:30"------------
+2026-07-15 10:50:01.972 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:50:01.9722391+05:30"------------
+2026-07-15 10:50:11.977 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:50:11.9779630+05:30"------------
+2026-07-15 10:50:21.983 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:50:21.9832879+05:30"------------
+2026-07-15 10:50:31.995 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:50:31.9951635+05:30"------------
+2026-07-15 10:50:42.001 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:50:42.0016077+05:30"------------
+2026-07-15 10:50:52.015 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:50:52.0156016+05:30"------------
+2026-07-15 10:51:02.028 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:51:02.0282875+05:30"------------
+2026-07-15 10:51:12.041 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:51:12.0412027+05:30"------------
+2026-07-15 10:51:22.057 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:51:22.0570991+05:30"------------
+2026-07-15 10:51:32.073 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:51:32.0732887+05:30"------------
+2026-07-15 10:51:41.318 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/PatientApi/me - null null
+2026-07-15 10:51:41.323 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:51:41.324 +05:30 [INF] HTTP OPTIONS /api/PatientApi/me responded 204 in 1.1938 ms
+2026-07-15 10:51:41.326 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/PatientApi/me - 204 null null 7.9854ms
+2026-07-15 10:51:41.330 +05:30 [INF] Request starting HTTP/1.1 PUT http://localhost:5066/api/PatientApi/me - application/json 98
+2026-07-15 10:51:41.333 +05:30 [INF] CORS policy execution successful.
+2026-07-15 10:51:41.335 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.PatientApiController.UpdateMyProfile (HealthApp.Api)'
+2026-07-15 10:51:41.338 +05:30 [INF] Route matched with {action = "UpdateMyProfile", controller = "PatientApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UpdateMyProfile(HealthApp.Shared.Dto.PatientUpdateDto) on controller HealthApp.Api.Controllers.PatientApiController (HealthApp.Api).
+2026-07-15 10:51:41.558 +05:30 [INF] Executed DbCommand (28ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 10:51:41.570 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (Size = 100)], CommandType='"Text"', CommandTimeout='30']
+SET IMPLICIT_TRANSACTIONS OFF;
+SET NOCOUNT ON;
+UPDATE [Patients] SET [InsuranceId] = @p0
+OUTPUT 1
+WHERE [PatientId] = @p1;
+2026-07-15 10:51:41.574 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthApp.Shared.Dto.PatientDto'.
+2026-07-15 10:51:41.578 +05:30 [INF] Executed action HealthApp.Api.Controllers.PatientApiController.UpdateMyProfile (HealthApp.Api) in 236.4955ms
+2026-07-15 10:51:41.579 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.PatientApiController.UpdateMyProfile (HealthApp.Api)'
+2026-07-15 10:51:41.580 +05:30 [INF] HTTP PUT /api/PatientApi/me responded 200 in 247.9356 ms
+2026-07-15 10:51:41.582 +05:30 [INF] Request finished HTTP/1.1 PUT http://localhost:5066/api/PatientApi/me - 200 null application/json; charset=utf-8 252.0138ms
+2026-07-15 10:51:42.077 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:51:42.0779322+05:30"------------
+2026-07-15 10:51:52.094 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:51:52.0940649+05:30"------------
+2026-07-15 10:52:02.108 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:52:02.1089632+05:30"------------
+2026-07-15 10:52:12.114 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:52:12.1141374+05:30"------------
+2026-07-15 10:52:22.125 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:52:22.1252084+05:30"------------
+2026-07-15 10:52:32.139 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:52:32.1390872+05:30"------------
+2026-07-15 10:52:42.154 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:52:42.1544549+05:30"------------
+2026-07-15 10:52:52.168 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:52:52.1689541+05:30"------------
+2026-07-15 10:53:02.187 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:53:02.1875208+05:30"------------
+2026-07-15 10:53:12.198 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:53:12.1989589+05:30"------------
+2026-07-15 10:53:22.211 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:53:22.2113240+05:30"------------
+2026-07-15 10:53:32.220 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T10:53:32.2202660+05:30"------------
+2026-07-15 12:24:28.927 +05:30 [INF] Executed DbCommand (122ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-15 12:24:29.207 +05:30 [INF] Executed DbCommand (3ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-15 12:24:29.211 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@normalizedName='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+FROM [AspNetRoles] AS [a]
+WHERE [a].[NormalizedName] = @normalizedName
+2026-07-15 12:24:29.258 +05:30 [INF] User profile is available. Using 'C:\Users\310208\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2026-07-15 12:24:29.899 +05:30 [INF] HealthAxis Heartbeat Background Service started.+++++++++++++
+2026-07-15 12:24:29.900 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T12:24:29.9006288+05:30"------------
+2026-07-15 12:24:30.167 +05:30 [INF] Now listening on: http://localhost:5066
+2026-07-15 12:24:30.228 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-15 12:24:30.265 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-15 12:24:30.266 +05:30 [INF] Hosting environment: Development
+2026-07-15 12:24:30.268 +05:30 [INF] Content root path: C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api
+2026-07-15 12:24:39.915 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T12:24:39.9151063+05:30"------------
+2026-07-15 12:24:49.920 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T12:24:49.9203652+05:30"------------
+2026-07-15 12:24:55.783 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/auth/login - null null
+2026-07-15 12:24:55.923 +05:30 [INF] CORS policy execution successful.
+2026-07-15 12:24:55.928 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 40.2879 ms
+2026-07-15 12:24:55.941 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/auth/login - 204 null null 165.9688ms
+2026-07-15 12:24:55.947 +05:30 [INF] Request starting HTTP/1.1 POST http://localhost:5066/api/auth/login - application/json 49
+2026-07-15 12:24:55.954 +05:30 [INF] CORS policy execution successful.
+2026-07-15 12:24:55.956 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-07-15 12:24:55.974 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.AuthController.Login (HealthApp.Api)'
+2026-07-15 12:24:55.995 +05:30 [INF] Route matched with {action = "Login", controller = "Auth"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] Login(HealthApp.Shared.Dto.LoginDto) on controller HealthApp.Api.Controllers.AuthController (HealthApp.Api).
+2026-07-15 12:24:56.100 +05:30 [INF] Executed DbCommand (4ms) [Parameters=[@normalizedEmail='?' (Size = 256)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(2) [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+WHERE [a].[NormalizedEmail] = @normalizedEmail
+2026-07-15 12:24:56.290 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[@userId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a0].[Name]
+FROM [AspNetUserRoles] AS [a]
+INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+WHERE [a].[UserId] = @userId
+2026-07-15 12:24:56.333 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@userId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a0].[Name]
+FROM [AspNetUserRoles] AS [a]
+INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+WHERE [a].[UserId] = @userId
+2026-07-15 12:24:56.438 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthApp.Shared.Dto.LoginResponseDto'.
+2026-07-15 12:24:56.465 +05:30 [INF] Executed action HealthApp.Api.Controllers.AuthController.Login (HealthApp.Api) in 456.2021ms
+2026-07-15 12:24:56.470 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.AuthController.Login (HealthApp.Api)'
+2026-07-15 12:24:56.475 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 521.6667 ms
+2026-07-15 12:24:56.493 +05:30 [INF] Request finished HTTP/1.1 POST http://localhost:5066/api/auth/login - 200 null application/json; charset=utf-8 545.9355ms
+2026-07-15 12:24:56.498 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/PatientApi/me - null null
+2026-07-15 12:24:56.503 +05:30 [INF] CORS policy execution successful.
+2026-07-15 12:24:56.504 +05:30 [INF] HTTP OPTIONS /api/PatientApi/me responded 204 in 3.2108 ms
+2026-07-15 12:24:56.507 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/PatientApi/me - 204 null null 8.6539ms
+2026-07-15 12:24:56.515 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/PatientApi/me - application/json null
+2026-07-15 12:24:56.520 +05:30 [INF] CORS policy execution successful.
+2026-07-15 12:24:56.651 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.PatientApiController.GetMyProfile (HealthApp.Api)'
+2026-07-15 12:24:56.669 +05:30 [INF] Route matched with {action = "GetMyProfile", controller = "PatientApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyProfile() on controller HealthApp.Api.Controllers.PatientApiController (HealthApp.Api).
+2026-07-15 12:24:56.800 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-15 12:24:56.854 +05:30 [INF] Executed DbCommand (6ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 12:24:56.897 +05:30 [INF] Executing OkObjectResult, writing value of type 'HealthApp.Shared.Dto.PatientDto'.
+2026-07-15 12:24:56.909 +05:30 [INF] Executed action HealthApp.Api.Controllers.PatientApiController.GetMyProfile (HealthApp.Api) in 235.108ms
+2026-07-15 12:24:56.911 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.PatientApiController.GetMyProfile (HealthApp.Api)'
+2026-07-15 12:24:56.912 +05:30 [INF] HTTP GET /api/PatientApi/me responded 200 in 393.3294 ms
+2026-07-15 12:24:56.914 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/PatientApi/me - 200 null application/json; charset=utf-8 398.9622ms
+2026-07-15 12:24:56.917 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/HealthRecordApi/me - null null
+2026-07-15 12:24:56.917 +05:30 [INF] Request starting HTTP/1.1 OPTIONS http://localhost:5066/api/appointments/me - null null
+2026-07-15 12:24:56.919 +05:30 [INF] CORS policy execution successful.
+2026-07-15 12:24:56.921 +05:30 [INF] CORS policy execution successful.
+2026-07-15 12:24:56.922 +05:30 [INF] HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 2.4270 ms
+2026-07-15 12:24:56.922 +05:30 [INF] HTTP OPTIONS /api/appointments/me responded 204 in 1.2376 ms
+2026-07-15 12:24:56.924 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/HealthRecordApi/me - 204 null null 6.6572ms
+2026-07-15 12:24:56.926 +05:30 [INF] Request finished HTTP/1.1 OPTIONS http://localhost:5066/api/appointments/me - 204 null null 8.612ms
+2026-07-15 12:24:56.928 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/HealthRecordApi/me - null null
+2026-07-15 12:24:56.930 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5066/api/appointments/me - null null
+2026-07-15 12:24:56.933 +05:30 [INF] CORS policy execution successful.
+2026-07-15 12:24:56.935 +05:30 [INF] CORS policy execution successful.
+2026-07-15 12:24:56.938 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api)'
+2026-07-15 12:24:56.938 +05:30 [INF] Executing endpoint 'HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api)'
+2026-07-15 12:24:56.946 +05:30 [INF] Route matched with {action = "GetMyAppointments", controller = "AppointmentApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyAppointments() on controller HealthApp.Api.Controllers.AppointmentApiController (HealthApp.Api).
+2026-07-15 12:24:56.946 +05:30 [INF] Route matched with {action = "GetMyRecords", controller = "HealthRecordApi"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetMyRecords() on controller HealthApp.Api.Controllers.HealthRecordApiController (HealthApp.Api).
+2026-07-15 12:24:56.954 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 12:24:56.959 +05:30 [INF] Executed DbCommand (1ms) [Parameters=[@identityUserId='?' (Size = 450)], CommandType='"Text"', CommandTimeout='30']
+SELECT TOP(1) [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber]
+FROM [Patients] AS [p]
+WHERE [p].[IdentityUserId] = @identityUserId
+2026-07-15 12:24:57.028 +05:30 [INF] Executed DbCommand (13ms) [Parameters=[@patientId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [h].[RecordId], [h].[Diagnosis], [h].[DoctorId], [h].[Notes], [h].[PatientId], [h].[Prescription], [h].[VisitDate], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber], [d].[DoctorId], [d].[ConsultationFee], [d].[DoctorPhoneNumber], [d].[Email], [d].[FullName], [d].[IdentityUserId], [d].[IsActive], [d].[PracticeStartDate], [d].[Specialisation]
+FROM [HealthRecords] AS [h]
+INNER JOIN [Patients] AS [p] ON [h].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [h].[DoctorId] = [d].[DoctorId]
+WHERE [h].[PatientId] = @patientId
+2026-07-15 12:24:57.131 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthApp.Shared.Dto.HealthRecordDto, HealthApp.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-15 12:24:57.144 +05:30 [INF] Executed action HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api) in 194.8979ms
+2026-07-15 12:24:57.147 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.HealthRecordApiController.GetMyRecords (HealthApp.Api)'
+2026-07-15 12:24:57.149 +05:30 [INF] HTTP GET /api/HealthRecordApi/me responded 200 in 216.1679 ms
+2026-07-15 12:24:57.151 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/HealthRecordApi/me - 200 null application/json; charset=utf-8 223.1949ms
+2026-07-15 12:24:57.230 +05:30 [INF] Executed DbCommand (11ms) [Parameters=[@patientId='?' (DbType = Int32)], CommandType='"Text"', CommandTimeout='30']
+SELECT [a].[AppointmentId], [a].[CancellationReason], [a].[DoctorId], [a].[PatientId], [a].[ScheduledDate], [a].[Status], [a].[TimeSlot], [p].[PatientId], [p].[CreatedDate], [p].[DateOfBirth], [p].[Email], [p].[FullName], [p].[Gender], [p].[IdentityUserId], [p].[InsuranceId], [p].[PhoneNumber], [d].[DoctorId], [d].[ConsultationFee], [d].[DoctorPhoneNumber], [d].[Email], [d].[FullName], [d].[IdentityUserId], [d].[IsActive], [d].[PracticeStartDate], [d].[Specialisation]
+FROM [Appointments] AS [a]
+INNER JOIN [Patients] AS [p] ON [a].[PatientId] = [p].[PatientId]
+INNER JOIN [Doctors] AS [d] ON [a].[DoctorId] = [d].[DoctorId]
+WHERE [a].[PatientId] = @patientId
+2026-07-15 12:24:57.254 +05:30 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[HealthApp.Shared.Dto.AppointmentDto, HealthApp.Shared, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2026-07-15 12:24:57.263 +05:30 [INF] Executed action HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api) in 315.3031ms
+2026-07-15 12:24:57.265 +05:30 [INF] Executed endpoint 'HealthApp.Api.Controllers.AppointmentApiController.GetMyAppointments (HealthApp.Api)'
+2026-07-15 12:24:57.266 +05:30 [INF] HTTP GET /api/appointments/me responded 200 in 331.4088 ms
+2026-07-15 12:24:57.270 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5066/api/appointments/me - 200 null application/json; charset=utf-8 339.2976ms
+2026-07-15 12:24:59.937 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T12:24:59.9374071+05:30"------------
+2026-07-15 12:25:09.947 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T12:25:09.9470633+05:30"------------
+2026-07-15 12:25:19.964 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T12:25:19.9639956+05:30"------------
+2026-07-15 12:25:29.974 +05:30 [INF] HealthAxis heartbeat running at "2026-07-15T12:25:29.9747638+05:30"------------

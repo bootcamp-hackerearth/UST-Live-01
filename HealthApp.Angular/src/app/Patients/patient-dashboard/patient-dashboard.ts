@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { Sidebar } from '../shared/sidebar/sidebar';
+
 import { AuthService } from '../../service/auth.service';
-
-
-
 import { PatientService } from '../../Patient.service/patientservice';
 import { AppointmentService } from '../../Patient.service/appointmentservice';
 import { HealthRecordService } from '../../Patient.service/health-recordservice';
@@ -23,104 +22,114 @@ import { HealthRecord } from '../../models/health-record/health-record.model';
 })
 export class PatientDashboard implements OnInit {
 
-  patient: Patient | null = null;
+  patient = signal<Patient | null>(null);
+  editPatient: Patient | null = null;
 
-  appointments: Appointment[] = [];
-  records: HealthRecord[] = [];
+  appointments = signal<Appointment[]>([]);
+  records = signal<HealthRecord[]>([]);
 
-  upcomingCount = 0;
-  pendingCount = 0;
+  upcomingCount = signal(0);
+  pendingCount = signal(0);
+
   showProfile = false;
-
   editMode = false;
-  filteredAppointments: Appointment[] = [];
-  paginatedAppointments: Appointment[] = [];
-  pageNumber = 1;
+  isSavingProfile = false;
+
+  filteredAppointments = signal<Appointment[]>([]);
+  paginatedAppointments = signal<Appointment[]>([]);
+
+  pageNumber = signal(1);
   pageSize = 5;
-  totalPages = 0;
+  totalPages = signal(1);
+
+  passwordForm = {
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
+
+  showAppPopup = signal(false);
+  popupTitle = signal('');
+  popupMessage = signal('');
+  popupType = signal<'success' | 'error' | 'warning'>('success');
 
   constructor(
     private patientService: PatientService,
     private appointmentService: AppointmentService,
     private recordService: HealthRecordService,
-      private authService: AuthService 
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.loadProfile();
   }
 
-openProfile() {
-  this.showProfile = true;
-}
+  openProfile() {
+    this.showProfile = true;
+    this.editMode = false;
+    this.editPatient = null;
+  }
 
-closeProfile() {
-  this.showProfile = false;
-}
+  closeProfile() {
+    this.showProfile = false;
+    this.editMode = false;
+    this.editPatient = null;
+    this.isSavingProfile = false;
+    this.resetPasswordForm();
+  }
 
   loadProfile() {
     this.patientService.getMyProfile().subscribe({
       next: (res) => {
-        this.patient = res;
-
+        this.patient.set(res);
         this.loadAppointments();
         this.loadRecords();
       },
       error: (err) => {
         console.error('Profile load failed', err);
+        this.openAppPopup('Profile Error', 'Unable to load your profile details. Please try again.', 'error');
       }
     });
   }
 
-loadAppointments() {
-  this.appointmentService.getMyAppointments().subscribe({
-    next: (res) => {
+  loadAppointments() {
+    this.appointmentService.getMyAppointments().subscribe({
+      next: (res) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+        const data = (res || [])
+          .map((a: any) => ({
+            ...a,
+            scheduledDate: a.scheduledDate ? new Date(a.scheduledDate) : null
+          }))
+          .filter((a: any) => {
+            const isUpcoming = a.scheduledDate && a.scheduledDate >= today;
+            const isValidStatus = a.status === 'Pending' || a.status === 'Confirmed';
+            return isUpcoming && isValidStatus;
+          })
+          .sort((a, b) =>
+            new Date(a.scheduledDate!).getTime() -
+            new Date(b.scheduledDate!).getTime()
+          );
 
-      const data = (res || [])
-        .map((a: any) => ({
-          ...a,
-          scheduledDate: a.scheduledDate ? new Date(a.scheduledDate) : null
-        }))
-        .filter((a: any) => {
-
-          const isUpcoming = a.scheduledDate && a.scheduledDate >= today;
-
-          const isValidStatus =
-            a.status === 'Pending' || a.status === 'Confirmed';
-
-          return isUpcoming && isValidStatus;
-        })
-        .sort((a, b) =>
-          new Date(a.scheduledDate!).getTime() -
-          new Date(b.scheduledDate!).getTime()
-        );
-
-      this.appointments = data;
-      this.filteredAppointments = data; 
-
-      this.upcomingCount = data.length;
-      this.pendingCount = data.filter(a => a.status === 'Pending').length;
-
-      this.pageNumber = 1;
-
-      this.updatePagination();
-    },
-
-    error: (err) => {
-      console.error('Appointments load failed', err);
-    }
-  });
-}
-
-
+        this.appointments.set(data);
+        this.filteredAppointments.set(data);
+        this.upcomingCount.set(data.length);
+        this.pendingCount.set(data.filter(a => a.status === 'Pending').length);
+        this.pageNumber.set(1);
+        this.updatePagination();
+      },
+      error: (err) => {
+        console.error('Appointments load failed', err);
+      }
+    });
+  }
 
   loadRecords() {
     this.recordService.getMyRecords().subscribe({
       next: (res) => {
-        this.records = res || [];
+        this.records.set(res || []);
       },
       error: (err) => {
         console.error('Records load failed', err);
@@ -130,82 +139,171 @@ loadAppointments() {
 
   cancel(id: number) {
     const reason = prompt('Enter cancel reason');
-    if (!reason) return;
+    if (!reason || !reason.trim()) return;
 
     this.appointmentService.cancelAppointment(id, reason).subscribe({
-      next: () => {
-        this.loadAppointments();
-      },
+      next: () => this.loadAppointments(),
       error: (err) => {
         console.error('Cancel failed', err);
+        this.openAppPopup('Cancel Failed', err.error?.message || err.error || 'Unable to cancel appointment.', 'error');
       }
     });
   }
 
   toggleEdit() {
-    this.editMode = !this.editMode;
+    if (!this.patient()) return;
+    this.editMode = true;
+    this.editPatient = {
+      ...this.patient()!,
+      dateOfBirth: this.patient()!.dateOfBirth
+        ? this.formatDateForInput(this.patient()!.dateOfBirth) as any
+        : null as any
+    };
+  }
+
+  cancelEdit() {
+    if (this.isSavingProfile) return;
+    this.editMode = false;
+    this.editPatient = null;
   }
 
   update() {
-    if (!this.patient) return;
+    if (!this.editPatient || !this.patient() || this.isSavingProfile) return;
 
-    this.patientService.updateMyProfile(this.patient).subscribe({
-      next: () => {
+    this.isSavingProfile = true;
+
+    const payload = {
+      fullName: this.editPatient.fullName,
+      phoneNumber: this.editPatient.phoneNumber,
+      dateOfBirth: this.normalizeDate(this.editPatient.dateOfBirth),
+      insuranceId: this.editPatient.insuranceId || null
+    };
+
+    console.log('UPDATE PROFILE PAYLOAD:', payload);
+
+    this.patientService.updateMyProfile(payload).subscribe({
+      next: (res: Patient) => {
+        this.patient.set({
+          ...this.patient()!,
+          ...payload,
+          ...res
+        } as Patient);
+
+        this.isSavingProfile = false;
+        this.showProfile = false;
         this.editMode = false;
+        this.editPatient = null;
+
+        this.openAppPopup('Profile Updated', 'Your profile details have been updated successfully.', 'success');
       },
       error: (err) => {
+        this.isSavingProfile = false;
         console.error('Update failed', err);
+        console.log('Update failed details:', err.error);
+        this.openAppPopup('Update Failed', this.getErrorMessage(err, 'Profile update failed. Please try again.'), 'error');
       }
     });
   }
 
-  updatePagination() {
-  this.totalPages = Math.ceil(this.filteredAppointments.length / this.pageSize);
-  this.paginate();
-}
-
-paginate() {
-  const start = (this.pageNumber - 1) * this.pageSize;
-  const end = start + this.pageSize;
-
-  this.paginatedAppointments = this.filteredAppointments.slice(start, end);
-}
-
-nextPage() {
-  if (this.pageNumber < this.totalPages) {
-    this.pageNumber++;
-    this.paginate();
-  }
-}
-
-prevPage() {
-  if (this.pageNumber > 1) {
-    this.pageNumber--;
-    this.paginate();
-  }
-}
-
-passwordForm = {
-  currentPassword: '',
-  newPassword: '',
-  confirmPassword: ''
-};
-changePassword() {
-  this.authService.changePassword(this.passwordForm).subscribe({
-    next: (res: any) => {
-      alert(res.message);
-      
-      this.passwordForm = {
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      };
-    },
-    error: (err) => {
-      alert(err.error);
+  changePassword() {
+    if (!this.passwordForm.currentPassword || !this.passwordForm.newPassword || !this.passwordForm.confirmPassword) {
+      this.openAppPopup('Missing Details', 'Please fill all password fields.', 'warning');
+      return;
     }
-  });
-}
 
+    if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
+      this.openAppPopup('Password Mismatch', 'New password and confirm password do not match.', 'warning');
+      return;
+    }
 
+    this.authService.changePassword(this.passwordForm).subscribe({
+      next: (res: any) => {
+        this.resetPasswordForm();
+        this.openAppPopup('Password Updated', res.message || 'Password updated successfully.', 'success');
+      },
+      error: (err) => {
+        this.openAppPopup('Password Update Failed', this.getErrorMessage(err, 'Password update failed.'), 'error');
+      }
+    });
+  }
+
+  private normalizeDate(dateValue: any): string | null {
+    if (!dateValue) return null;
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private formatDateForInput(dateValue: any): string {
+    if (!dateValue) return '';
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  updatePagination() {
+    const totalPages = Math.ceil(this.filteredAppointments().length / this.pageSize);
+    this.totalPages.set(totalPages <= 0 ? 1 : totalPages);
+    if (this.pageNumber() > this.totalPages()) this.pageNumber.set(this.totalPages());
+    this.paginate();
+  }
+
+  paginate() {
+    const start = (this.pageNumber() - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedAppointments.set(this.filteredAppointments().slice(start, end));
+  }
+
+  nextPage() {
+    if (this.pageNumber() < this.totalPages()) {
+      this.pageNumber.update(value => value + 1);
+      this.paginate();
+    }
+  }
+
+  prevPage() {
+    if (this.pageNumber() > 1) {
+      this.pageNumber.update(value => value - 1);
+      this.paginate();
+    }
+  }
+
+  private resetPasswordForm() {
+    this.passwordForm = {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    };
+  }
+
+  private openAppPopup(title: string, message: string, type: 'success' | 'error' | 'warning' = 'success') {
+    this.popupTitle.set(title);
+    this.popupMessage.set(message);
+    this.popupType.set(type);
+    this.showAppPopup.set(true);
+  }
+
+  closeAppPopup() {
+    this.showAppPopup.set(false);
+    this.popupTitle.set('');
+    this.popupMessage.set('');
+    this.popupType.set('success');
+  }
+
+  private getErrorMessage(err: any, fallback: string): string {
+    const errors = err?.error?.errors;
+    if (errors) {
+      const firstKey = Object.keys(errors)[0];
+      if (firstKey && errors[firstKey]?.length) return errors[firstKey][0];
+    }
+    if (err?.error?.message) return err.error.message;
+    if (typeof err?.error === 'string') return err.error;
+    return fallback;
+  }
 }

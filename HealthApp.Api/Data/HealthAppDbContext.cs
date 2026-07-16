@@ -17,6 +17,7 @@ namespace HealthApp.Api.Data
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<HealthRecord> HealthRecords { get; set; }
         public DbSet<DoctorLeave> DoctorLeaves { get; set; }
+        public DbSet<Notification> notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

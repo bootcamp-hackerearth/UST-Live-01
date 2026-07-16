@@ -1,0 +1,396 @@
+/* ===================================
+   PAGE LAYOUT
+=================================== */
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f1f5f9;
+  font-family: "Inter", sans-serif;
+}
+
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+}
+
+.main {
+  flex: 1;
+  padding: 30px;
+}
+
+.leave-page {
+  width: 100%;
+}
+
+/* ===================================
+   HEADER
+=================================== */
+
+.page-header {
+  background: #ffffff;
+  padding: 25px 30px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.05);
+}
+
+.eyebrow {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 30px;
+  background: #dbeafe;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.page-header h1 {
+  font-size: 32px;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.subtext {
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* ===================================
+   ALERTS
+=================================== */
+
+.alert {
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+
+.success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.danger {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+/* ===================================
+   GRID
+=================================== */
+
+.leave-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+}
+
+/* ===================================
+   CARDS
+=================================== */
+
+.leave-form-card,
+.leave-history-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.05);
+}
+
+.leave-form-card h3,
+.leave-history-card h3 {
+  margin-bottom: 20px;
+  color: #0f172a;
+}
+
+/* ===================================
+   FORM
+=================================== */
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 15px;
+  font-size: 14px;
+  outline: none;
+  transition: .3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #2f6fed;
+  box-shadow: 0 0 0 3px rgba(47,111,237,.15);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.hint {
+  display: block;
+  margin-top: 5px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.error {
+  display: block;
+  margin-top: 5px;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ===================================
+   BUTTONS
+=================================== */
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-light {
+  background: #e2e8f0;
+  color: #0f172a;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.leave-btn {
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  background: linear-gradient(
+    135deg,
+    #2f6fed,
+    #1e3a8a
+  );
+}
+
+.leave-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* ===================================
+   HISTORY
+=================================== */
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.history-header p {
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.count-pill {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 8px 14px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.leave-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.leave-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px;
+  transition: .3s;
+}
+
+.leave-item:hover {
+  border-color: #2f6fed;
+  transform: translateY(-2px);
+}
+
+.leave-date-box {
+  margin-bottom: 10px;
+}
+
+.leave-date-box strong {
+  color: #0f172a;
+  display: block;
+}
+
+.leave-date-box span {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.leave-item p {
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* ===================================
+   EMPTY STATE
+=================================== */
+
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.empty-icon {
+  font-size: 60px;
+  margin-bottom: 12px;
+}
+
+.empty-state h3 {
+  margin-bottom: 8px;
+  color: #0f172a;
+}
+
+.empty-state p {
+  color: #64748b;
+}
+
+/* ===================================
+   MODAL
+=================================== */
+
+.confirm-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, .65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.confirm-box {
+  width: 500px;
+  max-width: 95%;
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,.15);
+}
+
+.confirm-icon {
+  width: 70px;
+  height: 70px;
+  margin: auto;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: #fef3c7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+}
+
+.confirm-box h3 {
+  margin-bottom: 15px;
+}
+
+.confirm-box p {
+  color: #475569;
+  line-height: 1.6;
+}
+
+.actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.btn-secondary {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #e2e8f0;
+  color: #0f172a;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-danger {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #ef4444;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+/* ===================================
+   RESPONSIVE
+=================================== */
+
+@media (max-width: 992px) {
+  .leave-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 16px;
+  }
+
+  .history-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .form-actions,
+  .actions {
+    flex-direction: column;
+  }
+
+  .btn-light,
+  .leave-btn,
+  .btn-secondary,
+  .btn-danger {
+    width: 100%;
+  }
+}

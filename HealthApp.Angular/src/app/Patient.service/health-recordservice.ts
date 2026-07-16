@@ -9,7 +9,7 @@ import { HealthRecord } from '../models/health-record/health-record.model';
 })
 export class HealthRecordService {
 
-  private baseUrl = 'https://localhost:7066/api/HealthRecordApi';
+  private baseUrl = 'http://localhost:5066/api/HealthRecordApi';
 
   constructor(private http: HttpClient) {}
 

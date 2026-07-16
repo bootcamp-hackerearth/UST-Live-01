@@ -17,29 +17,29 @@
     <div class="stats">
       <div class="card">
         <h3>Total</h3>
-        <p>{{ totalCount }}</p>
+        <p>{{ totalCount() }}</p>
       </div>
 
       <div class="card">
         <h3>Pending</h3>
-        <p>{{ pendingCount }}</p>
+        <p>{{ pendingCount() }}</p>
       </div>
 
       <div class="card">
         <h3>Confirmed</h3>
-        <p>{{ confirmedCount }}</p>
+        <p>{{ confirmedCount() }}</p>
       </div>
 
       <div class="card">
         <h3>Completed</h3>
-        <p>{{ completedCount }}</p>
+        <p>{{ completedCount() }}</p>
       </div>
     </div>
 
     <!-- LIST -->
     <div class="list">
 
-      <div *ngFor="let a of paginatedAppointments" class="item">
+      <div *ngFor="let a of paginatedAppointments()" class="item">
 
         <div>
           <strong>{{ a.patientName }}</strong>
@@ -69,28 +69,28 @@
 
     <!-- PAGINATION -->
     <div class="pagination">
-      <button (click)="prevPage()" [disabled]="pageNumber === 1">Prev</button>
-      <span>Page {{ pageNumber }} of {{ totalPages }}</span>
-      <button (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
+      <button (click)="prevPage()" [disabled]="pageNumber() === 1">Prev</button>
+      <span>Page {{ pageNumber() }} of {{ totalPages() }}</span>
+      <button (click)="nextPage()" [disabled]="pageNumber() === totalPages()">Next</button>
     </div>
 
   </div>
 </div>
 
 <!-- VIEW MODAL -->
-<div class="profile-modal" *ngIf="selected">
+<div class="profile-modal" *ngIf="selected()">
   <div class="modal-box">
 
     <h2>Appointment Details</h2>
 
-    <p><strong>Patient:</strong> {{ selected.patientName }}</p>
-    <p><strong>Doctor:</strong> {{ selected.doctorName }}</p>
-    <p><strong>Date:</strong> {{ selected.scheduledDate | date:'fullDate' }}</p>
-    <p><strong>Time:</strong> {{ selected.timeSlot }}</p>
-    <p><strong>Status:</strong> {{ selected.status }}</p>
+    <p><strong>Patient:</strong> {{ selected().patientName }}</p>
+    <p><strong>Doctor:</strong> {{ selected().doctorName }}</p>
+    <p><strong>Date:</strong> {{ selected().scheduledDate | date:'fullDate' }}</p>
+    <p><strong>Time:</strong> {{ selected().timeSlot }}</p>
+    <p><strong>Status:</strong> {{ selected().status }}</p>
 
-    <p *ngIf="selected.cancellationReason">
-      <strong>Reason:</strong> {{ selected.cancellationReason }}
+    <p *ngIf="selected().cancellationReason">
+      <strong>Reason:</strong> {{ selected().cancellationReason }}
     </p>
 
     <div class="actions">
@@ -98,4 +98,7 @@
     </div>
 
   </div>
+</div>
+<div class="error-alert" *ngIf="errorMessage()">
+  {{ errorMessage() }}
 </div>

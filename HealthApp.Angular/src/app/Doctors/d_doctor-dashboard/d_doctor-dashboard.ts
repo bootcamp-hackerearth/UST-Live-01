@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -6,29 +6,45 @@ import { Sidebar } from '../shared/d_sidebar/d_sidebar';
 import { AuthService } from '../../service/auth.service';
 import { AppointmentService } from '../../Doctor.service/appointmentservice';
 import { DoctorService } from '../../Doctor.service/doctorservice';
+import { DoctorLeaveService } from '../../Doctor.service/doctor-leave.service';
+import { AppPopupComponent } from '../../shared/app-popup/app-popup';
 
 @Component({
   selector: 'app-doctor-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, Sidebar],
+  imports: [CommonModule, FormsModule, Sidebar, AppPopupComponent],
   templateUrl: './d_doctor-dashboard.html',
   styleUrls: ['./d_doctor-dashboard.css']
 })
 export class DoctorDashboard implements OnInit {
 
-  appointments: any[] = [];
-  filteredAppointments: any[] = [];
-  latestAppointments: any[] = [];
+  appointments = signal<any[]>([]);
+  filteredAppointments = signal<any[]>([]);
+  latestAppointments = signal<any[]>([]);
 
-  upcomingCount = 0;
-  pendingCount = 0;
-  confirmedCount = 0;
-  completedCount = 0;
+  leaveForm = {
+    startDate: '',
+    endDate: '',
+    reason: ''
+  };
 
-  doctor: any = null;
+  leaveErrors = signal<any>({});
+  doctorLeaves = signal<any[]>([]);
+  showLeaveConfirm = signal(false);
 
-  showProfile = false;
-  showPasswordModal = false;
+  upcomingCount = signal(0);
+  pendingCount = signal(0);
+  confirmedCount = signal(0);
+  completedCount = signal(0);
+
+  doctor = signal<any>(null);
+
+  showProfile = signal(false);
+  showPasswordModal = signal(false);
+  popupVisible = signal(false);
+  popupTitle = signal('');
+  popupMessage = signal('');
+  popupType = signal<'success' | 'error' | 'warning'>('success');
 
   passwordForm = {
     currentPassword: '',
@@ -39,12 +55,14 @@ export class DoctorDashboard implements OnInit {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly doctorService: DoctorService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private doctorLeaveService: DoctorLeaveService
   ) {}
 
   ngOnInit(): void {
     this.loadAppointments();
     this.loadProfile();
+    this.loadMyLeaves();
   }
 
   loadAppointments() {
@@ -58,13 +76,13 @@ export class DoctorDashboard implements OnInit {
           scheduledDate: a.scheduledDate ? new Date(a.scheduledDate) : null
         }));
 
-        this.appointments = data;
-        this.filteredAppointments = data;
+        this.appointments.set(data);
+        this.filteredAppointments.set(data);
 
-        this.upcomingCount = data.length;
-        this.pendingCount = data.filter((a: any) => a.status === 'Pending').length;
-        this.confirmedCount = data.filter((a: any) => a.status === 'Confirmed').length;
-        this.completedCount = data.filter((a: any) => a.status === 'Completed').length;
+        this.upcomingCount.set(data.length);
+        this.pendingCount.set(data.filter((a: any) => a.status === 'Pending').length);
+        this.confirmedCount.set(data.filter((a: any) => a.status === 'Confirmed').length);
+        this.completedCount.set(data.filter((a: any) => a.status === 'Completed').length);
 
         this.setLatestAppointments();
       },
@@ -73,37 +91,37 @@ export class DoctorDashboard implements OnInit {
   }
 
   setLatestAppointments() {
-    this.latestAppointments = [...this.filteredAppointments]
+    this.latestAppointments.set([...this.filteredAppointments()]
       .sort((a: any, b: any) => {
         const dateA = a.scheduledDate ? new Date(a.scheduledDate).getTime() : 0;
         const dateB = b.scheduledDate ? new Date(b.scheduledDate).getTime() : 0;
 
         return dateB - dateA;
       })
-      .slice(0, 4);
+      .slice(0, 4));
   }
 
   loadProfile() {
     this.doctorService.getMyProfile().subscribe({
-      next: (res) => this.doctor = res,
+      next: (res) => this.doctor.set(res),
       error: (err) => console.error(err)
     });
   }
 
   openProfile() {
-    this.showProfile = true;
+    this.showProfile.set(true);
   }
 
   closeProfile() {
-    this.showProfile = false;
+    this.showProfile.set(false);
   }
 
   openPasswordModal() {
-    this.showPasswordModal = true;
+    this.showPasswordModal.set(true);
   }
 
   closePasswordModal() {
-    this.showPasswordModal = false;
+    this.showPasswordModal.set(false);
     this.clearPassword();
   }
 
@@ -124,25 +142,98 @@ export class DoctorDashboard implements OnInit {
     if (!this.passwordForm.currentPassword ||
         !this.passwordForm.newPassword ||
         !this.passwordForm.confirmPassword) {
-      alert('All fields are required');
+      this.showPopup('Missing Details', 'All fields are required.', 'warning');
       return;
     }
 
     if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
-      alert('Passwords do not match');
+      this.showPopup('Password Mismatch', 'Passwords do not match.', 'warning');
       return;
     }
 
     this.authService.changePassword(this.passwordForm).subscribe({
       next: (res: any) => {
-        alert(res.message || 'Password updated successfully');
+        this.showPopup('Password Updated', res.message || 'Password updated successfully.', 'success');
         this.closePasswordModal();
       },
       error: (err) => {
-        alert(err.error?.message || 'Password change failed');
+        this.showPopup('Password Update Failed', err.error?.message || 'Password change failed.', 'error');
       }
     });
   }
+
+  loadMyLeaves() {
+    this.doctorLeaveService.getMyLeaves().subscribe({
+      next: (res) => {
+        this.doctorLeaves.set(res || []);
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  validateLeaveForm(): boolean {
+    this.leaveErrors.set({});
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const start = this.leaveForm.startDate ? new Date(this.leaveForm.startDate) : null;
+    const end = this.leaveForm.endDate ? new Date(this.leaveForm.endDate) : null;
+
+    if (!this.leaveForm.startDate) {
+      this.leaveErrors.update(errors => ({ ...errors, startDate: 'Start date is required' }));
+    }
+
+    if (!this.leaveForm.endDate) {
+      this.leaveErrors.update(errors => ({ ...errors, endDate: 'End date is required' }));
+    }
+
+    if (start && start < today) {
+      this.leaveErrors.update(errors => ({ ...errors, startDate: 'Start date cannot be in the past' }));
+    }
+
+    if (start && end && end < start) {
+      this.leaveErrors.update(errors => ({ ...errors, endDate: 'End date cannot be before start date' }));
+    }
+
+    if (!this.leaveForm.reason?.trim()) {
+      this.leaveErrors.update(errors => ({ ...errors, reason: 'Reason is required' }));
+    }
+
+    return Object.keys(this.leaveErrors()).length === 0;
+  }
+
+  openLeaveConfirm() {
+    if (!this.validateLeaveForm()) return;
+    this.showLeaveConfirm.set(true);
+  }
+
+  closeLeaveConfirm() {
+    this.showLeaveConfirm.set(false);
+  }
+
+  submitLeave() {
+    this.doctorLeaveService.createMyLeave(this.leaveForm).subscribe({
+      next: () => {
+        this.showPopup('Leave Created', 'Leave created successfully.', 'success');
+
+        this.leaveForm = {
+          startDate: '',
+          endDate: '',
+          reason: ''
+        };
+
+        this.showLeaveConfirm.set(false);
+        this.loadMyLeaves();
+      },
+      error: (err) => {
+        this.showPopup('Leave Creation Failed', err.error?.message || err.error || 'Leave creation failed.', 'error');
+        this.showLeaveConfirm.set(false);
+      }
+    });
+  }
+
+
+
 
   clearPassword() {
     this.passwordForm = {
@@ -150,5 +241,18 @@ export class DoctorDashboard implements OnInit {
       newPassword: '',
       confirmPassword: ''
     };
+  }
+
+  private showPopup(title: string, message: string, type: 'success' | 'error' | 'warning' = 'success') {
+    this.popupTitle.set(title);
+    this.popupMessage.set(message);
+    this.popupType.set(type);
+    this.popupVisible.set(true);
+  }
+
+  closePopup() {
+    this.popupVisible.set(false);
+    this.popupTitle.set('');
+    this.popupMessage.set('');
   }
 }

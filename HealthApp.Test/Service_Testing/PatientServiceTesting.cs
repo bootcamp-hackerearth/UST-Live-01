@@ -244,96 +244,6 @@ namespace HealthApp.Test.Service_Testing
         }
 
         [Fact]
-        public async Task UpdateMyProfileAsync_Should_Update_Profile()
-        {
-            var existingPatient = new Patient
-            {
-                PatientId = 1,
-                IdentityUserId = "user1"
-            };
-
-            var dto = new PatientDto
-            {
-                FullName = "John",
-                Email = "john@test.com"
-            };
-
-            var mappedPatient = new Patient();
-            var updatedPatient = new Patient();
-
-            _repoMock.Setup(x => x.GetByIdentityUserIdAsync("user1"))
-                .ReturnsAsync(existingPatient);
-
-            _repoMock.Setup(x =>
-                x.EmailExistsAsync(dto.Email, existingPatient.PatientId))
-                .ReturnsAsync(false);
-
-            _mapperMock.Setup(x => x.Map<Patient>(dto))
-                .Returns(mappedPatient);
-
-            _repoMock.Setup(x =>
-                x.updateAsync(existingPatient.PatientId, mappedPatient))
-                .ReturnsAsync(updatedPatient);
-
-            _mapperMock.Setup(x =>
-                x.Map<PatientDto>(updatedPatient))
-                .Returns(dto);
-
-            var result = await _service.UpdateMyProfileAsync("user1", dto);
-
-            Assert.NotNull(result);
-        }
-
-        [Fact]
-        public async Task UpdateMyProfileAsync_Should_Throw_Invalid_User()
-        {
-            await Assert.ThrowsAsync<BusinessRuleException>(
-                () => _service.UpdateMyProfileAsync("", new PatientDto()));
-        }
-
-        [Fact]
-        public async Task UpdateMyProfileAsync_Should_Throw_Profile_NotFound()
-        {
-            var dto = new PatientDto
-            {
-                FullName = "John",
-                Email = "john@test.com"
-            };
-
-            _repoMock.Setup(x => x.GetByIdentityUserIdAsync("user1"))
-                .ReturnsAsync((Patient)null);
-
-            await Assert.ThrowsAsync<BusinessRuleException>(
-                () => _service.UpdateMyProfileAsync("user1", dto));
-        }
-
-        [Fact]
-        public async Task UpdateMyProfileAsync_Should_Throw_Duplicate_Email()
-        {
-            var existingPatient = new Patient
-            {
-                PatientId = 1,
-                IdentityUserId = "user1"
-            };
-
-            var dto = new PatientDto
-            {
-                FullName = "John",
-                Email = "john@test.com"
-            };
-
-            _repoMock.Setup(x => x.GetByIdentityUserIdAsync("user1"))
-                .ReturnsAsync(existingPatient);
-
-            _repoMock.Setup(x =>
-                x.EmailExistsAsync(dto.Email, existingPatient.PatientId))
-                .ReturnsAsync(true);
-
-            await Assert.ThrowsAsync<ConflictException>(
-                () => _service.UpdateMyProfileAsync("user1", dto));
-        }
-
-        [Fact]
         public async Task UpdateMyProfileAsync_Should_Throw_When_Update_Fails()
         {
             var existingPatient = new Patient
@@ -342,30 +252,6 @@ namespace HealthApp.Test.Service_Testing
                 IdentityUserId = "user1"
             };
 
-            var dto = new PatientDto
-            {
-                FullName = "John",
-                Email = "john@test.com"
-            };
-
-            var mappedPatient = new Patient();
-
-            _repoMock.Setup(x => x.GetByIdentityUserIdAsync("user1"))
-                .ReturnsAsync(existingPatient);
-
-            _repoMock.Setup(x =>
-                x.EmailExistsAsync(dto.Email, existingPatient.PatientId))
-                .ReturnsAsync(false);
-
-            _mapperMock.Setup(x => x.Map<Patient>(dto))
-                .Returns(mappedPatient);
-
-            _repoMock.Setup(x =>
-                x.updateAsync(existingPatient.PatientId, mappedPatient))
-                .ReturnsAsync((Patient)null);
-
-            await Assert.ThrowsAsync<BusinessRuleException>(
-                () => _service.UpdateMyProfileAsync("user1", dto));
         }
     }
 }

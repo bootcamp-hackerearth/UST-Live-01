@@ -4,18 +4,41 @@
     <p>Doctor Portal</p>
   </div>
 
-  <ul>
+  <ul class="menu">
+
     <li routerLink="/doctor-dashboard" routerLinkActive="active">
-      <span>🏠</span> Dashboard
+      <span>🏠</span>
+      Dashboard
     </li>
-        <li routerLink="/doctor_appointments" routerLinkActive="active">
-      <span>📅</span> Appointments
+
+    <li routerLink="/doctor_appointments" routerLinkActive="active">
+      <span>📅</span>
+      Appointments
     </li>
+
     <li routerLink="/doctor_health-records" routerLinkActive="active">
-      <span>📄</span> Records
+      <span>📄</span>
+      Records
     </li>
+
+    <li routerLink="/d_leave" routerLinkActive="active">
+      <span>🏖️</span>
+      Leave
+    </li>
+
     <li (click)="logout()" class="logout">
-      🚪 Logout
+      <span>🚪</span>
+      Logout
     </li>
+
   </ul>
 </aside>
+
+<app-popup
+  [visible]="popupVisible"
+  [title]="popupTitle"
+  [message]="popupMessage"
+  [type]="'warning'"
+  (closed)="closePopup()"
+  (confirmed)="confirmLogout()">
+</app-popup>

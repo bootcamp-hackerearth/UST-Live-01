@@ -38,25 +38,25 @@
       <div class="card">
         <span>📅</span>
         <h3>Total Appointments</h3>
-        <p>{{ upcomingCount }}</p>
+        <p>{{ upcomingCount() }}</p>
       </div>
 
       <div class="card">
         <span>⏳</span>
         <h3>Pending</h3>
-        <p>{{ pendingCount }}</p>
+        <p>{{ pendingCount() }}</p>
       </div>
 
       <div class="card">
         <span>✅</span>
         <h3>Confirmed</h3>
-        <p>{{ confirmedCount }}</p>
+        <p>{{ confirmedCount() }}</p>
       </div>
 
       <div class="card">
         <span>🏁</span>
         <h3>Completed</h3>
-        <p>{{ completedCount }}</p>
+        <p>{{ completedCount() }}</p>
       </div>
     </div>
 
@@ -72,9 +72,9 @@
         <strong>Today’s priorities</strong>
       </div>
 
-      <div class="latest-list" *ngIf="latestAppointments.length > 0; else noAppointments">
+      <div class="latest-list" *ngIf="latestAppointments().length > 0; else noAppointments">
 
-        <div class="latest-item" *ngFor="let a of latestAppointments">
+        <div class="latest-item" *ngFor="let a of latestAppointments()">
 
           <div class="patient-info">
             <div class="avatar">
@@ -122,8 +122,16 @@
   </div>
 </div>
 
+<app-popup
+  [visible]="popupVisible()"
+  [title]="popupTitle()"
+  [message]="popupMessage()"
+  [type]="popupType()"
+  (closed)="closePopup()">
+</app-popup>
+
 <!-- PROFILE MODAL -->
-<div class="profile-modal" *ngIf="showProfile && doctor">
+<div class="profile-modal" *ngIf="showProfile() && doctor()">
   <div class="modal-box">
 
     <h2>Doctor Profile</h2>
@@ -132,32 +140,32 @@
 
       <div class="profile-item">
         <label>Name</label>
-        <p>{{ doctor.fullName }}</p>
+        <p>{{ doctor().fullName }}</p>
       </div>
 
       <div class="profile-item">
         <label>Email</label>
-        <p>{{ doctor.email }}</p>
+        <p>{{ doctor().email }}</p>
       </div>
 
       <div class="profile-item">
         <label>Phone</label>
-        <p>{{ doctor.doctorPhoneNumber }}</p>
+        <p>{{ doctor().doctorPhoneNumber }}</p>
       </div>
 
       <div class="profile-item">
         <label>Specialisation</label>
-        <p>{{ doctor.specialisation }}</p>
+        <p>{{ doctor().specialisation }}</p>
       </div>
 
       <div class="profile-item">
         <label>Consultation Fee</label>
-        <p>₹ {{ doctor.consultationFee }}</p>
+        <p>₹ {{ doctor().consultationFee }}</p>
       </div>
 
       <div class="profile-item">
         <label>Practice Start</label>
-        <p>{{ doctor.practiceStartDate | date }}</p>
+        <p>{{ doctor().practiceStartDate | date }}</p>
       </div>
 
     </div>
@@ -176,7 +184,7 @@
 </div>
 
 <!-- PASSWORD MODAL -->
-<div class="profile-modal" *ngIf="showPasswordModal">
+<div class="profile-modal" *ngIf="showPasswordModal()">
   <div class="modal-box">
 
     <h2>Change Password</h2>
@@ -212,3 +220,5 @@
 
   </div>
 </div>
+
+

@@ -19,10 +19,12 @@ namespace HealthApp.Api.Controllers
             _service = service;
         }
 
-
         [HttpGet("paged")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<IActionResult> GetPaged(int pageNumber = 1, int pageSize = 10, string? search = null)
+        public async Task<IActionResult> GetPaged(
+            int pageNumber = 1,
+            int pageSize = 10,
+            string? search = null)
         {
             try
             {
@@ -84,7 +86,6 @@ namespace HealthApp.Api.Controllers
             }
         }
 
-
         [HttpGet("me")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
         public async Task<IActionResult> GetMyProfile()
@@ -97,17 +98,26 @@ namespace HealthApp.Api.Controllers
                     return Unauthorized(new { message = "Invalid token." });
 
                 var patient = await _service.GetMyProfileAsync(identityUserId);
+
                 return Ok(patient);
             }
             catch (BusinessRuleException ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
+            catch (EntityNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch
+            {
+                return StatusCode(500, new { message = "Internal server error" });
+            }
         }
 
         [HttpPut("me")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
-        public async Task<IActionResult> UpdateMyProfile([FromBody] PatientDto dto)
+        public async Task<IActionResult> UpdateMyProfile([FromBody] PatientUpdateDto dto)
         {
             try
             {
@@ -120,13 +130,17 @@ namespace HealthApp.Api.Controllers
 
                 return Ok(updated);
             }
-            catch (ConflictException ex)
+            catch (EntityNotFoundException ex)
             {
-                return Conflict(new { message = ex.Message });
+                return NotFound(new { message = ex.Message });
             }
             catch (BusinessRuleException ex)
             {
                 return BadRequest(new { message = ex.Message });
+            }
+            catch (ConflictException ex)
+            {
+                return Conflict(new { message = ex.Message });
             }
             catch
             {

@@ -101,13 +101,13 @@ namespace HealthApp.Api.Service.Impl
 
         public async Task<PatientDto> UpdateMyProfileAsync(
             string identityUserId,
-            PatientDto patientDto)
+            PatientUpdateDto patientDto)
         {
             if (string.IsNullOrWhiteSpace(identityUserId))
                 throw new BusinessRuleException(
                     "Invalid user");
 
-            ValidatePatientDto(patientDto);
+            ValidatePatientUpdateDto(patientDto);
 
             var existingPatient =
                 await _repo.GetByIdentityUserIdAsync(
@@ -117,30 +117,21 @@ namespace HealthApp.Api.Service.Impl
                 throw new BusinessRuleException(
                     "Profile not found");
 
-            string email = patientDto.Email!;
+            // ✅ Update only editable profile fields
+            existingPatient.FullName = patientDto.FullName.Trim();
+            existingPatient.PhoneNumber = patientDto.PhoneNumber.Trim();
+            if (!patientDto.DateOfBirth.HasValue)
+                throw new BusinessRuleException("Date of birth is required");
 
-            var duplicate =
-                await _repo.EmailExistsAsync(
-                    email,
-                    existingPatient.PatientId);
-
-            if (duplicate)
-                throw new ConflictException(
-                    "Email already exists.");
-
-            var patient =
-                _mapper.Map<Patient>(patientDto);
-
-            patient.PatientId =
-                existingPatient.PatientId;
-
-            patient.IdentityUserId =
-                existingPatient.IdentityUserId;
+            existingPatient.DateOfBirth = patientDto.DateOfBirth.Value.Date;
+            existingPatient.InsuranceId = string.IsNullOrWhiteSpace(patientDto.InsuranceId)
+                ? null
+                : patientDto.InsuranceId.Trim();
 
             var updated =
                 await _repo.updateAsync(
                     existingPatient.PatientId,
-                    patient);
+                    existingPatient);
 
             if (updated == null)
                 throw new BusinessRuleException(
@@ -172,6 +163,34 @@ namespace HealthApp.Api.Service.Impl
                 patientDto.Email))
                 throw new BusinessRuleException(
                     "Email required");
+        }
+
+        private static void ValidatePatientUpdateDto(
+            PatientUpdateDto patientDto)
+        {
+            if (patientDto == null)
+                throw new BusinessRuleException(
+                    "Patient update data required");
+
+            if (string.IsNullOrWhiteSpace(patientDto.FullName))
+                throw new BusinessRuleException(
+                    "Name required");
+
+            if (string.IsNullOrWhiteSpace(patientDto.PhoneNumber))
+                throw new BusinessRuleException(
+                    "Phone number required");
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(
+                patientDto.PhoneNumber,
+                @"^[0-9]{10}$"))
+            {
+                throw new BusinessRuleException(
+                    "Phone number must be exactly 10 digits");
+            }
+
+            if (!patientDto.DateOfBirth.HasValue)
+                throw new BusinessRuleException("Date of birth is required");
+
         }
     }
 }

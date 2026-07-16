@@ -68,7 +68,7 @@ namespace HealthApp.Api.Service.Impl
                 startDate,
                 endDate);
 
-            return MapLeave(saved, doctor.FullName);
+            return MapLeave(saved, doctor.FullName!);
         }
 
         public async Task<List<DoctorLeaveDto>> GetMyLeavesAsync(
@@ -84,7 +84,7 @@ namespace HealthApp.Api.Service.Impl
                 .GetByDoctorIdAsync(doctor.DoctorId);
 
             return leaves
-                .Select(x => MapLeave(x, doctor.FullName))
+                .Select(x => MapLeave(x, doctor.FullName!))
                 .ToList();
         }
 
@@ -103,7 +103,7 @@ namespace HealthApp.Api.Service.Impl
                 .GetByDoctorIdAsync(doctorId);
 
             return leaves
-                .Select(x => MapLeave(x, doctor.FullName))
+                .Select(x => MapLeave(x, doctor.FullName!))
                 .ToList();
         }
 

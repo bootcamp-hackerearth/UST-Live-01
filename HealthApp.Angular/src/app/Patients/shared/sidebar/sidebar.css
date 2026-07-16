@@ -1,61 +1,258 @@
+/* ===================================
+   SIDEBAR
+=================================== */
+
 .sidebar {
-  width: 260px;
-  min-height: 100vh;
-  background: linear-gradient(180deg, #0f172a 0%, #112a43 100%);
-  color: white;
-  padding: 24px 18px;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  background: linear-gradient(
+    180deg,
+    #0f172a 0%,
+    #1e293b 100%
+  );
+  padding: 24px 18px;
+  color: #ffffff;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 8px 0 25px rgba(15, 23, 42, 0.18);
 }
 
+/* ===================================
+   BRAND
+=================================== */
+
 .brand-block {
-  margin-bottom: 28px;
+  margin-bottom: 30px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .logo {
-  margin: 0;
-  font-size: 1.3rem;
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #ffffff;
 }
 
 .logo span {
-  color: #2dd4bf;
+  color: #2f6fed;
 }
 
 .brand-block p {
-  margin: 6px 0 0;
   color: #94a3b8;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-ul {
+/* ===================================
+   MENU TITLE
+=================================== */
+
+.sidebar ul::before {
+  content: "PATIENT MENU";
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 18px;
+  padding-left: 12px;
+}
+
+/* ===================================
+   MENU
+=================================== */
+
+.sidebar ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-li {
-  padding: 12px 14px;
-  border-radius: 12px;
-  cursor: pointer;
-  margin-bottom: 10px;
+.sidebar li {
   display: flex;
-  gap: 10px;
   align-items: center;
-  color: #e2e8f0;
-  transition: background 0.2s ease, transform 0.2s ease;
+  gap: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #cbd5e1;
+  font-weight: 500;
+  font-size: 15px;
 }
 
-li:hover {
-  background: rgba(255,255,255,0.12);
-  transform: translateX(2px);
+.sidebar li span {
+  font-size: 18px;
+  width: 22px;
+  text-align: center;
 }
 
-.active {
-  background: linear-gradient(90deg, #0f766e, #14b8a6);
-  font-weight: 700;
+/* Hover */
+
+.sidebar li:hover {
+  background: rgba(47, 111, 237, 0.15);
+  color: #ffffff;
+  transform: translateX(4px);
 }
+
+/* Active Route */
+
+.sidebar li.active,
+.sidebar li.router-link-active {
+  background: linear-gradient(
+    135deg,
+    #16a34a,
+    #15803d
+  );
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(22, 163, 74, 0.25);
+}
+
+/* ===================================
+   LOGOUT
+=================================== */
 
 .logout {
-  margin-top: 28px;
-  background: rgba(220, 38, 38, 0.16);
-  color: #fecaca;
+  margin-top: 30px;
+  color: #fca5a5 !important;
+}
+
+.logout:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #ffffff !important;
+}
+
+/* ===================================
+   SCROLLBAR
+=================================== */
+
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.15);
+  border-radius: 20px;
+}
+
+/* ===================================
+   RESPONSIVE
+=================================== */
+
+@media (max-width: 768px) {
+
+  .sidebar {
+    width: 80px;
+    padding: 20px 10px;
+  }
+
+  .brand-block p,
+  .logo,
+  .sidebar ul::before {
+    display: none;
+  }
+
+  .sidebar li {
+    justify-content: center;
+    padding: 14px;
+  }
+
+  .sidebar li span {
+    font-size: 22px;
+    margin: 0;
+  }
+
+  .sidebar li {
+    font-size: 0;
+  }
+}
+.popup-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.popup-ok-btn,
+.popup-cancel-btn,
+.popup-logout-btn {
+  border: none;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.popup-ok-btn {
+  background: #2f6fed;
+  color: white;
+}
+
+.popup-cancel-btn {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.popup-logout-btn {
+  background: linear-gradient(
+    135deg,
+    #ef4444,
+    #dc2626
+  );
+  color: white;
+}
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  pointer-events: none;
+}
+
+.confirm-actions {
+  position: fixed;
+  left: 50%;
+  top: calc(50% + 110px);
+
+  transform: translateX(-50%);
+
+  display: flex;
+  gap: 12px;
+
+  pointer-events: auto;
+}
+
+.cancel-btn-popup {
+  border: none;
+  background: #e2e8f0;
+  color: #0f172a;
+
+  padding: 12px 20px;
+  border-radius: 10px;
+
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout-btn-popup {
+  border: none;
+
+  background: linear-gradient(
+    135deg,
+    #ef4444,
+    #dc2626
+  );
+
+  color: white;
+
+  padding: 12px 20px;
+  border-radius: 10px;
+
+  cursor: pointer;
+  font-weight: 600;
 }

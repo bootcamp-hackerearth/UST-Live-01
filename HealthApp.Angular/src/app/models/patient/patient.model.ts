@@ -1,7 +1,7 @@
 export interface Patient {
   patientId: number;
   fullName?: string;
-  dateOfBirth?: Date;
+  dateOfBirth?: string | Date | null;
   gender?: 'Male' | 'Female' | 'Other';
   phoneNumber?: string;
   email?: string;

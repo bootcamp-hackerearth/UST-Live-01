@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '../service/auth.service';
 import { LoginResponse } from '../login/login-response.model';
+import { AppPopupComponent } from '../shared/app-popup/app-popup';
 
 
 
@@ -16,7 +17,7 @@ export interface LoginRequest {
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterModule, FormsModule],
+  imports: [RouterModule, FormsModule, AppPopupComponent],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
@@ -24,6 +25,10 @@ export class LoginComponent {
 
   email = '';
   password = '';
+  popupVisible = false;
+  popupTitle = '';
+  popupMessage = '';
+  popupType: 'success' | 'error' | 'warning' = 'success';
 
   constructor(
     private authService: AuthService,
@@ -42,7 +47,7 @@ export class LoginComponent {
     next: (res: LoginResponse) => {
 
       if (!res.success) {
-        alert(res.message);
+        this.showPopup('Login Failed', res.message || 'Unable to sign in. Please try again.', 'error');
         return;
       }
 
@@ -70,9 +75,22 @@ export class LoginComponent {
 
     error: (err) => {
       console.error(err);
-      alert('Login failed');
+      this.showPopup('Login Failed', 'Unable to sign in. Please try again.', 'error');
     }
   });
 }
+
+  private showPopup(title: string, message: string, type: 'success' | 'error' | 'warning' = 'success') {
+    this.popupTitle = title;
+    this.popupMessage = message;
+    this.popupType = type;
+    this.popupVisible = true;
+  }
+
+  closePopup() {
+    this.popupVisible = false;
+    this.popupTitle = '';
+    this.popupMessage = '';
+  }
 
 }

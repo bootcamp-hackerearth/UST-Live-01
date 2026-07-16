@@ -1,3 +1,7 @@
+using Elastic.Ingest.Elasticsearch;
+using Elastic.Ingest.Elasticsearch.DataStreams;
+using Elastic.Serilog.Sinks;
+using Elastic.Transport;
 using HealthApp.Api.BackgroundServices;
 using HealthApp.Api.Data;
 using HealthApp.Api.Mappings;
@@ -15,30 +19,37 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
+using Serilog.Debugging;
 using System.Text;
 using System.Text.Json;
 
 
-var builder = WebApplication.CreateBuilder(args);
+SelfLog.Enable(msg => Console.Error.WriteLine($"SERILOG ERROR: {msg}"));
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
-
-    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", Serilog.Events.LogEventLevel.Information)
-
-
-    .Enrich.FromLogContext()
     .WriteTo.Console()
-    .WriteTo.File(
-        path: "Logs/healthcare-log-.txt",
-        rollingInterval: RollingInterval.Day,
-        retainedFileCountLimit: 7
-    )
-    .CreateLogger();
+    .CreateBootstrapLogger();
 
-builder.Host.UseSerilog();
+Log.Information("HealthAxis API is starting up...");
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .WriteTo.Elasticsearch(
+            new[] { new Uri("http://localhost:9200") },
+            opts =>
+            {
+                opts.DataStream = new DataStreamName("logs", "healthaxis", "api");
+                opts.BootstrapMethod = BootstrapMethod.Failure;
+            });
+});
+
+
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -213,5 +224,6 @@ using (var scope = app.Services.CreateScope())
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     await RoleSeeder.seedroleAsync(roleManager);
 }
+
 
 await app.RunAsync();

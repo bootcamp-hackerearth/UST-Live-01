@@ -12,7 +12,7 @@
         <p class="subtext">Manage medical history and treatments.</p>
       </div>
 
-      <button class="add-btn" (click)="showForm = true">
+      <button class="add-btn" (click)="showForm.set(true)">
         + Add Record
       </button>
     </header>
@@ -20,7 +20,7 @@
     <!-- RECORD LIST -->
     <div class="records-list">
 
-      <div *ngFor="let r of paginatedRecords" class="record-card">
+      <div *ngFor="let r of paginatedRecords()" class="record-card">
 
         <!-- LEFT -->
         <div>
@@ -42,20 +42,20 @@
 </div>
 
 <!-- VIEW MODAL -->
-<div class="modal" *ngIf="selected">
+<div class="modal" *ngIf="selected()">
 
   <div class="modal-box">
 
     <h2>Health Record Details</h2>
 
-    <p><strong>Patient:</strong> {{ selected.patientName }}</p>
-    <p><strong>Doctor:</strong> {{ selected.doctorName }}</p>
-    <p><strong>Date:</strong> {{ selected.visitDate | date:'fullDate' }}</p>
-    <p><strong>Diagnosis:</strong> {{ selected.diagnosis }}</p>
-    <p><strong>Prescription:</strong> {{ selected.prescription }}</p>
+    <p><strong>Patient:</strong> {{ selected().patientName }}</p>
+    <p><strong>Doctor:</strong> {{ selected().doctorName }}</p>
+    <p><strong>Date:</strong> {{ selected().visitDate | date:'fullDate' }}</p>
+    <p><strong>Diagnosis:</strong> {{ selected().diagnosis }}</p>
+    <p><strong>Prescription:</strong> {{ selected().prescription }}</p>
 
-    <p *ngIf="selected.notes">
-      <strong>Notes:</strong> {{ selected.notes }}
+    <p *ngIf="selected().notes">
+      <strong>Notes:</strong> {{ selected().notes }}
     </p>
 
     <div class="actions">
@@ -66,7 +66,7 @@
 </div>
 
 <!-- ADD RECORD MODAL -->
-<div class="modal" *ngIf="showForm">
+<div class="modal" *ngIf="showForm()">
 
   <div class="modal-box">
 
@@ -86,7 +86,7 @@
 
     <div class="actions">
       <button (click)="create()">Save</button>
-      <button class="cancel" (click)="showForm = false">Cancel</button>
+      <button class="cancel" (click)="showForm.set(false)">Cancel</button>
     </div>
 
   </div>
@@ -96,15 +96,15 @@
 
 <div class="pagination">
 
-  <button (click)="prevPage()" [disabled]="pageNumber === 1">
+  <button (click)="prevPage()" [disabled]="pageNumber() === 1">
     Prev
   </button>
 
   <span>
-    Page {{ pageNumber }} of {{ totalPages }}
+    Page {{ pageNumber() }} of {{ totalPages() }}
   </span>
 
-  <button (click)="nextPage()" [disabled]="pageNumber === totalPages">
+  <button (click)="nextPage()" [disabled]="pageNumber() === totalPages()">
     Next
   </button>
 

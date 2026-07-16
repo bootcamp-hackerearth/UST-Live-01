@@ -21,7 +21,7 @@
           <span class="toolbar-icon">📄</span>
           <div>
             <h3>Medical Timeline</h3>
-            <p>{{ allRecords.length }} records available</p>
+            <p>{{ allRecords().length }} records available</p>
           </div>
         </div>
 
@@ -48,9 +48,9 @@
       </div>
 
       <!-- RECORD CARDS -->
-      <div class="records-grid" *ngIf="paginatedRecords.length; else emptyRecords">
+      <div class="records-grid" *ngIf="paginatedRecords().length; else emptyRecords">
 
-        <article class="record-card" *ngFor="let r of paginatedRecords">
+        <article class="record-card" *ngFor="let r of paginatedRecords()">
 
           <div class="record-header">
             <div class="record-icon">
@@ -112,20 +112,20 @@
         <button
           class="page-btn"
           (click)="prevPage()"
-          [disabled]="pageNumber === 1">
+          [disabled]="pageNumber() === 1">
           ‹ Back
         </button>
 
         <div class="page-indicator">
           <span>Page</span>
-          <strong>{{ pageNumber }}</strong>
-          <span>of {{ totalPages || 1 }}</span>
+          <strong>{{ pageNumber() }}</strong>
+          <span>of {{ totalPages() || 1 }}</span>
         </div>
 
         <button
           class="page-btn"
           (click)="nextPage()"
-          [disabled]="pageNumber === totalPages || totalPages === 0">
+          [disabled]="pageNumber() === totalPages() || totalPages() === 0">
           Next ›
         </button>
       </div>

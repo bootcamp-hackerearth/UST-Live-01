@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../shared/sidebar/sidebar';
@@ -17,16 +17,16 @@ import { Doctor } from '../../models/doctor/doctor.model';
 })
 export class PatientDoctors implements OnInit {
 
-  allDoctors: Doctor[] = [];
-  filteredDoctors: Doctor[] = [];
-  paginatedDoctors: Doctor[] = [];
+  allDoctors = signal<Doctor[]>([]);
+  filteredDoctors = signal<Doctor[]>([]);
+  paginatedDoctors = signal<Doctor[]>([]);
 
   nameSearch: string = '';
   specialisationSearch: string = '';
 
-  pageNumber = 1;
+  pageNumber = signal(1);
   pageSize = 6;
-  totalPages = 0;
+  totalPages = signal(0);
 
   constructor(
     private doctorService: DoctorService,
@@ -41,7 +41,7 @@ export class PatientDoctors implements OnInit {
     this.doctorService.getActiveDoctors(1, 1000)
       .subscribe({
         next: (res: any) => {
-          this.allDoctors = res.data || res;
+          this.allDoctors.set(res.data || res);
           this.filterDoctors();
         },
         error: (err) => {
@@ -51,39 +51,39 @@ export class PatientDoctors implements OnInit {
   }
 
   filterDoctors() {
-    this.filteredDoctors = this.allDoctors.filter(d =>
+    this.filteredDoctors.set(this.allDoctors().filter(d =>
       (!this.specialisationSearch || d.specialisation === this.specialisationSearch) &&
       (!this.nameSearch || d.fullName?.toLowerCase().includes(this.nameSearch.toLowerCase()))
-    );
+    ));
 
-    this.pageNumber = 1;
+    this.pageNumber.set(1);
     this.calculateTotalPages();
     this.paginate();
   }
 
   paginate() {
-    const start = (this.pageNumber - 1) * this.pageSize;
+    const start = (this.pageNumber() - 1) * this.pageSize;
     const end = start + this.pageSize;
 
-    this.paginatedDoctors = this.filteredDoctors.slice(start, end);
+    this.paginatedDoctors.set(this.filteredDoctors().slice(start, end));
   }
 
   nextPage() {
-    if (this.pageNumber < this.totalPages) {
-      this.pageNumber++;
+    if (this.pageNumber() < this.totalPages()) {
+      this.pageNumber.update(value => value + 1);
       this.paginate();
     }
   }
 
   prevPage() {
-    if (this.pageNumber > 1) {
-      this.pageNumber--;
+    if (this.pageNumber() > 1) {
+      this.pageNumber.update(value => value - 1);
       this.paginate();
     }
   }
 
   calculateTotalPages() {
-    this.totalPages = Math.ceil(this.filteredDoctors.length / this.pageSize);
+    this.totalPages.set(Math.ceil(this.filteredDoctors().length / this.pageSize));
   }
 
   getExperience(startDate?: Date): number {

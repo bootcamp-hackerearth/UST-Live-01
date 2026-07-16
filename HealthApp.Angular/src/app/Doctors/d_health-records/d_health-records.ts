@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../shared/d_sidebar/d_sidebar';
@@ -15,17 +15,17 @@ import { DoctorService } from '../../Doctor.service/doctorservice';
 })
 export class DoctorHealthRecords implements OnInit {
 
-  records: any[] = [];
+  records = signal<any[]>([]);
 
-  showForm = false;
-  filteredRecords: any[] = [];
-  paginatedRecords: any[] = [];
-  pageNumber = 1;
+  showForm = signal(false);
+  filteredRecords = signal<any[]>([]);
+  paginatedRecords = signal<any[]>([]);
+  pageNumber = signal(1);
   pageSize = 5;
-  totalPages = 0;
+  totalPages = signal(0);
 
-  doctor: any = null;
-  selected: any = null;
+  doctor = signal<any>(null);
+  selected = signal<any>(null);
 
   form: any = {
     patientId: '',
@@ -44,17 +44,17 @@ export class DoctorHealthRecords implements OnInit {
   }
 
   view(data: any) {
-    this.selected = data;
+    this.selected.set(data);
   }
 
   closeView() {
-    this.selected = null;
+    this.selected.set(null);
   }
 
   loadDoctor() {
     this.doctorService.getMyProfile().subscribe({
       next: (res) => {
-        this.doctor = res;
+        this.doctor.set(res);
         console.log('Doctor loaded:', res);
       },
       error: (err) => console.error('Failed to load doctor', err)
@@ -64,11 +64,10 @@ export class DoctorHealthRecords implements OnInit {
   load() {
     this.service.getDoctorRecords().subscribe({
       next: (res: any) => {
-
         const list = res?.data || res || [];
 
-        this.records = list;
-        this.filteredRecords = list;
+        this.records.set(list);
+        this.filteredRecords.set(list);
 
         this.updatePagination();
       },
@@ -77,14 +76,14 @@ export class DoctorHealthRecords implements OnInit {
   }
 
   create() {
-    if (this.doctor) {
-      this.form.doctorId = this.doctor.doctorId;
-      this.form.doctorName = this.doctor.fullName;
+    if (this.doctor()) {
+      this.form.doctorId = this.doctor().doctorId;
+      this.form.doctorName = this.doctor().fullName;
     }
 
     this.service.createRecord(this.form).subscribe({
       next: () => {
-        this.showForm = false;
+        this.showForm.set(false);
 
         this.form = {
           patientId: '',
@@ -99,7 +98,6 @@ export class DoctorHealthRecords implements OnInit {
 
         this.load();
       },
-
       error: (err) => {
         console.error('Create error:', err.error);
       }
@@ -107,27 +105,27 @@ export class DoctorHealthRecords implements OnInit {
   }
 
   updatePagination() {
-    this.totalPages = Math.ceil(this.filteredRecords.length / this.pageSize);
+    this.totalPages.set(Math.ceil(this.filteredRecords().length / this.pageSize));
     this.paginate();
   }
 
   paginate() {
-    const start = (this.pageNumber - 1) * this.pageSize;
+    const start = (this.pageNumber() - 1) * this.pageSize;
     const end = start + this.pageSize;
 
-    this.paginatedRecords = this.filteredRecords.slice(start, end);
+    this.paginatedRecords.set(this.filteredRecords().slice(start, end));
   }
 
   nextPage() {
-    if (this.pageNumber < this.totalPages) {
-      this.pageNumber++;
+    if (this.pageNumber() < this.totalPages()) {
+      this.pageNumber.update(value => value + 1);
       this.paginate();
     }
   }
 
   prevPage() {
-    if (this.pageNumber > 1) {
-      this.pageNumber--;
+    if (this.pageNumber() > 1) {
+      this.pageNumber.update(value => value - 1);
       this.paginate();
     }
   }

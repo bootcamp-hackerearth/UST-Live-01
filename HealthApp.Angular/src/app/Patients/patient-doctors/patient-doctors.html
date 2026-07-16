@@ -46,7 +46,7 @@
 
       <!-- DOCTOR GRID -->
       <div class="doctor-grid">
-        <article class="doctor-card" *ngFor="let d of paginatedDoctors">
+        <article class="doctor-card" *ngFor="let d of paginatedDoctors()">
 
           <div class="doctor-top">
             <div class="doctor-avatar">
@@ -84,30 +84,30 @@
       </div>
 
       <!-- EMPTY STATE -->
-      <div class="empty-state" *ngIf="paginatedDoctors.length === 0">
+      <div class="empty-state" *ngIf="paginatedDoctors().length === 0">
         <div class="empty-icon">🔎</div>
         <h3>No doctors found</h3>
         <p>Try changing the search term or specialisation filter.</p>
       </div>
 
-    <div class="pagination" *ngIf="totalPages > 1">
+    <div class="pagination" *ngIf="totalPages() > 1">
   <button
     class="page-btn"
     (click)="prevPage()"
-    [disabled]="pageNumber === 1">
+    [disabled]="pageNumber() === 1">
     ‹ Prev
   </button>
 
   <div class="page-indicator">
     <span>Page</span>
-    <strong>{{ pageNumber }}</strong>
-    <span>of {{ totalPages }}</span>
+    <strong>{{ pageNumber() }}</strong>
+    <span>of {{ totalPages() }}</span>
   </div>
 
   <button
     class="page-btn"
     (click)="nextPage()"
-    [disabled]="pageNumber === totalPages">
+    [disabled]="pageNumber() === totalPages()">
     Next ›
   </button>
 </div>

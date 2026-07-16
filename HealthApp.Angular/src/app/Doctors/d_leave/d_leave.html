@@ -1,0 +1,161 @@
+<div class="dashboard">
+  <app-sidebar class="sidebar"></app-sidebar>
+
+  <main class="main">
+
+    <section class="leave-page">
+
+      <!-- HEADER -->
+      <div class="page-header">
+        <div>
+          <p class="eyebrow">Doctor Availability</p>
+          <h1>Leave / Unavailability</h1>
+          <p class="subtext">
+            Mark unavailable dates so patients cannot book appointments during your leave.
+          </p>
+        </div>
+      </div>
+
+      <!-- ALERTS -->
+      <div class="alert success" *ngIf="successMessage()">
+        {{ successMessage() }}
+      </div>
+
+      <div class="alert danger" *ngIf="errorMessage()">
+        {{ errorMessage() }}
+      </div>
+
+      <!-- CONTENT GRID -->
+      <div class="leave-grid">
+
+        <!-- CREATE LEAVE -->
+        <div class="leave-form-card">
+          <h3>Submit Leave</h3>
+          <div class="form-group">
+  <label>Start Date</label>
+
+  <input
+    type="date"
+    [(ngModel)]="leaveForm.startDate"
+    [min]="tomorrowString"
+    (change)="onStartDateChange()">
+
+  <small class="hint">
+    Leave can be created only from tomorrow onwards.
+  </small>
+
+  <small class="error" *ngIf="leaveErrors().startDate">
+    {{ leaveErrors().startDate }}
+  </small>
+</div>
+
+<div class="form-group">
+  <label>End Date</label>
+
+  <input
+    type="date"
+    [(ngModel)]="leaveForm.endDate"
+    [min]="endMinDate">
+
+  <small class="hint">
+    End date must be same as or after start date.
+  </small>
+
+  <small class="error" *ngIf="leaveErrors().endDate">
+    {{ leaveErrors().endDate }}
+  </small>
+</div>
+
+
+          <div class="form-group">
+            <label>Reason</label>
+            <textarea
+              placeholder="Example: Personal leave, conference, emergency..."
+              [(ngModel)]="leaveForm.reason">
+            </textarea>
+            <small class="error" *ngIf="leaveErrors().reason">
+              {{ leaveErrors().reason }}
+            </small>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-light" (click)="resetForm()">Clear</button>
+            <button class="leave-btn" (click)="openLeaveConfirm()">
+              Submit Leave
+            </button>
+          </div>
+        </div>
+
+        <!-- LEAVE HISTORY -->
+        <div class="leave-history-card">
+
+          <div class="history-header">
+            <div>
+              <h3>My Leave History</h3>
+              <p>All submitted leave records are shown below.</p>
+            </div>
+
+            <span class="count-pill">
+              {{ doctorLeaves().length }} Records
+            </span>
+          </div>
+
+          <div *ngIf="doctorLeaves().length; else noLeaves" class="leave-list">
+
+            <div class="leave-item" *ngFor="let l of doctorLeaves()">
+              <div class="leave-date-box">
+                <strong>
+                  {{ l.startDate | date:'MMM d, y' }}
+                  -
+                  {{ l.endDate | date:'MMM d, y' }}
+                </strong>
+                <span>Created {{ l.createdDate | date:'MMM d, y' }}</span>
+              </div>
+
+              <p>{{ l.reason }}</p>
+            </div>
+
+          </div>
+
+          <ng-template #noLeaves>
+            <div class="empty-state">
+              <div class="empty-icon">📭</div>
+              <h3>No leave records yet</h3>
+              <p>Your submitted leave history will appear here.</p>
+            </div>
+          </ng-template>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="confirm-modal" *ngIf="showLeaveConfirm()">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠</div>
+
+    <h3>Confirm Leave</h3>
+
+    <p>
+      Are you sure you want to mark yourself unavailable from
+      <strong>{{ leaveForm.startDate }}</strong>
+      to
+      <strong>{{ leaveForm.endDate }}</strong>?
+    </p>
+
+    <div class="actions">
+      <button class="btn-secondary" (click)="closeLeaveConfirm()">
+        Cancel
+      </button>
+
+      <button class="btn-danger" (click)="submitLeave()">
+        Confirm Leave
+      </button>
+    </div>
+  </div>
+</div>

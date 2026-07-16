@@ -13,10 +13,6 @@
             Manage consultations, track appointment status, and book care with confidence.
           </p>
         </div>
-
-        <button class="primary-btn" (click)="openBooking()">
-          + Book Appointment
-        </button>
       </div>
 
       <!-- SUMMARY STRIP -->
@@ -68,9 +64,9 @@
       </div>
 
       <!-- APPOINTMENT LIST -->
-      <div class="card-list" *ngIf="paginatedAppointments.length; else emptyBlock">
+      <div class="card-list" *ngIf="paginatedAppointments().length; else emptyBlock">
 
-        <article class="appointment-card" *ngFor="let a of paginatedAppointments">
+        <article class="appointment-card" *ngFor="let a of paginatedAppointments()">
 
           <div class="appointment-left">
             <div class="doctor-avatar">
@@ -125,14 +121,14 @@
       </ng-template>
 
       <!-- PAGINATION -->
-      <div class="pagination" *ngIf="totalPages > 1">
-        <button (click)="prevPage()" [disabled]="pageNumber === 1">
+      <div class="pagination" *ngIf="totalPages() > 1">
+        <button (click)="prevPage()" [disabled]="pageNumber() === 1">
           Prev
         </button>
 
-        <span>Page {{ pageNumber }} of {{ totalPages }}</span>
+        <span>Page {{ pageNumber() }} of {{ totalPages() }}</span>
 
-        <button (click)="nextPage()" [disabled]="pageNumber === totalPages">
+        <button (click)="nextPage()" [disabled]="pageNumber() === totalPages()">
           Next
         </button>
       </div>
@@ -142,7 +138,7 @@
 </div>
 
 <!-- BOOKING MODAL -->
-<div class="modal" *ngIf="showBookingModal">
+<div class="modal" *ngIf="showBookingModal()">
   <div class="modal-box">
 
     <div class="modal-header">
@@ -155,11 +151,17 @@
     </div>
 
     <!-- SELECTED DOCTOR -->
-    <div class="selected-doctor" *ngIf="selectedDoctor; else manualDoctor">
-      <span>Selected Doctor</span>
-      <strong>{{ selectedDoctor.fullName }}</strong>
-      <small>{{ selectedDoctor.specialisation }}</small>
-    </div>
+   <div class="selected-doctor" *ngIf="selectedDoctor; else manualDoctor">
+
+  <label>Selected Doctor</label>
+
+  <h3>{{ selectedDoctor.fullName }}</h3>
+
+  <p class="speciality">
+    {{ selectedDoctor.specialisation }}
+  </p>
+
+</div>
 
     <ng-template #manualDoctor>
       <div class="form-group">
@@ -176,27 +178,51 @@
       <label>Appointment Date</label>
       <input
         type="date"
-        [(ngModel)]="selectedDate"
-        (change)="checkSlots()"
-      />
+          [(ngModel)]="selectedDate"
+          [min]="minBookingDate()"
+          (change)="checkSlots()"
+        />
     </div>
 
-    <div class="slot-section">
-      <label>Available Slots</label>
+    <div class="leave-warning" *ngIf="isDoctorOnLeave()">
+  {{ availabilityMessage() }}
+</div>
 
-      <div class="slots" *ngIf="availableSlots.length">
-        <button
-          *ngFor="let s of availableSlots"
-          (click)="selectedSlot = s"
-          [class.active]="selectedSlot === s">
-          {{ s }}
-        </button>
-      </div>
 
-      <p *ngIf="availableSlots.length === 0" class="no-slots">
+<div class="slots">
+
+  <button
+    *ngFor="let s of availableSlots()"
+    [disabled]="!s.isAvailable"
+    [class.active]="selectedSlot === s.timeSlot"
+    [class.leave-slot]="s.status === 'Doctor On Leave'"
+    [class.booked-slot]="s.status === 'Booked'"
+    (click)="selectSlot(s)">
+
+    <span class="slot-time">
+      {{ s.timeSlot }}
+    </span>
+
+    <small class="slot-status">
+      {{ s.status }}
+    </small>
+
+  </button>
+
+</div>
+
+      <p *ngIf="availableSlots().length === 0" class="no-slots">
         No slots available for this date.
       </p>
-    </div>
+
+      <div class="message error-message" *ngIf="bookingErrorMessage()">
+  {{ bookingErrorMessage() }}
+</div>
+
+<div class="message success-message" *ngIf="bookingSuccessMessage()">
+  {{ bookingSuccessMessage() }}
+</div>
+
 
     <div class="actions">
       <button class="secondary-btn" (click)="closeBooking()">
@@ -205,6 +231,56 @@
 
       <button class="primary-btn" (click)="bookAppointment()">
         Confirm Booking
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<app-popup
+  [visible]="popupVisible()"
+  [title]="popupTitle()"
+  [message]="popupMessage()"
+  [type]="popupType()"
+  (closed)="closePopup()">
+</app-popup>
+
+<!-- CANCEL MODAL -->
+
+<div class="modal" *ngIf="showCancelModal()">
+  <div class="cancel-modal-box">
+
+    <div class="modal-header">
+      <h2>Cancel Appointment</h2>
+
+      <button
+        class="close-btn"
+        (click)="closeCancelModal()">
+        ×
+      </button>
+    </div>
+
+    <div class="form-group">
+      <label>Cancellation Reason</label>
+
+      <textarea
+        rows="5"
+        placeholder="Enter cancel reason..."
+        [(ngModel)]="cancelReason">
+      </textarea>
+    </div>
+
+    <div class="actions">
+      <button
+        class="secondary-btn"
+        (click)="closeCancelModal()">
+        Close
+      </button>
+
+      <button
+        class="danger-btn"
+        (click)="confirmCancel()">
+        Cancel Appointment
       </button>
     </div>
 

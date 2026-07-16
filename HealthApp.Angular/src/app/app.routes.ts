@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { Home } from './home/home';
 import { LoginComponent } from './login/login-request.model';
 import { Register } from './register/register';
+import { DLeave } from './Doctors/d_leave/d_leave';
 
 
 import { PatientDashboard } from './Patients/patient-dashboard/patient-dashboard';
@@ -61,6 +62,12 @@ export const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'Doctor' }
   },
+{
+  path: 'd_leave',
+  component: DLeave,
+  canActivate: [AuthGuard, RoleGuard],
+  data: { role: 'Doctor' }
+},
   {
     path: 'doctor_health-records',
     component: DoctorHealthRecords,

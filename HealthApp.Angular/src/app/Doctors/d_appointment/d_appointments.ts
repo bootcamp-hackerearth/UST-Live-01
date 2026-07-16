@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Sidebar } from '../shared/d_sidebar/d_sidebar';
 
@@ -13,20 +13,22 @@ import { AppointmentService } from '../../Doctor.service/appointmentservice';
 })
 export class DoctorAppointments implements OnInit {
 
-  appointments: any[] = [];
-  filteredAppointments: any[] = [];
-  paginatedAppointments: any[] = [];
+  appointments = signal<any[]>([]);
+  filteredAppointments = signal<any[]>([]);
+  paginatedAppointments = signal<any[]>([]);
 
-  totalCount = 0;
-  pendingCount = 0;
-  confirmedCount = 0;
-  completedCount = 0;
+  errorMessage = signal('');
 
-  pageNumber = 1;
+  totalCount = signal(0);
+  pendingCount = signal(0);
+  confirmedCount = signal(0);
+  completedCount = signal(0);
+
+  pageNumber = signal(1);
   pageSize = 5;
-  totalPages = 0;
+  totalPages = signal(0);
 
-  selected: any = null;
+  selected = signal<any>(null);
 
   constructor(private readonly appointmentService: AppointmentService) {}
 
@@ -39,14 +41,14 @@ export class DoctorAppointments implements OnInit {
       next: (res: any) => {
         const appointments = this.formatAppointments(res);
 
-        this.appointments = appointments;
-        this.filteredAppointments = appointments;
+        this.appointments.set(appointments);
+        this.filteredAppointments.set(appointments);
 
         this.updateCounts(appointments);
         this.updatePagination();
       },
       error: (err) => {
-        console.error('Failed to load doctor appointments', err);
+        this.errorMessage.set(err?.error?.message || 'Failed to load doctor appointments');
       }
     });
   }
@@ -63,10 +65,10 @@ export class DoctorAppointments implements OnInit {
   }
 
   private updateCounts(appointments: any[]): void {
-    this.totalCount = appointments.length;
-    this.pendingCount = this.getStatusCount(appointments, 'Pending');
-    this.confirmedCount = this.getStatusCount(appointments, 'Confirmed');
-    this.completedCount = this.getStatusCount(appointments, 'Completed');
+    this.totalCount.set(appointments.length);
+    this.pendingCount.set(this.getStatusCount(appointments, 'Pending'));
+    this.confirmedCount.set(this.getStatusCount(appointments, 'Confirmed'));
+    this.completedCount.set(this.getStatusCount(appointments, 'Completed'));
   }
 
   private getStatusCount(appointments: any[], status: string): number {
@@ -74,37 +76,37 @@ export class DoctorAppointments implements OnInit {
   }
 
   updatePagination() {
-    this.totalPages = Math.ceil(this.filteredAppointments.length / this.pageSize);
+    this.totalPages.set(Math.ceil(this.filteredAppointments().length / this.pageSize));
     this.paginate();
   }
 
   paginate() {
-    const start = (this.pageNumber - 1) * this.pageSize;
+    const start = (this.pageNumber() - 1) * this.pageSize;
     const end = start + this.pageSize;
 
-    this.paginatedAppointments = this.filteredAppointments.slice(start, end);
+    this.paginatedAppointments.set(this.filteredAppointments().slice(start, end));
   }
 
   nextPage() {
-    if (this.pageNumber < this.totalPages) {
-      this.pageNumber++;
+    if (this.pageNumber() < this.totalPages()) {
+      this.pageNumber.update(value => value + 1);
       this.paginate();
     }
   }
 
   prevPage() {
-    if (this.pageNumber > 1) {
-      this.pageNumber--;
+    if (this.pageNumber() > 1) {
+      this.pageNumber.update(value => value - 1);
       this.paginate();
     }
   }
 
   view(data: any) {
-    this.selected = data;
+    this.selected.set(data);
   }
 
   closeView() {
-    this.selected = null;
+    this.selected.set(null);
   }
 
   confirm(id: number) {

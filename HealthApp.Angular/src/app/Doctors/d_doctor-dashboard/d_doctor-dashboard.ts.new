@@ -1,0 +1,247 @@
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+import { Sidebar } from '../shared/d_sidebar/d_sidebar';
+import { AuthService } from '../../service/auth.service';
+import { AppointmentService } from '../../Doctor.service/appointmentservice';
+import { DoctorService } from '../../Doctor.service/doctorservice';
+import { DoctorLeaveService } from '../../Doctor.service/doctor-leave.service';
+import { AppPopupComponent } from '../../shared/app-popup/app-popup';
+
+@Component({
+  selector: 'app-doctor-dashboard',
+  standalone: true,
+  imports: [CommonModule, FormsModule, Sidebar, AppPopupComponent],
+  templateUrl: './d_doctor-dashboard.html',
+  styleUrls: ['./d_doctor-dashboard.css']
+})
+export class DoctorDashboard implements OnInit {
+
+  appointments = signal<any[]>([]);
+  filteredAppointments = signal<any[]>([]);
+  latestAppointments = signal<any[]>([]);
+
+  leaveForm = {
+    startDate: '',
+    endDate: '',
+    reason: ''
+  };
+
+  leaveErrors = signal<any>({});
+  doctorLeaves = signal<any[]>([]);
+  showLeaveConfirm = signal(false);
+
+  upcomingCount = signal(0);
+  pendingCount = signal(0);
+  confirmedCount = signal(0);
+  completedCount = signal(0);
+
+  doctor = signal<any>(null);
+
+  showProfile = signal(false);
+  showPasswordModal = signal(false);
+  popupVisible = signal(false);
+  popupTitle = signal('');
+  popupMessage = signal('');
+  popupType = signal<'success' | 'error' | 'warning'>('success');
+
+  passwordForm = {
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
+
+  constructor(
+    private readonly appointmentService: AppointmentService,
+    private readonly doctorService: DoctorService,
+    private readonly authService: AuthService,
+    private doctorLeaveService: DoctorLeaveService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadAppointments();
+    this.loadProfile();
+    this.loadMyLeaves();
+  }
+
+  loadAppointments() {
+    this.appointmentService.getMyDoctorAppointments().subscribe({
+      next: (res: any) => {
+        const list = res?.data || res || [];
+        const data = list.map((a: any) => ({
+          ...a,
+          scheduledDate: a.scheduledDate ? new Date(a.scheduledDate) : null
+        }));
+
+        this.appointments.set(data);
+        this.filteredAppointments.set(data);
+        this.upcomingCount.set(data.length);
+        this.pendingCount.set(data.filter((a: any) => a.status === 'Pending').length);
+        this.confirmedCount.set(data.filter((a: any) => a.status === 'Confirmed').length);
+        this.completedCount.set(data.filter((a: any) => a.status === 'Completed').length);
+        this.setLatestAppointments();
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  setLatestAppointments() {
+    this.latestAppointments.set([...this.filteredAppointments()]
+      .sort((a: any, b: any) => {
+        const dateA = a.scheduledDate ? new Date(a.scheduledDate).getTime() : 0;
+        const dateB = b.scheduledDate ? new Date(b.scheduledDate).getTime() : 0;
+        return dateB - dateA;
+      })
+      .slice(0, 4));
+  }
+
+  loadProfile() {
+    this.doctorService.getMyProfile().subscribe({
+      next: (res) => this.doctor.set(res),
+      error: (err) => console.error(err)
+    });
+  }
+
+  openProfile() {
+    this.showProfile.set(true);
+  }
+
+  closeProfile() {
+    this.showProfile.set(false);
+  }
+
+  openPasswordModal() {
+    this.showPasswordModal.set(true);
+  }
+
+  closePasswordModal() {
+    this.showPasswordModal.set(false);
+    this.clearPassword();
+  }
+
+  confirm(id: number) {
+    this.appointmentService.confirmAppointment(id).subscribe(() => {
+      this.loadAppointments();
+    });
+  }
+
+  complete(id: number) {
+    this.appointmentService.completeAppointment(id).subscribe(() => {
+      this.loadAppointments();
+    });
+  }
+
+  changePassword() {
+    if (!this.passwordForm.currentPassword ||
+        !this.passwordForm.newPassword ||
+        !this.passwordForm.confirmPassword) {
+      this.showPopup('Missing Details', 'All fields are required.', 'warning');
+      return;
+    }
+
+    if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
+      this.showPopup('Password Mismatch', 'Passwords do not match.', 'warning');
+      return;
+    }
+
+    this.authService.changePassword(this.passwordForm).subscribe({
+      next: (res: any) => {
+        this.showPopup('Password Updated', res.message || 'Password updated successfully.', 'success');
+        this.closePasswordModal();
+      },
+      error: (err) => {
+        this.showPopup('Password Update Failed', err.error?.message || 'Password change failed.', 'error');
+      }
+    });
+  }
+
+  loadMyLeaves() {
+    this.doctorLeaveService.getMyLeaves().subscribe({
+      next: (res) => {
+        this.doctorLeaves.set(res || []);
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  validateLeaveForm(): boolean {
+    this.leaveErrors.set({});
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const start = this.leaveForm.startDate ? new Date(this.leaveForm.startDate) : null;
+    const end = this.leaveForm.endDate ? new Date(this.leaveForm.endDate) : null;
+
+    if (!this.leaveForm.startDate) {
+      this.leaveErrors.update(errors => ({ ...errors, startDate: 'Start date is required' }));
+    }
+
+    if (!this.leaveForm.endDate) {
+      this.leaveErrors.update(errors => ({ ...errors, endDate: 'End date is required' }));
+    }
+
+    if (start && start < today) {
+      this.leaveErrors.update(errors => ({ ...errors, startDate: 'Start date cannot be in the past' }));
+    }
+
+    if (start && end && end < start) {
+      this.leaveErrors.update(errors => ({ ...errors, endDate: 'End date cannot be before start date' }));
+    }
+
+    if (!this.leaveForm.reason?.trim()) {
+      this.leaveErrors.update(errors => ({ ...errors, reason: 'Reason is required' }));
+    }
+
+    return Object.keys(this.leaveErrors()).length === 0;
+  }
+
+  openLeaveConfirm() {
+    if (!this.validateLeaveForm()) return;
+    this.showLeaveConfirm.set(true);
+  }
+
+  closeLeaveConfirm() {
+    this.showLeaveConfirm.set(false);
+  }
+
+  submitLeave() {
+    this.doctorLeaveService.createMyLeave(this.leaveForm).subscribe({
+      next: () => {
+        this.showPopup('Leave Created', 'Leave created successfully.', 'success');
+        this.leaveForm = {
+          startDate: '',
+          endDate: '',
+          reason: ''
+        };
+        this.showLeaveConfirm.set(false);
+        this.loadMyLeaves();
+      },
+      error: (err) => {
+        this.showPopup('Leave Creation Failed', err.error?.message || err.error || 'Leave creation failed.', 'error');
+        this.showLeaveConfirm.set(false);
+      }
+    });
+  }
+
+  clearPassword() {
+    this.passwordForm = {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    };
+  }
+
+  private showPopup(title: string, message: string, type: 'success' | 'error' | 'warning' = 'success') {
+    this.popupTitle.set(title);
+    this.popupMessage.set(message);
+    this.popupType.set(type);
+    this.popupVisible.set(true);
+  }
+
+  closePopup() {
+    this.popupVisible.set(false);
+    this.popupTitle.set('');
+    this.popupMessage.set('');
+  }
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Sidebar } from '../shared/sidebar/sidebar';
 import { FormsModule } from '@angular/forms';
@@ -15,15 +15,15 @@ import { HealthRecord } from '../../models/health-record/health-record.model';
 })
 export class HealthRecords implements OnInit {
 
-  allRecords: HealthRecord[] = [];
-  paginatedRecords: HealthRecord[] = [];
+  allRecords = signal<HealthRecord[]>([]);
+  paginatedRecords = signal<HealthRecord[]>([]);
   nameSearch: string = '';
-  filteredTemp: HealthRecord[] = [];
+  filteredTemp = signal<HealthRecord[]>([]);
   dateSearch: string = '';
 
-  pageNumber = 1;
+  pageNumber = signal(1);
   pageSize = 5;
-  totalPages = 0;
+  totalPages = signal(0);
 
   constructor(private readonly recordService: HealthRecordService) {}
 
@@ -34,44 +34,51 @@ export class HealthRecords implements OnInit {
   loadRecords() {
     this.recordService.getMyRecords().subscribe({
       next: (res) => {
-        this.allRecords = res || [];
-        this.filteredTemp = this.allRecords;
+        const records = Array.isArray(res) ? res : [];
+        this.allRecords.set(records);
+        this.filteredTemp.set([...records]);
         this.calculateTotalPages();
+        this.pageNumber.set(1);
         this.paginate();
       },
       error: (err) => {
         console.error('Failed to load records', err);
+        this.allRecords.set([]);
+        this.filteredTemp.set([]);
+        this.paginatedRecords.set([]);
+        this.totalPages.set(0);
+        this.pageNumber.set(1);
       }
     });
   }
 
   paginate() {
-    const start = (this.pageNumber - 1) * this.pageSize;
+    const start = (this.pageNumber() - 1) * this.pageSize;
     const end = start + this.pageSize;
 
-    this.paginatedRecords = this.filteredTemp.slice(start, end);
+    this.paginatedRecords.set(this.filteredTemp().slice(start, end));
   }
 
   nextPage() {
-    if (this.pageNumber < this.totalPages) {
-      this.pageNumber++;
+    if (this.pageNumber() < this.totalPages()) {
+      this.pageNumber.update(value => value + 1);
       this.paginate();
     }
   }
 
   prevPage() {
-    if (this.pageNumber > 1) {
-      this.pageNumber--;
+    if (this.pageNumber() > 1) {
+      this.pageNumber.update(value => value - 1);
       this.paginate();
     }
   }
 
   calculateTotalPages() {
-    this.totalPages = Math.ceil(this.allRecords.length / this.pageSize);
+    this.totalPages.set(Math.ceil(this.allRecords().length / this.pageSize));
   }
 
   filterRecords() {
-    const filtered = this.allRecords.filter(r => {
+    const filtered = this.allRecords().filter(r => {
 
       const matchName =
         !this.nameSearch ||
@@ -85,10 +92,10 @@ export class HealthRecords implements OnInit {
       return matchName && matchDate;
     });
 
-    this.filteredTemp = filtered;
+    this.filteredTemp.set(filtered);
 
-    this.pageNumber = 1;
-    this.totalPages = Math.ceil(filtered.length / this.pageSize);
+    this.pageNumber.set(1);
+    this.totalPages.set(Math.ceil(filtered.length / this.pageSize));
 
     this.paginate();
   }
