@@ -35,7 +35,6 @@ builder.Services.AddControllers();
 
 // Swagger / OpenAPI
 builder.Services.AddOpenApi();
-
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
@@ -78,7 +77,6 @@ builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
         options.User.RequireUniqueEmail = true;
-
         options.Password.RequireDigit = true;
         options.Password.RequireUppercase = true;
         options.Password.RequireNonAlphanumeric = true;
@@ -106,12 +104,10 @@ builder.Services.AddCors(options =>
 
 // JWT Authentication
 builder.Services
-    .AddAuthentication(
-        JwtBearerDefaults.AuthenticationScheme)
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         var jwt = builder.Configuration.GetSection("Jwt");
-
         var jwtKey = jwt["Key"];
 
         if (string.IsNullOrWhiteSpace(jwtKey))
@@ -125,17 +121,13 @@ builder.Services
             {
                 ValidateIssuer = true,
                 ValidIssuer = jwt["Issuer"],
-
                 ValidateAudience = true,
                 ValidAudience = jwt["Audience"],
-
                 ValidateLifetime = true,
-
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey =
                     new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(jwtKey)),
-
                 ClockSkew = TimeSpan.Zero
             };
     });
@@ -145,7 +137,6 @@ builder.Services.AddAuthorization();
 
 // Global exception handling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-
 builder.Services.AddProblemDetails();
 
 builder.Services.AddSingleton<
@@ -153,78 +144,32 @@ builder.Services.AddSingleton<
     CustomAuthorizationMiddlewareResultHandler>();
 
 // Repository registrations
-builder.Services.AddScoped<
-    IDoctorRepository,
-    DoctorRepository>();
-
-builder.Services.AddScoped<
-    IPatientRepository,
-    PatientRepository>();
-
-builder.Services.AddScoped<
-    IAppointmentRepository,
-    AppointmentRepository>();
-
-builder.Services.AddScoped<
-    IHealthRecordRepository,
-    HealthRecordRepository>();
-
-builder.Services.AddScoped<
-    IAdminRepository,
-    AdminRepository>();
-
-builder.Services.AddScoped<
-    IDoctorLeaveRepository,
-    DoctorLeaveRepository>();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
 
 // Service registrations
-builder.Services.AddScoped<
-    IDoctorService,
-    DoctorService>();
-
-builder.Services.AddScoped<
-    IPatientService,
-    PatientService>();
-
-builder.Services.AddScoped<
-    IAppointmentService,
-    AppointmentService>();
-
-builder.Services.AddScoped<
-    IHealthRecordService,
-    HealthRecordService>();
-
-builder.Services.AddScoped<
-    IAuthService,
-    AuthService>();
-
-builder.Services.AddScoped<
-    IAdminService,
-    AdminService>();
-
-builder.Services.AddScoped<
-    IDoctorLeaveService,
-    DoctorLeaveService>();
-
-builder.Services.AddScoped<
-    INotificationService,
-    NotificationService>();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // Hosted services
-builder.Services.AddHostedService<
-    NotificationCleanupService>();
-
-builder.Services.AddHostedService<
-    HeartbeatService>();
+builder.Services.AddHostedService<NotificationCleanupService>();
+builder.Services.AddHostedService<HeartbeatService>();
 
 // MassTransit / RabbitMQ
 builder.Services.AddMassTransit(configuration =>
 {
-    configuration.AddConsumer<
-        AppointmentBookedConsumer>();
-
-    configuration.AddConsumer<
-        AppointmentCancelledByDoctorLeaveConsumer>();
+    configuration.AddConsumer<AppointmentBookedConsumer>();
+    configuration.AddConsumer<AppointmentCancelledByDoctorLeaveConsumer>();
 
     configuration.UsingRabbitMq(
         (context, rabbitConfig) =>
@@ -232,17 +177,10 @@ builder.Services.AddMassTransit(configuration =>
             var rabbitMqSection =
                 builder.Configuration.GetSection("RabbitMq");
 
-            var host =
-                rabbitMqSection["Host"] ?? "localhost";
-
-            var virtualHost =
-                rabbitMqSection["VirtualHost"] ?? "/";
-
-            var username =
-                rabbitMqSection["Username"] ?? "guest";
-
-            var password =
-                rabbitMqSection["Password"] ?? "guest";
+            var host = rabbitMqSection["Host"] ?? "localhost";
+            var virtualHost = rabbitMqSection["VirtualHost"] ?? "/";
+            var username = rabbitMqSection["Username"] ?? "guest";
+            var password = rabbitMqSection["Password"] ?? "guest";
 
             rabbitConfig.Host(
                 host,
@@ -267,11 +205,8 @@ builder.Services.AddStackExchangeRedisCache(options =>
         .GetSection("Garnet")
         .Get<GarnetOptions>() ?? new GarnetOptions();
 
-    options.Configuration =
-        garnetOptions.ConnectionString;
-
-    options.InstanceName =
-        garnetOptions.InstanceName;
+    options.Configuration = garnetOptions.ConnectionString;
+    options.InstanceName = garnetOptions.InstanceName;
 });
 
 // AutoMapper
@@ -288,19 +223,14 @@ try
         "Starting HealthApp API in {Environment}",
         app.Environment.EnvironmentName);
 
-    Log.Information(
-        "Serilog configuration loaded for HealthApp API");
-
     // Seed roles and admin user
     using (var scope = app.Services.CreateScope())
     {
         var roleManager = scope.ServiceProvider
-            .GetRequiredService<
-                RoleManager<IdentityRole>>();
+            .GetRequiredService<RoleManager<IdentityRole>>();
 
         var userManager = scope.ServiceProvider
-            .GetRequiredService<
-                UserManager<ApplicationUser>>();
+            .GetRequiredService<UserManager<ApplicationUser>>();
 
         var configuration = scope.ServiceProvider
             .GetRequiredService<IConfiguration>();
@@ -312,17 +242,13 @@ try
     }
 
     // Seed login users for seeded doctors and patients
-    await DemoUserSeeder
-        .SeedDoctorAndPatientUsersAsync(
-            app.Services);
+    await DemoUserSeeder.SeedDoctorAndPatientUsersAsync(app.Services);
 
     // Swagger / OpenAPI
     if (app.Environment.IsDevelopment())
     {
         app.MapOpenApi();
-
         app.UseSwagger();
-
         app.UseSwaggerUI();
     }
 
@@ -336,19 +262,13 @@ try
     });
 
     app.UseHttpsRedirection();
-
     app.UseExceptionHandler();
-
     app.UseCors("AllowBlazor");
-
     app.UseAuthentication();
-
     app.UseAuthorization();
-
     app.MapControllers();
 
-    Log.Information(
-        "HealthApp API started successfully");
+    Log.Information("HealthApp API started successfully");
 
     await app.RunAsync();
 }
@@ -357,8 +277,7 @@ catch (Exception exception)
     Log.Fatal(
         exception,
         "HealthApp API terminated unexpectedly");
-
-    throw;
+    Environment.ExitCode = 1;
 }
 finally
 {

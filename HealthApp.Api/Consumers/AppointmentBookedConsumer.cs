@@ -60,16 +60,13 @@ namespace HealthApp.Api.Consumers
             }
             catch (Exception exception)
             {
-                _logger.LogError(
-                    exception,
-                    "Failed to create appointment booking notification for appointment {AppointmentId}, patient {PatientId}, doctor {DoctorId}, and message {MessageId}. Event type: {EventType}",
-                    appointment.AppointmentId,
-                    appointment.PatientId,
-                    appointment.DoctorId,
-                    context.MessageId,
-                    "AppointmentBookingNotificationFailed");
-
-                throw;
+                throw new InvalidOperationException(
+                    $"Failed to create appointment booking notification for " +
+                    $"appointment {appointment.AppointmentId}, " +
+                    $"patient {appointment.PatientId}, " +
+                    $"doctor {appointment.DoctorId}, and " +
+                    $"message {context.MessageId}.",
+                    exception);
             }
         }
     }

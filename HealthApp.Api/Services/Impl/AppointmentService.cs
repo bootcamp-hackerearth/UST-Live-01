@@ -159,10 +159,13 @@ namespace HealthApp.Api.Services.Impl
 
             if (string.IsNullOrWhiteSpace(patientUserId))
             {
-                _logger.LogWarning(
-                    "Appointment booking was rejected because patient {PatientId} has no linked user account. Event type: {EventType}",
-                    dto.PatientId,
-                    "AppointmentBookingRejected");
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning(
+                        "Appointment booking was rejected because patient {PatientId} has no linked user account. Event type: {EventType}",
+                        dto.PatientId,
+                        "AppointmentBookingRejected");
+                }
 
                 throw new BusinessRuleViolationException(
                     "Patient user account is not linked.");
@@ -177,11 +180,14 @@ namespace HealthApp.Api.Services.Impl
 
             if (!doctor.IsActive)
             {
-                _logger.LogWarning(
-                    "Appointment booking was rejected because doctor {DoctorId} is inactive. Patient {PatientId}. Event type: {EventType}",
-                    dto.DoctorId,
-                    dto.PatientId,
-                    "AppointmentBookingRejected");
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning(
+                        "Appointment booking was rejected because doctor {DoctorId} is inactive. Patient {PatientId}. Event type: {EventType}",
+                        dto.DoctorId,
+                        dto.PatientId,
+                        "AppointmentBookingRejected");
+                }
 
                 throw new BusinessRuleViolationException(
                     "Selected doctor is inactive.");
@@ -192,13 +198,16 @@ namespace HealthApp.Api.Services.Impl
 
             if (doctorLeave != null)
             {
-                _logger.LogWarning(
-                    "Appointment booking was rejected because doctor {DoctorId} is on leave on {ScheduledDate}. Patient {PatientId}, leave {DoctorLeaveId}. Event type: {EventType}",
-                    dto.DoctorId,
-                    scheduledDate,
-                    dto.PatientId,
-                    doctorLeave.DoctorLeaveId,
-                    "AppointmentBookingRejectedDoctorOnLeave");
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning(
+                        "Appointment booking was rejected because doctor {DoctorId} is on leave on {ScheduledDate}. Patient {PatientId}, leave {DoctorLeaveId}. Event type: {EventType}",
+                        dto.DoctorId,
+                        scheduledDate,
+                        dto.PatientId,
+                        doctorLeave.DoctorLeaveId,
+                        "AppointmentBookingRejectedDoctorOnLeave");
+                }
 
                 throw new BusinessRuleViolationException(
                     $"The selected doctor is on leave from " +
@@ -276,13 +285,16 @@ namespace HealthApp.Api.Services.Impl
 
             await _publishEndpoint.Publish(appointmentBookedEvent);
 
-            _logger.LogInformation(
-                "Appointment {AppointmentId} booked for patient {PatientId} with doctor {DoctorId} on {ScheduledDate}. Event type: {EventType}",
-                createdAppointment.AppointmentId,
-                createdAppointment.PatientId,
-                createdAppointment.DoctorId,
-                createdAppointment.ScheduledDate,
-                "AppointmentBooked");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    "Appointment {AppointmentId} booked for patient {PatientId} with doctor {DoctorId} on {ScheduledDate}. Event type: {EventType}",
+                    createdAppointment.AppointmentId,
+                    createdAppointment.PatientId,
+                    createdAppointment.DoctorId,
+                    createdAppointment.ScheduledDate,
+                    "AppointmentBooked");
+            }
 
             return _mapper.Map<AppointmentDto>(createdAppointment);
         }
@@ -332,14 +344,17 @@ namespace HealthApp.Api.Services.Impl
                 appointment.DoctorId,
                 appointment.ScheduledDate);
 
-            _logger.LogInformation(
-                "Appointment {AppointmentId} status changed from {PreviousAppointmentStatus} to {AppointmentStatus} for doctor {DoctorId} and patient {PatientId}. Event type: {EventType}",
-                appointment.AppointmentId,
-                previousStatus,
-                appointment.Status,
-                appointment.DoctorId,
-                appointment.PatientId,
-                "AppointmentStatusChanged");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    "Appointment {AppointmentId} status changed from {PreviousAppointmentStatus} to {AppointmentStatus} for doctor {DoctorId} and patient {PatientId}. Event type: {EventType}",
+                    appointment.AppointmentId,
+                    previousStatus,
+                    appointment.Status,
+                    appointment.DoctorId,
+                    appointment.PatientId,
+                    "AppointmentStatusChanged");
+            }
         }
 
         public async Task<DoctorAvailabilityDto> GetDoctorAvailabilityAsync(
@@ -398,12 +413,15 @@ namespace HealthApp.Api.Services.Impl
                 }
                 catch (JsonException exception)
                 {
-                    _logger.LogWarning(
-                        exception,
-                        "Invalid cached doctor availability was removed for doctor {DoctorId} on {AvailabilityDate}. Event type: {EventType}",
-                        doctorId,
-                        date,
-                        "DoctorAvailabilityCacheInvalid");
+                    if (_logger.IsEnabled(LogLevel.Warning))
+                    {
+                        _logger.LogWarning(
+                            exception,
+                            "Invalid cached doctor availability was removed for doctor {DoctorId} on {AvailabilityDate}. Event type: {EventType}",
+                            doctorId,
+                            date,
+                            "DoctorAvailabilityCacheInvalid");
+                    }
 
                     await _cache.RemoveAsync(cacheKey);
                 }
@@ -525,12 +543,15 @@ namespace HealthApp.Api.Services.Impl
                 appointment.DoctorId,
                 appointment.ScheduledDate);
 
-            _logger.LogInformation(
-                "Cancelled appointment {AppointmentId} deleted for doctor {DoctorId} and patient {PatientId}. Event type: {EventType}",
-                appointment.AppointmentId,
-                appointment.DoctorId,
-                appointment.PatientId,
-                "AppointmentDeleted");
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    "Cancelled appointment {AppointmentId} deleted for doctor {DoctorId} and patient {PatientId}. Event type: {EventType}",
+                    appointment.AppointmentId,
+                    appointment.DoctorId,
+                    appointment.PatientId,
+                    "AppointmentDeleted");
+            }
         }
 
         private async Task LoadAppointmentNavigationDataAsync(

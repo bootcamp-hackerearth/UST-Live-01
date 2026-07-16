@@ -28,20 +28,30 @@
 
                 serviceStartedAtUtc = DateTime.UtcNow;
 
-                _logger.LogInformation(
-                    "Heartbeat service started with an interval of {HeartbeatIntervalMinutes} minute(s). {EventType}",
-                    HeartbeatDelay.TotalMinutes,
-                    "HeartbeatServiceStarted");
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
+                        "Heartbeat service started with an interval of {HeartbeatIntervalMinutes} minute(s). {EventType}",
+                        HeartbeatDelay.TotalMinutes,
+                        "HeartbeatServiceStarted");
+                }
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     heartbeatCount++;
 
-                    _logger.LogDebug(
-                        "API heartbeat {HeartbeatCount} completed successfully. Service uptime is {ServiceUptimeSeconds} seconds. {EventType}",
-                        heartbeatCount,
-                        (DateTime.UtcNow - serviceStartedAtUtc).TotalSeconds,
-                        "ApiHeartbeatCompleted");
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        var serviceUptimeSeconds =
+                            (DateTime.UtcNow - serviceStartedAtUtc)
+                            .TotalSeconds;
+
+                        _logger.LogDebug(
+                            "API heartbeat {HeartbeatCount} completed successfully. Service uptime is {ServiceUptimeSeconds} seconds. {EventType}",
+                            heartbeatCount,
+                            serviceUptimeSeconds,
+                            "ApiHeartbeatCompleted");
+                    }
 
                     await Task.Delay(
                         HeartbeatDelay,
@@ -51,28 +61,30 @@
             catch (OperationCanceledException)
                 when (stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation(
-                    "Heartbeat service received a shutdown signal after {HeartbeatCount} heartbeat(s). {EventType}",
-                    heartbeatCount,
-                    "HeartbeatServiceStopping");
+                // Expected during application shutdown. The final log entry
+                // records that the service stopped normally.
             }
             catch (Exception exception)
             {
-                _logger.LogError(
-                    exception,
-                    "Heartbeat service stopped because of an unexpected error after {HeartbeatCount} heartbeat(s). {EventType}",
-                    heartbeatCount,
-                    "HeartbeatServiceFailed");
-
-                throw;
+                throw new InvalidOperationException(
+                    $"Heartbeat service failed unexpectedly after " +
+                    $"{heartbeatCount} heartbeat(s).",
+                    exception);
             }
             finally
             {
-                _logger.LogInformation(
-                    "Heartbeat service stopped after {HeartbeatCount} heartbeat(s) and {ServiceUptimeSeconds} seconds of uptime. {EventType}",
-                    heartbeatCount,
-                    (DateTime.UtcNow - serviceStartedAtUtc).TotalSeconds,
-                    "HeartbeatServiceStopped");
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    var serviceUptimeSeconds =
+                        (DateTime.UtcNow - serviceStartedAtUtc)
+                        .TotalSeconds;
+
+                    _logger.LogInformation(
+                        "Heartbeat service stopped after {HeartbeatCount} heartbeat(s) and {ServiceUptimeSeconds} seconds of uptime. {EventType}",
+                        heartbeatCount,
+                        serviceUptimeSeconds,
+                        "HeartbeatServiceStopped");
+                }
             }
         }
     }

@@ -229,77 +229,86 @@
     </ng-container>
     
     <ng-container *ngIf="currentCancellationNotification as notification">
-      <div class="cancellation-modal-backdrop" aria-hidden="true"></div>
+  <div class="cancellation-modal-backdrop" aria-hidden="true"></div>
 
-      <section
-        class="cancellation-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="cancellationModalTitle"
+  <dialog
+    class="cancellation-modal"
+    open
+    aria-labelledby="cancellationModalTitle"
+    aria-describedby="cancellationModalDescription cancellationNotificationMessage"
+  >
+    <div class="cancellation-modal-card">
+      <div class="cancellation-modal-icon" aria-hidden="true">
+        <i class="bi bi-calendar2-x-fill"></i>
+      </div>
+
+      <div class="cancellation-modal-heading">
+        <span class="cancellation-modal-label">Important Update</span>
+
+        <h2 id="cancellationModalTitle">
+          {{ notification.title }}
+        </h2>
+
+        <p id="cancellationModalDescription">
+          An appointment was cancelled because the doctor is unavailable.
+        </p>
+      </div>
+
+      <div class="cancellation-message-box">
+        <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+        <p id="cancellationNotificationMessage">
+          {{ notification.message }}
+        </p>
+      </div>
+
+      <div
+        class="cancellation-reference"
+        *ngIf="notification.relatedEntityId"
       >
-        <div class="cancellation-modal-card">
-          <div class="cancellation-modal-icon">
-            <i class="bi bi-calendar2-x-fill"></i>
-          </div>
+        <span>Appointment reference</span>
+        <strong>#APT-{{ notification.relatedEntityId }}</strong>
+      </div>
 
-          <div class="cancellation-modal-heading">
-            <span class="cancellation-modal-label">Important Update</span>
-            <h2 id="cancellationModalTitle">
-              {{ notification.title }}
-            </h2>
-            <p>An appointment was cancelled because the doctor is unavailable.</p>
-          </div>
+      <div class="cancellation-modal-meta">
+        <span>
+          <i class="bi bi-clock me-1" aria-hidden="true"></i>
+          Received {{ notification.createdAt | date: 'medium' }}
+        </span>
 
-          <div class="cancellation-message-box">
-            <i class="bi bi-info-circle-fill"></i>
-            <p>{{ notification.message }}</p>
-          </div>
+        <span *ngIf="remainingCancellationCount > 0">
+          {{ remainingCancellationCount }} more update{{
+            remainingCancellationCount === 1 ? '' : 's'
+          }}
+        </span>
+      </div>
 
-          <div class="cancellation-reference" *ngIf="notification.relatedEntityId">
-            <span>Appointment reference</span>
-            <strong>#APT-{{ notification.relatedEntityId }}</strong>
-          </div>
+      <div class="cancellation-modal-actions">
+        <button
+          type="button"
+          class="btn cancellation-got-it-btn"
+          (click)="acknowledgeCurrentNotification()"
+          [disabled]="isAcknowledgingNotification"
+        >
+          @if (isAcknowledgingNotification) {
+            <i class="bi bi-hourglass-split me-2" aria-hidden="true"></i>
+            Please wait...
+          } @else {
+            <i class="bi bi-check-circle me-2" aria-hidden="true"></i>
+            Got It
+          }
+        </button>
 
-          <div class="cancellation-modal-meta">
-            <span>
-              <i class="bi bi-clock me-1"></i>
-              Received {{ notification.createdAt | date: 'medium' }}
-            </span>
-
-            <span *ngIf="remainingCancellationCount > 0">
-              {{ remainingCancellationCount }} more update{{
-                remainingCancellationCount === 1 ? '' : 's'
-              }}
-            </span>
-          </div>
-
-          <div class="cancellation-modal-actions">
-            <button
-              type="button"
-              class="btn cancellation-got-it-btn"
-              (click)="acknowledgeCurrentNotification()"
-              [disabled]="isAcknowledgingNotification"
-            >
-              @if (isAcknowledgingNotification) {
-                <i class="bi bi-hourglass-split me-2"></i>
-                Please wait...
-              } @else {
-                <i class="bi bi-check-circle me-2"></i>
-                Got It
-              }
-            </button>
-
-            <button
-              type="button"
-              class="btn btn-health cancellation-book-btn"
-              (click)="bookAnotherAppointment()"
-              [disabled]="isAcknowledgingNotification"
-            >
-              <i class="bi bi-calendar-plus me-2"></i>
-              Book Another Appointment
-            </button>
-          </div>
-        </div>
-      </section>
-    </ng-container>
+        <button
+          type="button"
+          class="btn btn-health cancellation-book-btn"
+          (click)="bookAnotherAppointment()"
+          [disabled]="isAcknowledgingNotification"
+        >
+          <i class="bi bi-calendar-plus me-2" aria-hidden="true"></i>
+          Book Another Appointment
+        </button>
+      </div>
+    </div>
+  </dialog>
+</ng-container>
 </div>

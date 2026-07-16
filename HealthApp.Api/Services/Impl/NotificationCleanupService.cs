@@ -31,11 +31,16 @@ namespace HealthApp.Api.Services.Impl
             {
                 await Task.Delay(InitialDelay, stoppingToken);
 
-                _logger.LogInformation(
-                    "Notification cleanup service started with a cleanup interval of {CleanupIntervalHours} hour(s) and a retention period of {RetentionDays} days. {EventType}",
-                    CleanupInterval.TotalHours,
-                    RetentionDays,
-                    "NotificationCleanupServiceStarted");
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    var cleanupIntervalHours = CleanupInterval.TotalHours;
+
+                    _logger.LogInformation(
+                        "Notification cleanup service started with a cleanup interval of {CleanupIntervalHours} hour(s) and a retention period of {RetentionDays} days. {EventType}",
+                        cleanupIntervalHours,
+                        RetentionDays,
+                        "NotificationCleanupServiceStarted");
+                }
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
@@ -49,24 +54,24 @@ namespace HealthApp.Api.Services.Impl
             catch (OperationCanceledException)
                 when (stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation(
-                    "Notification cleanup service received a shutdown signal. {EventType}",
-                    "NotificationCleanupServiceStopping");
+                // Expected during application shutdown. The final log entry
+                // records that the cleanup service stopped normally.
             }
             catch (Exception exception)
             {
-                _logger.LogError(
-                    exception,
-                    "Notification cleanup service stopped because of an unexpected error. {EventType}",
-                    "NotificationCleanupServiceFailed");
-
-                throw;
+                throw new InvalidOperationException(
+                    "Notification cleanup service stopped because of an " +
+                    "unexpected error.",
+                    exception);
             }
             finally
             {
-                _logger.LogInformation(
-                    "Notification cleanup service stopped. {EventType}",
-                    "NotificationCleanupServiceStopped");
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
+                        "Notification cleanup service stopped. {EventType}",
+                        "NotificationCleanupServiceStopped");
+                }
             }
         }
 
@@ -90,10 +95,13 @@ namespace HealthApp.Api.Services.Impl
 
                 if (oldNotifications.Count == 0)
                 {
-                    _logger.LogDebug(
-                        "Notification cleanup completed with no expired notifications found before {CutoffDateUtc}. {EventType}",
-                        cutoffDateUtc,
-                        "NotificationCleanupCompleted");
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug(
+                            "Notification cleanup completed with no expired notifications found before {CutoffDateUtc}. {EventType}",
+                            cutoffDateUtc,
+                            "NotificationCleanupCompleted");
+                    }
 
                     return;
                 }
@@ -102,15 +110,19 @@ namespace HealthApp.Api.Services.Impl
 
                 await dbContext.SaveChangesAsync(stoppingToken);
 
-                var elapsedMilliseconds =
-                    (DateTime.UtcNow - cleanupStartedAtUtc).TotalMilliseconds;
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    var elapsedMilliseconds =
+                        (DateTime.UtcNow - cleanupStartedAtUtc)
+                        .TotalMilliseconds;
 
-                _logger.LogInformation(
-                    "Notification cleanup deleted {DeletedNotificationCount} notification(s) created before {CutoffDateUtc} in {ElapsedMilliseconds} ms. {EventType}",
-                    oldNotifications.Count,
-                    cutoffDateUtc,
-                    elapsedMilliseconds,
-                    "ExpiredNotificationsDeleted");
+                    _logger.LogInformation(
+                        "Notification cleanup deleted {DeletedNotificationCount} notification(s) created before {CutoffDateUtc} in {ElapsedMilliseconds} ms. {EventType}",
+                        oldNotifications.Count,
+                        cutoffDateUtc,
+                        elapsedMilliseconds,
+                        "ExpiredNotificationsDeleted");
+                }
             }
             catch (OperationCanceledException)
                 when (stoppingToken.IsCancellationRequested)
@@ -119,13 +131,10 @@ namespace HealthApp.Api.Services.Impl
             }
             catch (Exception exception)
             {
-                _logger.LogError(
-                    exception,
-                    "Notification cleanup failed for notifications created before {CutoffDateUtc}. {EventType}",
-                    cutoffDateUtc,
-                    "NotificationCleanupFailed");
-
-                throw;
+                throw new InvalidOperationException(
+                    $"Notification cleanup failed for notifications created " +
+                    $"before {cutoffDateUtc:O}.",
+                    exception);
             }
         }
     }

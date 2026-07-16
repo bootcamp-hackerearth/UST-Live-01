@@ -128,31 +128,59 @@ namespace HealthApp.Api.Repositories.Impl
                 _ => query
             };
 
-            return await query
+            var leaves = await query
                 .OrderByDescending(leave => leave.StartDate)
                 .ThenByDescending(leave => leave.CreatedAtUtc)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Select(leave => new AdminDoctorLeaveDto
+                .Select(leave => new
                 {
-                    DoctorLeaveId = leave.DoctorLeaveId,
-                    DoctorId = leave.DoctorId,
+                    leave.DoctorLeaveId,
+                    leave.DoctorId,
                     DoctorName = leave.Doctor != null
                         ? leave.Doctor.FullName ?? "Doctor"
                         : "Doctor",
+                    leave.StartDate,
+                    leave.EndDate,
+                    leave.Reason,
+                    leave.CreatedAtUtc
+                })
+                .ToListAsync(ct);
+
+            var result = new List<AdminDoctorLeaveDto>(leaves.Count);
+
+            foreach (var leave in leaves)
+            {
+                string leaveStatus;
+
+                if (today < leave.StartDate)
+                {
+                    leaveStatus = "Upcoming";
+                }
+                else if (today > leave.EndDate)
+                {
+                    leaveStatus = "Past";
+                }
+                else
+                {
+                    leaveStatus = "Current";
+                }
+
+                result.Add(new AdminDoctorLeaveDto
+                {
+                    DoctorLeaveId = leave.DoctorLeaveId,
+                    DoctorId = leave.DoctorId,
+                    DoctorName = leave.DoctorName,
                     StartDate = leave.StartDate,
                     EndDate = leave.EndDate,
                     Reason = leave.Reason,
                     CreatedAtUtc = leave.CreatedAtUtc,
-                    Status = today < leave.StartDate
-                        ? "Upcoming"
-                        : today > leave.EndDate
-                            ? "Past"
-                            : "Current",
-                    IsSingleDayLeave =
-                        leave.StartDate == leave.EndDate
-                })
-                .ToListAsync(ct);
+                    Status = leaveStatus,
+                    IsSingleDayLeave = leave.StartDate == leave.EndDate
+                });
+            }
+
+            return result;
         }
     }
 }

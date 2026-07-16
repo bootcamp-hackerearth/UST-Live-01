@@ -64,16 +64,13 @@ namespace HealthApp.Api.Consumers
             }
             catch (Exception exception)
             {
-                _logger.LogError(
-                    exception,
-                    "Failed to create doctor-leave cancellation notification for appointment {AppointmentId}, patient {PatientId}, doctor {DoctorId}, and message {MessageId}. Event type: {EventType}",
-                    message.AppointmentId,
-                    message.PatientId,
-                    message.DoctorId,
-                    context.MessageId,
-                    "DoctorLeaveCancellationNotificationFailed");
-
-                throw;
+                throw new InvalidOperationException(
+                    $"Failed to create doctor-leave cancellation notification " +
+                    $"for appointment {message.AppointmentId}, " +
+                    $"patient {message.PatientId}, " +
+                    $"doctor {message.DoctorId}, and " +
+                    $"message {context.MessageId}.",
+                    exception);
             }
         }
     }
