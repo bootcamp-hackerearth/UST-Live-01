@@ -41,12 +41,12 @@ implements OnInit {
   
 
   constructor(
-    private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router,
-    private doctorService: DoctorService,
-    private appointmentService:AppointmentService,
-    private toastr: ToastrService
+    private readonly fb: FormBuilder,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly doctorService: DoctorService,
+    private readonly appointmentService: AppointmentService,
+    private readonly toastr: ToastrService
   ) {}
 
   ngOnInit(): void {

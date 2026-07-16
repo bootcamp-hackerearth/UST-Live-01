@@ -11,10 +11,10 @@
 <h3 class="fw-bold mb-1">Dashboard Overview</h3>
 <p class="text-muted mb-4">Welcome back, Admin — here’s what’s happening today.</p>
 
-<!-- ✅ SECTION 1: PATIENT + DOCTOR -->
+<!-- SECTION 1: PATIENT + DOCTOR -->
 <div class="row g-3 mb-4">
 
-    <!-- ✅ PATIENT -->
+    <!--  PATIENT -->
     <div class="col-12">
         <div class="card shadow-sm p-3 border-0 rounded-3">
             <div class="text-muted small">Total Patients</div>
@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <!-- ✅ DOCTOR BELOW PATIENT -->
+    <!--  DOCTOR BELOW PATIENT -->
     <div class="col-12">
         <div class="card shadow-sm p-3 border-0 rounded-3">
             <div class="text-muted small">Total Doctors</div>
@@ -107,7 +107,7 @@
     private int cancelled;
 
     [Inject] NavigationManager? Nav { get; set; }
-    [Inject] IJSRuntime? JS { get; set; }
+    [Inject] public required IJSRuntime JS { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -121,7 +121,7 @@
                 "localStorage.removeItem",
                 "token");
 
-            Nav.NavigateTo("https://localhost:4200", true);
+            Nav?.NavigateTo("https:localhost:4200", true);
             return;
         }
 

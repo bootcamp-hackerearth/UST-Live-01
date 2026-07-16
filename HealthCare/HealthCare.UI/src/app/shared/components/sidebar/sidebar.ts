@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { RouterLink, RouterLinkActive } from '@angular/router';
@@ -15,7 +15,7 @@ import { BookAppointmentComponent } from '../../../features/patient/book-appoint
   ],
   templateUrl: './sidebar.html'
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
 
   role: string | null = null;
   showBookingModal = false;
@@ -25,16 +25,16 @@ export class SidebarComponent {
 
 
   constructor(
-    private authService: AuthService,
-    private router: Router
+    private readonly  authService: AuthService,
+    private readonly  router: Router
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.role = this.authService.getRole();
     this.setupMenu();
   }
 
-  setupMenu() {
+  setupMenu() :void {
 
     const menusByRole: any = {
 
@@ -91,5 +91,9 @@ cancelLogout() {
   logout() {
     this.authService.logout();
     this.router.navigate(['/']);
+  }
+
+  closeSidebar(): void {
+    this.isSidebarOpen = false;
   }
 }

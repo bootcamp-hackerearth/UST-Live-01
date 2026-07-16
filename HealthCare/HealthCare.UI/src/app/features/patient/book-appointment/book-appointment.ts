@@ -20,7 +20,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 })
 export class BookAppointmentComponent implements OnInit {
 
-  private destroyRef = inject(DestroyRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   @Output() appointmentClosed = new EventEmitter<void>();
 

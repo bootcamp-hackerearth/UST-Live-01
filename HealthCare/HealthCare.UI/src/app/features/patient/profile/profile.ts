@@ -100,5 +100,17 @@ toggleEdit() {
   this.isEditMode.set(!this.isEditMode());
 }
 
+getInitials(): string {
+  const name = this.profileForm.get('fullName')?.value ?? '';
+
+  return name
+    .split(' ')
+    .map((x: string) => x[0])
+    .join('')
+    .substring(0, 2)
+    .toUpperCase();
+}
+
+
 
 }
