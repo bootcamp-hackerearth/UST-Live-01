@@ -5,6 +5,11 @@ namespace HealthCareApp.BackgroundServices
 {
     public class NotificationCleanupService : BackgroundService
     {
+        private const string DateTimeFormat = "dd MMM yyyy hh:mm:ss tt";
+        private const string CleanupStatusCompleted = "Completed";
+        private const string CleanupRuleDescription = "Delete notifications older than 30 days";
+        private const string ShutdownReason = "Application shutdown requested";
+
         private static readonly TimeSpan CleanupInterval = TimeSpan.FromHours(1);
 
         private static readonly TimeSpan NotificationRetentionPeriod = TimeSpan.FromDays(30);
@@ -23,14 +28,7 @@ namespace HealthCareApp.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            logger.LogInformation(
-                """
-                ============================================================
-                | HealthAxis Notification Cleanup Service STARTED          |
-                | Purpose : Deletes notifications older than 30 days        |
-                | Runs    : Once immediately, then every 1 hour             |
-                ============================================================
-                """);
+            LogCleanupServiceStarted();
 
             try
             {
@@ -43,15 +41,10 @@ namespace HealthCareApp.BackgroundServices
                     await CleanOldNotificationsAsync(stoppingToken);
                 }
             }
-            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            catch (OperationCanceledException ex)
+                when (stoppingToken.IsCancellationRequested)
             {
-                logger.LogInformation(
-                    """
-                    ============================================================
-                    | HealthAxis Notification Cleanup Service STOPPING         |
-                    | Reason : Application shutdown requested                  |
-                    ============================================================
-                    """);
+                LogCleanupServiceStopping(ex);
             }
         }
 
@@ -69,17 +62,9 @@ namespace HealthCareApp.BackgroundServices
 
             if (oldNotifications.Count == 0)
             {
-                logger.LogInformation(
-                    """
-                    ------------------------------------------------------------
-                    | HEALTHAXIS NOTIFICATION CLEANUP                         |
-                    | Status       : Completed                                 |
-                    | Deleted      : 0 notification(s)                         |
-                    | Cutoff Date  : {CutoffDate}                              |
-                    | Rule         : Delete notifications older than 30 days    |
-                    ------------------------------------------------------------
-                    """,
-                    cutoffDate.ToString("dd MMM yyyy hh:mm:ss tt"));
+                LogNotificationCleanupCompleted(
+                    deletedNotificationCount: 0,
+                    cutoffDate);
 
                 return;
             }
@@ -88,18 +73,75 @@ namespace HealthCareApp.BackgroundServices
 
             await dbContext.SaveChangesAsync(cancellationToken);
 
+            LogNotificationCleanupCompleted(
+                oldNotifications.Count,
+                cutoffDate);
+        }
+
+        private void LogCleanupServiceStarted()
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                """
+                ============================================================
+                | HealthAxis Notification Cleanup Service STARTED          |
+                | Purpose : Deletes notifications older than 30 days        |
+                | Runs    : Once immediately, then every 1 hour             |
+                ============================================================
+                """);
+        }
+
+        private void LogCleanupServiceStopping(
+            OperationCanceledException exception)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                exception,
+                """
+                ============================================================
+                | HealthAxis Notification Cleanup Service STOPPING         |
+                | Reason : {ShutdownReason}                               |
+                ============================================================
+                """,
+                ShutdownReason);
+        }
+
+        private void LogNotificationCleanupCompleted(
+            int deletedNotificationCount,
+            DateTime cutoffDate)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
             logger.LogInformation(
                 """
                 ------------------------------------------------------------
                 | HEALTHAXIS NOTIFICATION CLEANUP                         |
-                | Status       : Completed                                 |
-                | Deleted      : {Count} notification(s)                    |
+                | Status       : {CleanupStatus}                           |
+                | Deleted      : {DeletedNotificationCount} notification(s) |
                 | Cutoff Date  : {CutoffDate}                              |
-                | Rule         : Delete notifications older than 30 days    |
+                | Rule         : {CleanupRule}                             |
                 ------------------------------------------------------------
                 """,
-                oldNotifications.Count,
-                cutoffDate.ToString("dd MMM yyyy hh:mm:ss tt"));
+                CleanupStatusCompleted,
+                deletedNotificationCount,
+                FormatDateTime(cutoffDate),
+                CleanupRuleDescription);
+        }
+
+        private static string FormatDateTime(DateTime dateTime)
+        {
+            return dateTime.ToString(DateTimeFormat);
         }
     }
 }

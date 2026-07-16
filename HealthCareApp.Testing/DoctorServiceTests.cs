@@ -12,7 +12,6 @@ using HealthCareApp.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;
-using HealthCareApp.Services;
 
 namespace HealthCareApp.Testing.Services
 {
@@ -587,7 +586,10 @@ namespace HealthCareApp.Testing.Services
                 repository => repository.CreateAsync(
                     It.Is<Doctor>(doctor =>
                         doctor.DoctorName == dto.FullName.Trim() &&
-                        doctor.Email == dto.Email.Trim().ToLower() &&
+                       string.Equals(
+                        doctor.Email,
+                        dto.Email.Trim(),
+                         StringComparison.OrdinalIgnoreCase) &&
                         doctor.IsActive &&
                         doctor.CreatedDate != default),
                     It.IsAny<CancellationToken>()),

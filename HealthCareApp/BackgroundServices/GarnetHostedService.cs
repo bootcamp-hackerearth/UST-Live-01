@@ -28,9 +28,7 @@ namespace HealthCareApp.BackgroundServices
 
                 server.Start();
 
-                logger.LogInformation(
-                    "Embedded Garnet server started on port {Port}.",
-                    GarnetPort);
+                LogGarnetServerStarted();
             }
             catch (Exception ex)
             {
@@ -47,8 +45,7 @@ namespace HealthCareApp.BackgroundServices
         {
             DisposeServer();
 
-            logger.LogInformation(
-                "Embedded Garnet server stopped.");
+            LogGarnetServerStopped();
 
             return Task.CompletedTask;
         }
@@ -80,6 +77,29 @@ namespace HealthCareApp.BackgroundServices
             server?.Dispose();
 
             server = null;
+        }
+
+        private void LogGarnetServerStarted()
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                "Embedded Garnet server started on port {Port}.",
+                GarnetPort);
+        }
+
+        private void LogGarnetServerStopped()
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                "Embedded Garnet server stopped.");
         }
     }
 }

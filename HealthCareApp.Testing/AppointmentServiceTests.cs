@@ -522,7 +522,7 @@ namespace HealthCareApp.Testing.Services
                     DoctorId = 1,
                     Doctor = GetDoctors().First(),
                     ScheduledDate = DateTime.Today,
-                    TimeSlot = TimeSlots.Slots.First(),
+                    TimeSlot = TimeSlots.Slots[0],
                     Status = AppointmentStatus.Confirmed
                 }
             };
@@ -1779,7 +1779,7 @@ namespace HealthCareApp.Testing.Services
                     DoctorId = doctor.DoctorId,
                     Doctor = doctor,
                     ScheduledDate = DateTime.Today,
-                    TimeSlot = TimeSlots.Slots.First(),
+                    TimeSlot = TimeSlots.Slots[0],
                     Status = AppointmentStatus.Confirmed
                 }
             };
@@ -2431,7 +2431,7 @@ namespace HealthCareApp.Testing.Services
                 PatientId = 1,
                 DoctorId = 1,
                 ScheduledDate = DateTime.Today.AddDays(1),
-                TimeSlot = TimeSlots.Slots.First()
+                TimeSlot = TimeSlots.Slots[0]
             };
         }
 

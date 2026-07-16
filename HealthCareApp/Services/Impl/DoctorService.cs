@@ -18,6 +18,13 @@ namespace HealthCareApp.Services
         private const string DoctorRoleName = "Doctor";
         private const string DoctorDetailsRequiredMessage = "Doctor details are required.";
         private const string DoctorAvailabilityEvent = "DoctorAvailabilityCache";
+        private const string DateFormat = "yyyy-MM-dd";
+
+        private const string CacheStatusLeave = "LEAVE";
+        private const string CacheStatusHit = "HIT";
+        private const string CacheStatusMiss = "MISS";
+        private const string CacheStatusSet = "SET";
+        private const string CacheStatusSkipped = "SKIPPED";
 
         private static readonly TimeSpan DoctorAvailabilityCacheDuration =
             TimeSpan.FromMinutes(5);
@@ -318,11 +325,6 @@ namespace HealthCareApp.Services
                     doctorId,
                     selectedDate);
 
-                using var availabilityLogScope = BeginAvailabilityLogScope(
-                    cacheKey,
-                    doctorId,
-                    selectedDate);
-
                 var isDoctorOnLeave =
                     await doctorLeaveService.IsDoctorOnLeaveAsync(
                         doctorId,
@@ -330,9 +332,10 @@ namespace HealthCareApp.Services
 
                 if (isDoctorOnLeave)
                 {
-                    logger.LogInformation(
-                        "Doctor availability blocked because the doctor is on leave. CacheStatus: {CacheStatus}",
-                        "LEAVE");
+                    LogDoctorAvailabilityBlockedBecauseOnLeave(
+                        cacheKey,
+                        doctorId,
+                        selectedDate);
 
                     var leaveSlots =
                         await BuildDoctorLeaveAvailabilityAsync(doctorId);
@@ -340,7 +343,7 @@ namespace HealthCareApp.Services
                     var leaveResponse = new DoctorAvailabilityResponseDto
                     {
                         DoctorId = doctorId,
-                        Date = selectedDate.ToString("yyyy-MM-dd"),
+                        Date = FormatDate(selectedDate),
                         IsDoctorOnLeave = true,
                         Message = "Doctor is on leave on this date. Please choose another date or another doctor.",
                         Slots = leaveSlots
@@ -360,16 +363,18 @@ namespace HealthCareApp.Services
 
                 if (cachedAvailability is not null)
                 {
-                    logger.LogInformation(
-                        "Doctor availability served from cache. CacheStatus: {CacheStatus}",
-                        "HIT");
+                    LogDoctorAvailabilityServedFromCache(
+                        cacheKey,
+                        doctorId,
+                        selectedDate);
 
                     return cachedAvailability;
                 }
 
-                logger.LogInformation(
-                    "Doctor availability cache miss. Loading from SQL Server. CacheStatus: {CacheStatus}",
-                    "MISS");
+                LogDoctorAvailabilityCacheMiss(
+                    cacheKey,
+                    doctorId,
+                    selectedDate);
 
                 var slots = await BuildDoctorAvailabilityFromDatabaseAsync(
                     doctorId,
@@ -378,7 +383,7 @@ namespace HealthCareApp.Services
                 var availabilityResponse = new DoctorAvailabilityResponseDto
                 {
                     DoctorId = doctorId,
-                    Date = selectedDate.ToString("yyyy-MM-dd"),
+                    Date = FormatDate(selectedDate),
                     IsDoctorOnLeave = false,
                     Message = string.Empty,
                     Slots = slots
@@ -389,19 +394,15 @@ namespace HealthCareApp.Services
                     availabilityResponse,
                     DoctorAvailabilityCacheDuration);
 
-                logger.LogInformation(
-                    "Doctor availability stored in cache. CacheStatus: {CacheStatus}, CacheDurationMinutes: {CacheDurationMinutes}",
-                    "SET",
-                    DoctorAvailabilityCacheDuration.TotalMinutes);
+                LogDoctorAvailabilityStoredInCache(
+                    cacheKey,
+                    doctorId,
+                    selectedDate);
 
                 return availabilityResponse;
             }
 
-            logger.LogInformation(
-                "Doctor availability requested without a date; cache was skipped. EventType: {EventType}, CacheStatus: {CacheStatus}, DoctorId: {DoctorId}",
-                DoctorAvailabilityEvent,
-                "SKIPPED",
-                doctorId);
+            LogDoctorAvailabilityCacheSkipped(doctorId);
 
             var fallbackSlots = await BuildDoctorAvailabilityFromDatabaseAsync(
                 doctorId,
@@ -481,6 +482,101 @@ namespace HealthCareApp.Services
                 .ToList();
         }
 
+        private void LogDoctorAvailabilityBlockedBecauseOnLeave(
+            string cacheKey,
+            int doctorId,
+            DateTime selectedDate)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            using var availabilityLogScope = BeginAvailabilityLogScope(
+                cacheKey,
+                doctorId,
+                selectedDate);
+
+            logger.LogInformation(
+                "Doctor availability blocked because the doctor is on leave. CacheStatus: {CacheStatus}",
+                CacheStatusLeave);
+        }
+
+        private void LogDoctorAvailabilityServedFromCache(
+            string cacheKey,
+            int doctorId,
+            DateTime selectedDate)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            using var availabilityLogScope = BeginAvailabilityLogScope(
+                cacheKey,
+                doctorId,
+                selectedDate);
+
+            logger.LogInformation(
+                "Doctor availability served from cache. CacheStatus: {CacheStatus}",
+                CacheStatusHit);
+        }
+
+        private void LogDoctorAvailabilityCacheMiss(
+            string cacheKey,
+            int doctorId,
+            DateTime selectedDate)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            using var availabilityLogScope = BeginAvailabilityLogScope(
+                cacheKey,
+                doctorId,
+                selectedDate);
+
+            logger.LogInformation(
+                "Doctor availability cache miss. Loading from SQL Server. CacheStatus: {CacheStatus}",
+                CacheStatusMiss);
+        }
+
+        private void LogDoctorAvailabilityStoredInCache(
+            string cacheKey,
+            int doctorId,
+            DateTime selectedDate)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            using var availabilityLogScope = BeginAvailabilityLogScope(
+                cacheKey,
+                doctorId,
+                selectedDate);
+
+            logger.LogInformation(
+                "Doctor availability stored in cache. CacheStatus: {CacheStatus}, CacheDurationMinutes: {CacheDurationMinutes}",
+                CacheStatusSet,
+                DoctorAvailabilityCacheDuration.TotalMinutes);
+        }
+
+        private void LogDoctorAvailabilityCacheSkipped(int doctorId)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            logger.LogInformation(
+                "Doctor availability requested without a date; cache was skipped. EventType: {EventType}, CacheStatus: {CacheStatus}, DoctorId: {DoctorId}",
+                DoctorAvailabilityEvent,
+                CacheStatusSkipped,
+                doctorId);
+        }
+
         private IDisposable? BeginAvailabilityLogScope(
             string cacheKey,
             int doctorId,
@@ -491,7 +587,7 @@ namespace HealthCareApp.Services
                 ["EventType"] = DoctorAvailabilityEvent,
                 ["CacheKey"] = cacheKey,
                 ["DoctorId"] = doctorId,
-                ["AvailabilityDate"] = availabilityDate.ToString("yyyy-MM-dd")
+                ["AvailabilityDate"] = FormatDate(availabilityDate)
             });
         }
 
@@ -508,7 +604,12 @@ namespace HealthCareApp.Services
             int doctorId,
             DateTime date)
         {
-            return $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
+            return $"doctors:{doctorId}:availability:{FormatDate(date)}";
+        }
+
+        private static string FormatDate(DateTime date)
+        {
+            return date.ToString(DateFormat);
         }
 
         private static void ValidateDoctorId(int doctorId)
