@@ -8,7 +8,6 @@ using HealthAxis.API.Services.Interfaces;
 using HealthAxis.Shared.DTO.AppointmentDtos;
 using HealthAxis.Shared.Enums;
 using HealthAxis.Shared.Utilities;
-using Microsoft.Extensions.Caching.Distributed;
 using System.Globalization;
 
 namespace HealthAxis.API.Services.Implementation
@@ -20,7 +19,7 @@ namespace HealthAxis.API.Services.Implementation
         IMapper mapper,
         ILogger<AppointmentService> logger,
         IEventPublisher eventPublisher,
-        IDistributedCache distributedCache) : IAppointmentService
+        IDoctorService doctorService) : IAppointmentService
     {
         private const int ConfirmedCancellationCutoffHours = 2;
 
@@ -149,7 +148,9 @@ namespace HealthAxis.API.Services.Implementation
             var savedAppointment = await appointmentRepository.AddAsync(
                 appointment);
 
-            await InvalidateDoctorAvailabilityCacheAsync(savedAppointment);
+            await doctorService.InvalidateAvailabilityCacheAsync(
+                savedAppointment.DoctorId,
+                savedAppointment.ScheduledDate);
 
             var appointmentBookedEvent = CreateAppointmentBookedEvent(
                 savedAppointment,
@@ -192,7 +193,9 @@ namespace HealthAxis.API.Services.Implementation
                 throw new NotFoundException(AppointmentNotFound);
             }
 
-            await InvalidateDoctorAvailabilityCacheAsync(updatedAppointment);
+            await doctorService.InvalidateAvailabilityCacheAsync(
+                updatedAppointment.DoctorId,
+                updatedAppointment.ScheduledDate);
 
             return await MapAppointmentAsync(updatedAppointment);
         }
@@ -219,7 +222,9 @@ namespace HealthAxis.API.Services.Implementation
                 return null;
             }
 
-            await InvalidateDoctorAvailabilityCacheAsync(deletedAppointment);
+            await doctorService.InvalidateAvailabilityCacheAsync(
+                deletedAppointment.DoctorId,
+                deletedAppointment.ScheduledDate);
 
             return await MapAppointmentAsync(deletedAppointment);
         }
@@ -242,21 +247,6 @@ namespace HealthAxis.API.Services.Implementation
                 Status = appointment.Status.ToString(),
                 OccurredAt = DateTime.UtcNow
             };
-        }
-
-        private async Task InvalidateDoctorAvailabilityCacheAsync(
-            Appointment appointment)
-        {
-            var cacheKey =
-                $"doctors:{appointment.DoctorId}:availability:{appointment.ScheduledDate:yyyy-MM-dd}";
-
-            await distributedCache.RemoveAsync(cacheKey);
-
-            logger.LogInformation(
-                "Doctor availability Garnet cache invalidated. DoctorId: {DoctorId}, Date: {Date}, CacheKey: {CacheKey}",
-                appointment.DoctorId,
-                appointment.ScheduledDate.Date,
-                cacheKey);
         }
 
         private void LogAppointmentBookedEvent(

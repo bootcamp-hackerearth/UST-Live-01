@@ -251,8 +251,7 @@ try
 
     builder.Services.AddSingleton<GarnetHostedService>();
     builder.Services.AddHostedService(sp => sp.GetRequiredService<GarnetHostedService>());
-    builder.Services.AddStackExchangeRedisCache(options =>
-        options.Configuration = "localhost:6379");
+    
 
     var app = builder.Build();
 

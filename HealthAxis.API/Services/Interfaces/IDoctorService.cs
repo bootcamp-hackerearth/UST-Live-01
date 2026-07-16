@@ -8,8 +8,15 @@ namespace HealthAxis.API.Services.Interfaces
 
         Task<DoctorDto> GetByIdAsync(int id);
 
-        Task<DoctorDto?> GetByUserIdAsync(string userId);
+        Task<DoctorDto?> GetByUserIdAsync(
+            string userId);
 
-        Task<DoctorAvailabilityDto> GetAvailabilityAsync(int id, DateTime? date = null);
+        Task<DoctorAvailabilityDto> GetAvailabilityAsync(
+            int id,
+            DateTime? date = null);
+
+        Task InvalidateAvailabilityCacheAsync(
+            int doctorId,
+            DateTime date);
     }
 }

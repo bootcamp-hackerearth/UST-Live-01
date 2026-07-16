@@ -4,9 +4,9 @@ using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Implementation;
+using HealthAxis.API.Services.Interfaces;
 using HealthAxis.Shared.DTO.AppointmentDtos;
 using HealthAxis.Shared.Enums;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using HealthAxis.API.Messaging;
 using Moq;
@@ -25,7 +25,7 @@ namespace HealthAxis.API.Tests.Services
         private readonly Mock<ILogger<AppointmentService>> _loggerMock;
         private readonly Mock<IEventPublisher> _eventPublisherMock;
         private readonly AppointmentService _service;
-        private readonly Mock<IDistributedCache> _distributedCacheMock;
+        private readonly Mock<IDoctorService> _doctorServiceMock;
 
         public AppointmentServiceTests()
         {
@@ -35,7 +35,7 @@ namespace HealthAxis.API.Tests.Services
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILogger<AppointmentService>>();
             _eventPublisherMock = new Mock<IEventPublisher>();
-            _distributedCacheMock = new Mock<IDistributedCache>();
+            _doctorServiceMock = new Mock<IDoctorService>();
 
             _mapperMock
                 .Setup(mapper => mapper.Map<AppointmentDto>(It.IsAny<Appointment>()))
@@ -48,7 +48,7 @@ namespace HealthAxis.API.Tests.Services
     _mapperMock.Object,
     _loggerMock.Object,
     _eventPublisherMock.Object,
-    _distributedCacheMock.Object);
+    _doctorServiceMock.Object);
         }
 
         [Fact]
@@ -883,6 +883,229 @@ namespace HealthAxis.API.Tests.Services
             result.Should().NotBeNull();
             result!.AppointmentId.Should().Be(1);
             result.Status.Should().Be(AppointmentStatus.Pending);
+        }
+
+
+        [Fact]
+        public async Task AddAsync_WhenValid_InvalidatesDoctorAvailabilityCache()
+        {
+            SetupValidAddDependencies();
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync())
+                .ReturnsAsync(new List<Appointment>());
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.AddAsync(
+                    It.IsAny<Appointment>()))
+                .ReturnsAsync((Appointment appointment) =>
+                {
+                    appointment.AppointmentId = 50;
+                    return appointment;
+                });
+
+            SetupPatientDoctorLists();
+
+            var dto = CreateCreateAppointmentDto();
+
+            await _service.AddAsync(dto);
+
+            _doctorServiceMock.Verify(
+                service => service.InvalidateAvailabilityCacheAsync(
+                    dto.DoctorId,
+                    dto.ScheduledDate.Date),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task AddAsync_WhenConflictExists_DoesNotInvalidateDoctorAvailabilityCache()
+        {
+            SetupValidAddDependencies();
+
+            var dto = CreateCreateAppointmentDto();
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync())
+                .ReturnsAsync(new List<Appointment>
+                {
+                    CreateAppointment(
+                        id: 10,
+                        patientId: 2,
+                        doctorId: dto.DoctorId,
+                        date: dto.ScheduledDate,
+                        timeSlot: dto.TimeSlot,
+                        status: AppointmentStatus.Pending)
+                });
+
+            Func<Task> act = async () =>
+                await _service.AddAsync(dto);
+
+            await act.Should()
+                .ThrowAsync<BusinessRuleException>();
+
+            _doctorServiceMock.Verify(
+                service => service.InvalidateAvailabilityCacheAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<DateTime>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_WhenSuccessful_InvalidatesDoctorAvailabilityCache()
+        {
+            var appointment = CreateAppointment(
+                status: AppointmentStatus.Pending);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(appointment);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.UpdateAsync(
+                    1,
+                    It.IsAny<Appointment>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((
+                    int _,
+                    Appointment updatedAppointment,
+                    CancellationToken _) =>
+                    updatedAppointment);
+
+            SetupPatientDoctorLists();
+
+            await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Confirmed
+                });
+
+            _doctorServiceMock.Verify(
+                service => service.InvalidateAvailabilityCacheAsync(
+                    appointment.DoctorId,
+                    appointment.ScheduledDate.Date),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_WhenRepositoryReturnsNull_DoesNotInvalidateCache()
+        {
+            var appointment = CreateAppointment(
+                status: AppointmentStatus.Pending);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(appointment);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.UpdateAsync(
+                    1,
+                    It.IsAny<Appointment>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Appointment?)null);
+
+            Func<Task> act = async () =>
+                await _service.UpdateStatusAsync(
+                    1,
+                    new UpdateAppointmentStatusDto
+                    {
+                        Status = AppointmentStatus.Confirmed
+                    });
+
+            await act.Should()
+                .ThrowAsync<NotFoundException>();
+
+            _doctorServiceMock.Verify(
+                service => service.InvalidateAvailabilityCacheAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<DateTime>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task DeleteAsync_WhenSuccessful_InvalidatesDoctorAvailabilityCache()
+        {
+            var appointment = CreateAppointment(
+                status: AppointmentStatus.Pending);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(appointment);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.DeleteAsync(1))
+                .ReturnsAsync(appointment);
+
+            SetupPatientDoctorLists();
+
+            await _service.DeleteAsync(1);
+
+            _doctorServiceMock.Verify(
+                service => service.InvalidateAvailabilityCacheAsync(
+                    appointment.DoctorId,
+                    appointment.ScheduledDate.Date),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteAsync_WhenRepositoryReturnsNull_DoesNotInvalidateCache()
+        {
+            var appointment = CreateAppointment(
+                status: AppointmentStatus.Pending);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(appointment);
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.DeleteAsync(1))
+                .ReturnsAsync((Appointment?)null);
+
+            var result = await _service.DeleteAsync(1);
+
+            result.Should().BeNull();
+
+            _doctorServiceMock.Verify(
+                service => service.InvalidateAvailabilityCacheAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<DateTime>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task AddAsync_WhenValid_PublishesAppointmentBookedEvent()
+        {
+            SetupValidAddDependencies();
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync())
+                .ReturnsAsync(new List<Appointment>());
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.AddAsync(
+                    It.IsAny<Appointment>()))
+                .ReturnsAsync((Appointment appointment) =>
+                {
+                    appointment.AppointmentId = 75;
+                    return appointment;
+                });
+
+            SetupPatientDoctorLists();
+
+            var dto = CreateCreateAppointmentDto();
+
+            await _service.AddAsync(dto);
+
+            _eventPublisherMock.Verify(
+                publisher => publisher.PublishAppointmentBookedAsync(
+                    It.Is<HealthAxis.API.Events.AppointmentBookedEvent>(
+                        appointmentEvent =>
+                            appointmentEvent.AppointmentId == 75 &&
+                            appointmentEvent.PatientId == dto.PatientId &&
+                            appointmentEvent.DoctorId == dto.DoctorId &&
+                            appointmentEvent.Status ==
+                                AppointmentStatus.Pending.ToString())),
+                Times.Once);
         }
 
         private void SetupValidAddDependencies()

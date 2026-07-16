@@ -50,7 +50,7 @@ namespace HealthAxis.API.Services.Implementation
         {
             var doctor = await doctorRepository.GetByIdAsync(id);
 
-            if (doctor == null)
+            if (doctor is null)
             {
                 throw new NotFoundException("Doctor not found");
             }
@@ -62,11 +62,13 @@ namespace HealthAxis.API.Services.Implementation
         {
             var doctors = await doctorRepository.GetAllAsync();
 
-            var doctor = doctors.FirstOrDefault(item => item.UserId == userId);
+            var doctor = doctors.FirstOrDefault(
+                item => item.UserId == userId);
 
-            if (doctor == null)
+            if (doctor is null)
             {
-                throw new NotFoundException("Doctor profile not found");
+                throw new NotFoundException(
+                    "Doctor profile not found");
             }
 
             return mapper.Map<DoctorDto>(doctor);
@@ -76,7 +78,14 @@ namespace HealthAxis.API.Services.Implementation
             int id,
             DateTime? date = null)
         {
-            var availabilityDate = (date ?? DateTime.Today).Date;
+            if (id <= 0)
+            {
+                throw new ValidationExceptions(
+                    "Doctor id must be greater than zero.");
+            }
+
+            var availabilityDate =
+                (date ?? DateTime.Today).Date;
 
             if (availabilityDate < DateTime.Today)
             {
@@ -84,28 +93,48 @@ namespace HealthAxis.API.Services.Implementation
                     "Cannot check doctor availability for a past date.");
             }
 
+            var doctor = await doctorRepository.GetByIdAsync(id);
+
+            if (doctor is null)
+            {
+                throw new NotFoundException("Doctor not found");
+            }
+
             var cacheKey = BuildDoctorAvailabilityCacheKey(
                 id,
                 availabilityDate);
 
-            var cachedValue = await distributedCache.GetStringAsync(cacheKey);
+            var cachedValue = await distributedCache.GetStringAsync(
+                cacheKey);
 
             if (!string.IsNullOrWhiteSpace(cachedValue))
             {
-                var cachedAvailability =
-                    JsonSerializer.Deserialize<DoctorAvailabilityDto>(
-                        cachedValue,
-                        JsonOptions);
-
-                if (cachedAvailability != null)
+                try
                 {
-                    LogCacheHit(
-                        id,
-                        availabilityDate,
-                        cacheKey,
-                        cachedAvailability.AvailableSlots.Count);
+                    var cachedAvailability =
+                        JsonSerializer.Deserialize<DoctorAvailabilityDto>(
+                            cachedValue,
+                            JsonOptions);
 
-                    return cachedAvailability;
+                    if (cachedAvailability is not null)
+                    {
+                        LogCacheHit(
+                            id,
+                            availabilityDate,
+                            cacheKey,
+                            cachedAvailability.AvailableSlots.Count);
+
+                        return cachedAvailability;
+                    }
+                }
+                catch (JsonException exception)
+                {
+                    logger.LogWarning(
+                        exception,
+                        "Invalid availability cache data. CacheKey: {CacheKey}",
+                        cacheKey);
+
+                    await distributedCache.RemoveAsync(cacheKey);
                 }
             }
 
@@ -113,13 +142,6 @@ namespace HealthAxis.API.Services.Implementation
                 id,
                 availabilityDate,
                 cacheKey);
-
-            var doctor = await doctorRepository.GetByIdAsync(id);
-
-            if (doctor == null)
-            {
-                throw new NotFoundException("Doctor not found");
-            }
 
             var availableSlots = await GetAvailableSlotsAsync(
                 id,
@@ -138,9 +160,10 @@ namespace HealthAxis.API.Services.Implementation
                 AvailableSlots = availableSlots
             };
 
-            var serializedAvailability = JsonSerializer.Serialize(
-                availability,
-                JsonOptions);
+            var serializedAvailability =
+                JsonSerializer.Serialize(
+                    availability,
+                    JsonOptions);
 
             await distributedCache.SetStringAsync(
                 cacheKey,
@@ -160,6 +183,37 @@ namespace HealthAxis.API.Services.Implementation
             return availability;
         }
 
+        public async Task InvalidateAvailabilityCacheAsync(
+            int doctorId,
+            DateTime date)
+        {
+            if (doctorId <= 0)
+            {
+                return;
+            }
+
+            var cacheKey = BuildDoctorAvailabilityCacheKey(
+                doctorId,
+                date.Date);
+
+            await distributedCache.RemoveAsync(cacheKey);
+
+            logger.LogInformation(
+                """
+                ========================================
+                CACHE INVALIDATED
+                ========================================
+                Doctor Id : {DoctorId}
+                Date      : {Date:yyyy-MM-dd}
+                Key       : {CacheKey}
+                Reason    : Doctor availability changed
+                ========================================
+                """,
+                doctorId,
+                date.Date,
+                cacheKey);
+        }
+
         private async Task<List<string>> GetAvailableSlotsAsync(
             int doctorId,
             DateTime availabilityDate,
@@ -167,32 +221,41 @@ namespace HealthAxis.API.Services.Implementation
         {
             if (!isDoctorActive)
             {
-                return new List<string>();
+                return [];
             }
 
-            var appointments = await appointmentRepository.GetAllAsync();
+            var appointments =
+                await appointmentRepository.GetAllAsync();
 
             var bookedSlots = appointments
                 .Where(appointment =>
                     appointment.DoctorId == doctorId &&
-                    appointment.ScheduledDate.Date == availabilityDate &&
-                    IsActiveAppointmentStatus(appointment.Status))
-                .Select(appointment => NormalizeTimeSlot(appointment.TimeSlot))
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                    appointment.ScheduledDate.Date ==
+                    availabilityDate &&
+                    IsActiveAppointmentStatus(
+                        appointment.Status))
+                .Select(appointment =>
+                    NormalizeTimeSlot(appointment.TimeSlot))
+                .ToHashSet(
+                    StringComparer.OrdinalIgnoreCase);
 
             return HospitalTimeSlots
-                .Where(slot => !bookedSlots.Contains(NormalizeTimeSlot(slot)))
+                .Where(slot =>
+                    !bookedSlots.Contains(
+                        NormalizeTimeSlot(slot)))
                 .ToList();
         }
 
         private static bool IsActiveAppointmentStatus(
             AppointmentStatus status)
         {
-            return status == AppointmentStatus.Pending ||
-                   status == AppointmentStatus.Confirmed;
+            return status is
+                AppointmentStatus.Pending or
+                AppointmentStatus.Confirmed;
         }
 
-        private static string NormalizeTimeSlot(string timeSlot)
+        private static string NormalizeTimeSlot(
+            string timeSlot)
         {
             return timeSlot.Trim();
         }
