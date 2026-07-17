@@ -1,8 +1,22 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder,FormGroup,ReactiveFormsModule,Validators} from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { PatientService } from '../../../core/services/patient.service';
+
+export interface PatientProfile {
+  patientId: string;
+  fullName: string;
+  phoneNumber: string;
+  email: string;
+  gender: string;
+  hasInsurance: boolean;
+}
 
 @Component({
   selector: 'app-profile',
@@ -13,11 +27,13 @@ import { PatientService } from '../../../core/services/patient.service';
 })
 export class ProfileComponent implements OnInit {
 
-  profileForm!: FormGroup; 
-  isEditMode = signal(false);
-  loading = signal(false);
-  saving = signal(false);
+  profileForm!: FormGroup;
 
+  patient = signal<PatientProfile | null>(null);
+
+  isEditMode = signal(false);
+  loading = signal(true);
+  saving = signal(false);
 
   constructor(
     private fb: FormBuilder,
@@ -27,90 +43,122 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
 
-   this.profileForm = this.fb.group({
+    this.profileForm = this.fb.group({
 
-  patientId: [{ value: '', disabled: true }], 
+      patientId: [{ value: '', disabled: true }],
 
-  fullName: ['', Validators.required],
+      fullName: ['', Validators.required],
 
-  phoneNumber: [
-    '',
-    [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]
-  ],
+      phoneNumber: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^[6-9]\d{9}$/)
+        ]
+      ],
 
-  email: [{ value: '', disabled: true }],
+      email: [{ value: '', disabled: true }],
 
-  gender: ['', Validators.required],
+      gender: ['', Validators.required],
 
-  hasInsurance: [false]
-});
+      hasInsurance: [false]
+
+    });
 
     this.loadProfile();
   }
 
-  loadProfile() {
+  loadProfile(): void {
 
-  this.loading.set(true);
+    this.loading.set(true);
 
-  this.patientService.getProfile()
-    .subscribe({
+    this.patientService.getProfile().subscribe({
 
-      next: (res: any) => {
+  next: (res: any) => {
 
-        this.profileForm.patchValue({
-          patientId: res.patientId,
-          fullName: res.fullName,
-          phoneNumber: res.phoneNumber,
-          email: res.email,
-          gender: res.gender,
-          hasInsurance: res.hasInsurance
+    this.patient.set(res);
+
+    this.profileForm.patchValue({
+      patientId: res.patientId,
+      fullName: res.fullName,
+      phoneNumber: res.phoneNumber,
+      email: res.email,
+      gender: res.gender,
+      hasInsurance: res.hasInsurance
+    });
+
+    this.loading.set(false);
+  },
+
+  error: () => {
+    this.loading.set(false);
+  }
+});
+        
+      
+  }
+
+  updateProfile(): void {
+
+    if (this.profileForm.invalid) {
+      this.profileForm.markAllAsTouched();
+      return;
+    }
+
+    this.saving.set(true);
+
+    const payload = this.profileForm.getRawValue();
+
+    this.patientService.updateProfile(payload).subscribe({
+
+      next: () => {
+
+        this.patient.set({
+          ...this.patient()!,
+          ...payload
         });
 
-        this.loading.set(false); 
+        this.saving.set(false);
+        this.isEditMode.set(false);
+
+        this.toastr.success(
+          'Profile updated successfully',
+          'Success'
+        );
+      },
+
+      error: () => {
+
+        this.saving.set(false);
+
+        this.toastr.error(
+          'Failed to update profile',
+          'Error'
+        );
       }
     });
-}
+  }
 
- updateProfile() {
+  toggleEdit(): void {
 
-  if (this.profileForm.invalid) return;
+    if (!this.isEditMode() && this.patient()) {
 
-  this.saving.set(true);
-
-  this.patientService.updateProfile(
-    this.profileForm.getRawValue()
-  )
-  .subscribe({
-
-    next: () => {
-      this.saving.set(false);
-      this.isEditMode.set(false);
-      this.toastr.success('Profile updated successfully ', 'Success');
-    },
-
-    error: () => {
-      this.saving.set(false);
-      this.toastr.error('Failed to update profile','Error ');
-
+      this.profileForm.patchValue(this.patient()!);
     }
-  });
-}
 
-toggleEdit() {
-  this.isEditMode.set(!this.isEditMode());
-}
+    this.isEditMode.update(v => !v);
+  }
 
-getInitials(): string {
-  const name = this.profileForm.get('fullName')?.value ?? '';
+  getInitials(): string {
 
-  return name
-    .split(' ')
-    .map((x: string) => x[0])
-    .join('')
-    .substring(0, 2)
-    .toUpperCase();
-}
+    const name = this.patient()?.fullName ?? '';
 
-
-
+    return name
+      .split(' ')
+      .filter(Boolean)
+      .map(x => x[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
+  }
 }

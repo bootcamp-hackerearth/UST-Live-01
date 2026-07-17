@@ -1,259 +1,241 @@
 <div class="max-w-7xl mx-auto px-4 py-6 bg-slate-100 min-h-screen">
 
-  <!-- PROFILE CARD -->
-  <section class="bg-white rounded-[30px] shadow-lg overflow-hidden">
+  @if(loading()) {
 
-    <!-- HEADER -->
-    <div class="relative h-16 bg-gradient-to-r from-blue-700 to-blue-500">
-
-      <div class="absolute right-6 top-1 opacity-10">
-        <svg
-          class="w-20 h-20 text-white"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          viewBox="0 0 24 24">
-
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z"/>
-        </svg>
+    <div class="h-[500px] flex items-center justify-center">
+      <div class="text-xl text-slate-500 animate-pulse">
+        Loading Profile...
       </div>
-
-      <div
-        class="absolute bottom-0 left-0 h-10 w-[76%] bg-white rounded-tr-[40px]">
-      </div>
-
     </div>
 
-    <!-- BODY -->
-    <div class="relative px-5 py-4">
+  } @else {
 
-      <div class="flex justify-between items-start">
+    <section class="bg-white rounded-[30px] shadow-lg overflow-hidden">
 
-        <div class="flex items-center gap-4">
+      <!-- HEADER -->
+      <div class="relative h-16 bg-gradient-to-r from-blue-700 to-blue-500">
 
-          <!-- Avatar -->
-          <div
-            class="-mt-8 w-20 h-20 rounded-full border-4 border-white shadow-md
-                   bg-gradient-to-br from-blue-400 to-blue-600
-                   flex items-center justify-center">
+        <div class="absolute right-6 top-1 opacity-10">
+          <svg
+            class="w-20 h-20 text-white"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24">
 
-            <span class="text-2xl font-bold text-white">
-              {{ getInitials() }}
-            </span>
-
-          </div>
-
-          <!-- Profile Details -->
-          <div>
-
-            <h1 class="text-2xl font-bold text-slate-900">
-              {{ profileForm.get('fullName')?.value }}
-            </h1>
-
-            <p class="text-sm text-slate-500 mt-1">
-              Patient Profile
-            </p>
-
-            <p class="text-xs text-slate-400 mt-1">
-              Manage your healthcare information
-            </p>
-
-          </div>
-
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.418 0-8 1.79-8 4v2h16v-2c0-2.21-3.582-4-8-4z" />
+          </svg>
         </div>
 
-        <!-- Edit Button -->
-        <button
-          type="button"
-          (click)="toggleEdit()"
-          class="px-4 py-2 rounded-lg text-white
-                 bg-gradient-to-r from-[#0B5ED7] to-[#14B8A6]">
-
-          {{ isEditMode() ? 'Cancel' : 'Edit Profile' }}
-
-        </button>
-
-      </div>
-
-      <!-- INFO CARDS -->
-      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mt-6">
-
-        <!-- Patient ID -->
-        <div class="border rounded-lg px-3 py-2 flex items-center gap-2 bg-blue-50">
-
-          <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-            🪪
-          </div>
-
-          <div>
-            <p class="text-xs text-slate-500">Patient ID</p>
-            <h3 class="text-sm font-semibold">
-              {{ profileForm.get('patientId')?.value }}
-            </h3>
-          </div>
-
-        </div>
-
-        <!-- Email -->
-        <div class="border rounded-lg px-3 py-2 flex items-center gap-2 bg-blue-50 lg:col-span-2">
-
-          <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-            ✉️
-          </div>
-
-          <div class="min-w-0 flex-1">
-            <p class="text-xs text-slate-500">Email</p>
-
-            <h3 class="text-sm font-semibold break-all">
-              {{ profileForm.get('email')?.value }}
-            </h3>
-
-          </div>
-
-        </div>
-
-        <!-- Gender -->
-        <div class="border rounded-lg px-3 py-2 flex items-center gap-2 bg-purple-50">
-
-          <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-            👤
-          </div>
-
-          <div>
-            <p class="text-xs text-slate-500">Gender</p>
-
-            <h3 class="text-sm font-semibold">
-              {{ profileForm.get('gender')?.value }}
-            </h3>
-
-          </div>
-
-        </div>
-
-        <!-- Insurance -->
-        <div class="border rounded-lg px-3 py-2 flex items-center gap-2 bg-green-50">
-
-          <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-            🛡️
-          </div>
-
-          <div>
-            <p class="text-xs text-slate-500">Insurance</p>
-
-            <h3 class="text-sm font-semibold">
-              {{ profileForm.get('hasInsurance')?.value ? 'Yes' : 'No' }}
-            </h3>
-
-          </div>
-
+        <div
+          class="absolute bottom-0 left-0 h-10 w-[76%] bg-white rounded-tr-[40px]">
         </div>
 
       </div>
 
-      <!-- EDIT SECTION -->
-      @if(isEditMode()){
+      <!-- BODY -->
+      <div class="relative px-5 py-4">
 
-        <form
-          [formGroup]="profileForm"
-          (ngSubmit)="updateProfile()"
-          class="grid md:grid-cols-2 gap-4 mt-8">
+        <div class="flex justify-between items-start">
 
-          <!-- Full Name -->
-          <div>
+          <div class="flex items-center gap-4">
 
-            <label class="block text-sm text-slate-500 mb-2">
-              Full Name
-            </label>
+            <div
+              class="-mt-8 w-20 h-20 rounded-full border-4 border-white shadow-md bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
 
-            <input
-              formControlName="fullName"
-              class="w-full border rounded-xl px-4 py-3"/>
-
-          </div>
-
-          <!-- Phone -->
-          <div>
-
-            <label class="block text-sm text-slate-500 mb-2">
-              Phone Number
-            </label>
-
-            <input
-              formControlName="phoneNumber"
-              class="w-full border rounded-xl px-4 py-3"/>
-
-          </div>
-
-          <!-- Gender -->
-          <div>
-
-            <label class="block text-sm text-slate-500 mb-2">
-              Gender
-            </label>
-
-            <select
-              formControlName="gender"
-              class="w-full border rounded-xl px-4 py-3">
-
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-
-            </select>
-
-          </div>
-
-          <!-- Insurance -->
-          <div>
-
-            <label class="block text-sm text-slate-500 mb-2">
-              Insurance
-            </label>
-
-            <div class="flex items-center gap-3 mt-3">
-
-              <input
-                type="checkbox"
-                formControlName="hasInsurance"/>
-
-              <span>
-                Has Insurance
+              <span class="text-2xl font-bold text-white">
+                {{ getInitials() }}
               </span>
+
+            </div>
+
+            <div>
+
+              <h1 class="text-2xl font-bold text-slate-900">
+                {{ patient()?.fullName }}
+              </h1>
+
+              <p class="text-sm text-slate-500 mt-1">
+                Patient Profile
+              </p>
+
+              <p class="text-xs text-slate-400 mt-1">
+                Manage your healthcare information
+              </p>
 
             </div>
 
           </div>
 
-          <!-- Save -->
-          <div class="md:col-span-2 flex justify-end mt-4">
+          <button
+            type="button"
+            (click)="toggleEdit()"
+            class="px-4 py-2 rounded-lg text-white bg-gradient-to-r from-[#0B5ED7] to-[#14B8A6]">
 
-            <button
-              type="submit"
-              [disabled]="saving() || profileForm.invalid"
-              class="px-6 py-3 rounded-xl text-white
-                     bg-[#0B5ED7] flex items-center gap-2">
+            {{ isEditMode() ? 'Cancel' : 'Edit Profile' }}
 
-              @if(saving()){
-                <span
-                  class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin">
-                </span>
-              }
+          </button>
 
-              {{ saving() ? 'Saving...' : 'Save Changes' }}
+        </div>
 
-            </button>
+        <!-- INFO CARDS -->
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mt-6">
+
+          <div class="border rounded-lg px-3 py-2 flex items-center gap-2 bg-blue-50">
+
+            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+              🪪
+            </div>
+
+            <div>
+              <p class="text-xs text-slate-500">Patient ID</p>
+              <h3 class="text-sm font-semibold">
+                {{ patient()?.patientId }}
+              </h3>
+            </div>
 
           </div>
 
-        </form>
+          <div class="border rounded-lg px-3 py-2 flex items-center gap-2 bg-blue-50 lg:col-span-2">
 
-      }
+            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+              ✉️
+            </div>
 
-    </div>
+            <div class="flex-1 min-w-0">
 
-  </section>
+              <p class="text-xs text-slate-500">Email</p>
+
+              <h3 class="text-sm font-semibold break-all">
+                {{ patient()?.email }}
+              </h3>
+
+            </div>
+
+          </div>
+
+          <div class="border rounded-lg px-3 py-2 flex items-center gap-2 bg-purple-50">
+
+            <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+              👤
+            </div>
+
+            <div>
+              <p class="text-xs text-slate-500">Gender</p>
+              <h3 class="text-sm font-semibold">
+                {{ patient()?.gender }}
+              </h3>
+            </div>
+
+          </div>
+
+          <div class="border rounded-lg px-3 py-2 flex items-center gap-2 bg-green-50">
+
+            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+              🛡️
+            </div>
+
+            <div>
+              <p class="text-xs text-slate-500">Insurance</p>
+
+              <h3 class="text-sm font-semibold">
+                {{ patient()?.hasInsurance ? 'Yes' : 'No' }}
+              </h3>
+            </div>
+
+          </div>
+
+        </div>
+
+        @if(isEditMode()) {
+
+          <form
+            [formGroup]="profileForm"
+            (ngSubmit)="updateProfile()"
+            class="grid md:grid-cols-2 gap-4 mt-8">
+
+            <div>
+              <label class="block text-sm text-slate-500 mb-2">
+                Full Name
+              </label>
+
+              <input
+                formControlName="fullName"
+                class="w-full border rounded-xl px-4 py-3">
+            </div>
+
+            <div>
+              <label class="block text-sm text-slate-500 mb-2">
+                Phone Number
+              </label>
+
+              <input
+                formControlName="phoneNumber"
+                class="w-full border rounded-xl px-4 py-3">
+            </div>
+
+            <div>
+              <label class="block text-sm text-slate-500 mb-2">
+                Gender
+              </label>
+
+              <select
+                formControlName="gender"
+                class="w-full border rounded-xl px-4 py-3">
+
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm text-slate-500 mb-2">
+                Insurance
+              </label>
+
+              <div class="flex items-center gap-3 mt-3">
+
+                <input
+                  type="checkbox"
+                  formControlName="hasInsurance">
+
+                <span>I have Insurance</span>
+
+              </div>
+
+            </div>
+
+            <div class="md:col-span-2 flex justify-end mt-4">
+
+              <button
+                type="submit"
+                [disabled]="saving() || profileForm.invalid"
+                class="px-6 py-3 rounded-xl text-white bg-[#0B5ED7] flex items-center gap-2">
+
+                @if(saving()) {
+                  <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                }
+
+                {{ saving() ? 'Saving...' : 'Save Changes' }}
+
+              </button>
+
+            </div>
+
+          </form>
+
+        }
+
+      </div>
+
+    </section>
+
+  }
 
 </div>
