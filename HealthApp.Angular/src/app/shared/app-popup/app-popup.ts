@@ -20,4 +20,8 @@ export class AppPopupComponent {
   close(): void {
     this.closed.emit();
   }
+
+  confirm(): void {
+    this.confirmed.emit();
+  }
 }

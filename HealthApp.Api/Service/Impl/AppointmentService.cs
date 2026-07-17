@@ -7,7 +7,6 @@ using HealthApp.Api.Repository.Interface;
 using HealthApp.Api.Service.Interface;
 using HealthApp.Shared.Dto;
 using Microsoft.Extensions.Caching.Distributed;
-using System.Text.Json;
 
 namespace HealthApp.Api.Service.Impl
 {
@@ -19,7 +18,7 @@ namespace HealthApp.Api.Service.Impl
         private readonly IMapper _mapper;
         private readonly IAppointmentEventPublisher _appointmentEventPublisher;
         private readonly IDoctorLeaveRepository _doctorLeaveRepository;
-
+        private readonly INotificationService _notificationService;
 
         private const string AppointmentEntity = "Appointment";
 
@@ -28,6 +27,7 @@ namespace HealthApp.Api.Service.Impl
             IPatientRepository patientRepository,
             IDoctorRepository doctorRepository,
             IMapper mapper,
+            INotificationService notificationService,
             IAppointmentEventPublisher appointmentEventPublisher,
             IDoctorLeaveRepository doctorLeaveRepository)
         {
@@ -35,17 +35,18 @@ namespace HealthApp.Api.Service.Impl
             _patientRepository = patientRepository;
             _doctorRepository = doctorRepository;
             _mapper = mapper;
+            _notificationService = notificationService;
             _appointmentEventPublisher = appointmentEventPublisher;
             _doctorLeaveRepository = doctorLeaveRepository;
         }
-        private const string DoctorAvailabilityCachePrefix = "appointment:doctor:availability";
+
+        private const string DoctorAvailabilityCachePrefix =
+            "appointment:doctor:availability";
 
         private readonly DistributedCacheEntryOptions cacheOptions = new()
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
         };
-
-
 
         public async Task<object> Add(AppointmentDto dto, string identityUserId)
         {
@@ -55,14 +56,12 @@ namespace HealthApp.Api.Service.Impl
             if (patient == null)
                 throw new EntityNotFoundException("Patient", 0);
 
-
-
-            var isDoctorOnLeave = await _doctorLeaveRepository.
-                IsDoctorOnLeaveAsync(dto.DoctorId, dto.ScheduledDate);
+            var isDoctorOnLeave = await _doctorLeaveRepository
+                .IsDoctorOnLeaveAsync(dto.DoctorId, dto.ScheduledDate);
 
             if (isDoctorOnLeave)
-                throw new AppointmentRuleException
-                    ("Doctor is on leave for the selected date. Please choose another date.");
+                throw new AppointmentRuleException(
+                    "Doctor is on leave for the selected date. Please choose another date.");
 
             var isBooked = await _repo.IsSlotBookedAsync(
                 dto.DoctorId,
@@ -94,7 +93,8 @@ namespace HealthApp.Api.Service.Impl
                 TimeSlot = dto.TimeSlot
             };
 
-            await _appointmentEventPublisher.PublishAppointmentBookedAsync(appointmentBookEvent);
+            await _appointmentEventPublisher
+                .PublishAppointmentBookedAsync(appointmentBookEvent);
 
             return new
             {
@@ -132,6 +132,8 @@ namespace HealthApp.Api.Service.Impl
                     AppointmentEntity,
                     appointmentId);
 
+            await SendAppointmentCancelledNotification(saved, reason);
+
             return _mapper.Map<AppointmentDto>(saved);
         }
 
@@ -145,6 +147,8 @@ namespace HealthApp.Api.Service.Impl
                 throw new EntityNotFoundException(
                     AppointmentEntity,
                     appointmentId);
+
+            await SendAppointmentConfirmedNotification(saved);
 
             return _mapper.Map<AppointmentDto>(saved);
         }
@@ -164,23 +168,23 @@ namespace HealthApp.Api.Service.Impl
         }
 
         public async Task<DoctorAvailabilityResponseDto> CheckDoctorAvailability(
-    int doctorId,
-    DateTime date)
+            int doctorId,
+            DateTime date)
         {
             var selectedDate = date.Date;
 
             var allSlots = new List<string>
-    {
-        "09:00 AM",
-        "10:00 AM",
-        "11:00 AM",
-        "12:00 PM",
-        "01:00 PM",
-        "02:00 PM",
-        "03:00 PM",
-        "04:00 PM",
-        "05:00 PM"
-    };
+            {
+                "09:00 AM",
+                "10:00 AM",
+                "11:00 AM",
+                "12:00 PM",
+                "01:00 PM",
+                "02:00 PM",
+                "03:00 PM",
+                "04:00 PM",
+                "05:00 PM"
+            };
 
             var isDoctorOnLeave = await _doctorLeaveRepository
                 .IsDoctorOnLeaveAsync(doctorId, selectedDate);
@@ -218,7 +222,9 @@ namespace HealthApp.Api.Service.Impl
                 {
                     TimeSlot = slot,
                     IsAvailable = !bookedSlots.Contains(slot),
-                    Status = bookedSlots.Contains(slot) ? "Booked" : "Available"
+                    Status = bookedSlots.Contains(slot)
+                        ? "Booked"
+                        : "Available"
                 }).ToList()
             };
         }
@@ -246,23 +252,6 @@ namespace HealthApp.Api.Service.Impl
 
             return _mapper.Map<List<AppointmentDto>>(
                 list ?? new List<Appointment>());
-        }
-
-        private async Task LoadNavigation(Appointment appointment)
-        {
-            if (appointment.Patient == null)
-            {
-                appointment.Patient =
-                    await _patientRepository.getbyidAsync(
-                        appointment.PatientId);
-            }
-
-            if (appointment.Doctor == null)
-            {
-                appointment.Doctor =
-                    await _doctorRepository.getbyidAsync(
-                        appointment.DoctorId);
-            }
         }
 
         public async Task<List<AppointmentDto>> GetAppointmentsByUserAsync(
@@ -334,6 +323,81 @@ namespace HealthApp.Api.Service.Impl
                 pageSize);
 
             return (_mapper.Map<List<AppointmentDto>>(items), total);
+        }
+
+        private async Task LoadNavigation(Appointment appointment)
+        {
+            if (appointment.Patient == null)
+            {
+                appointment.Patient =
+                    await _patientRepository.getbyidAsync(
+                        appointment.PatientId);
+            }
+
+            if (appointment.Doctor == null)
+            {
+                appointment.Doctor =
+                    await _doctorRepository.getbyidAsync(
+                        appointment.DoctorId);
+            }
+        }
+
+        private async Task SendAppointmentConfirmedNotification(
+            Appointment appointment)
+        {
+            var patient = await _patientRepository
+                .getbyidAsync(appointment.PatientId);
+
+            var doctor = await _doctorRepository
+                .getbyidAsync(appointment.DoctorId);
+
+            if (patient == null ||
+                string.IsNullOrWhiteSpace(patient.IdentityUserId))
+            {
+                return;
+            }
+
+            await _notificationService.CreateAsync(new NotificationCreateDto
+            {
+                UserId = patient.IdentityUserId,
+                Title = "Appointment Confirmed",
+                Message =
+                    $"Your appointment with Dr. {doctor?.FullName ?? "Doctor"} " +
+                    $"on {appointment.ScheduledDate:dd-MM-yyyy} " +
+                    $"at {appointment.TimeSlot} has been confirmed.",
+                EventType = "AppointmentConfirmed",
+                CreatedAt = DateTime.UtcNow
+            });
+        }
+
+        private async Task SendAppointmentCancelledNotification(
+            Appointment appointment,
+            string reason)
+        {
+            var patient = await _patientRepository
+                .getbyidAsync(appointment.PatientId);
+
+            var doctor = await _doctorRepository
+                .getbyidAsync(appointment.DoctorId);
+
+            if (patient == null ||
+                string.IsNullOrWhiteSpace(patient.IdentityUserId))
+            {
+                return;
+            }
+
+            await _notificationService.CreateAsync(new NotificationCreateDto
+            {
+                UserId = patient.IdentityUserId,
+                Title = "Appointment Cancelled",
+                Message =
+                    $"Your appointment with Dr. {doctor?.FullName ?? "Doctor"} " +
+                    $"on {appointment.ScheduledDate:dd-MM-yyyy} " +
+                    $"at {appointment.TimeSlot} has been cancelled. " +
+                    $"Reason: {reason}",
+                EventType = "AppointmentCancelled",
+                CreatedAt = DateTime.UtcNow
+            });
         }
     }
 }

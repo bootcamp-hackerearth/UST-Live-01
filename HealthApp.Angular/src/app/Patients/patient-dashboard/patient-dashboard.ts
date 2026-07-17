@@ -13,6 +13,9 @@ import { Patient } from '../../models/patient/patient.model';
 import { Appointment } from '../../models/appointment/appointment.model';
 import { HealthRecord } from '../../models/health-record/health-record.model';
 
+import { NotificationService } from '../../Patient.service/notificationservice';
+import { Notification } from '../../models/notification/notification.model';
+
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
@@ -21,6 +24,11 @@ import { HealthRecord } from '../../models/health-record/health-record.model';
   styleUrls: ['./patient-dashboard.css']
 })
 export class PatientDashboard implements OnInit {
+
+  unreadNotifications: Notification[] = [];
+  currentNotification: Notification | null = null;
+  showNotificationPopup = false;
+  isReadingNotification = false;
 
   patient = signal<Patient | null>(null);
   editPatient: Patient | null = null;
@@ -39,7 +47,7 @@ export class PatientDashboard implements OnInit {
   paginatedAppointments = signal<Appointment[]>([]);
 
   pageNumber = signal(1);
-  pageSize = 5;
+  readonly pageSize = 5;
   totalPages = signal(1);
 
   passwordForm = {
@@ -53,23 +61,79 @@ export class PatientDashboard implements OnInit {
   popupMessage = signal('');
   popupType = signal<'success' | 'error' | 'warning'>('success');
 
-  constructor(
-    private patientService: PatientService,
-    private appointmentService: AppointmentService,
-    private recordService: HealthRecordService,
-    private authService: AuthService
-  ) {}
+
+constructor(
+  private patientService: PatientService,
+  private appointmentService: AppointmentService,
+  private recordService: HealthRecordService,
+  private authService: AuthService,
+  private notificationService: NotificationService
+) {}
+
 
   ngOnInit(): void {
-    this.loadProfile();
-  }
+  this.loadProfile();
+  this.loadUnreadNotifications();
+}
 
   openProfile() {
-    this.showProfile = true;
-    this.editMode = false;
-    this.editPatient = null;
-  }
+  this.showProfile = true;
+  this.editMode = false;
+  this.editPatient = null;
 
+  this.loadUnreadNotifications();
+}
+loadUnreadNotifications() {
+  this.notificationService.getMyUnreadNotifications().subscribe({
+    next: (res) => {
+      console.log('UNREAD NOTIFICATIONS:', res);
+
+      this.unreadNotifications = res || [];
+
+      if (this.unreadNotifications.length > 0) {
+        this.currentNotification = this.unreadNotifications[0];
+        this.showNotificationPopup = true;
+      }
+    },
+    error: (err) => {
+      console.error('Failed to load unread notifications', err);
+    }
+  });
+}
+
+markCurrentNotificationAsRead() {
+  if (!this.currentNotification || this.isReadingNotification) return;
+
+  const notificationId = this.currentNotification.notificationId;
+
+  this.isReadingNotification = true;
+
+  this.notificationService.markAsRead(notificationId).subscribe({
+    next: () => {
+      this.isReadingNotification = false;
+
+      this.unreadNotifications = this.unreadNotifications.filter(
+        n => n.notificationId !== notificationId
+      );
+
+      if (this.unreadNotifications.length > 0) {
+        this.currentNotification = this.unreadNotifications[0];
+        this.showNotificationPopup = true;
+      } else {
+        this.currentNotification = null;
+        this.showNotificationPopup = false;
+      }
+    },
+    error: (err) => {
+      this.isReadingNotification = false;
+      console.error('Failed to mark notification as read', err);
+    }
+  });
+}
+
+closeNotificationPopupWithoutRead() {
+  this.showNotificationPopup = false;
+}
   closeProfile() {
     this.showProfile = false;
     this.editMode = false;
@@ -99,6 +163,7 @@ export class PatientDashboard implements OnInit {
         today.setHours(0, 0, 0, 0);
 
         const data = (res || [])
+        
           .map((a: any) => ({
             ...a,
             scheduledDate: a.scheduledDate ? new Date(a.scheduledDate) : null
@@ -109,9 +174,10 @@ export class PatientDashboard implements OnInit {
             return isUpcoming && isValidStatus;
           })
           .sort((a, b) =>
-            new Date(a.scheduledDate!).getTime() -
-            new Date(b.scheduledDate!).getTime()
+            new Date(a.scheduledDate).getTime() -
+            new Date(b.scheduledDate).getTime()
           );
+
 
         this.appointments.set(data);
         this.filteredAppointments.set(data);
@@ -138,10 +204,16 @@ export class PatientDashboard implements OnInit {
   }
 
   cancel(id: number) {
-    const reason = prompt('Enter cancel reason');
-    if (!reason || !reason.trim()) return;
 
-    this.appointmentService.cancelAppointment(id, reason).subscribe({
+const reason = prompt('Enter cancel reason');
+
+
+  if (!reason?.trim()) {
+    return;
+  }
+
+  this.appointmentService.cancelAppointment(id, reason).subscribe({
+
       next: () => this.loadAppointments(),
       error: (err) => {
         console.error('Cancel failed', err);

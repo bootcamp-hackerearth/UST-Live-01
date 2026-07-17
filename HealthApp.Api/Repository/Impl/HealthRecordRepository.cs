@@ -13,7 +13,7 @@ namespace HealthApp.Api.Repository.Impl
             _context=context;
         }
 
-        public async Task<List<HealthRecord?>> GetHealthRecordsByDoctorAndPatientAsync(int? doctorId, int? patientId)
+        public async Task<List<HealthRecord>> GetHealthRecordsByDoctorAndPatientAsync(int? doctorId, int? patientId)
         {
             var query = _context.HealthRecords
                 .Include(r => r.Patient)

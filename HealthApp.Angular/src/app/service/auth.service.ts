@@ -10,12 +10,13 @@ import { LoginRequest } from '../login/login-request.model';
 })
 export class AuthService {
 
-  private baseUrl = 'http://localhost:5066/api/auth';
+  private readonly baseUrl = 'http://localhost:5066/api/auth';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   login(data: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.baseUrl}/login`, data)
+    return this.http
+      .post<LoginResponse>(`${this.baseUrl}/login`, data)
       .pipe(
         tap(res => {
           if (res.success) {
@@ -36,11 +37,13 @@ export class AuthService {
     phoneNumber: string;
     insuranceId?: string;
   }): Observable<any> {
-
-    return this.http.post(`${this.baseUrl}/patientregister`, data);
+    return this.http.post(
+      `${this.baseUrl}/patientregister`,
+      data
+    );
   }
 
-  logout() {
+  logout(): void {
     localStorage.clear();
   }
 
@@ -56,8 +59,10 @@ export class AuthService {
     return !!this.getToken();
   }
 
-
-  changePassword(data: any) {
-  return this.http.post('http://localhost:5066/api/Auth/change-password', data);
-}
+  changePassword(data: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/change-password`,
+      data
+    );
+  }
 }

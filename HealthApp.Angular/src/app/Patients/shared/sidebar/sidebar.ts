@@ -3,7 +3,6 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AppPopupComponent } from '../../../shared/app-popup/app-popup';
 
-
 @Component({
   selector: 'app-sidebar',
   standalone: true,
@@ -18,22 +17,17 @@ export class Sidebar {
   popupMessage = '';
   popupType: 'success' | 'error' | 'warning' = 'warning';
 
-  showLogoutConfirm = false;
-
   constructor(private router: Router) {}
 
   logout(): void {
     this.popupTitle = 'Logout';
     this.popupMessage = 'Are you sure you want to logout from HealthSphere?';
     this.popupType = 'warning';
-
     this.popupVisible = true;
-    this.showLogoutConfirm = true;
   }
 
   closePopup(): void {
     this.popupVisible = false;
-    this.showLogoutConfirm = false;
   }
 
   confirmLogout(): void {
@@ -41,7 +35,6 @@ export class Sidebar {
     sessionStorage.clear();
 
     this.popupVisible = false;
-    this.showLogoutConfirm = false;
 
     this.router.navigate(['/']);
   }

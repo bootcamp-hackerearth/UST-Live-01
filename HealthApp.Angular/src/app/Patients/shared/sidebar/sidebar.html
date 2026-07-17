@@ -5,28 +5,36 @@
   </div>
 
   <ul>
-    <li routerLink="/patient-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <li
+      routerLink="/patient-dashboard"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }">
       <span>🏠</span> Dashboard
     </li>
+
     <li routerLink="/appointments" routerLinkActive="active">
       <span>📅</span> Appointments
     </li>
+
     <li routerLink="/doctors" routerLinkActive="active">
       <span>👨‍⚕️</span> Doctors
     </li>
+
     <li routerLink="/health-records" routerLinkActive="active">
       <span>📄</span> Records
     </li>
+
     <li (click)="logout()" class="logout">
       <span>🚪</span> Logout
     </li>
   </ul>
 </aside>
+
 <app-popup
   [visible]="popupVisible"
   [title]="popupTitle"
   [message]="popupMessage"
   [type]="popupType"
-  (closed)="closePopup()">
+  (closed)="closePopup()"
+  (confirmed)="confirmLogout()">
 </app-popup>
-

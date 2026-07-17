@@ -1,5 +1,6 @@
 <div class="app-popup-backdrop" *ngIf="visible">
   <div class="app-popup" [ngClass]="type">
+
     <div class="popup-icon" [ngClass]="type">
       <span *ngIf="type === 'success'">✓</span>
       <span *ngIf="type === 'error'">!</span>
@@ -11,35 +12,31 @@
 
     <div class="popup-actions">
 
-  <ng-container *ngIf="type !== 'warning'; else confirmButtons">
+      <ng-container *ngIf="type !== 'warning'; else confirmButtons">
+        <button
+          class="popup-ok-btn"
+          type="button"
+          (click)="close()">
+          OK
+        </button>
+      </ng-container>
 
-    <button
-      class="popup-ok-btn"
-      type="button"
-      (click)="close()">
-      OK
-    </button>
+      <ng-template #confirmButtons>
+        <button
+          class="popup-cancel-btn"
+          type="button"
+          (click)="close()">
+          Cancel
+        </button>
 
-  </ng-container>
+        <button
+          class="popup-logout-btn"
+          type="button"
+          (click)="confirm()">
+          Logout
+        </button>
+      </ng-template>
 
-  <ng-template #confirmButtons>
-
-    <button
-      class="popup-cancel-btn"
-      type="button"
-      (click)="close()">
-      Close
-    </button>
-
-    <button
-      class="popup-logout-btn"
-      type="button"
-      (click)="confirmed.emit()">
-      Logout
-    </button>
-
-  </ng-template>
-
-</div>
+    </div>
   </div>
 </div>

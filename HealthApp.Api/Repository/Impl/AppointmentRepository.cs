@@ -38,16 +38,18 @@ namespace HealthApp.Api.Repository.Impl
                 .ToListAsync();
         }
 
-     
-        public async Task<List<string>?> GetBookedSlotsAsync(int doctorId, DateTime date)
+        public async Task<List<string>> GetBookedSlotsAsync(int doctorId, DateTime date)
         {
             return await _context.Appointments
-                .Where(a => a.DoctorId == doctorId && a.ScheduledDate.Date == date.Date)
-                .Select(a => a.TimeSlot)
+                .Where(a => a.DoctorId == doctorId &&
+                            a.ScheduledDate.Date == date.Date &&
+                            a.TimeSlot != null)
+                .Select(a => a.TimeSlot!)
                 .ToListAsync();
         }
 
-   
+
+
         public async Task<Appointment?> CancelAppointmentAsync(int appointmentId, string reason)
         {
             var existing = await _context.Appointments

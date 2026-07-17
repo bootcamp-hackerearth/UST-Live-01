@@ -1,7 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Sidebar } from '../shared/d_sidebar/d_sidebar';
-
 import { AppointmentService } from '../../Doctor.service/appointmentservice';
 
 @Component({
@@ -18,6 +17,7 @@ export class DoctorAppointments implements OnInit {
   paginatedAppointments = signal<any[]>([]);
 
   errorMessage = signal('');
+  selected = signal<any>(null);
 
   totalCount = signal(0);
   pendingCount = signal(0);
@@ -25,20 +25,21 @@ export class DoctorAppointments implements OnInit {
   completedCount = signal(0);
 
   pageNumber = signal(1);
-  pageSize = 5;
   totalPages = signal(0);
 
-  selected = signal<any>(null);
+  readonly pageSize = 5;
 
-  constructor(private readonly appointmentService: AppointmentService) {}
+  constructor(
+    private readonly appointmentService: AppointmentService
+  ) {}
 
   ngOnInit(): void {
     this.loadAppointments();
   }
 
-  loadAppointments() {
+  private loadAppointments(): void {
     this.appointmentService.getMyDoctorAppointments().subscribe({
-      next: (res: any) => {
+      next: (res) => {
         const appointments = this.formatAppointments(res);
 
         this.appointments.set(appointments);
@@ -48,13 +49,15 @@ export class DoctorAppointments implements OnInit {
         this.updatePagination();
       },
       error: (err) => {
-        this.errorMessage.set(err?.error?.message || 'Failed to load doctor appointments');
+        this.errorMessage.set(
+          err?.error?.message ?? 'Failed to load doctor appointments'
+        );
       }
     });
   }
 
   private formatAppointments(res: any): any[] {
-    const list = res?.data || res || [];
+    const list = res?.data ?? res ?? [];
 
     return list.map((appointment: any) => ({
       ...appointment,
@@ -66,58 +69,80 @@ export class DoctorAppointments implements OnInit {
 
   private updateCounts(appointments: any[]): void {
     this.totalCount.set(appointments.length);
-    this.pendingCount.set(this.getStatusCount(appointments, 'Pending'));
-    this.confirmedCount.set(this.getStatusCount(appointments, 'Confirmed'));
-    this.completedCount.set(this.getStatusCount(appointments, 'Completed'));
+
+    const statuses = appointments.reduce(
+      (acc, appointment) => {
+        acc[appointment.status] = (acc[appointment.status] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
+    this.pendingCount.set(statuses['Pending'] || 0);
+    this.confirmedCount.set(statuses['Confirmed'] || 0);
+    this.completedCount.set(statuses['Completed'] || 0);
   }
 
-  private getStatusCount(appointments: any[], status: string): number {
-    return appointments.filter((appointment: any) => appointment.status === status).length;
-  }
+  private updatePagination(): void {
+    this.totalPages.set(
+      Math.ceil(this.filteredAppointments().length / this.pageSize)
+    );
 
-  updatePagination() {
-    this.totalPages.set(Math.ceil(this.filteredAppointments().length / this.pageSize));
     this.paginate();
   }
 
-  paginate() {
+  private paginate(): void {
     const start = (this.pageNumber() - 1) * this.pageSize;
-    const end = start + this.pageSize;
 
-    this.paginatedAppointments.set(this.filteredAppointments().slice(start, end));
+    this.paginatedAppointments.set(
+      this.filteredAppointments().slice(start, start + this.pageSize)
+    );
   }
 
-  nextPage() {
-    if (this.pageNumber() < this.totalPages()) {
-      this.pageNumber.update(value => value + 1);
+  changePage(offset: number): void {
+    const nextPage = this.pageNumber() + offset;
+
+    if (nextPage >= 1 && nextPage <= this.totalPages()) {
+      this.pageNumber.set(nextPage);
       this.paginate();
     }
   }
 
-  prevPage() {
-    if (this.pageNumber() > 1) {
-      this.pageNumber.update(value => value - 1);
-      this.paginate();
-    }
+  prevPage(): void {
+    this.changePage(-1);
   }
 
-  view(data: any) {
+  nextPage(): void {
+    this.changePage(1);
+  }
+
+  view(data: any): void {
     this.selected.set(data);
   }
 
-  closeView() {
+  closeView(): void {
     this.selected.set(null);
   }
 
-  confirm(id: number) {
-    this.appointmentService.confirmAppointment(id).subscribe(() => {
-      this.loadAppointments();
-    });
+  updateAppointment(
+    id: number,
+    action: (id: number) => any
+  ): void {
+    action.call(this.appointmentService, id)
+      .subscribe(() => this.loadAppointments());
   }
 
-  complete(id: number) {
-    this.appointmentService.completeAppointment(id).subscribe(() => {
-      this.loadAppointments();
-    });
+  confirm(id: number): void {
+    this.updateAppointment(
+      id,
+      this.appointmentService.confirmAppointment
+    );
+  }
+
+  complete(id: number): void {
+    this.updateAppointment(
+      id,
+      this.appointmentService.completeAppointment
+    );
   }
 }

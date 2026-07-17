@@ -19,11 +19,11 @@ namespace HealthApp.Api.Model
 
         [Required]
         [MaxLength(50)]
-        public string TimeSlot { get; set; }
+        public string? TimeSlot { get; set; }
 
         [Required]
         [MaxLength(50)]
-        public string Status { get; set; }
+        public string? Status { get; set; }
 
         [MaxLength(500)]
         public string? CancellationReason { get; set; }

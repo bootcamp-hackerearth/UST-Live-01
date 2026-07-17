@@ -334,3 +334,59 @@
 
   </div>
 </div>
+
+
+
+
+
+
+
+
+
+<!-- PATIENT NOTIFICATION POPUP -->
+<div class="notification-backdrop" *ngIf="showNotificationPopup && currentNotification as n">
+  <div class="notification-popup">
+
+    <div
+      class="notification-icon"
+      [ngClass]="{
+        'confirmed': n.eventType === 'AppointmentConfirmed',
+        'cancelled': n.eventType === 'AppointmentCancelled'
+      }">
+
+      <span *ngIf="n.eventType === 'AppointmentConfirmed'">✓</span>
+      <span *ngIf="n.eventType === 'AppointmentCancelled'">!</span>
+      <span *ngIf="n.eventType !== 'AppointmentConfirmed' && n.eventType !== 'AppointmentCancelled'">i</span>
+    </div>
+
+    <p class="notification-label">Notification</p>
+
+    <h2>{{ n.title }}</h2>
+
+    <p class="notification-message">
+      {{ n.message }}
+    </p>
+
+    <p class="notification-time">
+      {{ n.createdAt | date:'medium' }}
+    </p>
+
+    <div class="notification-actions">
+      <button
+        class="notification-secondary"
+        type="button"
+        (click)="closeNotificationPopupWithoutRead()">
+        Later
+      </button>
+
+      <button
+        class="notification-primary"
+        type="button"
+        [disabled]="isReadingNotification"
+        (click)="markCurrentNotificationAsRead()">
+        {{ isReadingNotification ? 'Updating...' : 'Mark as Read' }}
+      </button>
+    </div>
+
+  </div>
+</div>

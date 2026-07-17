@@ -180,14 +180,6 @@ namespace HealthApp.Api.Service.Impl
                 throw new BusinessRuleException(
                     "Phone number required");
 
-            if (!System.Text.RegularExpressions.Regex.IsMatch(
-                patientDto.PhoneNumber,
-                @"^[0-9]{10}$"))
-            {
-                throw new BusinessRuleException(
-                    "Phone number must be exactly 10 digits");
-            }
-
             if (!patientDto.DateOfBirth.HasValue)
                 throw new BusinessRuleException("Date of birth is required");
 

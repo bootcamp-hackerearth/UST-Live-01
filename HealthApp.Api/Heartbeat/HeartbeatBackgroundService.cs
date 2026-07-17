@@ -19,8 +19,7 @@ namespace HealthApp.Api.BackgroundServices
                     DateTime.Now);
                 await Task.Delay(TimeSpan.FromSeconds(10),stoppingToken);
             }
-            logger.LogInformation(
-                   "HealthAxis Heartbeat Background Service stopped.**************");
+            logger.LogInformation("HealthAxis Heartbeat Background Service stopped.**************");
         }
     }
 }

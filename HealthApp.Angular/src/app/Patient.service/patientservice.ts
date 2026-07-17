@@ -9,9 +9,9 @@ import { Patient } from '../models/patient/patient.model';
 })
 export class PatientService {
 
-  private baseUrl = 'http://localhost:5066/api/PatientApi';
+  private readonly baseUrl = 'http://localhost:5066/api/PatientApi';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');

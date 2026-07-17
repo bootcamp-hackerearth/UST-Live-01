@@ -29,9 +29,9 @@ export class PatientDoctors implements OnInit {
   totalPages = signal(0);
 
   constructor(
-    private doctorService: DoctorService,
-    private router: Router
-  ) {}
+  private readonly doctorService: DoctorService,
+  private readonly router: Router) {}
+
 
   ngOnInit(): void {
     this.loadDoctors();
@@ -87,24 +87,26 @@ export class PatientDoctors implements OnInit {
   }
 
   getExperience(startDate?: Date): number {
-    if (!startDate) return 0;
-
-    const start = new Date(startDate);
-    const today = new Date();
-
-    let years = today.getFullYear() - start.getFullYear();
-
-    const monthDiff = today.getMonth() - start.getMonth();
-
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < start.getDate())
-    ) {
-      years--;
-    }
-
-    return years < 0 ? 0 : years;
+  if (!startDate) {
+    return 0;
   }
+
+  const start = new Date(startDate);
+  const today = new Date();
+
+  let years = today.getFullYear() - start.getFullYear();
+
+  const monthDiff = today.getMonth() - start.getMonth();
+
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < start.getDate())
+  ) {
+    years--;
+  }
+
+  return Math.max(0, years);
+}
 
   book(doctor: any) {
     console.log("Selected doctor:", doctor);

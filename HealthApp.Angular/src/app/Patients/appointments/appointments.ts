@@ -7,6 +7,20 @@ import { AppointmentService } from '../../Patient.service/appointmentservice';
 import { DoctorSlot } from '../../models/appointment/doctor-availability.model';
 import { AppPopupComponent } from '../../shared/app-popup/app-popup';
 
+interface AppointmentViewModel {
+  appointmentId: number;
+  patientId?: number;
+  doctorId: number;
+  patientName?: string;
+  doctorName?: string;
+  scheduledDate: Date | null;
+  timeSlot?: string;
+  status?: string;
+  cancellationReason?: string;
+}
+
+type PopupType = 'success' | 'error' | 'warning';
+
 @Component({
   selector: 'app-appointments',
   standalone: true,
@@ -15,10 +29,17 @@ import { AppPopupComponent } from '../../shared/app-popup/app-popup';
   styleUrls: ['./appointments.css']
 })
 export class Appointments implements OnInit {
+  readonly pageSize = 5;
+  private readonly statusClassMap: Record<string, string> = {
+    Pending: 'pending',
+    Confirmed: 'confirmed',
+    Completed: 'completed',
+    Cancelled: 'cancelled'
+  };
 
-  allAppointments = signal<any[]>([]);
-  filteredAppointments = signal<any[]>([]);
-  paginatedAppointments = signal<any[]>([]);
+  allAppointments = signal<AppointmentViewModel[]>([]);
+  filteredAppointments = signal<AppointmentViewModel[]>([]);
+  paginatedAppointments = signal<AppointmentViewModel[]>([]);
   minBookingDate = signal('');
   bookingErrorMessage = signal('');
   bookingSuccessMessage = signal('');
@@ -35,7 +56,6 @@ export class Appointments implements OnInit {
   dateSearch = '';
 
   pageNumber = signal(1);
-  pageSize = 5;
   totalPages = signal(0);
 
   showBookingModal = signal(false);
@@ -49,13 +69,12 @@ export class Appointments implements OnInit {
   popupVisible = signal(false);
   popupTitle = signal('');
   popupMessage = signal('');
-  popupType = signal<'success' | 'error' | 'warning'>('success');
+  popupType = signal<PopupType>('success');
 
   constructor(private readonly appointmentService: AppointmentService) {}
 
   ngOnInit(): void {
     this.minBookingDate.set(this.getTodayDateString());
-
     this.loadAppointments();
 
     const data = localStorage.getItem('selectedDoctor');
@@ -67,7 +86,11 @@ export class Appointments implements OnInit {
     }
   }
 
-  private showPopup(title: string, message: string, type: 'success' | 'error' | 'warning' = 'success') {
+  getStatusClass(status?: string): string {
+    return this.statusClassMap[status ?? ''] ?? 'pending';
+  }
+
+  private showPopup(title: string, message: string, type: PopupType = 'success') {
     this.popupTitle.set(title);
     this.popupMessage.set(message);
     this.popupType.set(type);
@@ -89,24 +112,34 @@ export class Appointments implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
+  private getDateOnly(value: string | Date | null): Date | null {
+    if (!value) {
+      return null;
+    }
+
+
+  const parsedDate = new Date(value);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return null;
+    }
+
+    parsedDate.setHours(0, 0, 0, 0);
+    return parsedDate;
+  }
+
   private isPastDate(dateValue: string): boolean {
-    const selectedDate = new Date(dateValue);
-    selectedDate.setHours(0, 0, 0, 0);
+    const selectedDate = this.getDateOnly(dateValue);
+    const today = this.getDateOnly(new Date());
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return selectedDate < today;
+    return !!selectedDate && !!today && selectedDate < today;
   }
 
   private isToday(dateValue: string): boolean {
-    const selectedDate = new Date(dateValue);
-    selectedDate.setHours(0, 0, 0, 0);
+    const selectedDate = this.getDateOnly(dateValue);
+    const today = this.getDateOnly(new Date());
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return selectedDate.getTime() === today.getTime();
+    return !!selectedDate && !!today && selectedDate.getTime() === today.getTime();
   }
 
   private convertSlotToDate(timeSlot: string, dateValue: string): Date | null {
@@ -114,13 +147,18 @@ export class Appointments implements OnInit {
       return null;
     }
 
-    const selectedDate = new Date(dateValue);
-    let hours = 0;
-    let minutes = 0;
+    const selectedDate = this.getDateOnly(dateValue);
+
+    if (!selectedDate) {
+      return null;
+    }
 
     const cleanedSlot = timeSlot.trim().toUpperCase();
+    const timeRegex = /^(\d{1,2}):(\d{2})\s?(AM|PM)$/;
+    const twelveHourMatch = timeRegex.exec(cleanedSlot);
 
-    const twelveHourMatch = cleanedSlot.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/);
+    let hours = 0;
+    let minutes = 0;
 
     if (twelveHourMatch) {
       hours = Number(twelveHourMatch[1]);
@@ -135,7 +173,8 @@ export class Appointments implements OnInit {
         hours = 0;
       }
     } else {
-      const twentyFourHourMatch = cleanedSlot.match(/^(\d{1,2}):(\d{2})$/);
+      const twentyFourHourRegex = /^(\d{1,2}):(\d{2})$/;
+      const twentyFourHourMatch = twentyFourHourRegex.exec(cleanedSlot);
 
       if (!twentyFourHourMatch) {
         return null;
@@ -146,7 +185,6 @@ export class Appointments implements OnInit {
     }
 
     selectedDate.setHours(hours, minutes, 0, 0);
-
     return selectedDate;
   }
 
@@ -166,42 +204,33 @@ export class Appointments implements OnInit {
     }
 
     const now = new Date();
-
     return slotDateTime > now;
   }
 
-  loadAppointments() {
-    this.appointmentService.getMyAppointments().subscribe(res => {
-      const appointments = (res || []).map((a: any) => ({
-        ...a,
-        scheduledDate: a.scheduledDate ? new Date(a.scheduledDate) : null
-      }));
-
-      this.allAppointments.set(appointments);
-      this.filteredAppointments.set(appointments);
-      this.updatePagination();
-    });
+  private normalizeAppointments(appointments: AppointmentViewModel[]): AppointmentViewModel[] {
+    return appointments.map((appointment) => ({
+      ...appointment,
+      scheduledDate: appointment.scheduledDate ? new Date(appointment.scheduledDate) : null
+    }));
   }
 
-  filterAppointments() {
-    const filtered = this.allAppointments().filter(a => {
-      const matchName =
-        !this.nameSearch ||
-        a.doctorName?.toLowerCase().includes(this.nameSearch.toLowerCase());
+  private updatePagination() {
+    const totalPages = Math.ceil(this.filteredAppointments().length / this.pageSize);
+    this.totalPages.set(totalPages <= 0 ? 1 : totalPages);
+    this.paginate();
+  }
 
-      const matchStatus =
-        !this.statusFilter || a.status === this.statusFilter;
+  private applyFilters() {
+    const filtered = this.allAppointments().filter((appointment) => {
+      const matchName = !this.nameSearch || appointment.doctorName?.toLowerCase().includes(this.nameSearch.toLowerCase());
+      const matchStatus = !this.statusFilter || appointment.status === this.statusFilter;
 
       let matchDate = true;
 
       if (this.dateSearch) {
-        const selectedDate = new Date(this.dateSearch);
-        selectedDate.setHours(0, 0, 0, 0);
-
-        const appointmentDate = new Date(a.scheduledDate);
-        appointmentDate.setHours(0, 0, 0, 0);
-
-        matchDate = appointmentDate.getTime() === selectedDate.getTime();
+        const selectedDate = this.getDateOnly(this.dateSearch);
+        const appointmentDate = this.getDateOnly(appointment.scheduledDate);
+        matchDate = !!selectedDate && !!appointmentDate && appointmentDate.getTime() === selectedDate.getTime();
       }
 
       return matchName && matchStatus && matchDate;
@@ -212,10 +241,46 @@ export class Appointments implements OnInit {
     this.updatePagination();
   }
 
-  updatePagination() {
-    const totalPages = Math.ceil(this.filteredAppointments().length / this.pageSize);
-    this.totalPages.set(totalPages <= 0 ? 1 : totalPages);
-    this.paginate();
+  private resetBookingState() {
+    this.availableSlots.set([]);
+    this.availabilityMessage.set('');
+    this.isDoctorOnLeave.set(false);
+    this.bookingErrorMessage.set('');
+    this.bookingSuccessMessage.set('');
+  }
+
+  private getBookingValidationError(): string | null {
+    if (this.isDoctorOnLeave()) {
+      return 'Doctor is on leave for selected date.';
+    }
+
+    if (!this.selectedDoctorId || !this.selectedDate || !this.selectedSlot) {
+      return 'Please fill all fields.';
+    }
+
+    if (this.isPastDate(this.selectedDate)) {
+      return 'Previous date appointment booking is not allowed.';
+    }
+
+    if (!this.isFutureSlotForToday(this.selectedSlot)) {
+      return 'Selected time slot has already passed.';
+    }
+
+    return null;
+  }
+
+  loadAppointments() {
+    this.appointmentService.getMyAppointments().subscribe((res) => {
+      const appointments = this.normalizeAppointments((res || []) as AppointmentViewModel[]);
+
+      this.allAppointments.set(appointments);
+      this.filteredAppointments.set(appointments);
+      this.updatePagination();
+    });
+  }
+
+  filterAppointments() {
+    this.applyFilters();
   }
 
   paginate() {
@@ -227,14 +292,14 @@ export class Appointments implements OnInit {
 
   nextPage() {
     if (this.pageNumber() < this.totalPages()) {
-      this.pageNumber.update(value => value + 1);
+      this.pageNumber.update((value) => value + 1);
       this.paginate();
     }
   }
 
   prevPage() {
     if (this.pageNumber() > 1) {
-      this.pageNumber.update(value => value - 1);
+      this.pageNumber.update((value) => value - 1);
       this.paginate();
     }
   }
@@ -243,7 +308,6 @@ export class Appointments implements OnInit {
     this.selectedAppointmentId = id;
     this.cancelReason = '';
     this.showCancelModal.set(true);
-    console.log('Clicked appointment', id);
   }
 
   confirmCancel(): void {
@@ -257,10 +321,7 @@ export class Appointments implements OnInit {
     }
 
     this.appointmentService
-      .cancelAppointment(
-        this.selectedAppointmentId,
-        this.cancelReason
-      )
+      .cancelAppointment(this.selectedAppointmentId, this.cancelReason)
       .subscribe({
         next: () => {
           this.closeCancelModal();
@@ -285,13 +346,7 @@ export class Appointments implements OnInit {
     this.selectedDate = '';
     this.selectedSlot = '';
     this.selectedDoctor = null;
-
-    this.availableSlots.set([]);
-    this.availabilityMessage.set('');
-    this.isDoctorOnLeave.set(false);
-
-    this.bookingErrorMessage.set('');
-    this.bookingSuccessMessage.set('');
+    this.resetBookingState();
 
     localStorage.removeItem('selectedDoctor');
   }
@@ -316,19 +371,13 @@ export class Appointments implements OnInit {
           this.isDoctorOnLeave.set(res.isDoctorOnLeave);
           this.availabilityMessage.set(res.message);
 
-          const slots = res.slots || [];
-
-          this.availableSlots.set(slots.map((slot: DoctorSlot) => {
-            const isFutureSlot = this.isFutureSlotForToday(slot.timeSlot);
-
-            return {
-              ...slot,
-              isAvailable: slot.isAvailable && isFutureSlot,
-              status: !isFutureSlot
-                ? 'Time Passed'
-                : slot.status
-            };
+          const slots = (res.slots || []).map((slot: DoctorSlot) => ({
+            ...slot,
+            isAvailable: slot.isAvailable && this.isFutureSlotForToday(slot.timeSlot),
+            status: slot.status
           }));
+
+          this.availableSlots.set(slots);
 
           if (res.isDoctorOnLeave) {
             this.selectedSlot = '';
@@ -358,23 +407,15 @@ export class Appointments implements OnInit {
     this.bookingErrorMessage.set('');
     this.bookingSuccessMessage.set('');
 
-    if (this.isDoctorOnLeave()) {
-      this.bookingErrorMessage.set('Doctor is on leave for selected date.');
+    const validationError = this.getBookingValidationError();
+
+    if (validationError) {
+      this.bookingErrorMessage.set(validationError);
       return;
     }
 
-    if (!this.selectedDoctorId || !this.selectedDate || !this.selectedSlot) {
-      this.bookingErrorMessage.set('Please fill all fields.');
-      return;
-    }
-
-    if (this.isPastDate(this.selectedDate)) {
-      this.bookingErrorMessage.set('Previous date appointment booking is not allowed.');
-      return;
-    }
-
-    if (!this.isFutureSlotForToday(this.selectedSlot)) {
-      this.bookingErrorMessage.set('Selected time slot has already passed.');
+    if (!this.selectedDoctorId) {
+      this.bookingErrorMessage.set('Please select a doctor before booking.');
       return;
     }
 

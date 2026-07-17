@@ -76,14 +76,7 @@
             <div>
               <h3>{{ a.doctorName }}</h3>
 
-              <span
-                class="status"
-                [ngClass]="{
-                  'pending': a.status === 'Pending',
-                  'confirmed': a.status === 'Confirmed',
-                  'completed': a.status === 'Completed',
-                  'cancelled': a.status === 'Cancelled'
-                }">
+              <span class="status" [ngClass]="getStatusClass(a.status)">
                 {{ a.status }}
               </span>
             </div>

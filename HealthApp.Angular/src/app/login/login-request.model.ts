@@ -6,9 +6,6 @@ import { AuthService } from '../service/auth.service';
 import { LoginResponse } from '../login/login-response.model';
 import { AppPopupComponent } from '../shared/app-popup/app-popup';
 
-
-
-
 export interface LoginRequest {
   email: string;
   password: string;
@@ -31,66 +28,77 @@ export class LoginComponent {
   popupType: 'success' | 'error' | 'warning' = 'success';
 
   constructor(
-    private authService: AuthService,
-    private router: Router
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {}
 
- 
+  login(): void {
+    const data: LoginRequest = {
+      email: this.email,
+      password: this.password
+    };
 
-  login() {
-  const data = {
-    email: this.email,
-    password: this.password
-  };
+    this.authService.login(data).subscribe({
+      next: (res: LoginResponse) => {
 
-  this.authService.login(data).subscribe({
-    next: (res: LoginResponse) => {
+        if (!res.success) {
+          this.showPopup(
+            'Login Failed',
+            res.message || 'Unable to sign in. Please try again.',
+            'error'
+          );
+          return;
+        }
 
-      if (!res.success) {
-        this.showPopup('Login Failed', res.message || 'Unable to sign in. Please try again.', 'error');
-        return;
+        localStorage.setItem('token', res.accessToken);
+        localStorage.setItem('role', res.role);
+
+        switch (res.role) {
+          case 'Admin':
+            globalThis.location.href = 'https://localhost:7002/';
+            break;
+
+          case 'Doctor':
+            this.router.navigate(['/doctor-dashboard']);
+            break;
+
+          case 'User':
+            this.router.navigate(['/patient-dashboard']);
+            break;
+
+          default:
+            this.router.navigate(['/login']);
+            break;
+        }
+      },
+
+      error: (err) => {
+        console.error(err);
+
+        this.showPopup(
+          'Login Failed',
+          'Unable to sign in. Please try again.',
+          'error'
+        );
       }
+    });
+  }
 
-      localStorage.setItem('token', res.accessToken);
-      localStorage.setItem('role', res.role);
-
-      switch (res.role) {
-
-        case 'Admin':
-          window.location.href = 'https://localhost:7002/';
-          break;
-
-        case 'Doctor':
-          this.router.navigate(['/doctor-dashboard']);
-          break;
-
-        case 'User':
-          this.router.navigate(['/patient-dashboard']);
-          break;
-
-        default:
-          this.router.navigate(['/login']);
-      }
-    },
-
-    error: (err) => {
-      console.error(err);
-      this.showPopup('Login Failed', 'Unable to sign in. Please try again.', 'error');
-    }
-  });
-}
-
-  private showPopup(title: string, message: string, type: 'success' | 'error' | 'warning' = 'success') {
+  private showPopup(
+    title: string,
+    message: string,
+    type: 'success' | 'error' | 'warning' = 'success'
+  ): void {
     this.popupTitle = title;
     this.popupMessage = message;
     this.popupType = type;
     this.popupVisible = true;
   }
 
-  closePopup() {
+  closePopup(): void {
     this.popupVisible = false;
     this.popupTitle = '';
     this.popupMessage = '';
+    this.popupType = 'success';
   }
-
 }

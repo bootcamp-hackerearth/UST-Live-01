@@ -1,22 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
 
-namespace HealthApp.Api.Model
+namespace HealthApp.Shared.Dto
 {
-    public class Notification
+    public class NotificationCreateDto
     {
-        [Key]
         public string NotificationId { get; set; } = Guid.NewGuid().ToString();
-        [Required]
         public string UserId { get; set; } = string.Empty;
-        [Required]
         public string Title { get; set; } = string.Empty;
-        [Required]
         public string Message { get; set; } = string.Empty;
-        [Required]
         public string EventType { get; set; } = string.Empty;
-        [Required]
-        public bool IsRead { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

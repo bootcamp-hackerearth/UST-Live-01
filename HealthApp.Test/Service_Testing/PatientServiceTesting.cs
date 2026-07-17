@@ -58,7 +58,7 @@ namespace HealthApp.Test.Service_Testing
         public async Task AddPatientAsync_Should_Throw_When_Patient_Null()
         {
             await Assert.ThrowsAsync<BusinessRuleException>(
-                () => _service.AddPatientAsync(null));
+                () => _service.AddPatientAsync(null!));
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace HealthApp.Test.Service_Testing
                 .Returns(patient);
 
             _repoMock.Setup(x => x.addAsync(patient))
-                .ReturnsAsync((Patient)null);
+                .ReturnsAsync((Patient)null!);
 
             await Assert.ThrowsAsync<BusinessRuleException>(
                 () => _service.AddPatientAsync(dto));
@@ -203,7 +203,7 @@ namespace HealthApp.Test.Service_Testing
         public async Task GetPatientByIdAsync_Should_Throw_NotFound()
         {
             _repoMock.Setup(x => x.getbyidAsync(1))
-                .ReturnsAsync((Patient)null);
+                .ReturnsAsync((Patient)null!);
 
             await Assert.ThrowsAsync<EntityNotFoundException>(
                 () => _service.GetPatientByIdAsync(1));
@@ -237,12 +237,130 @@ namespace HealthApp.Test.Service_Testing
         public async Task GetMyProfileAsync_Should_Throw_Profile_NotFound()
         {
             _repoMock.Setup(x => x.GetByIdentityUserIdAsync("user1"))
-                .ReturnsAsync((Patient)null);
+                .ReturnsAsync((Patient)null!);
 
             await Assert.ThrowsAsync<BusinessRuleException>(
                 () => _service.GetMyProfileAsync("user1"));
         }
+        [Fact]
+        public async Task UpdateMyProfileAsync_Should_Return_Updated_Patient()
+        {
+            var existingPatient = new Patient
+            {
+                PatientId = 1,
+                IdentityUserId = "user1",
+                FullName = "Old",
+                PhoneNumber = "1234567890"
+            };
 
+            var updateDto = new PatientUpdateDto
+            {
+                FullName = "John Doe",
+                PhoneNumber = "9876543210",
+                DateOfBirth = DateTime.Now.AddYears(-20),
+                InsuranceId = "INS001"
+            };
+
+            var updatedPatient = new Patient
+            {
+                PatientId = 1,
+                IdentityUserId = "user1",
+                FullName = updateDto.FullName,
+                PhoneNumber = updateDto.PhoneNumber,
+                DateOfBirth = updateDto.DateOfBirth.Value,
+                InsuranceId = updateDto.InsuranceId
+            };
+
+            var patientDto = new PatientDto
+            {
+                PatientId = 1,
+                FullName = updateDto.FullName
+            };
+
+            _repoMock.Setup(x => x.GetByIdentityUserIdAsync("user1"))
+                .ReturnsAsync(existingPatient);
+
+            _repoMock.Setup(x => x.updateAsync(1, It.IsAny<Patient>()))
+                .ReturnsAsync(updatedPatient);
+
+            _mapperMock.Setup(x => x.Map<PatientDto>(updatedPatient))
+                .Returns(patientDto);
+
+            var result = await _service.UpdateMyProfileAsync("user1", updateDto);
+
+            Assert.NotNull(result);
+            Assert.Equal(1, result.PatientId);
+        }
+        [Fact]
+        public async Task UpdateMyProfileAsync_Should_Throw_Invalid_User()
+        {
+            var dto = new PatientUpdateDto();
+
+            await Assert.ThrowsAsync<BusinessRuleException>(
+                () => _service.UpdateMyProfileAsync("", dto));
+        }
+
+        [Fact]
+        public async Task UpdateMyProfileAsync_Should_Throw_When_Dto_Null()
+        {
+            await Assert.ThrowsAsync<BusinessRuleException>(
+                   () => _service.UpdateMyProfileAsync("user1", null!));
+
+        }
+        [Fact]
+        public async Task UpdateMyProfileAsync_Should_Throw_When_Name_Empty()
+        {
+            var dto = new PatientUpdateDto
+            {
+                FullName = "",
+                PhoneNumber = "9876543210",
+                DateOfBirth = DateTime.Today
+            };
+
+            await Assert.ThrowsAsync<BusinessRuleException>(
+                () => _service.UpdateMyProfileAsync("user1", dto));
+        }
+        [Fact]
+        public async Task UpdateMyProfileAsync_Should_Throw_When_Phone_Empty()
+        {
+            var dto = new PatientUpdateDto
+            {
+                FullName = "John",
+                PhoneNumber = "",
+                DateOfBirth = DateTime.Today
+            };
+
+            await Assert.ThrowsAsync<BusinessRuleException>(
+                () => _service.UpdateMyProfileAsync("user1", dto));
+        }
+        [Fact]
+        public async Task UpdateMyProfileAsync_Should_Throw_When_Dob_Missing()
+        {
+            var dto = new PatientUpdateDto
+            {
+                FullName = "John",
+                PhoneNumber = "9876543210"
+            };
+
+            await Assert.ThrowsAsync<BusinessRuleException>(
+                () => _service.UpdateMyProfileAsync("user1", dto));
+        }
+
+        [Fact]
+        public async Task UpdateMyProfileAsync_Should_Throw_Profile_NotFound()
+        {
+            var dto = new PatientUpdateDto
+            {
+                FullName = "John",
+                PhoneNumber = "9876543210",
+                DateOfBirth = DateTime.Today
+            };
+
+            _repoMock.Setup(x => x.GetByIdentityUserIdAsync("user1"))
+                .ReturnsAsync((Patient)null!);
+            await Assert.ThrowsAsync<BusinessRuleException>(
+                () => _service.UpdateMyProfileAsync("user1", dto));
+        }
         [Fact]
         public async Task UpdateMyProfileAsync_Should_Throw_When_Update_Fails()
         {
@@ -252,6 +370,51 @@ namespace HealthApp.Test.Service_Testing
                 IdentityUserId = "user1"
             };
 
+            var dto = new PatientUpdateDto
+            {
+                FullName = "John",
+                PhoneNumber = "9876543210",
+                DateOfBirth = DateTime.Today
+            };
+
+            _repoMock.Setup(x => x.GetByIdentityUserIdAsync("user1"))
+                .ReturnsAsync(existingPatient);
+
+            _repoMock.Setup(x => x.updateAsync(1, It.IsAny<Patient>()))
+                .ReturnsAsync((Patient)null!);
+
+            await Assert.ThrowsAsync<BusinessRuleException>(
+                () => _service.UpdateMyProfileAsync("user1", dto));
+        }
+        [Fact]
+        public async Task UpdateMyProfileAsync_Should_Set_InsuranceId_Null()
+        {
+            var existingPatient = new Patient
+            {
+                PatientId = 1,
+                IdentityUserId = "user1"
+            };
+
+            var dto = new PatientUpdateDto
+            {
+                FullName = "John",
+                PhoneNumber = "9876543210",
+                DateOfBirth = DateTime.Today,
+                InsuranceId = ""
+            };
+
+            _repoMock.Setup(x => x.GetByIdentityUserIdAsync("user1"))
+                .ReturnsAsync(existingPatient);
+
+            _repoMock.Setup(x => x.updateAsync(1, It.IsAny<Patient>()))
+                .ReturnsAsync(existingPatient);
+
+            _mapperMock.Setup(x => x.Map<PatientDto>(existingPatient))
+                .Returns(new PatientDto());
+
+            await _service.UpdateMyProfileAsync("user1", dto);
+
+            Assert.Null(existingPatient.InsuranceId);
         }
     }
 }

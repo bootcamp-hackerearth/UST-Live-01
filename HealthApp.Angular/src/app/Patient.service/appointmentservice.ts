@@ -2,27 +2,29 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { DoctorAvailabilityResponse } from '../models/appointment/doctor-availability.model';
-import { DoctorSlot } from '../models/appointment/doctor-availability.model';
+import {
+  DoctorAvailabilityResponse,
+  DoctorSlot
+} from '../models/appointment/doctor-availability.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppointmentService {
 
-  private baseUrl = 'http://localhost:5066/api/appointments';
-
+  private readonly baseUrl = 'http://localhost:5066/api/appointments';
 
   availabilityMessage = '';
   isDoctorOnLeave = false;
   showBookingModal = false;
   selectedDoctorId: number | null = null;
-    selectedDate = '';
-    selectedSlot = '';
-    selectedDoctor: any = null;
+  selectedDate = '';
+  selectedSlot = '';
+  selectedDoctor: any = null;
 
-availableSlots: DoctorSlot[] = [];
-  constructor(private http: HttpClient) {}
+  availableSlots: DoctorSlot[] = [];
+
+  constructor(private readonly http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');

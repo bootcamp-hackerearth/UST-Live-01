@@ -1,3 +1,4 @@
+using Elastic.CommonSchema;
 using Elastic.Ingest.Elasticsearch;
 using Elastic.Ingest.Elasticsearch.DataStreams;
 using Elastic.Serilog.Sinks;
@@ -26,28 +27,36 @@ using System.Text.Json;
 
 SelfLog.Enable(msg => Console.Error.WriteLine($"SERILOG ERROR: {msg}"));
 
-Log.Logger = new LoggerConfiguration()
+Serilog.Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
-Log.Information("HealthAxis API is starting up...");
+Serilog.Log.Information("HealthAxis API is starting up...");
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, services, configuration) =>
 {
+
+    var elasticUrl = context.Configuration["Elasticsearch:Url"];
+
     configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .WriteTo.Elasticsearch(
-            new[] { new Uri("http://localhost:9200") },
+            new[] { new Uri(elasticUrl!) },
             opts =>
             {
                 opts.DataStream = new DataStreamName("logs", "healthaxis", "api");
                 opts.BootstrapMethod = BootstrapMethod.Failure;
             });
+
 });
+
+
+
 
 
 
@@ -136,17 +145,19 @@ builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
+builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
-
-builder.Services.AddScoped<IAppointmentEventPublisher, AppointmentEventPublisher>();
-builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
 
+
+builder.Services.AddScoped<IAppointmentEventPublisher, AppointmentEventPublisher>();
 
 
 

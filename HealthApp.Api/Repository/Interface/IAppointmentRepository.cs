@@ -8,7 +8,7 @@ namespace HealthApp.Api.Repository.Interface
 
         Task<List<Appointment>?> GetUpcomingByDoctorAsync(int doctorId, DateTime from, DateTime to);
 
-        Task<List<string>?> GetBookedSlotsAsync(int doctorId, DateTime date);
+        Task<List<string>> GetBookedSlotsAsync(int doctorId, DateTime date);
 
         Task<Appointment?> UpdateStatusAsync(int appointmentId, string status);
 

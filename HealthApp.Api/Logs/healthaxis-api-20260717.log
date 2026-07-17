@@ -1,0 +1,693 @@
+[2026-07-17 23:11:07.098 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis Heartbeat Background Service started.+++++++++++++
+[2026-07-17 23:11:07.699 +05:30 INF] Microsoft.Hosting.Lifetime Now listening on: http://localhost:5066
+[2026-07-17 23:11:07.785 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:11:07.7830080+05:30"------------
+[2026-07-17 23:11:07.972 +05:30 INF] MassTransit Bus started: "rabbitmq://localhost/"
+[2026-07-17 23:11:08.875 +05:30 INF] Microsoft.Hosting.Lifetime Application started. Press Ctrl+C to shut down.
+[2026-07-17 23:11:08.890 +05:30 INF] Microsoft.Hosting.Lifetime Hosting environment: Development
+[2026-07-17 23:11:08.906 +05:30 INF] Microsoft.Hosting.Lifetime Content root path: C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api
+[2026-07-17 23:11:17.884 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:11:17.8846930+05:30"------------
+[2026-07-17 23:11:27.943 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:11:27.9437129+05:30"------------
+[2026-07-17 23:11:37.960 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:11:37.9604236+05:30"------------
+[2026-07-17 23:11:47.966 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:11:47.9667406+05:30"------------
+[2026-07-17 23:11:57.986 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:11:57.9863157+05:30"------------
+[2026-07-17 23:12:07.996 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:12:07.9965948+05:30"------------
+[2026-07-17 23:12:18.015 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:12:18.0149508+05:30"------------
+[2026-07-17 23:12:28.025 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:12:28.0251893+05:30"------------
+[2026-07-17 23:12:38.038 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:12:38.0382611+05:30"------------
+[2026-07-17 23:12:48.063 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:12:48.0626150+05:30"------------
+[2026-07-17 23:12:58.181 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:12:58.1813147+05:30"------------
+[2026-07-17 23:13:08.248 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:13:08.2479660+05:30"------------
+[2026-07-17 23:13:14.067 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 71.9276 ms
+[2026-07-17 23:13:14.200 +05:30 WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware Failed to determine the https port for redirect.
+[2026-07-17 23:13:14.947 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 759.7124 ms
+[2026-07-17 23:13:18.090 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 282.2872 ms
+[2026-07-17 23:13:18.375 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:13:18.3742723+05:30"------------
+[2026-07-17 23:13:27.885 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.5580 ms
+[2026-07-17 23:13:28.393 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:13:28.3931768+05:30"------------
+[2026-07-17 23:13:28.588 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 670.1318 ms
+[2026-07-17 23:13:28.693 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.2120 ms
+[2026-07-17 23:13:28.695 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctors/me responded 204 in 0.1199 ms
+[2026-07-17 23:13:28.696 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctor-leaves/my responded 204 in 0.0862 ms
+[2026-07-17 23:13:29.497 +05:30 WRN] LuckyPennySoftware.AutoMapper.License You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+[2026-07-17 23:13:30.123 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 1364.0097 ms
+[2026-07-17 23:13:30.195 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/me responded 200 in 1402.2860 ms
+[2026-07-17 23:13:30.277 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctor-leaves/my responded 200 in 1468.5668 ms
+[2026-07-17 23:13:36.268 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/29/confirm responded 204 in 0.1253 ms
+[2026-07-17 23:13:36.600 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP PUT /api/appointments/29/confirm responded 200 in 326.7825 ms
+[2026-07-17 23:13:36.607 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.0691 ms
+[2026-07-17 23:13:36.640 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 28.3698 ms
+[2026-07-17 23:13:38.401 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:13:38.4016716+05:30"------------
+[2026-07-17 23:13:48.414 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:13:48.4138897+05:30"------------
+[2026-07-17 23:13:58.424 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:13:58.4245903+05:30"------------
+[2026-07-17 23:14:08.468 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:14:08.4687473+05:30"------------
+[2026-07-17 23:14:14.351 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.2184 ms
+[2026-07-17 23:14:14.563 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 200.2728 ms
+[2026-07-17 23:14:14.627 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.1985 ms
+[2026-07-17 23:14:14.666 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 33.7222 ms
+[2026-07-17 23:14:14.677 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.1229 ms
+[2026-07-17 23:14:14.678 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0675 ms
+[2026-07-17 23:14:14.738 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 52.5267 ms
+[2026-07-17 23:14:14.771 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 84.5505 ms
+[2026-07-17 23:14:18.487 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:14:18.4874737+05:30"------------
+[2026-07-17 23:14:20.652 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.5100 ms
+[2026-07-17 23:14:20.666 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 6.4261 ms
+[2026-07-17 23:14:22.084 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.1058 ms
+[2026-07-17 23:14:22.098 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 8.2503 ms
+[2026-07-17 23:14:22.103 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0988 ms
+[2026-07-17 23:14:22.107 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 3.6448 ms
+[2026-07-17 23:14:22.116 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 8.5771 ms
+[2026-07-17 23:14:28.493 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:14:28.4933915+05:30"------------
+[2026-07-17 23:14:38.508 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:14:38.5086925+05:30"------------
+[2026-07-17 23:14:48.520 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:14:48.5200269+05:30"------------
+[2026-07-17 23:14:58.532 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:14:58.5329110+05:30"------------
+[2026-07-17 23:15:08.544 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:15:08.5446505+05:30"------------
+[2026-07-17 23:15:18.627 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:15:18.6268392+05:30"------------
+[2026-07-17 23:15:28.756 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:15:28.7563405+05:30"------------
+[2026-07-17 23:15:38.766 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:15:38.7666933+05:30"------------
+[2026-07-17 23:15:48.778 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:15:48.7772171+05:30"------------
+[2026-07-17 23:15:58.792 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:15:58.7924216+05:30"------------
+[2026-07-17 23:16:08.802 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:16:08.8022894+05:30"------------
+[2026-07-17 23:16:18.823 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:16:18.8229539+05:30"------------
+[2026-07-17 23:16:28.837 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:16:28.8377709+05:30"------------
+[2026-07-17 23:16:38.844 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:16:38.8443204+05:30"------------
+[2026-07-17 23:16:48.862 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:16:48.8622972+05:30"------------
+[2026-07-17 23:16:58.871 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:16:58.8712446+05:30"------------
+[2026-07-17 23:17:08.890 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:17:08.8902369+05:30"------------
+[2026-07-17 23:17:18.900 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:17:18.9005988+05:30"------------
+[2026-07-17 23:17:28.910 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:17:28.9105902+05:30"------------
+[2026-07-17 23:17:38.925 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:17:38.9257315+05:30"------------
+[2026-07-17 23:17:48.946 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:17:48.9459874+05:30"------------
+[2026-07-17 23:17:58.951 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:17:58.9518593+05:30"------------
+[2026-07-17 23:18:08.958 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:18:08.9584286+05:30"------------
+[2026-07-17 23:18:18.972 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:18:18.9721115+05:30"------------
+[2026-07-17 23:18:28.981 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:18:28.9811579+05:30"------------
+[2026-07-17 23:18:38.992 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:18:38.9922579+05:30"------------
+[2026-07-17 23:18:49.031 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:18:49.0312476+05:30"------------
+[2026-07-17 23:18:59.046 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:18:59.0465055+05:30"------------
+[2026-07-17 23:19:09.062 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:19:09.0627695+05:30"------------
+[2026-07-17 23:19:19.083 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:19:19.0836785+05:30"------------
+[2026-07-17 23:19:29.100 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:19:29.1006942+05:30"------------
+[2026-07-17 23:19:39.119 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:19:39.1192982+05:30"------------
+[2026-07-17 23:19:49.136 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:19:49.1369004+05:30"------------
+[2026-07-17 23:19:59.149 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:19:59.1493657+05:30"------------
+[2026-07-17 23:20:09.168 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:20:09.1684247+05:30"------------
+[2026-07-17 23:20:19.187 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:20:19.1875147+05:30"------------
+[2026-07-17 23:20:29.201 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:20:29.2013025+05:30"------------
+[2026-07-17 23:20:39.238 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:20:39.2389428+05:30"------------
+[2026-07-17 23:20:49.248 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:20:49.2485591+05:30"------------
+[2026-07-17 23:20:59.266 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:20:59.2665744+05:30"------------
+[2026-07-17 23:21:09.286 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:21:09.2861755+05:30"------------
+[2026-07-17 23:21:19.305 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:21:19.3052446+05:30"------------
+[2026-07-17 23:21:29.321 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:21:29.3219766+05:30"------------
+[2026-07-17 23:21:39.331 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:21:39.3311412+05:30"------------
+[2026-07-17 23:21:49.340 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:21:49.3409659+05:30"------------
+[2026-07-17 23:21:59.352 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:21:59.3524780+05:30"------------
+[2026-07-17 23:22:09.360 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:22:09.3603400+05:30"------------
+[2026-07-17 23:22:19.377 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:22:19.3773001+05:30"------------
+[2026-07-17 23:22:29.398 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:22:29.3980577+05:30"------------
+[2026-07-17 23:22:39.407 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:22:39.4071632+05:30"------------
+[2026-07-17 23:22:49.425 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:22:49.4255445+05:30"------------
+[2026-07-17 23:22:59.527 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:22:59.5276774+05:30"------------
+[2026-07-17 23:23:09.547 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:23:09.5471871+05:30"------------
+[2026-07-17 23:23:19.561 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:23:19.5613292+05:30"------------
+[2026-07-17 23:23:29.566 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:23:29.5663646+05:30"------------
+[2026-07-17 23:23:39.577 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:23:39.5771287+05:30"------------
+[2026-07-17 23:23:49.594 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:23:49.5945888+05:30"------------
+[2026-07-17 23:23:59.611 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:23:59.6111739+05:30"------------
+[2026-07-17 23:24:09.620 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:24:09.6200907+05:30"------------
+[2026-07-17 23:24:12.068 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.1845 ms
+[2026-07-17 23:24:12.297 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 224.2608 ms
+[2026-07-17 23:24:12.304 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0863 ms
+[2026-07-17 23:24:12.305 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0480 ms
+[2026-07-17 23:24:12.325 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 17.6488 ms
+[2026-07-17 23:24:12.606 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 297.1199 ms
+[2026-07-17 23:24:19.640 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:24:19.6403848+05:30"------------
+[2026-07-17 23:24:28.591 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.1492 ms
+[2026-07-17 23:24:28.604 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 7.4245 ms
+[2026-07-17 23:24:28.612 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0909 ms
+[2026-07-17 23:24:28.612 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0401 ms
+[2026-07-17 23:24:28.624 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 7.5383 ms
+[2026-07-17 23:24:28.626 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 9.3515 ms
+[2026-07-17 23:24:29.658 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:24:29.6588497+05:30"------------
+[2026-07-17 23:24:39.671 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:24:39.6719312+05:30"------------
+[2026-07-17 23:24:46.033 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.1858 ms
+[2026-07-17 23:24:46.056 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 6.4952 ms
+[2026-07-17 23:24:46.079 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0750 ms
+[2026-07-17 23:24:46.080 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0434 ms
+[2026-07-17 23:24:46.092 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 9.2434 ms
+[2026-07-17 23:24:46.096 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 9.2749 ms
+[2026-07-17 23:24:49.688 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:24:49.6888512+05:30"------------
+[2026-07-17 23:24:59.698 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:24:59.6981249+05:30"------------
+[2026-07-17 23:25:09.714 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:25:09.7148288+05:30"------------
+[2026-07-17 23:25:09.930 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.4873 ms
+[2026-07-17 23:25:09.960 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 21.8368 ms
+[2026-07-17 23:25:09.968 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0574 ms
+[2026-07-17 23:25:09.968 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0346 ms
+[2026-07-17 23:25:09.987 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 14.2152 ms
+[2026-07-17 23:25:09.991 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 19.4715 ms
+[2026-07-17 23:25:19.745 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:25:19.7450415+05:30"------------
+[2026-07-17 23:25:29.766 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:25:29.7668983+05:30"------------
+[2026-07-17 23:25:39.778 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:25:39.7780569+05:30"------------
+[2026-07-17 23:25:40.095 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0928 ms
+[2026-07-17 23:25:40.135 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 19.6355 ms
+[2026-07-17 23:25:40.176 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0706 ms
+[2026-07-17 23:25:40.176 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0081 ms
+[2026-07-17 23:25:40.232 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 42.2173 ms
+[2026-07-17 23:25:40.233 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 43.5762 ms
+[2026-07-17 23:25:49.791 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:25:49.7919253+05:30"------------
+[2026-07-17 23:25:59.798 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:25:59.7987721+05:30"------------
+[2026-07-17 23:26:09.809 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:26:09.8094047+05:30"------------
+[2026-07-17 23:26:19.815 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:26:19.8155356+05:30"------------
+[2026-07-17 23:26:29.822 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:26:29.8229402+05:30"------------
+[2026-07-17 23:26:39.845 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:26:39.8456598+05:30"------------
+[2026-07-17 23:26:42.987 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.1379 ms
+[2026-07-17 23:26:43.007 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 8.7892 ms
+[2026-07-17 23:26:43.016 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0811 ms
+[2026-07-17 23:26:43.016 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0321 ms
+[2026-07-17 23:26:43.030 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 9.6442 ms
+[2026-07-17 23:26:43.030 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 11.3624 ms
+[2026-07-17 23:26:49.864 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:26:49.8648544+05:30"------------
+[2026-07-17 23:26:59.887 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:26:59.8878648+05:30"------------
+[2026-07-17 23:27:02.626 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0533 ms
+[2026-07-17 23:27:02.763 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 133.6663 ms
+[2026-07-17 23:27:02.802 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0359 ms
+[2026-07-17 23:27:02.810 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 2.7685 ms
+[2026-07-17 23:27:02.828 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0440 ms
+[2026-07-17 23:27:02.829 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0329 ms
+[2026-07-17 23:27:02.842 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 7.0089 ms
+[2026-07-17 23:27:02.845 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 8.3449 ms
+[2026-07-17 23:27:09.910 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:27:09.9101021+05:30"------------
+[2026-07-17 23:27:19.923 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:27:19.9231022+05:30"------------
+[2026-07-17 23:28:05.449 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis Heartbeat Background Service started.+++++++++++++
+[2026-07-17 23:28:05.644 +05:30 INF] Microsoft.Hosting.Lifetime Now listening on: http://localhost:5066
+[2026-07-17 23:28:05.687 +05:30 INF] MassTransit Bus started: "rabbitmq://localhost/"
+[2026-07-17 23:28:05.711 +05:30 INF] Microsoft.Hosting.Lifetime Application started. Press Ctrl+C to shut down.
+[2026-07-17 23:28:05.713 +05:30 INF] Microsoft.Hosting.Lifetime Hosting environment: Development
+[2026-07-17 23:28:05.715 +05:30 INF] Microsoft.Hosting.Lifetime Content root path: C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api
+[2026-07-17 23:28:06.016 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:28:06.0160764+05:30"------------
+[2026-07-17 23:28:16.029 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:28:16.0291777+05:30"------------
+[2026-07-17 23:28:20.167 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 22.3487 ms
+[2026-07-17 23:28:20.218 +05:30 WRN] Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware Failed to determine the https port for redirect.
+[2026-07-17 23:28:20.734 +05:30 WRN] LuckyPennySoftware.AutoMapper.License You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+[2026-07-17 23:28:20.941 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 733.8654 ms
+[2026-07-17 23:28:20.951 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.5758 ms
+[2026-07-17 23:28:20.951 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.3281 ms
+[2026-07-17 23:28:21.290 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 331.6966 ms
+[2026-07-17 23:28:21.466 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 508.7290 ms
+[2026-07-17 23:28:26.045 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:28:26.0452051+05:30"------------
+[2026-07-17 23:28:27.853 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.1244 ms
+[2026-07-17 23:28:27.887 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 28.0162 ms
+[2026-07-17 23:28:27.892 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.1263 ms
+[2026-07-17 23:28:27.892 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0538 ms
+[2026-07-17 23:28:27.915 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 15.8476 ms
+[2026-07-17 23:28:27.916 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 19.9385 ms
+[2026-07-17 23:28:36.064 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:28:36.0647298+05:30"------------
+[2026-07-17 23:28:46.086 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:28:46.0860712+05:30"------------
+[2026-07-17 23:28:56.106 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:28:56.1059621+05:30"------------
+[2026-07-17 23:28:57.363 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.1207 ms
+[2026-07-17 23:28:57.694 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 324.2355 ms
+[2026-07-17 23:28:57.714 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.1016 ms
+[2026-07-17 23:28:57.714 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctors/me responded 204 in 0.0613 ms
+[2026-07-17 23:28:57.719 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctor-leaves/my responded 204 in 0.1406 ms
+[2026-07-17 23:28:57.776 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 52.5661 ms
+[2026-07-17 23:28:57.798 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctor-leaves/my responded 200 in 72.1497 ms
+[2026-07-17 23:28:57.988 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/me responded 200 in 262.9743 ms
+[2026-07-17 23:29:06.120 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:29:06.1203823+05:30"------------
+[2026-07-17 23:29:10.716 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.2374 ms
+[2026-07-17 23:29:10.841 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 120.2585 ms
+[2026-07-17 23:29:10.855 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.1069 ms
+[2026-07-17 23:29:10.863 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 4.2586 ms
+[2026-07-17 23:29:10.872 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.2251 ms
+[2026-07-17 23:29:10.872 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.2993 ms
+[2026-07-17 23:29:10.881 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 4.8051 ms
+[2026-07-17 23:29:10.881 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 3.6057 ms
+[2026-07-17 23:29:16.134 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:29:16.1347506+05:30"------------
+[2026-07-17 23:29:26.149 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:29:26.1497948+05:30"------------
+[2026-07-17 23:29:36.163 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:29:36.1635347+05:30"------------
+[2026-07-17 23:29:42.513 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.1200 ms
+[2026-07-17 23:29:42.543 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 19.5123 ms
+[2026-07-17 23:29:46.181 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:29:46.1812886+05:30"------------
+[2026-07-17 23:29:56.194 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:29:56.1943238+05:30"------------
+[2026-07-17 23:29:57.732 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.1283 ms
+[2026-07-17 23:29:57.744 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 4.6675 ms
+[2026-07-17 23:29:57.753 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.2512 ms
+[2026-07-17 23:29:57.753 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0486 ms
+[2026-07-17 23:29:57.761 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 4.2244 ms
+[2026-07-17 23:29:57.769 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 10.6217 ms
+[2026-07-17 23:30:06.215 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:30:06.2157103+05:30"------------
+[2026-07-17 23:30:16.221 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:30:16.2215140+05:30"------------
+[2026-07-17 23:30:20.383 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctors/activedoctors responded 204 in 0.1412 ms
+[2026-07-17 23:30:22.981 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.1139 ms
+[2026-07-17 23:30:23.001 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 13.2300 ms
+[2026-07-17 23:30:26.232 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:30:26.2325825+05:30"------------
+[2026-07-17 23:30:51.705 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:30:51.7057625+05:30"------------
+[2026-07-17 23:30:51.770 +05:30 ERR] HealthApp.Api.Middleware.GlobalExceptionHandler An unexpected Error Occured : The message timed out in the backlog attempting to send because no connection became available (5000ms) - Last Connection Exception: It was not possible to connect to the redis server(s). ConnectTimeout, command=HMGET, timeout: 5000, inst: 0, qu: 0, qs: 0, aw: False, bw: CheckingForTimeout, rs: NotStarted, ws: Idle, in: 0, last-in: 0, cur-in: 0, sync-ops: 0, async-ops: 1, serverEndpoint: localhost:6379, conn-sec: n/a, aoc: 0, mc: 1/1/0, mgr: 10 of 10 available, clientName: 137Q7R3(SE.Redis-v2.7.27.49176), IOCP: (Busy=0,Free=1000,Min=1,Max=1000), WORKER: (Busy=0,Free=32767,Min=8,Max=32767), POOL: (Threads=5,QueuedItems=0,CompletedItems=977,Timers=14), v: 2.7.27.49176 (Please take a look at this article for some common client-side issues that can cause timeouts: https://stackexchange.github.io/StackExchange.Redis/Timeouts)
+StackExchange.Redis.RedisConnectionException: The message timed out in the backlog attempting to send because no connection became available (5000ms) - Last Connection Exception: It was not possible to connect to the redis server(s). ConnectTimeout, command=HMGET, timeout: 5000, inst: 0, qu: 0, qs: 0, aw: False, bw: CheckingForTimeout, rs: NotStarted, ws: Idle, in: 0, last-in: 0, cur-in: 0, sync-ops: 0, async-ops: 1, serverEndpoint: localhost:6379, conn-sec: n/a, aoc: 0, mc: 1/1/0, mgr: 10 of 10 available, clientName: 137Q7R3(SE.Redis-v2.7.27.49176), IOCP: (Busy=0,Free=1000,Min=1,Max=1000), WORKER: (Busy=0,Free=32767,Min=8,Max=32767), POOL: (Threads=5,QueuedItems=0,CompletedItems=977,Timers=14), v: 2.7.27.49176 (Please take a look at this article for some common client-side issues that can cause timeouts: https://stackexchange.github.io/StackExchange.Redis/Timeouts)
+ ---> StackExchange.Redis.RedisConnectionException: It was not possible to connect to the redis server(s). ConnectTimeout
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache.GetAndRefreshAsync(String key, Boolean getData, CancellationToken token)
+   at Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache.GetAsync(String key, CancellationToken token)
+   at Microsoft.Extensions.Caching.Distributed.DistributedCacheExtensions.GetStringAsync(IDistributedCache cache, String key, CancellationToken token)
+   at HealthApp.Api.Service.Impl.DoctorService.GetPagedActiveDoctorsAsync(Int32 pageNumber, Int32 pageSize) in C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api\Service\Impl\DoctorService.cs:line 215
+   at HealthApp.Api.Controllers.DoctorApiController.GetActiveDoctors(Int32 pageNumber, Int32 pageSize) in C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api\Controllers\DoctorApiController.cs:line 105
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddlewareImpl.<Invoke>g__Awaited|10_0(ExceptionHandlerMiddlewareImpl middleware, HttpContext context, Task task)
+[2026-07-17 23:30:51.828 +05:30 ERR] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/activedoctors responded 500 in 31435.5790 ms
+[2026-07-17 23:31:01.772 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:31:01.7725958+05:30"------------
+[2026-07-17 23:31:11.791 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:31:11.7912756+05:30"------------
+[2026-07-17 23:31:21.808 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:31:21.8083949+05:30"------------
+[2026-07-17 23:31:31.826 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:31:31.8265135+05:30"------------
+[2026-07-17 23:31:41.843 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:31:41.8435517+05:30"------------
+[2026-07-17 23:31:51.865 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:31:51.8653013+05:30"------------
+[2026-07-17 23:32:01.881 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:32:01.8810312+05:30"------------
+[2026-07-17 23:32:11.890 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:32:11.8902431+05:30"------------
+[2026-07-17 23:32:21.908 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:32:21.9086376+05:30"------------
+[2026-07-17 23:32:31.916 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:32:31.9167412+05:30"------------
+[2026-07-17 23:32:41.924 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:32:41.9243224+05:30"------------
+[2026-07-17 23:32:51.933 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:32:51.9333106+05:30"------------
+[2026-07-17 23:33:01.941 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:33:01.9417340+05:30"------------
+[2026-07-17 23:33:11.946 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:33:11.9468540+05:30"------------
+[2026-07-17 23:33:21.953 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:33:21.9538626+05:30"------------
+[2026-07-17 23:33:24.162 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0858 ms
+[2026-07-17 23:33:24.189 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 20.9771 ms
+[2026-07-17 23:33:31.971 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:33:31.9711119+05:30"------------
+[2026-07-17 23:33:41.986 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:33:41.9861683+05:30"------------
+[2026-07-17 23:33:51.996 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:33:51.9960777+05:30"------------
+[2026-07-17 23:34:02.011 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:34:02.0113870+05:30"------------
+[2026-07-17 23:34:12.031 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:34:12.0315105+05:30"------------
+[2026-07-17 23:34:15.073 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.1307 ms
+[2026-07-17 23:34:15.101 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 18.7015 ms
+[2026-07-17 23:34:22.045 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:34:22.0450615+05:30"------------
+[2026-07-17 23:34:32.054 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:34:32.0541809+05:30"------------
+[2026-07-17 23:34:42.067 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:34:42.0670721+05:30"------------
+[2026-07-17 23:34:52.078 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:34:52.0781109+05:30"------------
+[2026-07-17 23:35:02.097 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:35:02.0977770+05:30"------------
+[2026-07-17 23:35:09.862 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0816 ms
+[2026-07-17 23:35:09.979 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 109.6362 ms
+[2026-07-17 23:35:12.109 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:35:12.1098027+05:30"------------
+[2026-07-17 23:35:12.885 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 98.3549 ms
+[2026-07-17 23:35:19.704 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.1010 ms
+[2026-07-17 23:35:19.920 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 211.4198 ms
+[2026-07-17 23:35:19.942 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.0831 ms
+[2026-07-17 23:35:19.944 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctors/me responded 204 in 0.0582 ms
+[2026-07-17 23:35:19.944 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctor-leaves/my responded 204 in 0.0236 ms
+[2026-07-17 23:35:19.984 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/me responded 200 in 32.4478 ms
+[2026-07-17 23:35:19.992 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctor-leaves/my responded 200 in 34.8167 ms
+[2026-07-17 23:35:20.194 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 246.1946 ms
+[2026-07-17 23:35:22.123 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:35:22.1233146+05:30"------------
+[2026-07-17 23:35:25.446 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.2142 ms
+[2026-07-17 23:35:25.456 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 4.1467 ms
+[2026-07-17 23:35:32.139 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:35:32.1391671+05:30"------------
+[2026-07-17 23:35:42.155 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:35:42.1558145+05:30"------------
+[2026-07-17 23:35:51.176 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/9/confirm responded 204 in 0.0770 ms
+[2026-07-17 23:35:51.518 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP PUT /api/appointments/9/confirm responded 200 in 335.6403 ms
+[2026-07-17 23:35:51.524 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.0373 ms
+[2026-07-17 23:35:51.530 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 3.1178 ms
+[2026-07-17 23:35:52.173 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:35:52.1732546+05:30"------------
+[2026-07-17 23:36:02.188 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:36:02.1884635+05:30"------------
+[2026-07-17 23:36:12.208 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:36:12.2079711+05:30"------------
+[2026-07-17 23:36:13.880 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0422 ms
+[2026-07-17 23:36:13.978 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 93.8253 ms
+[2026-07-17 23:36:13.997 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0659 ms
+[2026-07-17 23:36:14.012 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 10.3523 ms
+[2026-07-17 23:36:14.018 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0972 ms
+[2026-07-17 23:36:14.019 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0389 ms
+[2026-07-17 23:36:14.041 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 11.3510 ms
+[2026-07-17 23:36:14.043 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 14.5780 ms
+[2026-07-17 23:36:17.727 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 19.5006 ms
+[2026-07-17 23:36:22.218 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:36:22.2183570+05:30"------------
+[2026-07-17 23:36:32.242 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:36:32.2422899+05:30"------------
+[2026-07-17 23:36:42.264 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:36:42.2641157+05:30"------------
+[2026-07-17 23:36:52.270 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:36:52.2705076+05:30"------------
+[2026-07-17 23:37:02.281 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:37:02.2815446+05:30"------------
+[2026-07-17 23:37:12.287 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:37:12.2873608+05:30"------------
+[2026-07-17 23:37:22.298 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:37:22.2983799+05:30"------------
+[2026-07-17 23:37:32.317 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:37:32.3179167+05:30"------------
+[2026-07-17 23:37:42.337 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:37:42.3365783+05:30"------------
+[2026-07-17 23:37:52.350 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:37:52.3501522+05:30"------------
+[2026-07-17 23:37:58.413 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0638 ms
+[2026-07-17 23:37:58.539 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 120.3567 ms
+[2026-07-17 23:37:58.570 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.0431 ms
+[2026-07-17 23:37:58.574 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctors/me responded 204 in 0.0457 ms
+[2026-07-17 23:37:58.575 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctor-leaves/my responded 204 in 0.0307 ms
+[2026-07-17 23:37:58.646 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 48.1640 ms
+[2026-07-17 23:37:58.794 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/me responded 200 in 4.0254 ms
+[2026-07-17 23:37:58.895 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctor-leaves/my responded 200 in 26.4838 ms
+[2026-07-17 23:38:02.366 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:38:02.3664337+05:30"------------
+[2026-07-17 23:38:08.249 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/29/complete responded 204 in 0.0671 ms
+[2026-07-17 23:38:08.282 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP PUT /api/appointments/29/complete responded 200 in 28.6145 ms
+[2026-07-17 23:38:08.287 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.0286 ms
+[2026-07-17 23:38:08.292 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 2.3718 ms
+[2026-07-17 23:38:12.373 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:38:12.3733319+05:30"------------
+[2026-07-17 23:38:22.389 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:38:22.3893854+05:30"------------
+[2026-07-17 23:38:22.677 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.0508 ms
+[2026-07-17 23:38:22.677 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctors/me responded 204 in 0.0474 ms
+[2026-07-17 23:38:22.677 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctor-leaves/my responded 204 in 0.0209 ms
+[2026-07-17 23:38:22.747 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/me responded 200 in 64.3876 ms
+[2026-07-17 23:38:22.749 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 67.1676 ms
+[2026-07-17 23:38:22.761 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctor-leaves/my responded 200 in 64.5170 ms
+[2026-07-17 23:38:29.292 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/22/confirm responded 204 in 0.0792 ms
+[2026-07-17 23:38:29.323 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP PUT /api/appointments/22/confirm responded 200 in 26.4201 ms
+[2026-07-17 23:38:29.327 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.0279 ms
+[2026-07-17 23:38:29.341 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 10.6296 ms
+[2026-07-17 23:38:32.397 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:38:32.3971955+05:30"------------
+[2026-07-17 23:38:42.410 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:38:42.4106856+05:30"------------
+[2026-07-17 23:38:52.417 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:38:52.4174906+05:30"------------
+[2026-07-17 23:39:02.426 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:39:02.4262356+05:30"------------
+[2026-07-17 23:39:05.060 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0316 ms
+[2026-07-17 23:39:05.174 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 110.1624 ms
+[2026-07-17 23:39:05.186 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0545 ms
+[2026-07-17 23:39:05.198 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 5.7496 ms
+[2026-07-17 23:39:05.203 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0423 ms
+[2026-07-17 23:39:05.203 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0255 ms
+[2026-07-17 23:39:05.222 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 14.3025 ms
+[2026-07-17 23:39:05.225 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 10.4839 ms
+[2026-07-17 23:39:09.156 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctors/activedoctors responded 204 in 0.0652 ms
+[2026-07-17 23:39:09.747 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 4.9563 ms
+[2026-07-17 23:39:12.440 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:39:12.4405827+05:30"------------
+[2026-07-17 23:39:17.150 +05:30 ERR] HealthApp.Api.Middleware.GlobalExceptionHandler An unexpected Error Occured : The message timed out in the backlog attempting to send because no connection became available (5000ms) - Last Connection Exception: It was not possible to connect to the redis server(s). ConnectTimeout, command=HMGET, timeout: 5000, inst: 0, qu: 0, qs: 0, aw: False, bw: CheckingForTimeout, rs: NotStarted, ws: Initializing, in: 0, last-in: 0, cur-in: 0, sync-ops: 0, async-ops: 2, serverEndpoint: localhost:6379, conn-sec: n/a, aoc: 0, mc: 1/1/0, mgr: 10 of 10 available, clientName: 137Q7R3(SE.Redis-v2.7.27.49176), IOCP: (Busy=0,Free=1000,Min=1,Max=1000), WORKER: (Busy=0,Free=32767,Min=8,Max=32767), POOL: (Threads=5,QueuedItems=0,CompletedItems=5116,Timers=20), v: 2.7.27.49176 (Please take a look at this article for some common client-side issues that can cause timeouts: https://stackexchange.github.io/StackExchange.Redis/Timeouts)
+StackExchange.Redis.RedisConnectionException: The message timed out in the backlog attempting to send because no connection became available (5000ms) - Last Connection Exception: It was not possible to connect to the redis server(s). ConnectTimeout, command=HMGET, timeout: 5000, inst: 0, qu: 0, qs: 0, aw: False, bw: CheckingForTimeout, rs: NotStarted, ws: Initializing, in: 0, last-in: 0, cur-in: 0, sync-ops: 0, async-ops: 2, serverEndpoint: localhost:6379, conn-sec: n/a, aoc: 0, mc: 1/1/0, mgr: 10 of 10 available, clientName: 137Q7R3(SE.Redis-v2.7.27.49176), IOCP: (Busy=0,Free=1000,Min=1,Max=1000), WORKER: (Busy=0,Free=32767,Min=8,Max=32767), POOL: (Threads=5,QueuedItems=0,CompletedItems=5116,Timers=20), v: 2.7.27.49176 (Please take a look at this article for some common client-side issues that can cause timeouts: https://stackexchange.github.io/StackExchange.Redis/Timeouts)
+ ---> StackExchange.Redis.RedisConnectionException: It was not possible to connect to the redis server(s). ConnectTimeout
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache.GetAndRefreshAsync(String key, Boolean getData, CancellationToken token)
+   at Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache.GetAsync(String key, CancellationToken token)
+   at Microsoft.Extensions.Caching.Distributed.DistributedCacheExtensions.GetStringAsync(IDistributedCache cache, String key, CancellationToken token)
+   at HealthApp.Api.Service.Impl.DoctorService.GetPagedActiveDoctorsAsync(Int32 pageNumber, Int32 pageSize) in C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api\Service\Impl\DoctorService.cs:line 215
+   at HealthApp.Api.Controllers.DoctorApiController.GetActiveDoctors(Int32 pageNumber, Int32 pageSize) in C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api\Controllers\DoctorApiController.cs:line 105
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddlewareImpl.<Invoke>g__Awaited|10_0(ExceptionHandlerMiddlewareImpl middleware, HttpContext context, Task task)
+[2026-07-17 23:39:17.159 +05:30 ERR] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/activedoctors responded 500 in 7997.0681 ms
+[2026-07-17 23:39:22.456 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:39:22.4567396+05:30"------------
+[2026-07-17 23:39:32.460 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:39:32.4606412+05:30"------------
+[2026-07-17 23:39:42.475 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:39:42.4755228+05:30"------------
+[2026-07-17 23:39:52.497 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:39:52.4975387+05:30"------------
+[2026-07-17 23:40:02.507 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:40:02.5071443+05:30"------------
+[2026-07-17 23:40:12.518 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:40:12.5180988+05:30"------------
+[2026-07-17 23:40:22.529 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:40:22.5293970+05:30"------------
+[2026-07-17 23:40:32.541 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:40:32.5410478+05:30"------------
+[2026-07-17 23:40:42.557 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:40:42.5578391+05:30"------------
+[2026-07-17 23:40:52.576 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:40:52.5769534+05:30"------------
+[2026-07-17 23:41:02.592 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:41:02.5928226+05:30"------------
+[2026-07-17 23:41:12.612 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:41:12.6125362+05:30"------------
+[2026-07-17 23:41:22.626 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:41:22.6267505+05:30"------------
+[2026-07-17 23:41:32.644 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:41:32.6443106+05:30"------------
+[2026-07-17 23:41:42.659 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:41:42.6594423+05:30"------------
+[2026-07-17 23:41:52.677 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:41:52.6777233+05:30"------------
+[2026-07-17 23:42:02.695 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:42:02.6958998+05:30"------------
+[2026-07-17 23:42:12.706 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:42:12.7064285+05:30"------------
+[2026-07-17 23:42:22.714 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:42:22.7145062+05:30"------------
+[2026-07-17 23:42:32.731 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:42:32.7318288+05:30"------------
+[2026-07-17 23:42:42.735 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:42:42.7357612+05:30"------------
+[2026-07-17 23:42:52.751 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:42:52.7512105+05:30"------------
+[2026-07-17 23:43:02.761 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:43:02.7618094+05:30"------------
+[2026-07-17 23:43:12.781 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:43:12.7817837+05:30"------------
+[2026-07-17 23:43:22.799 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:43:22.7991487+05:30"------------
+[2026-07-17 23:43:32.816 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:43:32.8165767+05:30"------------
+[2026-07-17 23:43:42.822 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:43:42.8220526+05:30"------------
+[2026-07-17 23:43:52.827 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:43:52.8273043+05:30"------------
+[2026-07-17 23:44:02.835 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:44:02.8358501+05:30"------------
+[2026-07-17 23:44:12.841 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:44:12.8413872+05:30"------------
+[2026-07-17 23:44:18.245 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0864 ms
+[2026-07-17 23:44:18.539 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 281.4093 ms
+[2026-07-17 23:44:22.848 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:44:22.8485725+05:30"------------
+[2026-07-17 23:44:32.865 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:44:32.8656144+05:30"------------
+[2026-07-17 23:44:42.871 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:44:42.8716807+05:30"------------
+[2026-07-17 23:44:45.124 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0440 ms
+[2026-07-17 23:44:45.137 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 5.6728 ms
+[2026-07-17 23:44:52.893 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:44:52.8930463+05:30"------------
+[2026-07-17 23:45:02.899 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:45:02.8991229+05:30"------------
+[2026-07-17 23:45:12.918 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:45:12.9181312+05:30"------------
+[2026-07-17 23:45:13.377 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0528 ms
+[2026-07-17 23:45:13.401 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 15.9223 ms
+[2026-07-17 23:45:22.935 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:45:22.9349314+05:30"------------
+[2026-07-17 23:45:32.939 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:45:32.9392922+05:30"------------
+[2026-07-17 23:45:42.153 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0478 ms
+[2026-07-17 23:45:42.166 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 5.2231 ms
+[2026-07-17 23:45:42.948 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:45:42.9487705+05:30"------------
+[2026-07-17 23:45:52.962 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:45:52.9627659+05:30"------------
+[2026-07-17 23:46:02.972 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:46:02.9719938+05:30"------------
+[2026-07-17 23:46:12.985 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:46:12.9851534+05:30"------------
+[2026-07-17 23:46:23.001 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:46:23.0019712+05:30"------------
+[2026-07-17 23:46:33.006 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:46:33.0067649+05:30"------------
+[2026-07-17 23:46:43.018 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:46:43.0186784+05:30"------------
+[2026-07-17 23:46:53.025 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:46:53.0251264+05:30"------------
+[2026-07-17 23:47:03.040 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:47:03.0407910+05:30"------------
+[2026-07-17 23:47:13.057 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:47:13.0578822+05:30"------------
+[2026-07-17 23:47:23.064 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:47:23.0640346+05:30"------------
+[2026-07-17 23:47:33.078 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:47:33.0784758+05:30"------------
+[2026-07-17 23:47:43.083 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:47:43.0834787+05:30"------------
+[2026-07-17 23:47:53.096 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:47:53.0960890+05:30"------------
+[2026-07-17 23:48:03.107 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:48:03.1072267+05:30"------------
+[2026-07-17 23:48:13.114 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:48:13.1149404+05:30"------------
+[2026-07-17 23:48:23.128 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:48:23.1285576+05:30"------------
+[2026-07-17 23:48:33.138 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:48:33.1386895+05:30"------------
+[2026-07-17 23:48:40.857 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0921 ms
+[2026-07-17 23:48:40.955 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 92.0938 ms
+[2026-07-17 23:48:40.974 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0502 ms
+[2026-07-17 23:48:40.975 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/my-unread responded 204 in 0.0445 ms
+[2026-07-17 23:48:40.984 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 5.9510 ms
+[2026-07-17 23:48:40.991 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0496 ms
+[2026-07-17 23:48:40.994 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0494 ms
+[2026-07-17 23:48:41.007 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 11.5271 ms
+[2026-07-17 23:48:41.051 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 71.2050 ms
+[2026-07-17 23:48:41.188 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 191.2224 ms
+[2026-07-17 23:48:43.143 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:48:43.1435927+05:30"------------
+[2026-07-17 23:48:49.675 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0341 ms
+[2026-07-17 23:48:49.676 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/my-unread responded 204 in 0.0094 ms
+[2026-07-17 23:48:49.683 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 3.2953 ms
+[2026-07-17 23:48:49.690 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 7.9997 ms
+[2026-07-17 23:48:49.696 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0661 ms
+[2026-07-17 23:48:49.697 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0329 ms
+[2026-07-17 23:48:49.707 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 6.8662 ms
+[2026-07-17 23:48:49.708 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 2.4669 ms
+[2026-07-17 23:48:52.342 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/bed91321-565e-4e2c-a92f-f2ee301afce4/read responded 204 in 0.0616 ms
+[2026-07-17 23:48:52.406 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP PUT /api/notifications/bed91321-565e-4e2c-a92f-f2ee301afce4/read responded 200 in 56.6334 ms
+[2026-07-17 23:48:53.159 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:48:53.1593503+05:30"------------
+[2026-07-17 23:49:01.052 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0583 ms
+[2026-07-17 23:49:01.053 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/my-unread responded 204 in 0.5663 ms
+[2026-07-17 23:49:01.066 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 7.3740 ms
+[2026-07-17 23:49:01.067 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 9.0232 ms
+[2026-07-17 23:49:01.080 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0365 ms
+[2026-07-17 23:49:01.081 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0178 ms
+[2026-07-17 23:49:01.090 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 4.7259 ms
+[2026-07-17 23:49:01.090 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 7.3335 ms
+[2026-07-17 23:49:02.098 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/59896da8-3d72-4758-925e-c05035984e4f/read responded 204 in 0.0385 ms
+[2026-07-17 23:49:02.116 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP PUT /api/notifications/59896da8-3d72-4758-925e-c05035984e4f/read responded 200 in 7.9201 ms
+[2026-07-17 23:49:03.172 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:49:03.1722312+05:30"------------
+[2026-07-17 23:49:13.184 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:49:13.1839282+05:30"------------
+[2026-07-17 23:49:22.529 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0171 ms
+[2026-07-17 23:49:22.529 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/my-unread responded 204 in 0.2358 ms
+[2026-07-17 23:49:22.553 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 8.6038 ms
+[2026-07-17 23:49:22.561 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 18.2548 ms
+[2026-07-17 23:49:22.563 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0402 ms
+[2026-07-17 23:49:22.564 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0417 ms
+[2026-07-17 23:49:22.582 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 10.4320 ms
+[2026-07-17 23:49:22.585 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 10.0425 ms
+[2026-07-17 23:49:23.201 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:49:23.2009802+05:30"------------
+[2026-07-17 23:49:24.409 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 5.4241 ms
+[2026-07-17 23:49:24.409 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 5.4241 ms
+[2026-07-17 23:49:24.434 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 15.7875 ms
+[2026-07-17 23:49:24.440 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 21.6599 ms
+[2026-07-17 23:49:33.214 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:49:33.2142640+05:30"------------
+[2026-07-17 23:49:43.220 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:49:43.2199630+05:30"------------
+[2026-07-17 23:49:53.229 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:49:53.2291995+05:30"------------
+[2026-07-17 23:49:54.460 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0426 ms
+[2026-07-17 23:49:54.599 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 135.5504 ms
+[2026-07-17 23:49:54.622 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.0608 ms
+[2026-07-17 23:49:54.622 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctors/me responded 204 in 0.0226 ms
+[2026-07-17 23:49:54.623 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctor-leaves/my responded 204 in 0.0285 ms
+[2026-07-17 23:49:54.645 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/me responded 200 in 12.5048 ms
+[2026-07-17 23:49:54.653 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 22.4232 ms
+[2026-07-17 23:49:54.660 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctor-leaves/my responded 200 in 16.7292 ms
+[2026-07-17 23:49:58.731 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/11/confirm responded 204 in 0.0542 ms
+[2026-07-17 23:49:58.756 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP PUT /api/appointments/11/confirm responded 200 in 21.1111 ms
+[2026-07-17 23:49:58.763 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 2.0227 ms
+[2026-07-17 23:50:03.236 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:50:03.2367935+05:30"------------
+[2026-07-17 23:50:13.254 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:50:13.2546065+05:30"------------
+[2026-07-17 23:50:18.907 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0323 ms
+[2026-07-17 23:50:19.031 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 118.6358 ms
+[2026-07-17 23:50:19.043 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0584 ms
+[2026-07-17 23:50:19.043 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/my-unread responded 204 in 0.0344 ms
+[2026-07-17 23:50:19.051 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 4.1660 ms
+[2026-07-17 23:50:19.054 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 5.9100 ms
+[2026-07-17 23:50:19.064 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0384 ms
+[2026-07-17 23:50:19.064 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0114 ms
+[2026-07-17 23:50:19.080 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 10.0682 ms
+[2026-07-17 23:50:19.084 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 11.3528 ms
+[2026-07-17 23:50:23.269 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:50:23.2695962+05:30"------------
+[2026-07-17 23:50:33.285 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:50:33.2853598+05:30"------------
+[2026-07-17 23:50:38.868 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctors/activedoctors responded 204 in 0.0483 ms
+[2026-07-17 23:50:39.660 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0395 ms
+[2026-07-17 23:50:39.681 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 13.6785 ms
+[2026-07-17 23:50:43.303 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:50:43.3039063+05:30"------------
+[2026-07-17 23:50:46.477 +05:30 ERR] HealthApp.Api.Middleware.GlobalExceptionHandler An unexpected Error Occured : The message timed out in the backlog attempting to send because no connection became available (5000ms) - Last Connection Exception: It was not possible to connect to the redis server(s). ConnectTimeout, command=HMGET, timeout: 5000, inst: 0, qu: 0, qs: 0, aw: False, bw: CheckingForTimeout, rs: NotStarted, ws: Initializing, in: 0, last-in: 0, cur-in: 0, sync-ops: 0, async-ops: 3, serverEndpoint: localhost:6379, conn-sec: n/a, aoc: 0, mc: 1/1/0, mgr: 10 of 10 available, clientName: 137Q7R3(SE.Redis-v2.7.27.49176), IOCP: (Busy=0,Free=1000,Min=1,Max=1000), WORKER: (Busy=0,Free=32767,Min=8,Max=32767), POOL: (Threads=6,QueuedItems=0,CompletedItems=10572,Timers=16), v: 2.7.27.49176 (Please take a look at this article for some common client-side issues that can cause timeouts: https://stackexchange.github.io/StackExchange.Redis/Timeouts)
+StackExchange.Redis.RedisConnectionException: The message timed out in the backlog attempting to send because no connection became available (5000ms) - Last Connection Exception: It was not possible to connect to the redis server(s). ConnectTimeout, command=HMGET, timeout: 5000, inst: 0, qu: 0, qs: 0, aw: False, bw: CheckingForTimeout, rs: NotStarted, ws: Initializing, in: 0, last-in: 0, cur-in: 0, sync-ops: 0, async-ops: 3, serverEndpoint: localhost:6379, conn-sec: n/a, aoc: 0, mc: 1/1/0, mgr: 10 of 10 available, clientName: 137Q7R3(SE.Redis-v2.7.27.49176), IOCP: (Busy=0,Free=1000,Min=1,Max=1000), WORKER: (Busy=0,Free=32767,Min=8,Max=32767), POOL: (Threads=6,QueuedItems=0,CompletedItems=10572,Timers=16), v: 2.7.27.49176 (Please take a look at this article for some common client-side issues that can cause timeouts: https://stackexchange.github.io/StackExchange.Redis/Timeouts)
+ ---> StackExchange.Redis.RedisConnectionException: It was not possible to connect to the redis server(s). ConnectTimeout
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache.GetAndRefreshAsync(String key, Boolean getData, CancellationToken token)
+   at Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache.GetAsync(String key, CancellationToken token)
+   at Microsoft.Extensions.Caching.Distributed.DistributedCacheExtensions.GetStringAsync(IDistributedCache cache, String key, CancellationToken token)
+   at HealthApp.Api.Service.Impl.DoctorService.GetPagedActiveDoctorsAsync(Int32 pageNumber, Int32 pageSize) in C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api\Service\Impl\DoctorService.cs:line 215
+   at HealthApp.Api.Controllers.DoctorApiController.GetActiveDoctors(Int32 pageNumber, Int32 pageSize) in C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api\Controllers\DoctorApiController.cs:line 105
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddlewareImpl.<Invoke>g__Awaited|10_0(ExceptionHandlerMiddlewareImpl middleware, HttpContext context, Task task)
+[2026-07-17 23:50:46.484 +05:30 ERR] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/activedoctors responded 500 in 7608.9911 ms
+[2026-07-17 23:50:49.194 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0490 ms
+[2026-07-17 23:50:49.194 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/my-unread responded 204 in 0.0336 ms
+[2026-07-17 23:50:49.201 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 2.1668 ms
+[2026-07-17 23:50:49.207 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 7.3130 ms
+[2026-07-17 23:50:49.207 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0383 ms
+[2026-07-17 23:50:49.207 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0108 ms
+[2026-07-17 23:50:49.217 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 3.5870 ms
+[2026-07-17 23:50:49.225 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 9.8122 ms
+[2026-07-17 23:50:49.952 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 2.5808 ms
+[2026-07-17 23:50:51.714 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 1.3223 ms
+[2026-07-17 23:50:51.714 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 1.3256 ms
+[2026-07-17 23:50:51.726 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 4.0706 ms
+[2026-07-17 23:50:51.727 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 5.1905 ms
+[2026-07-17 23:50:53.310 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:50:53.3100314+05:30"------------
+[2026-07-17 23:51:03.325 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:51:03.3253304+05:30"------------
+[2026-07-17 23:51:03.696 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0555 ms
+[2026-07-17 23:51:03.703 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 3.1513 ms
+[2026-07-17 23:51:13.336 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:51:13.3368810+05:30"------------
+[2026-07-17 23:51:23.358 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:51:23.3582231+05:30"------------
+[2026-07-17 23:51:33.376 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:51:33.3762367+05:30"------------
+[2026-07-17 23:51:43.381 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:51:43.3809903+05:30"------------
+[2026-07-17 23:51:53.398 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:51:53.3982372+05:30"------------
+[2026-07-17 23:51:54.011 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0357 ms
+[2026-07-17 23:51:54.108 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 92.5597 ms
+[2026-07-17 23:51:55.282 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 113.2753 ms
+[2026-07-17 23:52:03.404 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:52:03.4045191+05:30"------------
+[2026-07-17 23:52:09.385 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0377 ms
+[2026-07-17 23:52:09.488 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 96.9862 ms
+[2026-07-17 23:52:09.498 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0546 ms
+[2026-07-17 23:52:09.498 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/my-unread responded 204 in 0.0231 ms
+[2026-07-17 23:52:09.507 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 3.3562 ms
+[2026-07-17 23:52:09.508 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 4.0220 ms
+[2026-07-17 23:52:09.511 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0423 ms
+[2026-07-17 23:52:09.512 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0297 ms
+[2026-07-17 23:52:09.528 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 9.1917 ms
+[2026-07-17 23:52:09.529 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 7.6129 ms
+[2026-07-17 23:52:12.719 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 3.9030 ms
+[2026-07-17 23:52:13.417 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:52:13.4178433+05:30"------------
+[2026-07-17 23:52:13.829 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctors/activedoctors responded 204 in 0.0422 ms
+[2026-07-17 23:52:14.836 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0328 ms
+[2026-07-17 23:52:14.843 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 2.6810 ms
+[2026-07-17 23:52:16.100 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0409 ms
+[2026-07-17 23:52:16.101 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/my-unread responded 204 in 0.0327 ms
+[2026-07-17 23:52:16.107 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 1.6179 ms
+[2026-07-17 23:52:16.107 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 1.2265 ms
+[2026-07-17 23:52:16.113 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.2363 ms
+[2026-07-17 23:52:16.120 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 4.3013 ms
+[2026-07-17 23:52:16.122 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 1.9104 ms
+[2026-07-17 23:52:17.664 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 2.3370 ms
+[2026-07-17 23:52:21.443 +05:30 ERR] HealthApp.Api.Middleware.GlobalExceptionHandler An unexpected Error Occured : The message timed out in the backlog attempting to send because no connection became available (5000ms) - Last Connection Exception: It was not possible to connect to the redis server(s). ConnectTimeout, command=HMGET, timeout: 5000, inst: 0, qu: 0, qs: 0, aw: False, bw: CheckingForTimeout, last-in: 0, cur-in: 0, sync-ops: 0, async-ops: 4, serverEndpoint: localhost:6379, conn-sec: n/a, aoc: 0, mc: 1/1/0, mgr: 10 of 10 available, clientName: 137Q7R3(SE.Redis-v2.7.27.49176), IOCP: (Busy=0,Free=1000,Min=1,Max=1000), WORKER: (Busy=1,Free=32766,Min=8,Max=32767), POOL: (Threads=6,QueuedItems=0,CompletedItems=11585,Timers=14), v: 2.7.27.49176 (Please take a look at this article for some common client-side issues that can cause timeouts: https://stackexchange.github.io/StackExchange.Redis/Timeouts)
+StackExchange.Redis.RedisConnectionException: The message timed out in the backlog attempting to send because no connection became available (5000ms) - Last Connection Exception: It was not possible to connect to the redis server(s). ConnectTimeout, command=HMGET, timeout: 5000, inst: 0, qu: 0, qs: 0, aw: False, bw: CheckingForTimeout, last-in: 0, cur-in: 0, sync-ops: 0, async-ops: 4, serverEndpoint: localhost:6379, conn-sec: n/a, aoc: 0, mc: 1/1/0, mgr: 10 of 10 available, clientName: 137Q7R3(SE.Redis-v2.7.27.49176), IOCP: (Busy=0,Free=1000,Min=1,Max=1000), WORKER: (Busy=1,Free=32766,Min=8,Max=32767), POOL: (Threads=6,QueuedItems=0,CompletedItems=11585,Timers=14), v: 2.7.27.49176 (Please take a look at this article for some common client-side issues that can cause timeouts: https://stackexchange.github.io/StackExchange.Redis/Timeouts)
+ ---> StackExchange.Redis.RedisConnectionException: It was not possible to connect to the redis server(s). ConnectTimeout
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache.GetAndRefreshAsync(String key, Boolean getData, CancellationToken token)
+   at Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache.GetAsync(String key, CancellationToken token)
+   at Microsoft.Extensions.Caching.Distributed.DistributedCacheExtensions.GetStringAsync(IDistributedCache cache, String key, CancellationToken token)
+   at HealthApp.Api.Service.Impl.DoctorService.GetPagedActiveDoctorsAsync(Int32 pageNumber, Int32 pageSize) in C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api\Service\Impl\DoctorService.cs:line 215
+   at HealthApp.Api.Controllers.DoctorApiController.GetActiveDoctors(Int32 pageNumber, Int32 pageSize) in C:\Users\310208\source\repos\Sprint 4\UST-Live-01\HealthApp.Api\Controllers\DoctorApiController.cs:line 105
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddlewareImpl.<Invoke>g__Awaited|10_0(ExceptionHandlerMiddlewareImpl middleware, HttpContext context, Task task)
+[2026-07-17 23:52:21.451 +05:30 ERR] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/activedoctors responded 500 in 7614.9799 ms
+[2026-07-17 23:52:23.428 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:52:23.4288307+05:30"------------
+[2026-07-17 23:52:33.441 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:52:33.4411647+05:30"------------
+[2026-07-17 23:52:38.850 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0435 ms
+[2026-07-17 23:52:38.954 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 97.0226 ms
+[2026-07-17 23:52:38.963 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.0411 ms
+[2026-07-17 23:52:38.963 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctors/me responded 204 in 0.0257 ms
+[2026-07-17 23:52:38.963 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/doctor-leaves/my responded 204 in 0.0236 ms
+[2026-07-17 23:52:38.997 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 20.1502 ms
+[2026-07-17 23:52:38.997 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctor-leaves/my responded 200 in 11.4300 ms
+[2026-07-17 23:52:39.228 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/doctors/me responded 200 in 247.2106 ms
+[2026-07-17 23:52:43.447 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:52:43.4476312+05:30"------------
+[2026-07-17 23:52:45.272 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.0485 ms
+[2026-07-17 23:52:45.300 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 17.6535 ms
+[2026-07-17 23:52:53.458 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:52:53.4582932+05:30"------------
+[2026-07-17 23:53:01.629 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/41/confirm responded 204 in 0.0355 ms
+[2026-07-17 23:53:01.664 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP PUT /api/appointments/41/confirm responded 200 in 25.4518 ms
+[2026-07-17 23:53:01.671 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/doctor/me responded 204 in 0.0773 ms
+[2026-07-17 23:53:01.679 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/doctor/me responded 200 in 3.7255 ms
+[2026-07-17 23:53:03.471 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:53:03.4715811+05:30"------------
+[2026-07-17 23:53:13.486 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:53:13.4865046+05:30"------------
+[2026-07-17 23:53:23.498 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:53:23.4981455+05:30"------------
+[2026-07-17 23:53:28.696 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0372 ms
+[2026-07-17 23:53:28.859 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 158.0709 ms
+[2026-07-17 23:53:33.510 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:53:33.5108793+05:30"------------
+[2026-07-17 23:53:40.643 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/auth/login responded 204 in 0.0658 ms
+[2026-07-17 23:53:40.794 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP POST /api/auth/login responded 200 in 145.2442 ms
+[2026-07-17 23:53:40.806 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0535 ms
+[2026-07-17 23:53:40.807 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/my-unread responded 204 in 0.0244 ms
+[2026-07-17 23:53:40.816 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 6.1817 ms
+[2026-07-17 23:53:40.819 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 7.4626 ms
+[2026-07-17 23:53:40.825 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0409 ms
+[2026-07-17 23:53:40.825 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0766 ms
+[2026-07-17 23:53:40.843 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 11.0482 ms
+[2026-07-17 23:53:40.843 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 13.9791 ms
+[2026-07-17 23:53:43.029 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/3e60e23a-5f16-43ad-8113-bb8bc2f4658f/read responded 204 in 0.1417 ms
+[2026-07-17 23:53:43.054 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP PUT /api/notifications/3e60e23a-5f16-43ad-8113-bb8bc2f4658f/read responded 200 in 21.2055 ms
+[2026-07-17 23:53:43.524 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:53:43.5248899+05:30"------------
+[2026-07-17 23:53:51.810 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/PatientApi/me responded 204 in 0.0467 ms
+[2026-07-17 23:53:51.810 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/notifications/my-unread responded 204 in 0.0279 ms
+[2026-07-17 23:53:51.829 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/PatientApi/me responded 200 in 11.7917 ms
+[2026-07-17 23:53:51.833 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/notifications/my-unread responded 200 in 12.0049 ms
+[2026-07-17 23:53:51.837 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/appointments/me responded 204 in 0.0423 ms
+[2026-07-17 23:53:51.837 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0233 ms
+[2026-07-17 23:53:51.849 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 6.1571 ms
+[2026-07-17 23:53:51.850 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 5.6870 ms
+[2026-07-17 23:53:53.530 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:53:53.5304613+05:30"------------
+[2026-07-17 23:53:54.706 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/appointments/me responded 200 in 3.2436 ms
+[2026-07-17 23:54:03.533 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:54:03.5331160+05:30"------------
+[2026-07-17 23:54:13.545 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:54:13.5456591+05:30"------------
+[2026-07-17 23:54:23.554 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:54:23.5539771+05:30"------------
+[2026-07-17 23:54:33.564 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:54:33.5643569+05:30"------------
+[2026-07-17 23:54:41.201 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP OPTIONS /api/HealthRecordApi/me responded 204 in 0.0410 ms
+[2026-07-17 23:54:41.217 +05:30 INF] Serilog.AspNetCore.RequestLoggingMiddleware HTTP GET /api/HealthRecordApi/me responded 200 in 4.3301 ms
+[2026-07-17 23:54:43.570 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:54:43.5704970+05:30"------------
+[2026-07-17 23:54:53.574 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:54:53.5741331+05:30"------------
+[2026-07-17 23:55:03.593 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:55:03.5933826+05:30"------------
+[2026-07-17 23:55:13.601 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:55:13.6016696+05:30"------------
+[2026-07-17 23:55:23.607 +05:30 INF] HealthApp.Api.BackgroundServices.HeartbeatBackgroundService HealthAxis heartbeat running at "2026-07-17T23:55:23.6079742+05:30"------------
