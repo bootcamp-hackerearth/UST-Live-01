@@ -6,381 +6,528 @@ using HealthApp.Api.Services.Impl;
 using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
 using Moq;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace HealthApp.Api.Tests.Services
+namespace HealthApp.Api.Tests.Services;
+
+public class DoctorServiceTests
 {
-    public class DoctorServiceTests
+    private readonly Mock<IDoctorRepository> _doctorRepository = new();
+    private readonly Mock<IMapper> _mapper = new();
+    private readonly DoctorService _service;
+
+    public DoctorServiceTests()
     {
-        private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly DoctorService _doctorService;
-
-        public DoctorServiceTests()
-        {
-            _doctorRepositoryMock = new Mock<IDoctorRepository>();
-            _mapperMock = new Mock<IMapper>();
-
-            _doctorService = new DoctorService(
-                _doctorRepositoryMock.Object,
-                _mapperMock.Object);
-        }
-
-        private static DoctorCreateDto GetValidDoctorCreateDto()
-        {
-            return new DoctorCreateDto
-            {
-                FullName = "Dr Test",
-                Specialisation = SpecialisationType.Cardiologist,
-                DoctorPhoneNo = "9876543210",
-                DoctorEmail = "doctor@test.com",
-                YearsOfExperience = 5,
-                ConsultationFee = 500
-            };
-        }
-
-        private static Doctor GetDoctor(int id = 1)
-        {
-            return new Doctor
-            {
-                DoctorId = id,
-                FullName = "Dr Test",
-                Specialisation = SpecialisationType.Cardiologist,
-                DoctorPhoneNo = "9876543210",
-                DoctorEmail = "doctor@test.com",
-                YearsOfExperience = 5,
-                ConsultationFee = 500,
-                IsActive = true
-            };
-        }
-
-        [Fact]
-        public async Task GetAllDoctors_ShouldReturnMappedDoctors()
-        {
-            var doctors = new List<Doctor>
-            {
-                GetDoctor(1),
-                GetDoctor(2)
-            };
-
-            var doctorDtos = new List<DoctorDto>
-            {
-                new DoctorDto { DoctorId = 1 },
-                new DoctorDto { DoctorId = 2 }
-            };
-
-            _doctorRepositoryMock.Setup(x => x.GetAllAsync())
-                .ReturnsAsync(doctors);
-
-            _mapperMock.Setup(x => x.Map<IEnumerable<DoctorDto>>(doctors))
-                .Returns(doctorDtos);
-
-            var result = await _doctorService.GetAllDoctorsAsync();
-
-            Assert.Equal(2, result.Count());
-            _doctorRepositoryMock.Verify(x => x.GetAllAsync(), Times.Once);
-        }
-
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        public async Task GetDoctorById_ShouldThrow_WhenIdIsInvalid(int id)
-        {
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.GetDoctorByIdAsync(id));
-        }
-
-        [Fact]
-        public async Task GetDoctorById_ShouldThrow_WhenDoctorNotFound()
-        {
-            _doctorRepositoryMock.Setup(x => x.GetByIdAsync(1))
-                .ReturnsAsync((Doctor?)null);
-
-            await Assert.ThrowsAsync<EntityNotFoundException>(() =>
-                _doctorService.GetDoctorByIdAsync(1));
-        }
-
-        [Fact]
-        public async Task GetDoctorById_ShouldReturnMappedDoctor_WhenDoctorExists()
-        {
-            var doctor = GetDoctor(1);
-            var doctorDto = new DoctorDto { DoctorId = 1 };
-
-            _doctorRepositoryMock.Setup(x => x.GetByIdAsync(1))
-                .ReturnsAsync(doctor);
-
-            _mapperMock.Setup(x => x.Map<DoctorDto>(doctor))
-                .Returns(doctorDto);
-
-            var result = await _doctorService.GetDoctorByIdAsync(1);
-
-            Assert.Equal(1, result.DoctorId);
-        }
-
-        [Fact]
-        public async Task AddDoctor_ShouldThrow_WhenDtoIsNull()
-        {
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.AddDoctorAsync(null!));
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public async Task AddDoctor_ShouldThrow_WhenFullNameIsMissing(string? fullName)
-        {
-            var dto = GetValidDoctorCreateDto();
-            dto.FullName = fullName!;
-
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.AddDoctorAsync(dto));
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public async Task AddDoctor_ShouldThrow_WhenPhoneNumberIsMissing(string? phoneNumber)
-        {
-            var dto = GetValidDoctorCreateDto();
-            dto.DoctorPhoneNo = phoneNumber!;
-
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.AddDoctorAsync(dto));
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public async Task AddDoctor_ShouldThrow_WhenEmailIsMissing(string? email)
-        {
-            var dto = GetValidDoctorCreateDto();
-            dto.DoctorEmail = email!;
-
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.AddDoctorAsync(dto));
-        }
-
-        [Theory]
-        [InlineData(-1)]
-        [InlineData(61)]
-        public async Task AddDoctor_ShouldThrow_WhenYearsOfExperienceIsOutOfRange(int yearsOfExperience)
-        {
-            var dto = GetValidDoctorCreateDto();
-            dto.YearsOfExperience = yearsOfExperience;
-
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.AddDoctorAsync(dto));
-        }
-
-        [Theory]
-        [InlineData(-1)]
-        [InlineData(100001)]
-        public async Task AddDoctor_ShouldThrow_WhenConsultationFeeIsOutOfRange(decimal consultationFee)
-        {
-            var dto = GetValidDoctorCreateDto();
-            dto.ConsultationFee = consultationFee;
-
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.AddDoctorAsync(dto));
-        }
-
-        [Fact]
-        public async Task AddDoctor_ShouldThrow_WhenEmailExistsIgnoringCase()
-        {
-            var dto = GetValidDoctorCreateDto();
-
-            _doctorRepositoryMock.Setup(x => x.GetAllAsync())
-                .ReturnsAsync(new List<Doctor>
-                {
-                    new Doctor { DoctorEmail = dto.DoctorEmail.ToUpperInvariant() }
-                });
-
-            await Assert.ThrowsAsync<DuplicateEntityException>(() =>
-                _doctorService.AddDoctorAsync(dto));
-        }
-
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        public async Task UpdateDoctor_ShouldThrow_WhenIdIsInvalid(int id)
-        {
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.UpdateDoctorAsync(id, GetValidDoctorCreateDto()));
-        }
-
-        [Fact]
-        public async Task UpdateDoctor_ShouldThrow_WhenDtoIsNull()
-        {
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.UpdateDoctorAsync(1, null!));
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public async Task UpdateDoctor_ShouldThrow_WhenFullNameIsMissing(string? fullName)
-        {
-            var dto = GetValidDoctorCreateDto();
-            dto.FullName = fullName!;
-
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.UpdateDoctorAsync(1, dto));
-        }
-
-        [Theory]
-        [InlineData(-1)]
-        [InlineData(61)]
-        public async Task UpdateDoctor_ShouldThrow_WhenYearsOfExperienceIsOutOfRange(int yearsOfExperience)
-        {
-            var dto = GetValidDoctorCreateDto();
-            dto.YearsOfExperience = yearsOfExperience;
-
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.UpdateDoctorAsync(1, dto));
-        }
-
-        [Theory]
-        [InlineData(-1)]
-        [InlineData(100001)]
-        public async Task UpdateDoctor_ShouldThrow_WhenConsultationFeeIsOutOfRange(decimal consultationFee)
-        {
-            var dto = GetValidDoctorCreateDto();
-            dto.ConsultationFee = consultationFee;
-
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.UpdateDoctorAsync(1, dto));
-        }
-
-        [Fact]
-        public async Task UpdateDoctor_ShouldThrow_WhenDoctorNotFound()
-        {
-            _doctorRepositoryMock.Setup(x => x.GetByIdAsync(1))
-                .ReturnsAsync((Doctor?)null);
-
-            await Assert.ThrowsAsync<EntityNotFoundException>(() =>
-                _doctorService.UpdateDoctorAsync(1, GetValidDoctorCreateDto()));
-        }
-
-        [Fact]
-        public async Task UpdateDoctor_ShouldThrow_WhenEmailIsUsedByAnotherDoctorIgnoringCase()
-        {
-            var dto = GetValidDoctorCreateDto();
-
-            _doctorRepositoryMock.Setup(x => x.GetByIdAsync(1))
-                .ReturnsAsync(GetDoctor(1));
-
-            _doctorRepositoryMock.Setup(x => x.GetAllAsync())
-                .ReturnsAsync(new List<Doctor>
-                {
-                    new Doctor { DoctorId = 2, DoctorEmail = dto.DoctorEmail.ToUpperInvariant() }
-                });
-
-            await Assert.ThrowsAsync<DuplicateEntityException>(() =>
-                _doctorService.UpdateDoctorAsync(1, dto));
-        }        
-
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        public async Task ChangeStatus_ShouldThrow_WhenIdIsInvalid(int id)
-        {
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _doctorService.ChangeStatusAsync(id, true));
-        }
-
-        [Fact]
-        public async Task ChangeStatus_ShouldThrow_WhenDoctorNotFound()
-        {
-            _doctorRepositoryMock.Setup(x => x.GetByIdAsync(1))
-                .ReturnsAsync((Doctor?)null);
-
-            await Assert.ThrowsAsync<EntityNotFoundException>(() =>
-                _doctorService.ChangeStatusAsync(1, true));
-        }
-
-        [Fact]
-        public async Task ChangeStatus_ShouldThrow_WhenRepositoryUpdateFails()
-        {
-            _doctorRepositoryMock.Setup(x => x.GetByIdAsync(1))
-                .ReturnsAsync(GetDoctor(1));
-
-            _doctorRepositoryMock.Setup(x => x.ChangeStatusAsync(1, true))
-                .ReturnsAsync(false);
-
-            await Assert.ThrowsAsync<BusinessRuleViolationException>(() =>
-                _doctorService.ChangeStatusAsync(1, true));
-        }
-
-        [Fact]
-        public async Task ChangeStatus_ShouldUpdate_WhenValid()
-        {
-            _doctorRepositoryMock.Setup(x => x.GetByIdAsync(1))
-                .ReturnsAsync(GetDoctor(1));
-
-            _doctorRepositoryMock.Setup(x => x.ChangeStatusAsync(1, true))
-                .ReturnsAsync(true);
-
-            await _doctorService.ChangeStatusAsync(1, true);
-
-            _doctorRepositoryMock.Verify(x => x.ChangeStatusAsync(1, true), Times.Once);
-        }
-
-        [Fact]
-        public async Task GetDoctorsBySpecialisation_ShouldReturnOnlyActiveDoctorsWithMatchingSpecialisation()
-        {
-            var doctors = new List<Doctor>
-            {
-                new Doctor { DoctorId = 1, Specialisation = SpecialisationType.Cardiologist, IsActive = true },
-                new Doctor { DoctorId = 2, Specialisation = SpecialisationType.Cardiologist, IsActive = false },
-                new Doctor { DoctorId = 3, Specialisation = SpecialisationType.Dermatologist, IsActive = true }
-            };
-
-            _doctorRepositoryMock.Setup(x => x.GetAllAsync())
-                .ReturnsAsync(doctors);
-
-            _mapperMock.Setup(x => x.Map<IEnumerable<DoctorDto>>(It.IsAny<IEnumerable<Doctor>>()))
-                .Returns((IEnumerable<Doctor> source) =>
-                    source.Select(d => new DoctorDto { DoctorId = d.DoctorId }).ToList());
-
-            var result = await _doctorService.GetDoctorsBySpecialisationAsync(SpecialisationType.Cardiologist);
-
-            var doctorDto = Assert.Single(result);
-            Assert.Equal(1, doctorDto.DoctorId);
-        }
-
-        [Fact]
-        public async Task SearchDoctors_ShouldReturnPagedResult()
-        {
-            var doctors = new List<Doctor>
-            {
-                GetDoctor(1)
-            };
-
-            var doctorDtos = new List<DoctorDto>
-            {
-                new DoctorDto { DoctorId = 1 }
-            };
-
-            _doctorRepositoryMock.Setup(x =>
-                    x.SearchDoctorsAsync("test", null, null, 1, 10))
-                .ReturnsAsync((doctors, 1));
-
-            _mapperMock.Setup(x => x.Map<List<DoctorDto>>(doctors))
-                .Returns(doctorDtos);
-
-            var result = await _doctorService.SearchDoctorsAsync("test", null, null, 1, 10);
-
-            Assert.Single(result.Items);
-            Assert.Equal(1, result.PageNumber);
-            Assert.Equal(10, result.PageSize);
-            Assert.Equal(1, result.TotalCount);
-        }
+        _service = new DoctorService(
+            _doctorRepository.Object,
+            _mapper.Object);
     }
+
+    [Fact]
+    public async Task GetAllDoctors_ShouldReturnMappedDoctors()
+    {
+        var doctors = new List<Doctor>
+        {
+            CreateDoctor(1),
+            CreateDoctor(2)
+        };
+        var doctorDtos = new List<DoctorDto>
+        {
+            new() { DoctorId = 1 },
+            new() { DoctorId = 2 }
+        };
+
+        _doctorRepository
+            .Setup(repository => repository.GetAllAsync())
+            .ReturnsAsync(doctors);
+        _mapper
+            .Setup(mapper => mapper.Map<IEnumerable<DoctorDto>>(doctors))
+            .Returns(doctorDtos);
+
+        var result = await _service.GetAllDoctorsAsync();
+
+        Assert.Equal(2, result.Count());
+        Assert.Equal([1, 2], result.Select(doctor => doctor.DoctorId));
+        _doctorRepository.Verify(
+            repository => repository.GetAllAsync(),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetAllDoctors_WhenNoDoctorsExist_ShouldReturnEmpty()
+    {
+        var doctors = new List<Doctor>();
+        _doctorRepository
+            .Setup(repository => repository.GetAllAsync())
+            .ReturnsAsync(doctors);
+        _mapper
+            .Setup(mapper => mapper.Map<IEnumerable<DoctorDto>>(doctors))
+            .Returns([]);
+
+        var result = await _service.GetAllDoctorsAsync();
+
+        Assert.Empty(result);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public async Task GetDoctorById_WhenIdIsInvalid_ShouldThrow(int id)
+    {
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.GetDoctorByIdAsync(id));
+
+        _doctorRepository.Verify(
+            repository => repository.GetByIdAsync(It.IsAny<int>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task GetDoctorById_WhenDoctorDoesNotExist_ShouldThrow()
+    {
+        _doctorRepository
+            .Setup(repository => repository.GetByIdAsync(1))
+            .ReturnsAsync((Doctor?)null);
+
+        await Assert.ThrowsAsync<EntityNotFoundException>(
+            () => _service.GetDoctorByIdAsync(1));
+    }
+
+    [Fact]
+    public async Task GetDoctorById_WhenDoctorExists_ShouldReturnMappedDoctor()
+    {
+        var doctor = CreateDoctor(5);
+        var dto = new DoctorDto { DoctorId = 5 };
+        _doctorRepository
+            .Setup(repository => repository.GetByIdAsync(5))
+            .ReturnsAsync(doctor);
+        _mapper
+            .Setup(mapper => mapper.Map<DoctorDto>(doctor))
+            .Returns(dto);
+
+        var result = await _service.GetDoctorByIdAsync(5);
+
+        Assert.Equal(5, result.DoctorId);
+    }
+
+    [Fact]
+    public async Task AddDoctor_WhenDtoIsNull_ShouldThrow()
+    {
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.AddDoctorAsync(null!));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task AddDoctor_WhenNameIsMissing_ShouldThrow(string? value)
+    {
+        var dto = CreateDto();
+        dto.FullName = value!;
+
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.AddDoctorAsync(dto));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task AddDoctor_WhenPhoneIsMissing_ShouldThrow(string? value)
+    {
+        var dto = CreateDto();
+        dto.DoctorPhoneNo = value!;
+
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.AddDoctorAsync(dto));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task AddDoctor_WhenEmailIsMissing_ShouldThrow(string? value)
+    {
+        var dto = CreateDto();
+        dto.DoctorEmail = value!;
+
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.AddDoctorAsync(dto));
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(61)]
+    public async Task AddDoctor_WhenExperienceIsOutsideRange_ShouldThrow(
+        int value)
+    {
+        var dto = CreateDto();
+        dto.YearsOfExperience = value;
+
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.AddDoctorAsync(dto));
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(100001)]
+    public async Task AddDoctor_WhenFeeIsOutsideRange_ShouldThrow(
+        decimal value)
+    {
+        var dto = CreateDto();
+        dto.ConsultationFee = value;
+
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.AddDoctorAsync(dto));
+    }
+
+    [Fact]
+    public async Task AddDoctor_WhenEmailExistsIgnoringCase_ShouldThrow()
+    {
+        var dto = CreateDto();
+        _doctorRepository
+            .Setup(repository => repository.GetAllAsync())
+            .ReturnsAsync([
+                new Doctor
+                {
+                    DoctorEmail = dto.DoctorEmail.ToUpperInvariant()
+                }
+            ]);
+
+        await Assert.ThrowsAsync<DuplicateEntityException>(
+            () => _service.AddDoctorAsync(dto));
+
+        _doctorRepository.Verify(
+            repository => repository.Add(It.IsAny<Doctor>()),
+            Times.Never);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public async Task UpdateDoctor_WhenIdIsInvalid_ShouldThrow(int id)
+    {
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.UpdateDoctorAsync(id, CreateDto()));
+    }
+
+    [Fact]
+    public async Task UpdateDoctor_WhenDtoIsNull_ShouldThrow()
+    {
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.UpdateDoctorAsync(1, null!));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task UpdateDoctor_WhenNameIsMissing_ShouldThrow(string? value)
+    {
+        var dto = CreateDto();
+        dto.FullName = value!;
+
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.UpdateDoctorAsync(1, dto));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task UpdateDoctor_WhenPhoneIsMissing_ShouldThrow(string? value)
+    {
+        var dto = CreateDto();
+        dto.DoctorPhoneNo = value!;
+
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.UpdateDoctorAsync(1, dto));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task UpdateDoctor_WhenEmailIsMissing_ShouldThrow(string? value)
+    {
+        var dto = CreateDto();
+        dto.DoctorEmail = value!;
+
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.UpdateDoctorAsync(1, dto));
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(61)]
+    public async Task UpdateDoctor_WhenExperienceIsOutsideRange_ShouldThrow(
+        int value)
+    {
+        var dto = CreateDto();
+        dto.YearsOfExperience = value;
+
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.UpdateDoctorAsync(1, dto));
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(100001)]
+    public async Task UpdateDoctor_WhenFeeIsOutsideRange_ShouldThrow(
+        decimal value)
+    {
+        var dto = CreateDto();
+        dto.ConsultationFee = value;
+
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.UpdateDoctorAsync(1, dto));
+    }
+
+    [Fact]
+    public async Task UpdateDoctor_WhenDoctorDoesNotExist_ShouldThrow()
+    {
+        _doctorRepository
+            .Setup(repository => repository.GetByIdAsync(1))
+            .ReturnsAsync((Doctor?)null);
+
+        await Assert.ThrowsAsync<EntityNotFoundException>(
+            () => _service.UpdateDoctorAsync(1, CreateDto()));
+    }
+
+    [Fact]
+    public async Task UpdateDoctor_WhenEmailIsUsedByAnotherDoctor_ShouldThrow()
+    {
+        var dto = CreateDto();
+        _doctorRepository
+            .Setup(repository => repository.GetByIdAsync(1))
+            .ReturnsAsync(CreateDoctor(1));
+        _doctorRepository
+            .Setup(repository => repository.GetAllAsync())
+            .ReturnsAsync([
+                new Doctor
+                {
+                    DoctorId = 2,
+                    DoctorEmail = dto.DoctorEmail.ToUpperInvariant()
+                }
+            ]);
+
+        await Assert.ThrowsAsync<DuplicateEntityException>(
+            () => _service.UpdateDoctorAsync(1, dto));
+
+        _doctorRepository.Verify(
+            repository => repository.Update(
+                It.IsAny<int>(),
+                It.IsAny<Doctor>()),
+            Times.Never);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public async Task ChangeStatus_WhenIdIsInvalid_ShouldThrow(int id)
+    {
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.ChangeStatusAsync(id, true));
+    }
+
+    [Fact]
+    public async Task ChangeStatus_WhenDoctorDoesNotExist_ShouldThrow()
+    {
+        _doctorRepository
+            .Setup(repository => repository.GetByIdAsync(1))
+            .ReturnsAsync((Doctor?)null);
+
+        await Assert.ThrowsAsync<EntityNotFoundException>(
+            () => _service.ChangeStatusAsync(1, true));
+    }
+
+    [Fact]
+    public async Task ChangeStatus_WhenRepositoryUpdateFails_ShouldThrow()
+    {
+        _doctorRepository
+            .Setup(repository => repository.GetByIdAsync(1))
+            .ReturnsAsync(CreateDoctor(1));
+        _doctorRepository
+            .Setup(repository => repository.ChangeStatusAsync(1, true))
+            .ReturnsAsync(false);
+
+        await Assert.ThrowsAsync<BusinessRuleViolationException>(
+            () => _service.ChangeStatusAsync(1, true));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ChangeStatus_WhenValid_ShouldPassStatusToRepository(
+        bool isActive)
+    {
+        _doctorRepository
+            .Setup(repository => repository.GetByIdAsync(1))
+            .ReturnsAsync(CreateDoctor(1));
+        _doctorRepository
+            .Setup(repository => repository.ChangeStatusAsync(1, isActive))
+            .ReturnsAsync(true);
+
+        await _service.ChangeStatusAsync(1, isActive);
+
+        _doctorRepository.Verify(
+            repository => repository.ChangeStatusAsync(1, isActive),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetDoctorsBySpecialisation_ShouldReturnOnlyActiveMatches()
+    {
+        var doctors = new List<Doctor>
+        {
+            new()
+            {
+                DoctorId = 1,
+                Specialisation = SpecialisationType.Cardiologist,
+                IsActive = true
+            },
+            new()
+            {
+                DoctorId = 2,
+                Specialisation = SpecialisationType.Cardiologist,
+                IsActive = false
+            },
+            new()
+            {
+                DoctorId = 3,
+                Specialisation = SpecialisationType.Dermatologist,
+                IsActive = true
+            }
+        };
+        _doctorRepository
+            .Setup(repository => repository.GetAllAsync())
+            .ReturnsAsync(doctors);
+        _mapper
+            .Setup(mapper => mapper.Map<IEnumerable<DoctorDto>>(
+                It.IsAny<IEnumerable<Doctor>>()))
+            .Returns((IEnumerable<Doctor> source) =>
+                source.Select(doctor => new DoctorDto
+                {
+                    DoctorId = doctor.DoctorId
+                }).ToList());
+
+        var result = await _service.GetDoctorsBySpecialisationAsync(
+            SpecialisationType.Cardiologist);
+
+        var doctor = Assert.Single(result);
+        Assert.Equal(1, doctor.DoctorId);
+    }
+
+    [Fact]
+    public async Task GetDoctorsBySpecialisation_WhenNoMatches_ShouldReturnEmpty()
+    {
+        _doctorRepository
+            .Setup(repository => repository.GetAllAsync())
+            .ReturnsAsync([
+                new Doctor
+                {
+                    DoctorId = 1,
+                    Specialisation = SpecialisationType.Cardiologist,
+                    IsActive = false
+                },
+                new Doctor
+                {
+                    DoctorId = 2,
+                    Specialisation = SpecialisationType.Dermatologist,
+                    IsActive = true
+                }
+            ]);
+        _mapper
+            .Setup(mapper => mapper.Map<IEnumerable<DoctorDto>>(
+                It.IsAny<IEnumerable<Doctor>>()))
+            .Returns([]);
+
+        var result = await _service.GetDoctorsBySpecialisationAsync(
+            SpecialisationType.Cardiologist);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task SearchDoctors_ShouldReturnRepositoryPageAndMappedItems()
+    {
+        var doctors = new List<Doctor> { CreateDoctor(1) };
+        var dtos = new List<DoctorDto>
+        {
+            new() { DoctorId = 1 }
+        };
+        _doctorRepository
+            .Setup(repository => repository.SearchDoctorsAsync(
+                "test",
+                SpecialisationType.Cardiologist,
+                true,
+                2,
+                5))
+            .ReturnsAsync((doctors, 11));
+        _mapper
+            .Setup(mapper => mapper.Map<List<DoctorDto>>(doctors))
+            .Returns(dtos);
+
+        var result = await _service.SearchDoctorsAsync(
+            "test",
+            SpecialisationType.Cardiologist,
+            true,
+            2,
+            5);
+
+        Assert.Single(result.Items);
+        Assert.Equal(2, result.PageNumber);
+        Assert.Equal(5, result.PageSize);
+        Assert.Equal(11, result.TotalCount);
+    }
+
+    [Fact]
+    public async Task SearchDoctors_WhenNoResults_ShouldReturnEmptyPage()
+    {
+        var doctors = new List<Doctor>();
+        _doctorRepository
+            .Setup(repository => repository.SearchDoctorsAsync(
+                "missing",
+                null,
+                null,
+                1,
+                10))
+            .ReturnsAsync((doctors, 0));
+        _mapper
+            .Setup(mapper => mapper.Map<List<DoctorDto>>(doctors))
+            .Returns([]);
+
+        var result = await _service.SearchDoctorsAsync(
+            "missing",
+            null,
+            null,
+            1,
+            10);
+
+        Assert.Empty(result.Items);
+        Assert.Equal(0, result.TotalCount);
+    }
+
+    private static DoctorCreateDto CreateDto() => new()
+    {
+        FullName = "Dr Test",
+        Specialisation = SpecialisationType.Cardiologist,
+        DoctorPhoneNo = "9876543210",
+        DoctorEmail = "doctor@test.com",
+        YearsOfExperience = 5,
+        ConsultationFee = 500
+    };
+
+    private static Doctor CreateDoctor(int id) => new()
+    {
+        DoctorId = id,
+        FullName = "Dr Test",
+        Specialisation = SpecialisationType.Cardiologist,
+        DoctorPhoneNo = "9876543210",
+        DoctorEmail = "doctor@test.com",
+        YearsOfExperience = 5,
+        ConsultationFee = 500,
+        IsActive = true
+    };
 }

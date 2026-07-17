@@ -1,6 +1,7 @@
 using HealthApp.Api.Consumers;
 using HealthApp.Api.Data;
 using HealthApp.Api.Handler;
+using HealthApp.Api.HostedServices;
 using HealthApp.Api.Mapping;
 using HealthApp.Api.Models;
 using HealthApp.Api.Options;
@@ -151,6 +152,7 @@ builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 // Grouped service dependencies
 builder.Services.AddScoped<AppointmentServiceRepositories>();

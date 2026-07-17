@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HealthApp.Api\HealthApp.Api.csproj" />
+    <ProjectReference Include="..\HealthApp.Shared\HealthApp.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
