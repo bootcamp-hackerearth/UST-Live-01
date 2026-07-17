@@ -12,9 +12,10 @@ export class PatientService {
   constructor(private readonly http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
-    const token = typeof window !== 'undefined'
-      ? localStorage.getItem('token')
-      : null;
+    const token =  globalThis.window === undefined
+    ? null
+    : globalThis.window.localStorage.getItem('token');
+
 
     if (token) {
       return new HttpHeaders({

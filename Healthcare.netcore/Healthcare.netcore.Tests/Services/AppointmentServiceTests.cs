@@ -47,7 +47,7 @@ namespace Healthcare.netcore.Tests.Services
                 _cacheMock.Object);
         }
 
-        private Doctor GetDoctor(bool active = true)
+        private static Doctor GetDoctor(bool active = true)
         {
             return new Doctor
             {
@@ -57,7 +57,7 @@ namespace Healthcare.netcore.Tests.Services
             };
         }
 
-        private Patient GetPatient()
+        private static Patient GetPatient()
         {
             return new Patient
             {
@@ -66,7 +66,7 @@ namespace Healthcare.netcore.Tests.Services
             };
         }
 
-        private Appointment GetAppointment()
+        private static Appointment GetAppointment()
         {
             return new Appointment
             {
@@ -79,7 +79,7 @@ namespace Healthcare.netcore.Tests.Services
             };
         }
 
-        private AppointmentDto GetAppointmentDto()
+        private static AppointmentDto GetAppointmentDto()
         {
             return new AppointmentDto
             {
@@ -92,7 +92,7 @@ namespace Healthcare.netcore.Tests.Services
             };
         }
 
-        private CreateAppointmentDto GetCreateDto()
+        private static CreateAppointmentDto GetCreateDto()
         {
             return new CreateAppointmentDto
             {

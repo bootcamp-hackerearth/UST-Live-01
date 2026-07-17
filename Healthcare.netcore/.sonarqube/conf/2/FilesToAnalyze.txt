@@ -76,4 +76,6 @@ C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore\L
 C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore\Logs\healthaxis-api-20260710.log
 C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore\Logs\healthaxis-api-20260713.log
 C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore\Logs\healthaxis-api-20260714.log
+C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore\Logs\healthaxis-api-20260715.log
+C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore\Logs\healthaxis-api-20260716.log
 C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore\Properties\launchSettings.json

@@ -41,7 +41,7 @@ export class DoctorSearch implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       this.loadDoctors();
     }
   }

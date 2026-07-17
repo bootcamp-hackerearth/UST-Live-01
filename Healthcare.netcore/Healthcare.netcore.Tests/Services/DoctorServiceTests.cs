@@ -44,7 +44,7 @@ namespace Healthcare.netcore.Tests.Services
                 _mapperMock.Object);
         }
 
-        private Doctor GetDoctor(bool isActive = true)
+        private static Doctor GetDoctor(bool isActive = true)
         {
             return new Doctor
             {
@@ -57,7 +57,7 @@ namespace Healthcare.netcore.Tests.Services
             };
         }
 
-        private DoctorDto GetDoctorDto()
+        private static DoctorDto GetDoctorDto()
         {
             return new DoctorDto
             {
@@ -70,7 +70,7 @@ namespace Healthcare.netcore.Tests.Services
             };
         }
 
-        private CreateDoctorDto GetCreateDoctorDto()
+        private static CreateDoctorDto GetCreateDoctorDto()
         {
             return new CreateDoctorDto
             {
@@ -83,7 +83,7 @@ namespace Healthcare.netcore.Tests.Services
             };
         }
 
-        private UpdateDoctorDto GetUpdateDoctorDto()
+        private static UpdateDoctorDto GetUpdateDoctorDto()
         {
             return new UpdateDoctorDto
             {
@@ -593,7 +593,7 @@ namespace Healthcare.netcore.Tests.Services
                 });
 
             result.Should().NotBeNull();
-            result.Items.Count().Should().Be(5);
+            result.Items.Count.Should().Be(5);
             result.PageNumber.Should().Be(2);
         }
         [Fact]

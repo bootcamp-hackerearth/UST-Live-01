@@ -239,7 +239,7 @@ cC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Pages\R
 ‡‡- E
 ëë- E$
 
-íí +
+íí 2
 ˆˆ- E
 ìì- E:
 
@@ -1272,8 +1272,8 @@ XC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Pages\H
  )
 ÞÞ% 3
 ˜˜! /
-ÄÄ! /a
-_C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Layout\AuthLayout.razorù
+ÄÄ! /S
+QC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\App.razorù
 cC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Pages\AdminTokenLogin.razor
 
 " 4
@@ -1287,8 +1287,72 @@ cC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Pages\A
 55 77 77% *99. 3
   1   
    2
-  $ ' "" S
-QC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\App.razorù
+  $ ' "" a
+_C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Layout\AuthLayout.razorÖ
+bC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Services\PatientService.cs
+
+		 <
+$ )  "" ++ 88 
+$ ' 22 !
+) - 
+: < 
+
+6 F
+ + 5
+ A I
+
+/ >
+P W""? F
+
+%%/ A
+&& ,,  )
+'' $-- (
+00 + "   ")) "
+22 66+ 099< AÕ
+aC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Services\DoctorService.cs
+
+		 <
+$ )  "" ++ 88 
+$ ' 22 !
+( , 
+9 ; 
+
+5 D
+ . 8
+ D L
+
+/ =
+N T""D J
+
+%%/ @
+&& ,,% -
+'' "-- (
+00 + "   ")) "
+22 66+ 099< Aø
+fC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Services\AppointmentService.cs
+
+ #2
+
+
+$ )  !! .. 
+$ ' (( !
+- 1 
+> @ 
+
+1 E
+
+/ K
+ ""$ 1
+' *## 
+&& + " "
+(( ,,+ 0//< AÔ
+RC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Program.cs\
+ 
+
+          
+
+ 
+8 : ù
 gC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Auth\CustomAuthStateProvider.cs
 
  ((
@@ -1346,68 +1410,4 @@ gC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Auth\Cu
 ‘‘ 
 ’’ 
 —— 
-˜˜ Õ
-aC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Services\DoctorService.cs
-
-		 <
-$ )  "" ++ 88 
-$ ' 22 !
-( , 
-9 ; 
-
-5 D
- . 8
- D L
-
-/ =
-N T""D J
-
-%%/ @
-&& ,,% -
-'' "-- (
-00 + "   ")) "
-22 66+ 099< AÖ
-bC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Services\PatientService.cs
-
-		 <
-$ )  "" ++ 88 
-$ ' 22 !
-) - 
-: < 
-
-6 F
- + 5
- A I
-
-/ >
-P W""? F
-
-%%/ A
-&& ,,  )
-'' $-- (
-00 + "   ")) "
-22 66+ 099< Aø
-fC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Services\AppointmentService.cs
-
- #2
-
-
-$ )  !! .. 
-$ ' (( !
-- 1 
-> @ 
-
-1 E
-
-/ K
- ""$ 1
-' *## 
-&& + " "
-(( ,,+ 0//< AÔ
-RC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\AdminWebApp\Program.cs\
- 
-
-          
-
- 
-8 : 
+˜˜ 

@@ -266,10 +266,15 @@ namespace HealthAxis.API.Services.Implementations
                         return cachedDto;
                     }
                 }
+                if (_logger?.IsEnabled(LogLevel.Information) == true)
+                {
 
-                _logger?.LogInformation(
+
+                    _logger?.LogInformation(
                     "{CacheMissMessage}",
                     BuildCacheMissMessage(id, availabilityDate, cacheKey));
+                }
+
             }
 
             Doctor? doctor;
@@ -527,14 +532,14 @@ namespace HealthAxis.API.Services.Implementations
         {
             return
                 Environment.NewLine +
-                "========================================" + Environment.NewLine +
+                "LogSeparator" + Environment.NewLine +
                 "CACHE HIT - DOCTOR AVAILABILITY" + Environment.NewLine +
-                "========================================" + Environment.NewLine +
+                "LogSeparator" + Environment.NewLine +
                 $"Doctor Id : {doctorId}" + Environment.NewLine +
                 $"Date      : {date:yyyy-MM-dd}" + Environment.NewLine +
                 $"Key       : {cacheKey}" + Environment.NewLine +
                 "Source    : Garnet Cache" + Environment.NewLine +
-                "========================================";
+                "LogSeparator";
         }
 
         private static string BuildCacheMissMessage(
@@ -544,14 +549,14 @@ namespace HealthAxis.API.Services.Implementations
         {
             return
                 Environment.NewLine +
-                "========================================" + Environment.NewLine +
+                "LogSeparator" + Environment.NewLine +
                 "CACHE MISS - DOCTOR AVAILABILITY" + Environment.NewLine +
-                "========================================" + Environment.NewLine +
+                "LogSeparator" + Environment.NewLine +
                 $"Doctor Id : {doctorId}" + Environment.NewLine +
                 $"Date      : {date:yyyy-MM-dd}" + Environment.NewLine +
                 $"Key       : {cacheKey}" + Environment.NewLine +
                 "Source    : SQL Server Required" + Environment.NewLine +
-                "========================================";
+                "LogSeparator";
         }
 
         private static string BuildCacheStoredMessage(
@@ -562,15 +567,15 @@ namespace HealthAxis.API.Services.Implementations
         {
             return
                 Environment.NewLine +
-                "========================================" + Environment.NewLine +
+                "LogSeparator" + Environment.NewLine +
                 "CACHE STORED IN GARNET" + Environment.NewLine +
-                "========================================" + Environment.NewLine +
+                "LogSeparator" + Environment.NewLine +
                 $"Doctor Id : {doctorId}" + Environment.NewLine +
                 $"Date      : {date:yyyy-MM-dd}" + Environment.NewLine +
                 $"Key       : {cacheKey}" + Environment.NewLine +
                 "TTL       : 5 Minutes" + Environment.NewLine +
                 $"Slots     : {slotCount}" + Environment.NewLine +
-                "========================================";
+                "LogSeparator";
         }
 
         private static string BuildCacheRemovedMessage(
@@ -580,14 +585,14 @@ namespace HealthAxis.API.Services.Implementations
         {
             return
                 Environment.NewLine +
-                "========================================" + Environment.NewLine +
+                "LogSeparator" + Environment.NewLine +
                 "CACHE REMOVED - DOCTOR AVAILABILITY" + Environment.NewLine +
-                "========================================" + Environment.NewLine +
+                "LogSeparator" + Environment.NewLine +
                 $"Doctor Id : {doctorId}" + Environment.NewLine +
                 $"Date      : {date:yyyy-MM-dd}" + Environment.NewLine +
                 $"Key       : {cacheKey}" + Environment.NewLine +
                 "Reason    : Doctor schedule/status updated" + Environment.NewLine +
-                "========================================";
+                "LogSeparator";
         }
 
         private static DoctorDto MapToDto(Doctor doctor)

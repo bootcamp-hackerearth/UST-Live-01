@@ -44,7 +44,7 @@ export class DoctorProfile implements OnInit {
   private readonly doctorStatusUrl = 'https://localhost:7130/api/doctors/me/status';
 
   ngOnInit() {
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       this.loadDoctorProfile();
     }
   }

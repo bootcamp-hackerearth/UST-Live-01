@@ -47,7 +47,7 @@ export class BookAppointment implements OnInit {
   ];
 
   ngOnInit() {
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       this.loadDoctors();
     }
   }

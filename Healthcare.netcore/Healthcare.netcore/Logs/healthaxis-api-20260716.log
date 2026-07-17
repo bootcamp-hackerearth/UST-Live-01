@@ -1,0 +1,431 @@
+2026-07-16 09:46:06.129 +05:30 [INF] Configured endpoint appointment.events.queue, Consumer: HealthAxis.API.Consumers.AppointmentBookedConsumer
+2026-07-16 09:46:07.651 +05:30 [INF] HeartbeatService started.
+2026-07-16 09:46:07.653 +05:30 [INF] NotificationCleanupService started.
+2026-07-16 09:46:07.656 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:46:07.6556282+05:30"
+2026-07-16 09:46:07.922 +05:30 [INF] No old notifications found for cleanup.
+2026-07-16 09:46:08.518 +05:30 [INF] Now listening on: https://localhost:7130
+2026-07-16 09:46:08.535 +05:30 [INF] Now listening on: http://localhost:5145
+2026-07-16 09:46:08.656 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-16 09:46:08.666 +05:30 [INF] Hosting environment: Development
+2026-07-16 09:46:08.704 +05:30 [INF] Content root path: C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore
+2026-07-16 09:46:09.271 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-16 09:46:12.490 +05:30 [INF] HTTP OPTIONS /api/admin/doctors responded 204 in 7.5042 ms
+2026-07-16 09:46:12.821 +05:30 [INF] HTTP GET /api/admin/doctors responded 401 in 301.4404 ms
+2026-07-16 09:46:12.862 +05:30 [INF] HTTP OPTIONS /api/patients responded 204 in 1.1639 ms
+2026-07-16 09:46:12.882 +05:30 [INF] HTTP GET /api/patients responded 401 in 10.7402 ms
+2026-07-16 09:46:12.903 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 0.1013 ms
+2026-07-16 09:46:12.922 +05:30 [INF] HTTP GET /api/appointments responded 401 in 11.2801 ms
+2026-07-16 09:46:17.669 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:46:17.6688092+05:30"
+2026-07-16 09:46:27.684 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:46:27.6846659+05:30"
+2026-07-16 09:46:37.688 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:46:37.6880876+05:30"
+2026-07-16 09:46:47.696 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:46:47.6968560+05:30"
+2026-07-16 09:46:57.704 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:46:57.7047221+05:30"
+2026-07-16 09:47:07.717 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:47:07.7169966+05:30"
+2026-07-16 09:47:17.734 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:47:17.7344968+05:30"
+2026-07-16 09:47:27.743 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:47:27.7436339+05:30"
+2026-07-16 09:47:37.769 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:47:37.7693157+05:30"
+2026-07-16 09:47:47.804 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:47:47.8038139+05:30"
+2026-07-16 09:47:57.815 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:47:57.8151131+05:30"
+2026-07-16 09:48:07.830 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:48:07.8306866+05:30"
+2026-07-16 09:48:17.844 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:48:17.8448514+05:30"
+2026-07-16 09:48:27.861 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:48:27.8618913+05:30"
+2026-07-16 09:48:37.873 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:48:37.8730990+05:30"
+2026-07-16 09:48:47.884 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:48:47.8847208+05:30"
+2026-07-16 09:48:57.901 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:48:57.9007269+05:30"
+2026-07-16 09:49:07.915 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:49:07.9158991+05:30"
+2026-07-16 09:49:17.925 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:49:17.9250114+05:30"
+2026-07-16 09:49:27.929 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:49:27.9293055+05:30"
+2026-07-16 09:49:37.942 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:49:37.9428473+05:30"
+2026-07-16 09:49:47.956 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:49:47.9561997+05:30"
+2026-07-16 09:49:57.969 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:49:57.9695018+05:30"
+2026-07-16 09:50:07.981 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:50:07.9806507+05:30"
+2026-07-16 09:50:17.995 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:50:17.9950829+05:30"
+2026-07-16 09:50:28.009 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:50:28.0086299+05:30"
+2026-07-16 09:50:38.013 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:50:38.0133234+05:30"
+2026-07-16 09:50:48.017 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:50:48.0175817+05:30"
+2026-07-16 09:50:58.027 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:50:58.0268639+05:30"
+2026-07-16 09:51:08.045 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:51:08.0440683+05:30"
+2026-07-16 09:51:18.064 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:51:18.0639420+05:30"
+2026-07-16 09:51:28.067 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:51:28.0675534+05:30"
+2026-07-16 09:51:38.080 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:51:38.0808280+05:30"
+2026-07-16 09:51:48.093 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:51:48.0930438+05:30"
+2026-07-16 09:51:58.101 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:51:58.1016756+05:30"
+2026-07-16 09:52:08.116 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:52:08.1169123+05:30"
+2026-07-16 09:52:18.120 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:52:18.1204640+05:30"
+2026-07-16 09:52:28.130 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:52:28.1304086+05:30"
+2026-07-16 09:52:38.144 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:52:38.1442467+05:30"
+2026-07-16 09:52:48.151 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:52:48.1509759+05:30"
+2026-07-16 09:52:58.155 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:52:58.1556629+05:30"
+2026-07-16 09:53:08.173 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:53:08.1736377+05:30"
+2026-07-16 09:53:18.190 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:53:18.1908475+05:30"
+2026-07-16 09:53:28.195 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:53:28.1954398+05:30"
+2026-07-16 09:53:38.201 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:53:38.2019239+05:30"
+2026-07-16 09:53:48.208 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:53:48.2084541+05:30"
+2026-07-16 09:53:58.217 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:53:58.2169579+05:30"
+2026-07-16 09:54:08.224 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:54:08.2241062+05:30"
+2026-07-16 09:54:18.241 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:54:18.2412075+05:30"
+2026-07-16 09:54:28.252 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:54:28.2527999+05:30"
+2026-07-16 09:54:38.260 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:54:38.2609255+05:30"
+2026-07-16 09:54:48.271 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:54:48.2711881+05:30"
+2026-07-16 09:54:58.279 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:54:58.2792824+05:30"
+2026-07-16 09:55:08.295 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:55:08.2949945+05:30"
+2026-07-16 09:55:18.303 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:55:18.3031070+05:30"
+2026-07-16 09:55:28.313 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:55:28.3115189+05:30"
+2026-07-16 09:55:38.330 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:55:38.3302161+05:30"
+2026-07-16 09:55:48.341 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:55:48.3414003+05:30"
+2026-07-16 09:55:58.348 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:55:58.3481937+05:30"
+2026-07-16 09:56:08.358 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:56:08.3581219+05:30"
+2026-07-16 09:56:18.370 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:56:18.3707380+05:30"
+2026-07-16 09:56:28.389 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:56:28.3890108+05:30"
+2026-07-16 09:56:38.402 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:56:38.4021176+05:30"
+2026-07-16 09:56:48.417 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:56:48.4177248+05:30"
+2026-07-16 09:56:58.428 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:56:58.4287697+05:30"
+2026-07-16 09:57:08.442 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:57:08.4425428+05:30"
+2026-07-16 09:57:18.454 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:57:18.4548823+05:30"
+2026-07-16 09:57:28.463 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:57:28.4631316+05:30"
+2026-07-16 09:57:38.466 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:57:38.4661600+05:30"
+2026-07-16 09:57:48.478 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:57:48.4783934+05:30"
+2026-07-16 09:57:58.481 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:57:58.4810186+05:30"
+2026-07-16 09:58:08.493 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:58:08.4939761+05:30"
+2026-07-16 09:58:18.512 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:58:18.5119974+05:30"
+2026-07-16 09:58:28.520 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:58:28.5200663+05:30"
+2026-07-16 09:58:38.527 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:58:38.5271948+05:30"
+2026-07-16 09:58:48.541 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:58:48.5410889+05:30"
+2026-07-16 09:58:58.546 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:58:58.5468541+05:30"
+2026-07-16 09:59:08.550 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:59:08.5506448+05:30"
+2026-07-16 09:59:18.562 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:59:18.5628547+05:30"
+2026-07-16 09:59:28.578 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:59:28.5780785+05:30"
+2026-07-16 09:59:38.580 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:59:38.5809425+05:30"
+2026-07-16 09:59:48.596 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:59:48.5966849+05:30"
+2026-07-16 09:59:58.606 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T09:59:58.6069651+05:30"
+2026-07-16 10:00:08.624 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:00:08.6241149+05:30"
+2026-07-16 10:00:18.636 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:00:18.6362090+05:30"
+2026-07-16 10:00:28.654 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:00:28.6542691+05:30"
+2026-07-16 10:00:38.667 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:00:38.6672702+05:30"
+2026-07-16 10:00:48.684 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:00:48.6846561+05:30"
+2026-07-16 10:00:58.691 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:00:58.6917011+05:30"
+2026-07-16 10:01:08.700 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:01:08.7007761+05:30"
+2026-07-16 10:01:18.705 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:01:18.7052046+05:30"
+2026-07-16 10:01:28.715 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:01:28.7155408+05:30"
+2026-07-16 10:01:38.718 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:01:38.7189788+05:30"
+2026-07-16 10:01:48.732 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:01:48.7322054+05:30"
+2026-07-16 10:01:58.744 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:01:58.7444446+05:30"
+2026-07-16 10:02:08.751 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:02:08.7512516+05:30"
+2026-07-16 10:02:18.770 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:02:18.7702763+05:30"
+2026-07-16 10:02:28.782 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:02:28.7820377+05:30"
+2026-07-16 10:02:38.786 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:02:38.7861126+05:30"
+2026-07-16 10:02:48.791 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:02:48.7909810+05:30"
+2026-07-16 10:02:58.798 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:02:58.7983201+05:30"
+2026-07-16 10:03:08.804 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:03:08.8046123+05:30"
+2026-07-16 10:03:18.812 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:03:18.8121742+05:30"
+2026-07-16 10:03:28.820 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:03:28.8207540+05:30"
+2026-07-16 10:03:38.833 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:03:38.8331063+05:30"
+2026-07-16 10:03:48.849 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:03:48.8495571+05:30"
+2026-07-16 10:03:58.859 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:03:58.8591184+05:30"
+2026-07-16 10:04:08.872 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:04:08.8729109+05:30"
+2026-07-16 10:04:18.876 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:04:18.8769054+05:30"
+2026-07-16 10:04:28.886 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:04:28.8860230+05:30"
+2026-07-16 10:04:38.889 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:04:38.8892443+05:30"
+2026-07-16 10:04:48.891 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:04:48.8911488+05:30"
+2026-07-16 10:04:58.896 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:04:58.8960939+05:30"
+2026-07-16 10:05:08.903 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:05:08.9033309+05:30"
+2026-07-16 10:05:18.916 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:05:18.9169486+05:30"
+2026-07-16 10:05:28.924 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:05:28.9246583+05:30"
+2026-07-16 10:05:38.927 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:05:38.9274284+05:30"
+2026-07-16 10:05:48.931 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:05:48.9311819+05:30"
+2026-07-16 10:05:58.939 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:05:58.9397580+05:30"
+2026-07-16 10:06:08.949 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:06:08.9498272+05:30"
+2026-07-16 10:06:18.961 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:06:18.9614480+05:30"
+2026-07-16 10:06:28.968 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:06:28.9684683+05:30"
+2026-07-16 10:06:38.984 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:06:38.9849406+05:30"
+2026-07-16 10:06:48.991 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:06:48.9916697+05:30"
+2026-07-16 10:06:59.006 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:06:59.0060924+05:30"
+2026-07-16 10:07:09.015 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:07:09.0151494+05:30"
+2026-07-16 10:07:19.019 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:07:19.0190408+05:30"
+2026-07-16 10:07:29.029 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:07:29.0291899+05:30"
+2026-07-16 10:07:39.031 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:07:39.0315501+05:30"
+2026-07-16 10:07:49.044 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:07:49.0445227+05:30"
+2026-07-16 10:07:59.048 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:07:59.0482484+05:30"
+2026-07-16 10:08:09.065 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:08:09.0650326+05:30"
+2026-07-16 10:08:19.075 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:08:19.0750412+05:30"
+2026-07-16 10:08:29.081 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:08:29.0817627+05:30"
+2026-07-16 10:08:39.092 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:08:39.0923894+05:30"
+2026-07-16 10:08:49.109 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:08:49.1091090+05:30"
+2026-07-16 10:08:59.127 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:08:59.1268085+05:30"
+2026-07-16 10:09:09.136 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:09:09.1366856+05:30"
+2026-07-16 10:09:19.153 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:09:19.1533838+05:30"
+2026-07-16 10:09:29.159 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:09:29.1594954+05:30"
+2026-07-16 10:09:39.170 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:09:39.1709714+05:30"
+2026-07-16 10:09:49.175 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:09:49.1754878+05:30"
+2026-07-16 10:09:59.190 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:09:59.1903247+05:30"
+2026-07-16 10:10:09.206 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:10:09.2064153+05:30"
+2026-07-16 10:10:19.214 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:10:19.2146792+05:30"
+2026-07-16 10:10:29.218 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:10:29.2189322+05:30"
+2026-07-16 10:10:39.224 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:10:39.2240457+05:30"
+2026-07-16 10:10:49.231 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:10:49.2319693+05:30"
+2026-07-16 10:10:59.245 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:10:59.2453233+05:30"
+2026-07-16 10:11:09.252 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:11:09.2527270+05:30"
+2026-07-16 10:11:19.264 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:11:19.2648650+05:30"
+2026-07-16 10:11:29.272 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:11:29.2721864+05:30"
+2026-07-16 10:11:39.285 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:11:39.2853430+05:30"
+2026-07-16 10:11:49.290 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:11:49.2908225+05:30"
+2026-07-16 10:11:59.307 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:11:59.3072297+05:30"
+2026-07-16 10:12:09.310 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:12:09.3103472+05:30"
+2026-07-16 10:12:19.313 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:12:19.3138112+05:30"
+2026-07-16 10:12:29.328 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:12:29.3285304+05:30"
+2026-07-16 10:12:39.344 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:12:39.3442845+05:30"
+2026-07-16 10:12:49.362 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:12:49.3623717+05:30"
+2026-07-16 10:12:59.373 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:12:59.3731265+05:30"
+2026-07-16 10:13:09.384 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:13:09.3844688+05:30"
+2026-07-16 10:13:19.397 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:13:19.3971494+05:30"
+2026-07-16 10:13:29.404 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:13:29.4040231+05:30"
+2026-07-16 10:13:39.412 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:13:39.4128738+05:30"
+2026-07-16 10:13:49.419 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:13:49.4193559+05:30"
+2026-07-16 10:13:59.422 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:13:59.4221399+05:30"
+2026-07-16 10:14:09.432 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:14:09.4322465+05:30"
+2026-07-16 10:14:19.439 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:14:19.4399731+05:30"
+2026-07-16 10:14:29.443 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:14:29.4438953+05:30"
+2026-07-16 10:14:39.460 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:14:39.4606374+05:30"
+2026-07-16 10:14:49.467 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:14:49.4678356+05:30"
+2026-07-16 10:14:59.477 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:14:59.4779457+05:30"
+2026-07-16 10:15:09.485 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:15:09.4850337+05:30"
+2026-07-16 10:15:19.502 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:15:19.5021740+05:30"
+2026-07-16 10:15:29.514 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:15:29.5149429+05:30"
+2026-07-16 10:15:39.519 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:15:39.5197201+05:30"
+2026-07-16 10:15:49.535 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:15:49.5351754+05:30"
+2026-07-16 10:15:59.550 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:15:59.5502348+05:30"
+2026-07-16 10:16:09.566 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:16:09.5669427+05:30"
+2026-07-16 10:16:19.581 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:16:19.5811551+05:30"
+2026-07-16 10:16:29.587 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:16:29.5870566+05:30"
+2026-07-16 10:16:39.590 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:16:39.5900228+05:30"
+2026-07-16 10:16:49.605 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:16:49.6055260+05:30"
+2026-07-16 10:16:59.622 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:16:59.6221620+05:30"
+2026-07-16 10:17:09.623 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:17:09.6237142+05:30"
+2026-07-16 10:17:19.633 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:17:19.6337344+05:30"
+2026-07-16 10:17:29.641 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:17:29.6411012+05:30"
+2026-07-16 10:17:39.648 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:17:39.6482459+05:30"
+2026-07-16 10:17:49.656 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:17:49.6568695+05:30"
+2026-07-16 10:17:59.665 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:17:59.6654769+05:30"
+2026-07-16 10:18:09.671 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:18:09.6710058+05:30"
+2026-07-16 10:18:19.691 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:18:19.6911125+05:30"
+2026-07-16 10:18:29.700 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:18:29.7006775+05:30"
+2026-07-16 10:18:39.716 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:18:39.7165883+05:30"
+2026-07-16 10:18:49.723 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:18:49.7235138+05:30"
+2026-07-16 10:18:59.739 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:18:59.7397358+05:30"
+2026-07-16 10:19:09.749 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:19:09.7493844+05:30"
+2026-07-16 10:19:19.758 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:19:19.7583040+05:30"
+2026-07-16 10:19:29.778 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:19:29.7781608+05:30"
+2026-07-16 10:19:39.780 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:19:39.7805268+05:30"
+2026-07-16 10:19:49.792 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:19:49.7926965+05:30"
+2026-07-16 10:19:59.799 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:19:59.7995256+05:30"
+2026-07-16 10:20:09.815 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:20:09.8150394+05:30"
+2026-07-16 10:20:19.827 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:20:19.8270744+05:30"
+2026-07-16 10:20:41.680 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:20:41.6802063+05:30"
+2026-07-16 10:49:39.616 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:49:39.6169428+05:30"
+2026-07-16 10:49:50.791 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:49:50.7914846+05:30"
+2026-07-16 10:50:00.804 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:50:00.8040504+05:30"
+2026-07-16 10:50:10.808 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:50:10.8082669+05:30"
+2026-07-16 10:50:20.822 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:50:20.8222324+05:30"
+2026-07-16 10:50:30.830 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:50:30.8303784+05:30"
+2026-07-16 10:50:40.843 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:50:40.8437754+05:30"
+2026-07-16 10:50:50.854 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:50:50.8547005+05:30"
+2026-07-16 10:51:00.862 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:51:00.8625533+05:30"
+2026-07-16 10:51:10.879 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:51:10.8793324+05:30"
+2026-07-16 10:51:20.888 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:51:20.8888233+05:30"
+2026-07-16 10:51:30.893 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:51:30.8936526+05:30"
+2026-07-16 10:51:40.902 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:51:40.9023161+05:30"
+2026-07-16 10:51:50.915 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:51:50.9157388+05:30"
+2026-07-16 10:52:00.922 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:52:00.9220413+05:30"
+2026-07-16 10:52:10.928 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:52:10.9282746+05:30"
+2026-07-16 10:52:20.940 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:52:20.9400031+05:30"
+2026-07-16 10:52:30.941 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:52:30.9416768+05:30"
+2026-07-16 10:52:40.960 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:52:40.9599873+05:30"
+2026-07-16 10:52:50.976 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:52:50.9763080+05:30"
+2026-07-16 10:53:00.980 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:53:00.9799980+05:30"
+2026-07-16 10:53:10.996 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:53:10.9968166+05:30"
+2026-07-16 10:53:21.003 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:53:21.0036784+05:30"
+2026-07-16 10:53:31.016 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:53:31.0164988+05:30"
+2026-07-16 10:53:41.027 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:53:41.0278743+05:30"
+2026-07-16 10:53:51.042 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:53:51.0424885+05:30"
+2026-07-16 10:54:01.050 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:54:01.0507097+05:30"
+2026-07-16 10:54:11.066 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:54:11.0663986+05:30"
+2026-07-16 10:54:21.078 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:54:21.0781407+05:30"
+2026-07-16 10:54:31.087 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:54:31.0870653+05:30"
+2026-07-16 10:54:41.104 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:54:41.1043706+05:30"
+2026-07-16 10:54:51.128 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:54:51.1288519+05:30"
+2026-07-16 10:55:01.134 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:55:01.1346437+05:30"
+2026-07-16 10:55:11.147 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:55:11.1475391+05:30"
+2026-07-16 10:55:21.158 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:55:21.1588847+05:30"
+2026-07-16 10:55:31.167 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:55:31.1677901+05:30"
+2026-07-16 10:55:41.175 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:55:41.1754897+05:30"
+2026-07-16 10:55:51.184 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:55:51.1845001+05:30"
+2026-07-16 10:56:01.193 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:56:01.1929995+05:30"
+2026-07-16 10:56:11.198 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:56:11.1988669+05:30"
+2026-07-16 10:56:21.209 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:56:21.2090201+05:30"
+2026-07-16 10:56:31.226 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:56:31.2263558+05:30"
+2026-07-16 10:56:41.243 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:56:41.2435369+05:30"
+2026-07-16 10:56:51.245 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:56:51.2453419+05:30"
+2026-07-16 10:57:01.255 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:57:01.2558706+05:30"
+2026-07-16 10:57:11.267 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:57:11.2674037+05:30"
+2026-07-16 10:57:21.272 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:57:21.2729007+05:30"
+2026-07-16 10:57:31.285 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:57:31.2858463+05:30"
+2026-07-16 10:57:41.289 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:57:41.2897689+05:30"
+2026-07-16 10:57:51.303 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:57:51.3034494+05:30"
+2026-07-16 10:58:01.320 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:58:01.3205356+05:30"
+2026-07-16 10:58:11.328 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:58:11.3289722+05:30"
+2026-07-16 10:58:21.344 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:58:21.3445590+05:30"
+2026-07-16 10:58:31.352 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:58:31.3525074+05:30"
+2026-07-16 10:58:41.363 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:58:41.3636403+05:30"
+2026-07-16 10:58:51.380 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:58:51.3806706+05:30"
+2026-07-16 10:59:01.395 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:59:01.3951015+05:30"
+2026-07-16 10:59:11.411 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:59:11.4118133+05:30"
+2026-07-16 10:59:21.417 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:59:21.4177607+05:30"
+2026-07-16 10:59:31.435 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:59:31.4351265+05:30"
+2026-07-16 10:59:41.442 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:59:41.4425399+05:30"
+2026-07-16 10:59:51.461 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T10:59:51.4614076+05:30"
+2026-07-16 11:00:01.472 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:00:01.4725551+05:30"
+2026-07-16 11:00:11.490 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:00:11.4906706+05:30"
+2026-07-16 11:00:21.496 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:00:21.4961294+05:30"
+2026-07-16 11:00:31.506 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:00:31.5064214+05:30"
+2026-07-16 11:00:41.517 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:00:41.5178133+05:30"
+2026-07-16 11:00:51.528 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:00:51.5281486+05:30"
+2026-07-16 11:01:01.532 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:01:01.5328551+05:30"
+2026-07-16 11:01:11.547 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:01:11.5479081+05:30"
+2026-07-16 11:01:21.554 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:01:21.5548116+05:30"
+2026-07-16 11:01:31.566 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:01:31.5664947+05:30"
+2026-07-16 11:01:41.580 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:01:41.5809222+05:30"
+2026-07-16 11:01:51.594 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:01:51.5947997+05:30"
+2026-07-16 11:02:01.610 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:02:01.6104049+05:30"
+2026-07-16 11:02:11.628 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:02:11.6285868+05:30"
+2026-07-16 11:02:21.639 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:02:21.6397208+05:30"
+2026-07-16 11:02:31.654 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:02:31.6543388+05:30"
+2026-07-16 11:02:41.658 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:02:41.6582609+05:30"
+2026-07-16 11:02:51.678 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:02:51.6783192+05:30"
+2026-07-16 11:03:01.688 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:03:01.6884214+05:30"
+2026-07-16 11:03:11.698 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:03:11.6986893+05:30"
+2026-07-16 11:03:21.711 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:03:21.7118491+05:30"
+2026-07-16 11:03:31.721 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:03:31.7219757+05:30"
+2026-07-16 11:03:41.729 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T11:03:41.7298674+05:30"
+2026-07-16 17:57:18.288 +05:30 [INF] Configured endpoint appointment.events.queue, Consumer: HealthAxis.API.Consumers.AppointmentBookedConsumer
+2026-07-16 17:57:19.061 +05:30 [INF] HeartbeatService started.
+2026-07-16 17:57:19.064 +05:30 [INF] NotificationCleanupService started.
+2026-07-16 17:57:19.065 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:57:19.0647570+05:30"
+2026-07-16 17:57:19.197 +05:30 [INF] No old notifications found for cleanup.
+2026-07-16 17:57:19.368 +05:30 [INF] Now listening on: https://localhost:7130
+2026-07-16 17:57:19.372 +05:30 [INF] Now listening on: http://localhost:5145
+2026-07-16 17:57:19.416 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-16 17:57:19.419 +05:30 [INF] Hosting environment: Development
+2026-07-16 17:57:19.422 +05:30 [INF] Content root path: C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore
+2026-07-16 17:57:19.449 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-16 17:57:19.669 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 4.6854 ms
+2026-07-16 17:57:19.838 +05:30 [INF] HTTP GET /api/appointments responded 401 in 144.8076 ms
+2026-07-16 17:57:29.080 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:57:29.0800542+05:30"
+2026-07-16 17:57:39.110 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:57:39.1107177+05:30"
+2026-07-16 17:57:41.776 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 1.9133 ms
+2026-07-16 17:57:43.138 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 1347.6761 ms
+2026-07-16 17:57:43.194 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 0.5374 ms
+2026-07-16 17:57:43.201 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 0.1788 ms
+2026-07-16 17:57:43.787 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-16 17:57:44.000 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 793.9859 ms
+2026-07-16 17:57:44.023 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 20.1397 ms
+2026-07-16 17:57:44.035 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 0.0990 ms
+2026-07-16 17:57:44.035 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 0.0388 ms
+2026-07-16 17:57:44.035 +05:30 [INF] HTTP OPTIONS /api/patients/1006/health-records responded 204 in 0.0700 ms
+2026-07-16 17:57:44.338 +05:30 [INF] HTTP GET /api/appointments responded 200 in 288.2888 ms
+2026-07-16 17:57:44.427 +05:30 [INF] HTTP GET /api/patients/1006/health-records responded 200 in 373.9722 ms
+2026-07-16 17:57:45.110 +05:30 [INF] HTTP GET /api/doctors responded 200 in 1065.9678 ms
+2026-07-16 17:57:49.122 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:57:49.1219383+05:30"
+2026-07-16 17:57:49.124 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 0.5192 ms
+2026-07-16 17:57:49.160 +05:30 [INF] HTTP GET /api/doctors responded 200 in 25.9142 ms
+2026-07-16 17:57:59.129 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:57:59.1298830+05:30"
+2026-07-16 17:58:01.930 +05:30 [INF] HTTP OPTIONS /api/doctors/3/availability responded 204 in 0.2538 ms
+2026-07-16 17:58:01.931 +05:30 [INF] HTTP OPTIONS /api/doctors/6/availability responded 204 in 0.0802 ms
+2026-07-16 17:58:02.919 +05:30 [INF] 
+========================================
+CACHE MISS - DOCTOR AVAILABILITY
+========================================
+Doctor Id : 6
+Date      : 2026-07-25
+Key       : doctors:6:availability:2026-07-25
+Source    : SQL Server Required
+========================================
+2026-07-16 17:58:02.919 +05:30 [INF] 
+========================================
+CACHE MISS - DOCTOR AVAILABILITY
+========================================
+Doctor Id : 3
+Date      : 2026-07-25
+Key       : doctors:3:availability:2026-07-25
+Source    : SQL Server Required
+========================================
+2026-07-16 17:58:03.082 +05:30 [INF] 
+========================================
+CACHE STORED IN GARNET
+========================================
+Doctor Id : 6
+Date      : 2026-07-25
+Key       : doctors:6:availability:2026-07-25
+TTL       : 5 Minutes
+Slots     : 12
+========================================
+2026-07-16 17:58:03.082 +05:30 [INF] 
+========================================
+CACHE STORED IN GARNET
+========================================
+Doctor Id : 3
+Date      : 2026-07-25
+Key       : doctors:3:availability:2026-07-25
+TTL       : 5 Minutes
+Slots     : 12
+========================================
+2026-07-16 17:58:03.087 +05:30 [INF] HTTP GET /api/doctors/6/availability responded 200 in 1135.7622 ms
+2026-07-16 17:58:03.089 +05:30 [INF] HTTP GET /api/doctors/3/availability responded 200 in 1144.7481 ms
+2026-07-16 17:58:09.135 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:58:09.1353912+05:30"
+2026-07-16 17:58:19.144 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:58:19.1443628+05:30"
+2026-07-16 17:58:21.964 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 0.4529 ms
+2026-07-16 17:58:22.358 +05:30 [INF] 
+========================================
+CACHE REMOVED - DOCTOR AVAILABILITY
+========================================
+Doctor Id : 3
+Date      : 2026-07-25
+Key       : doctors:3:availability:2026-07-25
+Reason    : Appointment booked
+========================================
+2026-07-16 17:58:22.737 +05:30 [INF] AppointmentBookedEvent published using MassTransit for AppointmentId 58, DoctorId 3
+2026-07-16 17:58:22.746 +05:30 [INF] HTTP POST /api/appointments responded 200 in 766.5131 ms
+2026-07-16 17:58:22.800 +05:30 [INF] ===============================
+APPOINTMENT EVENT RECEIVED
+===============================
+Event Type  : AppointmentBooked
+Appointment : 58
+Patient     : Raju
+Doctor      : 3
+Date        : 25-Jul-2026
+Time Slot   : 09:00
+Occurred At : 16-Jul-2026 12:28:22
+===============================
+2026-07-16 17:58:22.855 +05:30 [INF] Notification created for DoctorId 3 for AppointmentId 58
+2026-07-16 17:58:25.278 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 0.0695 ms
+2026-07-16 17:58:25.281 +05:30 [INF] HTTP OPTIONS /api/health-records/patient/1006 responded 204 in 0.1401 ms
+2026-07-16 17:58:25.300 +05:30 [INF] HTTP GET /api/appointments responded 200 in 19.8887 ms
+2026-07-16 17:58:25.317 +05:30 [INF] HTTP GET /api/doctors responded 200 in 30.5808 ms
+2026-07-16 17:58:25.372 +05:30 [INF] HTTP GET /api/health-records/patient/1006 responded 200 in 69.4782 ms
+2026-07-16 17:58:29.167 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:58:29.1676847+05:30"
+2026-07-16 17:58:39.199 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:58:39.1996299+05:30"
+2026-07-16 17:58:49.219 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:58:49.2191124+05:30"
+2026-07-16 17:58:59.238 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:58:59.2381127+05:30"
+2026-07-16 17:59:09.251 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:59:09.2516455+05:30"
+2026-07-16 17:59:19.272 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:59:19.2717989+05:30"
+2026-07-16 17:59:29.283 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:59:29.2831425+05:30"
+2026-07-16 17:59:39.298 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:59:39.2980662+05:30"
+2026-07-16 17:59:49.306 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:59:49.3060199+05:30"
+2026-07-16 17:59:59.326 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T17:59:59.3265183+05:30"
+2026-07-16 18:00:09.333 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T18:00:09.3332589+05:30"
+2026-07-16 18:00:19.343 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T18:00:19.3436292+05:30"
+2026-07-16 18:00:29.366 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T18:00:29.3660962+05:30"
+2026-07-16 18:00:39.376 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T18:00:39.3760410+05:30"
+2026-07-16 18:00:49.394 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T18:00:49.3933601+05:30"
+2026-07-16 18:00:59.411 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T18:00:59.4108469+05:30"
+2026-07-16 18:01:09.419 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T18:01:09.4198799+05:30"
+2026-07-16 18:01:19.435 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-16T18:01:19.4350442+05:30"

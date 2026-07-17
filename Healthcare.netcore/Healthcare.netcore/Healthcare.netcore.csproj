@@ -35,8 +35,4 @@
     <ProjectReference Include="..\HealthcareAxis.Shared\HealthcareAxis.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Messaging\" />
-  </ItemGroup>
-
 </Project>

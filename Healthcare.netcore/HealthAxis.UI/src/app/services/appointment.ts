@@ -13,7 +13,7 @@ export class AppointmentService {
   private getHeaders(): HttpHeaders {
     let token: string | null = null;
 
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       token = localStorage.getItem('token');
     }
 

@@ -63,7 +63,7 @@ namespace Healthcare.netcore.Tests.Services
                 _configuration);
         }
 
-        private RegisterDto GetRegisterDto()
+        private static RegisterDto GetRegisterDto()
         {
             return new RegisterDto
             {

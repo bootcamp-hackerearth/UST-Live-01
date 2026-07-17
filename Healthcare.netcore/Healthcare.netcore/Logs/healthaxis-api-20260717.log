@@ -1,0 +1,11 @@
+2026-07-17 14:37:41.647 +05:30 [INF] Configured endpoint appointment.events.queue, Consumer: HealthAxis.API.Consumers.AppointmentBookedConsumer
+2026-07-17 14:37:42.944 +05:30 [INF] HeartbeatService started.
+2026-07-17 14:37:42.964 +05:30 [INF] NotificationCleanupService started.
+2026-07-17 14:37:42.974 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-17T14:37:42.9731040+05:30"
+2026-07-17 14:37:43.380 +05:30 [INF] No old notifications found for cleanup.
+2026-07-17 14:37:43.506 +05:30 [INF] Now listening on: https://localhost:7130
+2026-07-17 14:37:43.592 +05:30 [INF] Now listening on: http://localhost:5145
+2026-07-17 14:37:43.695 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-17 14:37:43.716 +05:30 [INF] Hosting environment: Development
+2026-07-17 14:37:43.723 +05:30 [INF] Content root path: C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore
+2026-07-17 14:37:43.985 +05:30 [INF] Bus started: "rabbitmq://localhost/"

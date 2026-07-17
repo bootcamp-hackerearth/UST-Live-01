@@ -22,7 +22,7 @@ export class DoctorLayout implements OnInit {
   doctorInitial = 'D';
 
   ngOnInit() {
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       this.loadDoctor();
     }
   }

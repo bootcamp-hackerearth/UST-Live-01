@@ -77,7 +77,7 @@ export class Login {
               `?accessToken=${encodeURIComponent(response.accessToken)}` +
               `&refreshToken=${encodeURIComponent(response.refreshToken || '')}`;
 
-            window.location.href = redirectUrl;
+            globalThis.window.location.href = redirectUrl;
             return;
           }
 

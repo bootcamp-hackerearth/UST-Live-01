@@ -32,7 +32,7 @@ export class HealthHistory implements OnInit {
   selectedRecord: any = null;
 
   ngOnInit() {
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       this.loadHealthRecords();
     }
   }

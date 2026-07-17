@@ -26,7 +26,7 @@ export class Dashboard implements OnInit {
   private readonly appointmentsUrl = 'https://localhost:7130/api/appointments';
 
   ngOnInit() {
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       this.loadDashboard();
     }
   }

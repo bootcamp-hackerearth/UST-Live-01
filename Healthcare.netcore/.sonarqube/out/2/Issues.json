@@ -1825,6 +1825,248 @@
         {
           "ruleId": "S1192",
           "level": "warning",
+          "message": "Define a constant instead of using this literal 'Doctor not found' 6 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 177,
+                  "startColumn": 49,
+                  "endLine": 177,
+                  "endColumn": 67
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 185,
+                  "startColumn": 45,
+                  "endLine": 185,
+                  "endColumn": 63
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 195,
+                  "startColumn": 45,
+                  "endLine": 195,
+                  "endColumn": 63
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 299,
+                  "startColumn": 45,
+                  "endLine": 299,
+                  "endColumn": 63
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 470,
+                  "startColumn": 49,
+                  "endLine": 470,
+                  "endColumn": 67
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 493,
+                  "startColumn": 45,
+                  "endLine": 493,
+                  "endColumn": 63
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'LogSeparator' 12 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 535,
+                  "startColumn": 17,
+                  "endLine": 535,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 537,
+                  "startColumn": 17,
+                  "endLine": 537,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 542,
+                  "startColumn": 17,
+                  "endLine": 542,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 552,
+                  "startColumn": 17,
+                  "endLine": 552,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 554,
+                  "startColumn": 17,
+                  "endLine": 554,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 559,
+                  "startColumn": 17,
+                  "endLine": 559,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 570,
+                  "startColumn": 17,
+                  "endLine": 570,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 572,
+                  "startColumn": 17,
+                  "endLine": 572,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 578,
+                  "startColumn": 17,
+                  "endLine": 578,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 588,
+                  "startColumn": 17,
+                  "endLine": 588,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 590,
+                  "startColumn": 17,
+                  "endLine": 590,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 595,
+                  "startColumn": 17,
+                  "endLine": 595,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "10": null,
+              "2": null,
+              "3": null,
+              "4": null,
+              "5": null,
+              "6": null,
+              "7": null,
+              "8": null,
+              "9": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
           "message": "Define a constant instead of using this literal 'Patient not found' 4 times.",
           "locations": [
             {
@@ -1884,248 +2126,6 @@
           }
         },
         {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'Doctor not found' 6 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 177,
-                  "startColumn": 49,
-                  "endLine": 177,
-                  "endColumn": 67
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 185,
-                  "startColumn": 45,
-                  "endLine": 185,
-                  "endColumn": 63
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 195,
-                  "startColumn": 45,
-                  "endLine": 195,
-                  "endColumn": 63
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 294,
-                  "startColumn": 45,
-                  "endLine": 294,
-                  "endColumn": 63
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 465,
-                  "startColumn": 49,
-                  "endLine": 465,
-                  "endColumn": 67
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 488,
-                  "startColumn": 45,
-                  "endLine": 488,
-                  "endColumn": 63
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null,
-              "4": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal '========================================' 12 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 530,
-                  "startColumn": 17,
-                  "endLine": 530,
-                  "endColumn": 59
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 532,
-                  "startColumn": 17,
-                  "endLine": 532,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 537,
-                  "startColumn": 17,
-                  "endLine": 537,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 547,
-                  "startColumn": 17,
-                  "endLine": 547,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 549,
-                  "startColumn": 17,
-                  "endLine": 549,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 554,
-                  "startColumn": 17,
-                  "endLine": 554,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 565,
-                  "startColumn": 17,
-                  "endLine": 565,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 567,
-                  "startColumn": 17,
-                  "endLine": 567,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 573,
-                  "startColumn": 17,
-                  "endLine": 573,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 583,
-                  "startColumn": 17,
-                  "endLine": 583,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 585,
-                  "startColumn": 17,
-                  "endLine": 585,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 590,
-                  "startColumn": 17,
-                  "endLine": 590,
-                  "endColumn": 59
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "10": null,
-              "2": null,
-              "3": null,
-              "4": null,
-              "5": null,
-              "6": null,
-              "7": null,
-              "8": null,
-              "9": null
-            }
-          }
-        },
-        {
           "ruleId": "S6667",
           "level": "warning",
           "message": "Logging in a catch clause should pass the caught exception as a parameter.",
@@ -2165,6 +2165,54 @@
           ],
           "properties": {
             "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Migrations/20260616123056_SolvedIssues.cs",
+                "region": {
+                  "startLine": 121,
+                  "startColumn": 26,
+                  "endLine": 121,
+                  "endColumn": 128
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Migrations/20260616123056_SolvedIssues.cs",
+                "region": {
+                  "startLine": 133,
+                  "startColumn": 26,
+                  "endLine": 133,
+                  "endColumn": 138
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
           }
         },
         {
@@ -2241,96 +2289,6 @@
           }
         },
         {
-          "ruleId": "CA1873",
-          "level": "note",
-          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Consumers/AppointmentBookedConsumer.cs",
-                "region": {
-                  "startLine": 38,
-                  "startColumn": 9,
-                  "endLine": 38,
-                  "endColumn": 83
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CA1873",
-          "level": "note",
-          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Consumers/AppointmentBookedConsumer.cs",
-                "region": {
-                  "startLine": 51,
-                  "startColumn": 9,
-                  "endLine": 54,
-                  "endColumn": 44
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CA1861",
-          "level": "note",
-          "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Migrations/20260616123056_SolvedIssues.cs",
-                "region": {
-                  "startLine": 121,
-                  "startColumn": 26,
-                  "endLine": 121,
-                  "endColumn": 128
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "paramName": "columns"
-            }
-          }
-        },
-        {
-          "ruleId": "CA1861",
-          "level": "note",
-          "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Migrations/20260616123056_SolvedIssues.cs",
-                "region": {
-                  "startLine": 133,
-                  "startColumn": 26,
-                  "endLine": 133,
-                  "endColumn": 138
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "paramName": "columns"
-            }
-          }
-        },
-        {
           "ruleId": "S6667",
           "level": "warning",
           "message": "Logging in a catch clause should pass the caught exception as a parameter.",
@@ -2379,12 +2337,75 @@
           "locations": [
             {
               "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Consumers/AppointmentBookedConsumer.cs",
+                "region": {
+                  "startLine": 38,
+                  "startColumn": 9,
+                  "endLine": 38,
+                  "endColumn": 83
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Consumers/AppointmentBookedConsumer.cs",
+                "region": {
+                  "startLine": 51,
+                  "startColumn": 9,
+                  "endLine": 54,
+                  "endColumn": 44
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
                 "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/BackgroundServices/NotificationCleanupService.cs",
                 "region": {
                   "startLine": 53,
                   "startColumn": 9,
                   "endLine": 56,
                   "endColumn": 24
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S5122",
+          "level": "warning",
+          "message": "Make sure this permissive CORS policy is safe here.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Program.cs",
+                "region": {
+                  "startLine": 76,
+                  "startColumn": 45,
+                  "endLine": 76,
+                  "endColumn": 68
                 }
               }
             }
@@ -2436,17 +2457,186 @@
           }
         },
         {
-          "ruleId": "S5122",
+          "ruleId": "S3776",
           "level": "warning",
-          "message": "Make sure this permissive CORS policy is safe here.",
+          "message": "Refactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Program.cs",
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
                 "region": {
-                  "startLine": 76,
-                  "startColumn": 45,
-                  "endLine": 76,
+                  "startLine": 244,
+                  "startColumn": 50,
+                  "endLine": 244,
+                  "endColumn": 70
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 252,
+                  "startColumn": 13,
+                  "endLine": 252,
+                  "endColumn": 15
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 256,
+                  "startColumn": 17,
+                  "endLine": 256,
+                  "endColumn": 19
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 260,
+                  "startColumn": 21,
+                  "endLine": 260,
+                  "endColumn": 23
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 269,
+                  "startColumn": 17,
+                  "endLine": 269,
+                  "endColumn": 19
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 282,
+                  "startColumn": 13,
+                  "endLine": 282,
+                  "endColumn": 15
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 286,
+                  "startColumn": 13,
+                  "endLine": 286,
+                  "endColumn": 17
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 292,
+                  "startColumn": 13,
+                  "endLine": 292,
+                  "endColumn": 17
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 297,
+                  "startColumn": 13,
+                  "endLine": 297,
+                  "endColumn": 15
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 304,
+                  "startColumn": 13,
+                  "endLine": 304,
+                  "endColumn": 15
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 309,
+                  "startColumn": 42,
+                  "endLine": 309,
+                  "endColumn": 44
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 317,
+                  "startColumn": 17,
+                  "endLine": 317,
+                  "endColumn": 18
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 329,
+                  "startColumn": 13,
+                  "endLine": 329,
+                  "endColumn": 15
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": "+1",
+              "1": "+2 (incl 1 for nesting)",
+              "10": "+1",
+              "11": "+1",
+              "2": "+3 (incl 2 for nesting)",
+              "3": "+2 (incl 1 for nesting)",
+              "4": "+1",
+              "5": "+1",
+              "6": "+1",
+              "7": "+1",
+              "8": "+1",
+              "9": "+1"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1873",
+          "level": "note",
+          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
+                "region": {
+                  "startLine": 523,
+                  "startColumn": 21,
+                  "endLine": 525,
                   "endColumn": 68
                 }
               }
@@ -2486,73 +2676,10 @@
               "resultFile": {
                 "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
                 "region": {
-                  "startLine": 270,
+                  "startLine": 337,
                   "startColumn": 25,
-                  "endLine": 272,
-                  "endColumn": 75
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CA1873",
-          "level": "note",
-          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 332,
-                  "startColumn": 25,
-                  "endLine": 338,
+                  "endLine": 343,
                   "endColumn": 47
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CA1873",
-          "level": "note",
-          "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Services/Implementations/DoctorService.cs",
-                "region": {
-                  "startLine": 518,
-                  "startColumn": 21,
-                  "endLine": 520,
-                  "endColumn": 68
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S6966",
-          "level": "warning",
-          "message": "Await RunAsync instead.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore/Program.cs",
-                "region": {
-                  "startLine": 222,
-                  "startColumn": 1,
-                  "endLine": 222,
-                  "endColumn": 10
                 }
               }
             }
@@ -2639,6 +2766,23 @@
             ]
           }
         },
+        "S3776": {
+          "id": "S3776",
+          "shortDescription": "Cognitive Complexity of methods should not be too high",
+          "fullDescription": "This rule raises an issue when the code cognitive complexity of a function is above a certain threshold.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-3776",
+          "properties": {
+            "category": "Critical Code Smell",
+            "isEnabledByDefault": false,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
         "S5122": {
           "id": "S5122",
           "shortDescription": "Having a permissive Cross-Origin Resource Sharing policy is security-sensitive",
@@ -2683,23 +2827,6 @@
             "tags": [
               "C#",
               "MainSourceScope",
-              "SonarWay"
-            ]
-          }
-        },
-        "S6966": {
-          "id": "S6966",
-          "shortDescription": "Awaitable method should be used",
-          "fullDescription": "In an async method, any blocking operations should be avoided.",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-6966",
-          "properties": {
-            "category": "Major Code Smell",
-            "isEnabledByDefault": true,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "TestSourceScope",
               "SonarWay"
             ]
           }

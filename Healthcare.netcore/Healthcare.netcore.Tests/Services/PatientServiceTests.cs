@@ -37,7 +37,7 @@ namespace Healthcare.netcore.Tests.Services
                 _mapperMock.Object);
         }
 
-        private Patient GetPatient()
+        private static Patient GetPatient()
         {
             return new Patient
             {
@@ -52,7 +52,7 @@ namespace Healthcare.netcore.Tests.Services
             };
         }
 
-        private PatientDto GetPatientDto()
+        private static PatientDto GetPatientDto()
         {
             return new PatientDto
             {
@@ -63,7 +63,7 @@ namespace Healthcare.netcore.Tests.Services
             };
         }
 
-        private UpdatePatientDto GetValidUpdatePatientDto()
+        private static  UpdatePatientDto GetValidUpdatePatientDto()
         {
             return new UpdatePatientDto
             {

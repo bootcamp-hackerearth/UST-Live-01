@@ -33,7 +33,7 @@ namespace Healthcare.netcore.Tests.Services
                 _mapperMock.Object);
         }
 
-        private CreateHealthRecordDto GetCreateDto()
+        private static CreateHealthRecordDto GetCreateDto()
         {
             return new CreateHealthRecordDto
             {
@@ -44,7 +44,7 @@ namespace Healthcare.netcore.Tests.Services
             };
         }
 
-        private Appointment GetCompletedAppointment()
+        private static Appointment GetCompletedAppointment()
         {
             return new Appointment
             {
@@ -57,7 +57,7 @@ namespace Healthcare.netcore.Tests.Services
             };
         }
 
-        private HealthRecord GetHealthRecord()
+        private static  HealthRecord GetHealthRecord()
         {
             return new HealthRecord
             {
@@ -72,7 +72,7 @@ namespace Healthcare.netcore.Tests.Services
             };
         }
 
-        private HealthRecordDto GetHealthRecordDto()
+        private static HealthRecordDto GetHealthRecordDto()
         {
             return new HealthRecordDto
             {

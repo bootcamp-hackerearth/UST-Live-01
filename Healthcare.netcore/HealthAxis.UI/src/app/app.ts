@@ -23,7 +23,7 @@ export class App implements OnInit {
       return;
     }
 
-    window.alert = (message?: any) => {
+    globalThis.alert = (message?: any) => {
       this.zone.run(() => {
         const text = String(message ?? '');
 

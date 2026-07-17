@@ -1,7 +1,7 @@
-import { inject } from '@angular/core';
+import { inject,PLATFORM_ID} from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { PLATFORM_ID } from '@angular/core';
+
 
 export const authGuard: CanActivateFn = () => {
   const router = inject(Router);

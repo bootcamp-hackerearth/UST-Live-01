@@ -79,7 +79,7 @@ export class Register {
       return 'Phone number is required.';
     }
 
-    const phonePattern = /^[0-9]{10}$/;
+    const phonePattern = /^\d{10}$/;
 
     if (!phonePattern.test(this.phoneNumber.trim())) {
       return 'Phone number must be 10 digits.';

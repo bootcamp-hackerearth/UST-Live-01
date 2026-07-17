@@ -31,7 +31,7 @@ export class Dashboard implements OnInit {
   private readonly patientsUrl = 'https://localhost:7130/api/patients';
 
   ngOnInit() {
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       this.loadDashboard();
     }
   }

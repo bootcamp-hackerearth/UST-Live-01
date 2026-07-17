@@ -47,7 +47,7 @@ export class Profile implements OnInit {
   };
 
   ngOnInit() {
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       this.loadCurrentPatient();
     }
   }
@@ -153,7 +153,7 @@ export class Profile implements OnInit {
       return 'Phone number is required.';
     }
 
-    const phonePattern = /^[0-9]{10}$/;
+    const phonePattern = /^\d{10}$/;
 
     if (!phonePattern.test(phoneNumber)) {
       return 'Phone number must be exactly 10 digits.';
@@ -296,7 +296,7 @@ export class Profile implements OnInit {
     }
 
     const hasUppercase = /[A-Z]/.test(newPassword);
-    const hasDigit = /[0-9]/.test(newPassword);
+    const hasDigit = /\d/.test(newPassword);
     const hasSpecial = /[^A-Za-z0-9]/.test(newPassword);
 
     if (!hasUppercase || !hasDigit || !hasSpecial) {

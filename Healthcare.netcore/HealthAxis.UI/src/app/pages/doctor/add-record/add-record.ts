@@ -33,7 +33,7 @@ export class AddRecord implements OnInit {
   selectedRecord: any = null;
 
   ngOnInit() {
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       this.loadHealthRecordData();
     }
   }

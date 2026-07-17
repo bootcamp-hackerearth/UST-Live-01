@@ -219,4 +219,4 @@ using (var scope = app.Services.CreateScope())
     await AdminSeeder.SeedAdmin(userManager);
 }
 
-app.Run();
+await app.RunAsync();

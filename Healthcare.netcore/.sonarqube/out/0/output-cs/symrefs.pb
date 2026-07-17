@@ -109,22 +109,22 @@ lC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shar
 
  $
 
- 'x
-jC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\InsuranceStatus.cs
-
- o
-aC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\Gender.cs
-
- }
-oC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\DoctorSpecialisation.cs
-
- z
-lC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\AppointmentStatus.cs
-
- q
+ 'q
 cC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\UserRole.cs
 
- û
+ x
+jC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\InsuranceStatus.cs
+
+ z
+lC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\AppointmentStatus.cs
+
+ }
+oC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\DoctorSpecialisation.cs
+
+ o
+aC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\Gender.cs
+
+ û
 rC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\Patient\UpdatePatientDto.cs
 
  !
@@ -202,12 +202,7 @@ vC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shar
 
  
 
- ê
-vC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\Doctor\UpdateDoctorStatusDto.cs
-
- &
-
- ∫
+ ∫
 |C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\HealthRecord\CreateHealthRecordDto.cs
 
  &
@@ -218,7 +213,12 @@ vC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shar
 
 		 "
 
- ∫
+ ê
+vC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\Doctor\UpdateDoctorStatusDto.cs
+
+ &
+
+ ∫
 pC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\Doctor\UpdateDoctorDto.cs
 
   
@@ -261,22 +261,7 @@ vC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shar
 
  
 
- &∆
-pC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\Doctor\CreateDoctorDto.cs
-
-  
-
- 
-
- 
-
- '
-
- ,
-
- $
-
- &◊
+ &◊
 qC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\Common\PaginationParams.cs
 
  
@@ -302,18 +287,7 @@ nC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shar
 
  
 
- ¨
-nC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\Common\ErrorResponse.cs
-
- 
-
- 
-
- 
-
-		 !
-
- ∞
+ ∞
 fC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\Auth\UserDto.cs
 
  
@@ -326,7 +300,33 @@ fC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shar
 
  
 
- ÿ
+ ∆
+pC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\Doctor\CreateDoctorDto.cs
+
+  
+
+ 
+
+ 
+
+ '
+
+ ,
+
+ $
+
+ &¨
+nC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\Common\ErrorResponse.cs
+
+ 
+
+ 
+
+ 
+
+		 !
+
+ ÿ
 jC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\Auth\RegisterDto.cs
 
  

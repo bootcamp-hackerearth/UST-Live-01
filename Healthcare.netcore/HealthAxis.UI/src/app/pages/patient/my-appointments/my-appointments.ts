@@ -55,7 +55,7 @@ export class MyAppointments implements OnInit {
   selectedHealthRecord: any = null;
 
   ngOnInit(): void {
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       this.loadAppointments();
     }
   }

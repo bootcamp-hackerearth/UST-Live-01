@@ -22,7 +22,7 @@ export class PatientLayout implements OnInit {
   private readonly patientUrl = 'https://localhost:7130/api/patients/me';
 
   ngOnInit() {
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       this.loadPatient();
     }
   }

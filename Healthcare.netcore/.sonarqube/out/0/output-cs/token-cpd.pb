@@ -470,8 +470,8 @@ HealthAxis
 }		 
 }
 
- ¿
-aC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\Gender.cs
+ Ó
+lC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\AppointmentStatus.cs
 	namespace 	
 
 HealthAxis
@@ -479,21 +479,19 @@ HealthAxis
 . 
 Shared 
 . 
-Enums !
-{ 
-public 
-
-enum 
-Gender 
-{ 
-Male 
-= 
-$num 
-, 
-Female 
-, 
-Other 
-} 
+Enums !
+;! "
+public 
+enum 
+AppointmentStatus 
+{ 
+Pending 
+, 
+	Confirmed 
+, 
+	Completed 
+, 
+	Cancelled 
 }		 ï
 oC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\DoctorSpecialisation.cs
 	namespace 	
@@ -559,8 +557,8 @@ Nephrology 
 , 
 GeneralMedicine 
 } 
-} Ó
-lC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\AppointmentStatus.cs
+} ¿
+aC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\Enums\Gender.cs
 	namespace 	
 
 HealthAxis
@@ -568,19 +566,21 @@ HealthAxis
 . 
 Shared 
 . 
-Enums !
-;! "
-public 
-enum 
-AppointmentStatus 
-{ 
-Pending 
-, 
-	Confirmed 
-, 
-	Completed 
-, 
-	Cancelled 
+Enums !
+{ 
+public 
+
+enum 
+Gender 
+{ 
+Male 
+= 
+$num 
+, 
+Female 
+, 
+Other 
+} 
 }		 Í-
 rC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\HealthcareAxis.Shared\DTOs\Patient\UpdatePatientDto.cs
 	namespace 	
