@@ -257,61 +257,99 @@ export class DoctorLeave implements OnInit {
   }
 
   private getErrorMessage(error: unknown): string {
-    if (typeof error === 'string' && error.trim()) {
-      return error;
-    }
+  const stringError = this.getStringError(error);
 
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'error' in error
-    ) {
-      const apiError = error as {
-        error?: {
-          message?: string;
-          Message?: string;
-          errors?: Record<string, string[]>;
-          title?: string;
-        } | string;
-        name?: string;
-        message?: string;
-      };
+  if (stringError) {
+    return stringError;
+  }
 
-      if (apiError.name === 'TimeoutError') {
-        return 'The server is taking too long to respond. Please try again.';
-      }
+  const apiError = this.getApiError(error);
 
-      if (typeof apiError.error === 'string' && apiError.error.trim()) {
-        return apiError.error;
-      }
-
-      if (typeof apiError.error === 'object' && apiError.error !== null) {
-        if (apiError.error.message) {
-          return apiError.error.message;
-        }
-
-        if (apiError.error.Message) {
-          return apiError.error.Message;
-        }
-
-        if (apiError.error.title) {
-          return apiError.error.title;
-        }
-
-        if (apiError.error.errors) {
-          const firstError = Object.values(apiError.error.errors)[0]?.[0];
-
-          if (firstError) {
-            return firstError;
-          }
-        }
-      }
-
-      if (apiError.message) {
-        return apiError.message;
-      }
-    }
-
+  if (!apiError) {
     return 'Something went wrong while processing doctor leave.';
   }
+
+  if (apiError.name === 'TimeoutError') {
+    return 'The server is taking too long to respond. Please try again.';
+  }
+
+  return (
+    this.getApiErrorBodyMessage(apiError.error) ||
+    apiError.message ||
+    'Something went wrong while processing doctor leave.'
+  );
+}
+
+private getStringError(error: unknown): string {
+  if (typeof error === 'string' && error.trim()) {
+    return error;
+  }
+
+  return '';
+}
+
+private getApiError(error: unknown): {
+  error?: {
+    message?: string;
+    Message?: string;
+    errors?: Record<string, string[]>;
+    title?: string;
+  } | string;
+  name?: string;
+  message?: string;
+} | undefined {
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'error' in error
+  ) {
+    return error as {
+      error?: {
+        message?: string;
+        Message?: string;
+        errors?: Record<string, string[]>;
+        title?: string;
+      } | string;
+      name?: string;
+      message?: string;
+    };
+  }
+
+  return undefined;
+}
+
+private getApiErrorBodyMessage(
+  errorBody?: {
+    message?: string;
+    Message?: string;
+    errors?: Record<string, string[]>;
+    title?: string;
+  } | string
+): string {
+  if (!errorBody) {
+    return '';
+  }
+
+  if (typeof errorBody === 'string') {
+    return errorBody.trim();
+  }
+
+  return (
+    errorBody.message ||
+    errorBody.Message ||
+    errorBody.title ||
+    this.getFirstValidationError(errorBody.errors)
+  );
+}
+
+private getFirstValidationError(
+  errors?: Record<string, string[]>
+): string {
+  if (!errors) {
+    return '';
+  }
+
+  return Object.values(errors)[0]?.[0] ?? '';
+}
+
 }

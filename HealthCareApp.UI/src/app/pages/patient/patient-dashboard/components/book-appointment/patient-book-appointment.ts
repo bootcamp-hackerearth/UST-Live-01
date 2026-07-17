@@ -28,6 +28,20 @@ interface PatientToastEvent {
   type: PatientToastType;
 }
 
+interface BookingApiErrorBody {
+  message?: string;
+  Message?: string;
+  errors?: Record<string, string[]>;
+  title?: string;
+}
+
+interface BookingApiError {
+  error?: BookingApiErrorBody | string;
+  name?: string;
+  status?: number;
+  message?: string;
+}
+
 @Component({
   selector: 'app-book-appointment',
   standalone: true,
@@ -571,99 +585,126 @@ export class PatientBookAppointment implements OnInit {
     });
   }
 
-  private isBookingFormValid(): boolean {
-    if (this.isLoadingPatient) {
-      this.message = 'Please wait while patient profile is loading.';
-      return false;
-    }
+ private isBookingFormValid(): boolean {
+  const validationMessage = this.getBookingValidationMessage();
 
-    if (this.currentPatientId <= 0) {
-      this.message = 'Patient profile is not loaded. Please reload and try again.';
-      return false;
-    }
-
-    if (this.isLoadingDoctors) {
-      this.message = 'Please wait while doctors are loading.';
-      return false;
-    }
-
-    if (!this.selectedSpecialisation) {
-      this.message = 'Please select a specialisation.';
-      return false;
-    }
-
-    if (!this.form.doctorId) {
-      this.message = 'Please select a doctor.';
-      return false;
-    }
-
-    if (!this.form.scheduledDate) {
-      this.message = 'Please select an appointment date.';
-      return false;
-    }
-
-    const selectedDate = this.parseInputDate(this.form.scheduledDate);
-    const today = this.parseInputDate(this.todayDate);
-    const maxDate = this.parseInputDate(this.maxBookingDate);
-
-    if (!selectedDate || !today || !maxDate) {
-      this.message = 'Please select a valid appointment date.';
-      return false;
-    }
-
-    if (selectedDate.getTime() < today.getTime()) {
-      this.message = 'Past dates are not allowed. Please select today or a future date.';
-      return false;
-    }
-
-    if (selectedDate.getTime() > maxDate.getTime()) {
-      this.message = 'Appointments can only be booked within the next 30 days.';
-      return false;
-    }
-
-    if (this.isDoctorOnLeave) {
-
-      this.message = this.doctorLeaveMessage ||
-        'Doctor is on leave for the selected date. Please choose another date.';
-      return false;
-    }
-
-    if (this.isLoadingSlots) {
-      this.message = 'Please wait while available slots are loading.';
-      return false;
-    }
-
-    if (!this.form.timeSlot) {
-      this.message = 'Please select an available time slot.';
-      return false;
-    }
-
-    const selectedSlot = this.timeSlots.find(
-      (slot: SlotAvailabilityDto) => slot.timeSlot === this.form.timeSlot
-    );
-
-    if (!selectedSlot) {
-      this.message = 'Please select a valid time slot.';
-      return false;
-    }
-
-    if (this.isTimeSlotBooked(selectedSlot)) {
-      this.message = 'This slot is already booked. Please choose another slot.';
-      return false;
-    }
-
-    if (this.isPastTimeSlot(selectedSlot)) {
-      this.message = 'This time slot has already passed. Please choose another slot.';
-      return false;
-    }
-
-    if (this.isFutureBeyondBookingWindow()) {
-      this.message = 'Booking is not open for this date. Please select a date within the next 30 days.';
-      return false;
-    }
-
-    return true;
+  if (validationMessage) {
+    this.message = validationMessage;
+    return false;
   }
+
+  return true;
+}
+
+private getBookingValidationMessage(): string {
+  return (
+    this.getPatientValidationMessage() ||
+    this.getDoctorSelectionValidationMessage() ||
+    this.getDateValidationMessage() ||
+    this.getLeaveValidationMessage() ||
+    this.getSlotValidationMessage() ||
+    ''
+  );
+}
+
+private getPatientValidationMessage(): string {
+  if (this.isLoadingPatient) {
+    return 'Please wait while patient profile is loading.';
+  }
+
+  if (this.currentPatientId <= 0) {
+    return 'Patient profile is not loaded. Please reload and try again.';
+  }
+
+  return '';
+}
+
+private getDoctorSelectionValidationMessage(): string {
+  if (this.isLoadingDoctors) {
+    return 'Please wait while doctors are loading.';
+  }
+
+  if (!this.selectedSpecialisation) {
+    return 'Please select a specialisation.';
+  }
+
+  if (!this.form.doctorId) {
+    return 'Please select a doctor.';
+  }
+
+  return '';
+}
+
+private getDateValidationMessage(): string {
+  if (!this.form.scheduledDate) {
+    return 'Please select an appointment date.';
+  }
+
+  const selectedDate = this.parseInputDate(this.form.scheduledDate);
+  const today = this.parseInputDate(this.todayDate);
+  const maxDate = this.parseInputDate(this.maxBookingDate);
+
+  if (!selectedDate || !today || !maxDate) {
+    return 'Please select a valid appointment date.';
+  }
+
+  if (selectedDate.getTime() < today.getTime()) {
+    return 'Past dates are not allowed. Please select today or a future date.';
+  }
+
+  if (selectedDate.getTime() > maxDate.getTime()) {
+    return 'Appointments can only be booked within the next 30 days.';
+  }
+
+  if (this.isFutureBeyondBookingWindow()) {
+    return 'Booking is not open for this date. Please select a date within the next 30 days.';
+  }
+
+  return '';
+}
+
+private getLeaveValidationMessage(): string {
+  if (!this.isDoctorOnLeave) {
+    return '';
+  }
+
+  return (
+    this.doctorLeaveMessage ||
+    'Doctor is on leave for the selected date. Please choose another date.'
+  );
+}
+
+private getSlotValidationMessage(): string {
+  if (this.isLoadingSlots) {
+    return 'Please wait while available slots are loading.';
+  }
+
+  if (!this.form.timeSlot) {
+    return 'Please select an available time slot.';
+  }
+
+  const selectedSlot = this.getSelectedSlot();
+
+  if (!selectedSlot) {
+    return 'Please select a valid time slot.';
+  }
+
+  if (this.isTimeSlotBooked(selectedSlot)) {
+    return 'This slot is already booked. Please choose another slot.';
+  }
+
+  if (this.isPastTimeSlot(selectedSlot)) {
+    return 'This time slot has already passed. Please choose another slot.';
+  }
+
+  return '';
+}
+
+private getSelectedSlot(): SlotAvailabilityDto | undefined {
+  return this.timeSlots.find(
+    (slot: SlotAvailabilityDto) => slot.timeSlot === this.form.timeSlot
+  );
+}
 
   private resetForm(): void {
     this.selectedSpecialisation = '';
@@ -775,66 +816,83 @@ export class PatientBookAppointment implements OnInit {
 
     return this.formatDateForInput(date);
   }
+  
+private getErrorMessage(error: unknown): string {
+  const stringError = this.getStringError(error);
 
-  private getErrorMessage(error: unknown): string {
-    if (typeof error === 'string' && error.trim()) {
-      return error;
-    }
+  if (stringError) {
+    return stringError;
+  }
 
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'error' in error
-    ) {
-      const apiError = error as {
-        error?: {
-          message?: string;
-          Message?: string;
-          errors?: Record<string, string[]>;
-          title?: string;
-        } | string;
-        name?: string;
-        status?: number;
-        message?: string;
-      };
+  const apiError = this.getApiError(error);
 
-      if (apiError.name === 'TimeoutError') {
-        return 'The server is taking too long to respond. Please try again.';
-      }
-
-      if (typeof apiError.error === 'string' && apiError.error.trim()) {
-        return apiError.error;
-      }
-
-      if (typeof apiError.error === 'object' && apiError.error !== null) {
-        if (apiError.error.message) {
-          return apiError.error.message;
-        }
-
-        if (apiError.error.Message) {
-          return apiError.error.Message;
-        }
-
-        if (apiError.error.title) {
-          return apiError.error.title;
-        }
-
-        if (apiError.error.errors) {
-          const firstError = Object.values(apiError.error.errors)[0]?.[0];
-
-          if (firstError) {
-            return firstError;
-          }
-        }
-      }
-
-      if (apiError.message) {
-        return apiError.message;
-      }
-    }
-
+  if (!apiError) {
     return 'Something went wrong while booking the appointment.';
   }
+
+  if (apiError.name === 'TimeoutError') {
+    return 'The server is taking too long to respond. Please try again.';
+  }
+
+  return (
+    this.getApiErrorBodyMessage(apiError.error) ||
+    apiError.message ||
+    'Something went wrong while booking the appointment.'
+  );
+}
+
+private getStringError(error: unknown): string {
+  if (typeof error === 'string' && error.trim()) {
+    return error;
+  }
+
+  return '';
+}
+
+private getApiError(error: unknown): BookingApiError | undefined {
+  if (!this.hasApiErrorShape(error)) {
+    return undefined;
+  }
+
+  return error as BookingApiError;
+}
+
+private hasApiErrorShape(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'error' in error
+  );
+}
+
+private getApiErrorBodyMessage(
+  errorBody?: BookingApiErrorBody | string
+): string {
+  if (!errorBody) {
+    return '';
+  }
+
+  if (typeof errorBody === 'string') {
+    return errorBody.trim();
+  }
+
+  return (
+    errorBody.message ||
+    errorBody.Message ||
+    errorBody.title ||
+    this.getFirstValidationError(errorBody.errors)
+  );
+}
+
+private getFirstValidationError(
+  errors?: Record<string, string[]>
+): string {
+  if (!errors) {
+    return '';
+  }
+
+  return Object.values(errors)[0]?.[0] ?? '';
+}
 
   private clearDoctorLeaveState(): void {
     this.isDoctorOnLeave = false;

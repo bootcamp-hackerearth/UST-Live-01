@@ -6,12 +6,15 @@ using HealthCareApp.Repository.Interface;
 using HealthCareApp.Services;
 using HealthCareApp.Services.Interface;
 using HealthCareApp.Shared.Constants;
+using HealthCareApp.Shared.Dtos.DoctorDto;
+using HealthCareApp.Shared.Dtos.DoctorLeaves;
 using HealthCareApp.Shared.Dtos.Doctors;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Numerics;
 using static MassTransit.Util.ChartTable;
 
 namespace HealthCareApp.Testing.Services
@@ -629,13 +632,26 @@ namespace HealthCareApp.Testing.Services
             result.Message.Should().Be("Doctor account created successfully.");
 
             repositoryMock.Verify(
+
                 repository => repository.CreateAsync(
-                    It.Is<Doctor>(doctor =>
-                        doctor.DoctorName == dto.FullName.Trim() &&
-                        doctor.Email == dto.Email.Trim().ToLower() &&
-                        doctor.IsActive &&
-                        doctor.CreatedDate != default),
-                    It.IsAny<CancellationToken>()),
+                It.Is<Doctor>(doctor =>
+
+                doctor.DoctorName == dto.FullName.Trim() &&
+
+                string.Equals(
+
+                doctor.Email,
+
+                dto.Email.Trim(),
+
+                StringComparison.OrdinalIgnoreCase) &&
+
+                doctor.IsActive &&
+
+                doctor.CreatedDate != default),
+
+                It.IsAny<CancellationToken>()),
+
                 Times.Once);
         }
 
@@ -871,34 +887,70 @@ namespace HealthCareApp.Testing.Services
         [Fact]
         public async Task GetDoctorAvailabilityAsync_WhenDoctorIsActiveAndDateIsNull_ShouldReturnAllSlotsAsNotBooked()
         {
-            var doctor = GetDoctors()
-                .First(existingDoctor => existingDoctor.IsActive);
+            var doctors = GetDoctors();
+
+            var doctor = doctors[0];
 
             repositoryMock
                 .Setup(repository => repository.GetByIdAsync(doctor.DoctorId))
                 .ReturnsAsync(doctor);
 
-            var result = await doctorService.GetDoctorAvailabilityAsync(doctor.DoctorId, null);
+            cacheServiceMock
+                .Setup(service => service.GetAsync<DoctorAvailabilityResponseDto>(
+                    It.IsAny<string>()))
+                .ReturnsAsync((DoctorAvailabilityResponseDto?)null);
+
+            doctorLeaveServiceMock
+                .Setup(service => service.GetDoctorLeaveStatusAsync(
+                    doctor.DoctorId,
+                    It.IsAny<DateOnly>()))
+                .ReturnsAsync(new DoctorLeaveStatusDto
+                {
+                    IsDoctorOnLeave = false,
+                    Message = string.Empty
+                });
+
+            appointmentRepositoryMock
+                .Setup(repository => repository.GetBookedTimeSlotsByDoctorAndDateAsync(
+                    doctor.DoctorId,
+                    DateTime.Today,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<string>());
+
+            cacheServiceMock
+                .Setup(service => service.SetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<DoctorAvailabilityResponseDto>(),
+                    It.IsAny<TimeSpan>()))
+                .Returns(Task.CompletedTask);
+
+            var result = await doctorService.GetDoctorAvailabilityAsync(
+                doctor.DoctorId,
+                null);
 
             result.Slots.Should().HaveCount(TimeSlots.Slots.Count);
 
-            result.Slots.Select(slot => slot.TimeSlot).Should().BeEquivalentTo(TimeSlots.Slots);
+            result.Slots
+                .Select(slot => slot.TimeSlot)
+                .Should()
+                .BeEquivalentTo(TimeSlots.Slots);
 
             result.Slots.Should().OnlyContain(slot => !slot.IsBooked);
 
             appointmentRepositoryMock.Verify(
                 repository => repository.GetBookedTimeSlotsByDoctorAndDateAsync(
-                    It.IsAny<int>(),
-                    It.IsAny<DateTime>(),
+                    doctor.DoctorId,
+                    DateTime.Today,
                     It.IsAny<CancellationToken>()),
-                Times.Never);
+                Times.Once);
         }
 
         [Fact]
         public async Task GetDoctorAvailabilityAsync_WhenDoctorIsActiveAndDateProvided_ShouldReturnBookedSlotStatus()
         {
-            var doctor = GetDoctors()
-                .First(existingDoctor => existingDoctor.IsActive);
+            var doctors = GetDoctors();
+
+            var doctor = doctors.Find(existingDoctor => existingDoctor.IsActive)!;
 
             var selectedDate = DateTime.Today.AddDays(1);
 
@@ -912,6 +964,21 @@ namespace HealthCareApp.Testing.Services
                 .Setup(repository => repository.GetByIdAsync(doctor.DoctorId))
                 .ReturnsAsync(doctor);
 
+            cacheServiceMock
+                .Setup(service => service.GetAsync<DoctorAvailabilityResponseDto>(
+                    It.IsAny<string>()))
+                .ReturnsAsync((DoctorAvailabilityResponseDto?)null);
+
+            doctorLeaveServiceMock
+                .Setup(service => service.GetDoctorLeaveStatusAsync(
+                    doctor.DoctorId,
+                    DateOnly.FromDateTime(selectedDate)))
+                .ReturnsAsync(new DoctorLeaveStatusDto
+                {
+                    IsDoctorOnLeave = false,
+                    Message = string.Empty
+                });
+
             appointmentRepositoryMock
                 .Setup(repository => repository.GetBookedTimeSlotsByDoctorAndDateAsync(
                     doctor.DoctorId,
@@ -919,15 +986,26 @@ namespace HealthCareApp.Testing.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(bookedSlots);
 
-            var result = await doctorService.GetDoctorAvailabilityAsync(doctor.DoctorId, selectedDate);
+            cacheServiceMock
+                .Setup(service => service.SetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<DoctorAvailabilityResponseDto>(),
+                    It.IsAny<TimeSpan>()))
+                .Returns(Task.CompletedTask);
+
+            var result = await doctorService.GetDoctorAvailabilityAsync(
+                doctor.DoctorId,
+                selectedDate);
 
             result.Slots.Should().HaveCount(TimeSlots.Slots.Count);
 
-            result.Slots.Where(slot => bookedSlots.Contains(slot.TimeSlot))
+            result.Slots
+                .Where(slot => bookedSlots.Contains(slot.TimeSlot))
                 .Should()
                 .OnlyContain(slot => slot.IsBooked);
 
-            result.Slots.Where(slot => !bookedSlots.Contains(slot.TimeSlot))
+            result.Slots
+                .Where(slot => !bookedSlots.Contains(slot.TimeSlot))
                 .Should()
                 .OnlyContain(slot => !slot.IsBooked);
 
@@ -936,6 +1014,19 @@ namespace HealthCareApp.Testing.Services
                     doctor.DoctorId,
                     selectedDate,
                     It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            doctorLeaveServiceMock.Verify(
+                service => service.GetDoctorLeaveStatusAsync(
+                    doctor.DoctorId,
+                    DateOnly.FromDateTime(selectedDate)),
+                Times.Once);
+
+            cacheServiceMock.Verify(
+                service => service.SetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<DoctorAvailabilityResponseDto>(),
+                    It.IsAny<TimeSpan>()),
                 Times.Once);
         }
 

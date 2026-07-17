@@ -100,12 +100,57 @@ export class PatientProfile implements OnInit {
     return !this.form.gender;
   }
 
-  get isEmailInvalid(): boolean {
-    const email = this.form.email.trim();
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+ get isEmailInvalid(): boolean {
+  const email = this.form.email.trim();
 
-    return !emailPattern.test(email);
+  return !this.isEmailValid(email);
+}
+
+private isEmailValid(email: string): boolean {
+  if (!email || email.length > 254) {
+    return false;
   }
+
+  if (this.hasWhitespace(email)) {
+    return false;
+  }
+
+  const emailParts = email.split('@');
+
+  if (emailParts.length !== 2) {
+    return false;
+  }
+
+  const [localPart, domainPart] = emailParts;
+
+  if (!localPart || !domainPart) {
+    return false;
+  }
+
+  if (localPart.length > 64 || domainPart.length > 253) {
+    return false;
+  }
+
+  if (!domainPart.includes('.')) {
+    return false;
+  }
+
+  if (domainPart.startsWith('.') || domainPart.endsWith('.')) {
+    return false;
+  }
+
+  if (domainPart.includes('..')) {
+    return false;
+  }
+
+  return true;
+}
+
+private hasWhitespace(value: string): boolean {
+  return Array.from(value).some(character =>
+    (character.codePointAt(0) ?? 0) <= 32
+  );
+}
 
   get isPhoneInvalid(): boolean {
     const phone = this.form.phoneNumber.replaceAll(/\s/g, '');

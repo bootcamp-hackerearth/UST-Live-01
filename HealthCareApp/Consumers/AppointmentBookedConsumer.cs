@@ -19,12 +19,18 @@ namespace HealthCareApp.Consumers
         }
 
         public async Task Consume(
-            ConsumeContext<AppointmentBookedEvent> context)
+     ConsumeContext<AppointmentBookedEvent> context)
         {
             var msg = context.Message;
 
-            _logger.LogInformation("AppointmentBookedEvent received. AppointmentId={AppointmentId}, DoctorId={DoctorId}, Patient={PatientName}",msg.AppointmentId,msg.DoctorId,msg.PatientName);
-            
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    "AppointmentBookedEvent received. AppointmentId={AppointmentId}, DoctorId={DoctorId}, Patient={PatientName}",
+                    msg.AppointmentId,
+                    msg.DoctorId,
+                    msg.PatientName);
+            }
 
             var notification = new Notification
             {
@@ -32,14 +38,20 @@ namespace HealthCareApp.Consumers
                 CreatedDate = DateTime.UtcNow,
                 IsRead = false,
                 Message =
-                    $"New appointment booked by {msg.PatientName} on {msg.ScheduledDate:yyyy-MM-dd} at {msg.TimeSlot}"
+                    $"New appointment booked by {msg.PatientName} " +
+                    $"on {msg.ScheduledDate:yyyy-MM-dd} at {msg.TimeSlot}"
             };
 
             _db.Notifications.Add(notification);
 
             await _db.SaveChangesAsync();
 
-            _logger.LogInformation("Notification created successfully for DoctorId={DoctorId}",msg.DoctorId);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    "Notification created successfully for DoctorId={DoctorId}",
+                    msg.DoctorId);
+            }
         }
     }
 }

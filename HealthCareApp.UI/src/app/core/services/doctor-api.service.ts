@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-import { DoctorDto } from '../../shared/models/doctor.models';
+
 import {
-  DoctorAvailabilityResponseDto,ApiDoctorAvailabilityResponseDto
+  DoctorAvailabilityResponseDto,ApiDoctorAvailabilityResponseDto,DoctorDto
 } from '../../shared/models/doctor.models';
 
 export interface SlotAvailabilityDto {

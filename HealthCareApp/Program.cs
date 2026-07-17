@@ -61,6 +61,9 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = garnetOptions?.InstanceName ?? "HealthCareApp:";
 });
 
+builder.Services.Configure<NotificationCleanupOptions>(
+    builder.Configuration.GetSection("NotificationCleanup"));
+
 // Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -172,6 +175,7 @@ builder.Services.AddScoped<IPatientNotificationService, PatientNotificationServi
 
 // Register background services.
 builder.Services.AddHostedService<HeartbeatBackgroundService>();
+builder.Services.AddHostedService<NotificationCleanupBackgroundService>();
 
 // Register Global Exception Handler.
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -248,5 +252,5 @@ try
 }
 finally
 {
-    Log.CloseAndFlush();
+    await Log.CloseAndFlushAsync();
 }

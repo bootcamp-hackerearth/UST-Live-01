@@ -6,8 +6,7 @@ import { timeout } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import {
   LoginRequest,
-  PatientRegisterRequest,
-  UserRole
+  PatientRegisterRequest
 } from '../../shared/models/auth.models';
 
 type HomeModal =
@@ -48,6 +47,19 @@ interface RegisterForm {
   insuranceId: string;
   password: string;
   confirmPassword: string;
+}
+
+interface ApiErrorBody {
+  message?: string;
+  Message?: string;
+  title?: string;
+  errors?: Record<string, string[]>;
+}
+
+interface ApiErrorResponse {
+  error?: ApiErrorBody | string;
+  name?: string;
+  message?: string;
 }
 
 @Component({
@@ -297,8 +309,8 @@ export class Home {
 
       const token = this.authService.getToken();
 
-    globalThis.location.href =
-  `https://localhost:7075/admin-login-bridge?token=${encodeURIComponent(token)}`;
+      globalThis.location.href =
+        `https://localhost:7075/admin-login-bridge?token=${encodeURIComponent(token)}`;
       return;
 
     }
@@ -332,7 +344,7 @@ export class Home {
       return false;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!this.isEmailValid(email)) {
       this.setModalMessage('Please enter a valid email address.', 'warning');
       return false;
     }
@@ -419,57 +431,110 @@ export class Home {
   }
 
   private getErrorMessage(error: unknown, fallbackMessage: string): string {
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'error' in error
-    ) {
-      const apiError = error as {
-        error?: {
-          message?: string;
-          Message?: string;
-          title?: string;
-          errors?: Record<string, string[]>;
-        } | string;
-        name?: string;
-        message?: string;
-      };
+  const apiError = this.getApiError(error);
 
-      if (apiError.name === 'TimeoutError') {
-        return 'The server is taking too long to respond. Please try again.';
-      }
-
-      if (typeof apiError.error === 'string' && apiError.error.trim()) {
-        return apiError.error;
-      }
-
-      if (typeof apiError.error === 'object' && apiError.error !== null) {
-        if (apiError.error.message) {
-          return apiError.error.message;
-        }
-
-        if (apiError.error.Message) {
-          return apiError.error.Message;
-        }
-
-        if (apiError.error.title) {
-          return apiError.error.title;
-        }
-
-        if (apiError.error.errors) {
-          const firstError = Object.values(apiError.error.errors)[0]?.[0];
-
-          if (firstError) {
-            return firstError;
-          }
-        }
-      }
-
-      if (apiError.message) {
-        return apiError.message;
-      }
-    }
-
+  if (!apiError) {
     return fallbackMessage;
   }
+
+  if (apiError.name === 'TimeoutError') {
+    return 'The server is taking too long to respond. Please try again.';
+  }
+
+  return (
+    this.getErrorBodyMessage(apiError.error) ||
+    apiError.message ||
+    fallbackMessage
+  );
+}
+
+private getApiError(error: unknown): ApiErrorResponse | undefined {
+  if (!this.hasApiErrorShape(error)) {
+    return undefined;
+  }
+
+  return error as ApiErrorResponse;
+}
+
+private hasApiErrorShape(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'error' in error
+  );
+}
+
+private getErrorBodyMessage(errorBody?: ApiErrorBody | string): string {
+  if (!errorBody) {
+    return '';
+  }
+
+  if (typeof errorBody === 'string') {
+    return errorBody.trim();
+  }
+
+  return (
+    errorBody.message ||
+    errorBody.Message ||
+    errorBody.title ||
+    this.getFirstValidationError(errorBody.errors)
+  );
+}
+
+private getFirstValidationError(
+  errors?: Record<string, string[]>
+): string {
+  if (!errors) {
+    return '';
+  }
+
+  return Object.values(errors)[0]?.[0] ?? '';
+}
+
+  private isEmailValid(email: string): boolean {
+    if (!email || email.length > 254) {
+      return false;
+    }
+
+    if (this.hasWhitespace(email)) {
+      return false;
+    }
+
+    const parts = email.split('@');
+
+    if (parts.length !== 2) {
+      return false;
+    }
+
+    const [localPart, domainPart] = parts;
+
+    if (!localPart || !domainPart) {
+      return false;
+    }
+
+    if (localPart.length > 64 || domainPart.length > 253) {
+      return false;
+    }
+
+    if (!domainPart.includes('.')) {
+      return false;
+    }
+
+    if (domainPart.startsWith('.') || domainPart.endsWith('.')) {
+      return false;
+    }
+
+    if (domainPart.includes('..')) {
+      return false;
+    }
+
+    return true;
+  }
+
+ private hasWhitespace(value: string): boolean {
+  return Array.from(value).some(character =>
+    (character.codePointAt(0) ?? 0) <= 32
+  );
+}
+
 }

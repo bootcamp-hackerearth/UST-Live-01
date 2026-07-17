@@ -17,22 +17,21 @@ namespace HealthCareApp.BackgroundServices
         {
             logger.LogInformation("HealthAxis Heartbeat Background Service started.");
 
-
             while (!stoppingToken.IsCancellationRequested)
             {
-                logger.LogInformation("HealthAxis heartbeat running at {Time}",
+                if (logger.IsEnabled(LogLevel.Information))
+                {
+                    logger.LogInformation(
+                        "HealthAxis heartbeat running at {Time}",
+                        DateTime.Now);
+                }
 
-                    DateTime.Now);
-
-
-                await Task.Delay(TimeSpan.FromMinutes(1),
-
+                await Task.Delay(
+                    TimeSpan.FromMinutes(1),
                     stoppingToken);
-
             }
 
             logger.LogInformation("HealthAxis Heartbeat Background Service stopped.");
-
         }
     }
 }

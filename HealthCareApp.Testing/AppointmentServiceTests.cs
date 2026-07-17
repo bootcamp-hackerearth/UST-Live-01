@@ -8,8 +8,10 @@ using HealthCareApp.Services.Impl;
 using HealthCareApp.Services.Interface;
 using HealthCareApp.Shared.Constants;
 using HealthCareApp.Shared.Dtos.Appointments;
+using HealthCareApp.Shared.Dtos.DoctorLeaves;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
+using HealthCareApp.Shared.Events;
 using MassTransit;
 using Moq;
 
@@ -510,20 +512,23 @@ namespace HealthCareApp.Testing.Services
         {
             SetupDoctorExists(1, true);
 
+            var patients = GetPatients();
+            var doctors = GetDoctors();
+
             var appointments = new List<Appointment>
-            {
-                new Appointment
-                {
-                    AppointmentId = 20,
-                    PatientId = 1,
-                    Patient = GetPatients().First(),
-                    DoctorId = 1,
-                    Doctor = GetDoctors().First(),
-                    ScheduledDate = DateTime.Today,
-                    TimeSlot = TimeSlots.Slots.First(),
-                    Status = AppointmentStatus.Confirmed
-                }
-            };
+    {
+        new Appointment
+        {
+            AppointmentId = 20,
+            PatientId = 1,
+            Patient = patients[0],
+            DoctorId = 1,
+            Doctor = doctors[0],
+            ScheduledDate = DateTime.Today,
+            TimeSlot = TimeSlots.Slots[0],
+            Status = AppointmentStatus.Confirmed
+        }
+    };
 
             appointmentRepositoryMock
                 .Setup(repository => repository.GetTodayConfirmedAppointmentsByDoctorIdAsync(
@@ -534,8 +539,9 @@ namespace HealthCareApp.Testing.Services
             var result = await appointmentService.GetTodayConfirmedAppointmentsByDoctorIdAsync(1);
 
             result.Should().HaveCount(1);
-            result.Single().Status.Should().Be(AppointmentStatus.Confirmed);
+            result[0].Status.Should().Be(AppointmentStatus.Confirmed);
         }
+
 
         [Fact]
         public async Task BookAppointmentAsync_WhenDtoNull_ShouldThrow()
@@ -614,14 +620,24 @@ namespace HealthCareApp.Testing.Services
                 .ThrowAsync<AppointmentRuleException>()
                 .WithMessage("Invalid time slot selected.");
         }
-
         [Fact]
         public async Task BookAppointmentAsync_WhenSlotBooked_ShouldThrowConflictException()
         {
             var dto = GetValidBookAppointmentDto();
 
             SetupPatientExists(dto.PatientId);
+
             SetupDoctorExists(dto.DoctorId, true);
+
+            doctorLeaveServiceMock
+                .Setup(service => service.GetDoctorLeaveStatusAsync(
+                    dto.DoctorId,
+                    DateOnly.FromDateTime(dto.ScheduledDate.Date)))
+                .ReturnsAsync(new DoctorLeaveStatusDto
+                {
+                    IsDoctorOnLeave = false,
+                    Message = string.Empty
+                });
 
             appointmentRepositoryMock
                 .Setup(repository => repository.IsSlotBookedAsync(
@@ -645,8 +661,20 @@ namespace HealthCareApp.Testing.Services
             var dto = GetValidBookAppointmentDto();
 
             SetupPatientExists(dto.PatientId);
+
             SetupDoctorExists(dto.DoctorId, true);
+
             SetupSlotNotBooked(dto);
+
+            doctorLeaveServiceMock
+                .Setup(service => service.GetDoctorLeaveStatusAsync(
+                    dto.DoctorId,
+                    DateOnly.FromDateTime(dto.ScheduledDate.Date)))
+                .ReturnsAsync(new DoctorLeaveStatusDto
+                {
+                    IsDoctorOnLeave = false,
+                    Message = string.Empty
+                });
 
             appointmentRepositoryMock
                 .Setup(repository => repository.PatientHasActiveAppointmentOnDateAndSlotAsync(
@@ -670,9 +698,22 @@ namespace HealthCareApp.Testing.Services
             var dto = GetValidBookAppointmentDto();
 
             SetupPatientExists(dto.PatientId);
+
             SetupDoctorExists(dto.DoctorId, true);
+
             SetupSlotNotBooked(dto);
+
             SetupPatientNoSameSlot(dto);
+
+            doctorLeaveServiceMock
+                .Setup(service => service.GetDoctorLeaveStatusAsync(
+                    dto.DoctorId,
+                    DateOnly.FromDateTime(dto.ScheduledDate.Date)))
+                .ReturnsAsync(new DoctorLeaveStatusDto
+                {
+                    IsDoctorOnLeave = false,
+                    Message = string.Empty
+                });
 
             appointmentRepositoryMock
                 .Setup(repository => repository.PatientHasActiveAppointmentWithDoctorOnDateAsync(
@@ -696,6 +737,16 @@ namespace HealthCareApp.Testing.Services
             var dto = GetValidBookAppointmentDto();
 
             SetupSuccessfulBooking(dto);
+
+            doctorLeaveServiceMock
+                .Setup(service => service.GetDoctorLeaveStatusAsync(
+                    dto.DoctorId,
+                    DateOnly.FromDateTime(dto.ScheduledDate.Date)))
+                .ReturnsAsync(new DoctorLeaveStatusDto
+                {
+                    IsDoctorOnLeave = false,
+                    Message = string.Empty
+                });
 
             var result = await appointmentService.BookAppointmentAsync(dto);
 
@@ -1763,24 +1814,27 @@ namespace HealthCareApp.Testing.Services
         [Fact]
         public async Task GetMyTodayConfirmedAppointmentsForDoctorAsync_ShouldReturnMappedAppointments()
         {
-            var doctor = GetDoctors().First();
+            var doctors = GetDoctors();
+            var patients = GetPatients();
+
+            var doctor = doctors[0];
 
             SetupLoggedInDoctor(doctor);
 
             var appointments = new List<Appointment>
-            {
-                new Appointment
-                {
-                    AppointmentId = 700,
-                    PatientId = 1,
-                    Patient = GetPatients().First(),
-                    DoctorId = doctor.DoctorId,
-                    Doctor = doctor,
-                    ScheduledDate = DateTime.Today,
-                    TimeSlot = TimeSlots.Slots.First(),
-                    Status = AppointmentStatus.Confirmed
-                }
-            };
+    {
+        new Appointment
+        {
+            AppointmentId = 700,
+            PatientId = 1,
+            Patient = patients[0],
+            DoctorId = doctor.DoctorId,
+            Doctor = doctor,
+            ScheduledDate = DateTime.Today,
+            TimeSlot = TimeSlots.Slots[0],
+            Status = AppointmentStatus.Confirmed
+        }
+    };
 
             appointmentRepositoryMock
                 .Setup(repository => repository.GetTodayConfirmedAppointmentsByDoctorIdAsync(
@@ -1791,7 +1845,7 @@ namespace HealthCareApp.Testing.Services
             var result = await appointmentService.GetMyTodayConfirmedAppointmentsForDoctorAsync("doctor-identity");
 
             result.Should().HaveCount(1);
-            result.Single().Status.Should().Be(AppointmentStatus.Confirmed);
+            result[0].Status.Should().Be(AppointmentStatus.Confirmed);
         }
 
         [Fact]
@@ -1850,14 +1904,16 @@ namespace HealthCareApp.Testing.Services
                 .ThrowAsync<AppointmentRuleException>()
                 .WithMessage("Appointment details are required.");
         }
-
         [Fact]
         public async Task BookAppointmentForPatientAsync_ShouldIgnoreBodyPatientIdAndUseLoggedInPatient()
         {
             var dto = GetValidBookAppointmentDto();
+
             dto.PatientId = 999;
 
-            var patient = GetPatients().First();
+            var patients = GetPatients();
+
+            var patient = patients[0];
 
             SetupLoggedInPatient(patient);
 
@@ -1868,7 +1924,18 @@ namespace HealthCareApp.Testing.Services
                 .ReturnsAsync(patient);
 
             SetupDoctorExists(dto.DoctorId, true);
+
             SetupSlotNotBookedForPatient(patient.PatientId, dto);
+
+            doctorLeaveServiceMock
+                .Setup(service => service.GetDoctorLeaveStatusAsync(
+                    dto.DoctorId,
+                    DateOnly.FromDateTime(dto.ScheduledDate.Date)))
+                .ReturnsAsync(new DoctorLeaveStatusDto
+                {
+                    IsDoctorOnLeave = false,
+                    Message = string.Empty
+                });
 
             appointmentRepositoryMock
                 .Setup(repository => repository.CreateAsync(
@@ -1880,11 +1947,23 @@ namespace HealthCareApp.Testing.Services
                     return appointment;
                 });
 
+            cacheServiceMock
+                .Setup(service => service.RemoveAsync(
+                    It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+
+            busMock
+                .Setup(bus => bus.Publish(
+                    It.IsAny<AppointmentBookedEvent>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
             var result = await appointmentService.BookAppointmentForPatientAsync(
                 dto,
                 "patient-identity");
 
             result.PatientId.Should().Be(patient.PatientId);
+
             dto.PatientId.Should().Be(patient.PatientId);
         }
 
@@ -2429,7 +2508,7 @@ namespace HealthCareApp.Testing.Services
                 PatientId = 1,
                 DoctorId = 1,
                 ScheduledDate = DateTime.Today.AddDays(1),
-                TimeSlot = TimeSlots.Slots.First()
+                TimeSlot = TimeSlots.Slots[0]
             };
         }
 

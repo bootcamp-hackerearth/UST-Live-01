@@ -918,7 +918,7 @@ namespace HealthCareApp.Testing.Services
 
             dto.Diagnosis = diagnosis;
             dto.Prescription = prescription;
-            dto.Notes = notes;
+            dto.Notes = notes ?? string.Empty;
 
             var appointment = GetConfirmedAppointmentForToday();
 

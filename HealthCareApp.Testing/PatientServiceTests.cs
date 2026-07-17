@@ -806,7 +806,7 @@ namespace HealthCareApp.Testing.Services
 
                 PhoneNumber = patient.PhoneNumber,
 
-                InsuranceId = patient.InsuranceID,
+                InsuranceId = patient.InsuranceID ?? string.Empty,
 
                 CreatedDate = patient.CreatedDate.ToString("yyyy-MM-dd")
             };

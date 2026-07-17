@@ -8,6 +8,19 @@ import {
   AppointmentStatusText
 } from '../../../../../core/services/appointment-api.service';
 
+interface AppointmentApiErrorBody {
+  message?: string;
+  Message?: string;
+  title?: string;
+  errors?: Record<string, string[]>;
+}
+
+interface AppointmentApiError {
+  error?: AppointmentApiErrorBody;
+  name?: string;
+  message?: string;
+}
+
 @Component({
   selector: 'app-appointment-list',
   standalone: true,
@@ -15,6 +28,8 @@ import {
   templateUrl: './patient-appointment-list.html',
   styleUrl: './patient-appointment-list.css'
 })
+
+
 export class PatientAppointmentList implements OnInit {
   appointments: AppointmentDto[] = [];
 
@@ -104,26 +119,26 @@ export class PatientAppointmentList implements OnInit {
   }
 
   refreshAppointmentsAfterBooking(): void {
-    this.searchTerm = '';
-    this.selectedStatus = '';
-    this.selectedDate = '';
-    this.pageNumber = 1;
+  this.resetFiltersAndReload();
+}
 
-    this.loadAppointments();
-  }
+applyFilters(): void {
+  this.pageNumber = 1;
+  this.loadAppointments();
+}
 
-  applyFilters(): void {
-    this.pageNumber = 1;
-    this.loadAppointments();
-  }
+clearFilters(): void {
+  this.resetFiltersAndReload();
+}
 
-  clearFilters(): void {
-    this.searchTerm = '';
-    this.selectedStatus = '';
-    this.selectedDate = '';
-    this.pageNumber = 1;
-    this.loadAppointments();
-  }
+private resetFiltersAndReload(): void {
+  this.searchTerm = '';
+  this.selectedStatus = '';
+  this.selectedDate = '';
+  this.pageNumber = 1;
+
+  this.loadAppointments();
+}
 
   changePageSize(): void {
     this.pageNumber = 1;
@@ -213,52 +228,58 @@ export class PatientAppointmentList implements OnInit {
     });
   }
 
-  private getErrorMessage(error: unknown): string {
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'error' in error
-    ) {
-      const apiError = error as {
-        error?: {
-          message?: string;
-          Message?: string;
-          title?: string;
-          errors?: Record<string, string[]>;
-        };
-        name?: string;
-        message?: string;
-      };
+ private getErrorMessage(error: unknown): string {
+  const apiError = this.getApiError(error);
 
-      if (apiError.name === 'TimeoutError') {
-        return 'The server is taking too long to respond. Please try again.';
-      }
-
-      if (apiError.error?.message) {
-        return apiError.error.message;
-      }
-
-      if (apiError.error?.Message) {
-        return apiError.error.Message;
-      }
-
-      if (apiError.error?.title) {
-        return apiError.error.title;
-      }
-
-      if (apiError.error?.errors) {
-        const firstError = Object.values(apiError.error.errors)[0]?.[0];
-
-        if (firstError) {
-          return firstError;
-        }
-      }
-
-      if (apiError.message) {
-        return apiError.message;
-      }
-    }
-
+  if (!apiError) {
     return 'Something went wrong while loading appointments.';
   }
+
+  if (apiError.name === 'TimeoutError') {
+    return 'The server is taking too long to respond. Please try again.';
+  }
+
+  return (
+    this.getApiErrorMessage(apiError.error) ||
+    apiError.message ||
+    'Something went wrong while loading appointments.'
+  );
+}
+
+private getApiError(error: unknown): AppointmentApiError | undefined {
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'error' in error
+  ) {
+    return error as AppointmentApiError;
+  }
+
+  return undefined;
+}
+
+private getApiErrorMessage(
+  error?: AppointmentApiErrorBody
+): string {
+  if (!error) {
+    return '';
+  }
+
+  return (
+    error.message ||
+    error.Message ||
+    error.title ||
+    this.getFirstValidationError(error.errors)
+  );
+}
+
+private getFirstValidationError(
+  errors?: Record<string, string[]>
+): string {
+  if (!errors) {
+    return '';
+  }
+
+  return Object.values(errors)[0]?.[0] ?? '';
+}
 }
