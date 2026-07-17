@@ -85,7 +85,7 @@ namespace HealthAxis.API.Services.Implementation
 
             if (emailExists)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Email already registered");
             }
 
@@ -97,7 +97,7 @@ namespace HealthAxis.API.Services.Implementation
 
             if (phoneExists)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Phone number already registered");
             }
 

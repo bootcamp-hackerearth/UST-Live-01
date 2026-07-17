@@ -38,17 +38,17 @@
   }
 
   @if (successMessage()) {
-    <div class="page-alert success-alert" role="status">
+    <output class="page-alert success-alert">
       <span class="alert-icon" aria-hidden="true">✓</span>
       <span>{{ successMessage() }}</span>
-    </div>
+    </output>
   }
 
   @if (loadingRecord()) {
-    <div class="page-alert information-alert" role="status">
+    <output class="page-alert information-alert">
       <span class="record-loader" aria-hidden="true"></span>
       <span>Loading health record...</span>
-    </div>
+    </output>
   }
 
   <section class="stats-grid">
@@ -460,15 +460,18 @@
 @if (selectedHealthRecord(); as record) {
   <div
     class="modal-backdrop"
-    role="presentation"
     (click)="closeCompletedHealthRecord()"
+    (keydown.escape)="closeCompletedHealthRecord()"
   >
-    <section
+    <dialog
+      open
       class="record-view-modal"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="completedHealthRecordTitle"
       (click)="$event.stopPropagation()"
+      (keydown.escape)="
+        closeCompletedHealthRecord();
+        $event.stopPropagation()
+      "
     >
       <div class="modal-header">
         <div>
@@ -605,22 +608,25 @@
           }}
         </p>
       </section>
-    </section>
+    </dialog>
   </div>
 }
 
 @if (selectedAppointment(); as appointment) {
   <div
     class="modal-backdrop"
-    role="presentation"
     (click)="closeHealthRecordDialog()"
+    (keydown.escape)="closeHealthRecordDialog()"
   >
-    <section
+    <dialog
+      open
       class="record-modal"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="addHealthRecordTitle"
       (click)="$event.stopPropagation()"
+      (keydown.escape)="
+        closeHealthRecordDialog();
+        $event.stopPropagation()
+      "
     >
       <div class="modal-header">
         <div>
@@ -813,6 +819,6 @@
           </button>
         </div>
       </form>
-    </section>
+    </dialog>
   </div>
 }

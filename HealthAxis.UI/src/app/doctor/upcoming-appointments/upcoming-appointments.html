@@ -39,10 +39,10 @@
   }
 
   @if (successMessage()) {
-    <div class="page-alert success-alert" role="status">
+    <output class="page-alert success-alert">
       <span class="alert-icon" aria-hidden="true">✓</span>
       <span>{{ successMessage() }}</span>
-    </div>
+    </output>
   }
 
   <section
@@ -423,15 +423,15 @@
 @if (selectedAppointment(); as appointment) {
   <div
     class="modal-backdrop"
-    role="presentation"
     (click)="closeAppointmentDetails()"
+    (keydown.escape)="closeAppointmentDetails()"
   >
-    <section
+    <dialog
+      open
       class="modal-card details-modal"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="appointmentDetailsTitle"
       (click)="$event.stopPropagation()"
+      (keydown.escape)="closeAppointmentDetails(); $event.stopPropagation()"
     >
       <div class="modal-header">
         <div>
@@ -612,22 +612,22 @@
           </button>
         }
       </div>
-    </section>
+    </dialog>
   </div>
 }
 
 @if (cancelTarget(); as appointment) {
   <div
     class="modal-backdrop"
-    role="presentation"
     (click)="closeCancelDialog()"
+    (keydown.escape)="closeCancelDialog()"
   >
-    <section
+    <dialog
+      open
       class="modal-card cancel-modal"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="cancelDialogTitle"
       (click)="$event.stopPropagation()"
+      (keydown.escape)="closeCancelDialog(); $event.stopPropagation()"
     >
       <div
         class="warning-symbol"
@@ -743,6 +743,6 @@
           Keep Appointment
         </button>
       </div>
-    </section>
+    </dialog>
   </div>
 }

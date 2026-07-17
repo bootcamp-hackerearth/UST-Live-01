@@ -13,10 +13,20 @@ namespace HealthAxis_Admin.Services
         private const int DoctorPageSize = 6;
         private const int RequestTimeoutSeconds = 20;
 
-        private const string DoctorEndpoint = "api/admin/doctors";
-        private const string DoctorPagedEndpoint = "api/admin/doctors/paged";
-        private const string ResetPasswordEndpoint = "api/Auth/admin/reset-password";
-        private const string AppointmentDetailsEndpoint = "api/admin/reports/appointments/details";
+        private const string DoctorEndpoint =
+            "api/admin/doctors";
+
+        private const string DoctorPagedEndpoint =
+            "api/admin/doctors/paged";
+
+        private const string ResetPasswordEndpoint =
+            "api/Auth/admin/reset-password";
+
+        private const string AppointmentDetailsEndpoint =
+            "api/admin/reports/appointments/details";
+
+        private const string RequestFailedMessage =
+            "Request failed.";
 
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
@@ -31,33 +41,40 @@ namespace HealthAxis_Admin.Services
 
         public DoctorAdminService(HttpClient httpClient)
         {
+            ArgumentNullException.ThrowIfNull(httpClient);
             _httpClient = httpClient;
         }
 
         public async Task<List<DoctorDto>> GetAllDoctorsAsync()
         {
-            using var cancellationTokenSource = CreateTimeoutToken();
+            using var cancellationTokenSource =
+                CreateTimeoutToken();
 
-            var doctors = await _httpClient.GetFromJsonAsync<List<DoctorDto>>(
-                DoctorEndpoint,
-                JsonOptions,
-                cancellationTokenSource.Token);
+            var doctors =
+                await _httpClient.GetFromJsonAsync<List<DoctorDto>>(
+                    DoctorEndpoint,
+                    JsonOptions,
+                    cancellationTokenSource.Token);
 
             return doctors ?? new List<DoctorDto>();
         }
 
-        public async Task<PagedResponseDto<DoctorDto>> GetDoctorsPageAsync(
-            int pageNumber)
+        public async Task<PagedResponseDto<DoctorDto>>
+            GetDoctorsPageAsync(int pageNumber)
         {
-            using var cancellationTokenSource = CreateTimeoutToken();
+            using var cancellationTokenSource =
+                CreateTimeoutToken();
 
             var endpoint =
-                $"{DoctorPagedEndpoint}?pageNumber={pageNumber}&pageSize={DoctorPageSize}";
+                $"{DoctorPagedEndpoint}?pageNumber={pageNumber}" +
+                $"&pageSize={DoctorPageSize}";
 
-            var response = await _httpClient.GetFromJsonAsync<PagedResponseDto<DoctorDto>>(
-                endpoint,
-                JsonOptions,
-                cancellationTokenSource.Token);
+            var response =
+                await _httpClient
+                    .GetFromJsonAsync<PagedResponseDto<DoctorDto>>(
+                        endpoint,
+                        JsonOptions,
+                        cancellationTokenSource.Token);
 
             return response ?? new PagedResponseDto<DoctorDto>
             {
@@ -68,48 +85,62 @@ namespace HealthAxis_Admin.Services
             };
         }
 
-        public async Task<List<AdminAppointmentDetailDto>> GetDoctorAppointmentsAsync(
-            int doctorId)
+        public async Task<List<AdminAppointmentDetailDto>>
+            GetDoctorAppointmentsAsync(int doctorId)
         {
             if (doctorId <= 0)
             {
                 return new List<AdminAppointmentDetailDto>();
             }
 
-            using var cancellationTokenSource = CreateTimeoutToken();
+            using var cancellationTokenSource =
+                CreateTimeoutToken();
 
-            var appointments = await _httpClient.GetFromJsonAsync<List<AdminAppointmentDetailDto>>(
-                AppointmentDetailsEndpoint,
-                JsonOptions,
-                cancellationTokenSource.Token);
+            var appointments =
+                await _httpClient
+                    .GetFromJsonAsync<List<AdminAppointmentDetailDto>>(
+                        AppointmentDetailsEndpoint,
+                        JsonOptions,
+                        cancellationTokenSource.Token);
 
             return appointments?
-                .Where(appointment => appointment.DoctorId == doctorId)
-                .OrderByDescending(appointment => appointment.ScheduledDate)
-                .ThenBy(appointment => appointment.TimeSlot)
-                .ToList() ?? new List<AdminAppointmentDetailDto>();
+                .Where(appointment =>
+                    appointment.DoctorId == doctorId)
+                .OrderByDescending(appointment =>
+                    appointment.ScheduledDate)
+                .ThenBy(appointment =>
+                    appointment.TimeSlot)
+                .ToList()
+                ?? new List<AdminAppointmentDetailDto>();
         }
 
-        public async Task<(bool Success, string Message, DoctorCreatedDto? Doctor)> RegisterDoctorAsync(
-            CreateDoctorDto doctorDto)
+        public async Task<(
+            bool Success,
+            string Message,
+            DoctorCreatedDto? Doctor)> RegisterDoctorAsync(
+                CreateDoctorDto doctorDto)
         {
             ArgumentNullException.ThrowIfNull(doctorDto);
 
-            using var cancellationTokenSource = CreateTimeoutToken();
+            using var cancellationTokenSource =
+                CreateTimeoutToken();
 
             try
             {
-                using var response = await _httpClient.PostAsJsonAsync(
-                    DoctorEndpoint,
-                    doctorDto,
-                    JsonOptions,
-                    cancellationTokenSource.Token);
+                using var response =
+                    await _httpClient.PostAsJsonAsync(
+                        DoctorEndpoint,
+                        doctorDto,
+                        JsonOptions,
+                        cancellationTokenSource.Token);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var createdDoctor = await response.Content.ReadFromJsonAsync<DoctorCreatedDto>(
-                        JsonOptions,
-                        cancellationTokenSource.Token);
+                    var createdDoctor =
+                        await response.Content
+                            .ReadFromJsonAsync<DoctorCreatedDto>(
+                                JsonOptions,
+                                cancellationTokenSource.Token);
 
                     return (
                         true,
@@ -117,9 +148,13 @@ namespace HealthAxis_Admin.Services
                         createdDoctor);
                 }
 
-                var errorMessage = await ReadErrorMessageAsync(response);
+                var errorMessage =
+                    await ReadErrorMessageAsync(response);
 
-                return (false, errorMessage, null);
+                return (
+                    false,
+                    errorMessage,
+                    null);
             }
             catch (TaskCanceledException)
             {
@@ -144,89 +179,107 @@ namespace HealthAxis_Admin.Services
             }
         }
 
-        public async Task<(bool Success, string Message)> UpdateDoctorAsync(
-            int doctorId,
-            CreateDoctorDto doctorDto)
+        public async Task<(bool Success, string Message)>
+            UpdateDoctorAsync(
+                int doctorId,
+                CreateDoctorDto doctorDto)
         {
             ArgumentNullException.ThrowIfNull(doctorDto);
 
-            using var cancellationTokenSource = CreateTimeoutToken();
+            using var cancellationTokenSource =
+                CreateTimeoutToken();
 
             var updateDto = new UpdateDoctorDto
             {
                 FullName = doctorDto.FullName,
                 Email = doctorDto.Email,
                 Specialisation = doctorDto.Specialisation,
-                YearsOfExperience = doctorDto.YearsOfExperience,
-                ConsultationFee = doctorDto.ConsultationFee,
+                YearsOfExperience =
+                    doctorDto.YearsOfExperience,
+                ConsultationFee =
+                    doctorDto.ConsultationFee,
                 IsActive = doctorDto.IsActive
             };
 
-            using var response = await _httpClient.PutAsJsonAsync(
-                $"{DoctorEndpoint}/{doctorId}",
-                updateDto,
-                JsonOptions,
-                cancellationTokenSource.Token);
+            using var response =
+                await _httpClient.PutAsJsonAsync(
+                    $"{DoctorEndpoint}/{doctorId}",
+                    updateDto,
+                    JsonOptions,
+                    cancellationTokenSource.Token);
 
             if (response.IsSuccessStatusCode)
             {
-                return (true, "Doctor updated successfully.");
+                return (
+                    true,
+                    "Doctor updated successfully.");
             }
 
-            var errorMessage = await ReadErrorMessageAsync(response);
+            var errorMessage =
+                await ReadErrorMessageAsync(response);
 
             return (false, errorMessage);
         }
 
-        public async Task<(bool Success, string Message)> ToggleDoctorStatusAsync(
-            DoctorDto doctor)
+        public async Task<(bool Success, string Message)>
+            ToggleDoctorStatusAsync(DoctorDto doctor)
         {
             ArgumentNullException.ThrowIfNull(doctor);
 
-            using var cancellationTokenSource = CreateTimeoutToken();
+            using var cancellationTokenSource =
+                CreateTimeoutToken();
 
             var updateDto = new UpdateDoctorDto
             {
                 FullName = doctor.FullName,
                 Email = doctor.Email,
                 Specialisation = doctor.Specialisation,
-                YearsOfExperience = doctor.YearsOfExperience,
-                ConsultationFee = doctor.ConsultationFee,
+                YearsOfExperience =
+                    doctor.YearsOfExperience,
+                ConsultationFee =
+                    doctor.ConsultationFee,
                 IsActive = !doctor.IsActive
             };
 
-            using var response = await _httpClient.PutAsJsonAsync(
-                $"{DoctorEndpoint}/{doctor.DoctorId}",
-                updateDto,
-                JsonOptions,
-                cancellationTokenSource.Token);
+            using var response =
+                await _httpClient.PutAsJsonAsync(
+                    $"{DoctorEndpoint}/{doctor.DoctorId}",
+                    updateDto,
+                    JsonOptions,
+                    cancellationTokenSource.Token);
 
             if (response.IsSuccessStatusCode)
             {
-                return (true, "Doctor status updated successfully.");
+                return (
+                    true,
+                    "Doctor status updated successfully.");
             }
 
-            var errorMessage = await ReadErrorMessageAsync(response);
+            var errorMessage =
+                await ReadErrorMessageAsync(response);
 
             return (false, errorMessage);
         }
 
-        public async Task<(bool Success, string Message)> ResetPasswordAsync(
-            AdminResetPasswordDto request)
+        public async Task<(bool Success, string Message)>
+            ResetPasswordAsync(AdminResetPasswordDto request)
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            using var cancellationTokenSource = CreateTimeoutToken();
+            using var cancellationTokenSource =
+                CreateTimeoutToken();
 
             try
             {
-                using var response = await _httpClient.PostAsJsonAsync(
-                    ResetPasswordEndpoint,
-                    request,
-                    JsonOptions,
-                    cancellationTokenSource.Token);
+                using var response =
+                    await _httpClient.PostAsJsonAsync(
+                        ResetPasswordEndpoint,
+                        request,
+                        JsonOptions,
+                        cancellationTokenSource.Token);
 
-                var message = await ReadErrorMessageAsync(response);
+                var message =
+                    await ReadErrorMessageAsync(response);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -253,47 +306,54 @@ namespace HealthAxis_Admin.Services
             }
         }
 
-        private static CancellationTokenSource CreateTimeoutToken()
+        private static CancellationTokenSource
+            CreateTimeoutToken()
         {
             return new CancellationTokenSource(
-                TimeSpan.FromSeconds(RequestTimeoutSeconds));
+                TimeSpan.FromSeconds(
+                    RequestTimeoutSeconds));
         }
 
-        private static async Task<string> ReadErrorMessageAsync(
-            HttpResponseMessage response)
+        private static async Task<string>
+            ReadErrorMessageAsync(HttpResponseMessage response)
         {
-            var content = await response.Content.ReadAsStringAsync();
+            var content =
+                await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrWhiteSpace(content))
             {
                 return response.IsSuccessStatusCode
                     ? string.Empty
-                    : "Request failed.";
+                    : RequestFailedMessage;
             }
 
             try
             {
-                using var document = JsonDocument.Parse(content);
+                using var document =
+                    JsonDocument.Parse(content);
 
                 if (document.RootElement.TryGetProperty(
                         "message",
                         out var messageElement))
                 {
-                    return messageElement.GetString() ?? "Request failed.";
+                    return messageElement.GetString()
+                        ?? RequestFailedMessage;
                 }
 
                 if (document.RootElement.TryGetProperty(
                         "title",
                         out var titleElement))
                 {
-                    return titleElement.GetString() ?? "Request failed.";
+                    return titleElement.GetString()
+                        ?? RequestFailedMessage;
                 }
 
                 if (document.RootElement.TryGetProperty(
                         "errors",
                         out var errorsElement))
                 {
-                    return ReadValidationErrors(errorsElement);
+                    return ReadValidationErrors(
+                        errorsElement);
                 }
             }
             catch (JsonException)
@@ -303,30 +363,27 @@ namespace HealthAxis_Admin.Services
 
             return response.IsSuccessStatusCode
                 ? string.Empty
-                : "Request failed.";
+                : RequestFailedMessage;
         }
 
-        private static string ReadValidationErrors(JsonElement errorsElement)
+        private static string ReadValidationErrors(
+            JsonElement errorsElement)
         {
-            var errors = new List<string>();
-
-            foreach (var property in errorsElement.EnumerateObject())
-            {
-                if (property.Value.ValueKind != JsonValueKind.Array)
-                {
-                    continue;
-                }
-
-                foreach (var error in property.Value.EnumerateArray())
-                {
-                    var errorMessage = error.GetString();
-
-                    if (!string.IsNullOrWhiteSpace(errorMessage))
-                    {
-                        errors.Add(errorMessage);
-                    }
-                }
-            }
+            var errors = errorsElement
+                .EnumerateObject()
+                .Select(property => property.Value)
+                .Where(value =>
+                    value.ValueKind == JsonValueKind.Array)
+                .SelectMany(value =>
+                    value.EnumerateArray())
+                .Select(error =>
+                    error.GetString())
+                .Where(errorMessage =>
+                    !string.IsNullOrWhiteSpace(
+                        errorMessage))
+                .Select(errorMessage =>
+                    errorMessage!)
+                .ToList();
 
             return errors.Count == 0
                 ? "Validation failed."

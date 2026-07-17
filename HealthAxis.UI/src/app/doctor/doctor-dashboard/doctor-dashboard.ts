@@ -27,9 +27,14 @@ import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DoctorDashboard {
-  private readonly doctorService = inject(DoctorService);
-  private readonly appointmentService = inject(AppointmentService);
-  private readonly doctorStatusState = inject(DoctorStatusStateService);
+  private readonly doctorService =
+    inject(DoctorService);
+
+  private readonly appointmentService =
+    inject(AppointmentService);
+
+  private readonly doctorStatusState =
+    inject(DoctorStatusStateService);
 
   readonly doctor = signal<Doctor | null>(null);
   readonly appointments = signal<Appointment[]>([]);
@@ -42,14 +47,20 @@ export class DoctorDashboard {
     return this.appointments()
       .filter((appointment) =>
         this.isSameDate(
-          this.createLocalDate(appointment.scheduledDate),
+          this.createLocalDate(
+            appointment.scheduledDate
+          ),
           today
         )
       )
       .sort(
         (first, second) =>
-          this.getAppointmentStartDateTime(first).getTime() -
-          this.getAppointmentStartDateTime(second).getTime()
+          this.getAppointmentStartDateTime(
+            first
+          ).getTime() -
+          this.getAppointmentStartDateTime(
+            second
+          ).getTime()
       );
   });
 
@@ -57,13 +68,19 @@ export class DoctorDashboard {
     this.appointments()
       .filter((appointment) =>
         this.isWithinNextSevenDays(
-          this.createLocalDate(appointment.scheduledDate)
+          this.createLocalDate(
+            appointment.scheduledDate
+          )
         )
       )
       .sort(
         (first, second) =>
-          this.getAppointmentStartDateTime(first).getTime() -
-          this.getAppointmentStartDateTime(second).getTime()
+          this.getAppointmentStartDateTime(
+            first
+          ).getTime() -
+          this.getAppointmentStartDateTime(
+            second
+          ).getTime()
       )
   );
 
@@ -83,27 +100,39 @@ export class DoctorDashboard {
     this.countByStatus('Cancelled')
   );
 
-  readonly nextAppointment = computed<Appointment | null>(() => {
-    const appointment = this.appointments()
-      .filter((item) => {
-        const status = this.normalizeStatus(item.status);
+  readonly nextAppointment =
+    computed<Appointment | null>(() => {
+      const appointment = this.appointments()
+        .filter((item) => {
+          const status =
+            this.normalizeStatus(item.status);
 
-        return (
-          (status === 'pending' || status === 'confirmed') &&
-          this.getAppointmentStartDateTime(item).getTime() >= Date.now()
-        );
-      })
-      .sort(
-        (first, second) =>
-          this.getAppointmentStartDateTime(first).getTime() -
-          this.getAppointmentStartDateTime(second).getTime()
-      )[0];
+          return (
+            (
+              status === 'pending' ||
+              status === 'confirmed'
+            ) &&
+            this.getAppointmentStartDateTime(
+              item
+            ).getTime() >= Date.now()
+          );
+        })
+        .sort(
+          (first, second) =>
+            this.getAppointmentStartDateTime(
+              first
+            ).getTime() -
+            this.getAppointmentStartDateTime(
+              second
+            ).getTime()
+        )[0];
 
-    return appointment ?? null;
-  });
+      return appointment ?? null;
+    });
 
   readonly isDoctorAvailable = computed(() => {
-    const sharedStatus = this.doctorStatusState.isActive();
+    const sharedStatus =
+      this.doctorStatusState.isActive();
 
     if (sharedStatus !== null) {
       return sharedStatus;
@@ -127,27 +156,30 @@ export class DoctorDashboard {
       .getMyDoctorProfile()
       .pipe(
         catchError((error: unknown) => {
-          profileError = getFriendlyErrorMessage(
-            error,
-            'Could not load doctor profile.'
-          );
+          profileError =
+            getFriendlyErrorMessage(
+              error,
+              'Could not load doctor profile.'
+            );
 
           return of(null);
         })
       );
 
-    const appointmentsRequest = this.appointmentService
-      .getMyDoctorAppointments()
-      .pipe(
-        catchError((error: unknown) => {
-          appointmentsError = getFriendlyErrorMessage(
-            error,
-            'Could not load doctor appointments.'
-          );
+    const appointmentsRequest =
+      this.appointmentService
+        .getMyDoctorAppointments()
+        .pipe(
+          catchError((error: unknown) => {
+            appointmentsError =
+              getFriendlyErrorMessage(
+                error,
+                'Could not load doctor appointments.'
+              );
 
-          return of([] as Appointment[]);
-        })
-      );
+            return of([] as Appointment[]);
+          })
+        );
 
     forkJoin({
       doctor: doctorRequest,
@@ -168,11 +200,15 @@ export class DoctorDashboard {
           appointmentsError
         ].filter(Boolean);
 
-        this.errorMessage.set(errors.join(' '));
+        this.errorMessage.set(
+          errors.join(' ')
+        );
+
         this.loading.set(false);
       },
       error: () => {
         this.loading.set(false);
+
         this.errorMessage.set(
           'Could not load the doctor dashboard.'
         );
@@ -193,13 +229,15 @@ export class DoctorDashboard {
   }
 
   getDoctorDisplayName(): string {
-    const fullName = this.doctor()?.fullName?.trim();
+    const fullName =
+      this.doctor()?.fullName?.trim();
 
     if (!fullName) {
       return 'Doctor';
     }
 
-    const normalizedName = fullName.toLowerCase();
+    const normalizedName =
+      fullName.toLowerCase();
 
     if (
       normalizedName.startsWith('dr.') ||
@@ -242,26 +280,38 @@ export class DoctorDashboard {
     return cleanStatus || 'Pending';
   }
 
-  getPatientName(name: string | null | undefined): string {
+  getPatientName(
+    name: string | null | undefined
+  ): string {
     const cleanName = (name ?? '').trim();
 
     return cleanName || 'Patient';
   }
 
-  getTimeSlot(timeSlot: string | null | undefined): string {
-    const cleanTimeSlot = (timeSlot ?? '').trim();
+  getTimeSlot(
+    timeSlot: string | null | undefined
+  ): string {
+    const cleanTimeSlot =
+      (timeSlot ?? '').trim();
 
-    return cleanTimeSlot || 'Time not assigned';
+    return cleanTimeSlot ||
+      'Time not assigned';
   }
 
-  private countByStatus(status: string): number {
-    const normalizedStatus = this.normalizeStatus(status);
+  private countByStatus(
+    status: string
+  ): number {
+    const normalizedStatus =
+      this.normalizeStatus(status);
 
-    return this.appointments().filter(
-      (appointment) =>
-        this.normalizeStatus(appointment.status) ===
-        normalizedStatus
-    ).length;
+    return this.appointments()
+      .filter(
+        (appointment) =>
+          this.normalizeStatus(
+            appointment.status
+          ) === normalizedStatus
+      )
+      .length;
   }
 
   private isSameDate(
@@ -269,49 +319,81 @@ export class DoctorDashboard {
     secondDate: Date
   ): boolean {
     return (
-      firstDate.getFullYear() === secondDate.getFullYear() &&
-      firstDate.getMonth() === secondDate.getMonth() &&
-      firstDate.getDate() === secondDate.getDate()
+      firstDate.getFullYear() ===
+        secondDate.getFullYear() &&
+      firstDate.getMonth() ===
+        secondDate.getMonth() &&
+      firstDate.getDate() ===
+        secondDate.getDate()
     );
   }
 
-  private isWithinNextSevenDays(date: Date): boolean {
-    const startDate = this.startOfDay(new Date());
-    const endDate = this.startOfDay(new Date());
+  private isWithinNextSevenDays(
+    date: Date
+  ): boolean {
+    const startDate =
+      this.startOfDay(new Date());
 
-    endDate.setDate(startDate.getDate() + 6);
-    endDate.setHours(23, 59, 59, 999);
+    const endDate =
+      this.startOfDay(new Date());
 
-    return date >= startDate && date <= endDate;
+    endDate.setDate(
+      startDate.getDate() + 6
+    );
+
+    endDate.setHours(
+      23,
+      59,
+      59,
+      999
+    );
+
+    return (
+      date >= startDate &&
+      date <= endDate
+    );
   }
 
   private getAppointmentStartDateTime(
     appointment: Appointment
   ): Date {
-    const appointmentDate = this.createLocalDate(
-      appointment.scheduledDate
-    );
+    const appointmentDate =
+      this.createLocalDate(
+        appointment.scheduledDate
+      );
 
-    const timeParts = appointment.timeSlot
-      .trim()
-      .match(
-        /^(\d{1,2}):(\d{2})\s*(AM|PM)/i
+    const timeParts =
+      /^(\d{1,2}):(\d{2})\s*(AM|PM)/i.exec(
+        appointment.timeSlot.trim()
       );
 
     if (!timeParts) {
-      appointmentDate.setHours(23, 59, 59, 999);
+      appointmentDate.setHours(
+        23,
+        59,
+        59,
+        999
+      );
+
       return appointmentDate;
     }
 
     let hours = Number(timeParts[1]);
     const minutes = Number(timeParts[2]);
-    const period = timeParts[3].toUpperCase();
+    const period =
+      timeParts[3].toUpperCase();
 
-    if (period === 'PM' && hours !== 12) {
+    if (
+      period === 'PM' &&
+      hours !== 12
+    ) {
       hours += 12;
     }
 
-    if (period === 'AM' && hours === 12) {
+    if (
+      period === 'AM' &&
+      hours === 12
+    ) {
       hours = 0;
     }
 
@@ -325,13 +407,21 @@ export class DoctorDashboard {
     return appointmentDate;
   }
 
-  private createLocalDate(dateValue: string): Date {
-    const dateOnly = dateValue.split('T')[0];
-    const parts = dateOnly.split('-').map(Number);
+  private createLocalDate(
+    dateValue: string
+  ): Date {
+    const dateOnly =
+      dateValue.split('T')[0];
+
+    const parts = dateOnly
+      .split('-')
+      .map(Number);
 
     if (
       parts.length === 3 &&
-      parts.every((part) => Number.isFinite(part))
+      parts.every((part) =>
+        Number.isFinite(part)
+      )
     ) {
       const [year, month, day] = parts;
 
@@ -348,7 +438,12 @@ export class DoctorDashboard {
   private startOfDay(date: Date): Date {
     const cleanDate = new Date(date);
 
-    cleanDate.setHours(0, 0, 0, 0);
+    cleanDate.setHours(
+      0,
+      0,
+      0,
+      0
+    );
 
     return cleanDate;
   }
@@ -366,6 +461,10 @@ export class DoctorDashboard {
   ): string {
     return (name ?? '')
       .trim()
-      .replace(/^dr\.?\s+/i, '');
+      .replace(
+        /^dr\.?\s+/i,
+        ''
+      );
   }
 }
+

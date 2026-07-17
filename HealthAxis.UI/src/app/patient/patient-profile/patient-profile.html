@@ -334,14 +334,10 @@
 </section>
 
 @if (isEditDialogOpen() && patient()) {
-  <div
-    class="modal-backdrop"
-    role="presentation"
-  >
-    <section
+  <div class="modal-backdrop">
+    <dialog
+      open
       class="edit-modal"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="editProfileTitle"
     >
 
@@ -542,17 +538,16 @@
 
       </form>
 
-    </section>
+    </dialog>
   </div>
 }
 
 @if (successDialogMessage()) {
   <div class="modal-backdrop">
 
-    <section
+    <dialog
+      open
       class="success-modal"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="successDialogTitle"
     >
 
@@ -578,7 +573,7 @@
         Done
       </button>
 
-    </section>
+    </dialog>
 
   </div>
 }

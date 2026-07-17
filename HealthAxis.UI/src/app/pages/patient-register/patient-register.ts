@@ -84,7 +84,7 @@ export class PatientRegister {
         '',
         [
           Validators.required,
-          Validators.pattern(/^[1-9][0-9]{9}$/)
+          Validators.pattern(/^[1-9]\d{9}$/)
         ]
       ],
       email: [
@@ -175,7 +175,7 @@ export class PatientRegister {
           'Patient registered successfully. Please login now.'
         );
 
-        window.setTimeout(() => {
+        globalThis.setTimeout(() => {
           void this.router.navigate(['/login']);
         }, REDIRECT_DELAY_IN_MS);
       },
@@ -200,7 +200,9 @@ export class PatientRegister {
       friendlyMessage?: unknown;
     };
 
-    if (typeof possibleError.friendlyMessage === 'string') {
+    if (
+      typeof possibleError.friendlyMessage === 'string'
+    ) {
       return possibleError.friendlyMessage;
     }
 
@@ -210,8 +212,11 @@ export class PatientRegister {
   private static passwordsMatchValidator(
     control: AbstractControl
   ): ValidationErrors | null {
-    const password = control.get('password')?.value;
-    const confirmPassword = control.get('confirmPassword')?.value;
+    const password =
+      control.get('password')?.value;
+
+    const confirmPassword =
+      control.get('confirmPassword')?.value;
 
     if (
       password &&
@@ -233,11 +238,25 @@ export class PatientRegister {
       return null;
     }
 
-    const selectedDate = new Date(control.value);
+    const selectedDate = new Date(
+      control.value
+    );
+
     const today = new Date();
 
-    selectedDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
+    selectedDate.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+    today.setHours(
+      0,
+      0,
+      0,
+      0
+    );
 
     if (selectedDate > today) {
       return {

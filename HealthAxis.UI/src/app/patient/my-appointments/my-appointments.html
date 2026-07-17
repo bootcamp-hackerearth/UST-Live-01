@@ -21,9 +21,9 @@
   }
 
   @if (successMessage()) {
-    <div class="page-alert success-alert" role="status">
+    <output class="page-alert success-alert">
       {{ successMessage() }}
-    </div>
+    </output>
   }
 
   <section class="statistics-grid">
@@ -316,15 +316,18 @@
 @if (selectedAppointment(); as appointment) {
   <div
     class="modal-backdrop"
-    role="presentation"
     (click)="onAppointmentBackdropClick($event)"
+    (keydown.escape)="closeAppointmentDetails()"
   >
-    <section
+    <dialog
+      open
       class="modal-card details-modal"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="appointmentDetailsTitle"
       (click)="$event.stopPropagation()"
+      (keydown.escape)="
+        closeAppointmentDetails();
+        $event.stopPropagation()
+      "
     >
       <div class="modal-header">
         <div>
@@ -384,22 +387,25 @@
           <strong>{{ appointment.cancellationReason || 'Not applicable' }}</strong>
         </div>
       </div>
-    </section>
+    </dialog>
   </div>
 }
 
 @if (selectedHealthRecord(); as record) {
   <div
     class="modal-backdrop"
-    role="presentation"
     (click)="onHealthRecordBackdropClick($event)"
+    (keydown.escape)="closeHealthRecordDetails()"
   >
-    <section
+    <dialog
+      open
       class="modal-card health-record-modal"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="healthRecordTitle"
       (click)="$event.stopPropagation()"
+      (keydown.escape)="
+        closeHealthRecordDetails();
+        $event.stopPropagation()
+      "
     >
       <div class="modal-header">
         <div>
@@ -458,16 +464,15 @@
         <h3>Doctor Notes</h3>
         <p>{{ getSafeText(record.notes, 'No doctor notes added.') }}</p>
       </section>
-    </section>
+    </dialog>
   </div>
 }
 
 @if (cancelTarget(); as appointment) {
   <div class="modal-backdrop">
-    <section
+    <dialog
+      open
       class="modal-card cancel-modal"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="cancelAppointmentTitle"
     >
       <div class="modal-header">
@@ -535,6 +540,6 @@
           Keep Appointment
         </button>
       </div>
-    </section>
+    </dialog>
   </div>
 }

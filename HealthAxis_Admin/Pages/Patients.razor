@@ -83,90 +83,90 @@
         }
         else
         {
-        <div class="table-wrapper patients-table-wrapper">
-            <table class="modern-table patients-table">
-                <thead>
-                    <tr>
-                        <th>Patient</th>
-                        <th>Date of Birth</th>
-                        <th>Gender</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th class="action-column">Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach (var patient in pagedPatients)
-                    {
+            <div class="table-wrapper patients-table-wrapper">
+                <table class="modern-table patients-table">
+                    <thead>
                         <tr>
-                            <td>
-                                <div class="doctor-profile-cell">
-                                    <div class="doctor-avatar user-avatar-patient">
-                                        @GetInitial(patient.FullName)
-                                    </div>
-
-                                    <div>
-                                        <h4>@GetSafeText(patient.FullName, "Patient")</h4>
-                                        <span>ID: @patient.PatientId</span>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>@patient.DateOfBirth.ToString("dd MMM yyyy")</td>
-
-                            <td>@GetSafeText(patient.Gender, "Not available")</td>
-
-                            <td>@DisplayValue(patient.PhoneNumber)</td>
-
-                            <td>@DisplayValue(patient.Email)</td>
-
-                            <td class="action-column">
-                                <div class="patient-actions">
-                                    <button type="button"
-                                            class="table-action-btn view-table-action"
-                                            @onclick="() => OpenViewDialog(patient)">
-                                        View
-                                    </button>
-
-                                    <button type="button"
-                                            class="table-action-btn appointments-table-action"
-                                            @onclick="() => OpenAppointmentsDialogAsync(patient)">
-                                        Appointments
-                                    </button>
-                                </div>
-                            </td>
+                            <th>Patient</th>
+                            <th>Date of Birth</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th class="action-column">Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
 
-        @if (filteredPatients.Count > PageSize)
-        {
-            <div class="pagination-bar patient-pagination">
+                    <tbody>
+                        @foreach (var patient in pagedPatients)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="doctor-profile-cell">
+                                        <div class="doctor-avatar user-avatar-patient">
+                                            @GetInitial(patient.FullName)
+                                        </div>
 
-                <button type="button"
-                        class="secondary-btn page-btn"
-                        disabled="@(currentPage == FirstPageNumber)"
-                        @onclick="GoToPreviousPage">
-                    Previous
-                </button>
+                                        <div>
+                                            <h4>@GetSafeText(patient.FullName, "Patient")</h4>
+                                            <span>ID: @patient.PatientId</span>
+                                        </div>
+                                    </div>
+                                </td>
 
-                <span class="page-info">
-                    Page @currentPage of @totalPages
-                    • Showing @pagedPatients.Count of @filteredPatients.Count patients
-                </span>
+                                <td>@patient.DateOfBirth.ToString("dd MMM yyyy")</td>
 
-                <button type="button"
-                        class="secondary-btn page-btn"
-                        disabled="@(currentPage == totalPages)"
-                        @onclick="GoToNextPage">
-                    Next
-                </button>
+                                <td>@GetSafeText(patient.Gender, "Not available")</td>
 
+                                <td>@DisplayValue(patient.PhoneNumber)</td>
+
+                                <td>@DisplayValue(patient.Email)</td>
+
+                                <td class="action-column">
+                                    <div class="patient-actions">
+                                        <button type="button"
+                                                class="table-action-btn view-table-action"
+                                                @onclick="() => OpenViewDialog(patient)">
+                                            View
+                                        </button>
+
+                                        <button type="button"
+                                                class="table-action-btn appointments-table-action"
+                                                @onclick="() => OpenAppointmentsDialogAsync(patient)">
+                                            Appointments
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        }
+
+            @if (filteredPatients.Count > PageSize)
+            {
+                <div class="pagination-bar patient-pagination">
+
+                    <button type="button"
+                            class="secondary-btn page-btn"
+                            disabled="@(currentPage == FirstPageNumber)"
+                            @onclick="GoToPreviousPage">
+                        Previous
+                    </button>
+
+                    <span class="page-info">
+                        Page @currentPage of @totalPages
+                        • Showing @pagedPatients.Count of @filteredPatients.Count patients
+                    </span>
+
+                    <button type="button"
+                            class="secondary-btn page-btn"
+                            disabled="@(currentPage == totalPages)"
+                            @onclick="GoToNextPage">
+                        Next
+                    </button>
+
+                </div>
+            }
         }
     }
 
@@ -514,10 +514,10 @@
                 </div>
             </div>
 
-            @if (!string.IsNullOrWhiteSpace(resetPasswordError))
+            @if (!string.IsNullOrWhiteSpace(resetErrorMessage))
             {
                 <div class="error-box">
-                    @resetPasswordError
+                    @resetErrorMessage
                 </div>
             }
 
@@ -1127,7 +1127,7 @@
     private string message = string.Empty;
     private string messageClass = "success-box";
     private string selectedPatientAppointmentStatus = AllAppointmentStatusOption;
-    private string resetPasswordError = string.Empty;
+    private string resetErrorMessage = string.Empty;
 
     private bool isLoading;
     private bool isSaving;
@@ -1432,7 +1432,7 @@
             Email = patient.Email
         };
 
-        resetPasswordError = string.Empty;
+        resetErrorMessage = string.Empty;
         message = string.Empty;
 
         showViewDialog = false;
@@ -1445,19 +1445,19 @@
     {
         if (resetPasswordPatient is null)
         {
-            resetPasswordError = "Please select a patient.";
+            resetErrorMessage = "Please select a patient.";
             return;
         }
 
         if (resetPasswordForm.NewPassword != resetPasswordForm.ConfirmPassword)
         {
-            resetPasswordError =
+            resetErrorMessage =
                 "New password and confirm password do not match.";
             return;
         }
 
         isResettingPassword = true;
-        resetPasswordError = string.Empty;
+        resetErrorMessage = string.Empty;
 
         resetPasswordForm.Email = resetPasswordPatient.Email;
 
@@ -1468,7 +1468,7 @@
 
         if (!result.Success)
         {
-            resetPasswordError = result.Message;
+            resetErrorMessage = result.Message;
             return;
         }
 
@@ -1502,7 +1502,7 @@
         editForm = new UpdateAdminPatientDto();
         resetPasswordForm = new AdminResetPasswordDto();
 
-        resetPasswordError = string.Empty;
+        resetErrorMessage = string.Empty;
     }
 
     private void GoToPreviousPage()

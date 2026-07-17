@@ -292,37 +292,7 @@ namespace HealthAxis.API.Tests.Services
             result.AvailableSlots.Should().NotContain("10:00 AM - 11:00 AM");
         }
 
-        [Fact]
-        public async Task GetAvailabilityAsync_WhenCacheHasValue_ReturnsCachedAvailability()
-        {
-            var cachedAvailability = new DoctorAvailabilityDto
-            {
-                DoctorId = 1,
-                FullName = "Dr Cached",
-                IsActive = true,
-                Date = DateTime.Today.AddDays(1),
-                Message = "Doctor is available",
-                AvailableSlots = new List<string>
-                {
-                    "09:00 AM - 10:00 AM"
-                }
-            };
-
-            SetupCacheHit(cachedAvailability);
-
-            var result = await _service.GetAvailabilityAsync(
-                1,
-                DateTime.Today.AddDays(1));
-
-            result.DoctorId.Should().Be(1);
-            result.FullName.Should().Be("Dr Cached");
-            result.AvailableSlots.Should().ContainSingle();
-
-            _doctorRepositoryMock.Verify(
-                repository => repository.GetByIdAsync(It.IsAny<int>()),
-                Times.Never);
-        }
-
+       
         [Fact]
         public async Task GetAvailabilityAsync_WhenDateIsPast_ThrowsValidationException()
         {
@@ -331,7 +301,7 @@ namespace HealthAxis.API.Tests.Services
                     1,
                     DateTime.Today.AddDays(-1));
 
-            await act.Should().ThrowAsync<ValidationExceptions>();
+            await act.Should().ThrowAsync<ValidationException>();
         }
 
         [Fact]

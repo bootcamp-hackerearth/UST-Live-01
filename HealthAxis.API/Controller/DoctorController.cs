@@ -13,7 +13,6 @@ namespace HealthAxis.API.Controller
     [ApiController]
     public class DoctorController : ControllerBase
     {
-
         private const string InvalidToken = "Invalid token";
 
         private readonly ApplicationDbContext _context;
@@ -28,13 +27,6 @@ namespace HealthAxis.API.Controller
             _context = context;
             _doctorService = doctorService;
             _patientService = patientService;
-        }
-
-        private string? GetLoggedInUserId()
-        {
-            return User.FindFirstValue(ClaimTypes.NameIdentifier)
-                ?? User.FindFirstValue("sub")
-                ?? User.FindFirstValue("nameid");
         }
 
         [HttpGet("me")]
@@ -57,7 +49,8 @@ namespace HealthAxis.API.Controller
             {
                 return NotFound(new
                 {
-                    message = "Doctor profile not found. Please link this doctor account with the doctor table."
+                    message =
+                        "Doctor profile not found. Please link this doctor account with the doctor table."
                 });
             }
 
@@ -80,18 +73,19 @@ namespace HealthAxis.API.Controller
             }
 
             var doctor = await _context.Doctors
-                .FirstOrDefaultAsync(item => item.UserId == userId);
+                .FirstOrDefaultAsync(item =>
+                    item.UserId == userId);
 
             if (doctor == null)
             {
                 return NotFound(new
                 {
-                    message = "Doctor profile not found. Please link this doctor account with the doctor table."
+                    message =
+                        "Doctor profile not found. Please link this doctor account with the doctor table."
                 });
             }
 
             doctor.IsActive = dto.IsActive;
-
             await _context.SaveChangesAsync();
 
             return Ok(new
@@ -127,15 +121,17 @@ namespace HealthAxis.API.Controller
                 });
             }
 
-            var patients = await _patientService.GetPatientsForDoctorAsync(
-                doctor.DoctorId);
+            var patients =
+                await _patientService.GetPatientsForDoctorAsync(
+                    doctor.DoctorId);
 
             return Ok(patients);
         }
 
         [HttpGet("me/patients/{patientId}")]
         [Authorize(Roles = "Doctor")]
-        public async Task<IActionResult> GetMyPatientById(int patientId)
+        public async Task<IActionResult> GetMyPatientById(
+            int patientId)
         {
             var userId = GetLoggedInUserId();
 
@@ -157,15 +153,17 @@ namespace HealthAxis.API.Controller
                 });
             }
 
-            var patient = await _patientService.GetPatientForDoctorAsync(
-                doctor.DoctorId,
-                patientId);
+            var patient =
+                await _patientService.GetPatientForDoctorAsync(
+                    doctor.DoctorId,
+                    patientId);
 
             if (patient == null)
             {
                 return StatusCode(403, new
                 {
-                    message = "You are not allowed to access this patient's details"
+                    message =
+                        "You are not allowed to access this patient's details"
                 });
             }
 
@@ -177,7 +175,6 @@ namespace HealthAxis.API.Controller
         public async Task<IActionResult> GetAllDoctors()
         {
             var doctors = await _doctorService.GetAllAsync();
-
             return Ok(doctors);
         }
 
@@ -197,7 +194,8 @@ namespace HealthAxis.API.Controller
                     });
                 }
 
-                var loggedInDoctor = await _doctorService.GetByUserIdAsync(userId);
+                var loggedInDoctor =
+                    await _doctorService.GetByUserIdAsync(userId);
 
                 if (loggedInDoctor == null)
                 {
@@ -211,7 +209,8 @@ namespace HealthAxis.API.Controller
                 {
                     return StatusCode(403, new
                     {
-                        message = "You are not allowed to access another doctor's details"
+                        message =
+                            "You are not allowed to access another doctor's details"
                     });
                 }
 
@@ -219,21 +218,29 @@ namespace HealthAxis.API.Controller
             }
 
             var doctor = await _doctorService.GetByIdAsync(id);
-
             return Ok(doctor);
         }
 
         [HttpGet("{id}/availability")]
         [Authorize(Roles = "Patient,Admin")]
         public async Task<IActionResult> GetDoctorAvailability(
-    int id,
-    [FromQuery] DateTime? date)
+            int id,
+            [FromQuery] DateTime? date)
         {
-            var availability = await _doctorService.GetAvailabilityAsync(
-                id,
-                date);
+            var availability =
+                await _doctorService.GetAvailabilityAsync(
+                    id,
+                    date);
 
             return Ok(availability);
+        }
+
+        private string? GetLoggedInUserId()
+        {
+            return User.FindFirstValue(
+                       ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue("sub")
+                ?? User.FindFirstValue("nameid");
         }
     }
 }

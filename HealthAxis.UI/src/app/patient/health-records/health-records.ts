@@ -222,287 +222,330 @@ export class HealthRecords {
     return createdDate.toLocaleString();
   }
 
-  printHealthRecord(record: HealthRecord): void {
-    const printWindow = window.open(
-      '',
-      '_blank',
-      'width=900,height=700'
+ printHealthRecord(record: HealthRecord): void {
+  const printWindow = globalThis.open(
+    '',
+    '_blank',
+    'width=900,height=700'
+  );
+
+  if (!printWindow) {
+    this.errorMessage.set(
+      'Please allow popups to print or save the health record.'
     );
+    return;
+  }
 
-    if (!printWindow) {
-      this.errorMessage.set(
-        'Please allow popups to print or save the health record.'
-      );
-      return;
-    }
+  const recordId = this.getRecordId(record);
 
-    const recordId = this.getRecordId(record);
+  const patientName = this.escapeHtml(
+    this.getSafeText(
+      record.patientName,
+      'Patient'
+    )
+  );
 
-    const patientName = this.escapeHtml(
-      this.getSafeText(record.patientName, 'Patient')
-    );
+  const doctorName = this.escapeHtml(
+    this.getDoctorDisplayName(
+      record.doctorName
+    )
+  );
 
-    const doctorName = this.escapeHtml(
-      this.getDoctorDisplayName(record.doctorName)
-    );
+  const specialisation = this.escapeHtml(
+    this.getSafeText(
+      record.specialisation,
+      'Not assigned'
+    )
+  );
 
-    const specialisation = this.escapeHtml(
-      this.getSafeText(
-        record.specialisation,
-        'Not assigned'
-      )
-    );
+  const diagnosis = this.escapeHtml(
+    this.getSafeText(
+      record.diagnosis,
+      'Diagnosis not provided.'
+    )
+  );
 
-    const diagnosis = this.escapeHtml(
-      this.getSafeText(
-        record.diagnosis,
-        'Diagnosis not provided.'
-      )
-    );
+  const prescription = this.escapeHtml(
+    this.getSafeText(
+      record.prescription,
+      'No prescription added.'
+    )
+  );
 
-    const prescription = this.escapeHtml(
-      this.getSafeText(
-        record.prescription,
-        'No prescription added.'
-      )
-    );
+  const notes = this.escapeHtml(
+    this.getSafeText(
+      record.notes,
+      'No doctor notes added.'
+    )
+  );
 
-    const notes = this.escapeHtml(
-      this.getSafeText(
-        record.notes,
-        'No doctor notes added.'
-      )
-    );
+  const visitDate =
+    new Date(record.visitDate)
+      .toLocaleDateString();
 
-    const visitDate =
-      new Date(record.visitDate).toLocaleDateString();
+  const createdAt = this.escapeHtml(
+    this.getCreatedDateText(record)
+  );
 
-    const createdAt = this.escapeHtml(
-      this.getCreatedDateText(record)
-    );
+  const updatedAt = this.escapeHtml(
+    record.updatedDate
+      ? new Date(record.updatedDate)
+          .toLocaleString()
+      : 'Not updated'
+  );
 
-    const updatedAt = record.updatedDate
-      ? new Date(record.updatedDate).toLocaleString()
-      : 'Not updated';
+  const printContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
 
-    printWindow.document.open();
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0"
+        />
 
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="UTF-8" />
-          <title>Health Record #${recordId}</title>
+        <title>
+          Health Record #${recordId}
+        </title>
 
-          <style>
-            * {
-              box-sizing: border-box;
-            }
+        <style>
+          * {
+            box-sizing: border-box;
+          }
 
+          body {
+            margin: 0;
+            padding: 24px;
+            font-family: Arial, sans-serif;
+            color: #111c36;
+            background: #f7f8fc;
+          }
+
+          .document {
+            width: 800px;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 32px;
+            border: 1px solid #e6e8f0;
+            border-radius: 20px;
+            background: #ffffff;
+          }
+
+          .header {
+            padding: 24px;
+            border-radius: 17px;
+            color: #ffffff;
+            background: linear-gradient(
+              135deg,
+              #704dff,
+              #4d27e9
+            );
+          }
+
+          .header h1 {
+            margin: 0;
+            font-size: 26px;
+          }
+
+          .header p {
+            margin: 8px 0 0;
+            color: #eeeaff;
+          }
+
+          .grid {
+            margin-top: 22px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 13px;
+          }
+
+          .box {
+            padding: 14px;
+            border: 1px solid #e6e8f0;
+            border-radius: 13px;
+            background: #faf9ff;
+          }
+
+          .box span {
+            display: block;
+            margin-bottom: 6px;
+            color: #66738a;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+          }
+
+          .box strong {
+            color: #111c36;
+            font-size: 14px;
+          }
+
+          .section {
+            margin-top: 16px;
+            padding: 17px;
+            border: 1px solid #e6e8f0;
+            border-radius: 14px;
+          }
+
+          .section h2 {
+            margin: 0 0 10px;
+            color: #111c36;
+            font-size: 17px;
+          }
+
+          .section p {
+            margin: 0;
+            color: #334155;
+            line-height: 1.7;
+            white-space: pre-wrap;
+          }
+
+          .diagnosis {
+            background: #fffaf0;
+          }
+
+          .prescription {
+            background: #f1f7ff;
+          }
+
+          .notes {
+            background: #effbf7;
+          }
+
+          .footer {
+            margin-top: 24px;
+            padding-top: 14px;
+            border-top: 1px solid #e6e8f0;
+            color: #66738a;
+            font-size: 12px;
+            line-height: 1.6;
+          }
+
+          @media print {
             body {
-              margin: 0;
-              padding: 24px;
-              font-family: Arial, sans-serif;
-              color: #111c36;
-              background: #f7f8fc;
-            }
-
-            .document {
-              width: 800px;
-              max-width: 100%;
-              margin: 0 auto;
-              padding: 32px;
-              border: 1px solid #e6e8f0;
-              border-radius: 20px;
+              padding: 0;
               background: #ffffff;
             }
 
-            .header {
-              padding: 24px;
-              border-radius: 17px;
-              color: #ffffff;
-              background: linear-gradient(
-                135deg,
-                #704dff,
-                #4d27e9
-              );
+            .document {
+              width: auto;
+              border: none;
+              border-radius: 0;
             }
+          }
+        </style>
+      </head>
 
-            .header h1 {
-              margin: 0;
-              font-size: 26px;
-            }
+      <body>
+        <main class="document">
+          <header class="header">
+            <h1>HealthAxis Medical Record</h1>
 
-            .header p {
-              margin: 8px 0 0;
-              color: #eeeaff;
-            }
+            <p>
+              Patient Health Record Document
+            </p>
+          </header>
 
-            .grid {
-              margin-top: 22px;
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 13px;
-            }
+          <section class="grid">
+            <div class="box">
+              <span>Record ID</span>
+              <strong>#${recordId}</strong>
+            </div>
 
-            .box {
-              padding: 14px;
-              border: 1px solid #e6e8f0;
-              border-radius: 13px;
-              background: #faf9ff;
-            }
+            <div class="box">
+              <span>Appointment ID</span>
+              <strong>
+                #${record.appointmentId}
+              </strong>
+            </div>
 
-            .box span {
-              display: block;
-              margin-bottom: 6px;
-              color: #66738a;
-              font-size: 11px;
-              font-weight: bold;
-              text-transform: uppercase;
-            }
+            <div class="box">
+              <span>Patient Name</span>
+              <strong>${patientName}</strong>
+            </div>
 
-            .box strong {
-              color: #111c36;
-              font-size: 14px;
-            }
+            <div class="box">
+              <span>Doctor Name</span>
+              <strong>${doctorName}</strong>
+            </div>
 
-            .section {
-              margin-top: 16px;
-              padding: 17px;
-              border: 1px solid #e6e8f0;
-              border-radius: 14px;
-            }
+            <div class="box">
+              <span>Specialisation</span>
+              <strong>${specialisation}</strong>
+            </div>
 
-            .section h2 {
-              margin: 0 0 10px;
-              color: #111c36;
-              font-size: 17px;
-            }
+            <div class="box">
+              <span>Visit Date</span>
+              <strong>${visitDate}</strong>
+            </div>
 
-            .section p {
-              margin: 0;
-              color: #334155;
-              line-height: 1.7;
-              white-space: pre-wrap;
-            }
+            <div class="box">
+              <span>Record Created</span>
+              <strong>${createdAt}</strong>
+            </div>
 
-            .diagnosis {
-              background: #fffaf0;
-            }
+            <div class="box">
+              <span>Last Updated</span>
+              <strong>${updatedAt}</strong>
+            </div>
+          </section>
 
-            .prescription {
-              background: #f1f7ff;
-            }
+          <section class="section diagnosis">
+            <h2>Diagnosis</h2>
+            <p>${diagnosis}</p>
+          </section>
 
-            .notes {
-              background: #effbf7;
-            }
+          <section class="section prescription">
+            <h2>Prescription</h2>
+            <p>${prescription}</p>
+          </section>
 
-            .footer {
-              margin-top: 24px;
-              padding-top: 14px;
-              border-top: 1px solid #e6e8f0;
-              color: #66738a;
-              font-size: 12px;
-              line-height: 1.6;
-            }
+          <section class="section notes">
+            <h2>Doctor Notes</h2>
+            <p>${notes}</p>
+          </section>
 
-            @media print {
-              body {
-                padding: 0;
-                background: #ffffff;
-              }
+          <footer class="footer">
+            This record was generated from HealthAxis.
+            Please consult your doctor before changing
+            any medication.
+          </footer>
+        </main>
+      </body>
+    </html>
+  `;
 
-              .document {
-                width: auto;
-                border: none;
-                border-radius: 0;
-              }
-            }
-          </style>
-        </head>
+  const printDocumentBlob = new Blob(
+    [printContent],
+    {
+      type: 'text/html;charset=utf-8'
+    }
+  );
 
-        <body>
-          <main class="document">
-            <header class="header">
-              <h1>HealthAxis Medical Record</h1>
-              <p>Patient Health Record Document</p>
-            </header>
+  const printDocumentUrl =
+    globalThis.URL.createObjectURL(
+      printDocumentBlob
+    );
 
-            <section class="grid">
-              <div class="box">
-                <span>Record ID</span>
-                <strong>#${recordId}</strong>
-              </div>
+  printWindow.addEventListener(
+    'load',
+    () => {
+      printWindow.focus();
+      printWindow.print();
 
-              <div class="box">
-                <span>Appointment ID</span>
-                <strong>#${record.appointmentId}</strong>
-              </div>
+      globalThis.URL.revokeObjectURL(
+        printDocumentUrl
+      );
+    },
+    {
+      once: true
+    }
+  );
 
-              <div class="box">
-                <span>Patient Name</span>
-                <strong>${patientName}</strong>
-              </div>
-
-              <div class="box">
-                <span>Doctor Name</span>
-                <strong>${doctorName}</strong>
-              </div>
-
-              <div class="box">
-                <span>Specialisation</span>
-                <strong>${specialisation}</strong>
-              </div>
-
-              <div class="box">
-                <span>Visit Date</span>
-                <strong>${visitDate}</strong>
-              </div>
-
-              <div class="box">
-                <span>Record Created</span>
-                <strong>${createdAt}</strong>
-              </div>
-
-              <div class="box">
-                <span>Last Updated</span>
-                <strong>${updatedAt}</strong>
-              </div>
-            </section>
-
-            <section class="section diagnosis">
-              <h2>Diagnosis</h2>
-              <p>${diagnosis}</p>
-            </section>
-
-            <section class="section prescription">
-              <h2>Prescription</h2>
-              <p>${prescription}</p>
-            </section>
-
-            <section class="section notes">
-              <h2>Doctor Notes</h2>
-              <p>${notes}</p>
-            </section>
-
-            <footer class="footer">
-              This record was generated from HealthAxis.
-              Please consult your doctor before changing any medication.
-            </footer>
-          </main>
-
-          <script>
-            window.onload = function () {
-              window.print();
-            };
-          </script>
-        </body>
-      </html>
-    `);
-
-    printWindow.document.close();
-  }
+  printWindow.location.href =
+    printDocumentUrl;
+}
 
   private getRecordDateValue(
     record: HealthRecord

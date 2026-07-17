@@ -1,8 +1,8 @@
 ﻿namespace HealthAxis.API.Exceptions
 {
-    public class ValidationExceptions : Exception
+    public class ValidationException : Exception
     {
-        public ValidationExceptions(string message) : base(message)
+        public ValidationException(string message) : base(message)
         {
         }
     }

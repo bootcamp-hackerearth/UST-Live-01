@@ -91,7 +91,7 @@ export class PatientProfile {
       '',
       [
         Validators.required,
-        Validators.pattern(/^[6-9][0-9]{9}$/)
+        Validators.pattern(/^[6-9]\d{9}$/)
       ]
     ],
     email: [
@@ -412,8 +412,8 @@ export class PatientProfile {
       return null;
     }
 
-    return newPassword !== confirmPassword
-      ? { passwordMismatch: true }
-      : null;
+    return newPassword === confirmPassword
+      ? null
+      : { passwordMismatch: true };
   }
 }

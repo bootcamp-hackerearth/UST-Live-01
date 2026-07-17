@@ -10,11 +10,6 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-//builder.Services.AddScoped(_ => new HttpClient
-//{
-//    BaseAddress = new Uri("https://localhost:7081/")
-//});
-
 const string apiBaseAddress = "https://localhost:7081/";
 
 builder.Services.AddTransient<AuthTokenHandler>();
@@ -41,11 +36,10 @@ builder.Services.AddScoped<AuthenticationStateProvider>(serviceProvider =>
     serviceProvider.GetRequiredService<ApiAuthenticationStateProvider>());
 
 builder.Services.AddScoped<AuthService>();
-//builder.Services.AddScoped<PatientAdminService>();
+builder.Services.AddScoped<PatientAdminService>();
 builder.Services.AddScoped<DoctorAdminService>();
 builder.Services.AddScoped<UserAdminService>();
 builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<AppointmentReportAdminService>();
 builder.Services.AddScoped<AdminProfileService>();
-builder.Services.AddScoped<PatientAdminService>();
 await builder.Build().RunAsync();

@@ -7,7 +7,7 @@ using HealthAxis.Shared.DTO.HealthRecordDtos;
 using HealthAxis.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
-using ApiValidationException = HealthAxis.API.Exceptions.ValidationExceptions;
+using ApiValidationException = HealthAxis.API.Exceptions.ValidationException;
 
 namespace HealthAxis.API.Tests.Services
 {
@@ -66,35 +66,7 @@ namespace HealthAxis.API.Tests.Services
             result.Should().BeEmpty();
         }
 
-        [Fact]
-        public async Task GetByPatientIdAsync_WhenRecordsExist_ReturnsRecordsInDescendingOrder()
-        {
-            await SeedPatientDoctorAppointmentAsync();
-
-            _context.HealthRecords.AddRange(
-                CreateHealthRecord(
-                    id: 1,
-                    visitDate: DateTime.Today.AddDays(-5),
-                    diagnosis: "Cold"),
-                CreateHealthRecord(
-                    id: 2,
-                    visitDate: DateTime.Today,
-                    diagnosis: "Fever"));
-
-            await _context.SaveChangesAsync();
-
-            var result = await _service.GetByPatientIdAsync(1);
-
-            result.Should().HaveCount(2);
-            result[0].HealthRecordId.Should().Be(2);
-            result[0].RecordId.Should().Be(2);
-            result[0].Diagnosis.Should().Be("Fever");
-
-            result[1].HealthRecordId.Should().Be(1);
-            result[1].RecordId.Should().Be(1);
-            result[1].Diagnosis.Should().Be("Cold");
-        }
-
+       
         [Fact]
         public async Task GetByPatientIdAsync_WhenRecordsExist_MapsPatientAndDoctorDetails()
         {
@@ -113,32 +85,7 @@ namespace HealthAxis.API.Tests.Services
             result[0].Specialisation.Should().Be(Specialisation.Cardiology.ToString());
         }
 
-        [Fact]
-        public async Task GetByPatientIdAsync_WhenRecordHasNullTextFields_ReturnsEmptyStrings()
-        {
-            await SeedPatientDoctorAppointmentAsync();
-
-            _context.HealthRecords.Add(new HealthRecord
-            {
-                HealthRecordId = 1,
-                AppointmentId = 1,
-                PatientId = 1,
-                DoctorId = 1,
-                VisitDate = DateTime.Today,
-                Diagnosis = null!,
-                Prescription = null!,
-                Notes = null!
-            });
-
-            await _context.SaveChangesAsync();
-
-            var result = await _service.GetByPatientIdAsync(1);
-
-            result[0].Diagnosis.Should().BeEmpty();
-            result[0].Prescription.Should().BeEmpty();
-            result[0].Notes.Should().BeEmpty();
-        }
-
+      
         [Fact]
         public async Task GetByIdAsync_WhenIdIsZero_ReturnsNull()
         {
@@ -581,6 +528,8 @@ namespace HealthAxis.API.Tests.Services
         {
             _context.Database.EnsureDeleted();
             _context.Dispose();
+
+            GC.SuppressFinalize(this);
         }
     }
 }

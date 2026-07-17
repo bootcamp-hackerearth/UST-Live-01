@@ -8,12 +8,14 @@ using HealthAxis.Shared.DTO.PatientDtos;
 using HealthAxis.Shared.Enums;
 using Moq;
 
-using ApiValidationException = HealthAxis.API.Exceptions.ValidationExceptions;
+using ApiValidationException = HealthAxis.API.Exceptions.ValidationException;
 
 namespace HealthAxis.API.Tests.Services
 {
     public class PatientServiceTests
     {
+        private static readonly int[] ExpectedPatientIds = { 1, 2 };
+
         private readonly Mock<IPatientRepository> _patientRepositoryMock;
         private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
         private readonly Mock<IHealthRecordRepository> _healthRecordRepositoryMock;
@@ -493,7 +495,7 @@ namespace HealthAxis.API.Tests.Services
             var result = await _service.GetPatientsForDoctorAsync(1);
 
             result.Should().HaveCount(2);
-            result.Select(patient => patient.PatientId).Should().Contain(new[] { 1, 2 });
+            result.Select(patient => patient.PatientId).Should().Contain(ExpectedPatientIds);
             result.Select(patient => patient.PatientId).Should().NotContain(3);
         }
 

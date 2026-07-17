@@ -5,23 +5,28 @@ using System.Text.Json;
 
 namespace HealthAxis_Admin.Providers
 {
-    public sealed class ApiAuthenticationStateProvider : AuthenticationStateProvider
+    public sealed class ApiAuthenticationStateProvider
+        : AuthenticationStateProvider
     {
         private const string AdminRole = "Admin";
         private const string JwtAuthenticationType = "jwt";
 
         private readonly TokenService _tokenService;
 
-        public ApiAuthenticationStateProvider(TokenService tokenService)
+        public ApiAuthenticationStateProvider(
+            TokenService tokenService)
         {
             _tokenService = tokenService;
         }
 
-        public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+        public override async Task<AuthenticationState>
+            GetAuthenticationStateAsync()
         {
-            var token = await _tokenService.GetAccessTokenAsync();
+            var token =
+                await _tokenService.GetAccessTokenAsync();
 
-            if (string.IsNullOrWhiteSpace(token) || IsTokenExpired(token))
+            if (string.IsNullOrWhiteSpace(token) ||
+                IsTokenExpired(token))
             {
                 await _tokenService.ClearTokensAsync();
 
@@ -32,44 +37,55 @@ namespace HealthAxis_Admin.Providers
                 ParseClaimsFromJwt(token),
                 JwtAuthenticationType);
 
-            return new AuthenticationState(new ClaimsPrincipal(identity));
+            return new AuthenticationState(
+                new ClaimsPrincipal(identity));
         }
 
         public void NotifyUserAuthenticated()
         {
-            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+            NotifyAuthenticationStateChanged(
+                GetAuthenticationStateAsync());
         }
 
         public void NotifyUserLoggedOut()
         {
             NotifyAuthenticationStateChanged(
-                Task.FromResult(CreateAnonymousState()));
+                Task.FromResult(
+                    CreateAnonymousState()));
         }
 
         public static bool IsAdminToken(string token)
         {
-            var claims = ParseClaimsFromJwt(token);
+            var claims =
+                ParseClaimsFromJwt(token);
 
             return claims.Any(claim =>
                 claim.Type == ClaimTypes.Role &&
-                claim.Value.Equals(AdminRole, StringComparison.OrdinalIgnoreCase));
+                claim.Value.Equals(
+                    AdminRole,
+                    StringComparison.OrdinalIgnoreCase));
         }
 
-        public static List<Claim> ParseClaimsFromJwt(string token)
+        public static List<Claim> ParseClaimsFromJwt(
+            string token)
         {
             var claims = new List<Claim>();
 
-            var payload = GetJwtPayload(token);
+            var payload =
+                GetJwtPayload(token);
 
             if (string.IsNullOrWhiteSpace(payload))
             {
                 return claims;
             }
 
-            var jsonBytes = Convert.FromBase64String(payload);
+            var jsonBytes =
+                Convert.FromBase64String(payload);
 
             var keyValuePairs =
-                JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(jsonBytes);
+                JsonSerializer.Deserialize<
+                    Dictionary<string, JsonElement>>(
+                        jsonBytes);
 
             if (keyValuePairs is null)
             {
@@ -78,58 +94,79 @@ namespace HealthAxis_Admin.Providers
 
             foreach (var pair in keyValuePairs)
             {
-                AddClaim(claims, pair.Key, pair.Value);
+                AddClaim(
+                    claims,
+                    pair.Key,
+                    pair.Value);
             }
 
             return claims;
         }
 
-        private static AuthenticationState CreateAnonymousState()
+        private static AuthenticationState
+            CreateAnonymousState()
         {
             return new AuthenticationState(
-                new ClaimsPrincipal(new ClaimsIdentity()));
+                new ClaimsPrincipal(
+                    new ClaimsIdentity()));
         }
 
         private static void AddClaim(
-            ICollection<Claim> claims,
+            List<Claim> claims,
             string claimType,
             JsonElement claimValue)
         {
-            var normalizedClaimType = NormalizeClaimType(claimType);
+            var normalizedClaimType =
+                NormalizeClaimType(claimType);
 
-            if (claimValue.ValueKind == JsonValueKind.Array)
+            if (claimValue.ValueKind ==
+                JsonValueKind.Array)
             {
-                foreach (var value in claimValue.EnumerateArray())
+                foreach (
+                    var value in
+                    claimValue.EnumerateArray())
                 {
-                    claims.Add(new Claim(normalizedClaimType, value.ToString()));
+                    claims.Add(
+                        new Claim(
+                            normalizedClaimType,
+                            value.ToString()));
                 }
 
                 return;
             }
 
-            claims.Add(new Claim(normalizedClaimType, claimValue.ToString()));
+            claims.Add(
+                new Claim(
+                    normalizedClaimType,
+                    claimValue.ToString()));
         }
 
-        private static string NormalizeClaimType(string claimType)
+        private static string NormalizeClaimType(
+            string claimType)
         {
             return claimType switch
             {
                 "role" => ClaimTypes.Role,
                 "Role" => ClaimTypes.Role,
-                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role" => ClaimTypes.Role,
+
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+                    => ClaimTypes.Role,
 
                 "email" => ClaimTypes.Email,
                 "Email" => ClaimTypes.Email,
 
                 "sub" => ClaimTypes.NameIdentifier,
                 "nameid" => ClaimTypes.NameIdentifier,
-                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" => ClaimTypes.NameIdentifier,
+
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+                    => ClaimTypes.NameIdentifier,
 
                 _ => claimType
             };
         }
 
-        private static string GetJwtPayload(string token)
+        private static string GetJwtPayload(
+            string token)
         {
             var parts = token.Split('.');
 
@@ -142,35 +179,48 @@ namespace HealthAxis_Admin.Providers
                 .Replace('-', '+')
                 .Replace('_', '/');
 
-            var padding = payload.Length % 4;
+            var padding =
+                payload.Length % 4;
 
             if (padding > 0)
             {
-                payload = payload.PadRight(payload.Length + 4 - padding, '=');
+                payload = payload.PadRight(
+                    payload.Length + 4 - padding,
+                    '=');
             }
 
             return payload;
         }
 
-        private static bool IsTokenExpired(string token)
+        private static bool IsTokenExpired(
+            string token)
         {
-            var claims = ParseClaimsFromJwt(token);
+            var claims =
+                ParseClaimsFromJwt(token);
 
-            var expiryClaim = claims.FirstOrDefault(claim => claim.Type == "exp");
+            var expiryClaim =
+                claims.FirstOrDefault(
+                    claim => claim.Type == "exp");
 
             if (expiryClaim is null)
             {
                 return true;
             }
 
-            if (!long.TryParse(expiryClaim.Value, out var expirySeconds))
+            if (!long.TryParse(
+                    expiryClaim.Value,
+                    out var expirySeconds))
             {
                 return true;
             }
 
-            var expiryDate = DateTimeOffset.FromUnixTimeSeconds(expirySeconds);
+            var expiryDate =
+                DateTimeOffset.FromUnixTimeSeconds(
+                    expirySeconds);
 
-            return expiryDate <= DateTimeOffset.UtcNow;
+            return expiryDate <=
+                DateTimeOffset.UtcNow;
         }
     }
 }
+

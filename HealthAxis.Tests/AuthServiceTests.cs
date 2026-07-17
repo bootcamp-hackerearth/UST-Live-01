@@ -460,6 +460,113 @@ namespace HealthAxis.API.Tests.Services
             result.Message.Should().Be("Refresh token expired. Please login again");
             result.StatusCode.Should().Be(401);
         }
+        [Fact]
+        public async Task AdminResetPassword_WhenUserIdAndEmailMissing_ReturnsBadRequest()
+        {
+            var result = await _service.AdminResetPassword(
+                new AdminResetPasswordDto
+                {
+                    NewPassword = "Pass@123",
+                    ConfirmPassword = "Pass@123"
+                });
+
+            result.Success.Should().BeFalse();
+            result.Message.Should().Be("User id or email is required.");
+            result.StatusCode.Should().Be(400);
+        }
+        [Fact]
+        public async Task AdminResetPassword_WhenPasswordMismatch_ReturnsBadRequest()
+        {
+            var result = await _service.AdminResetPassword(
+                new AdminResetPasswordDto
+                {
+                    UserId = "user-1",
+                    NewPassword = "Pass@123",
+                    ConfirmPassword = "Other@123"
+                });
+
+            result.Success.Should().BeFalse();
+            result.StatusCode.Should().Be(400);
+        }
+        [Fact]
+        public async Task AdminResetPassword_WhenUserNotFound_Returns404()
+        {
+            _userManagerMock
+                .Setup(x => x.FindByIdAsync("user-1"))
+                .ReturnsAsync((IdentityUser?)null);
+
+            var result = await _service.AdminResetPassword(
+                new AdminResetPasswordDto
+                {
+                    UserId = "user-1",
+                    NewPassword = "Pass@123",
+                    ConfirmPassword = "Pass@123"
+                });
+
+            result.StatusCode.Should().Be(404);
+        }
+        [Fact]
+        public async Task AdminResetPassword_WhenRoleNotAllowed_ReturnsForbidden()
+        {
+            var user = CreateIdentityUser();
+
+            _userManagerMock
+                .Setup(x => x.FindByIdAsync(user.Id))
+                .ReturnsAsync(user);
+
+            _userManagerMock
+                .Setup(x => x.GetRolesAsync(user))
+                .ReturnsAsync(new List<string> { "Admin" });
+
+            var result = await _service.AdminResetPassword(
+                new AdminResetPasswordDto
+                {
+                    UserId = user.Id,
+                    NewPassword = "Pass@123",
+                    ConfirmPassword = "Pass@123"
+                });
+
+            result.StatusCode.Should().Be(403);
+        }
+        [Fact]
+        public async Task AdminResetPassword_WhenIdentityFails_ReturnsBadRequest()
+        {
+            var user = CreateIdentityUser();
+
+            _userManagerMock
+                .Setup(x => x.FindByIdAsync(user.Id))
+                .ReturnsAsync(user);
+
+            _userManagerMock
+                .Setup(x => x.GetRolesAsync(user))
+                .ReturnsAsync(new List<string> { "Patient" });
+
+            _userManagerMock
+                .Setup(x => x.GeneratePasswordResetTokenAsync(user))
+                .ReturnsAsync("token");
+
+            _userManagerMock
+                .Setup(x => x.ResetPasswordAsync(
+                    user,
+                    "token",
+                    "Pass@123"))
+                .ReturnsAsync(
+                    IdentityResult.Failed(
+                        new IdentityError
+                        {
+                            Description = "Reset failed"
+                        }));
+
+            var result = await _service.AdminResetPassword(
+                new AdminResetPasswordDto
+                {
+                    UserId = user.Id,
+                    NewPassword = "Pass@123",
+                    ConfirmPassword = "Pass@123"
+                });
+
+            result.Success.Should().BeFalse();
+        }
 
         [Fact]
         public async Task RefreshToken_WhenExpired_ReturnsUnauthorized()

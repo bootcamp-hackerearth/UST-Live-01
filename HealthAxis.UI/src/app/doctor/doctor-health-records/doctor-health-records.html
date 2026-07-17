@@ -344,15 +344,15 @@
 @if (selectedRecord(); as record) {
   <div
     class="modal-backdrop"
-    role="presentation"
     (click)="closeRecord()"
+    (keydown.escape)="closeRecord()"
   >
-    <section
+    <dialog
+      open
       class="record-modal"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="healthRecordTitle"
       (click)="$event.stopPropagation()"
+      (keydown.escape)="closeRecord(); $event.stopPropagation()"
     >
       <div class="modal-header">
         <div>
@@ -497,19 +497,17 @@
           Done
         </button>
       </div>
-    </section>
+    </dialog>
   </div>
 }
 
 @if (editingRecord(); as record) {
   <div
     class="modal-backdrop"
-    role="presentation"
   >
-    <section
+    <dialog
+      open
       class="record-modal edit-modal"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="editHealthRecordTitle"
     >
       <div class="modal-header">
@@ -666,16 +664,15 @@
           </button>
         </div>
       </form>
-    </section>
+    </dialog>
   </div>
 }
 
 @if (successDialogMessage()) {
   <div class="modal-backdrop">
-    <section
+    <dialog
+      open
       class="success-modal"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="recordUpdatedTitle"
     >
       <span class="success-icon" aria-hidden="true">
@@ -699,6 +696,6 @@
       >
         Done
       </button>
-    </section>
+    </dialog>
   </div>
 }

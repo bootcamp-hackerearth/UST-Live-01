@@ -31,13 +31,10 @@
   </section>
 
   @if (loading()) {
-    <div
-      class="page-alert loading-alert"
-      role="status"
-    >
+    <output class="page-alert loading-alert">
       <span class="loader" aria-hidden="true"></span>
       <span>Loading doctor profile...</span>
-    </div>
+    </output>
   }
 
   @if (errorMessage()) {
@@ -51,13 +48,10 @@
   }
 
   @if (successMessage()) {
-    <div
-      class="page-alert success-alert"
-      role="status"
-    >
+    <output class="page-alert success-alert">
       <span class="alert-icon" aria-hidden="true">✓</span>
       <span>{{ successMessage() }}</span>
-    </div>
+    </output>
   }
 
   @if (statusErrorMessage()) {
@@ -257,13 +251,10 @@
     }
 
     @if (passwordSuccessMessage()) {
-      <div
-        class="page-alert success-alert"
-        role="status"
-      >
+      <output class="page-alert success-alert">
         <span class="alert-icon" aria-hidden="true">✓</span>
         <span>{{ passwordSuccessMessage() }}</span>
-      </div>
+      </output>
     }
 
     <form
@@ -272,22 +263,36 @@
     >
       <div class="form-grid">
         <div class="form-group">
-          <label for="currentPassword">
+          <label
+            [attr.for]="
+              showCurrentPassword()
+                ? 'currentPasswordText'
+                : 'currentPasswordField'
+            "
+          >
             Current Password
           </label>
 
           <div class="password-input">
-            <input
-              id="currentPassword"
-              [type]="
-                showCurrentPassword()
-                  ? 'text'
-                  : 'password'
-              "
-              autocomplete="current-password"
-              formControlName="currentPassword"
-              placeholder="Enter current password"
-            />
+            @if (showCurrentPassword()) {
+              <input
+                id="currentPasswordText"
+                type="text"
+                name="currentPassword"
+                autocomplete="off"
+                formControlName="currentPassword"
+                placeholder="Enter current password"
+              />
+            } @else {
+              <input
+                id="currentPasswordField"
+                type="password"
+                name="currentPassword"
+                autocomplete="current-password"
+                formControlName="currentPassword"
+                placeholder="Enter current password"
+              />
+            }
 
             <button
   type="button"
@@ -314,22 +319,36 @@
         </div>
 
         <div class="form-group">
-          <label for="newPassword">
+          <label
+            [attr.for]="
+              showNewPassword()
+                ? 'newPasswordText'
+                : 'newPasswordField'
+            "
+          >
             New Password
           </label>
 
           <div class="password-input">
-            <input
-              id="newPassword"
-              [type]="
-                showNewPassword()
-                  ? 'text'
-                  : 'password'
-              "
-              autocomplete="new-password"
-              formControlName="newPassword"
-              placeholder="Enter new password"
-            />
+            @if (showNewPassword()) {
+              <input
+                id="newPasswordText"
+                type="text"
+                name="newPassword"
+                autocomplete="off"
+                formControlName="newPassword"
+                placeholder="Enter new password"
+              />
+            } @else {
+              <input
+                id="newPasswordField"
+                type="password"
+                name="newPassword"
+                autocomplete="new-password"
+                formControlName="newPassword"
+                placeholder="Enter new password"
+              />
+            }
 
             <button
   type="button"
@@ -356,22 +375,36 @@
         </div>
 
         <div class="form-group">
-          <label for="confirmPassword">
+          <label
+            [attr.for]="
+              showConfirmPassword()
+                ? 'confirmPasswordText'
+                : 'confirmPasswordField'
+            "
+          >
             Confirm New Password
           </label>
 
           <div class="password-input">
-            <input
-              id="confirmPassword"
-              [type]="
-                showConfirmPassword()
-                  ? 'text'
-                  : 'password'
-              "
-              autocomplete="new-password"
-              formControlName="confirmPassword"
-              placeholder="Re-enter new password"
-            />
+            @if (showConfirmPassword()) {
+              <input
+                id="confirmPasswordText"
+                type="text"
+                name="confirmPassword"
+                autocomplete="off"
+                formControlName="confirmPassword"
+                placeholder="Re-enter new password"
+              />
+            } @else {
+              <input
+                id="confirmPasswordField"
+                type="password"
+                name="confirmPassword"
+                autocomplete="new-password"
+                formControlName="confirmPassword"
+                placeholder="Re-enter new password"
+              />
+            }
 
             <button
   type="button"

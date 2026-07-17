@@ -728,9 +728,7 @@ export class DoctorHealthRecords {
         )
       );
 
-    printWindow.document.open();
-
-    printWindow.document.write(`
+    const printableDocument = `
       <!DOCTYPE html>
       <html lang="en">
         <head>
@@ -934,9 +932,10 @@ export class DoctorHealthRecords {
           </script>
         </body>
       </html>
-    `);
+    `;
 
-    printWindow.document.close();
+    printWindow.document.documentElement.innerHTML =
+      printableDocument;
   }
 
   private loadHealthRecordsForTreatedPatients(): void {
@@ -1549,10 +1548,10 @@ export class DoctorHealthRecords {
     value: string
   ): string {
     return value
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
   }
 }

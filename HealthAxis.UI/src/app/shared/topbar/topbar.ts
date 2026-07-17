@@ -1,3 +1,4 @@
+
 import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -49,7 +50,7 @@ export class Topbar implements OnDestroy {
   readonly statusUpdating = signal(false);
   readonly statusError = signal('');
 
-  private readonly timerId = window.setInterval(() => {
+  private readonly timerId = globalThis.setInterval(() => {
     this.currentTime.set(new Date());
   }, CLOCK_INTERVAL_IN_MS);
 
@@ -58,7 +59,7 @@ export class Topbar implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    window.clearInterval(this.timerId);
+    globalThis.clearInterval(this.timerId);
   }
 
   @HostListener('document:click')
@@ -138,54 +139,55 @@ export class Topbar implements OnDestroy {
   }
 
   goToChangePassword(): void {
-  this.isProfileMenuOpen.set(false);
+    this.isProfileMenuOpen.set(false);
 
-  const role = this.authService.role();
+    const role = this.authService.role();
 
-  if (role === 'Doctor') {
-    void this.router
-      .navigate(['/doctor/profile'])
-      .then((navigated) => {
-        if (!navigated) {
-          return;
-        }
+    if (role === 'Doctor') {
+      void this.router
+        .navigate(['/doctor/profile'])
+        .then((navigated) => {
+          if (!navigated) {
+            return;
+          }
 
-        window.setTimeout(() => {
-          document
-            .getElementById('change-password')
-            ?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
+          globalThis.setTimeout(() => {
+            document
+              .getElementById('change-password')
+              ?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              });
+          });
         });
-      });
 
-    return;
+      return;
+    }
+
+    if (role === 'Patient') {
+      void this.router
+        .navigate(['/patient/profile'])
+        .then((navigated) => {
+          if (!navigated) {
+            return;
+          }
+
+          globalThis.setTimeout(() => {
+            document
+              .getElementById('change-password')
+              ?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              });
+          });
+        });
+
+      return;
+    }
+
+    void this.router.navigate(['/login']);
   }
 
-  if (role === 'Patient') {
-    void this.router
-      .navigate(['/patient/profile'])
-      .then((navigated) => {
-        if (!navigated) {
-          return;
-        }
-
-        window.setTimeout(() => {
-          document
-            .getElementById('change-password')
-            ?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-        });
-      });
-
-    return;
-  }
-
-  void this.router.navigate(['/login']);
-}
   requestLogout(): void {
     this.isProfileMenuOpen.set(false);
     this.logoutRequested.emit();
@@ -285,8 +287,9 @@ export class Topbar implements OnDestroy {
   ): void {
     this.statusError.set(message);
 
-    window.setTimeout(() => {
+    globalThis.setTimeout(() => {
       this.statusError.set('');
     }, ERROR_DURATION_IN_MS);
   }
 }
+

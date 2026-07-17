@@ -11,16 +11,22 @@ using HealthAxis.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace HealthAxis.API.Services.Implementation
 {
-    public class AdminService : IAdminService
+    public partial class AdminService : IAdminService
     {
         private const string DoctorRole = "Doctor";
         private const string PatientRole = "Patient";
+        private const string AdminRole = "Admin";
+        private const string AdminDisplayName = "Admin";
 
         private const int DoctorPageSize = 6;
         private const int UserPageSize = 6;
+
+        [GeneratedRegex(@"^[A-Za-z ]+$")]
+        private static partial Regex DoctorNameRegex();
 
         private readonly IDoctorRepository _doctorRepository;
         private readonly IAppointmentRepository _appointmentRepository;
@@ -98,38 +104,36 @@ namespace HealthAxis.API.Services.Implementation
 
             if (string.IsNullOrWhiteSpace(doctorDto.FullName))
             {
-                throw new ValidationExceptions("Doctor name is required.");
+                throw new ValidationException("Doctor name is required.");
             }
 
-            if (!System.Text.RegularExpressions.Regex.IsMatch(
-                    doctorDto.FullName,
-                    @"^[A-Za-z ]+$"))
+            if (!DoctorNameRegex().IsMatch(doctorDto.FullName))
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Doctor name should contain only alphabets and spaces.");
             }
 
             if (string.IsNullOrWhiteSpace(doctorDto.Email))
             {
-                throw new ValidationExceptions("Doctor email is required.");
+                throw new ValidationException("Doctor email is required.");
             }
 
-            if (!Enum.IsDefined(typeof(Specialisation), doctorDto.Specialisation))
+            if (!Enum.IsDefined(doctorDto.Specialisation))
             {
-                throw new ValidationExceptions("Invalid specialisation.");
+                throw new ValidationException("Invalid specialisation.");
             }
 
             if (doctorDto.YearsOfExperience < 0 ||
                 doctorDto.YearsOfExperience > 60)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Years of experience must be between 0 and 60.");
             }
 
             if (doctorDto.ConsultationFee < 100 ||
                 doctorDto.ConsultationFee > 10000)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Consultation fee must be between 100 and 10000.");
             }
 
@@ -165,7 +169,7 @@ namespace HealthAxis.API.Services.Implementation
                     ", ",
                     result.Errors.Select(error => error.Description));
 
-                throw new ValidationExceptions(errors);
+                throw new ValidationException(errors);
             }
 
             await _userManager.AddToRoleAsync(user, DoctorRole);
@@ -214,19 +218,19 @@ namespace HealthAxis.API.Services.Implementation
 
             if (string.IsNullOrWhiteSpace(doctorDto.FullName))
             {
-                throw new ValidationExceptions("Doctor full name is required.");
+                throw new ValidationException("Doctor full name is required.");
             }
 
             if (doctorDto.YearsOfExperience < 0 ||
                 doctorDto.YearsOfExperience > 60)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Years of experience must be between 0 and 60.");
             }
 
             if (doctorDto.ConsultationFee <= 0)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Consultation fee must be greater than 0.");
             }
 
@@ -295,7 +299,7 @@ namespace HealthAxis.API.Services.Implementation
 
             if (appointment == null)
             {
-                throw new ValidationExceptions("Appointment not found.");
+                throw new ValidationException("Appointment not found.");
             }
 
             if (!Enum.TryParse<AppointmentStatus>(
@@ -303,13 +307,13 @@ namespace HealthAxis.API.Services.Implementation
                     true,
                     out var newStatus))
             {
-                throw new ValidationExceptions("Invalid appointment status.");
+                throw new ValidationException("Invalid appointment status.");
             }
 
             if (appointment.Status == AppointmentStatus.Completed ||
                 appointment.Status == AppointmentStatus.Cancelled)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Completed or cancelled appointment status cannot be changed.");
             }
 
@@ -317,7 +321,7 @@ namespace HealthAxis.API.Services.Implementation
                 newStatus != AppointmentStatus.Confirmed &&
                 newStatus != AppointmentStatus.Cancelled)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Pending appointment can only be confirmed or cancelled.");
             }
 
@@ -325,7 +329,7 @@ namespace HealthAxis.API.Services.Implementation
                 newStatus != AppointmentStatus.Completed &&
                 newStatus != AppointmentStatus.Cancelled)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Confirmed appointment can only be completed or cancelled.");
             }
 
@@ -462,7 +466,7 @@ namespace HealthAxis.API.Services.Implementation
                     ", ",
                     result.Errors.Select(error => error.Description));
 
-                throw new ValidationExceptions(errors);
+                throw new ValidationException(errors);
             }
 
             return new AdminProfileDto
@@ -498,7 +502,7 @@ namespace HealthAxis.API.Services.Implementation
                     ", ",
                     result.Errors.Select(error => error.Description));
 
-                throw new ValidationExceptions(errors);
+                throw new ValidationException(errors);
             }
         }
 
@@ -599,7 +603,7 @@ namespace HealthAxis.API.Services.Implementation
                     appointmentRecord.AppointmentId == appointmentId);
 
             return appointment == null
-                ? throw new ValidationExceptions("Appointment details not found.")
+                ? throw new ValidationException("Appointment details not found.")
                 : MapAppointmentDetailForAdmin(appointment);
         }
 
@@ -635,7 +639,12 @@ namespace HealthAxis.API.Services.Implementation
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault() ?? string.Empty;
 
-            var fullName = user.Email ?? string.Empty;
+            var fullName = string.Equals(
+                role,
+                AdminRole,
+                StringComparison.OrdinalIgnoreCase)
+                ? AdminDisplayName
+                : user.Email ?? string.Empty;
             var phoneNumber = user.PhoneNumber ?? "Not available";
             var specialisation = string.Empty;
             DateTime? createdDate = null;

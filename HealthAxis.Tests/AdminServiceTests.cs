@@ -18,7 +18,7 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading;
 
-using ApiValidationException = HealthAxis.API.Exceptions.ValidationExceptions;
+using ApiValidationException = HealthAxis.API.Exceptions.ValidationException;
 
 namespace HealthAxis.API.Tests.Services
 {
@@ -1143,6 +1143,8 @@ namespace HealthAxis.API.Tests.Services
         {
             _context.Database.EnsureDeleted();
             _context.Dispose();
+
+            GC.SuppressFinalize(this);
         }
     }
 

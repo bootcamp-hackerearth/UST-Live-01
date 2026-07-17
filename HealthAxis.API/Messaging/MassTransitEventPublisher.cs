@@ -26,29 +26,36 @@ namespace HealthAxis.API.Messaging
                     appointmentBookedEvent,
                     cancellationToken);
 
-                _logger.LogInformation(
-                    """
-                   
-                                   MASSTRANSIT EVENT PUBLISHED                    
-                    ─────────────────────────────────────────────────
-                     Event Type      : {EventType}                                
-                     Patient Name    : {PatientName}                              
-                     Doctor Name     : {DoctorName}                               
-                     Doctor ID       : {DoctorId}                                 
-                     Appointment ID  : {AppointmentId}                            
-                     Scheduled Date  : {ScheduledDate:yyyy-MM-dd}                 
-                     Time Slot       : {TimeSlot}                                 
-                     Status          : {Status}                                  
-                    
-                    """,
-                    appointmentBookedEvent.EventType,
-                    appointmentBookedEvent.PatientName,
-                    appointmentBookedEvent.DoctorName,
-                    appointmentBookedEvent.DoctorId,
-                    appointmentBookedEvent.AppointmentId,
-                    appointmentBookedEvent.ScheduledDate,
-                    appointmentBookedEvent.TimeSlot,
-                    appointmentBookedEvent.Status);
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
+                        """
+                        MASSTRANSIT EVENT PUBLISHED
+                        ─────────────────────────────────────────
+                        Event Type     : {EventType}
+                        Patient Name   : {PatientName}
+                        Doctor Name    : {DoctorName}
+                        Doctor ID      : {DoctorId}
+                        Appointment ID : {AppointmentId}
+                        Scheduled Date : {ScheduledDate:yyyy-MM-dd}
+                        Time Slot      : {TimeSlot}
+                        Status         : {Status}
+                       
+                        """,
+                        appointmentBookedEvent.EventType,
+                        appointmentBookedEvent.PatientName,
+                        appointmentBookedEvent.DoctorName,
+                        appointmentBookedEvent.DoctorId,
+                        appointmentBookedEvent.AppointmentId,
+                        appointmentBookedEvent.ScheduledDate,
+                        appointmentBookedEvent.TimeSlot,
+                        appointmentBookedEvent.Status);
+                }
+            }
+            catch (OperationCanceledException)
+                when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
             }
             catch (Exception exception)
             {

@@ -476,10 +476,9 @@
 @if (successDialog(); as dialog) {
   <div class="dialog-backdrop">
 
-    <section
+    <dialog
+      open
       class="dialog-card success-dialog"
-      role="dialog"
-      aria-modal="true"
       aria-labelledby="bookingSuccessTitle"
     >
 
@@ -551,7 +550,7 @@
 
       </div>
 
-    </section>
+    </dialog>
 
   </div>
 }

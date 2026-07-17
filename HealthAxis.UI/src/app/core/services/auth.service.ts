@@ -508,42 +508,42 @@ export class AuthService {
       : '';
   }
 
-  private decodeToken(
-    token: string
-  ): JwtPayload {
-    try {
-      const payloadPart =
-        token.split('.')[1];
+private decodeToken(
+  token: string
+): JwtPayload {
+  try {
+    const payloadPart =
+      token.split('.')[1];
 
-      if (!payloadPart) {
-        return {};
-      }
-
-      const base64 =
-        payloadPart
-          .replace(/-/g, '+')
-          .replace(/_/g, '/');
-
-      const paddedBase64 =
-        base64.padEnd(
-          Math.ceil(base64.length / 4) * 4,
-          '='
-        );
-
-      const parsedPayload: unknown =
-        JSON.parse(
-          atob(paddedBase64)
-        );
-
-      return this.isRecord(
-        parsedPayload
-      )
-        ? parsedPayload
-        : {};
-    } catch {
+    if (!payloadPart) {
       return {};
     }
+
+    const base64 =
+      payloadPart
+        .replaceAll('-', '+')
+        .replaceAll('_', '/');
+
+    const paddedBase64 =
+      base64.padEnd(
+        Math.ceil(base64.length / 4) * 4,
+        '='
+      );
+
+    const parsedPayload: unknown =
+      JSON.parse(
+        atob(paddedBase64)
+      );
+
+    return this.isRecord(
+      parsedPayload
+    )
+      ? parsedPayload
+      : {};
+  } catch {
+    return {};
   }
+}
 
   private isRecord(
     value: unknown

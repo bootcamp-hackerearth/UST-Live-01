@@ -19,72 +19,100 @@ namespace HealthAxis.API.Consumers
             _logger = logger;
         }
 
-        public async Task Consume(ConsumeContext<AppointmentBookedEvent> context)
+        public async Task Consume(
+            ConsumeContext<AppointmentBookedEvent> context)
         {
-            var appointmentBookedEvent = context.Message;
+            var appointmentBookedEvent =
+                context.Message;
 
-            await SaveNotificationAsync(appointmentBookedEvent);
+            await SaveNotificationAsync(
+                appointmentBookedEvent,
+                context.CancellationToken);
 
-            _logger.LogInformation(
-                """
-                
-                               MASSTRANSIT EVENT CONSUMED                     
-                ──────────────────────────────────────────────────────────────
-                 Event Type      : {EventType}                                
-                 Patient ID      : {PatientId}                                
-                 Patient Name    : {PatientName}                              
-                 Doctor Name     : {DoctorName}                               
-                 Doctor ID       : {DoctorId}                                 
-                 Appointment ID  : {AppointmentId}                            
-                 Scheduled Date  : {ScheduledDate:yyyy-MM-dd}                 
-                 Time Slot       : {TimeSlot}                                 
-                 Status          : {Status}                                   
-                 Notification    : Saved to database                          
-                
-                """,
-                appointmentBookedEvent.EventType,
-                appointmentBookedEvent.PatientId,
-                appointmentBookedEvent.PatientName,
-                appointmentBookedEvent.DoctorName,
-                appointmentBookedEvent.DoctorId,
-                appointmentBookedEvent.AppointmentId,
-                appointmentBookedEvent.ScheduledDate,
-                appointmentBookedEvent.TimeSlot,
-                appointmentBookedEvent.Status);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    """
+                    MASSTRANSIT EVENT CONSUMED
+                    ─────────────────────────────────────────
+                    Event Type     : {EventType}
+                    Patient ID     : {PatientId}
+                    Patient Name   : {PatientName}
+                    Doctor Name    : {DoctorName}
+                    Doctor ID      : {DoctorId}
+                    Appointment ID : {AppointmentId}
+                    Scheduled Date : {ScheduledDate:yyyy-MM-dd}
+                    Time Slot      : {TimeSlot}
+                    Status         : {Status}
+                    Notification   : Saved to database
+                    
+                    """,
+                    appointmentBookedEvent.EventType,
+                    appointmentBookedEvent.PatientId,
+                    appointmentBookedEvent.PatientName,
+                    appointmentBookedEvent.DoctorName,
+                    appointmentBookedEvent.DoctorId,
+                    appointmentBookedEvent.AppointmentId,
+                    appointmentBookedEvent.ScheduledDate,
+                    appointmentBookedEvent.TimeSlot,
+                    appointmentBookedEvent.Status);
+            }
         }
 
         private async Task SaveNotificationAsync(
-            AppointmentBookedEvent appointmentBookedEvent)
+            AppointmentBookedEvent appointmentBookedEvent,
+            CancellationToken cancellationToken)
         {
             await using var scope =
                 _serviceScopeFactory.CreateAsyncScope();
 
-            var dbContext = scope.ServiceProvider
-                .GetRequiredService<ApplicationDbContext>();
+            var dbContext =
+                scope.ServiceProvider
+                    .GetRequiredService<ApplicationDbContext>();
 
             var notification = new Notification
             {
-                PatientId = appointmentBookedEvent.PatientId,
-                DoctorId = appointmentBookedEvent.DoctorId,
-                Title = "Appointment Booked",
+                PatientId =
+                    appointmentBookedEvent.PatientId,
+
+                DoctorId =
+                    appointmentBookedEvent.DoctorId,
+
+                Title =
+                    "Appointment Booked",
+
                 Message =
-                    $"Your appointment with {appointmentBookedEvent.DoctorName} " +
-                    $"is booked on {appointmentBookedEvent.ScheduledDate:yyyy-MM-dd} " +
+                    $"Your appointment with " +
+                    $"{appointmentBookedEvent.DoctorName} " +
+                    $"is booked on " +
+                    $"{appointmentBookedEvent.ScheduledDate:yyyy-MM-dd} " +
                     $"for {appointmentBookedEvent.TimeSlot}.",
-                NotificationType = appointmentBookedEvent.EventType,
-                IsRead = false,
-                CreatedDate = DateTime.UtcNow
+
+                NotificationType =
+                    appointmentBookedEvent.EventType,
+
+                IsRead =
+                    false,
+
+                CreatedDate =
+                    DateTime.UtcNow
             };
 
-            await dbContext.Notifications.AddAsync(notification);
+            await dbContext.Notifications.AddAsync(
+                notification,
+                cancellationToken);
 
-            await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync(
+                cancellationToken);
 
-            _logger.LogInformation(
-                "Notification saved for AppointmentId: {AppointmentId}, PatientId: {PatientId}, DoctorId: {DoctorId}",
-                appointmentBookedEvent.AppointmentId,
-                appointmentBookedEvent.PatientId,
-                appointmentBookedEvent.DoctorId);
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation(
+                    "Notification saved for AppointmentId: {AppointmentId}, PatientId: {PatientId}, DoctorId: {DoctorId}",
+                    appointmentBookedEvent.AppointmentId,
+                    appointmentBookedEvent.PatientId,
+                    appointmentBookedEvent.DoctorId);
+            }
         }
     }
 }

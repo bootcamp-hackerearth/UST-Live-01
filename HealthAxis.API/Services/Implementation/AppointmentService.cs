@@ -252,20 +252,25 @@ namespace HealthAxis.API.Services.Implementation
         private void LogAppointmentBookedEvent(
             AppointmentBookedEvent appointmentBookedEvent)
         {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
             logger.LogInformation(
                 """
-                ┌──────────────────────────────────────────────────────────────┐
-                │                    HEALTHAXIS EVENT LOG                      │
-                ├──────────────────────────────────────────────────────────────┤
-                │ Event Type      : {EventType}
-                │ Patient Name    : {PatientName}
-                │ Doctor Name     : {DoctorName}
-                │ Doctor ID       : {DoctorId}
-                │ Appointment ID  : {AppointmentId}
-                │ Scheduled Date  : {ScheduledDate:yyyy-MM-dd}
-                │ Time Slot       : {TimeSlot}
-                │ Status          : {Status}
-                └──────────────────────────────────────────────────────────────┘
+                
+                                    HEALTHAXIS EVENT LOG                      
+                ──────────────────────────────────────────────────────────────
+                 Event Type      : {EventType}
+                 Patient Name    : {PatientName}
+                 Doctor Name     : {DoctorName}
+                 Doctor ID       : {DoctorId}
+                 Appointment ID  : {AppointmentId}
+                 Scheduled Date  : {ScheduledDate:yyyy-MM-dd}
+                 Time Slot       : {TimeSlot}
+                 Status          : {Status}
+                
                 """,
                 appointmentBookedEvent.EventType,
                 appointmentBookedEvent.PatientName,
@@ -368,7 +373,7 @@ namespace HealthAxis.API.Services.Implementation
         {
             if (string.IsNullOrWhiteSpace(statusDto.CancellationReason))
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Cancellation reason is required.");
             }
 
@@ -376,7 +381,7 @@ namespace HealthAxis.API.Services.Implementation
 
             if (reason.Length > ValidationLimits.CancellationReasonLength)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     $"Cancellation reason cannot exceed {ValidationLimits.CancellationReasonLength} characters.");
             }
 
@@ -388,12 +393,12 @@ namespace HealthAxis.API.Services.Implementation
         {
             if (appointmentDto.PatientId <= 0)
             {
-                throw new ValidationExceptions("Valid patient id is required.");
+                throw new ValidationException("Valid patient id is required.");
             }
 
             if (appointmentDto.DoctorId <= 0)
             {
-                throw new ValidationExceptions("Please select a valid doctor.");
+                throw new ValidationException("Please select a valid doctor.");
             }
 
             var appointmentDate = appointmentDto.ScheduledDate.Date;
@@ -402,32 +407,32 @@ namespace HealthAxis.API.Services.Implementation
 
             if (appointmentDate < today)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Appointment date cannot be in the past.");
             }
 
             if (appointmentDate > maxAllowedDate)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Appointment date cannot be more than 6 months ahead.");
             }
 
             if (string.IsNullOrWhiteSpace(appointmentDto.TimeSlot))
             {
-                throw new ValidationExceptions("Time slot is required.");
+                throw new ValidationException("Time slot is required.");
             }
 
             var timeSlot = NormalizeTimeSlot(appointmentDto.TimeSlot);
 
             if (!AllowedTimeSlots.Contains(timeSlot))
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Invalid time slot selected. Please choose a valid hospital time slot.");
             }
 
             if (appointmentDate == today && IsPastTimeSlot(timeSlot))
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Past time slot cannot be booked.");
             }
         }
@@ -489,9 +494,9 @@ namespace HealthAxis.API.Services.Implementation
         private static void ValidateAppointmentStatus(
             AppointmentStatus status)
         {
-            if (!Enum.IsDefined(typeof(AppointmentStatus), status))
+            if (!Enum.IsDefined(status))
             {
-                throw new ValidationExceptions("Invalid appointment status.");
+                throw new ValidationException("Invalid appointment status.");
             }
         }
 
@@ -599,7 +604,7 @@ namespace HealthAxis.API.Services.Implementation
 
             if (!parsed)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Invalid appointment time slot.");
             }
 

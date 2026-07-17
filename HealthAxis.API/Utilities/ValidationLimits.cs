@@ -1,6 +1,6 @@
 ﻿namespace HealthAxis.API.Utilities
 {
-    public class ValidationLimits
+    public static class ValidationLimits
     {
         public const int FullNameLength = 100;
 

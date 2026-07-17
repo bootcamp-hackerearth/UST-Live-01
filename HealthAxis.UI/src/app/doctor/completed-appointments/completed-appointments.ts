@@ -637,9 +637,7 @@ export class CompletedAppointments {
       )
     );
 
-    printWindow.document.open();
-
-    printWindow.document.write(`
+    const printableDocument = `
       <!DOCTYPE html>
       <html lang="en">
         <head>
@@ -843,9 +841,10 @@ export class CompletedAppointments {
           </script>
         </body>
       </html>
-    `);
+    `;
 
-    printWindow.document.close();
+    printWindow.document.documentElement.innerHTML =
+      printableDocument;
   }
 
   canAddHealthRecord(
@@ -1538,11 +1537,11 @@ export class CompletedAppointments {
     value: string
   ): string {
     return value
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
   }
 
   private static noFutureDateValidator(

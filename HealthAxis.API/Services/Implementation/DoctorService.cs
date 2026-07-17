@@ -9,29 +9,24 @@ using System.Text.Json;
 
 namespace HealthAxis.API.Services.Implementation
 {
-    public class DoctorService(
-        IDoctorRepository doctorRepository,
-        IAppointmentRepository appointmentRepository,
-        IMapper mapper,
-        IDistributedCache distributedCache,
-        ILogger<DoctorService> logger) : IDoctorService
+    public class DoctorService(IDoctorRepository doctorRepository, IAppointmentRepository appointmentRepository, IMapper mapper, IDistributedCache distributedCache, ILogger<DoctorService> logger) : IDoctorService
     {
         private const int CacheExpiryMinutes = 5;
 
         private static readonly string[] HospitalTimeSlots =
         [
             "09:00 AM - 10:00 AM",
-            "10:00 AM - 11:00 AM",
-            "11:00 AM - 12:00 PM",
-            "12:00 PM - 01:00 PM",
-            "02:00 PM - 03:00 PM",
-            "03:00 PM - 04:00 PM",
-            "04:00 PM - 05:00 PM",
-            "05:00 PM - 06:00 PM",
-            "06:00 PM - 07:00 PM",
-            "07:00 PM - 08:00 PM",
-            "08:00 PM - 09:00 PM",
-            "09:00 PM - 10:00 PM"
+        "10:00 AM - 11:00 AM",
+        "11:00 AM - 12:00 PM",
+        "12:00 PM - 01:00 PM",
+        "02:00 PM - 03:00 PM",
+        "03:00 PM - 04:00 PM",
+        "04:00 PM - 05:00 PM",
+        "05:00 PM - 06:00 PM",
+        "06:00 PM - 07:00 PM",
+        "07:00 PM - 08:00 PM",
+        "08:00 PM - 09:00 PM",
+        "09:00 PM - 10:00 PM"
         ];
 
         private static readonly JsonSerializerOptions JsonOptions = new()
@@ -80,7 +75,7 @@ namespace HealthAxis.API.Services.Implementation
         {
             if (id <= 0)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Doctor id must be greater than zero.");
             }
 
@@ -89,7 +84,7 @@ namespace HealthAxis.API.Services.Implementation
 
             if (availabilityDate < DateTime.Today)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Cannot check doctor availability for a past date.");
             }
 
@@ -184,8 +179,8 @@ namespace HealthAxis.API.Services.Implementation
         }
 
         public async Task InvalidateAvailabilityCacheAsync(
-            int doctorId,
-            DateTime date)
+      int doctorId,
+      DateTime date)
         {
             if (doctorId <= 0)
             {
@@ -198,20 +193,23 @@ namespace HealthAxis.API.Services.Implementation
 
             await distributedCache.RemoveAsync(cacheKey);
 
-            logger.LogInformation(
-                """
-                ========================================
-                CACHE INVALIDATED
-                ========================================
-                Doctor Id : {DoctorId}
-                Date      : {Date:yyyy-MM-dd}
-                Key       : {CacheKey}
-                Reason    : Doctor availability changed
-                ========================================
-                """,
-                doctorId,
-                date.Date,
-                cacheKey);
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.LogInformation(
+                    """
+       
+        CACHE INVALIDATED
+        ========================================
+        Doctor Id : {DoctorId}
+        Date      : {Date:yyyy-MM-dd}
+        Key       : {CacheKey}
+        Reason    : Doctor availability changed
+       
+        """,
+                    doctorId,
+                    date.Date,
+                    cacheKey);
+            }
         }
 
         private async Task<List<string>> GetAvailableSlotsAsync(
@@ -268,21 +266,26 @@ namespace HealthAxis.API.Services.Implementation
         }
 
         private void LogCacheMiss(
-            int doctorId,
-            DateTime date,
-            string cacheKey)
+             int doctorId,
+             DateTime date,
+             string cacheKey)
         {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
             logger.LogInformation(
                 """
-                ========================================
-                CACHE MISS - LOADING FROM DATABASE
-                ========================================
-                Doctor Id : {DoctorId}
-                Date      : {Date:yyyy-MM-dd}
-                Key       : {CacheKey}
-                Source    : SQL Server
-                ========================================
-                """,
+   
+    CACHE MISS - LOADING FROM DATABASE
+    ========================================
+    Doctor Id : {DoctorId}
+    Date      : {Date:yyyy-MM-dd}
+    Key       : {CacheKey}
+    Source    : SQL Server
+   
+    """,
                 doctorId,
                 date,
                 cacheKey);
@@ -294,18 +297,23 @@ namespace HealthAxis.API.Services.Implementation
             string cacheKey,
             int availableSlotCount)
         {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
             logger.LogInformation(
                 """
-                ========================================
-                CACHE STORED IN GARNET
-                ========================================
-                Doctor Id       : {DoctorId}
-                Date            : {Date:yyyy-MM-dd}
-                Key             : {CacheKey}
-                TTL             : {CacheExpiryMinutes} Minutes
-                Available Slots : {AvailableSlotCount}
-                ========================================
-                """,
+   
+    CACHE STORED IN GARNET
+    ========================================
+    Doctor Id       : {DoctorId}
+    Date            : {Date:yyyy-MM-dd}
+    Key             : {CacheKey}
+    TTL             : {CacheExpiryMinutes} Minutes
+    Available Slots : {AvailableSlotCount}
+    
+    """,
                 doctorId,
                 date,
                 cacheKey,
@@ -314,27 +322,33 @@ namespace HealthAxis.API.Services.Implementation
         }
 
         private void LogCacheHit(
-            int doctorId,
-            DateTime date,
-            string cacheKey,
-            int availableSlotCount)
+           int doctorId,
+           DateTime date,
+           string cacheKey,
+           int availableSlotCount)
         {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
             logger.LogInformation(
                 """
-                ========================================
-                CACHE HIT - LOADING FROM GARNET
-                ========================================
-                Doctor Id       : {DoctorId}
-                Date            : {Date:yyyy-MM-dd}
-                Key             : {CacheKey}
-                Source          : Garnet
-                Available Slots : {AvailableSlotCount}
-                ========================================
-                """,
+   
+    CACHE HIT - LOADING FROM GARNET
+    ========================================
+    Doctor Id       : {DoctorId}
+    Date            : {Date:yyyy-MM-dd}
+    Key             : {CacheKey}
+    Source          : Garnet
+    Available Slots : {AvailableSlotCount}
+   
+    """,
                 doctorId,
                 date,
                 cacheKey,
                 availableSlotCount);
         }
     }
+
 }

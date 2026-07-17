@@ -267,13 +267,13 @@ namespace HealthAxis.API.Services.Implementation
         {
             if (visitDate == default)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Visit date is required.");
             }
 
             if (visitDate.Date > DateTime.Today)
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Visit date cannot be in the future.");
             }
 
@@ -297,13 +297,13 @@ namespace HealthAxis.API.Services.Implementation
         {
             if (string.IsNullOrWhiteSpace(diagnosis))
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Diagnosis is required.");
             }
 
             if (string.IsNullOrWhiteSpace(prescription))
             {
-                throw new ValidationExceptions(
+                throw new ValidationException(
                     "Prescription is required.");
             }
         }

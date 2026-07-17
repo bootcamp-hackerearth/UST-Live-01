@@ -9,8 +9,14 @@ namespace HealthAxis_Admin.Services
     {
         private const int RequestTimeoutSeconds = 20;
 
-        private const string PatientsEndpoint = "api/admin/patients";
-        private const string ResetPasswordEndpoint = "api/Auth/admin/reset-password";
+        private const string PatientsEndpoint =
+            "api/admin/patients";
+
+        private const string ResetPasswordEndpoint =
+            "api/Auth/admin/reset-password";
+
+        private const string RequestFailedMessage =
+            "Request failed.";
 
         private readonly HttpClient _httpClient;
 
@@ -22,11 +28,13 @@ namespace HealthAxis_Admin.Services
 
         public async Task<List<AdminPatientDto>> GetPatientsAsync()
         {
-            using var cancellationTokenSource = CreateTimeoutToken();
+            using var cancellationTokenSource =
+                CreateTimeoutToken();
 
-            var patients = await _httpClient.GetFromJsonAsync<List<AdminPatientDto>>(
-                PatientsEndpoint,
-                cancellationTokenSource.Token);
+            var patients =
+                await _httpClient.GetFromJsonAsync<List<AdminPatientDto>>(
+                    PatientsEndpoint,
+                    cancellationTokenSource.Token);
 
             return patients ?? new List<AdminPatientDto>();
         }
@@ -37,41 +45,53 @@ namespace HealthAxis_Admin.Services
         {
             if (patientId <= 0)
             {
-                return (false, "Invalid patient selected.");
+                return (
+                    false,
+                    "Invalid patient selected.");
             }
 
             ArgumentNullException.ThrowIfNull(patientDto);
 
-            using var cancellationTokenSource = CreateTimeoutToken();
+            using var cancellationTokenSource =
+                CreateTimeoutToken();
 
-            using var response = await _httpClient.PutAsJsonAsync(
-                $"{PatientsEndpoint}/{patientId}",
-                patientDto,
-                cancellationTokenSource.Token);
+            using var response =
+                await _httpClient.PutAsJsonAsync(
+                    $"{PatientsEndpoint}/{patientId}",
+                    patientDto,
+                    cancellationTokenSource.Token);
 
             if (response.IsSuccessStatusCode)
             {
-                return (true, "Patient updated successfully.");
+                return (
+                    true,
+                    "Patient updated successfully.");
             }
 
-            return (false, await ReadErrorMessageAsync(response));
+            return (
+                false,
+                await ReadErrorMessageAsync(response));
         }
 
-        public async Task<List<AdminPatientAppointmentDto>> GetPatientAppointmentsAsync(
-            int patientId)
+        public async Task<List<AdminPatientAppointmentDto>>
+            GetPatientAppointmentsAsync(int patientId)
         {
             if (patientId <= 0)
             {
                 return new List<AdminPatientAppointmentDto>();
             }
 
-            using var cancellationTokenSource = CreateTimeoutToken();
+            using var cancellationTokenSource =
+                CreateTimeoutToken();
 
-            var appointments = await _httpClient.GetFromJsonAsync<List<AdminPatientAppointmentDto>>(
-                $"{PatientsEndpoint}/{patientId}/appointments",
-                cancellationTokenSource.Token);
+            var appointments =
+                await _httpClient
+                    .GetFromJsonAsync<List<AdminPatientAppointmentDto>>(
+                        $"{PatientsEndpoint}/{patientId}/appointments",
+                        cancellationTokenSource.Token);
 
-            return appointments ?? new List<AdminPatientAppointmentDto>();
+            return appointments
+                ?? new List<AdminPatientAppointmentDto>();
         }
 
         public async Task<(bool Success, string Message)> ResetPasswordAsync(
@@ -79,16 +99,19 @@ namespace HealthAxis_Admin.Services
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            using var cancellationTokenSource = CreateTimeoutToken();
+            using var cancellationTokenSource =
+                CreateTimeoutToken();
 
             try
             {
-                using var response = await _httpClient.PostAsJsonAsync(
-                    ResetPasswordEndpoint,
-                    request,
-                    cancellationTokenSource.Token);
+                using var response =
+                    await _httpClient.PostAsJsonAsync(
+                        ResetPasswordEndpoint,
+                        request,
+                        cancellationTokenSource.Token);
 
-                var message = await ReadErrorMessageAsync(response);
+                var message =
+                    await ReadErrorMessageAsync(response);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -124,38 +147,43 @@ namespace HealthAxis_Admin.Services
         private static async Task<string> ReadErrorMessageAsync(
             HttpResponseMessage response)
         {
-            var content = await response.Content.ReadAsStringAsync();
+            var content =
+                await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrWhiteSpace(content))
             {
                 return response.IsSuccessStatusCode
                     ? string.Empty
-                    : "Request failed.";
+                    : RequestFailedMessage;
             }
 
             try
             {
-                using var document = JsonDocument.Parse(content);
+                using var document =
+                    JsonDocument.Parse(content);
 
                 if (document.RootElement.TryGetProperty(
                         "message",
                         out var messageElement))
                 {
-                    return messageElement.GetString() ?? "Request failed.";
+                    return messageElement.GetString()
+                        ?? RequestFailedMessage;
                 }
 
                 if (document.RootElement.TryGetProperty(
                         "title",
                         out var titleElement))
                 {
-                    return titleElement.GetString() ?? "Request failed.";
+                    return titleElement.GetString()
+                        ?? RequestFailedMessage;
                 }
 
                 if (document.RootElement.TryGetProperty(
                         "errors",
                         out var errorsElement))
                 {
-                    return ReadValidationErrors(errorsElement);
+                    return ReadValidationErrors(
+                        errorsElement);
                 }
             }
             catch (JsonException)
@@ -165,30 +193,26 @@ namespace HealthAxis_Admin.Services
 
             return response.IsSuccessStatusCode
                 ? string.Empty
-                : "Request failed.";
+                : RequestFailedMessage;
         }
 
-        private static string ReadValidationErrors(JsonElement errorsElement)
+        private static string ReadValidationErrors(
+            JsonElement errorsElement)
         {
-            var errors = new List<string>();
-
-            foreach (var property in errorsElement.EnumerateObject())
-            {
-                if (property.Value.ValueKind != JsonValueKind.Array)
-                {
-                    continue;
-                }
-
-                foreach (var error in property.Value.EnumerateArray())
-                {
-                    var errorMessage = error.GetString();
-
-                    if (!string.IsNullOrWhiteSpace(errorMessage))
-                    {
-                        errors.Add(errorMessage);
-                    }
-                }
-            }
+            var errors = errorsElement
+                .EnumerateObject()
+                .Select(property => property.Value)
+                .Where(value =>
+                    value.ValueKind == JsonValueKind.Array)
+                .SelectMany(value =>
+                    value.EnumerateArray())
+                .Select(error =>
+                    error.GetString())
+                .Where(errorMessage =>
+                    !string.IsNullOrWhiteSpace(errorMessage))
+                .Select(errorMessage =>
+                    errorMessage!)
+                .ToList();
 
             return errors.Count == 0
                 ? "Validation failed."

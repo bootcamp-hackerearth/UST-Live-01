@@ -17,7 +17,10 @@ import { forkJoin } from 'rxjs';
 
 import { AppointmentService } from '../../core/services/appointment.service';
 import { Doctor } from '../../core/models/doctor.model';
-import { DoctorService } from '../../core/services/doctor.service';
+import {
+  DoctorAvailabilityResponse,
+  DoctorService
+} from '../../core/services/doctor.service';
 import { Patient } from '../../core/models/patient.model';
 import { PatientService } from '../../core/services/patient.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
@@ -74,6 +77,9 @@ export class BookAppointment {
   readonly doctorSearch = signal('');
   readonly currentDoctorPage = signal(1);
   readonly selectedDate = signal('');
+  readonly availableSlots = signal<readonly string[]>([]);
+  readonly availabilityLoaded = signal(false);
+  readonly loadingAvailability = signal(false);
 
   readonly loading = signal(false);
   readonly submitting = signal(false);
@@ -153,11 +159,18 @@ export class BookAppointment {
   );
 
   readonly noAvailableTimeSlots = computed(() => {
-    if (!this.selectedDate()) {
+    if (
+      !this.selectedDoctorId() ||
+      !this.selectedDate() ||
+      this.loadingAvailability() ||
+      !this.availabilityLoaded()
+    ) {
       return false;
     }
 
-    return this.timeSlotViews().every((slot) => slot.disabled);
+    return this.timeSlotViews().every(
+      (slot) => slot.disabled
+    );
   });
 
   constructor() {
@@ -195,10 +208,12 @@ export class BookAppointment {
   }
 
   onDateChange(): void {
-    const dateValue = this.bookingForm.controls.scheduledDate.value;
+    const dateValue =
+      this.bookingForm.controls.scheduledDate.value;
 
     this.selectedDate.set(dateValue);
-    this.clearPastSelectedTimeSlot();
+    this.clearSelectedTimeSlot();
+    this.loadSelectedDoctorAvailability();
   }
 
   selectDoctor(doctor: Doctor): void {
@@ -211,8 +226,12 @@ export class BookAppointment {
 
     this.errorMessage.set('');
     this.selectedDoctorId.set(doctor.doctorId);
-    this.bookingForm.controls.doctorId.setValue(doctor.doctorId);
+    this.bookingForm.controls.doctorId.setValue(
+      doctor.doctorId
+    );
     this.bookingForm.controls.doctorId.markAsTouched();
+    this.clearSelectedTimeSlot();
+    this.loadSelectedDoctorAvailability();
   }
 
   selectTimeSlot(slot: TimeSlotView): void {
@@ -406,9 +425,13 @@ export class BookAppointment {
 
     return {
       doctorId: Number(doctor['doctorId'] ?? doctor['DoctorId'] ?? 0),
-      fullName: String(doctor['fullName'] ?? doctor['FullName'] ?? ''),
-      specialisation: String(
-        doctor['specialisation'] ?? doctor['Specialisation'] ?? ''
+      fullName: this.getStringValue(
+        doctor['fullName'],
+        doctor['FullName']
+      ),
+      specialisation: this.getStringValue(
+        doctor['specialisation'],
+        doctor['Specialisation']
       ),
       yearsOfExperience: Number(
         doctor['yearsOfExperience'] ?? doctor['YearsOfExperience'] ?? 0
@@ -418,6 +441,18 @@ export class BookAppointment {
       ),
       isActive: Boolean(doctor['isActive'] ?? doctor['IsActive'])
     };
+  }
+
+  private getStringValue(
+    ...values: unknown[]
+  ): string {
+    for (const value of values) {
+      if (typeof value === 'string') {
+        return value;
+      }
+    }
+
+    return '';
   }
 
   private isDoctorMatchingFilters(
@@ -436,9 +471,21 @@ export class BookAppointment {
     return matchesSpecialisation && matchesSearch;
   }
 
-  private createTimeSlotView(slot: string): TimeSlotView {
+  private createTimeSlotView(
+    slot: string
+  ): TimeSlotView {
+    const doctorId = this.selectedDoctorId();
     const selectedAppointmentDate =
-      this.selectedDate() || this.bookingForm.controls.scheduledDate.value;
+      this.selectedDate() ||
+      this.bookingForm.controls.scheduledDate.value;
+
+    if (!doctorId) {
+      return {
+        value: slot,
+        disabled: true,
+        reason: 'Select doctor first'
+      };
+    }
 
     if (!selectedAppointmentDate) {
       return {
@@ -448,11 +495,35 @@ export class BookAppointment {
       };
     }
 
-    if (this.isPastTimeSlot(selectedAppointmentDate, slot)) {
+    if (this.loadingAvailability()) {
+      return {
+        value: slot,
+        disabled: true,
+        reason: 'Checking availability'
+      };
+    }
+
+    if (
+      this.isPastTimeSlot(
+        selectedAppointmentDate,
+        slot
+      )
+    ) {
       return {
         value: slot,
         disabled: true,
         reason: 'Past time'
+      };
+    }
+
+    if (
+      this.availabilityLoaded() &&
+      !this.availableSlots().includes(slot)
+    ) {
+      return {
+        value: slot,
+        disabled: true,
+        reason: 'Already booked'
       };
     }
 
@@ -461,6 +532,82 @@ export class BookAppointment {
       disabled: false,
       reason: 'Available'
     };
+  }
+
+  private loadSelectedDoctorAvailability(): void {
+    const doctorId = this.selectedDoctorId();
+    const date = this.selectedDate();
+
+    this.availableSlots.set([]);
+    this.availabilityLoaded.set(false);
+
+    if (!doctorId || !date) {
+      this.loadingAvailability.set(false);
+      return;
+    }
+
+    this.loadingAvailability.set(true);
+    this.errorMessage.set('');
+
+    this.doctorService
+      .getDoctorAvailability(doctorId, date)
+      .subscribe({
+        next: (availability) => {
+          this.applyDoctorAvailability(availability);
+          this.loadingAvailability.set(false);
+          this.availabilityLoaded.set(true);
+          this.clearUnavailableSelectedTimeSlot();
+        },
+        error: (error: unknown) => {
+          this.loadingAvailability.set(false);
+          this.availabilityLoaded.set(false);
+          this.availableSlots.set([]);
+
+          this.errorMessage.set(
+            getFriendlyErrorMessage(
+              error,
+              'Unable to load doctor availability.'
+            )
+          );
+        }
+      });
+  }
+
+  private applyDoctorAvailability(
+    availability: DoctorAvailabilityResponse
+  ): void {
+    const slots = Array.isArray(
+      availability.availableSlots
+    )
+      ? availability.availableSlots
+      : [];
+
+    this.availableSlots.set(slots);
+
+    if (!availability.isActive) {
+      this.errorMessage.set(
+        availability.message ||
+          'This doctor is currently unavailable.'
+      );
+    }
+  }
+
+  private clearUnavailableSelectedTimeSlot(): void {
+    const selectedTimeSlot =
+      this.bookingForm.controls.timeSlot.value;
+
+    if (
+      selectedTimeSlot &&
+      !this.availableSlots().includes(
+        selectedTimeSlot
+      )
+    ) {
+      this.clearSelectedTimeSlot();
+    }
+  }
+
+  private clearSelectedTimeSlot(): void {
+    this.bookingForm.controls.timeSlot.setValue('');
   }
 
   private isSelectedTimeSlotInvalid(): boolean {
@@ -533,11 +680,18 @@ export class BookAppointment {
 
     this.selectedDoctorId.set(0);
     this.selectedDate.set('');
+    this.availableSlots.set([]);
+    this.availabilityLoaded.set(false);
+    this.loadingAvailability.set(false);
   }
 
   private clearSelectedDoctor(): void {
     this.selectedDoctorId.set(0);
     this.bookingForm.controls.doctorId.setValue(0);
+    this.availableSlots.set([]);
+    this.availabilityLoaded.set(false);
+    this.loadingAvailability.set(false);
+    this.clearSelectedTimeSlot();
   }
 
   private resetDoctorPage(): void {
@@ -598,9 +752,7 @@ printBookedAppointment(dialog: AppointmentSuccessDialog): void {
   const status = this.escapeHtml(dialog.status);
   const generatedOn = this.escapeHtml(new Date().toLocaleString());
 
-  printWindow.document.open();
-
-  printWindow.document.write(`
+  const printableDocument = `
     <!DOCTYPE html>
     <html>
       <head>
@@ -767,9 +919,10 @@ printBookedAppointment(dialog: AppointmentSuccessDialog): void {
         </script>
       </body>
     </html>
-  `);
+  `;
 
-  printWindow.document.close();
+  printWindow.document.documentElement.innerHTML =
+    printableDocument;
 }
 
 private escapeHtml(value: string): string {

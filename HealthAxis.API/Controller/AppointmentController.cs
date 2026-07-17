@@ -430,7 +430,7 @@ namespace HealthAxis.API.Controller
             });
         }
 
-        private IActionResult? ValidateDoctorCancellationReason(
+        private BadRequestObjectResult? ValidateDoctorCancellationReason(
             UpdateAppointmentStatusDto statusDto)
         {
             if (statusDto.Status != AppointmentStatus.Cancelled)

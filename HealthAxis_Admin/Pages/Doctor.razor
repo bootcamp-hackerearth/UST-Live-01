@@ -601,10 +601,10 @@
                 </div>
             </div>
 
-            @if (!string.IsNullOrWhiteSpace(resetPasswordError))
+            @if (!string.IsNullOrWhiteSpace(resetErrorMessage))
             {
                 <div class="error-box">
-                    @resetPasswordError
+                    @resetErrorMessage
                 </div>
             }
 
@@ -1147,7 +1147,7 @@
     private string selectedSpecialisation = AllSpecialisationsOption;
     private string selectedStatus = AllStatusOption;
     private string selectedDoctorAppointmentStatus = AllAppointmentStatusOption;
-    private string resetPasswordError = string.Empty;
+    private string resetErrorMessage = string.Empty;
 
     private bool isLoading;
     private bool isLoadingAppointments;
@@ -1522,7 +1522,7 @@
             Email = doctor.Email
         };
 
-        resetPasswordError = string.Empty;
+        resetErrorMessage = string.Empty;
         message = string.Empty;
 
         showViewDialog = false;
@@ -1536,19 +1536,19 @@
     {
         if (resetPasswordDoctor is null)
         {
-            resetPasswordError = "Please select a doctor.";
+            resetErrorMessage = "Please select a doctor.";
             return;
         }
 
         if (resetPasswordForm.NewPassword != resetPasswordForm.ConfirmPassword)
         {
-            resetPasswordError =
+            resetErrorMessage =
                 "New password and confirm password do not match.";
             return;
         }
 
         isResettingPassword = true;
-        resetPasswordError = string.Empty;
+        resetErrorMessage = string.Empty;
 
         resetPasswordForm.Email = resetPasswordDoctor.Email;
 
@@ -1559,7 +1559,7 @@
 
         if (!result.Success)
         {
-            resetPasswordError = result.Message;
+            resetErrorMessage = result.Message;
             return;
         }
 
@@ -1612,7 +1612,7 @@
         doctorAppointments = new List<AdminAppointmentDetailDto>();
         selectedDoctorAppointmentStatus = AllAppointmentStatusOption;
 
-        resetPasswordError = string.Empty;
+        resetErrorMessage = string.Empty;
     }
 
     private void ClearSearchAndFilter()

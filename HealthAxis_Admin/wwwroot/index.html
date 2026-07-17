@@ -24,59 +24,77 @@
             const expiresAtKey = "healthaxis_admin_expires_at";
             const expiresInMinutesKey = "healthaxis_admin_expires_in_minutes";
 
-            const currentPath = normalizePath(window.location.pathname);
+            const currentPath = normalizePath(
+                globalThis.location.pathname
+            );
 
             if (currentPath !== externalLoginPath) {
                 return;
             }
 
-            const hashValue = window.location.hash;
+            const hashValue = globalThis.location.hash;
 
             if (!hashValue || hashValue.length <= 1) {
-                window.location.replace(loginPath);
+                globalThis.location.replace(loginPath);
                 return;
             }
 
-            const parameters = new URLSearchParams(hashValue.substring(1));
+            const parameters = new URLSearchParams(
+                hashValue.substring(1)
+            );
+
             const accessToken = parameters.get("accessToken");
 
             if (!accessToken) {
-                window.location.replace(loginPath);
+                globalThis.location.replace(loginPath);
                 return;
             }
 
             if (!isAdminToken(accessToken)) {
-                window.location.replace(loginPath);
+                globalThis.location.replace(loginPath);
                 return;
             }
 
-            localStorage.setItem(accessTokenKey, accessToken);
+            globalThis.localStorage.setItem(
+                accessTokenKey,
+                accessToken
+            );
 
             saveOptionalValue(
                 refreshTokenKey,
-                parameters.get("refreshToken"));
+                parameters.get("refreshToken")
+            );
 
-            localStorage.setItem(roleKey, "Admin");
+            globalThis.localStorage.setItem(
+                roleKey,
+                "Admin"
+            );
 
             saveOptionalValue(
                 expiresAtKey,
-                parameters.get("expiresAt"));
+                parameters.get("expiresAt")
+            );
 
             saveOptionalValue(
                 expiresInMinutesKey,
-                parameters.get("expiresInMinutes"));
+                parameters.get("expiresInMinutes")
+            );
 
-            window.history.replaceState(
+            globalThis.history.replaceState(
                 {},
                 document.title,
-                dashboardPath);
+                dashboardPath
+            );
 
-            window.location.replace(dashboardPath);
+            globalThis.location.replace(dashboardPath);
 
             function normalizePath(path) {
                 const lowerPath = path.toLowerCase();
 
-                if (lowerPath.length > 1 && lowerPath.endsWith("/")) {
+                if (
+                    lowerPath.length > 1 &&
+                    lowerPath.endsWith("/")
+                ) {
                     return lowerPath.slice(0, -1);
                 }
 
@@ -85,7 +103,7 @@
 
             function saveOptionalValue(key, value) {
                 if (value) {
-                    localStorage.setItem(key, value);
+                    globalThis.localStorage.setItem(key, value);
                 }
             }
 
@@ -99,7 +117,9 @@
                 const role =
                     payload.role ||
                     payload.Role ||
-                    payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+                    payload[
+                    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+                    ];
 
                 if (Array.isArray(role)) {
                     return role.some(function (item) {
@@ -119,23 +139,29 @@
 
                 try {
                     const base64Payload = parts[1]
-                        .replace(/-/g, "+")
-                        .replace(/_/g, "/");
+                        .replaceAll("-", "+")
+                        .replaceAll("_", "/");
+
+                    const paddingLength =
+                        (4 - base64Payload.length % 4) % 4;
 
                     const paddedPayload = base64Payload.padEnd(
-                        base64Payload.length + ((4 - base64Payload.length % 4) % 4),
-                        "=");
+                        base64Payload.length + paddingLength,
+                        "="
+                    );
 
-                    return JSON.parse(atob(paddedPayload));
+                    return JSON.parse(
+                        globalThis.atob(paddedPayload)
+                    );
                 } catch {
                     return null;
                 }
             }
         })();
 
-        window.healthAxisAdminLogin = {
+        globalThis.healthAxisAdminLogin = {
             getHash: function () {
-                return window.location.hash || "";
+                return globalThis.location.hash || "";
             }
         };
     </script>
