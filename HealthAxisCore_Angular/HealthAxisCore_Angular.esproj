@@ -1,16 +1,68 @@
 ﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.5277448">
+
   <PropertyGroup>
     <StartupCommand>npm start</StartupCommand>
     <JavaScriptTestFramework>Jasmine</JavaScriptTestFramework>
     <ShouldRunBuildScript>false</ShouldRunBuildScript>
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\HealthAxisCore_Angular\browser\</BuildOutputFolder>
 
-    <!-- Exclude project from SonarScanner for .NET -->
+    <!-- Excludes this MSBuild JavaScript project from Sonar analysis -->
     <SonarQubeExclude>true</SonarQubeExclude>
+    <SonarQubeTestProject>false</SonarQubeTestProject>
   </PropertyGroup>
-    <ItemGroup>
-      <SonarQubeSetting Include="sonar.coverage.exclusions">
-        <Value>HealthAxisCore_Angular/**,**/HealthAxisCore_Angular/**</Value>
-      </SonarQubeSetting>
-    </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="src\app\pages\patient\patient-layout\patient-layout.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SonarQubeSetting Include="sonar.exclusions">
+      <Value>
+        **/.vscode/**,
+        **/.vscode/**/*,
+        **/public/**,
+        **/public/**/*,
+        **/src/**,
+        **/src/**/*,
+        **/angular.json,
+        **/package.json,
+        **/package-lock.json,
+        **/tsconfig.json,
+        **/tsconfig.*.json,
+        **/karma.conf.js,
+        **/.editorconfig,
+        **/.gitignore,
+        **/.prettierrc,
+        **/README.md,
+        **/CHANGELOG.md,
+        **/HealthAxisCore_Angular/**,
+        **/HealthAxisCore_Angular/**/*
+      </Value>
+    </SonarQubeSetting>
+
+    <SonarQubeSetting Include="sonar.coverage.exclusions">
+      <Value>
+        **/.vscode/**,
+        **/.vscode/**/*,
+        **/public/**,
+        **/public/**/*,
+        **/src/**,
+        **/src/**/*,
+        **/angular.json,
+        **/package.json,
+        **/package-lock.json,
+        **/tsconfig.json,
+        **/tsconfig.*.json,
+        **/karma.conf.js,
+        **/.editorconfig,
+        **/.gitignore,
+        **/.prettierrc,
+        **/README.md,
+        **/CHANGELOG.md,
+        **/HealthAxisCore_Angular/**,
+        **/HealthAxisCore_Angular/**/*
+      </Value>
+    </SonarQubeSetting>
+  </ItemGroup>
+
 </Project>

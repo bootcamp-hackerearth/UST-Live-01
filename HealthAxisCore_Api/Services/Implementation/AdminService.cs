@@ -70,14 +70,16 @@ namespace HealthAxisCore_Api.Services.Implementation
                 FirstLogin = true
             };
 
-            var cr = await userManager.CreateAsync(
+            var createResult = await userManager.CreateAsync(
                 user,
                 request.Password);
 
-            if (!cr.Succeeded)
+            if (!createResult.Succeeded)
             {
                 throw new InvalidException(
-                    string.Join(", ", cr.Errors.Select(error => error.Description)));
+                    string.Join(
+                        ", ",
+                        createResult.Errors.Select(error => error.Description)));
             }
 
             if (!await roleManager.RoleExistsAsync("Doctor"))
@@ -85,14 +87,16 @@ namespace HealthAxisCore_Api.Services.Implementation
                 throw new InvalidException("Doctor role does not exist");
             }
 
-            var rr = await userManager.AddToRoleAsync(
+            var roleResult = await userManager.AddToRoleAsync(
                 user,
                 "Doctor");
 
-            if (!rr.Succeeded)
+            if (!roleResult.Succeeded)
             {
                 throw new InvalidException(
-                    string.Join(", ", rr.Errors.Select(error => error.Description)));
+                    string.Join(
+                        ", ",
+                        roleResult.Errors.Select(error => error.Description)));
             }
 
             return mapper.Map<DoctorDto>(saved);
@@ -265,7 +269,9 @@ namespace HealthAxisCore_Api.Services.Implementation
             patient.IsActive = isActive;
 
             var user = await userManager.Users
-                .FirstOrDefaultAsync(user => user.PatientId == patientId);
+                .FirstOrDefaultAsync(
+                    user => user.PatientId == patientId,
+                    ct);
 
             if (user != null)
             {
@@ -276,7 +282,9 @@ namespace HealthAxisCore_Api.Services.Implementation
                 if (!result.Succeeded)
                 {
                     throw new InvalidException(
-                        string.Join(", ", result.Errors.Select(error => error.Description)));
+                        string.Join(
+                            ", ",
+                            result.Errors.Select(error => error.Description)));
                 }
             }
 
@@ -294,7 +302,9 @@ namespace HealthAxisCore_Api.Services.Implementation
             doctor.IsActive = isActive;
 
             var user = await userManager.Users
-                .FirstOrDefaultAsync(user => user.DoctorId == doctorId);
+                .FirstOrDefaultAsync(
+                    user => user.DoctorId == doctorId,
+                    ct);
 
             if (user != null)
             {
@@ -305,7 +315,9 @@ namespace HealthAxisCore_Api.Services.Implementation
                 if (!result.Succeeded)
                 {
                     throw new InvalidException(
-                        string.Join(", ", result.Errors.Select(error => error.Description)));
+                        string.Join(
+                            ", ",
+                            result.Errors.Select(error => error.Description)));
                 }
             }
 

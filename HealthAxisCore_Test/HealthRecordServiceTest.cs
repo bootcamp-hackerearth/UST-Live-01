@@ -1032,5 +1032,513 @@ namespace HealthAxisCore_Api.Tests.Services
 
             Assert.Equal("You can view only health records written by you", exception.Message);
         }
+        [Fact]
+        public async Task CreateAsync_WhenDoctorClaimMissing_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(role: "Doctor");
+
+            var request = new CreateHealthRecordDto
+            {
+                PatientId = 10,
+                AppointmentId = 100,
+                Diagnosis = "Diagnosis One",
+                Prescription = "Prescription One",
+                Notes = "Notes One"
+            };
+
+            var service = CreateService();
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.CreateAsync(request, user, ct));
+
+            Assert.Equal("DoctorId claim missing", exception.Message);
+        }
+
+        [Fact]
+        public async Task CreateAsync_WhenAppointmentDoesNotBelongToSelectedPatient_ShouldThrowInvalidException()
+        {
+            var ct = CancellationToken.None;
+
+            var doctorId = 20;
+
+            var user = CreateUser(
+                role: "Doctor",
+                doctorId: doctorId);
+
+            var request = new CreateHealthRecordDto
+            {
+                PatientId = 99,
+                AppointmentId = 100,
+                Diagnosis = "Diagnosis One",
+                Prescription = "Prescription One",
+                Notes = "Notes One"
+            };
+
+            var appointment = CreateAppointment(
+                appointmentId: request.AppointmentId,
+                patientId: 10,
+                doctorId: doctorId,
+                status: "Completed");
+
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+
+            appointmentRepositoryMock
+                .Setup(x => x.GetDetailsAsync(request.AppointmentId, ct))
+                .ReturnsAsync(appointment);
+
+            var service = CreateService(
+                appointmentRepositoryMock: appointmentRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.CreateAsync(request, user, ct));
+
+            Assert.Equal("Appointment does not belong to the selected patient", exception.Message);
+
+            appointmentRepositoryMock.Verify(x => x.GetDetailsAsync(request.AppointmentId, ct), Times.Once);
+        }
+
+        [Fact]
+        public async Task CreateAsync_WhenAppointmentIsNotCompleted_ShouldThrowInvalidException()
+        {
+            var ct = CancellationToken.None;
+
+            var doctorId = 20;
+            var patientId = 10;
+
+            var user = CreateUser(
+                role: "Doctor",
+                doctorId: doctorId);
+
+            var request = new CreateHealthRecordDto
+            {
+                PatientId = patientId,
+                AppointmentId = 100,
+                Diagnosis = "Diagnosis One",
+                Prescription = "Prescription One",
+                Notes = "Notes One"
+            };
+
+            var appointment = CreateAppointment(
+                appointmentId: request.AppointmentId,
+                patientId: patientId,
+                doctorId: doctorId,
+                status: "Confirmed");
+
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+
+            appointmentRepositoryMock
+                .Setup(x => x.GetDetailsAsync(request.AppointmentId, ct))
+                .ReturnsAsync(appointment);
+
+            var service = CreateService(
+                appointmentRepositoryMock: appointmentRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.CreateAsync(request, user, ct));
+
+            Assert.Equal("Health record can be added only after appointment completion", exception.Message);
+
+            appointmentRepositoryMock.Verify(x => x.GetDetailsAsync(request.AppointmentId, ct), Times.Once);
+        }
+
+        [Fact]
+        public async Task CreateAsync_WhenHealthRecordAlreadyExists_ShouldThrowInvalidException()
+        {
+            var ct = CancellationToken.None;
+
+            var doctorId = 20;
+            var patientId = 10;
+            var appointmentId = 100;
+
+            var user = CreateUser(
+                role: "Doctor",
+                doctorId: doctorId);
+
+            var request = new CreateHealthRecordDto
+            {
+                PatientId = patientId,
+                AppointmentId = appointmentId,
+                Diagnosis = "Diagnosis One",
+                Prescription = "Prescription One",
+                Notes = "Notes One"
+            };
+
+            var appointment = CreateAppointment(
+                appointmentId: appointmentId,
+                patientId: patientId,
+                doctorId: doctorId,
+                status: "Completed");
+
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+
+            appointmentRepositoryMock
+                .Setup(x => x.GetDetailsAsync(appointmentId, ct))
+                .ReturnsAsync(appointment);
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.ExistsForAppointmentAsync(appointmentId, ct))
+                .ReturnsAsync(true);
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock,
+                appointmentRepositoryMock: appointmentRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.CreateAsync(request, user, ct));
+
+            Assert.Equal("Health record already exists for this appointment", exception.Message);
+
+            healthRecordRepositoryMock.Verify(x => x.ExistsForAppointmentAsync(appointmentId, ct), Times.Once);
+            healthRecordRepositoryMock.Verify(x => x.CreateAsync(It.IsAny<HealthRecord>(), ct), Times.Never);
+        }
+
+        [Fact]
+        public async Task ExistsForAppointmentAsync_WhenAppointmentDoesNotExist_ShouldThrowNotFoundException()
+        {
+            var ct = CancellationToken.None;
+
+            var appointmentId = 100;
+
+            var user = CreateUser(
+                role: "Doctor",
+                doctorId: 20);
+
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+
+            appointmentRepositoryMock
+                .Setup(x => x.GetDetailsAsync(appointmentId, ct))
+                .ReturnsAsync((Appointment?)null);
+
+            var service = CreateService(
+                appointmentRepositoryMock: appointmentRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(
+                () => service.ExistsForAppointmentAsync(appointmentId, user, ct));
+
+            Assert.Equal("Appointment not found", exception.Message);
+
+            appointmentRepositoryMock.Verify(x => x.GetDetailsAsync(appointmentId, ct), Times.Once);
+        }
+
+        [Fact]
+        public async Task ExistsForAppointmentAsync_WhenDoctorClaimMissing_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var appointmentId = 100;
+
+            var user = CreateUser(role: "Doctor");
+
+            var appointment = CreateAppointment(
+                appointmentId: appointmentId,
+                patientId: 10,
+                doctorId: 20,
+                status: "Completed");
+
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+
+            appointmentRepositoryMock
+                .Setup(x => x.GetDetailsAsync(appointmentId, ct))
+                .ReturnsAsync(appointment);
+
+            var service = CreateService(
+                appointmentRepositoryMock: appointmentRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.ExistsForAppointmentAsync(appointmentId, user, ct));
+
+            Assert.Equal("DoctorId claim missing", exception.Message);
+        }
+
+        [Fact]
+        public async Task ExistsForAppointmentAsync_WhenDoctorChecksAnotherDoctorsAppointment_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var appointmentId = 100;
+
+            var user = CreateUser(
+                role: "Doctor",
+                doctorId: 99);
+
+            var appointment = CreateAppointment(
+                appointmentId: appointmentId,
+                patientId: 10,
+                doctorId: 20,
+                status: "Completed");
+
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+
+            appointmentRepositoryMock
+                .Setup(x => x.GetDetailsAsync(appointmentId, ct))
+                .ReturnsAsync(appointment);
+
+            var service = CreateService(
+                appointmentRepositoryMock: appointmentRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.ExistsForAppointmentAsync(appointmentId, user, ct));
+
+            Assert.Equal("Cannot check health record for another doctor's appointment", exception.Message);
+        }
+
+        [Fact]
+        public async Task ExistsForAppointmentAsync_WhenDoctorOwnsAppointment_ShouldReturnRepositoryResult()
+        {
+            var ct = CancellationToken.None;
+
+            var appointmentId = 100;
+            var doctorId = 20;
+
+            var user = CreateUser(
+                role: "Doctor",
+                doctorId: doctorId);
+
+            var appointment = CreateAppointment(
+                appointmentId: appointmentId,
+                patientId: 10,
+                doctorId: doctorId,
+                status: "Completed");
+
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+
+            appointmentRepositoryMock
+                .Setup(x => x.GetDetailsAsync(appointmentId, ct))
+                .ReturnsAsync(appointment);
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.ExistsForAppointmentAsync(appointmentId, ct))
+                .ReturnsAsync(true);
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock,
+                appointmentRepositoryMock: appointmentRepositoryMock);
+
+            var result = await service.ExistsForAppointmentAsync(
+                appointmentId,
+                user,
+                ct);
+
+            Assert.True(result);
+
+            healthRecordRepositoryMock.Verify(x => x.ExistsForAppointmentAsync(appointmentId, ct), Times.Once);
+        }
+
+        [Fact]
+        public async Task ExistsForAppointmentAsync_WhenPatientClaimMissing_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var appointmentId = 100;
+
+            var user = CreateUser(role: "Patient");
+
+            var appointment = CreateAppointment(
+                appointmentId: appointmentId,
+                patientId: 10,
+                doctorId: 20,
+                status: "Completed");
+
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+
+            appointmentRepositoryMock
+                .Setup(x => x.GetDetailsAsync(appointmentId, ct))
+                .ReturnsAsync(appointment);
+
+            var service = CreateService(
+                appointmentRepositoryMock: appointmentRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.ExistsForAppointmentAsync(appointmentId, user, ct));
+
+            Assert.Equal("PatientId claim missing", exception.Message);
+        }
+
+        [Fact]
+        public async Task ExistsForAppointmentAsync_WhenPatientChecksAnotherPatientsAppointment_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var appointmentId = 100;
+
+            var user = CreateUser(
+                role: "Patient",
+                patientId: 99);
+
+            var appointment = CreateAppointment(
+                appointmentId: appointmentId,
+                patientId: 10,
+                doctorId: 20,
+                status: "Completed");
+
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+
+            appointmentRepositoryMock
+                .Setup(x => x.GetDetailsAsync(appointmentId, ct))
+                .ReturnsAsync(appointment);
+
+            var service = CreateService(
+                appointmentRepositoryMock: appointmentRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.ExistsForAppointmentAsync(appointmentId, user, ct));
+
+            Assert.Equal("Cannot check health record for another patient's appointment", exception.Message);
+        }
+
+        [Fact]
+        public async Task ExistsForAppointmentAsync_WhenPatientOwnsAppointment_ShouldReturnRepositoryResult()
+        {
+            var ct = CancellationToken.None;
+
+            var appointmentId = 100;
+            var patientId = 10;
+
+            var user = CreateUser(
+                role: "Patient",
+                patientId: patientId);
+
+            var appointment = CreateAppointment(
+                appointmentId: appointmentId,
+                patientId: patientId,
+                doctorId: 20,
+                status: "Completed");
+
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+
+            appointmentRepositoryMock
+                .Setup(x => x.GetDetailsAsync(appointmentId, ct))
+                .ReturnsAsync(appointment);
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.ExistsForAppointmentAsync(appointmentId, ct))
+                .ReturnsAsync(false);
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock,
+                appointmentRepositoryMock: appointmentRepositoryMock);
+
+            var result = await service.ExistsForAppointmentAsync(
+                appointmentId,
+                user,
+                ct);
+
+            Assert.False(result);
+
+            healthRecordRepositoryMock.Verify(x => x.ExistsForAppointmentAsync(appointmentId, ct), Times.Once);
+        }
+
+        [Fact]
+        public async Task ExistsForAppointmentAsync_WhenUserHasUnsupportedRole_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var appointmentId = 100;
+
+            var user = CreateUser(role: "Admin");
+
+            var appointment = CreateAppointment(
+                appointmentId: appointmentId,
+                patientId: 10,
+                doctorId: 20,
+                status: "Completed");
+
+            var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+
+            appointmentRepositoryMock
+                .Setup(x => x.GetDetailsAsync(appointmentId, ct))
+                .ReturnsAsync(appointment);
+
+            var service = CreateService(
+                appointmentRepositoryMock: appointmentRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.ExistsForAppointmentAsync(appointmentId, user, ct));
+
+            Assert.Equal("Unauthorized access", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WhenUserHasUnsupportedRole_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(role: "Unknown");
+
+            var record = CreateHealthRecord(
+                healthRecordId: 1,
+                patientId: 10,
+                doctorId: 20);
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.GetDetailsAsync(1, ct))
+                .ReturnsAsync(record);
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetByIdAsync(1, user, ct));
+
+            Assert.Equal("Unauthorized access", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WhenPatientOwnsRecord_ShouldReturnMappedDto()
+        {
+            var ct = CancellationToken.None;
+
+            var patientId = 10;
+
+            var user = CreateUser(
+                role: "Patient",
+                patientId: patientId);
+
+            var record = CreateHealthRecord(
+                healthRecordId: 1,
+                patientId: patientId,
+                doctorId: 20);
+
+            var expectedDto = CreateHealthRecordDto(
+                healthRecordId: 1,
+                patientId: patientId,
+                doctorId: 20);
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.GetDetailsAsync(1, ct))
+                .ReturnsAsync(record);
+
+            var mapperMock = new Mock<IMapper>();
+
+            mapperMock
+                .Setup(x => x.Map<HealthRecordDto>(record))
+                .Returns(expectedDto);
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock,
+                mapperMock: mapperMock);
+
+            var result = await service.GetByIdAsync(
+                1,
+                user,
+                ct);
+
+            Assert.Equal(1, result.HealthRecordId);
+            Assert.Equal(patientId, result.PatientId);
+
+            mapperMock.Verify(x => x.Map<HealthRecordDto>(record), Times.Once);
+        }
     }
 }

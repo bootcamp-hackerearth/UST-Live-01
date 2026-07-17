@@ -67,4 +67,46 @@ export class MyAppointments {
 
     this.selectedAppointment.set(appointment);
     this.cancellationReason.set('');
-    this.cancellationSubmitted
+    this.cancellationSubmitted.set(false);
+  }
+
+  closeCancelModal(): void {
+    this.selectedAppointment.set(null);
+    this.cancellationReason.set('');
+    this.cancellationSubmitted.set(false);
+  }
+
+  confirmCancellation(): void {
+    this.cancellationSubmitted.set(true);
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    const appointment = this.selectedAppointment();
+
+    if (!appointment) {
+      return;
+    }
+
+    if (!this.cancellationReason().trim()) {
+      return;
+    }
+
+    this.appointmentService.updateStatus(appointment.appointmentId, {
+      status: 'Cancelled',
+      cancellationReason: this.cancellationReason().trim()
+    }).subscribe({
+      next: () => {
+        this.successMessage.set('Appointment cancelled successfully.');
+        this.closeCancelModal();
+        this.loadAppointments();
+      },
+      error: error => {
+        this.errorMessage.set(this.authService.getErrorMessage(error));
+      }
+    });
+  }
+
+  getStatusClass(status: string): string {
+    return `status-badge status-${status.toLowerCase()}`;
+  }
+}

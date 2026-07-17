@@ -3,15 +3,10 @@ using Microsoft.Extensions.Logging;
 
 namespace HealthAxisCore_Api.BackgroundServices
 {
-    public class HealthAxisHeartbeatService : BackgroundService
+    public class HealthAxisHeartbeatService(
+        ILogger<HealthAxisHeartbeatService> logger) : BackgroundService
     {
-        private readonly ILogger<HealthAxisHeartbeatService> _logger;
-
-        public HealthAxisHeartbeatService(
-            ILogger<HealthAxisHeartbeatService> logger)
-        {
-            _logger = logger;
-        }
+        private readonly ILogger<HealthAxisHeartbeatService> _logger = logger;
 
         protected override async Task ExecuteAsync(
             CancellationToken stoppingToken)
@@ -21,9 +16,12 @@ namespace HealthAxisCore_Api.BackgroundServices
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation(
-                    "[HEARTBEAT] HealthAxis API alive | Time={CurrentTime}",
-                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                if (_logger.IsEnabled(LogLevel.Information))
+                {
+                    _logger.LogInformation(
+                        "[HEARTBEAT] HealthAxis API alive | Time={CurrentTime:yyyy-MM-dd HH:mm:ss}",
+                        DateTime.Now);
+                }
 
                 await Task.Delay(
                     TimeSpan.FromMinutes(5),

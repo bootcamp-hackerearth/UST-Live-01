@@ -18,13 +18,20 @@ namespace HealthAxisCore_Api.Services.Implementation
         IConfiguration configuration
     ) : IAuthService
     {
+        private const string PatientRole = "Patient";
+
+        private const string DoctorRole = "Doctor";
+
+        private const string UserNotFoundMessage = "User not found";
+
         public async Task<AuthResponseDto> RegisterPatientAsync(
             RegisterPatientDto request,
-            CancellationToken ct = default
-        )
+            CancellationToken ct = default)
         {
             if (await userManager.FindByEmailAsync(request.Email) != null)
+            {
                 throw new InvalidException("Email already exists");
+            }
 
             var emailDomainName = GetEmailDomainName(request.Email);
 
@@ -45,10 +52,12 @@ namespace HealthAxisCore_Api.Services.Implementation
                 throw new InvalidException("Please enter a valid date of birth");
             }
 
-            if (!await roleManager.RoleExistsAsync("Patient"))
+            if (!await roleManager.RoleExistsAsync(PatientRole))
+            {
                 throw new InvalidException("Patient role does not exist");
+            }
 
-            using var tx =
+            using var transaction =
                 await context.Database.BeginTransactionAsync(ct);
 
             var patient = new Patient
@@ -78,32 +87,26 @@ namespace HealthAxisCore_Api.Services.Implementation
 
             var createResult = await userManager.CreateAsync(
                 user,
-                request.Password
-            );
+                request.Password);
 
             if (!createResult.Succeeded)
             {
                 throw new InvalidException(
                     string.Join(
                         ", ",
-                        createResult.Errors.Select(e => e.Description)
-                    )
-                );
+                        createResult.Errors.Select(error => error.Description)));
             }
 
             var roleResult = await userManager.AddToRoleAsync(
                 user,
-                "Patient"
-            );
+                PatientRole);
 
             if (!roleResult.Succeeded)
             {
                 throw new InvalidException(
                     string.Join(
                         ", ",
-                        roleResult.Errors.Select(e => e.Description)
-                    )
-                );
+                        roleResult.Errors.Select(error => error.Description)));
             }
 
             var refresh = CreateRefreshToken(user);
@@ -111,64 +114,56 @@ namespace HealthAxisCore_Api.Services.Implementation
             await context.RefreshTokens.AddAsync(refresh, ct);
             await context.SaveChangesAsync(ct);
 
-            await tx.CommitAsync(ct);
+            await transaction.CommitAsync(ct);
 
             return await CreateResponse(
                 user,
-                "Patient",
-                refresh.Token
-            );
+                PatientRole,
+                refresh.Token);
         }
 
         public async Task<AuthResponseDto> LoginAsync(
             LoginDto request,
-            CancellationToken ct = default
-        )
+            CancellationToken ct = default)
         {
             var user = await context.Users
-                .Include(u => u.Patient)
-                .Include(u => u.Doctor)
-                .Include(u => u.RefreshTokens)
+                .Include(user => user.Patient)
+                .Include(user => user.Doctor)
+                .Include(user => user.RefreshTokens)
                 .FirstOrDefaultAsync(
-                    u => u.Email == request.Email,
-                    ct
-                )
-                ?? throw new InvalidException(
-                    "Invalid email or password"
-                );
+                    user => user.Email == request.Email,
+                    ct)
+                ?? throw new InvalidException("Invalid email or password");
 
             if (!user.IsActive)
-                throw new UnauthorizedException(
-                    "User is inactive"
-                );
+            {
+                throw new UnauthorizedException("User is inactive");
+            }
 
             if (user.Patient != null && !user.Patient.IsActive)
-                throw new UnauthorizedException(
-                    "Patient is inactive"
-                );
+            {
+                throw new UnauthorizedException("Patient is inactive");
+            }
 
             if (user.Doctor != null && !user.Doctor.IsActive)
-                throw new UnauthorizedException(
-                    "Doctor is inactive"
-                );
+            {
+                throw new UnauthorizedException("Doctor is inactive");
+            }
 
             var result = await signInManager.CheckPasswordSignInAsync(
                 user,
                 request.Password,
-                false
-            );
+                false);
 
             if (!result.Succeeded)
-                throw new InvalidException(
-                    "Invalid email or password"
-                );
+            {
+                throw new InvalidException("Invalid email or password");
+            }
 
             var role =
                 (await userManager.GetRolesAsync(user))
                 .FirstOrDefault()
-                ?? throw new InvalidException(
-                    "User has no role"
-                );
+                ?? throw new InvalidException("User has no role");
 
             var refresh = CreateRefreshToken(user);
 
@@ -179,35 +174,28 @@ namespace HealthAxisCore_Api.Services.Implementation
             return await CreateResponse(
                 user,
                 role,
-                refresh.Token
-            );
+                refresh.Token);
         }
 
         public async Task<AuthResponseDto> RefreshTokenAsync(
             RefreshTokenRequestDto request,
-            CancellationToken ct = default
-        )
+            CancellationToken ct = default)
         {
             var user = await context.Users
-                .Include(u => u.Patient)
-                .Include(u => u.Doctor)
-                .Include(u => u.RefreshTokens)
+                .Include(user => user.Patient)
+                .Include(user => user.Doctor)
+                .Include(user => user.RefreshTokens)
                 .FirstOrDefaultAsync(
-                    u => u.Id == request.UserId,
-                    ct
-                )
-                ?? throw new NotFoundException(
-                    "User not found"
-                );
+                    user => user.Id == request.UserId,
+                    ct)
+                ?? throw new NotFoundException(UserNotFoundMessage);
 
             var existing =
-                user.RefreshTokens.FirstOrDefault(r =>
-                    r.Token == request.RefreshToken &&
-                    !r.IsRevoked &&
-                    r.ExpiresAt > DateTime.UtcNow)
-                ?? throw new UnauthorizedException(
-                    "Invalid refresh token"
-                );
+                user.RefreshTokens.FirstOrDefault(refreshToken =>
+                    refreshToken.Token == request.RefreshToken &&
+                    !refreshToken.IsRevoked &&
+                    refreshToken.ExpiresAt > DateTime.UtcNow)
+                ?? throw new UnauthorizedException("Invalid refresh token");
 
             existing.IsRevoked = true;
 
@@ -220,64 +208,60 @@ namespace HealthAxisCore_Api.Services.Implementation
             var role =
                 (await userManager.GetRolesAsync(user))
                 .FirstOrDefault()
-                ?? throw new InvalidException(
-                    "User has no role"
-                );
+                ?? throw new InvalidException("User has no role");
 
             return await CreateResponse(
                 user,
                 role,
-                refresh.Token
-            );
+                refresh.Token);
         }
 
         private RefreshToken CreateRefreshToken(
-            ApplicationUser user
-        ) =>
-            new RefreshToken
+            ApplicationUser user)
+        {
+            return new RefreshToken
             {
                 Token = jwtService.GenerateRefreshToken(),
                 ApplicationUserId = user.Id,
                 ApplicationUser = user,
                 ExpiresAt = DateTime.UtcNow.AddDays(
                     Convert.ToDouble(
-                        configuration["Jwt:RefreshTokenExpiryDays"]
-                    )
-                ),
+                        configuration["Jwt:RefreshTokenExpiryDays"])),
                 IsRevoked = false
             };
+        }
 
         private async Task<AuthResponseDto> CreateResponse(
-     ApplicationUser user,
-     string role,
-     string refresh
- ) =>
-     new AuthResponseDto
-     {
-         UserId = user.Id,
-         PatientId = user.PatientId,
-         DoctorId = user.DoctorId,
-         FullName =
-             user.Patient?.PatientName
-             ?? user.Doctor?.DoctorName
-             ?? "System Admin",
-         Email = user.Email ?? string.Empty,
-         Role = role,
-         AccessToken =
-             await jwtService.GenerateAccessTokenAsync(user),
-         RefreshToken = refresh,
-         ExpiresIn =
-             Convert.ToInt32(
-                 configuration["Jwt:AccessTokenExpirationMinutes"]
-             ) * 60,
-         FirstLogin = user.FirstLogin
-     };
+            ApplicationUser user,
+            string role,
+            string refresh)
+        {
+            return new AuthResponseDto
+            {
+                UserId = user.Id,
+                PatientId = user.PatientId,
+                DoctorId = user.DoctorId,
+                FullName =
+                    user.Patient?.PatientName
+                    ?? user.Doctor?.DoctorName
+                    ?? "System Admin",
+                Email = user.Email ?? string.Empty,
+                Role = role,
+                AccessToken =
+                    await jwtService.GenerateAccessTokenAsync(user),
+                RefreshToken = refresh,
+                ExpiresIn =
+                    Convert.ToInt32(
+                        configuration["Jwt:AccessTokenExpirationMinutes"]) * 60,
+                FirstLogin = user.FirstLogin
+            };
+        }
 
         public async Task<ForgotPasswordResponseDto> ForgotPasswordAsync(
-    ForgotPasswordDto request)
+            ForgotPasswordDto request)
         {
             var user = await userManager.FindByEmailAsync(request.Email)
-                ?? throw new NotFoundException("User not found");
+                ?? throw new NotFoundException(UserNotFoundMessage);
 
             var token = await userManager.GeneratePasswordResetTokenAsync(user);
 
@@ -292,7 +276,7 @@ namespace HealthAxisCore_Api.Services.Implementation
             ResetPasswordDto request)
         {
             var user = await userManager.FindByEmailAsync(request.Email)
-                ?? throw new NotFoundException("User not found");
+                ?? throw new NotFoundException(UserNotFoundMessage);
 
             var result = await userManager.ResetPasswordAsync(
                 user,
@@ -302,22 +286,25 @@ namespace HealthAxisCore_Api.Services.Implementation
             if (!result.Succeeded)
             {
                 throw new InvalidException(
-                    string.Join(", ", result.Errors.Select(e => e.Description)));
+                    string.Join(
+                        ", ",
+                        result.Errors.Select(error => error.Description)));
             }
 
             return "Password reset successfully";
         }
+
         public async Task<string> ChangeFirstLoginPasswordAsync(
-    ChangeFirstLoginPasswordDto request,
-    ClaimsPrincipal users,
-    CancellationToken ct = default)
+            ChangeFirstLoginPasswordDto request,
+            ClaimsPrincipal user,
+            CancellationToken ct = default)
         {
             if (request.NewPassword != request.ConfirmPassword)
             {
                 throw new InvalidException("New password and confirm password do not match");
             }
 
-            var userId = users
+            var userId = user
                 .FindFirst(ClaimTypes.NameIdentifier)
                 ?.Value;
 
@@ -326,29 +313,31 @@ namespace HealthAxisCore_Api.Services.Implementation
                 throw new UnauthorizedException("User ID claim missing");
             }
 
-            var user = await context.Users
-                .FirstOrDefaultAsync(applicationUser => applicationUser.Id == userId, ct)
-                ?? throw new NotFoundException("User not found");
+            var applicationUser = await context.Users
+                .FirstOrDefaultAsync(
+                    applicationUser => applicationUser.Id == userId,
+                    ct)
+                ?? throw new NotFoundException(UserNotFoundMessage);
 
-            if (!user.IsActive)
+            if (!applicationUser.IsActive)
             {
                 throw new UnauthorizedException("User is inactive");
             }
 
-            var roles = await userManager.GetRolesAsync(user);
+            var roles = await userManager.GetRolesAsync(applicationUser);
 
-            if (!roles.Contains("Doctor"))
+            if (!roles.Contains(DoctorRole))
             {
                 throw new UnauthorizedException("Only doctors can change first login password");
             }
 
-            if (!user.FirstLogin)
+            if (!applicationUser.FirstLogin)
             {
                 throw new InvalidException("Password has already been changed");
             }
 
             var changePasswordResult = await userManager.ChangePasswordAsync(
-                user,
+                applicationUser,
                 request.CurrentPassword,
                 request.NewPassword);
 
@@ -360,12 +349,13 @@ namespace HealthAxisCore_Api.Services.Implementation
                         changePasswordResult.Errors.Select(error => error.Description)));
             }
 
-            user.FirstLogin = false;
+            applicationUser.FirstLogin = false;
 
             await context.SaveChangesAsync(ct);
 
             return "Password changed successfully";
         }
+
         private static string GetEmailDomainName(string email)
         {
             if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
@@ -384,16 +374,16 @@ namespace HealthAxisCore_Api.Services.Implementation
         }
 
         public async Task<string> ChangePasswordAsync(
-    ChangePasswordDto request,
-    ClaimsPrincipal users,
-    CancellationToken ct = default)
+            ChangePasswordDto request,
+            ClaimsPrincipal user,
+            CancellationToken ct = default)
         {
             if (request.NewPassword != request.ConfirmPassword)
             {
                 throw new InvalidException("New password and confirm password do not match");
             }
 
-            var userId = users
+            var userId = user
                 .FindFirst(ClaimTypes.NameIdentifier)
                 ?.Value;
 
@@ -402,24 +392,26 @@ namespace HealthAxisCore_Api.Services.Implementation
                 throw new UnauthorizedException("User ID claim missing");
             }
 
-            var user = await context.Users
-                .FirstOrDefaultAsync(applicationUser => applicationUser.Id == userId, ct)
-                ?? throw new NotFoundException("User not found");
+            var applicationUser = await context.Users
+                .FirstOrDefaultAsync(
+                    applicationUser => applicationUser.Id == userId,
+                    ct)
+                ?? throw new NotFoundException(UserNotFoundMessage);
 
-            if (!user.IsActive)
+            if (!applicationUser.IsActive)
             {
                 throw new UnauthorizedException("User is inactive");
             }
 
-            var roles = await userManager.GetRolesAsync(user);
+            var roles = await userManager.GetRolesAsync(applicationUser);
 
-            if (!roles.Contains("Patient") && !roles.Contains("Doctor"))
+            if (!roles.Contains(PatientRole) && !roles.Contains(DoctorRole))
             {
                 throw new UnauthorizedException("Only patients and doctors can change password here");
             }
 
             var result = await userManager.ChangePasswordAsync(
-                user,
+                applicationUser,
                 request.CurrentPassword,
                 request.NewPassword);
 

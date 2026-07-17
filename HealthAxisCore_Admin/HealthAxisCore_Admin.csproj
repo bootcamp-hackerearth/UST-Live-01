@@ -18,31 +18,12 @@
 
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.coverage.exclusions">
-			<Value>
-				**/Pages/**,
-				**/Shared/**,
-				**/Layout/**,
-				**/Components/**,
-				**/Models/**,
-				**/Services/**,
-				**/Data/**,
-				**/Helpers/**,
-				**/Extensions/**,
-				**/Constants/**,
-				**/DTOs/**,
-				**/Dtos/**,
-				**/ViewModels/**,
-				**/Interfaces/**,
-				**/Providers/**,
-				**/wwwroot/**,
-				**/App.razor,          
-				**/Program.cs,
-				**/RedirectToLogin.razor
-			</Value>
+			<Value>**/Pages/**,**/Shared/**,**/Layout/**,**/Components/**,**/Models/**,**/Services/**,**/Data/**,**/Helpers/**,**/Extensions/**,**/Constants/**,**/DTOs/**,**/Dtos/**,**/ViewModels/**,**/Interfaces/**,**/Providers/**,**/wwwroot/**,**/App.razor,**/Program.cs,**/RedirectToLogin.razor,**/HealthAxisCore_Angular/**,**/HealthAxisCore_Angular/**/*</Value>
 		</SonarQubeSetting>
+
 		<SonarQubeSetting Include="sonar.exclusions">
-			<Value>**/*.css</Value>
+			<Value>**/*.css,**/HealthAxisCore_Angular/**,**/HealthAxisCore_Angular/**/*</Value>
 		</SonarQubeSetting>
-	</ItemGroup>
+		</ItemGroup>
 
 </Project>

@@ -15,6 +15,8 @@ namespace HealthAxisCore_Api.Services.Implementation
         IMapper mapper
     ) : IHealthRecordService
     {
+        private const string DoctorIdClaimMissingMessage = "DoctorId claim missing";
+
         public async Task<List<HealthRecordDto>> GetByPatientIdAsync(
             int patientId,
             ClaimsPrincipal user,
@@ -40,7 +42,7 @@ namespace HealthAxisCore_Api.Services.Implementation
             if (user.IsDoctor())
             {
                 var doctorId = user.GetDoctorId()
-                    ?? throw new UnauthorizedException("DoctorId claim missing");
+                    ?? throw new UnauthorizedException(DoctorIdClaimMissingMessage);
 
                 var doctorRecords = records
                     .Where(record => record.DoctorId == doctorId)
@@ -71,36 +73,39 @@ namespace HealthAxisCore_Api.Services.Implementation
         }
 
         public async Task<HealthRecordDto> CreateAsync(
-     CreateHealthRecordDto request,
-     ClaimsPrincipal user,
-     CancellationToken ct = default)
+            CreateHealthRecordDto request,
+            ClaimsPrincipal user,
+            CancellationToken ct = default)
         {
             var doctorId = user.GetDoctorId()
-                ?? throw new UnauthorizedException("DoctorId claim missing");
+                ?? throw new UnauthorizedException(DoctorIdClaimMissingMessage);
 
-            var appt = await appointmentRepository.GetDetailsAsync(
+            var appointment = await appointmentRepository.GetDetailsAsync(
                 request.AppointmentId,
                 ct)
                 ?? throw new NotFoundException("Appointment not found");
 
-            if (appt.DoctorId != doctorId)
+            if (appointment.DoctorId != doctorId)
             {
                 throw new UnauthorizedException(
                     "Cannot add health record for another doctor's appointment");
             }
 
-            if (appt.PatientId != request.PatientId)
+            if (appointment.PatientId != request.PatientId)
             {
                 throw new InvalidException(
                     "Appointment does not belong to the selected patient");
             }
 
-            if (appt.Status != "Completed")
+            if (appointment.Status != "Completed")
             {
                 throw new InvalidException(
                     "Health record can be added only after appointment completion");
             }
-            var alreadyExists = await healthRecordRepository.ExistsForAppointmentAsync(request.AppointmentId, ct);
+
+            var alreadyExists = await healthRecordRepository.ExistsForAppointmentAsync(
+                request.AppointmentId,
+                ct);
 
             if (alreadyExists)
             {
@@ -122,12 +127,13 @@ namespace HealthAxisCore_Api.Services.Implementation
                     saved.HealthRecordId,
                     ct) ?? saved);
         }
+
         public async Task<bool> ExistsForAppointmentAsync(
-    int appointmentId,
-    ClaimsPrincipal user,
-    CancellationToken ct = default)
+            int appointmentId,
+            ClaimsPrincipal user,
+            CancellationToken ct = default)
         {
-            var appt = await appointmentRepository.GetDetailsAsync(
+            var appointment = await appointmentRepository.GetDetailsAsync(
                 appointmentId,
                 ct)
                 ?? throw new NotFoundException("Appointment not found");
@@ -135,9 +141,9 @@ namespace HealthAxisCore_Api.Services.Implementation
             if (user.IsDoctor())
             {
                 var doctorId = user.GetDoctorId()
-                    ?? throw new UnauthorizedException("DoctorId claim missing");
+                    ?? throw new UnauthorizedException(DoctorIdClaimMissingMessage);
 
-                if (appt.DoctorId != doctorId)
+                if (appointment.DoctorId != doctorId)
                 {
                     throw new UnauthorizedException(
                         "Cannot check health record for another doctor's appointment");
@@ -153,7 +159,7 @@ namespace HealthAxisCore_Api.Services.Implementation
                 var patientId = user.GetPatientId()
                     ?? throw new UnauthorizedException("PatientId claim missing");
 
-                if (appt.PatientId != patientId)
+                if (appointment.PatientId != patientId)
                 {
                     throw new UnauthorizedException(
                         "Cannot check health record for another patient's appointment");
@@ -166,6 +172,7 @@ namespace HealthAxisCore_Api.Services.Implementation
 
             throw new UnauthorizedException("Unauthorized access");
         }
+
         private static void EnsureCanAccessHealthRecord(
             HealthRecord record,
             ClaimsPrincipal user)
@@ -186,7 +193,7 @@ namespace HealthAxisCore_Api.Services.Implementation
             if (user.IsDoctor())
             {
                 var doctorId = user.GetDoctorId()
-                    ?? throw new UnauthorizedException("DoctorId claim missing");
+                    ?? throw new UnauthorizedException(DoctorIdClaimMissingMessage);
 
                 if (record.DoctorId != doctorId)
                 {

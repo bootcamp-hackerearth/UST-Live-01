@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using System.Security.Claims;
 
 namespace HealthAxisCore_Api.Tests.Services
 {
@@ -30,7 +31,20 @@ namespace HealthAxisCore_Api.Tests.Services
 
             return new AppDbContext(options);
         }
+        private static ClaimsPrincipal CreateClaimsPrincipal(
+    string? userId = "user-1")
+        {
+            var claims = new List<Claim>();
 
+            if (!string.IsNullOrWhiteSpace(userId))
+            {
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, userId));
+            }
+
+            var identity = new ClaimsIdentity(claims, "TestAuth");
+
+            return new ClaimsPrincipal(identity);
+        }
         private static IConfiguration CreateConfiguration()
         {
             var values = new Dictionary<string, string?>
@@ -1212,6 +1226,567 @@ namespace HealthAxisCore_Api.Tests.Services
             var result = await service.ResetPasswordAsync(request);
 
             Assert.Equal("Password reset successfully", result);
+        }
+        [Fact]
+        public async Task ChangeFirstLoginPasswordAsync_WhenPasswordsDoNotMatch_ShouldThrowInvalidException()
+        {
+            using var context = CreateDbContext();
+
+            var request = new ChangeFirstLoginPasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "DifferentPassword@123"
+            };
+
+            var service = CreateService(context);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.ChangeFirstLoginPasswordAsync(
+                    request,
+                    CreateClaimsPrincipal()));
+
+            Assert.Equal("New password and confirm password do not match", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangeFirstLoginPasswordAsync_WhenUserIdClaimMissing_ShouldThrowUnauthorizedException()
+        {
+            using var context = CreateDbContext();
+
+            var request = new ChangeFirstLoginPasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(context);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.ChangeFirstLoginPasswordAsync(
+                    request,
+                    CreateClaimsPrincipal(userId: null)));
+
+            Assert.Equal("User ID claim missing", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangeFirstLoginPasswordAsync_WhenUserNotFound_ShouldThrowNotFoundException()
+        {
+            using var context = CreateDbContext();
+
+            var request = new ChangeFirstLoginPasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(context);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(
+                () => service.ChangeFirstLoginPasswordAsync(
+                    request,
+                    CreateClaimsPrincipal("missing-user")));
+
+            Assert.Equal("User not found", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangeFirstLoginPasswordAsync_WhenUserIsInactive_ShouldThrowUnauthorizedException()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser(
+                id: "inactive-doctor",
+                email: "inactive-doctor@test.com",
+                isActive: false);
+
+            user.FirstLogin = true;
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var request = new ChangeFirstLoginPasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(context);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.ChangeFirstLoginPasswordAsync(
+                    request,
+                    CreateClaimsPrincipal(user.Id)));
+
+            Assert.Equal("User is inactive", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangeFirstLoginPasswordAsync_WhenUserIsNotDoctor_ShouldThrowUnauthorizedException()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser(
+                id: "patient-user",
+                email: "patient-user@test.com",
+                isActive: true);
+
+            user.FirstLogin = true;
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.GetRolesAsync(It.Is<ApplicationUser>(u => u.Id == user.Id)))
+                .ReturnsAsync(new List<string> { "Patient" });
+
+            var request = new ChangeFirstLoginPasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.ChangeFirstLoginPasswordAsync(
+                    request,
+                    CreateClaimsPrincipal(user.Id)));
+
+            Assert.Equal("Only doctors can change first login password", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangeFirstLoginPasswordAsync_WhenFirstLoginAlreadyFalse_ShouldThrowInvalidException()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser(
+                id: "doctor-user",
+                email: "doctor-user@test.com",
+                isActive: true);
+
+            user.FirstLogin = false;
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.GetRolesAsync(It.Is<ApplicationUser>(u => u.Id == user.Id)))
+                .ReturnsAsync(new List<string> { "Doctor" });
+
+            var request = new ChangeFirstLoginPasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.ChangeFirstLoginPasswordAsync(
+                    request,
+                    CreateClaimsPrincipal(user.Id)));
+
+            Assert.Equal("Password has already been changed", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangeFirstLoginPasswordAsync_WhenChangePasswordFails_ShouldThrowInvalidException()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser(
+                id: "doctor-change-fail",
+                email: "doctor-change-fail@test.com",
+                isActive: true);
+
+            user.FirstLogin = true;
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.GetRolesAsync(It.Is<ApplicationUser>(u => u.Id == user.Id)))
+                .ReturnsAsync(new List<string> { "Doctor" });
+
+            userManagerMock
+                .Setup(x => x.ChangePasswordAsync(
+                    It.Is<ApplicationUser>(u => u.Id == user.Id),
+                    "OldPassword@123",
+                    "NewPassword@123"))
+                .ReturnsAsync(IdentityResult.Failed(
+                    new IdentityError
+                    {
+                        Description = "Current password is incorrect"
+                    }));
+
+            var request = new ChangeFirstLoginPasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.ChangeFirstLoginPasswordAsync(
+                    request,
+                    CreateClaimsPrincipal(user.Id)));
+
+            Assert.Contains("Current password is incorrect", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangeFirstLoginPasswordAsync_WhenValidDoctorFirstLogin_ShouldChangePasswordAndDisableFirstLogin()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser(
+                id: "doctor-success",
+                email: "doctor-success@test.com",
+                isActive: true);
+
+            user.FirstLogin = true;
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.GetRolesAsync(It.Is<ApplicationUser>(u => u.Id == user.Id)))
+                .ReturnsAsync(new List<string> { "Doctor" });
+
+            userManagerMock
+                .Setup(x => x.ChangePasswordAsync(
+                    It.Is<ApplicationUser>(u => u.Id == user.Id),
+                    "OldPassword@123",
+                    "NewPassword@123"))
+                .ReturnsAsync(IdentityResult.Success);
+
+            var request = new ChangeFirstLoginPasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var result = await service.ChangeFirstLoginPasswordAsync(
+                request,
+                CreateClaimsPrincipal(user.Id));
+
+            Assert.Equal("Password changed successfully", result);
+            Assert.False(user.FirstLogin);
+
+            userManagerMock.Verify(x => x.ChangePasswordAsync(
+                It.Is<ApplicationUser>(u => u.Id == user.Id),
+                "OldPassword@123",
+                "NewPassword@123"), Times.Once);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_WhenPasswordsDoNotMatch_ShouldThrowInvalidException()
+        {
+            using var context = CreateDbContext();
+
+            var request = new ChangePasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "DifferentPassword@123"
+            };
+
+            var service = CreateService(context);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.ChangePasswordAsync(
+                    request,
+                    CreateClaimsPrincipal()));
+
+            Assert.Equal("New password and confirm password do not match", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_WhenUserIdClaimMissing_ShouldThrowUnauthorizedException()
+        {
+            using var context = CreateDbContext();
+
+            var request = new ChangePasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(context);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.ChangePasswordAsync(
+                    request,
+                    CreateClaimsPrincipal(userId: null)));
+
+            Assert.Equal("User ID claim missing", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_WhenUserNotFound_ShouldThrowNotFoundException()
+        {
+            using var context = CreateDbContext();
+
+            var request = new ChangePasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(context);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(
+                () => service.ChangePasswordAsync(
+                    request,
+                    CreateClaimsPrincipal("missing-user")));
+
+            Assert.Equal("User not found", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_WhenUserIsInactive_ShouldThrowUnauthorizedException()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser(
+                id: "inactive-user",
+                email: "inactive-user@test.com",
+                isActive: false);
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var request = new ChangePasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(context);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.ChangePasswordAsync(
+                    request,
+                    CreateClaimsPrincipal(user.Id)));
+
+            Assert.Equal("User is inactive", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_WhenUserIsNotPatientOrDoctor_ShouldThrowUnauthorizedException()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser(
+                id: "admin-user",
+                email: "admin-user@test.com",
+                isActive: true);
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.GetRolesAsync(It.Is<ApplicationUser>(u => u.Id == user.Id)))
+                .ReturnsAsync(new List<string> { "Admin" });
+
+            var request = new ChangePasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.ChangePasswordAsync(
+                    request,
+                    CreateClaimsPrincipal(user.Id)));
+
+            Assert.Equal("Only patients and doctors can change password here", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_WhenChangePasswordFails_ShouldThrowInvalidException()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser(
+                id: "patient-change-fail",
+                email: "patient-change-fail@test.com",
+                isActive: true);
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.GetRolesAsync(It.Is<ApplicationUser>(u => u.Id == user.Id)))
+                .ReturnsAsync(new List<string> { "Patient" });
+
+            userManagerMock
+                .Setup(x => x.ChangePasswordAsync(
+                    It.Is<ApplicationUser>(u => u.Id == user.Id),
+                    "OldPassword@123",
+                    "NewPassword@123"))
+                .ReturnsAsync(IdentityResult.Failed(
+                    new IdentityError
+                    {
+                        Description = "Password change failed"
+                    }));
+
+            var request = new ChangePasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.ChangePasswordAsync(
+                    request,
+                    CreateClaimsPrincipal(user.Id)));
+
+            Assert.Contains("Password change failed", exception.Message);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_WhenValidPatient_ShouldChangePassword()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser(
+                id: "patient-change-success",
+                email: "patient-change-success@test.com",
+                isActive: true);
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.GetRolesAsync(It.Is<ApplicationUser>(u => u.Id == user.Id)))
+                .ReturnsAsync(new List<string> { "Patient" });
+
+            userManagerMock
+                .Setup(x => x.ChangePasswordAsync(
+                    It.Is<ApplicationUser>(u => u.Id == user.Id),
+                    "OldPassword@123",
+                    "NewPassword@123"))
+                .ReturnsAsync(IdentityResult.Success);
+
+            var request = new ChangePasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var result = await service.ChangePasswordAsync(
+                request,
+                CreateClaimsPrincipal(user.Id));
+
+            Assert.Equal("Password changed successfully", result);
+
+            userManagerMock.Verify(x => x.ChangePasswordAsync(
+                It.Is<ApplicationUser>(u => u.Id == user.Id),
+                "OldPassword@123",
+                "NewPassword@123"), Times.Once);
+        }
+
+        [Fact]
+        public async Task ChangePasswordAsync_WhenValidDoctor_ShouldChangePassword()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser(
+                id: "doctor-change-success",
+                email: "doctor-change-success@test.com",
+                isActive: true);
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.GetRolesAsync(It.Is<ApplicationUser>(u => u.Id == user.Id)))
+                .ReturnsAsync(new List<string> { "Doctor" });
+
+            userManagerMock
+                .Setup(x => x.ChangePasswordAsync(
+                    It.Is<ApplicationUser>(u => u.Id == user.Id),
+                    "OldPassword@123",
+                    "NewPassword@123"))
+                .ReturnsAsync(IdentityResult.Success);
+
+            var request = new ChangePasswordDto
+            {
+                CurrentPassword = "OldPassword@123",
+                NewPassword = "NewPassword@123",
+                ConfirmPassword = "NewPassword@123"
+            };
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var result = await service.ChangePasswordAsync(
+                request,
+                CreateClaimsPrincipal(user.Id));
+
+            Assert.Equal("Password changed successfully", result);
+
+            userManagerMock.Verify(x => x.ChangePasswordAsync(
+                It.Is<ApplicationUser>(u => u.Id == user.Id),
+                "OldPassword@123",
+                "NewPassword@123"), Times.Once);
         }
     }
 }

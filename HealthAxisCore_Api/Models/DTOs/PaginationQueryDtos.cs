@@ -1,19 +1,27 @@
-﻿namespace HealthAxisCore_Api.Models.Dtos
+﻿using System.Text.Json.Serialization;
+
+namespace HealthAxisCore_Api.Models.Dtos
 {
     public class PaginationQueryDto
     {
+        private const int DefaultPageNumber = 1;
+
+        private const int DefaultPageSize = 10;
+
         private const int MaxPageSize = 100;
 
-        private int _pageNumber = 1;
+        private int _pageNumber = DefaultPageNumber;
 
-        private int _pageSize = 10;
+        private int _pageSize = DefaultPageSize;
 
+        [JsonRequired]
         public int PageNumber
         {
             get => _pageNumber;
-            set => _pageNumber = value < 1 ? 1 : value;
+            set => _pageNumber = value < 1 ? DefaultPageNumber : value;
         }
 
+        [JsonRequired]
         public int PageSize
         {
             get => _pageSize;
@@ -21,7 +29,7 @@
             {
                 if (value < 1)
                 {
-                    _pageSize = 10;
+                    _pageSize = DefaultPageSize;
                     return;
                 }
 
@@ -34,7 +42,7 @@
 
     public class PagedResultDto<T>
     {
-        public List<T> Items { get; set; } = new();
+        public List<T> Items { get; set; } = [];
 
         public int PageNumber { get; set; }
 

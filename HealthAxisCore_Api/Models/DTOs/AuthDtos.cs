@@ -1,33 +1,41 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace HealthAxisCore_Api.Models.Dtos
 {
     public class RegisterPatientDto
     {
-        [Required, RegularExpression(@"[A-Z][A-Za-z\s]+"), MinLength(2)]
+        [Required]
+        [RegularExpression(@"[A-Z][A-Za-z\s]+")]
+        [MinLength(2)]
         public required string PatientName { get; set; }
 
-        [Required]
+        [JsonRequired]
         public DateTime DateOfBirth { get; set; }
 
-        [Required, RegularExpression("(Male|Female|Transgender|Other)")]
+        [Required]
+        [RegularExpression("(Male|Female|Transgender|Other)")]
         public required string Gender { get; set; }
 
-        [Required, EmailAddress]
+        [Required]
+        [EmailAddress]
         public required string Email { get; set; }
 
-        [Required, Phone]
+        [Required]
+        [Phone]
         public required string PhoneNumber { get; set; }
 
         public string? InsuranceID { get; set; }
 
-        [Required, MinLength(8)]
+        [Required]
+        [MinLength(8)]
         public required string Password { get; set; }
     }
 
     public class LoginDto
     {
-        [Required, EmailAddress]
+        [Required]
+        [EmailAddress]
         public required string Email { get; set; }
 
         [Required]
@@ -42,17 +50,18 @@ namespace HealthAxisCore_Api.Models.Dtos
         [Required]
         public required string RefreshToken { get; set; }
     }
+
     public class ChangePasswordDto
     {
         [Required]
-        public string CurrentPassword { get; set; } = string.Empty;
+        public required string CurrentPassword { get; set; }
 
         [Required]
         [MinLength(8)]
-        public string NewPassword { get; set; } = string.Empty;
+        public required string NewPassword { get; set; }
 
         [Required]
-        public string ConfirmPassword { get; set; } = string.Empty;
+        public required string ConfirmPassword { get; set; }
     }
 
     public class AuthResponseDto
@@ -81,14 +90,14 @@ namespace HealthAxisCore_Api.Models.Dtos
     public class ChangeFirstLoginPasswordDto
     {
         [Required]
-        public string CurrentPassword { get; set; } = string.Empty;
+        public required string CurrentPassword { get; set; }
 
         [Required]
         [MinLength(8)]
-        public string NewPassword { get; set; } = string.Empty;
+        public required string NewPassword { get; set; }
 
         [Required]
-        public string ConfirmPassword { get; set; } = string.Empty;
+        public required string ConfirmPassword { get; set; }
     }
 
     public class ForgotPasswordDto

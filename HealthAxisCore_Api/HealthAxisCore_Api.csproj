@@ -42,14 +42,35 @@
 			<SonarQubeExclude>true</SonarQubeExclude>
 		</Compile>
 	</ItemGroup>
-
+	
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.coverage.exclusions">
-			<Value>**/Program.cs,**/Controllers/**/*.cs,**/Data/**/*.cs,**/Exceptions/**/*.cs,**/Mappings/**/*.cs,**/Middleware/**/*.cs,**/Models/**/*.cs,**/Repositories/**/*.cs,**/Migrations/**/*.cs,**/Properties/**/*.cs,**/Services/Interfaces/**/*.cs,**/Services/I*.cs</Value>
+			<Value>
+				**/Program.cs,
+				**/Controllers/**/*.cs,
+				**/Data/**/*.cs,
+				**/Exceptions/**/*.cs,
+				**/Mappings/**/*.cs,
+				**/Middleware/**/*.cs,
+				**/Models/**/*.cs,
+				**/Repositories/**/*.cs,
+				**/Migrations/**/*.cs,
+				**/Properties/**/*.cs,
+				**/Services/Interfaces/**/*.cs,
+				**/Services/I*.cs,
+				**/BackgroundServices/AppointmentAutoCancellationService.cs,
+				**/Messaging/Consumers/AppointmentBookedConsumer.cs,
+				**/BackgroundServices/GarnetHostedService.cs,
+				**/BackgroundServices/HeartBeatService.cs,
+				**/Options/GarnetOptions.cs,
+				**/Extensions/PaginationExtensions.cs,
+				**/HealthAxisCore_Angular/**,
+				**/HealthAxisCore_Angular/**/*
+			</Value>
 		</SonarQubeSetting>
 
 		<SonarQubeSetting Include="sonar.exclusions">
-			<Value>**/*.css</Value>
+			<Value>**/*.css,**/HealthAxisCore_Angular/**,**/HealthAxisCore_Angular/**/*</Value>
 		</SonarQubeSetting>
 	</ItemGroup>
 

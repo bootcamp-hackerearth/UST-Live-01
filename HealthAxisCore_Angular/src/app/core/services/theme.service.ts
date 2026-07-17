@@ -53,6 +53,6 @@ export class ThemeService {
   }
 
   private applyTheme(theme: HealthAxisTheme): void {
-    document.documentElement.dataset.theme = theme;
+    document.documentElement.dataset['theme'] = theme;
   }
 }

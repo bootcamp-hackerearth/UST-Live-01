@@ -20,6 +20,10 @@ namespace HealthAxisCore_Api.Services.Implementation
         private static readonly Serilog.ILogger Logger =
             Log.ForContext<DoctorService>();
 
+        private const string DoctorIdClaimMissingMessage = "DoctorId claim missing";
+
+        private const string DoctorNotFoundMessage = "Doctor not found";
+
         private static readonly JsonSerializerOptions JsonOptions = new()
         {
             PropertyNameCaseInsensitive = true
@@ -33,10 +37,10 @@ namespace HealthAxisCore_Api.Services.Implementation
             if (user.IsDoctor())
             {
                 var doctorId = user.GetDoctorId()
-                    ?? throw new UnauthorizedException("DoctorId claim missing");
+                    ?? throw new UnauthorizedException(DoctorIdClaimMissingMessage);
 
                 var doctor = await repository.GetByIdAsync(doctorId, ct)
-                    ?? throw new NotFoundException("Doctor not found");
+                    ?? throw new NotFoundException(DoctorNotFoundMessage);
 
                 return new List<DoctorDto>
                 {
@@ -68,10 +72,10 @@ namespace HealthAxisCore_Api.Services.Implementation
             if (user.IsDoctor())
             {
                 var doctorId = user.GetDoctorId()
-                    ?? throw new UnauthorizedException("DoctorId claim missing");
+                    ?? throw new UnauthorizedException(DoctorIdClaimMissingMessage);
 
                 var doctor = await repository.GetByIdAsync(doctorId, ct)
-                    ?? throw new NotFoundException("Doctor not found");
+                    ?? throw new NotFoundException(DoctorNotFoundMessage);
 
                 return new PagedResultDto<DoctorDto>
                 {
@@ -114,7 +118,7 @@ namespace HealthAxisCore_Api.Services.Implementation
             if (user.IsDoctor())
             {
                 var doctorId = user.GetDoctorId()
-                    ?? throw new UnauthorizedException("DoctorId claim missing");
+                    ?? throw new UnauthorizedException(DoctorIdClaimMissingMessage);
 
                 if (doctorId != id)
                 {
@@ -124,7 +128,7 @@ namespace HealthAxisCore_Api.Services.Implementation
             }
 
             var doctor = await repository.GetByIdAsync(id, ct)
-                ?? throw new NotFoundException("Doctor not found");
+                ?? throw new NotFoundException(DoctorNotFoundMessage);
 
             return mapper.Map<DoctorDto>(doctor);
         }
@@ -201,7 +205,7 @@ namespace HealthAxisCore_Api.Services.Implementation
             CancellationToken ct = default)
         {
             var loggedInDoctorId = user.GetDoctorId()
-                ?? throw new UnauthorizedException("DoctorId claim missing");
+                ?? throw new UnauthorizedException(DoctorIdClaimMissingMessage);
 
             if (loggedInDoctorId != id)
             {
@@ -210,7 +214,7 @@ namespace HealthAxisCore_Api.Services.Implementation
             }
 
             var doctor = await repository.GetByIdAsync(id, ct)
-                ?? throw new NotFoundException("Doctor not found");
+                ?? throw new NotFoundException(DoctorNotFoundMessage);
 
             doctor.IsActive = isActive;
 
@@ -218,7 +222,7 @@ namespace HealthAxisCore_Api.Services.Implementation
                 id,
                 doctor,
                 ct)
-                ?? throw new NotFoundException("Doctor not found");
+                ?? throw new NotFoundException(DoctorNotFoundMessage);
 
             return mapper.Map<DoctorDto>(updated);
         }

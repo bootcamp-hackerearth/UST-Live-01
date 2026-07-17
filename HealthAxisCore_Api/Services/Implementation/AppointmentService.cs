@@ -28,6 +28,14 @@ namespace HealthAxisCore_Api.Services.Implementation
         private static readonly Serilog.ILogger Logger =
             Log.ForContext<AppointmentService>();
 
+        private const string StatusPending = "Pending";
+
+        private const string StatusConfirmed = "Confirmed";
+
+        private const string StatusCancelled = "Cancelled";
+
+        private const string StatusCompleted = "Completed";
+
         public async Task<List<AppointmentDto>> GetAppointmentsAsync(
             int? patientId,
             int? doctorId,
@@ -127,7 +135,7 @@ namespace HealthAxisCore_Api.Services.Implementation
             var appointment = mapper.Map<Appointment>(request);
 
             appointment.PatientId = patientId;
-            appointment.Status = "Pending";
+            appointment.Status = StatusPending;
             appointment.CancellationReason = string.Empty;
 
             var savedAppointment = await appointmentRepository.CreateAsync(
@@ -143,7 +151,7 @@ namespace HealthAxisCore_Api.Services.Implementation
                 availabilityCacheKey,
                 ct);
 
-            Logger.Information(
+            Logger.Debug(
                 "[CACHE-INVALIDATE] Doctor availability cache removed | DoctorId={DoctorId} | Date={Date} | Key={CacheKey}",
                 savedAppointment.DoctorId,
                 savedAppointment.ScheduledDate.Date.ToString("yyyy-MM-dd"),
@@ -196,12 +204,12 @@ namespace HealthAxisCore_Api.Services.Implementation
             var appointment = await appointmentRepository.GetDetailsAsync(id, ct)
                 ?? throw new NotFoundException("Appointment not found");
 
-            if (appointment.Status == "Cancelled")
+            if (appointment.Status == StatusCancelled)
             {
                 throw new InvalidException("Cancelled appointment cannot be updated");
             }
 
-            if (appointment.Status == "Completed")
+            if (appointment.Status == StatusCompleted)
             {
                 throw new InvalidException("Completed appointment cannot be changed");
             }
@@ -222,7 +230,7 @@ namespace HealthAxisCore_Api.Services.Implementation
                     user);
             }
 
-            if (request.Status == "Cancelled")
+            if (request.Status == StatusCancelled)
             {
                 if (string.IsNullOrWhiteSpace(request.CancellationReason))
                 {
@@ -250,9 +258,7 @@ namespace HealthAxisCore_Api.Services.Implementation
                 ct)
                 ?? throw new NotFoundException("Appointment not found");
 
-            // CHANGE:
-            // Mark notification as read when doctor confirms or completes the appointment.
-            if (request.Status == "Confirmed" || request.Status == "Completed")
+            if (request.Status == StatusConfirmed || request.Status == StatusCompleted)
             {
                 await MarkAppointmentNotificationAsReadAsync(
                     updatedAppointment.AppointmentId,
@@ -307,7 +313,7 @@ namespace HealthAxisCore_Api.Services.Implementation
                 Specialisation = appointment.Doctor?.Specialisation ?? string.Empty,
                 ScheduledDate = appointment.ScheduledDate,
                 TimeSlot = appointment.TimeSlot,
-                Status = "Cancelled",
+                Status = StatusCancelled,
                 CancellationReason = cancellationReason
             };
 
@@ -336,7 +342,7 @@ namespace HealthAxisCore_Api.Services.Implementation
             await MarkAppointmentNotificationAsReadAsync(
                 appointment.AppointmentId,
                 appointment.DoctorId,
-                "Cancelled",
+                StatusCancelled,
                 ct);
 
             var availabilityCacheKey =
@@ -397,7 +403,7 @@ namespace HealthAxisCore_Api.Services.Implementation
                     "You can update only your own appointment");
             }
 
-            if (request.Status != "Cancelled")
+            if (request.Status != StatusCancelled)
             {
                 throw new UnauthorizedException(
                     "Patients can only cancel appointments");
@@ -418,23 +424,23 @@ namespace HealthAxisCore_Api.Services.Implementation
                     "You can update only your own appointment");
             }
 
-            if (request.Status != "Confirmed" &&
-                request.Status != "Completed" &&
-                request.Status != "Cancelled")
+            if (request.Status != StatusConfirmed &&
+                request.Status != StatusCompleted &&
+                request.Status != StatusCancelled)
             {
                 throw new UnauthorizedException(
                     "Doctors can only confirm, complete, or cancel appointments");
             }
 
-            if (request.Status == "Confirmed" &&
-                appointment.Status != "Pending")
+            if (request.Status == StatusConfirmed &&
+                appointment.Status != StatusPending)
             {
                 throw new InvalidException(
                     "Only pending appointments can be confirmed");
             }
 
-            if (request.Status == "Completed" &&
-                appointment.Status != "Confirmed")
+            if (request.Status == StatusCompleted &&
+                appointment.Status != StatusConfirmed)
             {
                 throw new InvalidException(
                     "Appointment must be confirmed before it can be completed");
@@ -469,8 +475,6 @@ namespace HealthAxisCore_Api.Services.Implementation
             notification.IsRead = true;
             notification.ReadAt = DateTime.UtcNow;
 
-            // IMPORTANT:
-            // This is required when notification is marked read during Confirmed/Completed flow.
             await dbContext.SaveChangesAsync(ct);
 
             Logger.Information(

@@ -200,6 +200,13 @@ try
                 builder.Configuration["RabbitMq:AppointmentBookedQueue"] ?? "appointment.booked.queue",
                 endpoint =>
                 {
+                    endpoint.UseMessageRetry(retry =>
+                    {
+                        retry.Interval(
+                            retryCount: 3,
+                            interval: TimeSpan.FromSeconds(15));
+                    });
+
                     endpoint.ConfigureConsumer<AppointmentBookedConsumer>(context);
                 });
         });
@@ -306,5 +313,5 @@ catch (Exception ex)
 }
 finally
 {
-    Log.CloseAndFlush();
+    await Log.CloseAndFlushAsync();
 }
