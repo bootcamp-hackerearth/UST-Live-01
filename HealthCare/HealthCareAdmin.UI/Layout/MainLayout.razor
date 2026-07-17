@@ -18,20 +18,33 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
+        if (!firstRender)
+            return;
 
-        var token = await JS.InvokeAsync<string>(
-            "localStorage.getItem",
-            "token");
+        var token = await JS.InvokeAsync<string>( "localStorage.getItem", "token");
 
-        if (string.IsNullOrWhiteSpace(token))
+        if (string.IsNullOrEmpty(token))
         {
-            await JS.InvokeVoidAsync(
-                "localStorage.removeItem",
-                "token");
-
-            Navigation.NavigateTo("https://localhost:4200", true);
+            await RedirectToAngular();
             return;
         }
+
+        var expired = await JS.InvokeAsync<bool>(
+            "isTokenExpired",
+            token);
+
+        if (expired)
+        {
+            await RedirectToAngular();
+        }
+    }
+
+    private async Task RedirectToAngular()
+    {
+        await JS.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "token");
+
+        Navigation.NavigateTo("http://localhost:4200", true);
     }
 }
