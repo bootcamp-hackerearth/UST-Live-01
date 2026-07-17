@@ -2,6 +2,7 @@
 using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
+using HealthApp.Api.Services.Dependencies;
 using HealthApp.Api.Services.Impl;
 using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
@@ -70,11 +71,14 @@ namespace HealthApp.Api.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            _service = new AppointmentService(
+            var repositories = new AppointmentServiceRepositories(
                 _appointmentRepo.Object,
                 _patientRepo.Object,
                 _doctorRepo.Object,
-                _doctorLeaveRepo.Object,
+                _doctorLeaveRepo.Object);
+
+            _service = new AppointmentService(
+                repositories,
                 _mapper.Object,
                 _publishEndpoint.Object,
                 _cache.Object,

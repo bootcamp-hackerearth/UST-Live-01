@@ -3,6 +3,7 @@ using HealthApp.Api.Data;
 using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
+using HealthApp.Api.Services.Dependencies;
 using HealthApp.Api.Services.Interfaces;
 using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
@@ -24,16 +25,21 @@ public class DoctorLeaveService : IDoctorLeaveService
     private readonly IDistributedCache _cache;
     private readonly ILogger<DoctorLeaveService> _logger;
 
-    public DoctorLeaveService(HealthAppDbContext context, IDoctorLeaveRepository doctorLeaveRepository,
-        IDoctorRepository doctorRepository, IAppointmentRepository appointmentRepository,
-        IPatientRepository patientRepository, IMapper mapper, IPublishEndpoint publishEndpoint,
-        IDistributedCache cache, ILogger<DoctorLeaveService> logger)
+    public DoctorLeaveService(
+    DoctorLeaveServiceDependencies dependencies,
+    IMapper mapper,
+    IPublishEndpoint publishEndpoint,
+    IDistributedCache cache,
+    ILogger<DoctorLeaveService> logger)
     {
-        _context = context;
-        _doctorLeaveRepository = doctorLeaveRepository;
-        _doctorRepository = doctorRepository;
-        _appointmentRepository = appointmentRepository;
-        _patientRepository = patientRepository;
+        ArgumentNullException.ThrowIfNull(dependencies);
+
+        _context = dependencies.Context;
+        _doctorLeaveRepository = dependencies.DoctorLeaveRepository;
+        _doctorRepository = dependencies.DoctorRepository;
+        _appointmentRepository = dependencies.AppointmentRepository;
+        _patientRepository = dependencies.PatientRepository;
+
         _mapper = mapper;
         _publishEndpoint = publishEndpoint;
         _cache = cache;

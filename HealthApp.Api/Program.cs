@@ -6,6 +6,7 @@ using HealthApp.Api.Models;
 using HealthApp.Api.Options;
 using HealthApp.Api.Repositories.Impl;
 using HealthApp.Api.Repositories.Interfaces;
+using HealthApp.Api.Services.Dependencies;
 using HealthApp.Api.Services.Impl;
 using HealthApp.Api.Services.Interfaces;
 using MassTransit;
@@ -150,6 +151,10 @@ builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
+
+// Grouped service dependencies
+builder.Services.AddScoped<AppointmentServiceRepositories>();
+builder.Services.AddScoped<DoctorLeaveServiceDependencies>();
 
 // Service registrations
 builder.Services.AddScoped<IDoctorService, DoctorService>();

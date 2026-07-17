@@ -3,6 +3,7 @@ using HealthApp.Api.Data;
 using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
+using HealthApp.Api.Services.Dependencies;
 using HealthApp.Api.Services.Impl;
 using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
@@ -15,11 +16,13 @@ using Xunit;
 
 namespace HealthApp.Api.Tests
 {
-    public class DoctorLeaveServiceTests
+    public class DoctorLeaveServiceTests : IDisposable
     {
-        private readonly Mock<IDoctorLeaveRepository> _doctorLeaveRepository;
+        private readonly Mock<IDoctorLeaveRepository>
+            _doctorLeaveRepository;
         private readonly Mock<IDoctorRepository> _doctorRepository;
-        private readonly Mock<IAppointmentRepository> _appointmentRepository;
+        private readonly Mock<IAppointmentRepository>
+            _appointmentRepository;
         private readonly Mock<IPatientRepository> _patientRepository;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IPublishEndpoint> _publishEndpoint;
@@ -30,26 +33,32 @@ namespace HealthApp.Api.Tests
 
         public DoctorLeaveServiceTests()
         {
-            _doctorLeaveRepository = new Mock<IDoctorLeaveRepository>();
+            _doctorLeaveRepository =
+                new Mock<IDoctorLeaveRepository>();
             _doctorRepository = new Mock<IDoctorRepository>();
-            _appointmentRepository = new Mock<IAppointmentRepository>();
+            _appointmentRepository =
+                new Mock<IAppointmentRepository>();
             _patientRepository = new Mock<IPatientRepository>();
             _mapper = new Mock<IMapper>();
             _publishEndpoint = new Mock<IPublishEndpoint>();
             _cache = new Mock<IDistributedCache>();
             _logger = new Mock<ILogger<DoctorLeaveService>>();
 
-            var dbOptions = new DbContextOptionsBuilder<HealthAppDbContext>()
-                .Options;
+            var dbOptions =
+                new DbContextOptionsBuilder<HealthAppDbContext>()
+                    .Options;
 
             _context = new HealthAppDbContext(dbOptions);
 
-            _service = new DoctorLeaveService(
+            var dependencies = new DoctorLeaveServiceDependencies(
                 _context,
                 _doctorLeaveRepository.Object,
                 _doctorRepository.Object,
                 _appointmentRepository.Object,
-                _patientRepository.Object,
+                _patientRepository.Object);
+
+            _service = new DoctorLeaveService(
+                dependencies,
                 _mapper.Object,
                 _publishEndpoint.Object,
                 _cache.Object,
@@ -60,29 +69,48 @@ namespace HealthApp.Api.Tests
         public async Task PreviewLeaveAsync_ReturnsPendingConfirmedAndTotalCounts()
         {
             const int doctorId = 7;
-            var startDate = DateOnly.FromDateTime(DateTime.Today.AddDays(5));
+            var startDate = DateOnly.FromDateTime(
+                DateTime.Today.AddDays(5));
             var endDate = startDate.AddDays(2);
             var dto = CreateLeaveDto(startDate, endDate);
             var doctor = CreateDoctor(doctorId);
 
             var affectedAppointments = new List<Appointment>
             {
-                CreateAppointment(1, doctorId, startDate, AppointmentStatus.Pending),
-                CreateAppointment(2, doctorId, startDate.AddDays(1), AppointmentStatus.Pending),
-                CreateAppointment(3, doctorId, endDate, AppointmentStatus.Confirmed)
-            };
-
-            SetupValidDoctorAndNonOverlappingLeave(doctorId, doctor);
-
-            _appointmentRepository
-                .Setup(repository => repository.GetActiveAppointmentsForDoctorDateRangeAsync(
+                CreateAppointment(
+                    1,
                     doctorId,
                     startDate,
+                    AppointmentStatus.Pending),
+                CreateAppointment(
+                    2,
+                    doctorId,
+                    startDate.AddDays(1),
+                    AppointmentStatus.Pending),
+                CreateAppointment(
+                    3,
+                    doctorId,
                     endDate,
-                    It.IsAny<CancellationToken>()))
+                    AppointmentStatus.Confirmed)
+            };
+
+            SetupValidDoctorAndNonOverlappingLeave(
+                doctorId,
+                doctor);
+
+            _appointmentRepository
+                .Setup(repository =>
+                    repository
+                        .GetActiveAppointmentsForDoctorDateRangeAsync(
+                            doctorId,
+                            startDate,
+                            endDate,
+                            It.IsAny<CancellationToken>()))
                 .ReturnsAsync(affectedAppointments);
 
-            var result = await _service.PreviewLeaveAsync(doctorId, dto);
+            var result = await _service.PreviewLeaveAsync(
+                doctorId,
+                dto);
 
             Assert.Equal(doctorId, result.DoctorId);
             Assert.Equal(startDate, result.StartDate);
@@ -97,21 +125,28 @@ namespace HealthApp.Api.Tests
         public async Task PreviewLeaveAsync_WhenNoAppointments_ReturnsZeroCounts()
         {
             const int doctorId = 4;
-            var startDate = DateOnly.FromDateTime(DateTime.Today.AddDays(3));
+            var startDate = DateOnly.FromDateTime(
+                DateTime.Today.AddDays(3));
             var dto = CreateLeaveDto(startDate, startDate);
             var doctor = CreateDoctor(doctorId);
 
-            SetupValidDoctorAndNonOverlappingLeave(doctorId, doctor);
+            SetupValidDoctorAndNonOverlappingLeave(
+                doctorId,
+                doctor);
 
             _appointmentRepository
-                .Setup(repository => repository.GetActiveAppointmentsForDoctorDateRangeAsync(
-                    doctorId,
-                    startDate,
-                    startDate,
-                    It.IsAny<CancellationToken>()))
+                .Setup(repository =>
+                    repository
+                        .GetActiveAppointmentsForDoctorDateRangeAsync(
+                            doctorId,
+                            startDate,
+                            startDate,
+                            It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Appointment>());
 
-            var result = await _service.PreviewLeaveAsync(doctorId, dto);
+            var result = await _service.PreviewLeaveAsync(
+                doctorId,
+                dto);
 
             Assert.Equal(0, result.PendingAppointmentCount);
             Assert.Equal(0, result.ConfirmedAppointmentCount);
@@ -125,18 +160,23 @@ namespace HealthApp.Api.Tests
         public async Task PreviewLeaveAsync_WithSingleDayLeave_UsesSameStartAndEndDate()
         {
             const int doctorId = 3;
-            var leaveDate = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
+            var leaveDate = DateOnly.FromDateTime(
+                DateTime.Today.AddDays(7));
             var dto = CreateLeaveDto(leaveDate, leaveDate);
             var doctor = CreateDoctor(doctorId);
 
-            SetupValidDoctorAndNonOverlappingLeave(doctorId, doctor);
+            SetupValidDoctorAndNonOverlappingLeave(
+                doctorId,
+                doctor);
 
             _appointmentRepository
-                .Setup(repository => repository.GetActiveAppointmentsForDoctorDateRangeAsync(
-                    doctorId,
-                    leaveDate,
-                    leaveDate,
-                    It.IsAny<CancellationToken>()))
+                .Setup(repository =>
+                    repository
+                        .GetActiveAppointmentsForDoctorDateRangeAsync(
+                            doctorId,
+                            leaveDate,
+                            leaveDate,
+                            It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Appointment>
                 {
                     CreateAppointment(
@@ -146,7 +186,9 @@ namespace HealthApp.Api.Tests
                         AppointmentStatus.Confirmed)
                 });
 
-            var result = await _service.PreviewLeaveAsync(doctorId, dto);
+            var result = await _service.PreviewLeaveAsync(
+                doctorId,
+                dto);
 
             Assert.Equal(leaveDate, result.StartDate);
             Assert.Equal(leaveDate, result.EndDate);
@@ -158,7 +200,8 @@ namespace HealthApp.Api.Tests
         public async Task PreviewLeaveAsync_WhenLeaveOverlaps_ThrowsBusinessRuleViolationException()
         {
             const int doctorId = 5;
-            var startDate = DateOnly.FromDateTime(DateTime.Today.AddDays(4));
+            var startDate = DateOnly.FromDateTime(
+                DateTime.Today.AddDays(4));
             var endDate = startDate.AddDays(2);
             var dto = CreateLeaveDto(startDate, endDate);
             var doctor = CreateDoctor(doctorId);
@@ -170,14 +213,16 @@ namespace HealthApp.Api.Tests
                 .ReturnsAsync(doctor);
 
             _doctorLeaveRepository
-                .Setup(repository => repository.HasOverlappingLeaveAsync(
-                    doctorId,
-                    startDate,
-                    endDate,
-                    It.IsAny<CancellationToken>()))
+                .Setup(repository =>
+                    repository.HasOverlappingLeaveAsync(
+                        doctorId,
+                        startDate,
+                        endDate,
+                        It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
-            var exception = await Assert.ThrowsAsync<BusinessRuleViolationException>(
+            var exception = await Assert.ThrowsAsync<
+                BusinessRuleViolationException>(
                 () => _service.PreviewLeaveAsync(doctorId, dto));
 
             Assert.Equal(
@@ -185,11 +230,13 @@ namespace HealthApp.Api.Tests
                 exception.Message);
 
             _appointmentRepository.Verify(
-                repository => repository.GetActiveAppointmentsForDoctorDateRangeAsync(
-                    It.IsAny<int>(),
-                    It.IsAny<DateOnly>(),
-                    It.IsAny<DateOnly>(),
-                    It.IsAny<CancellationToken>()),
+                repository =>
+                    repository
+                        .GetActiveAppointmentsForDoctorDateRangeAsync(
+                            It.IsAny<int>(),
+                            It.IsAny<DateOnly>(),
+                            It.IsAny<DateOnly>(),
+                            It.IsAny<CancellationToken>()),
                 Times.Never);
         }
 
@@ -197,13 +244,19 @@ namespace HealthApp.Api.Tests
         public async Task PreviewLeaveAsync_WhenStartDateIsPast_ThrowsBusinessRuleViolationException()
         {
             const int doctorId = 2;
-            var startDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-1));
-            var dto = CreateLeaveDto(startDate, startDate.AddDays(1));
+            var startDate = DateOnly.FromDateTime(
+                DateTime.Today.AddDays(-1));
+            var dto = CreateLeaveDto(
+                startDate,
+                startDate.AddDays(1));
 
-            var exception = await Assert.ThrowsAsync<BusinessRuleViolationException>(
+            var exception = await Assert.ThrowsAsync<
+                BusinessRuleViolationException>(
                 () => _service.PreviewLeaveAsync(doctorId, dto));
 
-            Assert.Equal("Leave start date cannot be in the past.", exception.Message);
+            Assert.Equal(
+                "Leave start date cannot be in the past.",
+                exception.Message);
 
             _doctorRepository.Verify(
                 repository => repository.GetByIdAsync(
@@ -216,10 +269,14 @@ namespace HealthApp.Api.Tests
         public async Task PreviewLeaveAsync_WhenEndDateIsBeforeStartDate_ThrowsBusinessRuleViolationException()
         {
             const int doctorId = 8;
-            var startDate = DateOnly.FromDateTime(DateTime.Today.AddDays(5));
-            var dto = CreateLeaveDto(startDate, startDate.AddDays(-1));
+            var startDate = DateOnly.FromDateTime(
+                DateTime.Today.AddDays(5));
+            var dto = CreateLeaveDto(
+                startDate,
+                startDate.AddDays(-1));
 
-            var exception = await Assert.ThrowsAsync<BusinessRuleViolationException>(
+            var exception = await Assert.ThrowsAsync<
+                BusinessRuleViolationException>(
                 () => _service.PreviewLeaveAsync(doctorId, dto));
 
             Assert.Equal(
@@ -231,21 +288,26 @@ namespace HealthApp.Api.Tests
         public async Task PreviewLeaveAsync_WhenReasonIsMissing_ThrowsInvalidRequestException()
         {
             const int doctorId = 6;
-            var leaveDate = DateOnly.FromDateTime(DateTime.Today.AddDays(5));
+            var leaveDate = DateOnly.FromDateTime(
+                DateTime.Today.AddDays(5));
             var dto = CreateLeaveDto(leaveDate, leaveDate);
             dto.Reason = " ";
 
-            var exception = await Assert.ThrowsAsync<InvalidRequestException>(
+            var exception = await Assert.ThrowsAsync<
+                InvalidRequestException>(
                 () => _service.PreviewLeaveAsync(doctorId, dto));
 
-            Assert.Equal("Leave reason is required.", exception.Message);
+            Assert.Equal(
+                "Leave reason is required.",
+                exception.Message);
         }
 
         [Fact]
         public async Task PreviewLeaveAsync_WhenDoctorDoesNotExist_ThrowsEntityNotFoundException()
         {
             const int doctorId = 99;
-            var startDate = DateOnly.FromDateTime(DateTime.Today.AddDays(5));
+            var startDate = DateOnly.FromDateTime(
+                DateTime.Today.AddDays(5));
             var dto = CreateLeaveDto(startDate, startDate);
 
             _doctorRepository
@@ -266,6 +328,12 @@ namespace HealthApp.Api.Tests
                 Times.Never);
         }
 
+        public void Dispose()
+        {
+            _context.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
         private void SetupValidDoctorAndNonOverlappingLeave(
             int doctorId,
             Doctor doctor)
@@ -277,11 +345,12 @@ namespace HealthApp.Api.Tests
                 .ReturnsAsync(doctor);
 
             _doctorLeaveRepository
-                .Setup(repository => repository.HasOverlappingLeaveAsync(
-                    doctorId,
-                    It.IsAny<DateOnly>(),
-                    It.IsAny<DateOnly>(),
-                    It.IsAny<CancellationToken>()))
+                .Setup(repository =>
+                    repository.HasOverlappingLeaveAsync(
+                        doctorId,
+                        It.IsAny<DateOnly>(),
+                        It.IsAny<DateOnly>(),
+                        It.IsAny<CancellationToken>()))
                 .ReturnsAsync(false);
         }
 

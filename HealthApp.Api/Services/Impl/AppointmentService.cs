@@ -2,6 +2,7 @@
 using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
+using HealthApp.Api.Services.Dependencies;
 using HealthApp.Api.Services.Interfaces;
 using HealthApp.Shared.Constants;
 using HealthApp.Shared.Dtos;
@@ -25,19 +26,18 @@ namespace HealthApp.Api.Services.Impl
         private readonly ILogger<AppointmentService> _logger;
 
         public AppointmentService(
-            IAppointmentRepository appointmentRepository,
-            IPatientRepository patientRepository,
-            IDoctorRepository doctorRepository,
-            IDoctorLeaveRepository doctorLeaveRepository,
+            AppointmentServiceRepositories repositories,
             IMapper mapper,
             IPublishEndpoint publishEndpoint,
             IDistributedCache cache,
             ILogger<AppointmentService> logger)
         {
-            _appointmentRepository = appointmentRepository;
-            _patientRepository = patientRepository;
-            _doctorRepository = doctorRepository;
-            _doctorLeaveRepository = doctorLeaveRepository;
+            ArgumentNullException.ThrowIfNull(repositories);
+
+            _appointmentRepository = repositories.AppointmentRepository;
+            _patientRepository = repositories.PatientRepository;
+            _doctorRepository = repositories.DoctorRepository;
+            _doctorLeaveRepository = repositories.DoctorLeaveRepository;
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
             _cache = cache;
