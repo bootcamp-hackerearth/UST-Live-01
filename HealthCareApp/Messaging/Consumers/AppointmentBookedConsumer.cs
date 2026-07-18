@@ -4,6 +4,7 @@ using HealthCareApp.Messaging.Events;
 using HealthCareApp.Models;
 using HealthCareApp.Shared.Enums;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthCareApp.Messaging.Consumers
 {
@@ -12,6 +13,7 @@ namespace HealthCareApp.Messaging.Consumers
         private const string DateFormat = "yyyy-MM-dd";
         private const string AppointmentBookedEventType = "AppointmentBooked";
         private const string EventStageNotificationCreated = "NotificationCreated";
+        private const string EventStageDuplicateSkipped = "DuplicateSkipped";
 
         private readonly HealthAxisDbContext dbContext;
 
@@ -28,6 +30,21 @@ namespace HealthCareApp.Messaging.Consumers
         public async Task Consume(ConsumeContext<AppointmentBookedEvent> context)
         {
             var appointmentBookedEvent = context.Message;
+
+            var notificationAlreadyExists =
+                await dbContext.Notifications.AnyAsync(
+                    notification =>
+                        notification.AppointmentId == appointmentBookedEvent.AppointmentId &&
+                        notification.NotificationType == NotificationType.AppointmentBooked,
+                    context.CancellationToken);
+
+            if (notificationAlreadyExists)
+            {
+                LogDuplicateAppointmentBookedNotificationSkipped(
+                    appointmentBookedEvent);
+
+                return;
+            }
 
             string notificationMessage =
                 $"New appointment booked by {appointmentBookedEvent.PatientName} " +
@@ -68,20 +85,41 @@ namespace HealthCareApp.Messaging.Consumers
             }
 
             using var appointmentBookedEventLogScope =
-                BeginAppointmentBookedEventLogScope(appointmentBookedEvent);
+                BeginAppointmentBookedEventLogScope(
+                    appointmentBookedEvent,
+                    EventStageNotificationCreated);
 
             logger.LogInformation(
                 "Appointment booked event consumed and doctor notification created. EventStage: {EventStage}",
                 EventStageNotificationCreated);
         }
 
-        private IDisposable? BeginAppointmentBookedEventLogScope(
+        private void LogDuplicateAppointmentBookedNotificationSkipped(
             AppointmentBookedEvent appointmentBookedEvent)
+        {
+            if (!logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            using var appointmentBookedEventLogScope =
+                BeginAppointmentBookedEventLogScope(
+                    appointmentBookedEvent,
+                    EventStageDuplicateSkipped);
+
+            logger.LogInformation(
+                "Duplicate appointment booked event skipped because notification already exists. EventStage: {EventStage}",
+                EventStageDuplicateSkipped);
+        }
+
+        private IDisposable? BeginAppointmentBookedEventLogScope(
+            AppointmentBookedEvent appointmentBookedEvent,
+            string eventStage)
         {
             return logger.BeginScope(new Dictionary<string, object>
             {
                 ["EventType"] = AppointmentBookedEventType,
-                ["EventStage"] = EventStageNotificationCreated,
+                ["EventStage"] = eventStage,
                 ["AppointmentId"] = appointmentBookedEvent.AppointmentId,
                 ["DoctorId"] = appointmentBookedEvent.DoctorId,
                 ["ScheduledDate"] = FormatDate(appointmentBookedEvent.ScheduledDate),

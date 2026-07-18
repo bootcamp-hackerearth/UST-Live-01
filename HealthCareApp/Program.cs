@@ -93,8 +93,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwt["Key"]!)
-            ),
+                Encoding.UTF8.GetBytes(jwt["Key"]!)),
 
             ClockSkew = TimeSpan.Zero
         };
@@ -109,7 +108,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "HealthApp API",
+        Title = "HealthAxis API",
         Version = "v1"
     });
 
@@ -131,9 +130,9 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<DbContext, HealthAxisDbContext>();
 
 // Register AutoMapper.
-builder.Services.AddAutoMapper(cfg =>
+builder.Services.AddAutoMapper(config =>
 {
-    cfg.AddProfile<MappingProfile>();
+    config.AddProfile<MappingProfile>();
 });
 
 // Register generic repository.
@@ -193,8 +192,6 @@ builder.Services.AddMassTransit(configurator =>
 {
     configurator.SetKebabCaseEndpointNameFormatter();
 
-
-    // Real Sprint 4 AppointmentBooked event consumer.
     configurator.AddConsumer<AppointmentBookedConsumer>();
 
     configurator.UsingRabbitMq((context, rabbitMqConfig) =>
@@ -210,14 +207,18 @@ builder.Services.AddMassTransit(configurator =>
                 hostConfig.Password(rabbitMqSection["Password"]!);
             });
 
-        // Temporary queue for RabbitMQ connectivity testing.
-   
-
-        // Real queue for AppointmentBookedEvent.
         rabbitMqConfig.ReceiveEndpoint(
             rabbitMqSection["AppointmentBookedQueue"]!,
             endpoint =>
             {
+
+                endpoint.UseMessageRetry(retryConfig =>
+                {
+                    retryConfig.Interval(
+                        retryCount: 3,
+                        interval: TimeSpan.FromSeconds(5));
+                });
+
                 endpoint.ConfigureConsumer<AppointmentBookedConsumer>(context);
             });
     });
@@ -236,8 +237,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
                 "https://localhost:7075",
                 "http://localhost:4200",
-                "https://localhost:4200"
-            )
+                "https://localhost:4200")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -264,10 +264,21 @@ using (var scope = app.Services.CreateScope())
 app.UseExceptionHandler();
 
 // Serilog request logging middleware.
+// This logs HTTP method, path, status code, and elapsed time.
+// The diagnostic context fields can appear in Kibana as labels.StatusCode,
+// labels.RequestMethod, labels.RequestPath, and labels.UserAgent.
 app.UseSerilogRequestLogging(options =>
 {
     options.MessageTemplate =
         "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("StatusCode", httpContext.Response.StatusCode);
+        diagnosticContext.Set("RequestMethod", httpContext.Request.Method);
+        diagnosticContext.Set("RequestPath", httpContext.Request.Path.Value ?? string.Empty);
+        diagnosticContext.Set("UserAgent", httpContext.Request.Headers.UserAgent.ToString());
+    };
 });
 
 // Configure HTTP request pipeline.
