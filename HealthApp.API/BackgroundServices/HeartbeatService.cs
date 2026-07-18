@@ -1,36 +1,63 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace HealthApp.API.BackgroundServices;
 
-public class HeartbeatService : BackgroundService
+public sealed class HeartbeatService : BackgroundService
 {
-    private readonly ILogger<HeartbeatService> _logger;
+    private static readonly TimeSpan HeartbeatInterval =
+        TimeSpan.FromSeconds(10);
 
-    public HeartbeatService(ILogger<HeartbeatService> logger)
+    private readonly ILogger<HeartbeatService> logger;
+
+    public HeartbeatService(
+        ILogger<HeartbeatService> logger)
     {
-        _logger = logger;
+        this.logger = logger;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(
+        CancellationToken stoppingToken)
     {
-        _logger.LogInformation("HeartbeatService started.");
+        logger.LogInformation(
+            "HeartbeatService started.");
 
         try
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation(
-                    "HeartbeatService running at: {Time}",
-                    DateTimeOffset.Now);
+                LogHeartbeat();
 
-                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+                await Task.Delay(
+                    HeartbeatInterval,
+                    stoppingToken);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException exception)
+            when (stoppingToken.IsCancellationRequested)
         {
-            
+            logger.LogInformation(
+                exception,
+                "HeartbeatService cancellation requested.");
+        }
+        finally
+        {
+            logger.LogInformation(
+                "HeartbeatService stopped.");
+        }
+    }
+
+    private void LogHeartbeat()
+    {
+        if (!logger.IsEnabled(LogLevel.Information))
+        {
+            return;
         }
 
-        _logger.LogInformation("HeartbeatService stopped.");
+        var currentTime = DateTimeOffset.Now;
+
+        logger.LogInformation(
+            "HeartbeatService running at: {Time}",
+            currentTime);
     }
 }

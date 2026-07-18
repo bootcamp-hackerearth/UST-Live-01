@@ -249,12 +249,19 @@ try
                 });
 
             rabbitMq.ReceiveEndpoint(
-                rabbitmqConfig["AppointmentQueue"]!,
-                endpoint =>
+            rabbitmqConfig["AppointmentQueue"]!,
+            endpoint =>
+            {
+                endpoint.UseMessageRetry(retry =>
                 {
-                    endpoint.ConfigureConsumer<
-                        AppointmentBookedConsumer>(context);
+                    retry.Interval(
+                        3,
+                        TimeSpan.FromSeconds(5));
                 });
+
+                endpoint.ConfigureConsumer<
+                    AppointmentBookedConsumer>(context);
+            });
         });
     });
 

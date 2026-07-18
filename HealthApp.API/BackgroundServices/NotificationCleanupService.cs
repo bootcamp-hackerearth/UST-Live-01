@@ -1,70 +1,116 @@
 ﻿using HealthApp.API.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace HealthApp.API.BackgroundServices;
 
-public class NotificationCleanupService : BackgroundService
+public sealed class NotificationCleanupService : BackgroundService
 {
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<NotificationCleanupService> _logger;
+    private static readonly TimeSpan CleanupInterval =
+        TimeSpan.FromHours(1);
+
+    private const int NotificationRetentionDays = 30;
+
+    private readonly IServiceScopeFactory scopeFactory;
+
+    private readonly ILogger<NotificationCleanupService> logger;
 
     public NotificationCleanupService(
         IServiceScopeFactory scopeFactory,
         ILogger<NotificationCleanupService> logger)
     {
-        _scopeFactory = scopeFactory;
-        _logger = logger;
+        this.scopeFactory = scopeFactory;
+        this.logger = logger;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(
+        CancellationToken stoppingToken)
     {
-        _logger.LogInformation("NotificationCleanupService started.");
+        logger.LogInformation(
+            "NotificationCleanupService started.");
 
         try
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await CleanupOldNotificationsAsync(stoppingToken);
+                await CleanupOldNotificationsAsync(
+                    stoppingToken);
 
-                await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+                await Task.Delay(
+                    CleanupInterval,
+                    stoppingToken);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException exception)
+            when (stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("NotificationCleanupService shutdown requested.");
+            logger.LogInformation(
+                exception,
+                "NotificationCleanupService shutdown requested.");
         }
-
-        _logger.LogInformation("NotificationCleanupService stopped.");
+        finally
+        {
+            logger.LogInformation(
+                "NotificationCleanupService stopped.");
+        }
     }
 
-    private async Task CleanupOldNotificationsAsync(CancellationToken stoppingToken)
+    private async Task CleanupOldNotificationsAsync(
+        CancellationToken stoppingToken)
     {
         try
         {
-            using var scope = _scopeFactory.CreateScope();
+            using var scope =
+                scopeFactory.CreateScope();
 
-            var dbContext = scope.ServiceProvider.GetRequiredService<HealthAppDbContext>();
+            var dbContext =
+                scope.ServiceProvider
+                    .GetRequiredService<HealthAppDbContext>();
 
-            var cutoffDate = DateTime.Now.AddDays(-30);
+            var cutoffDate =
+                DateTime.Now.AddDays(
+                    -NotificationRetentionDays);
 
-            var deletedCount = await dbContext.Notifications
-                .Where(notification => notification.CreatedDate < cutoffDate)
-                .ExecuteDeleteAsync(stoppingToken);
+            var deletedCount =
+                await dbContext.Notifications
+                    .Where(notification =>
+                        notification.CreatedDate <
+                        cutoffDate)
+                    .ExecuteDeleteAsync(
+                        stoppingToken);
 
-            _logger.LogInformation(
-                "Notification cleanup completed. Deleted {DeletedCount} notifications older than {CutoffDate}.",
+            LogCleanupResult(
                 deletedCount,
                 cutoffDate);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException exception)
+            when (stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("Notification cleanup cancelled during shutdown.");
+            logger.LogInformation(
+                exception,
+                "Notification cleanup cancelled during shutdown.");
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            _logger.LogError(
-                ex,
+            logger.LogError(
+                exception,
                 "An error occurred while cleaning up old notifications.");
         }
+    }
+
+    private void LogCleanupResult(
+        int deletedCount,
+        DateTime cutoffDate)
+    {
+        if (!logger.IsEnabled(LogLevel.Information))
+        {
+            return;
+        }
+
+        logger.LogInformation(
+            "Notification cleanup completed. Deleted {DeletedCount} notifications older than {CutoffDate}.",
+            deletedCount,
+            cutoffDate);
     }
 }
