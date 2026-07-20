@@ -11,6 +11,8 @@ using HealthCareApp.Shared.Enums;
 using MassTransit;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using HealthCareApp.Data;
+using System.Text.Json;
 
 namespace HealthCareApp.Services.Impl
 {
@@ -21,8 +23,7 @@ namespace HealthCareApp.Services.Impl
         private const string CancellationDetailsRequiredMessage = "Cancellation details are required.";
         private const string DateFormat = "yyyy-MM-dd";
         private const string AppointmentBookedEventType = "AppointmentBooked";
-        private const string EventStagePublished = "Published";
-
+        private const string EventStageSavedToOutbox = "SavedToOutbox";
         private const string ConcurrentSlotBookedMessage =
             "This slot was just booked by another patient. Please choose another available slot.";
 
@@ -33,6 +34,7 @@ namespace HealthCareApp.Services.Impl
         private readonly IDoctorLeaveService doctorLeaveService;
         private readonly IMapper mapper;
         private readonly IPublishEndpoint publishEndpoint;
+        private readonly HealthAxisDbContext dbContext;
         private readonly ILogger<AppointmentService> logger;
 
         public AppointmentService(AppointmentServiceDependencies dependencies)
@@ -44,6 +46,7 @@ namespace HealthCareApp.Services.Impl
             doctorLeaveService = dependencies.DoctorLeaveService;
             mapper = dependencies.Mapper;
             publishEndpoint = dependencies.PublishEndpoint;
+            dbContext = dependencies.DbContext;
             logger = dependencies.Logger;
         }
 
@@ -350,33 +353,70 @@ namespace HealthCareApp.Services.Impl
 
             Appointment savedAppointment;
 
+            await using var transaction =
+                await dbContext.Database.BeginTransactionAsync();
+
             try
             {
                 savedAppointment = await appointmentRepository.CreateAsync(appointment);
+
+                var appointmentBookedEvent = new AppointmentBookedEvent
+                {
+                    AppointmentId = savedAppointment.AppointmentId,
+                    PatientName = patient.PatientName,
+                    DoctorId = savedAppointment.DoctorId,
+                    ScheduledDate = savedAppointment.ScheduledDate.Date,
+                    TimeSlot = savedAppointment.TimeSlot
+                };
+
+                var outboxMessageId = Guid.NewGuid();
+
+                var outboxMessage = new OutboxMessage
+                {
+                    OutboxMessageId = outboxMessageId,
+                    EventType = nameof(AppointmentBookedEvent),
+                    Payload = JsonSerializer.Serialize(appointmentBookedEvent),
+                    CreatedDate = DateTime.Now,
+                    PublishedDate = null,
+                    Status = OutboxMessageStatuses.Pending,
+                    RetryCount = 0,
+                    ErrorMessage = null
+                };
+
+                await dbContext.OutboxMessages.AddAsync(outboxMessage);
+
+                await dbContext.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                LogAppointmentBookedEventSavedToOutbox(
+                    savedAppointment,
+                    outboxMessageId);
             }
-            catch (DbUpdateException ex) when (IsUniqueAppointmentSlotViolation(ex))
+            catch (DbUpdateException ex)
             {
-                LogConcurrentAppointmentBookingBlocked(
-                    ex,
-                    dto);
+                await transaction.RollbackAsync();
 
-                throw new ConflictException(ConcurrentSlotBookedMessage);
+                if (IsUniqueAppointmentSlotViolation(ex))
+                {
+                    LogConcurrentAppointmentBookingBlocked(
+                        ex,
+                        dto);
+
+                    throw new ConflictException(ConcurrentSlotBookedMessage);
+                }
+
+                throw;
             }
-
-            await publishEndpoint.Publish(new AppointmentBookedEvent
+            catch
             {
-                AppointmentId = savedAppointment.AppointmentId,
-                PatientName = patient.PatientName,
-                DoctorId = savedAppointment.DoctorId,
-                ScheduledDate = savedAppointment.ScheduledDate.Date,
-                TimeSlot = savedAppointment.TimeSlot
-            });
+                await transaction.RollbackAsync();
 
-            LogAppointmentBookedEventPublished(savedAppointment);
+                throw;
+            }
 
             return mapper.Map<AppointmentDto>(savedAppointment);
         }
-
         public async Task<AppointmentDto> UpdateAppointmentAsync(int appointmentId, UpdateAppointmentDto dto)
         {
             ValidateAppointmentId(appointmentId);
@@ -1001,7 +1041,9 @@ namespace HealthCareApp.Services.Impl
                 dto.TimeSlot);
         }
 
-        private void LogAppointmentBookedEventPublished(Appointment appointment)
+        private void LogAppointmentBookedEventSavedToOutbox(
+      Appointment appointment,
+      Guid outboxMessageId)
         {
             if (!logger.IsEnabled(LogLevel.Information))
             {
@@ -1009,26 +1051,32 @@ namespace HealthCareApp.Services.Impl
             }
 
             using var appointmentBookedEventLogScope =
-                BeginAppointmentBookedEventLogScope(appointment);
+                BeginAppointmentBookedEventLogScope(
+                    appointment,
+                    outboxMessageId);
 
             logger.LogInformation(
-                "Appointment booked event published to RabbitMQ. EventStage: {EventStage}",
-                EventStagePublished);
+                "Appointment booked event saved to outbox. EventStage: {EventStage}, OutboxMessageId: {OutboxMessageId}",
+                EventStageSavedToOutbox,
+                outboxMessageId);
         }
 
-        private IDisposable? BeginAppointmentBookedEventLogScope(Appointment appointment)
+        private IDisposable? BeginAppointmentBookedEventLogScope(
+            Appointment appointment,
+            Guid outboxMessageId)
         {
             return logger.BeginScope(new Dictionary<string, object>
             {
                 ["EventType"] = AppointmentBookedEventType,
+                ["EventStage"] = EventStageSavedToOutbox,
                 ["AppointmentId"] = appointment.AppointmentId,
                 ["PatientId"] = appointment.PatientId,
                 ["DoctorId"] = appointment.DoctorId,
                 ["ScheduledDate"] = FormatDate(appointment.ScheduledDate),
-                ["TimeSlot"] = appointment.TimeSlot
+                ["TimeSlot"] = appointment.TimeSlot,
+                ["OutboxMessageId"] = outboxMessageId
             });
         }
-
         private static bool IsUniqueAppointmentSlotViolation(DbUpdateException exception)
         {
             Exception? currentException = exception;

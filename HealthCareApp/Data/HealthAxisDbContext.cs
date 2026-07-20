@@ -25,6 +25,8 @@ namespace HealthCareApp.Data
 
         public DbSet<DoctorLeave> DoctorLeaves { get; set; }
 
+        public DbSet<OutboxMessage> OutboxMessages { get; set; }
+
         private static DateTime UtcDate(int year, int month, int day)
         {
             return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
@@ -121,6 +123,35 @@ namespace HealthCareApp.Data
                 .WithMany()
                 .HasForeignKey(doctorLeave => doctorLeave.DoctorId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            // OutboxMessage configuration.
+            builder.Entity<OutboxMessage>()
+                .HasKey(outboxMessage => outboxMessage.OutboxMessageId);
+
+            builder.Entity<OutboxMessage>()
+                .Property(outboxMessage => outboxMessage.EventType)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            builder.Entity<OutboxMessage>()
+                .Property(outboxMessage => outboxMessage.Payload)
+                .IsRequired();
+
+            builder.Entity<OutboxMessage>()
+                .Property(outboxMessage => outboxMessage.Status)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            builder.Entity<OutboxMessage>()
+                .Property(outboxMessage => outboxMessage.ErrorMessage)
+                .HasMaxLength(1000);
+
+            builder.Entity<OutboxMessage>()
+                .HasIndex(outboxMessage => new
+                {
+                    outboxMessage.Status,
+                    outboxMessage.CreatedDate
+                });
 
             // Patient seed data.
             builder.Entity<Patient>().HasData(

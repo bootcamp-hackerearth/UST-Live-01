@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HealthCareApp.Data;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Services.Interface;
 using MassTransit;
@@ -20,7 +21,7 @@ namespace HealthCareApp.Services.Impl
         public required IMapper Mapper { get; init; }
 
         public required IPublishEndpoint PublishEndpoint { get; init; }
-
+        public HealthAxisDbContext DbContext { get; set; } = default!;
         public required ILogger<AppointmentService> Logger { get; init; }
     }
 }

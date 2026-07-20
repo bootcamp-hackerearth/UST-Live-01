@@ -178,6 +178,7 @@ builder.Services.AddScoped(serviceProvider => new AppointmentServiceDependencies
     DoctorLeaveService = serviceProvider.GetRequiredService<IDoctorLeaveService>(),
     Mapper = serviceProvider.GetRequiredService<IMapper>(),
     PublishEndpoint = serviceProvider.GetRequiredService<IPublishEndpoint>(),
+    DbContext = serviceProvider.GetRequiredService<HealthAxisDbContext>(),
     Logger = serviceProvider.GetRequiredService<ILogger<AppointmentService>>()
 });
 
@@ -186,7 +187,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 // Register background services.
 builder.Services.AddHostedService<HeartbeatBackgroundService>();
 builder.Services.AddHostedService<NotificationCleanupService>();
-
+builder.Services.AddHostedService<OutboxPublisherBackgroundService>();
 // Register MassTransit with RabbitMQ.
 builder.Services.AddMassTransit(configurator =>
 {

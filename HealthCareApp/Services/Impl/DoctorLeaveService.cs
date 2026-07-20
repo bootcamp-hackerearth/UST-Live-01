@@ -171,7 +171,7 @@ namespace HealthCareApp.Services.Impl
             Doctor doctor,
             DateTime leaveStartDate,
             DateTime leaveEndDate)
-        {
+         {
             var nextDateAfterLeaveEnd = leaveEndDate.Date.AddDays(1);
 
             var affectedAppointments = await dbContext.Appointments
