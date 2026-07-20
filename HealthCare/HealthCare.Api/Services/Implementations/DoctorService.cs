@@ -260,8 +260,6 @@ namespace HealthCare.Api.Services.Implementations
                 _logger.LogInformation("CACHE MISS: {CacheKey}", cachedKey);
 
             var doctors= await _repository.AvailableDoctors(specialisation, date);
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("AvailableDoctors returned {Count} doctors",doctors.Count);
 
             try
             {

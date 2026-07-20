@@ -122,7 +122,6 @@ namespace HealthCare.Api.Services.Implementations
         }
         public async Task<PagedResult<AppointmentListDto>> GetAllAsync(AppointmentFilter filter)
         {
-            // Build predicate (filtering)
             Expression<Func<Appointment, bool>>? predicate = null;
 
             if (!string.IsNullOrWhiteSpace(filter.Status) && filter.ScheduledDate.HasValue)
