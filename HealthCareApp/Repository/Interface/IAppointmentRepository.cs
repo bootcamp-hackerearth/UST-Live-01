@@ -1,5 +1,6 @@
-﻿using HealthCareApp.Shared.Enums;
-using HealthCareApp.Models;
+﻿using HealthCareApp.Models;
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Enums;
 
 namespace HealthCareApp.Repository.Interface
 {
@@ -39,5 +40,7 @@ namespace HealthCareApp.Repository.Interface
         Task<bool> PatientHasActiveAppointmentOnDateAndSlotAsync(int patientId, DateTime date, string timeSlot, CancellationToken ct = default);
 
         Task<List<string>> GetBookedTimeSlotsByDoctorAndDateAsync( int doctorId, DateTime date,CancellationToken ct = default);
+
+        Task<(List<Appointment> Items, int TotalRecords)> GetPagedAppointmentsAsync( AppointmentPaginationQueryDto query,CancellationToken ct = default);
     }
 }

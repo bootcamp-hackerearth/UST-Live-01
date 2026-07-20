@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HealthCareApp.Data;
 using HealthCareApp.Exceptions;
 using HealthCareApp.Messaging.Events;
 using HealthCareApp.Models;
@@ -11,7 +12,6 @@ using HealthCareApp.Shared.Enums;
 using MassTransit;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using HealthCareApp.Data;
 using System.Text.Json;
 
 namespace HealthCareApp.Services.Impl
@@ -24,6 +24,7 @@ namespace HealthCareApp.Services.Impl
         private const string DateFormat = "yyyy-MM-dd";
         private const string AppointmentBookedEventType = "AppointmentBooked";
         private const string EventStageSavedToOutbox = "SavedToOutbox";
+
         private const string ConcurrentSlotBookedMessage =
             "This slot was just booked by another patient. Please choose another available slot.";
 
@@ -131,74 +132,20 @@ namespace HealthCareApp.Services.Impl
 
             pageSize = pageSize > 100 ? 100 : pageSize;
 
-            var appointments = await appointmentRepository.GetAllAsync();
+            query.PageNumber = pageNumber;
+            query.PageSize = pageSize;
 
-            var filteredAppointments = appointments.AsEnumerable();
+            var pagedResult = await appointmentRepository.GetPagedAppointmentsAsync(query);
 
-            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
-            {
-                string searchTerm = query.SearchTerm.Trim();
-
-                filteredAppointments = filteredAppointments.Where(appointment =>
-                    (appointment.Patient != null &&
-                     appointment.Patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                    (appointment.Doctor != null &&
-                     appointment.Doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                    appointment.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    (!string.IsNullOrWhiteSpace(appointment.CancellationReason) &&
-                     appointment.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
-            }
-
-            if (query.PatientId is not null)
-            {
-                filteredAppointments = filteredAppointments.Where(appointment =>
-                    appointment.PatientId == query.PatientId.Value);
-            }
-
-            if (query.DoctorId is not null)
-            {
-                filteredAppointments = filteredAppointments.Where(appointment =>
-                    appointment.DoctorId == query.DoctorId.Value);
-            }
-
-            if (query.Status is not null)
-            {
-                filteredAppointments = filteredAppointments.Where(appointment =>
-                    appointment.Status == query.Status.Value);
-            }
-
-            if (query.ScheduledDate is not null)
-            {
-                filteredAppointments = filteredAppointments.Where(appointment =>
-                    appointment.ScheduledDate.Date == query.ScheduledDate.Value.Date);
-            }
-
-            if (query.UpcomingOnly is not null && query.UpcomingOnly.Value)
-            {
-                filteredAppointments = filteredAppointments.Where(appointment =>
-                    appointment.ScheduledDate.Date >= DateTime.Today &&
-                    appointment.Status != AppointmentStatus.Cancelled &&
-                    appointment.Status != AppointmentStatus.Completed);
-            }
-
-            int totalRecords = filteredAppointments.Count();
-
-            var pagedAppointments = filteredAppointments
-                .OrderByDescending(appointment => appointment.ScheduledDate)
-                .ThenBy(appointment => appointment.TimeSlot)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            var mappedAppointments = mapper.Map<List<AppointmentDto>>(pagedAppointments);
+            var mappedAppointments = mapper.Map<List<AppointmentDto>>(pagedResult.Items);
 
             return new PagedResponse<AppointmentDto>
             {
                 Items = mappedAppointments,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                TotalRecords = totalRecords,
-                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
+                TotalRecords = pagedResult.TotalRecords,
+                TotalPages = (int)Math.Ceiling(pagedResult.TotalRecords / (double)pageSize)
             };
         }
 
@@ -417,6 +364,7 @@ namespace HealthCareApp.Services.Impl
 
             return mapper.Map<AppointmentDto>(savedAppointment);
         }
+
         public async Task<AppointmentDto> UpdateAppointmentAsync(int appointmentId, UpdateAppointmentDto dto)
         {
             ValidateAppointmentId(appointmentId);
@@ -662,11 +610,28 @@ namespace HealthCareApp.Services.Impl
 
             query ??= new AppointmentPaginationQueryDto();
 
+            int pageNumber = query.PageNumber <= 0 ? 1 : query.PageNumber;
+
+            int pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+
+            pageSize = pageSize > 100 ? 100 : pageSize;
+
             query.PatientId = patient.PatientId;
+            query.PageNumber = pageNumber;
+            query.PageSize = pageSize;
 
-            var appointments = await appointmentRepository.GetByPatientIdAsync(patient.PatientId);
+            var pagedResult = await appointmentRepository.GetPagedAppointmentsAsync(query);
 
-            return BuildPagedAppointmentResponse(appointments, query);
+            var mappedAppointments = mapper.Map<List<AppointmentDto>>(pagedResult.Items);
+
+            return new PagedResponse<AppointmentDto>
+            {
+                Items = mappedAppointments,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalRecords = pagedResult.TotalRecords,
+                TotalPages = (int)Math.Ceiling(pagedResult.TotalRecords / (double)pageSize)
+            };
         }
 
         public async Task<PagedResponse<AppointmentDto>> GetMyAppointmentsForDoctorPagedAsync(
@@ -677,78 +642,27 @@ namespace HealthCareApp.Services.Impl
 
             query ??= new AppointmentPaginationQueryDto();
 
-            query.DoctorId = doctor.DoctorId;
-
-            var appointments = await appointmentRepository.GetByDoctorIdAsync(doctor.DoctorId);
-
-            return BuildPagedAppointmentResponse(appointments, query);
-        }
-
-        private PagedResponse<AppointmentDto> BuildPagedAppointmentResponse(
-            List<Appointment> appointments,
-            AppointmentPaginationQueryDto query)
-        {
             int pageNumber = query.PageNumber <= 0 ? 1 : query.PageNumber;
 
             int pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
 
             pageSize = pageSize > 100 ? 100 : pageSize;
 
-            var filteredAppointments = appointments.AsEnumerable();
+            query.DoctorId = doctor.DoctorId;
+            query.PageNumber = pageNumber;
+            query.PageSize = pageSize;
 
-            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
-            {
-                string searchTerm = query.SearchTerm.Trim();
+            var pagedResult = await appointmentRepository.GetPagedAppointmentsAsync(query);
 
-                filteredAppointments = filteredAppointments.Where(appointment =>
-                    (appointment.Patient != null &&
-                     appointment.Patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                    (appointment.Doctor != null &&
-                     appointment.Doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                    appointment.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    appointment.AppointmentId.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    (!string.IsNullOrWhiteSpace(appointment.CancellationReason) &&
-                     appointment.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
-            }
-
-            if (query.Status is not null)
-            {
-                filteredAppointments = filteredAppointments.Where(appointment =>
-                    appointment.Status == query.Status.Value);
-            }
-
-            if (query.ScheduledDate is not null)
-            {
-                filteredAppointments = filteredAppointments.Where(appointment =>
-                    appointment.ScheduledDate.Date == query.ScheduledDate.Value.Date);
-            }
-
-            if (query.UpcomingOnly is not null && query.UpcomingOnly.Value)
-            {
-                filteredAppointments = filteredAppointments.Where(appointment =>
-                    appointment.ScheduledDate.Date >= DateTime.Today &&
-                    appointment.Status != AppointmentStatus.Cancelled &&
-                    appointment.Status != AppointmentStatus.Completed);
-            }
-
-            int totalRecords = filteredAppointments.Count();
-
-            var pagedAppointments = filteredAppointments
-                .OrderByDescending(appointment => appointment.ScheduledDate)
-                .ThenBy(appointment => appointment.TimeSlot)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            var mappedAppointments = mapper.Map<List<AppointmentDto>>(pagedAppointments);
+            var mappedAppointments = mapper.Map<List<AppointmentDto>>(pagedResult.Items);
 
             return new PagedResponse<AppointmentDto>
             {
                 Items = mappedAppointments,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                TotalRecords = totalRecords,
-                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
+                TotalRecords = pagedResult.TotalRecords,
+                TotalPages = (int)Math.Ceiling(pagedResult.TotalRecords / (double)pageSize)
             };
         }
 
@@ -1042,8 +956,8 @@ namespace HealthCareApp.Services.Impl
         }
 
         private void LogAppointmentBookedEventSavedToOutbox(
-      Appointment appointment,
-      Guid outboxMessageId)
+            Appointment appointment,
+            Guid outboxMessageId)
         {
             if (!logger.IsEnabled(LogLevel.Information))
             {
@@ -1077,6 +991,7 @@ namespace HealthCareApp.Services.Impl
                 ["OutboxMessageId"] = outboxMessageId
             });
         }
+
         private static bool IsUniqueAppointmentSlotViolation(DbUpdateException exception)
         {
             Exception? currentException = exception;
