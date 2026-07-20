@@ -175,38 +175,63 @@ try
 
     builder.Services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
 
-    builder.Services.AddMassTransit(x =>
+    builder.Services.AddMassTransit(configuration =>
     {
-        x.AddConsumer<AppointmentBookedConsumer>();
+        configuration.AddConsumer<AppointmentBookedConsumer>();
 
-        x.UsingRabbitMq((context, rabbitMqConfig) =>
-        {
-            var rabbitMqSection = context
-                .GetRequiredService<IConfiguration>()
-                .GetSection("RabbitMq");
-
-            var hostName = rabbitMqSection["HostName"] ?? "localhost";
-            var virtualHost = rabbitMqSection["VirtualHost"] ?? "/";
-            var userName = rabbitMqSection["UserName"] ?? "guest";
-            var password = rabbitMqSection["Password"] ?? "guest";
-
-            var appointmentBookedQueue =
-                rabbitMqSection["AppointmentBookedQueue"]
-                ?? "healthaxis.appointment.booked.queue";
-
-            rabbitMqConfig.Host(hostName, virtualHost, host =>
+        configuration.UsingRabbitMq(
+            (context, rabbitMqConfig) =>
             {
-                host.Username(userName);
-                host.Password(password);
-            });
+                var rabbitMqSection = context
+                    .GetRequiredService<IConfiguration>()
+                    .GetSection("RabbitMq");
 
-            rabbitMqConfig.ReceiveEndpoint(appointmentBookedQueue, endpoint =>
-            {
-                endpoint.ConfigureConsumer<AppointmentBookedConsumer>(context);
+                var hostName =
+                    rabbitMqSection["HostName"] ??
+                    "localhost";
+
+                var virtualHost =
+                    rabbitMqSection["VirtualHost"] ??
+                    "/";
+
+                var userName =
+                    rabbitMqSection["UserName"] ??
+                    "guest";
+
+                var password =
+                    rabbitMqSection["Password"] ??
+                    "guest";
+
+                var appointmentBookedQueue =
+                    rabbitMqSection["AppointmentBookedQueue"] ??
+                    "healthaxis.appointment.booked.queue";
+
+                rabbitMqConfig.Host(
+                    hostName,
+                    virtualHost,
+                    host =>
+                    {
+                        host.Username(userName);
+                        host.Password(password);
+                    });
+
+                rabbitMqConfig.ReceiveEndpoint(
+                    appointmentBookedQueue,
+                    endpoint =>
+                    {
+                        endpoint.UseMessageRetry(retry =>
+                        {
+                            retry.Interval(
+                                3,
+                                TimeSpan.FromSeconds(5));
+                        });
+
+                        endpoint.ConfigureConsumer<
+                            AppointmentBookedConsumer>(
+                                context);
+                    });
             });
-        });
     });
-
     builder.Services.AddHostedService<HeartbeatService>();
     builder.Services.AddHostedService<NotificationCleanupService>();
 

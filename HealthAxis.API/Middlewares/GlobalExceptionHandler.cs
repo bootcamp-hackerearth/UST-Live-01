@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Diagnostics;
 namespace HealthAxis.API.Middlewares
 {
     public sealed class GlobalExceptionHandler(
-        ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
+        ILogger<GlobalExceptionHandler> logger)
+        : IExceptionHandler
     {
         public async ValueTask<bool> TryHandleAsync(
             HttpContext httpContext,
@@ -17,7 +18,7 @@ namespace HealthAxis.API.Middlewares
 
             logger.LogError(
                 exception,
-                "Unhandled exception occurred. StatusCode: {StatusCode}, Path: {Path}",
+                "Exception occurred. StatusCode: {StatusCode}, Path: {Path}",
                 statusCode,
                 httpContext.Request.Path);
 
@@ -28,7 +29,8 @@ namespace HealthAxis.API.Middlewares
             };
 
             httpContext.Response.StatusCode = statusCode;
-            httpContext.Response.ContentType = "application/json";
+            httpContext.Response.ContentType =
+                "application/json";
 
             await httpContext.Response.WriteAsJsonAsync(
                 response,
@@ -37,27 +39,53 @@ namespace HealthAxis.API.Middlewares
             return true;
         }
 
-        private static int GetStatusCode(Exception exception)
+        private static int GetStatusCode(
+            Exception exception)
         {
             return exception switch
             {
-                NotFoundException => StatusCodes.Status404NotFound,
-                ValidationException => StatusCodes.Status400BadRequest,
-                BusinessRuleException => StatusCodes.Status400BadRequest,
-                UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
-                _ => StatusCodes.Status500InternalServerError
+                NotFoundException =>
+                    StatusCodes.Status404NotFound,
+
+                ValidationException =>
+                    StatusCodes.Status400BadRequest,
+
+                AppointmentConflictException =>
+                    StatusCodes.Status409Conflict,
+
+                BusinessRuleException =>
+                    StatusCodes.Status400BadRequest,
+
+                UnauthorizedAccessException =>
+                    StatusCodes.Status401Unauthorized,
+
+                _ =>
+                    StatusCodes.Status500InternalServerError
             };
         }
 
-        private static string GetMessage(Exception exception)
+        private static string GetMessage(
+            Exception exception)
         {
             return exception switch
             {
-                NotFoundException => exception.Message,
-                ValidationException => exception.Message,
-                BusinessRuleException => exception.Message,
-                UnauthorizedAccessException => "Unauthorized access",
-                _ => "An unexpected error occurred. Please try again later."
+                NotFoundException =>
+                    exception.Message,
+
+                ValidationException =>
+                    exception.Message,
+
+                AppointmentConflictException =>
+                    exception.Message,
+
+                BusinessRuleException =>
+                    exception.Message,
+
+                UnauthorizedAccessException =>
+                    "Unauthorized access",
+
+                _ =>
+                    "An unexpected error occurred. Please try again later."
             };
         }
     }

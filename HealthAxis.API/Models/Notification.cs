@@ -6,6 +6,8 @@ namespace HealthAxis.API.Models
     {
         public int NotificationId { get; set; }
 
+        public int? AppointmentId { get; set; }
+
         public int? PatientId { get; set; }
 
         public int? DoctorId { get; set; }
@@ -23,6 +25,7 @@ namespace HealthAxis.API.Models
 
         public bool IsRead { get; set; }
 
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedDate { get; set; } =
+            DateTime.UtcNow;
     }
 }
