@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentAssertions;
+using HealthCareApp.Data;
 using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
@@ -13,6 +14,7 @@ using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
 using HealthCareApp.Shared.Events;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace HealthCareApp.Testing.Services
@@ -24,10 +26,9 @@ namespace HealthCareApp.Testing.Services
         private readonly Mock<IDoctorRepository> doctorRepositoryMock;
         private readonly Mock<IHealthRecordRepository> healthRecordRepositoryMock;
         private readonly Mock<IMapper> mapperMock;
-        private readonly Mock<IBus> busMock;
         private readonly Mock<ICacheService> cacheServiceMock;
         private readonly Mock<IDoctorLeaveService> doctorLeaveServiceMock;
-
+        private readonly HealthAxisDbContext dbContext;
         private readonly AppointmentService appointmentService;
 
         public AppointmentServiceTests()
@@ -37,9 +38,10 @@ namespace HealthCareApp.Testing.Services
             doctorRepositoryMock = new Mock<IDoctorRepository>();
             healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
             mapperMock = new Mock<IMapper>();
-            busMock = new Mock<IBus>();
             cacheServiceMock = new Mock<ICacheService>();
             doctorLeaveServiceMock = new Mock<IDoctorLeaveService>();
+            var dbContextOptions = new DbContextOptionsBuilder<HealthAxisDbContext>().UseInMemoryDatabase($"AppointmentServiceTests_{Guid.NewGuid()}").Options;
+            dbContext = new HealthAxisDbContext(dbContextOptions);
 
             SetupMapper();
 
@@ -49,9 +51,9 @@ namespace HealthCareApp.Testing.Services
                 doctorRepositoryMock.Object,
                 healthRecordRepositoryMock.Object,
                 mapperMock.Object,
-                busMock.Object,
                 cacheServiceMock.Object,
-                doctorLeaveServiceMock.Object);
+                doctorLeaveServiceMock.Object,
+                dbContext);
         }
 
         [Fact]
@@ -1952,12 +1954,6 @@ namespace HealthCareApp.Testing.Services
                     It.IsAny<string>()))
                 .Returns(Task.CompletedTask);
 
-            busMock
-                .Setup(bus => bus.Publish(
-                    It.IsAny<AppointmentBookedEvent>(),
-                    It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
             var result = await appointmentService.BookAppointmentForPatientAsync(
                 dto,
                 "patient-identity");
@@ -1965,6 +1961,11 @@ namespace HealthCareApp.Testing.Services
             result.PatientId.Should().Be(patient.PatientId);
 
             dto.PatientId.Should().Be(patient.PatientId);
+
+            dbContext.OutboxMessages.Should().ContainSingle(message =>
+                message.EventType == nameof(AppointmentBookedEvent) &&
+                message.Status == OutboxMessageStatuses.Pending &&
+                message.Payload.Contains("\"appointmentId\":500"));
         }
 
         [Fact]

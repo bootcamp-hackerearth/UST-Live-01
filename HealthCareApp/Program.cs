@@ -49,7 +49,17 @@ builder.Services.AddMassTransit(x =>
                     builder.Configuration["RabbitMQ:Password"]!);
             });
 
-        cfg.ConfigureEndpoints(context);
+        cfg.ReceiveEndpoint("appointment-booked", endpoint =>
+        {
+            endpoint.UseMessageRetry(retry =>
+            {
+                retry.Interval(
+                    3,
+                    TimeSpan.FromSeconds(5));
+            });
+
+            endpoint.ConfigureConsumer<AppointmentBookedConsumer>(context);
+        });
     });
 });
 
@@ -176,6 +186,7 @@ builder.Services.AddScoped<IPatientNotificationService, PatientNotificationServi
 // Register background services.
 builder.Services.AddHostedService<HeartbeatBackgroundService>();
 builder.Services.AddHostedService<NotificationCleanupBackgroundService>();
+builder.Services.AddHostedService<OutboxPublisherBackgroundService>();
 
 // Register Global Exception Handler.
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

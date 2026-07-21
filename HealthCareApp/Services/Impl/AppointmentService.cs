@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Text.Json;
 using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
@@ -10,6 +11,7 @@ using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
 using HealthCareApp.Shared.Events;
 using MassTransit;
+using HealthCareApp.Data;
 
 namespace HealthCareApp.Services.Impl
 {
@@ -18,7 +20,8 @@ namespace HealthCareApp.Services.Impl
         IPatientRepository patientRepository,
         IDoctorRepository doctorRepository,
         IHealthRecordRepository healthRecordRepository,
-        IMapper mapper, IBus bus,ICacheService cacheService, IDoctorLeaveService doctorLeaveService) : IAppointmentService
+        IMapper mapper,ICacheService cacheService, IDoctorLeaveService doctorLeaveService,
+        HealthAxisDbContext context) : IAppointmentService
     {
 
         private const string AppointmentEntityName = "Appointment";
@@ -331,22 +334,37 @@ namespace HealthCareApp.Services.Impl
             appointment.CancellationReason = null;
             appointment.CreatedDate = DateTime.Now;
 
+            await using var transaction =
+                await context.Database.BeginTransactionAsync();
+
             var savedAppointment = await appointmentRepository.CreateAsync(appointment);
-            await cacheService.RemoveAsync($"doctors:{dto.DoctorId}:availability:{dto.ScheduledDate:yyyy-MM-dd}");
 
-            await bus.Publish(
-    new AppointmentBookedEvent
-    {
-        AppointmentId = savedAppointment.AppointmentId,
+            var appointmentBookedEvent = new AppointmentBookedEvent
+            {
+                AppointmentId = savedAppointment.AppointmentId,
+                PatientName = patient.PatientName,
+                DoctorId = doctor.DoctorId,
+                ScheduledDate = savedAppointment.ScheduledDate,
+                TimeSlot = savedAppointment.TimeSlot
+            };
 
-        PatientName = patient.PatientName,
+            var outboxMessage = new OutboxMessage
+            {
+                EventType = nameof(AppointmentBookedEvent),
+                Payload = JsonSerializer.Serialize(appointmentBookedEvent),
+                Status = OutboxMessageStatuses.Pending,
+                RetryCount = 0,
+                CreatedDateUtc = DateTime.UtcNow
+            };
 
-        DoctorId = doctor.DoctorId,
+            context.OutboxMessages.Add(outboxMessage);
 
-        ScheduledDate = savedAppointment.ScheduledDate,
+            await context.SaveChangesAsync();
 
-        TimeSlot = savedAppointment.TimeSlot
-    });
+            await transaction.CommitAsync();
+
+            await cacheService.RemoveAsync(
+                $"doctors:{dto.DoctorId}:availability:{dto.ScheduledDate:yyyy-MM-dd}");
 
             return mapper.Map<AppointmentDto>(savedAppointment);
         }

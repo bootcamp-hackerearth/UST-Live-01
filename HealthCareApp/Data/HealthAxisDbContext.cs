@@ -28,6 +28,8 @@ namespace HealthCareApp.Data
 
         public DbSet<PatientNotification> PatientNotifications { get; set; }
 
+        public DbSet<OutboxMessage> OutboxMessages { get; set; }
+
 
 
         private static DateTime UtcDate(int year, int month, int day)
@@ -130,6 +132,38 @@ namespace HealthCareApp.Data
                     .WithMany()
                     .HasForeignKey(x => x.AppointmentId)
                     .OnDelete(DeleteBehavior.SetNull);
+            });
+
+
+            builder.Entity<OutboxMessage>(entity =>
+            {
+                entity.HasKey(outboxMessage => outboxMessage.OutboxMessageId);
+
+                entity.Property(outboxMessage => outboxMessage.EventType)
+                    .HasMaxLength(250)
+                    .IsRequired();
+
+                entity.Property(outboxMessage => outboxMessage.Payload)
+                    .IsRequired();
+
+                entity.Property(outboxMessage => outboxMessage.Status)
+                    .HasMaxLength(30)
+                    .IsRequired();
+
+                entity.Property(outboxMessage => outboxMessage.RetryCount)
+                    .IsRequired();
+
+                entity.Property(outboxMessage => outboxMessage.CreatedDateUtc)
+                    .IsRequired();
+
+                entity.Property(outboxMessage => outboxMessage.PublishedDateUtc);
+
+                entity.Property(outboxMessage => outboxMessage.ErrorMessage)
+                    .HasMaxLength(2000);
+
+                entity.HasIndex(outboxMessage => outboxMessage.Status);
+
+                entity.HasIndex(outboxMessage => outboxMessage.CreatedDateUtc);
             });
 
 
