@@ -41,9 +41,7 @@
 
     private async Task RedirectToAngular()
     {
-        await JS.InvokeVoidAsync(
-            "localStorage.removeItem",
-            "token");
+        await JS.InvokeVoidAsync("localStorage.removeItem","token");
 
         Navigation.NavigateTo("http://localhost:4200", true);
     }
