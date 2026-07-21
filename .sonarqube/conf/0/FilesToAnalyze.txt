@@ -1,5 +1,4 @@
-﻿C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Class1.cs
-C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Appointment\AppointmentResponseDTO.cs
+﻿C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Appointment\AppointmentResponseDTO.cs
 C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Appointment\CreateAppointmentDTO.cs
 C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Common\ErrorResponse.cs
 C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Common\PagedResponseDto.cs

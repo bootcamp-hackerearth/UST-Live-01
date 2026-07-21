@@ -33,225 +33,6 @@
           }
         },
         {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'authLocalStorage.setItem' 5 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 39,
-                  "startColumn": 43,
-                  "endLine": 39,
-                  "endColumn": 69
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 40,
-                  "startColumn": 43,
-                  "endLine": 40,
-                  "endColumn": 69
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 41,
-                  "startColumn": 43,
-                  "endLine": 41,
-                  "endColumn": 69
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 42,
-                  "startColumn": 43,
-                  "endLine": 42,
-                  "endColumn": 69
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 43,
-                  "startColumn": 43,
-                  "endLine": 43,
-                  "endColumn": 69
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'authLocalStorage.getItem' 5 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 56,
-                  "startColumn": 55,
-                  "endLine": 56,
-                  "endColumn": 81
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 57,
-                  "startColumn": 55,
-                  "endLine": 57,
-                  "endColumn": 81
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 58,
-                  "startColumn": 54,
-                  "endLine": 58,
-                  "endColumn": 80
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 60,
-                  "startColumn": 59,
-                  "endLine": 60,
-                  "endColumn": 85
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 66,
-                  "startColumn": 64,
-                  "endLine": 66,
-                  "endColumn": 90
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'authLocalStorage.removeItem' 5 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 89,
-                  "startColumn": 43,
-                  "endLine": 89,
-                  "endColumn": 72
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 90,
-                  "startColumn": 43,
-                  "endLine": 90,
-                  "endColumn": 72
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 91,
-                  "startColumn": 43,
-                  "endLine": 91,
-                  "endColumn": 72
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 92,
-                  "startColumn": 43,
-                  "endLine": 92,
-                  "endColumn": 72
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 93,
-                  "startColumn": 43,
-                  "endLine": 93,
-                  "endColumn": 72
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null
-            }
-          }
-        },
-        {
           "ruleId": "S1075",
           "level": "warning",
           "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
@@ -263,27 +44,6 @@
                   "startLine": 21,
                   "startColumn": 44,
                   "endLine": 21,
-                  "endColumn": 73
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S1075",
-          "level": "warning",
-          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Pages/Login.razor",
-                "region": {
-                  "startLine": 20,
-                  "startColumn": 44,
-                  "endLine": 20,
                   "endColumn": 73
                 }
               }
@@ -321,12 +81,12 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Program.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Pages/Login.razor",
                 "region": {
-                  "startLine": 21,
-                  "startColumn": 34,
-                  "endLine": 21,
-                  "endColumn": 59
+                  "startLine": 20,
+                  "startColumn": 44,
+                  "endLine": 20,
+                  "endColumn": 73
                 }
               }
             }
@@ -357,123 +117,18 @@
           }
         },
         {
-          "ruleId": "S2486",
+          "ruleId": "S1075",
           "level": "warning",
-          "message": "Handle the exception or explain in a comment why it can be ignored.",
+          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
+                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Program.cs",
                 "region": {
-                  "startLine": 45,
-                  "startColumn": 13,
-                  "endLine": 47,
-                  "endColumn": 14
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S108",
-          "level": "warning",
-          "message": "Either remove or fill this block of code.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 46,
-                  "startColumn": 13,
-                  "endLine": 47,
-                  "endColumn": 14
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2486",
-          "level": "warning",
-          "message": "Handle the exception or explain in a comment why it can be ignored.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 72,
-                  "startColumn": 13,
-                  "endLine": 74,
-                  "endColumn": 14
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2486",
-          "level": "warning",
-          "message": "Handle the exception or explain in a comment why it can be ignored.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 95,
-                  "startColumn": 13,
-                  "endLine": 97,
-                  "endColumn": 14
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S108",
-          "level": "warning",
-          "message": "Either remove or fill this block of code.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 73,
-                  "startColumn": 13,
-                  "endLine": 74,
-                  "endColumn": 14
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S108",
-          "level": "warning",
-          "message": "Either remove or fill this block of code.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287802/source/repos/Sprint4_HealthAxis/HealthAxisAdminLayout/Services/Implmentations/AuthStateService.cs",
-                "region": {
-                  "startLine": 96,
-                  "startColumn": 13,
-                  "endLine": 97,
-                  "endColumn": 14
+                  "startLine": 21,
+                  "startColumn": 34,
+                  "endLine": 21,
+                  "endColumn": 59
                 }
               }
             }
@@ -521,23 +176,6 @@
             ]
           }
         },
-        "S108": {
-          "id": "S108",
-          "shortDescription": "Nested blocks of code should not be left empty",
-          "fullDescription": "An empty code block is confusing. It will require some effort from maintainers to determine if it is intentional or indicates the implementation is incomplete.",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-108",
-          "properties": {
-            "category": "Major Code Smell",
-            "isEnabledByDefault": true,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "TestSourceScope",
-              "SonarWay"
-            ]
-          }
-        },
         "S112": {
           "id": "S112",
           "shortDescription": "General or reserved exceptions should never be thrown",
@@ -546,38 +184,6 @@
           "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-112",
           "properties": {
             "category": "Major Code Smell",
-            "isEnabledByDefault": true,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "SonarWay"
-            ]
-          }
-        },
-        "S1192": {
-          "id": "S1192",
-          "shortDescription": "String literals should not be duplicated",
-          "fullDescription": "Duplicated string literals make the process of refactoring complex and error-prone, as any change would need to be propagated on all occurrences.",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-1192",
-          "properties": {
-            "category": "Minor Code Smell",
-            "isEnabledByDefault": false,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "SonarWay"
-            ]
-          }
-        },
-        "S2486": {
-          "id": "S2486",
-          "shortDescription": "Generic exceptions should not be ignored",
-          "fullDescription": "When exceptions occur, it is usually a bad idea to simply ignore them. Instead, it is better to handle them properly, or at least to log them.",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-2486",
-          "properties": {
-            "category": "Minor Code Smell",
             "isEnabledByDefault": true,
             "tags": [
               "C#",

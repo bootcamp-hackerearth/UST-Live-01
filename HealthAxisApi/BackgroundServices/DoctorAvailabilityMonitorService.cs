@@ -1,13 +1,18 @@
 ﻿using HealthAxisCore_Api.Data;
 using HealthAxisCore_Api.Services.Interfaces;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace HealthAxisCore_Api.BackgroundServices
 {
-    public class DoctorAvailabilityMonitorService : BackgroundService
+    public sealed class DoctorAvailabilityMonitorService
+        : BackgroundService
     {
-        private const string AvailableDoctorsCacheKey = "available-doctors";
+        private const string AvailableDoctorsCacheKey =
+            "available-doctors";
 
         private static readonly TimeSpan MonitoringInterval =
             TimeSpan.FromHours(24);
@@ -17,7 +22,8 @@ namespace HealthAxisCore_Api.BackgroundServices
 
         private readonly IServiceScopeFactory _scopeFactory;
 
-        private readonly ILogger<DoctorAvailabilityMonitorService> _logger;
+        private readonly ILogger<DoctorAvailabilityMonitorService>
+            _logger;
 
         public DoctorAvailabilityMonitorService(
             IServiceScopeFactory scopeFactory,
@@ -52,7 +58,8 @@ namespace HealthAxisCore_Api.BackgroundServices
                         exception,
                         "Error while processing doctor leave expiration.");
 
-                    await DelayBeforeRetryAsync(stoppingToken);
+                    await DelayBeforeRetryAsync(
+                        stoppingToken);
                 }
             }
         }
@@ -60,7 +67,8 @@ namespace HealthAxisCore_Api.BackgroundServices
         private async Task ProcessExpiredDoctorLeavesAsync(
             CancellationToken stoppingToken)
         {
-            using var scope = _scopeFactory.CreateScope();
+            using var scope =
+                _scopeFactory.CreateScope();
 
             var context =
                 scope.ServiceProvider
@@ -91,7 +99,8 @@ namespace HealthAxisCore_Api.BackgroundServices
                 doctor.IsOnLeave = false;
             }
 
-            await context.SaveChangesAsync(stoppingToken);
+            await context.SaveChangesAsync(
+                stoppingToken);
 
             await cacheService.RemoveAsync(
                 AvailableDoctorsCacheKey);
@@ -100,19 +109,22 @@ namespace HealthAxisCore_Api.BackgroundServices
                 doctorsToReactivate.Count);
         }
 
-        private void LogReactivatedDoctors(int doctorCount)
+        private void LogReactivatedDoctors(
+            int doctorCount)
         {
-            if (!_logger.IsEnabled(LogLevel.Information))
+            if (!_logger.IsEnabled(
+                LogLevel.Information))
             {
                 return;
             }
 
             _logger.LogInformation(
-                "{Count} doctors reactivated automatically after leave expiry.",
+                "{Count} doctors reactivated automatically " +
+                "after leave expiry.",
                 doctorCount);
         }
 
-        private async Task DelayBeforeRetryAsync(
+        private static async Task DelayBeforeRetryAsync(
             CancellationToken stoppingToken)
         {
             try

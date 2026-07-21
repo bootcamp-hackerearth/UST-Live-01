@@ -1436,19 +1436,7 @@ DoctorName		  
 ;( )
 }* +
 } 
-} ô
-KC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Class1.cs
-	namespace 	
-HealthAxis_Shared
- 
-{ 
-public 
-
-class 
-Class1 
-{ 
-} 
-} µ
+} µ
 nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\DoctorAvailabilityResponseDto.cs
 	namespace 	
 

@@ -85,4 +85,5 @@ C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisApi\Logs\healthaxis-ap
 C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisApi\Logs\healthaxis-api-20260709.log
 C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisApi\Logs\healthaxis-api-20260714.log
 C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisApi\Logs\healthaxis-api-20260715.log
+C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisApi\Logs\healthaxis-api-20260716.log
 C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisApi\Properties\launchSettings.json

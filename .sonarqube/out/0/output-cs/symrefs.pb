@@ -7,10 +7,7 @@ SC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Enums\UserRol
  "j
 \C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Enums\AppointmentStatus.cs
 
- !c
-UC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Enums\GenderType.cs
-
- “
+ !“
 ZC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\User\RegisterDTO.cs
 
  
@@ -42,7 +39,19 @@ WC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\User\Log
 
  
 
- ¥
+ í
+`C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\User\ChangePasswordDTO.cs
+
+ "
+
+		 
+
+ !
+
+ !c
+UC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Enums\GenderType.cs
+
+ ¥
 ^C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\User\AuthResponseDTO.cs
 
   
@@ -72,24 +81,35 @@ bC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Patient\
 
  !
 
- "∫
-dC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Patient\PatientResponseDTO.cs
+ "Œ
+lC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\HealthRecord\CreateHealthRecordDTO.cs
 
- #
+ &
 
- 
+		 
+
+ 
+
+  
+
+ !
+
+ 
+
+ "
+
+ ü
+mC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\DoctorLeaves\CreateMyDoctorLeaveDto.cs
+
+ '
 
 
 
- !
+ !
 
- #
+ 
 
-  
-
- 
-
- !∏
+ ∏
 bC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Patient\CreatePatientDTO.cs
 
  !
@@ -123,33 +143,24 @@ nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\HealthRe
 
  "
 
- Œ
-lC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\HealthRecord\CreateHealthRecordDTO.cs
+ ∫
+dC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Patient\PatientResponseDTO.cs
 
- &
+ #
 
-		 
+ 
 
- 
+
+
+ !
 
-  
+ #
 
- !
+  
 
- 
+ 
 
- "
-
- í
-`C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\User\ChangePasswordDTO.cs
-
- "
-
-		 
-
- !
-
- !–
+ !–
 bC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\DoctorResponseDTO.cs
 
  "
@@ -168,10 +179,7 @@ bC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\D
 
  
 
- Y
-KC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Class1.cs
-
- ƒ
+ ƒ
 nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\DoctorAvailabilityResponseDto.cs
 
  .
@@ -188,22 +196,7 @@ nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\D
 
  '
 
- %∂
-`C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\CreateDoctorDTO.cs
-
-  
-
-  
-
- 
-
-" 0
-
- $
-
- "
-
- ‘
+ %‘
 fC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\CreateDoctorResultDTO.cs
 
  &
@@ -228,7 +221,31 @@ fC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\C
 
 !! "
 
-"" «
+"" ∂
+`C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\CreateDoctorDTO.cs
+
+  
+
+  
+
+ 
+
+" 0
+
+ $
+
+ "
+
+ ê
+^C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Common\ErrorResponse.cs
+
+ !
+
+ 
+
+ 
+
+		 «
 eC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\DoctorLeaves\DoctorLeaveDto.cs
 
  
@@ -247,18 +264,7 @@ eC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\DoctorLe
 
  
 
- #ü
-mC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\DoctorLeaves\CreateMyDoctorLeaveDto.cs
-
- '
-
-
-
- !
-
- 
-
- ˜
+ #˜
 aC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Common\PagedResponseDto.cs
 
  !
@@ -274,16 +280,7 @@ aC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Common\P
 
  #
 
- ê
-^C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Common\ErrorResponse.cs
-
- !
-
- 
-
- 
-
-		 ®
+ ®
 jC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Appointment\CreateAppointmentDTO.cs
 
  %

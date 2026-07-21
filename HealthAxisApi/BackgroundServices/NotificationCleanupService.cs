@@ -1,16 +1,21 @@
 ﻿using HealthAxisCore_Api.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace HealthAxisCore_Api.BackgroundServices
 {
-    public class NotificationCleanupService : BackgroundService
+    public sealed class NotificationCleanupService : BackgroundService
     {
-        private readonly IServiceScopeFactory _scopeFactory;
-        private readonly ILogger<NotificationCleanupService> _logger;
-
-        private static readonly TimeSpan CleanupInterval = TimeSpan.FromHours(6);
+        private static readonly TimeSpan CleanupInterval =
+            TimeSpan.FromHours(6);
 
         private const int RetentionDays = 30;
+
+        private readonly IServiceScopeFactory _scopeFactory;
+
+        private readonly ILogger<NotificationCleanupService> _logger;
 
         public NotificationCleanupService(
             IServiceScopeFactory scopeFactory,
@@ -20,36 +25,34 @@ namespace HealthAxisCore_Api.BackgroundServices
             _logger = logger;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(
+            CancellationToken stoppingToken)
         {
-            _logger.LogInformation(
-                "NotificationCleanupService started at {Time}",
-                DateTimeOffset.Now
-            );
+            LogServiceStarted();
 
-            using var timer = new PeriodicTimer(CleanupInterval);
+            using var timer =
+                new PeriodicTimer(CleanupInterval);
 
             try
             {
-                await CleanupOldNotificationsAsync(stoppingToken);
+                await CleanupOldNotificationsAsync(
+                    stoppingToken);
 
-                while (await timer.WaitForNextTickAsync(stoppingToken))
+                while (await timer.WaitForNextTickAsync(
+                    stoppingToken))
                 {
-                    await CleanupOldNotificationsAsync(stoppingToken);
+                    await CleanupOldNotificationsAsync(
+                        stoppingToken);
                 }
             }
             catch (OperationCanceledException)
+                when (stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation(
-                    "NotificationCleanupService cancellation requested."
-                );
+                LogCancellationRequested();
             }
             finally
             {
-                _logger.LogInformation(
-                    "NotificationCleanupService stopped at {Time}",
-                    DateTimeOffset.Now
-                );
+                LogServiceStopped();
             }
         }
 
@@ -58,64 +61,150 @@ namespace HealthAxisCore_Api.BackgroundServices
         {
             try
             {
-                using var scope = _scopeFactory.CreateScope();
+                using var scope =
+                    _scopeFactory.CreateScope();
 
                 var dbContext =
-                    scope.ServiceProvider.GetRequiredService<HealthAppDbContext>();
+                    scope.ServiceProvider
+                        .GetRequiredService<HealthAppDbContext>();
 
-                var cutoffDate = DateTime.Now.AddDays(-RetentionDays);
+                var cutoffDate =
+                    DateTime.Now.AddDays(-RetentionDays);
 
-                var oldReadNotifications = await dbContext.Notifications
-                    .Where(notification =>
-                        notification.IsRead &&
-                        notification.CreatedDate < cutoffDate)
-                    .ToListAsync(cancellationToken);
+                var oldReadNotifications =
+                    await dbContext.Notifications
+                        .Where(notification =>
+                            notification.IsRead &&
+                            notification.CreatedDate < cutoffDate)
+                        .ToListAsync(cancellationToken);
 
-                if (!oldReadNotifications.Any())
+                if (oldReadNotifications.Count == 0)
                 {
-                    _logger.LogInformation(
-                        "Notification cleanup completed at {Time}. No read notifications older than {RetentionDays} days were found.",
-                        DateTimeOffset.Now,
-                        RetentionDays
-                    );
-
+                    LogNoNotificationsFound();
                     return;
                 }
 
-                dbContext.Notifications.RemoveRange(oldReadNotifications);
+                dbContext.Notifications.RemoveRange(
+                    oldReadNotifications);
 
-                await dbContext.SaveChangesAsync(cancellationToken);
+                await dbContext.SaveChangesAsync(
+                    cancellationToken);
 
-                _logger.LogInformation(
-                    "Notification cleanup completed at {Time}. Deleted {Count} read notifications older than {RetentionDays} days.",
-                    DateTimeOffset.Now,
-                    oldReadNotifications.Count,
-                    RetentionDays
-                );
+                LogNotificationsDeleted(
+                    oldReadNotifications.Count);
             }
             catch (OperationCanceledException)
+                when (cancellationToken.IsCancellationRequested)
             {
                 throw;
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                _logger.LogError(
-                    ex,
-                    "Error occurred while cleaning old notifications at {Time}",
-                    DateTimeOffset.Now
-                );
+                LogCleanupError(exception);
             }
         }
 
         public override async Task StopAsync(
             CancellationToken cancellationToken)
         {
-            _logger.LogInformation(
-                "NotificationCleanupService is stopping gracefully at {Time}",
-                DateTimeOffset.Now
-            );
+            LogServiceStopping();
 
             await base.StopAsync(cancellationToken);
+        }
+
+        private void LogServiceStarted()
+        {
+            if (!_logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            _logger.LogInformation(
+                "NotificationCleanupService started at {Time}",
+                DateTimeOffset.Now);
+        }
+
+        private void LogCancellationRequested()
+        {
+            if (!_logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            _logger.LogInformation(
+                "NotificationCleanupService cancellation requested.");
+        }
+
+        private void LogServiceStopped()
+        {
+            if (!_logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            _logger.LogInformation(
+                "NotificationCleanupService stopped at {Time}",
+                DateTimeOffset.Now);
+        }
+
+        private void LogNoNotificationsFound()
+        {
+            if (!_logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            _logger.LogInformation(
+                "Notification cleanup completed at {Time}. " +
+                "No read notifications older than " +
+                "{RetentionDays} days were found.",
+                DateTimeOffset.Now,
+                RetentionDays);
+        }
+
+        private void LogNotificationsDeleted(
+            int notificationCount)
+        {
+            if (!_logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            _logger.LogInformation(
+                "Notification cleanup completed at {Time}. " +
+                "Deleted {Count} read notifications older than " +
+                "{RetentionDays} days.",
+                DateTimeOffset.Now,
+                notificationCount,
+                RetentionDays);
+        }
+
+        private void LogCleanupError(
+            Exception exception)
+        {
+            if (!_logger.IsEnabled(LogLevel.Error))
+            {
+                return;
+            }
+
+            _logger.LogError(
+                exception,
+                "Error occurred while cleaning old notifications " +
+                "at {Time}",
+                DateTimeOffset.Now);
+        }
+
+        private void LogServiceStopping()
+        {
+            if (!_logger.IsEnabled(LogLevel.Information))
+            {
+                return;
+            }
+
+            _logger.LogInformation(
+                "NotificationCleanupService is stopping " +
+                "gracefully at {Time}",
+                DateTimeOffset.Now);
         }
     }
 }

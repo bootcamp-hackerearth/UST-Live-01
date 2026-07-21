@@ -16,8 +16,7 @@ dC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Patient\
 bC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Patient\CreatePatientDTO.csutf-8w
 nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\HealthRecord\HealthRecordResponseDTO.csutf-8u
 lC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\HealthRecord\CreateHealthRecordDTO.csutf-8k
-bC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\DoctorResponseDTO.csutf-8T
-KC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\Class1.csutf-8w
+bC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\DoctorResponseDTO.csutf-8w
 nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\DoctorAvailabilityResponseDto.csutf-8o
 fC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\CreateDoctorResultDTO.csutf-8i
 `C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxis_Shared\DTOs\Doctor\CreateDoctorDTO.csutf-8n

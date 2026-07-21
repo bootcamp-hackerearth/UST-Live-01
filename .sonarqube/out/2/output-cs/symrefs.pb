@@ -1069,7 +1069,15 @@ YC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Pages\Doc
 €€ 1
 ““  2
 ºº  2
-áá  2€
+áá  2î
+^C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Layout\AdminLayout.razor
+TT (aa -
+VV >>! +ZZ 
+
+XX" 4
+]] CC8 >
+ $aa 
+  ZZ &__ €
 `C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Pages\AdminDashboard.razort
 
 µµ (-- << "FF "PP "ZZ "pp &vv &|| &
@@ -1104,16 +1112,7 @@ YC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Pages\Doc
 
 
  *
-ÅÅ .î
-^C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Layout\AdminLayout.razor
-TT (aa -
-VV >>! +ZZ 
-
-XX" 4
-]] CC8 >
- $aa 
-  ZZ &__ `
-^C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Layout\EmptyLayout.razor»
+ÅÅ .»
 _C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Layout\GenericModal.razor
 !! "<< 2
 ##  44 ;; AA 
@@ -1128,17 +1127,9 @@ _C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Layout\Ge
 -- 22 !
 .. 33 (
 99 " )
-?? " 'Q
-OC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\App.razor¦
-tC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IHealthRecordApiService.cs
-
- ,
-
-, A
-
-		 *
-
-		/ 1Õ
+?? " '`
+^C:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Layout\EmptyLayout.razorQ
+OC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\App.razorÕ
 oC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IPatientApiService.cs
 
  '
@@ -1181,7 +1172,16 @@ oC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\
 
  %
 
-* ,à
+* ,¦
+tC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IHealthRecordApiService.cs
+
+ ,
+
+, A
+
+		 *
+
+		/ 1à
 nC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Interfaces\IDoctorApiService.cs
 
  &
@@ -1435,35 +1435,212 @@ qC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\
 $$. /$$3 4
 ((9 :((> ?
 )); <))@ A
-**; <**@ AÌ
-qC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\AuthStateService.cs
-
- !ª
+**; <**@ A…
+qC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\AuthStateService.cs
 
 
-$ ' '' (( )) ** ++ 88 !99 !::  <<" %BB' *YY ZZ [[ \\ ]] 
- 44 LL 
-+ - <
- = B ''O T88 QQ 2
-    ((O T99 RR <
-  !! ))N R:: SS 2
- "" **U `?? TT 2
-  ## ++V bEE  UU 
+ (&&! 1,, $
+ ,
+ÎÎ 
+ ,
+×× 
+ /
+ßß ".
+ %
+’’ 
+©©* 2
+ÂÂ) 1.
+ %
+–– 
+¬¬* 2
+ÃÃ) 1.
+ $
+šš 
+¯¯* 1
+ÄÄ) 0.
+ +
+žž 
+³³ "
+ÅÅ) 7.
+!! ,
+¢¢ 
+ºº #
+ÆÆ) 88
+$$$ '.. 
+ÍÍ 
+ÖÖ 
+ÞÞ t
+&&3 :// 
+ŠŠ 
+ 
+˜˜ 
+ 
+¦¦ 
+«« 
+´´ 
+¹¹ 2
+(( NN \\ ee yy 
+++ .. 
+,,& ,// D
+22 ==' ,
+ˆˆ 
+““ 
+¨¨ 
+åå :
+44 
+‰‰ 
+—— 
+«« 
+ææ D
+66 @@ 
+ŠŠ 
+›› 
+®® 
+çç :
+88 
+‹‹ 
+ŸŸ 
+µµ 
+èè :
+::  
+ŒŒ 
+££ 
+¼¼ 
+éé 
 
- 
+<< 
 
- 
+?? 
 
- '<
-8 @    !! "" "## #
+DD '
+EE $GG. 6II# +
 
-22 .
-<< ==! &
-==0 8??" *
-BB CC" ,
-CC6 @EE# -
+ZZ .
 
-OO %ö
+qq %
+
+…… +II "H
+
+†† $
+ˆˆ 
+‰‰ 
+ŠŠ 
+‹‹ "
+ŒŒ #
+
+ 7MM 2
+
+¦¦ 7cc 2
+
+±±  
+¶¶! 1
+
+¸¸ 
+½½  /
+
+ÀÀ 9ww 4H
+
+ÉÉ .
+‘‘ %
+•• %
+™™ %
+ %
+¡¡ %
+
+ÊÊ 
+ÏÏ 
+
+ËË 
+ÐÐ H
+
+ÔÔ 
+©© )
+¬¬ )
+¯¯ )
+²² )
+¹¹ )
+
+ÔÔ' *
+ØØ H
+
+ÛÛ 1
+ÂÂ (
+ÃÃ (
+ÄÄ (
+ÅÅ (
+ÆÆ (
+
+ÜÜ 
+àà 
+
+ãã -ss $0
+
+ìì 4
+¨¨ )
+«« )
+®® ($
+
+íí 
+ïï- 2
+ññ 
+
+ôô ,
+¶¶  
+
+õõ $
+øø  
+
+ùù )
+úú '
+
+þþ +
+½½ 
+
+ÿÿ #
+‚‚ 
+
+ƒƒ (
+„„  
+
+‡‡ +RR &
+
+ˆˆ !
+ 
+
+•• *ii %
+
+–– !
+žž 
+
+££ -}} (
+
+¤¤ !
+¬¬ ,
+
+±± *VV %mm %
+ %
+
+²²& /
+ºº ×
+iC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\DTOs\Dashboard\AdminDashboardDTO.cs
+
+ &
+
+ #
+
+ $
+
+		 $
+
+ (
+
+ *
+
+ ,
+
+ ,
+
+ )ö
 lC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\AuthService.cs
 
  Z
@@ -1490,7 +1667,14 @@ lC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\
 
 >> )
 
-CC &î	
+CC &…
+PC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Program.cs„
+
+
+             !! "" $$ && (( 
+0 6 
+
+  î	
 vC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\Implmentations\AppointmentApiService.cs
 
  &b
@@ -1561,14 +1745,7 @@ vC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Services\
 ŸŸ# 0
 
 žž 
-¢¢ …
-PC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Program.cs„
-
-
-             !! "" $$ && (( 
-0 6 
-
-  ‘
+¢¢ ‘
 aC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Handlers\AuthHeadHandler.cs
 
  "(
@@ -1580,26 +1757,7 @@ aC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Handlers\
 ; D
  & ( /
  /1 B
- + 0< A×
-iC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\DTOs\Dashboard\AdminDashboardDTO.cs
-
- &
-
- #
-
- $
-
-		 $
-
- (
-
- *
-
- ,
-
- ,
-
- )´
+ + 0< A´
 pC:\Users\287802\source\repos\Sprint4_HealthAxis\HealthAxisAdminLayout\Auth\CustomeAuthenticationStateProvider.cs
 
  .<
