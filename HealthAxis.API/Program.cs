@@ -160,16 +160,22 @@ try
     builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
     builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+
     builder.Services.AddScoped<IPatientService, PatientService>();
 
     builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+
     builder.Services.AddScoped<IDoctorService, DoctorService>();
 
     builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+
     builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
     builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
+
     builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
+
+    builder.Services.AddScoped< INotificationService,NotificationService>();
 
     builder.Services.AddScoped<IAuthService, AuthService>();
 

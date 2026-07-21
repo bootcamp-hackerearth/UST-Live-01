@@ -64,6 +64,188 @@
     </div>
 
     <div
+      class="notification-wrapper"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+    >
+      <button
+        type="button"
+        class="notification-button"
+        aria-label="Open notifications"
+        aria-controls="notificationMenu"
+        [attr.aria-expanded]="
+          isNotificationMenuOpen()
+        "
+        (click)="toggleNotificationMenu()"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"
+          ></path>
+
+          <path d="M10 21h4"></path>
+        </svg>
+
+        @if (unreadNotificationCount() > 0) {
+          <span class="notification-badge">
+            {{ getUnreadBadgeText() }}
+          </span>
+        }
+      </button>
+
+      @if (isNotificationMenuOpen()) {
+        <section
+          id="notificationMenu"
+          class="notification-menu"
+          aria-label="Notifications"
+        >
+          <div class="notification-menu-header">
+            <div>
+              <strong>Notifications</strong>
+
+              <span>
+                {{ unreadNotificationCount() }}
+                unread
+              </span>
+            </div>
+
+            <button
+              type="button"
+              class="mark-all-button"
+              [disabled]="
+                markAllUpdating() ||
+                unreadNotificationCount() === 0
+              "
+              (click)="markAllNotificationsAsRead()"
+            >
+              @if (markAllUpdating()) {
+                Updating
+              } @else {
+                Mark all as read
+              }
+            </button>
+          </div>
+
+          <div class="notification-menu-content">
+            @if (notificationsLoading()) {
+              <div class="notification-state">
+                Loading notifications...
+              </div>
+            } @else if (notificationError()) {
+              <div
+                class="notification-state notification-error"
+                role="alert"
+              >
+                <span>
+                  {{ notificationError() }}
+                </span>
+
+                <button
+                  type="button"
+                  (click)="refreshNotifications()"
+                >
+                  Try again
+                </button>
+              </div>
+            } @else if (notifications().length === 0) {
+              <div class="notification-state">
+                <span class="empty-notification-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"
+                    ></path>
+
+                    <path d="M10 21h4"></path>
+                  </svg>
+                </span>
+
+                <strong>No notifications yet</strong>
+
+                <small>
+                  New updates will appear here.
+                </small>
+              </div>
+            } @else {
+              <div class="notification-list">
+                @for (
+                  notification of notifications();
+                  track notification.notificationId
+                ) {
+                  <button
+                    type="button"
+                    class="notification-item"
+                    [class.unread]="
+                      !notification.isRead
+                    "
+                    (click)="
+                      openNotificationDialog(
+                        notification
+                      )
+                    "
+                  >
+                    <span
+                      class="notification-item-icon"
+                      aria-hidden="true"
+                    >
+                      <svg viewBox="0 0 24 24">
+                        <path
+                          d="M8 12l2.5 2.5L16 9"
+                        ></path>
+
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="9"
+                        ></circle>
+                      </svg>
+                    </span>
+
+                    <span class="notification-item-content">
+                      <span class="notification-title-row">
+                        <strong>
+                          {{ notification.title }}
+                        </strong>
+
+                        @if (!notification.isRead) {
+                          <span
+                            class="unread-dot"
+                            aria-label="Unread"
+                          ></span>
+                        }
+                      </span>
+
+                      <span class="notification-message">
+                        {{
+                          getNotificationMessage(
+                            notification
+                          )
+                        }}
+                      </span>
+
+                      <small>
+                        {{
+                          getNotificationTime(
+                            notification.createdDate
+                          )
+                        }}
+                      </small>
+                    </span>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </div>
+
+    <div
       class="profile-wrapper"
       (click)="$event.stopPropagation()"
       (keydown)="$event.stopPropagation()"
@@ -149,5 +331,175 @@
     role="alert"
   >
     {{ statusError() }}
+  </div>
+}
+
+@if (selectedNotification(); as notification) {
+  <div class="notification-dialog-layer">
+    <button
+      type="button"
+      class="notification-dialog-backdrop"
+      aria-label="Close notification dialog"
+      (click)="closeNotificationDialog()"
+    ></button>
+
+    <section
+      class="notification-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="notificationDialogTitle"
+      aria-describedby="notificationDialogMessage"
+    >
+      <div class="notification-dialog-header">
+        <div class="notification-dialog-heading">
+          <span
+            class="notification-dialog-icon"
+            aria-hidden="true"
+          >
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M8 12l2.5 2.5L16 9"
+              ></path>
+
+              <circle
+                cx="12"
+                cy="12"
+                r="9"
+              ></circle>
+            </svg>
+          </span>
+
+          <div>
+            <span class="notification-dialog-label">
+              Notification
+            </span>
+
+            <h2 id="notificationDialogTitle">
+              {{ notification.title }}
+            </h2>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="notification-dialog-close"
+          aria-label="Close notification"
+          (click)="closeNotificationDialog()"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="notification-dialog-body">
+        <div class="notification-dialog-meta">
+          <span class="notification-type">
+            {{
+              getNotificationTypeLabel(
+                notification.notificationType
+              )
+            }}
+          </span>
+
+          <span
+            class="notification-read-status"
+            [class.unread]="!notification.isRead"
+          >
+            {{
+              notification.isRead
+                ? 'Read'
+                : 'Unread'
+            }}
+          </span>
+        </div>
+
+        @if (
+          getDoctorDisplayName(notification);
+          as doctorDisplayName
+        ) {
+          <div class="notification-doctor">
+            <span
+              class="notification-doctor-icon"
+              aria-hidden="true"
+            >
+              <svg viewBox="0 0 24 24">
+                <circle
+                  cx="12"
+                  cy="8"
+                  r="4"
+                ></circle>
+
+                <path
+                  d="M4 21a8 8 0 0 1 16 0"
+                ></path>
+              </svg>
+            </span>
+
+            <div>
+              <span>Doctor</span>
+
+              <strong>
+                {{ doctorDisplayName }}
+              </strong>
+            </div>
+          </div>
+        }
+
+        <div class="notification-message-section">
+          <span class="notification-message-label">
+            Appointment update
+          </span>
+
+          <p
+            id="notificationDialogMessage"
+            class="notification-dialog-message"
+          >
+            {{
+              getNotificationMessage(
+                notification
+              )
+            }}
+          </p>
+        </div>
+
+        @if (notificationDialogError()) {
+          <div
+            class="notification-dialog-error"
+            role="alert"
+          >
+            {{ notificationDialogError() }}
+          </div>
+        }
+      </div>
+
+      <div class="notification-dialog-footer">
+        <div class="notification-received-details">
+          <span>
+            Received on
+          </span>
+
+          <strong>
+            {{
+              notification.createdDate
+                | date: 'dd MMM yyyy, hh:mm a'
+            }}
+          </strong>
+
+          @if (notification.appointmentId !== null) {
+            <small>
+              Appointment
+              #{{ notification.appointmentId }}
+            </small>
+          }
+        </div>
+
+        <button
+          type="button"
+          class="notification-dialog-done"
+          (click)="closeNotificationDialog()"
+        >
+          Close
+        </button>
+      </div>
+    </section>
   </div>
 }

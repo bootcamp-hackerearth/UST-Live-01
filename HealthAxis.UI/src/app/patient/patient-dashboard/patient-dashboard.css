@@ -160,15 +160,6 @@
   stroke-linejoin: round;
 }
 
-.hero-illustration {
-  align-self: stretch;
-  position: relative;
-  z-index: 1;
-  background:
-    url('/patient-dashboard-hero.png')
-    center bottom / contain no-repeat;
-}
-
 .account-card {
   min-height: 205px;
   position: relative;
