@@ -14,7 +14,8 @@ export class HealthRecordService {
     const token = localStorage.getItem('token');
 
     return new HttpHeaders({
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token || ''}`,
+      'Content-Type': 'application/json'
     });
   }
 

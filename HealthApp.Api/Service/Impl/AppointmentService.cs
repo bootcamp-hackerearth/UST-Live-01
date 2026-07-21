@@ -7,6 +7,7 @@ using HealthApp.Api.Repository.Interface;
 using HealthApp.Api.Service.Interface;
 using HealthApp.Shared.Dto;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace HealthApp.Api.Service.Impl
 {
@@ -19,8 +20,17 @@ namespace HealthApp.Api.Service.Impl
         private readonly IAppointmentEventPublisher _appointmentEventPublisher;
         private readonly IDoctorLeaveRepository _doctorLeaveRepository;
         private readonly INotificationService _notificationService;
+        private readonly IDistributedCache _cache;
 
         private const string AppointmentEntity = "Appointment";
+
+        private const string DoctorAvailabilityCachePrefix =
+            "appointment:doctor:availability";
+
+        private readonly DistributedCacheEntryOptions cacheOptions = new()
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+        };
 
         public AppointmentService(
             IAppointmentRepository repo,
@@ -29,7 +39,8 @@ namespace HealthApp.Api.Service.Impl
             IMapper mapper,
             INotificationService notificationService,
             IAppointmentEventPublisher appointmentEventPublisher,
-            IDoctorLeaveRepository doctorLeaveRepository)
+            IDoctorLeaveRepository doctorLeaveRepository,
+            IDistributedCache cache)
         {
             _repo = repo;
             _patientRepository = patientRepository;
@@ -38,15 +49,8 @@ namespace HealthApp.Api.Service.Impl
             _notificationService = notificationService;
             _appointmentEventPublisher = appointmentEventPublisher;
             _doctorLeaveRepository = doctorLeaveRepository;
+            _cache = cache;
         }
-
-        private const string DoctorAvailabilityCachePrefix =
-            "appointment:doctor:availability";
-
-        private readonly DistributedCacheEntryOptions cacheOptions = new()
-        {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
-        };
 
         public async Task<object> Add(AppointmentDto dto, string identityUserId)
         {
@@ -81,6 +85,10 @@ namespace HealthApp.Api.Service.Impl
             };
 
             await _repo.addAsync(appointment);
+
+            await RemoveDoctorAvailabilityCacheAsync(
+                appointment.DoctorId,
+                appointment.ScheduledDate);
 
             var doctor = await _doctorRepository.getbyidAsync(dto.DoctorId);
 
@@ -132,6 +140,10 @@ namespace HealthApp.Api.Service.Impl
                     AppointmentEntity,
                     appointmentId);
 
+            await RemoveDoctorAvailabilityCacheAsync(
+                saved.DoctorId,
+                saved.ScheduledDate);
+
             await SendAppointmentCancelledNotification(saved, reason);
 
             return _mapper.Map<AppointmentDto>(saved);
@@ -147,6 +159,10 @@ namespace HealthApp.Api.Service.Impl
                 throw new EntityNotFoundException(
                     AppointmentEntity,
                     appointmentId);
+
+            await RemoveDoctorAvailabilityCacheAsync(
+                saved.DoctorId,
+                saved.ScheduledDate);
 
             await SendAppointmentConfirmedNotification(saved);
 
@@ -164,6 +180,10 @@ namespace HealthApp.Api.Service.Impl
                     AppointmentEntity,
                     appointmentId);
 
+            await RemoveDoctorAvailabilityCacheAsync(
+                saved.DoctorId,
+                saved.ScheduledDate);
+
             return _mapper.Map<AppointmentDto>(saved);
         }
 
@@ -172,6 +192,23 @@ namespace HealthApp.Api.Service.Impl
             DateTime date)
         {
             var selectedDate = date.Date;
+
+            var cacheKey = GetDoctorAvailabilityCacheKey(doctorId,selectedDate);
+
+            var cachedValue = await _cache.GetStringAsync(cacheKey);
+
+            if (!string.IsNullOrWhiteSpace(cachedValue))
+            {
+                var cachedResponse =
+                    JsonSerializer.Deserialize<DoctorAvailabilityResponseDto>(cachedValue);
+
+                if (cachedResponse != null)
+                {
+                    return cachedResponse;
+                }
+
+                await _cache.RemoveAsync(cacheKey);
+            }
 
             var allSlots = new List<string>
             {
@@ -189,9 +226,11 @@ namespace HealthApp.Api.Service.Impl
             var isDoctorOnLeave = await _doctorLeaveRepository
                 .IsDoctorOnLeaveAsync(doctorId, selectedDate);
 
+            DoctorAvailabilityResponseDto response;
+
             if (isDoctorOnLeave)
             {
-                return new DoctorAvailabilityResponseDto
+                response = new DoctorAvailabilityResponseDto
                 {
                     DoctorId = doctorId,
                     Date = selectedDate,
@@ -205,28 +244,39 @@ namespace HealthApp.Api.Service.Impl
                     }).ToList()
                 };
             }
-
-            var bookedSlots = await _repo.GetBookedSlotsAsync(
-                doctorId,
-                selectedDate);
-
-            bookedSlots ??= new List<string>();
-
-            return new DoctorAvailabilityResponseDto
+            else
             {
-                DoctorId = doctorId,
-                Date = selectedDate,
-                IsDoctorOnLeave = false,
-                Message = "Doctor is available for the selected date.",
-                Slots = allSlots.Select(slot => new DoctorSlotDto
+                var bookedSlots = await _repo.GetBookedSlotsAsync(
+                    doctorId,
+                    selectedDate);
+
+                bookedSlots ??= new List<string>();
+
+                response = new DoctorAvailabilityResponseDto
                 {
-                    TimeSlot = slot,
-                    IsAvailable = !bookedSlots.Contains(slot),
-                    Status = bookedSlots.Contains(slot)
-                        ? "Booked"
-                        : "Available"
-                }).ToList()
-            };
+                    DoctorId = doctorId,
+                    Date = selectedDate,
+                    IsDoctorOnLeave = false,
+                    Message = "Doctor is available for the selected date.",
+                    Slots = allSlots.Select(slot => new DoctorSlotDto
+                    {
+                        TimeSlot = slot,
+                        IsAvailable = !bookedSlots.Contains(slot),
+                        Status = bookedSlots.Contains(slot)
+                            ? "Booked"
+                            : "Available"
+                    }).ToList()
+                };
+            }
+
+            var serializedResponse = JsonSerializer.Serialize(response);
+
+            await _cache.SetStringAsync(
+                cacheKey,
+                serializedResponse,
+                cacheOptions);
+
+            return response;
         }
 
         public async Task<bool> IsSlotBooked(
@@ -398,6 +448,24 @@ namespace HealthApp.Api.Service.Impl
                 EventType = "AppointmentCancelled",
                 CreatedAt = DateTime.UtcNow
             });
+        }
+
+        private static string GetDoctorAvailabilityCacheKey(
+            int doctorId,
+            DateTime date)
+        {
+            return $"{DoctorAvailabilityCachePrefix}:{doctorId}:{date.Date:yyyyMMdd}";
+        }
+
+        private async Task RemoveDoctorAvailabilityCacheAsync(
+            int doctorId,
+            DateTime date)
+        {
+            var cacheKey = GetDoctorAvailabilityCacheKey(
+                doctorId,
+                date);
+
+            await _cache.RemoveAsync(cacheKey);
         }
     }
 }

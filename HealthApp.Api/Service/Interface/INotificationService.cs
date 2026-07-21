@@ -11,5 +11,7 @@ namespace HealthApp.Api.Service.Interface
         Task<List<NotificationDto>> GetMyUnreadNotificationsAsync(string userId);
 
         Task<NotificationDto> MarkAsReadAsync(string notificationId);
+
+        Task<int> CleanupOldReadNotificationsAsync(int olderThanDays);
     }
 }

@@ -103,5 +103,16 @@ namespace HealthApp.Api.Service.Impl
                 CreatedAt = notification.CreatedAt
             };
         }
+
+        public async Task<int> CleanupOldReadNotificationsAsync(int olderThanDays)
+        {
+            if (olderThanDays <= 0)
+                throw new BusinessRuleException("Cleanup days must be greater than zero.");
+
+            var cutoffDate = DateTime.UtcNow.AddDays(-olderThanDays);
+
+            return await _notificationRepository
+                .DeleteReadNotificationsOlderThanAsync(cutoffDate);
+        }
     }
 }

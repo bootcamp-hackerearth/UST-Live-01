@@ -20,12 +20,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
-using Serilog.Debugging;
 using System.Text;
 using System.Text.Json;
 
 
-SelfLog.Enable(msg => Console.Error.WriteLine($"SERILOG ERROR: {msg}"));
 
 Serilog.Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -38,21 +36,39 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, services, configuration) =>
 {
-
-    var elasticUrl = context.Configuration["Elasticsearch:Url"];
-
     configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
-        .WriteTo.Elasticsearch(
-            new[] { new Uri(elasticUrl!) },
-            opts =>
-            {
-                opts.DataStream = new DataStreamName("logs", "healthaxis", "api");
-                opts.BootstrapMethod = BootstrapMethod.Failure;
-            });
+        .WriteTo.Console();
 
+    var elasticUrl = context.Configuration["Elasticsearch:Url"];
+
+    if (!string.IsNullOrWhiteSpace(elasticUrl) &&
+        Uri.TryCreate(elasticUrl, UriKind.Absolute, out var elasticUri))
+    {
+        try
+        {
+            configuration.WriteTo.Elasticsearch(
+                new[] { elasticUri },
+                opts =>
+                {
+                    opts.DataStream = new DataStreamName( "logs","healthaxis","api");
+
+                    opts.BootstrapMethod = BootstrapMethod.None;
+                });
+
+            Serilog.Log.Information("Elasticsearch logging configured: {ElasticUrl}",elasticUrl);
+        }
+        catch (Exception ex)
+        {
+            Serilog.Log.Warning(ex,"Elasticsearch logging setup failed. Continuing with console logging.");
+        }
+    }
+    else
+    {
+        Serilog.Log.Warning("Elasticsearch URL is missing or invalid. Continuing with console logging only.");
+    }
 });
 
 
@@ -147,6 +163,8 @@ builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
@@ -155,9 +173,11 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
+builder.Services.AddHostedService<NotificationCleanupBackgroundService>();
 
 
 builder.Services.AddScoped<IAppointmentEventPublisher, AppointmentEventPublisher>();
+builder.Services.AddHostedService<NotificationCleanupBackgroundService>();
 
 
 
@@ -183,7 +203,8 @@ builder.Services.AddMassTransit(x =>
                 h.Username(rabbitMqOptions.UserName);
                 h.Password(rabbitMqOptions.Password);
             });
-    });
+   
+});
 });
 
 builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection("Garnet"));

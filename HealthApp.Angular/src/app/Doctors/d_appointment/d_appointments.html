@@ -1,19 +1,26 @@
-<div class="dashboard">
-
+<div class="doctor-page">
   <app-sidebar class="sidebar"></app-sidebar>
 
-  <div class="content">
+  <main class="main-panel">
 
-    <!-- HEADER -->
-    <header>
+    <div class="page-header">
       <div>
-        <p class="eyebrow">Doctor Panel</p>
+        <p class="eyebrow">Doctor Portal</p>
         <h1>Appointments</h1>
-        <p class="subtext">Manage patient appointments efficiently.</p>
+        <p class="subtext">
+          Manage patient appointments and create health records after consultations.
+        </p>
       </div>
-    </header>
+    </div>
 
-    <!-- STATS -->
+    <div class="message success" *ngIf="successMessage()">
+      {{ successMessage() }}
+    </div>
+
+    <div class="message error" *ngIf="errorMessage()">
+      {{ errorMessage() }}
+    </div>
+
     <div class="stats">
       <div class="card">
         <h3>Total</h3>
@@ -36,69 +43,214 @@
       </div>
     </div>
 
-    <!-- LIST -->
     <div class="list">
-
       <div *ngFor="let a of paginatedAppointments()" class="item">
 
-        <div>
-          <strong>{{ a.patientName }}</strong>
-          <p class="status">{{ a.status }}</p>
+        <div class="patient-block">
+          <strong>{{ a.patientName || 'Patient' }}</strong>
+
+          <p class="status" [ngClass]="a.status?.toLowerCase()">
+            {{ a.status }}
+          </p>
         </div>
 
-        <div class="meta">
-          <p>{{ a.scheduledDate | date:'mediumDate' }}</p>
-          <p>{{ a.timeSlot }}</p>
+       <div class="meta">
+  <p>{{ a.scheduledDate | date:'mediumDate' }}</p>
+  <p>{{ a.timeSlot }}</p>
 
-          <button (click)="view(a)">View</button>
+  <button
+    class="view-btn"
+    type="button"
+    (click)="view(a)">
+    View
+  </button>
 
-          <button *ngIf="a.status === 'Pending'"
-                  (click)="confirm(a.appointmentId)">
-            Confirm
-          </button>
+  <button
+    class="confirm-btn"
+    type="button"
+    *ngIf="a.status === 'Pending'"
+    (click)="confirm(a.appointmentId)">
+    Confirm
+  </button>
 
-          <button *ngIf="a.status === 'Confirmed'"
-                  (click)="complete(a.appointmentId)">
-            Complete
-          </button>
-        </div>
+  <button
+    class="record-btn"
+    type="button"
+    *ngIf="a.status === 'Confirmed'"
+    (click)="openRecordForm(a)">
+    New Record
+  </button>
 
+  <span
+    class="completed-label"
+    *ngIf="a.status === 'Completed'">
+    Completed
+  </span>
+</div>
+
+
+      </div>
+    </div>
+
+    <div class="pagination" *ngIf="totalPages() > 1">
+      <button
+        type="button"
+        (click)="prevPage()"
+        [disabled]="pageNumber() === 1">
+        Prev
+      </button>
+
+      <span>Page {{ pageNumber() }} of {{ totalPages() }}</span>
+
+      <button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="pageNumber() === totalPages()">
+        Next
+      </button>
+    </div>
+
+  </main>
+</div>
+
+<!-- VIEW MODAL -->
+<div class="modal-backdrop" *ngIf="selected() as appointment">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>Appointment Details</h2>
+
+      <button
+        class="close-btn"
+        type="button"
+        (click)="closeView()">
+        ×
+      </button>
+    </div>
+
+    <div class="detail-grid">
+      <div>
+        <label>Patient</label>
+        <p>{{ appointment.patientName }}</p>
+      </div>
+
+      <div>
+        <label>Doctor</label>
+        <p>{{ appointment.doctorName }}</p>
+      </div>
+
+      <div>
+        <label>Date</label>
+        <p>{{ appointment.scheduledDate | date:'mediumDate' }}</p>
+      </div>
+
+      <div>
+        <label>Time</label>
+        <p>{{ appointment.timeSlot }}</p>
+      </div>
+
+      <div>
+        <label>Status</label>
+        <p>{{ appointment.status }}</p>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button
+        class="secondary"
+        type="button"
+        (click)="closeView()">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- HEALTH RECORD FORM MODAL -->
+<div class="modal-backdrop" *ngIf="showRecordForm()">
+  <div class="modal-box record-modal">
+
+    <div class="modal-header">
+      <div>
+        <p class="eyebrow">Health Record</p>
+        <h2>Create Patient Health Record</h2>
+      </div>
+
+      <button
+        class="close-btn"
+        type="button"
+        (click)="closeRecordForm()">
+        ×
+      </button>
+    </div>
+
+    <div class="record-grid">
+
+      <div class="form-group">
+        <label>Patient</label>
+        <input
+          type="text"
+          [(ngModel)]="healthRecordForm.patientName"
+          readonly>
+      </div>
+
+      <div class="form-group">
+        <label>Doctor</label>
+        <input
+          type="text"
+          [(ngModel)]="healthRecordForm.doctorName"
+          readonly>
+      </div>
+
+      <div class="form-group">
+        <label>Visit Date</label>
+        <input
+          type="date"
+          [(ngModel)]="healthRecordForm.visitDate">
+      </div>
+
+      <div class="form-group full">
+        <label>Diagnosis</label>
+        <textarea
+          rows="3"
+          [(ngModel)]="healthRecordForm.diagnosis"
+          placeholder="Enter diagnosis"></textarea>
+      </div>
+
+      <div class="form-group full">
+        <label>Prescription</label>
+        <textarea
+          rows="3"
+          [(ngModel)]="healthRecordForm.prescription"
+          placeholder="Enter prescription"></textarea>
+      </div>
+
+      <div class="form-group full">
+        <label>Notes</label>
+        <textarea
+          rows="3"
+          [(ngModel)]="healthRecordForm.notes"
+          placeholder="Enter notes"></textarea>
       </div>
 
     </div>
 
-    <!-- PAGINATION -->
-    <div class="pagination">
-      <button (click)="prevPage()" [disabled]="pageNumber() === 1">Prev</button>
-      <span>Page {{ pageNumber() }} of {{ totalPages() }}</span>
-      <button (click)="nextPage()" [disabled]="pageNumber() === totalPages()">Next</button>
+    <div class="modal-actions">
+      <button
+        type="button"
+        class="secondary"
+        [disabled]="isSavingRecord()"
+        (click)="closeRecordForm()">
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="primary"
+        [disabled]="isSavingRecord()"
+        (click)="saveHealthRecord()">
+        {{ isSavingRecord() ? 'Saving...' : 'Save Record' }}
+      </button>
     </div>
 
   </div>
-</div>
-
-<!-- VIEW MODAL -->
-<div class="profile-modal" *ngIf="selected()">
-  <div class="modal-box">
-
-    <h2>Appointment Details</h2>
-
-    <p><strong>Patient:</strong> {{ selected().patientName }}</p>
-    <p><strong>Doctor:</strong> {{ selected().doctorName }}</p>
-    <p><strong>Date:</strong> {{ selected().scheduledDate | date:'fullDate' }}</p>
-    <p><strong>Time:</strong> {{ selected().timeSlot }}</p>
-    <p><strong>Status:</strong> {{ selected().status }}</p>
-
-    <p *ngIf="selected().cancellationReason">
-      <strong>Reason:</strong> {{ selected().cancellationReason }}
-    </p>
-
-    <div class="actions">
-      <button (click)="closeView()">Close</button>
-    </div>
-
-  </div>
-</div>
-<div class="error-alert" *ngIf="errorMessage()">
-  {{ errorMessage() }}
 </div>

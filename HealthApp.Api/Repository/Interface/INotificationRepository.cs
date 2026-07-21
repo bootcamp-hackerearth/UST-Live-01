@@ -13,5 +13,7 @@ namespace HealthApp.Api.Repository.Interface
         Task<Notification?> GetByIdAsync(string notificationId);
 
         Task<Notification?> MarkAsReadAsync(string notificationId);
+
+        Task<int> DeleteReadNotificationsOlderThanAsync(DateTime cutoffDate);
     }
 }

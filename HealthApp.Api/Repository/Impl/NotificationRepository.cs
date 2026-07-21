@@ -57,5 +57,22 @@ namespace HealthApp.Api.Repository.Impl
 
             return notification;
         }
+
+
+        public async Task<int> DeleteReadNotificationsOlderThanAsync(DateTime cutoffDate)
+        {
+            var oldReadNotifications = await _context.Notifications
+                .Where(n => n.IsRead && n.CreatedAt < cutoffDate)
+                .ToListAsync();
+
+            if (!oldReadNotifications.Any())
+                return 0;
+
+            _context.Notifications.RemoveRange(oldReadNotifications);
+
+            await _context.SaveChangesAsync();
+
+            return oldReadNotifications.Count;
+        }
     }
 }
