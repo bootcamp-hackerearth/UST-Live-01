@@ -1,18 +1,29 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+
+interface RegisterResponse {
+  success?: boolean;
+  message?: string;
+}
+
+interface RegistrationError {
+  message?: string;
+  title?: string;
+}
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [
+    FormsModule,
+    RouterLink
+  ],
   templateUrl: './register.html',
   styleUrls: ['./register.css']
 })
 export class Register {
-
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
@@ -27,18 +38,25 @@ export class Register {
   submitted = false;
   isRegistering = false;
 
-  todayDate = new Date().toISOString().split('T')[0];
+  readonly todayDate = new Date()
+    .toISOString()
+    .split('T')[0];
 
-  private readonly registerUrl = 'https://localhost:7130/api/auth/register';
+  private readonly registerUrl =
+    'https://localhost:7130/api/auth/register';
 
   get fullNameError(): string {
-    if (!this.submitted) return '';
+    if (!this.submitted) {
+      return '';
+    }
 
-    if (!this.fullName.trim()) {
+    const value = this.fullName.trim();
+
+    if (!value) {
       return 'Full name is required.';
     }
 
-    if (this.fullName.trim().length < 3) {
+    if (value.length < 3) {
       return 'Full name must be at least 3 characters.';
     }
 
@@ -46,14 +64,28 @@ export class Register {
   }
 
   get dateOfBirthError(): string {
-    if (!this.submitted) return '';
+    if (!this.submitted) {
+      return '';
+    }
 
     if (!this.dateOfBirth) {
       return 'Date of birth is required.';
     }
 
-    const selectedDate = new Date(this.dateOfBirth);
+    const selectedDate = new Date(
+      `${this.dateOfBirth}T00:00:00`
+    );
+
+    const minimumDate = new Date(
+      '1900-01-01T00:00:00'
+    );
+
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < minimumDate) {
+      return 'Date of birth cannot be before 01 January 1900.';
+    }
 
     if (selectedDate > today) {
       return 'Future date is not allowed.';
@@ -63,7 +95,9 @@ export class Register {
   }
 
   get genderError(): string {
-    if (!this.submitted) return '';
+    if (!this.submitted) {
+      return '';
+    }
 
     if (this.gender === '') {
       return 'Gender is required.';
@@ -73,15 +107,19 @@ export class Register {
   }
 
   get phoneNumberError(): string {
-    if (!this.submitted) return '';
+    if (!this.submitted) {
+      return '';
+    }
 
-    if (!this.phoneNumber.trim()) {
+    const value = this.phoneNumber.trim();
+
+    if (!value) {
       return 'Phone number is required.';
     }
 
     const phonePattern = /^\d{10}$/;
 
-    if (!phonePattern.test(this.phoneNumber.trim())) {
+    if (!phonePattern.test(value)) {
       return 'Phone number must be 10 digits.';
     }
 
@@ -89,15 +127,20 @@ export class Register {
   }
 
   get emailError(): string {
-    if (!this.submitted) return '';
+    if (!this.submitted) {
+      return '';
+    }
 
-    if (!this.email.trim()) {
+    const value = this.email.trim();
+
+    if (!value) {
       return 'Email is required.';
     }
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailPattern =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!emailPattern.test(this.email.trim())) {
+    if (!emailPattern.test(value)) {
       return 'Enter a valid email address.';
     }
 
@@ -105,7 +148,9 @@ export class Register {
   }
 
   get passwordError(): string {
-    if (!this.submitted) return '';
+    if (!this.submitted) {
+      return '';
+    }
 
     if (!this.password.trim()) {
       return 'Password is required.';
@@ -119,7 +164,9 @@ export class Register {
   }
 
   get confirmPasswordError(): string {
-    if (!this.submitted) return '';
+    if (!this.submitted) {
+      return '';
+    }
 
     if (!this.confirmPassword.trim()) {
       return 'Confirm password is required.';
@@ -133,7 +180,7 @@ export class Register {
   }
 
   hasErrors(): boolean {
-    return !!(
+    return Boolean(
       this.fullNameError ||
       this.dateOfBirthError ||
       this.genderError ||
@@ -144,51 +191,70 @@ export class Register {
     );
   }
 
-  register() {
+  register(): void {
     this.submitted = true;
 
-    if (this.hasErrors()) {
+    if (this.hasErrors() || this.isRegistering) {
       return;
     }
 
     const payload = {
-      fullName: this.fullName,
+      fullName: this.fullName.trim(),
       dateOfBirth: this.dateOfBirth,
       gender: Number(this.gender),
-      phoneNumber: this.phoneNumber,
-      email: this.email,
+      phoneNumber: this.phoneNumber.trim(),
+      email: this.email.trim(),
       password: this.password,
       confirmPassword: this.confirmPassword,
       insuranceId: 'NA'
     };
 
-    console.log('Patient register payload ✅:', payload);
-
     this.isRegistering = true;
 
-    this.http.post<any>(this.registerUrl, payload).subscribe({
-      next: (res: any) => {
-        console.log('Patient registered ✅:', res);
+    this.http
+      .post<RegisterResponse>(
+        this.registerUrl,
+        payload
+      )
+      .subscribe({
+        next: (response) => {
+          this.isRegistering = false;
 
-        this.isRegistering = false;
+          alert(
+            response.message ||
+            'Registration successful. Please login.'
+          );
 
-        alert('Registration successful ✅ Please login.');
+          void this.router.navigate(['/login']);
+        },
 
-        this.router.navigate(['/login']);
-      },
-      error: (err: any) => {
-        console.error('Patient registration failed ❌:', err);
+        error: (error: HttpErrorResponse) => {
+          this.isRegistering = false;
 
-        this.isRegistering = false;
+          const response = error.error as
+            | RegistrationError
+            | string
+            | null;
 
-        const message =
-          err?.error?.message ||
-          err?.error?.title ||
-          err?.error ||
-          'Registration failed.';
+          let message = 'Registration failed.';
 
-        alert(message);
-      }
-    });
+          if (
+            typeof response === 'string' &&
+            response.trim()
+          ) {
+            message = response;
+          } else if (
+            response &&
+            typeof response !== 'string'
+          ) {
+            message =
+              response.message ||
+              response.title ||
+              message;
+          }
+
+          alert(message);
+        }
+      });
   }
 }

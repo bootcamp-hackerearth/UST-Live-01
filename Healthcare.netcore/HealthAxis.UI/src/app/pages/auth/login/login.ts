@@ -1,24 +1,38 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+
+interface LoginResponse {
+  success: boolean;
+  message?: string;
+  accessToken?: string;
+  refreshToken?: string;
+}
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink
+  ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
 export class Login {
   email = '';
   password = '';
-
   formSubmitted = false;
+  isLoggingIn = false;
 
-  private readonly apiBaseUrl = 'https://localhost:7130';
-  private readonly blazorAdminUrl = 'https://localhost:7273';
+  private readonly apiBaseUrl =
+    'https://localhost:7130';
+
+  private readonly blazorAdminUrl =
+    'https://localhost:7273';
 
   constructor(
     private readonly http: HttpClient,
@@ -32,8 +46,11 @@ export class Login {
       return 'Email is required';
     }
 
-    if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      return 'Enter valid email address';
+    if (
+      value &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+    ) {
+      return 'Enter a valid email address';
     }
 
     return '';
@@ -49,79 +66,179 @@ export class Login {
     return '';
   }
 
-  login() {
+  login(): void {
     this.formSubmitted = true;
 
-    if (this.emailError || this.passwordError) {
+    if (
+      this.emailError ||
+      this.passwordError ||
+      this.isLoggingIn
+    ) {
       return;
     }
+
+    this.isLoggingIn = true;
 
     const request = {
       email: this.email.trim(),
       password: this.password
     };
 
-    this.http.post<any>(`${this.apiBaseUrl}/api/auth/login`, request)
+    this.http
+      .post<LoginResponse>(
+        `${this.apiBaseUrl}/api/auth/login`,
+        request
+      )
       .subscribe({
         next: (response) => {
-          if (!response.success || !response.accessToken) {
-            alert(response.message || 'Login failed');
+          this.isLoggingIn = false;
+
+          if (
+            !response.success ||
+            !response.accessToken
+          ) {
+            alert(
+              response.message ||
+              'Login failed'
+            );
+
             return;
           }
 
-          const role = this.getRoleFromToken(response.accessToken);
+          const accessToken =
+            response.accessToken;
 
-          if (role.toLowerCase() === 'admin') {
-            const redirectUrl =
-              `${this.blazorAdminUrl}/admin-token-login` +
-              `?accessToken=${encodeURIComponent(response.accessToken)}` +
-              `&refreshToken=${encodeURIComponent(response.refreshToken || '')}`;
+          const refreshToken =
+            response.refreshToken || '';
 
-            globalThis.window.location.href = redirectUrl;
+          const role =
+            this.getRoleFromToken(
+              accessToken
+            ).toLowerCase();
+
+          if (role === 'admin') {
+            this.redirectAdmin(
+              accessToken,
+              refreshToken
+            );
+
             return;
           }
 
-          if (role.toLowerCase() === 'patient') {
-            localStorage.setItem('token', response.accessToken);
-            localStorage.setItem('refreshToken', response.refreshToken || '');
-            this.router.navigate(['/patient/dashboard']);
-            return;
-          }
-          if (role.toLowerCase() === 'patient') {
-            localStorage.setItem('token', response.accessToken);
-            localStorage.setItem('refreshToken', response.refreshToken || '');
-            console.log("TOKEN STORED :", response.accessToken); 
-            setTimeout(() => {
-              this.router.navigate(['/patient/dashboard']); 
-             }, 100);
-             return;
-            }
+          if (role === 'patient') {
+            this.storeTokens(
+              accessToken,
+              refreshToken
+            );
 
+            void this.router.navigate([
+              '/patient/dashboard'
+            ]);
 
-          if (role.toLowerCase() === 'doctor') {
-            localStorage.setItem('token', response.accessToken);
-            localStorage.setItem('refreshToken', response.refreshToken || '');
-            this.router.navigate(['/doctor/dashboard']);
             return;
           }
 
-          alert('Login successful, but role is missing or invalid.');
+          if (role === 'doctor') {
+            this.storeTokens(
+              accessToken,
+              refreshToken
+            );
+
+            void this.router.navigate([
+              '/doctor/dashboard'
+            ]);
+
+            return;
+          }
+
+          alert(
+            'Login succeeded, but the user role is missing or invalid.'
+          );
         },
-        error: () => {
-          alert('Invalid email or password');
+        error: (error) => {
+          this.isLoggingIn = false;
+
+          const message =
+            error?.error?.message ||
+            'Invalid email or password';
+
+          alert(message);
         }
       });
   }
 
-  private getRoleFromToken(token: string): string {
+  private storeTokens(
+    accessToken: string,
+    refreshToken: string
+  ): void {
+    if (globalThis.window === undefined) {
+      return;
+    }
+
+    globalThis.window.localStorage.setItem(
+      'token',
+      accessToken
+    );
+
+    globalThis.window.localStorage.setItem(
+      'refreshToken',
+      refreshToken
+    );
+  }
+
+  private redirectAdmin(
+    accessToken: string,
+    refreshToken: string
+  ): void {
+    if (globalThis.window === undefined) {
+      return;
+    }
+
+    const redirectUrl =
+      `${this.blazorAdminUrl}/admin-token-login` +
+      `?accessToken=${encodeURIComponent(accessToken)}` +
+      `&refreshToken=${encodeURIComponent(refreshToken)}`;
+
+    globalThis.window.location.href =
+      redirectUrl;
+  }
+
+  private getRoleFromToken(
+    token: string
+  ): string {
     try {
       const payload = token.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payload));
 
-      return decodedPayload.role ||
-             decodedPayload.roles ||
-             decodedPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
-             '';
+      if (!payload) {
+        return '';
+      }
+
+      const normalizedPayload =
+        payload
+          .replaceAll('-', '+')
+          .replaceAll('_', '/')
+          .padEnd(
+            Math.ceil(payload.length / 4) * 4,
+            '='
+          );
+
+      const decodedPayload =
+        JSON.parse(
+          globalThis.atob(normalizedPayload)
+        );
+
+      const roleClaim =
+        decodedPayload.role ??
+        decodedPayload.roles ??
+        decodedPayload[
+          'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
+        ];
+
+      if (Array.isArray(roleClaim)) {
+        return roleClaim[0] || '';
+      }
+
+      return roleClaim || '';
     } catch {
       return '';
     }

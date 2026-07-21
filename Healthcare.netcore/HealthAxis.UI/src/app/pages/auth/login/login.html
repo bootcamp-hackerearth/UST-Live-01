@@ -1,52 +1,71 @@
 <div class="login-container">
-
   <div class="left-panel">
     <h1>HealthAxis</h1>
+
     <p>
-      A smarter way to manage your health, appointments and records — all in one place.
+      A smarter way to manage your health, appointments and records,
+      all in one place.
     </p>
 
-    
-<img
-  src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
-  alt="HealthAxis healthcare portal" />
-
+    <img
+      src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
+      alt="HealthAxis healthcare portal" />
   </div>
 
   <div class="right-panel">
     <div class="login-box">
-
       <h2>Login</h2>
 
       <input
-        type="text"
+        type="email"
         placeholder="Email Address"
+        autocomplete="email"
         [(ngModel)]="email"
         [class.input-error]="emailError" />
 
-      <small class="error-text" *ngIf="emailError">
+      <small
+        class="error-text"
+        *ngIf="emailError">
         {{ emailError }}
       </small>
 
       <input
         type="password"
         placeholder="Password"
+        autocomplete="current-password"
         [(ngModel)]="password"
-        [class.input-error]="passwordError" />
+        [class.input-error]="passwordError"
+        (keyup.enter)="login()" />
 
-      <small class="error-text" *ngIf="passwordError">
+      <small
+        class="error-text"
+        *ngIf="passwordError">
         {{ passwordError }}
       </small>
 
-      <button type="button" (click)="login()">
-        Login
+      <button
+        type="button"
+        (click)="login()"
+        [disabled]="isLoggingIn">
+        {{ isLoggingIn ? 'Logging in...' : 'Login' }}
       </button>
 
-      <p class="bottom-text">
-        New user? Register from landing page
+      <p class="register-prompt">
+        New user?
+        <a
+          routerLink="/register"
+          class="register-link">
+          Create an account
+        </a>
       </p>
 
+      <p class="home-prompt">
+        <a
+          routerLink="/"
+          class="home-link">
+          Back to Home
+        </a>
+      </p>
     </div>
   </div>
-
 </div>

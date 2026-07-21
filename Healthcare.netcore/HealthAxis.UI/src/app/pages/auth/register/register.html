@@ -1,40 +1,62 @@
 <div class="login-container">
-
   <div class="left-panel">
     <h1>HealthAxis</h1>
-    <p>Create your patient account and manage your healthcare journey easily</p>
+
+    <p>
+      Create your patient account and manage your healthcare journey easily
+    </p>
+
     <img
-  src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png"
-  alt="Patient account registration" />
+      src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png"
+      alt="Patient account registration" />
   </div>
 
   <div class="right-panel">
     <div class="login-box">
-
       <h2>Patient Register</h2>
 
+      <label class="visually-hidden" for="fullName">
+        Full Name
+      </label>
+
       <input
+        id="fullName"
         type="text"
         placeholder="Full Name"
+        autocomplete="name"
         [(ngModel)]="fullName"
         [class.input-error]="fullNameError" />
 
-      <small class="error-text" *ngIf="fullNameError">
-        {{ fullNameError }}
-      </small>
+      @if (fullNameError) {
+        <small class="error-text">
+          {{ fullNameError }}
+        </small>
+      }
+
+      <label class="visually-hidden" for="dateOfBirth">
+        Date of Birth
+      </label>
 
       <input
+        id="dateOfBirth"
         type="date"
-        [(ngModel)]="dateOfBirth"
         min="1900-01-01"
         [max]="todayDate"
+        [(ngModel)]="dateOfBirth"
         [class.input-error]="dateOfBirthError" />
 
-      <small class="error-text" *ngIf="dateOfBirthError">
-        {{ dateOfBirthError }}
-      </small>
+      @if (dateOfBirthError) {
+        <small class="error-text">
+          {{ dateOfBirthError }}
+        </small>
+      }
+
+      <label class="visually-hidden" for="gender">
+        Gender
+      </label>
 
       <select
+        id="gender"
         [(ngModel)]="gender"
         [class.input-error]="genderError">
 
@@ -44,60 +66,110 @@
         <option value="2">Other</option>
       </select>
 
-      <small class="error-text" *ngIf="genderError">
-        {{ genderError }}
-      </small>
+      @if (genderError) {
+        <small class="error-text">
+          {{ genderError }}
+        </small>
+      }
+
+      <label class="visually-hidden" for="phoneNumber">
+        Phone Number
+      </label>
 
       <input
-        type="text"
+        id="phoneNumber"
+        type="tel"
         placeholder="Phone Number"
+        autocomplete="tel"
+        maxlength="10"
+        inputmode="numeric"
         [(ngModel)]="phoneNumber"
         [class.input-error]="phoneNumberError" />
 
-      <small class="error-text" *ngIf="phoneNumberError">
-        {{ phoneNumberError }}
-      </small>
+      @if (phoneNumberError) {
+        <small class="error-text">
+          {{ phoneNumberError }}
+        </small>
+      }
+
+      <label class="visually-hidden" for="email">
+        Email Address
+      </label>
 
       <input
-        type="text"
+        id="email"
+        type="email"
         placeholder="Email"
+        autocomplete="email"
         [(ngModel)]="email"
         [class.input-error]="emailError" />
 
-      <small class="error-text" *ngIf="emailError">
-        {{ emailError }}
-      </small>
+      @if (emailError) {
+        <small class="error-text">
+          {{ emailError }}
+        </small>
+      }
+
+      <label class="visually-hidden" for="password">
+        Password
+      </label>
 
       <input
+        id="password"
         type="password"
         placeholder="Password"
+        autocomplete="new-password"
         [(ngModel)]="password"
         [class.input-error]="passwordError" />
 
-      <small class="error-text" *ngIf="passwordError">
-        {{ passwordError }}
-      </small>
+      @if (passwordError) {
+        <small class="error-text">
+          {{ passwordError }}
+        </small>
+      }
+
+      <label class="visually-hidden" for="confirmPassword">
+        Confirm Password
+      </label>
 
       <input
+        id="confirmPassword"
         type="password"
         placeholder="Confirm Password"
+        autocomplete="new-password"
         [(ngModel)]="confirmPassword"
-        [class.input-error]="confirmPasswordError" />
+        [class.input-error]="confirmPasswordError"
+        (keyup.enter)="register()" />
 
-      <small class="error-text" *ngIf="confirmPasswordError">
-        {{ confirmPasswordError }}
-      </small>
-
-      
+      @if (confirmPasswordError) {
+        <small class="error-text">
+          {{ confirmPasswordError }}
+        </small>
+      }
 
       <button
-  type="button"
-  (click)="register()"
-  [disabled]="isRegistering">
-  {{ isRegistering ? 'Registering...' : 'Register' }}
-</button>
+        type="button"
+        (click)="register()"
+        [disabled]="isRegistering">
+        {{ isRegistering ? 'Registering...' : 'Register' }}
+      </button>
 
+      <p class="login-prompt">
+        Already have an account?
+        <a
+          routerLink="/login"
+          class="login-link">
+          Login here
+        </a>
+      </p>
+
+      <p class="home-prompt">
+        <a
+          routerLink="/"
+          class="home-link">
+          Back to Home
+        </a>
+      </p>
     </div>
   </div>
-
 </div>

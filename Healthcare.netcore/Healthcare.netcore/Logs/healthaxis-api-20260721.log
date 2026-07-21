@@ -1,0 +1,32 @@
+2026-07-21 11:19:45.165 +05:30 [INF] Configured endpoint appointment.events.queue, Consumer: HealthAxis.API.Consumers.AppointmentBookedConsumer
+2026-07-21 11:19:45.809 +05:30 [INF] HeartbeatService started.
+2026-07-21 11:19:45.815 +05:30 [INF] NotificationCleanupService started.
+2026-07-21 11:19:45.815 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-21T11:19:45.8151314+05:30"
+2026-07-21 11:19:45.984 +05:30 [INF] No old notifications found for cleanup.
+2026-07-21 11:19:46.332 +05:30 [INF] Now listening on: https://localhost:7130
+2026-07-21 11:19:46.357 +05:30 [INF] Now listening on: http://localhost:5145
+2026-07-21 11:19:46.454 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-21 11:19:46.488 +05:30 [INF] Hosting environment: Development
+2026-07-21 11:19:46.503 +05:30 [INF] Content root path: C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore
+2026-07-21 11:19:46.517 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-21 11:19:55.826 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-21T11:19:55.8264876+05:30"
+2026-07-21 11:20:05.835 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-21T11:20:05.8356860+05:30"
+2026-07-21 11:20:10.004 +05:30 [INF] HTTP OPTIONS /api/auth/login responded 204 in 10.1768 ms
+2026-07-21 11:20:10.989 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 951.2798 ms
+2026-07-21 11:20:11.033 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 0.6416 ms
+2026-07-21 11:20:11.033 +05:30 [INF] HTTP OPTIONS /api/patients/me responded 204 in 0.5429 ms
+2026-07-21 11:20:11.526 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-21 11:20:11.663 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 618.1632 ms
+2026-07-21 11:20:11.682 +05:30 [INF] HTTP GET /api/patients/me responded 200 in 17.7715 ms
+2026-07-21 11:20:11.692 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 0.0715 ms
+2026-07-21 11:20:11.693 +05:30 [INF] HTTP OPTIONS /api/patients/1006/health-records responded 204 in 0.0547 ms
+2026-07-21 11:20:11.693 +05:30 [INF] HTTP OPTIONS /api/appointments responded 204 in 0.0547 ms
+2026-07-21 11:20:11.861 +05:30 [INF] HTTP GET /api/appointments responded 200 in 157.0254 ms
+2026-07-21 11:20:11.964 +05:30 [INF] HTTP GET /api/patients/1006/health-records responded 200 in 263.5592 ms
+2026-07-21 11:20:12.413 +05:30 [INF] HTTP GET /api/doctors responded 200 in 714.6978 ms
+2026-07-21 11:20:15.845 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-21T11:20:15.8448148+05:30"
+2026-07-21 11:20:21.026 +05:30 [INF] HTTP OPTIONS /api/doctors responded 204 in 0.3788 ms
+2026-07-21 11:20:21.071 +05:30 [INF] HTTP GET /api/doctors responded 200 in 36.0469 ms
+2026-07-21 11:20:25.847 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-21T11:20:25.8478756+05:30"
+2026-07-21 11:20:35.859 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-21T11:20:35.8593267+05:30"
+2026-07-21 11:20:45.862 +05:30 [INF] HealthAxis API heartbeat running at "2026-07-21T11:20:45.8623790+05:30"
