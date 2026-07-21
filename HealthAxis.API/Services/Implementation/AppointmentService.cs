@@ -21,7 +21,8 @@ namespace HealthAxis.API.Services.Implementation
         IMapper mapper,
         ILogger<AppointmentService> logger,
         IEventPublisher eventPublisher,
-        IDoctorService doctorService)
+        IDoctorService doctorService,
+        INotificationService? notificationService = null)
         : IAppointmentService
     {
         private const int ConfirmedCancellationCutoffHours = 2;
@@ -286,6 +287,9 @@ namespace HealthAxis.API.Services.Implementation
                     updatedAppointment.DoctorId,
                     updatedAppointment.ScheduledDate);
 
+            await CreateStatusNotificationsAsync(
+                updatedAppointment);
+
             return await MapAppointmentAsync(
                 updatedAppointment);
         }
@@ -324,6 +328,23 @@ namespace HealthAxis.API.Services.Implementation
 
             return await MapAppointmentAsync(
                 deletedAppointment);
+        }
+
+        private async Task CreateStatusNotificationsAsync(
+            Appointment appointment)
+        {
+            if (notificationService == null)
+            {
+                logger.LogWarning(
+                    "Notification service is unavailable. Status notification skipped for appointment {AppointmentId}.",
+                    appointment.AppointmentId);
+
+                return;
+            }
+
+            await notificationService
+                .CreateAppointmentStatusNotificationsAsync(
+                    appointment);
         }
 
         private static AppointmentBookedEvent
@@ -736,9 +757,10 @@ namespace HealthAxis.API.Services.Implementation
             }
         }
 
-        private static void ValidatePendingStatusTransition(
-            Appointment appointment,
-            AppointmentStatus newStatus)
+        private static void
+            ValidatePendingStatusTransition(
+                Appointment appointment,
+                AppointmentStatus newStatus)
         {
             if (newStatus !=
                     AppointmentStatus.Confirmed &&

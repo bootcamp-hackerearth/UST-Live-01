@@ -12,15 +12,21 @@ namespace HealthAxis.API.Services.Implementation
     {
         private readonly ApplicationDbContext _context;
 
-        public HealthRecordService(ApplicationDbContext context)
+        private readonly INotificationService?
+            _notificationService;
+
+        public HealthRecordService(
+            ApplicationDbContext context,
+            INotificationService? notificationService = null)
         {
             ArgumentNullException.ThrowIfNull(context);
 
             _context = context;
+            _notificationService = notificationService;
         }
 
-        public async Task<List<HealthRecordDto>> GetByPatientIdAsync(
-            int patientId)
+        public async Task<List<HealthRecordDto>>
+            GetByPatientIdAsync(int patientId)
         {
             if (patientId <= 0)
             {
@@ -38,13 +44,9 @@ namespace HealthAxis.API.Services.Implementation
             }
 
             /*
-             * Load the records first.
-             *
-             * Do not use:
-             * .Select(record => MapHealthRecord(record))
-             *
-             * inside the database query because EF Core cannot translate
-             * a custom C# mapping method into SQL.
+             * Records are loaded first and then mapped in memory.
+             * EF Core cannot translate the custom mapping method
+             * directly into SQL.
              */
             var records = await _context.HealthRecords
                 .AsNoTracking()
@@ -53,7 +55,8 @@ namespace HealthAxis.API.Services.Implementation
                 .Where(record =>
                     record.PatientId == patientId)
                 .OrderByDescending(record =>
-                    record.CreatedAt ?? record.VisitDate)
+                    record.CreatedAt ??
+                    record.VisitDate)
                 .ToListAsync();
 
             return records
@@ -61,7 +64,8 @@ namespace HealthAxis.API.Services.Implementation
                 .ToList();
         }
 
-        public async Task<HealthRecordDto?> GetByIdAsync(int id)
+        public async Task<HealthRecordDto?>
+            GetByIdAsync(int id)
         {
             if (id <= 0)
             {
@@ -70,8 +74,10 @@ namespace HealthAxis.API.Services.Implementation
 
             var record = await _context.HealthRecords
                 .AsNoTracking()
-                .Include(healthRecord => healthRecord.Patient)
-                .Include(healthRecord => healthRecord.Doctor)
+                .Include(healthRecord =>
+                    healthRecord.Patient)
+                .Include(healthRecord =>
+                    healthRecord.Doctor)
                 .FirstOrDefaultAsync(healthRecord =>
                     healthRecord.HealthRecordId == id);
 
@@ -87,17 +93,19 @@ namespace HealthAxis.API.Services.Implementation
             CreateHealthRecordDto healthRecordDto,
             int loggedInDoctorId)
         {
-            ArgumentNullException.ThrowIfNull(healthRecordDto);
+            ArgumentNullException.ThrowIfNull(
+                healthRecordDto);
 
             ValidateNewHealthRecordDetails(
                 healthRecordDto.VisitDate,
                 healthRecordDto.Diagnosis,
                 healthRecordDto.Prescription);
 
-            var appointment = await _context.Appointments
-                .FirstOrDefaultAsync(item =>
-                    item.AppointmentId ==
-                    healthRecordDto.AppointmentId);
+            var appointment =
+                await _context.Appointments
+                    .FirstOrDefaultAsync(item =>
+                        item.AppointmentId ==
+                        healthRecordDto.AppointmentId);
 
             if (appointment == null)
             {
@@ -105,22 +113,25 @@ namespace HealthAxis.API.Services.Implementation
                     "Appointment not found.");
             }
 
-            if (appointment.DoctorId != loggedInDoctorId)
+            if (appointment.DoctorId !=
+                loggedInDoctorId)
             {
                 throw new BusinessRuleException(
                     "You cannot add a health record for another doctor's appointment.");
             }
 
-            if (appointment.Status != AppointmentStatus.Confirmed)
+            if (appointment.Status !=
+                AppointmentStatus.Confirmed)
             {
                 throw new BusinessRuleException(
                     "Health record can be added only for confirmed appointments.");
             }
 
-            var recordAlreadyExists = await _context.HealthRecords
-                .AnyAsync(record =>
-                    record.AppointmentId ==
-                    healthRecordDto.AppointmentId);
+            var recordAlreadyExists =
+                await _context.HealthRecords
+                    .AnyAsync(record =>
+                        record.AppointmentId ==
+                        healthRecordDto.AppointmentId);
 
             if (recordAlreadyExists)
             {
@@ -130,30 +141,62 @@ namespace HealthAxis.API.Services.Implementation
 
             var healthRecord = new HealthRecord
             {
-                AppointmentId = appointment.AppointmentId,
-                PatientId = appointment.PatientId,
-                DoctorId = appointment.DoctorId,
-                VisitDate = healthRecordDto.VisitDate.Date,
-                Diagnosis = healthRecordDto.Diagnosis.Trim(),
-                Prescription = healthRecordDto.Prescription.Trim(),
-                Notes = NormalizeOptionalText(
-                    healthRecordDto.Notes),
+                AppointmentId =
+                    appointment.AppointmentId,
 
-                // Stores the exact date and time at which the record is created.
+                PatientId =
+                    appointment.PatientId,
+
+                DoctorId =
+                    appointment.DoctorId,
+
+                VisitDate =
+                    healthRecordDto.VisitDate.Date,
+
+                Diagnosis =
+                    healthRecordDto.Diagnosis.Trim(),
+
+                Prescription =
+                    healthRecordDto.Prescription.Trim(),
+
+                Notes =
+                    NormalizeOptionalText(
+                        healthRecordDto.Notes),
+
+                /*
+                 * This stores the exact UTC time at which
+                 * the health record was created.
+                 */
                 CreatedAt = DateTime.UtcNow,
 
                 UpdatedDate = null
             };
 
-            _context.HealthRecords.Add(healthRecord);
+            _context.HealthRecords.Add(
+                healthRecord);
 
             /*
-             * Creating the health record means that the consultation
-             * has been completed.
+             * A health record is added after the consultation.
+             * Therefore, the appointment becomes completed.
              */
-            appointment.Status = AppointmentStatus.Completed;
+            appointment.Complete();
 
+            /*
+             * The health record and appointment status are saved
+             * together in the same database operation.
+             */
             await _context.SaveChangesAsync();
+
+            /*
+             * The appointment is already completed successfully.
+             * Now create the patient notification.
+             *
+             * NotificationService handles duplicate notifications
+             * and prevents a notification error from undoing the
+             * saved health record.
+             */
+            await CreateCompletionNotificationAsync(
+                appointment);
 
             var savedRecord = await GetByIdAsync(
                 healthRecord.HealthRecordId);
@@ -172,7 +215,8 @@ namespace HealthAxis.API.Services.Implementation
             UpdateHealthRecordDto healthRecordDto,
             int loggedInDoctorId)
         {
-            ArgumentNullException.ThrowIfNull(healthRecordDto);
+            ArgumentNullException.ThrowIfNull(
+                healthRecordDto);
 
             if (id <= 0)
             {
@@ -192,7 +236,8 @@ namespace HealthAxis.API.Services.Implementation
                 return null;
             }
 
-            if (record.DoctorId != loggedInDoctorId)
+            if (record.DoctorId !=
+                loggedInDoctorId)
             {
                 throw new BusinessRuleException(
                     "You cannot edit another doctor's health record.");
@@ -205,50 +250,102 @@ namespace HealthAxis.API.Services.Implementation
                 healthRecordDto.Prescription.Trim();
 
             record.Notes =
-                NormalizeOptionalText(healthRecordDto.Notes);
+                NormalizeOptionalText(
+                    healthRecordDto.Notes);
 
-            record.UpdatedDate = DateTime.UtcNow;
+            record.UpdatedDate =
+                DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
 
             return await GetByIdAsync(id);
         }
 
-        private static HealthRecordDto MapHealthRecord(
-            HealthRecord record)
+        private async Task
+            CreateCompletionNotificationAsync(
+                Appointment appointment)
         {
-            var patientName = record.Patient == null
-                ? string.Empty
-                : record.Patient.FullName;
+            /*
+             * Existing unit tests may create the service using
+             * only ApplicationDbContext. In that case, notification
+             * creation is safely skipped.
+             */
+            if (_notificationService == null)
+            {
+                return;
+            }
 
-            var doctorName = record.Doctor == null
-                ? string.Empty
-                : record.Doctor.FullName;
+            await _notificationService
+                .CreateAppointmentStatusNotificationsAsync(
+                    appointment);
+        }
 
-            var specialisation = record.Doctor == null
-                ? string.Empty
-                : record.Doctor.Specialisation.ToString();
+        private static HealthRecordDto
+            MapHealthRecord(HealthRecord record)
+        {
+            var patientName =
+                record.Patient == null
+                    ? string.Empty
+                    : record.Patient.FullName;
+
+            var doctorName =
+                record.Doctor == null
+                    ? string.Empty
+                    : record.Doctor.FullName;
+
+            var specialisation =
+                record.Doctor == null
+                    ? string.Empty
+                    : record.Doctor
+                        .Specialisation
+                        .ToString();
 
             return new HealthRecordDto
             {
-                HealthRecordId = record.HealthRecordId,
-                RecordId = record.HealthRecordId,
-                AppointmentId = record.AppointmentId,
+                HealthRecordId =
+                    record.HealthRecordId,
 
-                PatientId = record.PatientId,
-                PatientName = patientName,
+                RecordId =
+                    record.HealthRecordId,
 
-                DoctorId = record.DoctorId,
-                DoctorName = doctorName,
-                Specialisation = specialisation,
+                AppointmentId =
+                    record.AppointmentId,
 
-                VisitDate = record.VisitDate,
-                CreatedAt = record.CreatedAt,
-                UpdatedDate = record.UpdatedDate,
+                PatientId =
+                    record.PatientId,
 
-                Diagnosis = record.Diagnosis ?? string.Empty,
-                Prescription = record.Prescription ?? string.Empty,
-                Notes = record.Notes ?? string.Empty
+                PatientName =
+                    patientName,
+
+                DoctorId =
+                    record.DoctorId,
+
+                DoctorName =
+                    doctorName,
+
+                Specialisation =
+                    specialisation,
+
+                VisitDate =
+                    record.VisitDate,
+
+                CreatedAt =
+                    record.CreatedAt,
+
+                UpdatedDate =
+                    record.UpdatedDate,
+
+                Diagnosis =
+                    record.Diagnosis ??
+                    string.Empty,
+
+                Prescription =
+                    record.Prescription ??
+                    string.Empty,
+
+                Notes =
+                    record.Notes ??
+                    string.Empty
             };
         }
 
@@ -260,10 +357,11 @@ namespace HealthAxis.API.Services.Implementation
                 : value.Trim();
         }
 
-        private static void ValidateNewHealthRecordDetails(
-            DateTime visitDate,
-            string? diagnosis,
-            string? prescription)
+        private static void
+            ValidateNewHealthRecordDetails(
+                DateTime visitDate,
+                string? diagnosis,
+                string? prescription)
         {
             if (visitDate == default)
             {
@@ -282,26 +380,30 @@ namespace HealthAxis.API.Services.Implementation
                 prescription);
         }
 
-        private static void ValidateUpdatedHealthRecordDetails(
-            string? diagnosis,
-            string? prescription)
+        private static void
+            ValidateUpdatedHealthRecordDetails(
+                string? diagnosis,
+                string? prescription)
         {
             ValidateRequiredMedicalDetails(
                 diagnosis,
                 prescription);
         }
 
-        private static void ValidateRequiredMedicalDetails(
-            string? diagnosis,
-            string? prescription)
+        private static void
+            ValidateRequiredMedicalDetails(
+                string? diagnosis,
+                string? prescription)
         {
-            if (string.IsNullOrWhiteSpace(diagnosis))
+            if (string.IsNullOrWhiteSpace(
+                diagnosis))
             {
                 throw new ValidationException(
                     "Diagnosis is required.");
             }
 
-            if (string.IsNullOrWhiteSpace(prescription))
+            if (string.IsNullOrWhiteSpace(
+                prescription))
             {
                 throw new ValidationException(
                     "Prescription is required.");
