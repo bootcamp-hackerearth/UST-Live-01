@@ -14,11 +14,16 @@ import {
 })
 export class HealthRecordService {
   private readonly http = inject(HttpClient);
-  private readonly healthRecordUrl = `${environment.apiBaseUrl}/health-records`;
+  private readonly healthRecordUrl =
+    `${environment.apiBaseUrl}/health-records`;
 
-  getHealthRecordsByPatientId(patientId: number): Observable<HealthRecord[]> {
+  getHealthRecordsByPatientId(
+    patientId: number
+  ): Observable<HealthRecord[]> {
     return this.http
-      .get<HealthRecord[]>(`${this.healthRecordUrl}/patient/${patientId}`)
+      .get<HealthRecord[]>(
+        `${this.healthRecordUrl}/patient/${patientId}`
+      )
       .pipe(
         catchError((error: HttpErrorResponse) => {
           if (error.status === 404) {
@@ -30,18 +35,36 @@ export class HealthRecordService {
       );
   }
 
-  getHealthRecordById(id: number): Observable<HealthRecord> {
-    return this.http.get<HealthRecord>(`${this.healthRecordUrl}/${id}`);
+  getPatientHistoryByAppointmentId(
+    appointmentId: number
+  ): Observable<HealthRecord[]> {
+    return this.http.get<HealthRecord[]>(
+      `${this.healthRecordUrl}/appointment/${appointmentId}/history`
+    );
   }
 
-  createHealthRecord(data: CreateHealthRecordRequest): Observable<HealthRecord> {
-    return this.http.post<HealthRecord>(this.healthRecordUrl, data);
+  getHealthRecordById(id: number): Observable<HealthRecord> {
+    return this.http.get<HealthRecord>(
+      `${this.healthRecordUrl}/${id}`
+    );
+  }
+
+  createHealthRecord(
+    data: CreateHealthRecordRequest
+  ): Observable<HealthRecord> {
+    return this.http.post<HealthRecord>(
+      this.healthRecordUrl,
+      data
+    );
   }
 
   updateHealthRecord(
     id: number,
     data: UpdateHealthRecordRequest
   ): Observable<HealthRecord> {
-    return this.http.put<HealthRecord>(`${this.healthRecordUrl}/${id}`, data);
+    return this.http.put<HealthRecord>(
+      `${this.healthRecordUrl}/${id}`,
+      data
+    );
   }
 }

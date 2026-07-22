@@ -15,7 +15,9 @@ import {
   Appointment,
   AppointmentStatusCode
 } from '../../core/models/appointment.model';
+import { HealthRecord } from '../../core/models/health-record.model';
 import { AppointmentService } from '../../core/services/appointment.service';
+import { HealthRecordService } from '../../core/services/health-record.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
 const FILTERS = [
@@ -45,7 +47,13 @@ export class UpcomingAppointments {
   private readonly appointmentService =
     inject(AppointmentService);
 
+  private readonly healthRecordService =
+    inject(HealthRecordService);
+
   private readonly route = inject(ActivatedRoute);
+
+  private readonly historyRequestAppointmentId =
+    signal<number | null>(null);
 
   readonly appointments = signal<Appointment[]>([]);
   readonly loading = signal(false);
@@ -70,6 +78,19 @@ export class UpcomingAppointments {
 
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
+
+  readonly historyLoading = signal(false);
+  readonly historyErrorMessage = signal('');
+
+  readonly historyAppointment =
+    signal<Appointment | null>(null);
+
+  readonly historyRecords = signal<HealthRecord[]>([]);
+
+  readonly selectedHistoryRecord =
+    signal<HealthRecord | null>(null);
+
+  readonly historySearchText = signal('');
 
   readonly filters = FILTERS;
 
@@ -152,6 +173,40 @@ export class UpcomingAppointments {
     this.cancellationReason().length
   );
 
+  readonly sortedHistoryRecords = computed(() => {
+    return [...this.historyRecords()].sort(
+      (first, second) =>
+        this.getRecordDateTime(second) -
+        this.getRecordDateTime(first)
+    );
+  });
+
+  readonly filteredHistoryRecords = computed(() => {
+    const searchValue = this.historySearchText()
+      .trim()
+      .toLowerCase();
+
+    if (!searchValue) {
+      return this.sortedHistoryRecords();
+    }
+
+    return this.sortedHistoryRecords().filter((record) => {
+      const searchableText = [
+        record.doctorName,
+        record.specialisation,
+        record.visitDate,
+        record.diagnosis,
+        record.prescription,
+        record.notes,
+        record.appointmentId.toString()
+      ]
+        .join(' ')
+        .toLowerCase();
+
+      return searchableText.includes(searchValue);
+    });
+  });
+
   constructor() {
     this.applyFilterFromQuery();
     this.loadAppointments();
@@ -171,6 +226,7 @@ export class UpcomingAppointments {
         next: (appointments) => {
           this.appointments.set(appointments);
           this.ensureCurrentPageIsValid();
+          this.closeHistoryWhenAccessEnds(appointments);
           this.loading.set(false);
         },
         error: (error: unknown) => {
@@ -242,6 +298,92 @@ export class UpcomingAppointments {
 
   closeAppointmentDetails(): void {
     this.selectedAppointment.set(null);
+  }
+
+  openPatientHistory(
+    appointment: Appointment
+  ): void {
+    if (!this.canViewPatientHistory(appointment)) {
+      this.errorMessage.set(
+        this.getPatientHistoryRestrictionMessage()
+      );
+
+      return;
+    }
+
+    const appointmentId = appointment.appointmentId;
+
+    this.errorMessage.set('');
+    this.successMessage.set('');
+    this.selectedAppointment.set(null);
+    this.cancelTarget.set(null);
+    this.historyLoading.set(true);
+    this.historyErrorMessage.set('');
+    this.historyAppointment.set(appointment);
+    this.historyRecords.set([]);
+    this.selectedHistoryRecord.set(null);
+    this.historySearchText.set('');
+    this.historyRequestAppointmentId.set(appointmentId);
+
+    this.healthRecordService
+      .getPatientHistoryByAppointmentId(appointmentId)
+      .subscribe({
+        next: (records) => {
+          if (
+            this.historyRequestAppointmentId() !==
+            appointmentId
+          ) {
+            return;
+          }
+
+          this.historyRecords.set(records);
+          this.historyLoading.set(false);
+        },
+        error: (error: unknown) => {
+          if (
+            this.historyRequestAppointmentId() !==
+            appointmentId
+          ) {
+            return;
+          }
+
+          this.historyLoading.set(false);
+          this.historyErrorMessage.set(
+            getFriendlyErrorMessage(
+              error,
+              'Could not load this patient health history.'
+            )
+          );
+        }
+      });
+  }
+
+  closePatientHistory(): void {
+    this.historyRequestAppointmentId.set(null);
+    this.historyLoading.set(false);
+    this.historyErrorMessage.set('');
+    this.historyAppointment.set(null);
+    this.historyRecords.set([]);
+    this.selectedHistoryRecord.set(null);
+    this.historySearchText.set('');
+  }
+
+  onHistorySearchInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    this.historySearchText.set(input.value);
+  }
+
+  clearHistorySearch(): void {
+    this.historySearchText.set('');
+  }
+
+  openHistoryRecord(record: HealthRecord): void {
+    this.selectedHistoryRecord.set(record);
+  }
+
+  closeHistoryRecord(): void {
+    this.selectedHistoryRecord.set(null);
   }
 
   confirmAppointment(
@@ -393,6 +535,15 @@ export class UpcomingAppointments {
         appointment.status
       ) === 'confirmed' &&
       this.hasAppointmentStarted(appointment)
+    );
+  }
+
+  canViewPatientHistory(
+    appointment: Appointment
+  ): boolean {
+    return (
+      this.getStatusText(appointment.status) ===
+      'confirmed'
     );
   }
 
@@ -603,6 +754,31 @@ export class UpcomingAppointments {
     return cleanValue || fallback;
   }
 
+  getHistoryDoctorName(
+    record: HealthRecord
+  ): string {
+    return this.getSafeText(
+      record.doctorName,
+      'Doctor not available'
+    );
+  }
+
+  getHistorySpecialisation(
+    record: HealthRecord
+  ): string {
+    return this.getSafeText(
+      record.specialisation,
+      'Not specified'
+    );
+  }
+
+  getPatientHistoryRestrictionMessage(): string {
+    return (
+      'Patient history is available only while ' +
+      'the appointment is confirmed.'
+    );
+  }
+
   private applyFilterFromQuery(): void {
     const requestedFilter =
       this.route.snapshot.queryParamMap.get(
@@ -655,6 +831,14 @@ export class UpcomingAppointments {
           this.cancelTarget.set(null);
           this.cancellationReason.set('');
           this.cancellationReasonTouched.set(false);
+
+          if (
+            this.historyRequestAppointmentId() ===
+            appointment.appointmentId
+          ) {
+            this.closePatientHistory();
+          }
+
           this.successMessage.set(successMessage);
           this.loadAppointments(false);
         },
@@ -897,6 +1081,39 @@ export class UpcomingAppointments {
     if (this.currentPage() < 1) {
       this.currentPage.set(1);
     }
+  }
+
+  private closeHistoryWhenAccessEnds(
+    appointments: Appointment[]
+  ): void {
+    const appointmentId =
+      this.historyRequestAppointmentId();
+
+    if (appointmentId === null) {
+      return;
+    }
+
+    const stillConfirmed = appointments.some(
+      (appointment) =>
+        appointment.appointmentId === appointmentId &&
+        this.canViewPatientHistory(appointment)
+    );
+
+    if (!stillConfirmed) {
+      this.closePatientHistory();
+    }
+  }
+
+  private getRecordDateTime(
+    record: HealthRecord
+  ): number {
+    const visitDate = new Date(
+      record.visitDate
+    ).getTime();
+
+    return Number.isNaN(visitDate)
+      ? 0
+      : visitDate;
   }
 
   private getStatusText(

@@ -323,6 +323,20 @@
                       View
                     </button>
 
+                    @if (canViewPatientHistory(appointment)) {
+                      <button
+                        type="button"
+                        class="action-button history-button"
+                        (click)="
+                          openPatientHistory(
+                            appointment
+                          )
+                        "
+                      >
+                        View History
+                      </button>
+                    }
+
                     @if (canConfirm(appointment)) {
                       <button
                         type="button"
@@ -581,6 +595,18 @@
           </button>
         }
 
+        @if (canViewPatientHistory(appointment)) {
+          <button
+            type="button"
+            class="history-modal-button"
+            (click)="
+              openPatientHistory(appointment)
+            "
+          >
+            View Patient History
+          </button>
+        }
+
         @if (canAddHealthRecord(appointment)) {
           <a
             class="complete-modal-button"
@@ -741,6 +767,331 @@
           (click)="closeCancelDialog()"
         >
           Keep Appointment
+        </button>
+      </div>
+    </dialog>
+  </div>
+}
+
+@if (
+  historyLoading() ||
+  historyErrorMessage() ||
+  historyAppointment()
+) {
+  <div
+    class="modal-backdrop history-backdrop"
+    (click)="closePatientHistory()"
+    (keydown.escape)="closePatientHistory()"
+  >
+    <dialog
+      open
+      class="modal-card history-modal"
+      aria-labelledby="patientHistoryTitle"
+      (click)="$event.stopPropagation()"
+      (keydown.escape)="closePatientHistory(); $event.stopPropagation()"
+    >
+      <div class="modal-header history-modal-header">
+        <div>
+          <span>Confirmed Appointment Access</span>
+
+          <h2 id="patientHistoryTitle">
+            Patient Health History
+          </h2>
+
+          <p>
+            Previous health records stored in HealthAxis are available
+            only while this appointment remains confirmed.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="close-button"
+          aria-label="Close patient health history"
+          (click)="closePatientHistory()"
+        >
+          ×
+        </button>
+      </div>
+
+      @if (historyLoading()) {
+        <div class="history-loading" aria-live="polite">
+          <span class="loader" aria-hidden="true"></span>
+          Loading patient health history...
+        </div>
+      } @else if (historyErrorMessage()) {
+        <div class="history-error" role="alert">
+          <span class="alert-icon" aria-hidden="true">!</span>
+
+          <div>
+            <strong>Patient history unavailable</strong>
+            <p>{{ historyErrorMessage() }}</p>
+          </div>
+        </div>
+      } @else if (historyAppointment(); as historyAppointment) {
+        <section class="history-access-banner">
+          <span class="history-access-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7l8-4z"></path>
+              <path d="M8.5 12l2.2 2.2 4.8-5"></path>
+            </svg>
+          </span>
+
+          <div>
+            <strong>Temporary access granted</strong>
+
+            <p>
+              You can view {{ getPatientName(historyAppointment) }}'s
+              previous HealthAxis records because appointment
+              #{{ historyAppointment.appointmentId }} is confirmed for
+              {{ historyAppointment.scheduledDate | date: 'dd MMM yyyy' }} at
+              {{ getSafeText(historyAppointment.timeSlot, 'the scheduled time') }}.
+              Access ends when the appointment is completed or cancelled.
+            </p>
+          </div>
+        </section>
+
+        <section
+          class="history-summary-grid"
+          aria-label="Patient history summary"
+        >
+          <article class="history-summary-card">
+            <span>Patient</span>
+            <strong>{{ getPatientName(historyAppointment) }}</strong>
+            <small>Patient ID #{{ historyAppointment.patientId }}</small>
+          </article>
+
+          <article class="history-summary-card confirmed-summary-card">
+            <span>Confirmed Appointment</span>
+            <strong>
+              {{ historyAppointment.scheduledDate | date: 'dd MMM yyyy' }}
+            </strong>
+            <small>
+              {{ getSafeText(historyAppointment.timeSlot, 'Time not assigned') }}
+            </small>
+          </article>
+
+          <article class="history-summary-card records-summary-card">
+            <span>Previous Records</span>
+            <strong>{{ sortedHistoryRecords().length }}</strong>
+            <small>HealthAxis hospital records</small>
+          </article>
+        </section>
+
+        <section class="history-records-section">
+          <div class="history-section-heading">
+            <div>
+              <span>Medical History</span>
+
+              <h3>
+                {{ getPatientName(historyAppointment) }}'s Health Records
+              </h3>
+
+              <p>
+                These records were created after earlier consultations
+                inside this hospital system.
+              </p>
+            </div>
+
+            <span class="history-result-count">
+              {{ filteredHistoryRecords().length }} record(s)
+            </span>
+          </div>
+
+          <div class="history-toolbar">
+            <div class="history-search-box">
+              <span class="search-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <path d="M16 16l5 5"></path>
+                </svg>
+              </span>
+
+              <input
+                type="search"
+                maxlength="80"
+                aria-label="Search patient health history"
+                placeholder="Search doctor, specialisation, diagnosis, or prescription"
+                [value]="historySearchText()"
+                (input)="onHistorySearchInput($event)"
+              />
+            </div>
+
+            <button
+              type="button"
+              class="history-clear-button"
+              [disabled]="!historySearchText()"
+              (click)="clearHistorySearch()"
+            >
+              Clear
+            </button>
+          </div>
+
+          @if (historyRecords().length === 0) {
+            <div class="history-empty-state">
+              <span class="history-empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M6 3h9l3 3v15H6z"></path>
+                  <path d="M14 3v4h4M9 12h6M9 16h6"></path>
+                </svg>
+              </span>
+
+              <h3>No previous health records</h3>
+
+              <p>
+                This patient does not yet have an earlier HealthAxis
+                health record.
+              </p>
+            </div>
+          } @else if (filteredHistoryRecords().length === 0) {
+            <div class="history-empty-state compact-history-empty">
+              <h3>No matching records</h3>
+              <p>Change or clear the search text.</p>
+            </div>
+          } @else {
+            <div class="history-table-wrapper">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Doctor</th>
+                    <th>Specialisation</th>
+                    <th>Appointment</th>
+                    <th class="action-column">Details</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  @for (
+                    record of filteredHistoryRecords();
+                    track record.healthRecordId
+                  ) {
+                    <tr>
+                      <td>
+                        {{ record.visitDate | date: 'dd MMM yyyy' }}
+                      </td>
+
+                      <td>
+                        {{ getHistoryDoctorName(record) }}
+                      </td>
+
+                      <td>
+                        {{ getHistorySpecialisation(record) }}
+                      </td>
+
+                      <td>
+                        #{{ record.appointmentId }}
+                      </td>
+
+                      <td class="action-column">
+                        <button
+                          type="button"
+                          class="history-record-button"
+                          (click)="openHistoryRecord(record)"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </section>
+      }
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="keep-button history-close-button"
+          (click)="closePatientHistory()"
+        >
+          Close
+        </button>
+      </div>
+    </dialog>
+  </div>
+}
+
+@if (selectedHistoryRecord(); as record) {
+  <div
+    class="modal-backdrop history-record-backdrop"
+    (click)="closeHistoryRecord()"
+    (keydown.escape)="closeHistoryRecord()"
+  >
+    <dialog
+      open
+      class="modal-card history-record-modal"
+      aria-labelledby="historyRecordTitle"
+      (click)="$event.stopPropagation()"
+      (keydown.escape)="closeHistoryRecord(); $event.stopPropagation()"
+    >
+      <div class="modal-header">
+        <div>
+          <span>Health Record Details</span>
+
+          <h2 id="historyRecordTitle">
+            Record #{{ record.healthRecordId }}
+          </h2>
+        </div>
+
+        <button
+          type="button"
+          class="close-button"
+          aria-label="Close health record details"
+          (click)="closeHistoryRecord()"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="history-record-meta">
+        <div>
+          <span>Visit Date</span>
+          <strong>
+            {{ record.visitDate | date: 'dd MMM yyyy' }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Doctor</span>
+          <strong>{{ getHistoryDoctorName(record) }}</strong>
+        </div>
+
+        <div>
+          <span>Specialisation</span>
+          <strong>{{ getHistorySpecialisation(record) }}</strong>
+        </div>
+
+        <div>
+          <span>Appointment</span>
+          <strong>#{{ record.appointmentId }}</strong>
+        </div>
+      </div>
+
+      <section class="history-medical-section diagnosis-section">
+        <span>Diagnosis</span>
+        <p>{{ getSafeText(record.diagnosis, 'Not recorded') }}</p>
+      </section>
+
+      <section class="history-medical-section prescription-section">
+        <span>Prescription</span>
+        <p>{{ getSafeText(record.prescription, 'Not recorded') }}</p>
+      </section>
+
+      <section class="history-medical-section notes-section">
+        <span>Notes</span>
+        <p>{{ getSafeText(record.notes, 'No additional notes') }}</p>
+      </section>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="keep-button history-close-button"
+          (click)="closeHistoryRecord()"
+        >
+          Close
         </button>
       </div>
     </dialog>
