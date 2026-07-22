@@ -1,4 +1,5 @@
 ﻿using HealthApp.Api.Models;
+using HealthApp.Shared.Constants;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,6 +25,8 @@ namespace HealthApp.Api.Data
 
         public DbSet<Notification> Notifications { get; set; }
 
+        public DbSet<OutboxMessage> OutboxMessages { get; set; }
+
         protected override void OnModelCreating(
             ModelBuilder builder)
         {
@@ -42,12 +45,57 @@ namespace HealthApp.Api.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<DoctorLeave>()
-                .HasOne(x => x.Doctor)
-                .WithMany(x => x.DoctorLeaves)
-                .HasForeignKey(x => x.DoctorId)
+                .HasOne(leave => leave.Doctor)
+                .WithMany(doctor => doctor.DoctorLeaves)
+                .HasForeignKey(leave => leave.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            ConfigureOutboxMessage(builder);
+
             builder.SeedData();
+        }
+
+        private static void ConfigureOutboxMessage(
+            ModelBuilder builder)
+        {
+            var outbox = builder.Entity<OutboxMessage>();
+
+            outbox.HasKey(message => message.OutboxMessageId);
+
+            outbox.Property(message => message.EventId)
+                .IsRequired();
+
+            outbox.HasIndex(message => message.EventId)
+                .IsUnique();
+
+            outbox.Property(message => message.EventType)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            outbox.Property(message => message.Payload)
+                .HasColumnType("nvarchar(max)")
+                .IsRequired();
+
+            outbox.Property(message => message.Status)
+                .HasMaxLength(50)
+                .HasDefaultValue(OutboxMessageStatuses.Pending)
+                .IsRequired();
+
+            outbox.Property(message => message.RetryCount)
+                .HasDefaultValue(0);
+
+            outbox.Property(message => message.CreatedAtUtc)
+                .IsRequired();
+
+            outbox.Property(message => message.ErrorMessage)
+                .HasMaxLength(2000);
+
+            outbox.HasIndex(message => new
+            {
+                message.Status,
+                message.NextAttemptAtUtc,
+                message.CreatedAtUtc
+            });
         }
     }
 }

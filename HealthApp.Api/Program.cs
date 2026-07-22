@@ -153,6 +153,7 @@ builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IOutboxRepository, OutboxRepository>();
 
 // Grouped service dependencies
 builder.Services.AddScoped<AppointmentServiceRepositories>();
@@ -167,10 +168,12 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IOutboxService, OutboxService>();
 
 // Hosted services
 builder.Services.AddHostedService<NotificationCleanupService>();
 builder.Services.AddHostedService<HeartbeatService>();
+builder.Services.AddHostedService<OutboxPublisherBackgroundService>();
 
 // MassTransit / RabbitMQ
 builder.Services.AddMassTransit(configuration =>

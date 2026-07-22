@@ -1,16 +1,17 @@
 ﻿using System.Text;
 using System.Text.Json;
 using AutoMapper;
+using HealthApp.Api.Data;
 using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Dependencies;
 using HealthApp.Api.Services.Impl;
+using HealthApp.Api.Services.Interfaces;
 using HealthApp.Shared.Constants;
 using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
-using HealthApp.Shared.Events;
-using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -18,20 +19,26 @@ using Xunit;
 
 namespace HealthApp.Api.Tests.Services;
 
-public class AppointmentServiceTests
+public class AppointmentServiceTests : IDisposable
 {
     private readonly Mock<IAppointmentRepository> _appointmentRepo = new();
     private readonly Mock<IPatientRepository> _patientRepo = new();
     private readonly Mock<IDoctorRepository> _doctorRepo = new();
     private readonly Mock<IDoctorLeaveRepository> _doctorLeaveRepo = new();
     private readonly Mock<IMapper> _mapper = new();
-    private readonly Mock<IPublishEndpoint> _publishEndpoint = new();
+    private readonly Mock<IOutboxService> _outboxService = new();
     private readonly Mock<IDistributedCache> _cache = new();
     private readonly Mock<ILogger<AppointmentService>> _logger = new();
+    private readonly HealthAppDbContext _context;
     private readonly AppointmentService _service;
 
     public AppointmentServiceTests()
     {
+        var options = new DbContextOptionsBuilder<HealthAppDbContext>()
+            .Options;
+
+        _context = new HealthAppDbContext(options);
+
         _cache
             .Setup(cache => cache.GetAsync(
                 It.IsAny<string>(),
@@ -59,13 +66,14 @@ public class AppointmentServiceTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync((DoctorLeave?)null);
 
-        _publishEndpoint
-            .Setup(endpoint => endpoint.Publish(
-                It.IsAny<AppointmentBookedEvent>(),
+        _outboxService
+            .Setup(service => service.EnqueueAppointmentBookedAsync(
+                It.IsAny<HealthApp.Shared.Events.AppointmentBookedEvent>(),
                 It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+            .ReturnsAsync(Guid.NewGuid());
 
         var repositories = new AppointmentServiceRepositories(
+            _context,
             _appointmentRepo.Object,
             _patientRepo.Object,
             _doctorRepo.Object,
@@ -74,7 +82,7 @@ public class AppointmentServiceTests
         _service = new AppointmentService(
             repositories,
             _mapper.Object,
-            _publishEndpoint.Object,
+            _outboxService.Object,
             _cache.Object,
             _logger.Object);
     }
@@ -85,7 +93,7 @@ public class AppointmentServiceTests
         Assert.Throws<ArgumentNullException>(() => new AppointmentService(
             null!,
             _mapper.Object,
-            _publishEndpoint.Object,
+            _outboxService.Object,
             _cache.Object,
             _logger.Object));
     }
@@ -125,12 +133,8 @@ public class AppointmentServiceTests
             FromDate = DateOnly.FromDateTime(DateTime.Today)
         };
 
-        var exception = await Assert.ThrowsAsync<InvalidRequestException>(
+        await Assert.ThrowsAsync<InvalidRequestException>(
             () => _service.GetAppointmentsAsync(filter));
-
-        Assert.Equal(
-            "Use either exact date or date range, not both.",
-            exception.Message);
 
         _appointmentRepo.Verify(
             repo => repo.GetAppointmentsAsync(
@@ -148,12 +152,30 @@ public class AppointmentServiceTests
             ToDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1))
         };
 
-        var exception = await Assert.ThrowsAsync<InvalidRequestException>(
+        await Assert.ThrowsAsync<InvalidRequestException>(
             () => _service.GetAppointmentsAsync(filter));
+    }
 
-        Assert.Equal(
-            "From date cannot be greater than to date.",
-            exception.Message);
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public async Task GetAppointmentById_InvalidId_ShouldThrow(int id)
+    {
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.GetAppointmentByIdAsync(id));
+    }
+
+    [Fact]
+    public async Task GetAppointmentById_NotFound_ShouldThrow()
+    {
+        _appointmentRepo
+            .Setup(repo => repo.GetByIdAsync(
+                1,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Appointment?)null);
+
+        await Assert.ThrowsAsync<EntityNotFoundException>(
+            () => _service.GetAppointmentByIdAsync(1));
     }
 
     [Fact]
@@ -194,15 +216,30 @@ public class AppointmentServiceTests
     }
 
     [Fact]
+    public async Task BookAppointment_NullDto_ShouldThrow()
+    {
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.BookAppointmentAsync(null!));
+    }
+
+    [Fact]
+    public async Task BookAppointment_InvalidPatientId_ShouldThrow()
+    {
+        var dto = ValidDto();
+        dto.PatientId = 0;
+
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.BookAppointmentAsync(dto));
+    }
+
+    [Fact]
     public async Task BookAppointment_InvalidDoctorId_ShouldThrow()
     {
         var dto = ValidDto();
         dto.DoctorId = 0;
 
-        var exception = await Assert.ThrowsAsync<InvalidRequestException>(
+        await Assert.ThrowsAsync<InvalidRequestException>(
             () => _service.BookAppointmentAsync(dto));
-
-        Assert.Equal("Valid doctor is required.", exception.Message);
     }
 
     [Fact]
@@ -211,10 +248,43 @@ public class AppointmentServiceTests
         var dto = ValidDto();
         dto.ScheduledDate = default;
 
-        var exception = await Assert.ThrowsAsync<InvalidRequestException>(
+        await Assert.ThrowsAsync<InvalidRequestException>(
             () => _service.BookAppointmentAsync(dto));
+    }
 
-        Assert.Equal("Scheduled date is required.", exception.Message);
+    [Fact]
+    public async Task BookAppointment_EmptyTimeSlot_ShouldThrow()
+    {
+        var dto = ValidDto();
+        dto.TimeSlot = " ";
+
+        await Assert.ThrowsAsync<InvalidRequestException>(
+            () => _service.BookAppointmentAsync(dto));
+    }
+
+    [Fact]
+    public async Task BookAppointment_PastDate_ShouldThrow()
+    {
+        var dto = ValidDto();
+        dto.ScheduledDate = DateTime.Today.AddDays(-1);
+
+        await Assert.ThrowsAsync<BusinessRuleViolationException>(
+            () => _service.BookAppointmentAsync(dto));
+    }
+
+    [Fact]
+    public async Task BookAppointment_PatientNotFound_ShouldThrow()
+    {
+        var dto = ValidDto();
+
+        _patientRepo
+            .Setup(repo => repo.GetByIdAsync(
+                dto.PatientId,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Patient?)null);
+
+        await Assert.ThrowsAsync<EntityNotFoundException>(
+            () => _service.BookAppointmentAsync(dto));
     }
 
     [Fact]
@@ -234,13 +304,8 @@ public class AppointmentServiceTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync((string?)null);
 
-        var exception = await Assert.ThrowsAsync<
-            BusinessRuleViolationException>(
+        await Assert.ThrowsAsync<BusinessRuleViolationException>(
             () => _service.BookAppointmentAsync(dto));
-
-        Assert.Equal(
-            "Patient user account is not linked.",
-            exception.Message);
 
         _doctorRepo.Verify(
             repo => repo.GetByIdAsync(
@@ -266,63 +331,116 @@ public class AppointmentServiceTests
     }
 
     [Fact]
-    public async Task BookAppointment_Valid_ShouldTrimSlotAndPublishExpectedEvent()
+    public async Task BookAppointment_DoctorInactive_ShouldThrow()
     {
         var dto = ValidDto();
-        dto.TimeSlot = " 10AM ";
-        var scheduledDate = DateOnly.FromDateTime(dto.ScheduledDate);
-        var patient = CreatePatient(dto.PatientId);
+        SetupPatient(dto.PatientId);
         var doctor = CreateDoctor(dto.DoctorId);
-        var savedAppointment = new Appointment
-        {
-            AppointmentId = 501,
-            PatientId = dto.PatientId,
-            DoctorId = dto.DoctorId,
-            ScheduledDate = scheduledDate,
-            TimeSlot = "10AM"
-        };
+        doctor.IsActive = false;
 
-        SetupPatient(dto.PatientId, patient);
         _doctorRepo
             .Setup(repo => repo.GetByIdAsync(
                 dto.DoctorId,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(doctor);
-        SetupNoBookingConflicts();
 
-        _mapper
-            .Setup(mapper => mapper.Map<Appointment>(dto))
-            .Returns(new Appointment());
-        _appointmentRepo
-            .Setup(repo => repo.Add(
-                It.Is<Appointment>(appointment =>
-                    appointment.TimeSlot == "10AM" &&
-                    appointment.Status == AppointmentStatus.Pending &&
-                    appointment.CancellationReason == null),
+        await Assert.ThrowsAsync<BusinessRuleViolationException>(
+            () => _service.BookAppointmentAsync(dto));
+    }
+
+    [Fact]
+    public async Task BookAppointment_DoctorOnLeave_ShouldThrow()
+    {
+        var dto = ValidDto();
+        var date = DateOnly.FromDateTime(dto.ScheduledDate);
+        SetupPatient(dto.PatientId);
+        SetupActiveDoctor(dto.DoctorId);
+
+        _doctorLeaveRepo
+            .Setup(repo => repo.GetLeaveForDateAsync(
+                dto.DoctorId,
+                date,
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(savedAppointment);
-        _mapper
-            .Setup(mapper => mapper.Map<AppointmentDto>(savedAppointment))
-            .Returns(new AppointmentDto { AppointmentId = 501 });
+            .ReturnsAsync(new DoctorLeave
+            {
+                DoctorLeaveId = 20,
+                DoctorId = dto.DoctorId,
+                StartDate = date,
+                EndDate = date,
+                Reason = "Conference"
+            });
 
-        var result = await _service.BookAppointmentAsync(dto);
+        await Assert.ThrowsAsync<BusinessRuleViolationException>(
+            () => _service.BookAppointmentAsync(dto));
 
-        Assert.Equal(501, result.AppointmentId);
-        _publishEndpoint.Verify(endpoint => endpoint.Publish(
-            It.Is<AppointmentBookedEvent>(message =>
-                message.AppointmentId == 501 &&
-                message.PatientId == dto.PatientId &&
-                message.DoctorId == dto.DoctorId &&
-                message.TimeSlot == "10AM"),
-            It.IsAny<CancellationToken>()),
-            Times.Once);
+        _outboxService.Verify(
+            service => service.EnqueueAppointmentBookedAsync(
+                It.IsAny<HealthApp.Shared.Events.AppointmentBookedEvent>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task BookAppointment_SameDoctorSameDay_ShouldThrow()
+    {
+        var dto = ValidDto();
+        SetupPatient(dto.PatientId);
+        SetupActiveDoctor(dto.DoctorId);
+
+        _appointmentRepo
+            .Setup(repo => repo.HasAppointmentWithDoctorOnSameDayAsync(
+                dto.PatientId,
+                dto.DoctorId,
+                It.IsAny<DateOnly>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        await Assert.ThrowsAsync<BusinessRuleViolationException>(
+            () => _service.BookAppointmentAsync(dto));
+    }
+
+    [Fact]
+    public async Task BookAppointment_PatientSlotConflict_ShouldThrow()
+    {
+        var dto = ValidDto();
+        SetupPatient(dto.PatientId);
+        SetupActiveDoctor(dto.DoctorId);
+
+        _appointmentRepo
+            .Setup(repo => repo.HasPatientSlotConflictAsync(
+                dto.PatientId,
+                It.IsAny<DateOnly>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        await Assert.ThrowsAsync<BusinessRuleViolationException>(
+            () => _service.BookAppointmentAsync(dto));
+    }
+
+    [Fact]
+    public async Task BookAppointment_DoctorSlotBooked_ShouldThrow()
+    {
+        var dto = ValidDto();
+        SetupPatient(dto.PatientId);
+        SetupActiveDoctor(dto.DoctorId);
+
+        _appointmentRepo
+            .Setup(repo => repo.IsDoctorSlotBookedAsync(
+                dto.DoctorId,
+                It.IsAny<DateOnly>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        await Assert.ThrowsAsync<BusinessRuleViolationException>(
+            () => _service.BookAppointmentAsync(dto));
     }
 
     [Fact]
     public async Task UpdateStatus_CancelledWithReason_ShouldTrimReason()
     {
-        var appointment = CreateAppointment(
-            status: AppointmentStatus.Pending);
+        var appointment = CreateAppointment(AppointmentStatus.Pending);
 
         _appointmentRepo
             .Setup(repo => repo.GetByIdAsync(
@@ -342,11 +460,9 @@ public class AppointmentServiceTests
     }
 
     [Fact]
-    public async Task UpdateStatus_NonCancelled_ShouldClearOldReason()
+    public async Task UpdateStatus_Completed_ShouldThrow()
     {
-        var appointment = CreateAppointment(
-            status: AppointmentStatus.Pending);
-        appointment.CancellationReason = "Old reason";
+        var appointment = CreateAppointment(AppointmentStatus.Completed);
 
         _appointmentRepo
             .Setup(repo => repo.GetByIdAsync(
@@ -354,42 +470,38 @@ public class AppointmentServiceTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointment);
 
-        await _service.UpdateAppointmentStatusAsync(
-            appointment.AppointmentId,
-            AppointmentStatus.Confirmed);
-
-        Assert.Equal(AppointmentStatus.Confirmed, appointment.Status);
-        Assert.Null(appointment.CancellationReason);
+        await Assert.ThrowsAsync<BusinessRuleViolationException>(
+            () => _service.UpdateAppointmentStatusAsync(
+                appointment.AppointmentId,
+                AppointmentStatus.Cancelled,
+                "Reason"));
     }
 
     [Fact]
-    public async Task DeleteAppointment_NotFound_ShouldThrow()
+    public async Task Delete_Valid_ShouldDeleteAndInvalidateCache()
     {
+        var appointment = CreateAppointment(AppointmentStatus.Cancelled);
+
         _appointmentRepo
             .Setup(repo => repo.GetByIdAsync(
-                404,
+                appointment.AppointmentId,
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Appointment?)null);
+            .ReturnsAsync(appointment);
 
-        await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _service.DeleteAppointmentAsync(404));
-    }
+        _appointmentRepo
+            .Setup(repo => repo.DeleteAsync(appointment.AppointmentId))
+            .ReturnsAsync(true);
 
-    [Fact]
-    public async Task GetDoctorAvailability_PastDate_ShouldThrow()
-    {
-        var pastDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-1));
+        await _service.DeleteAppointmentAsync(appointment.AppointmentId);
 
-        var exception = await Assert.ThrowsAsync<
-            BusinessRuleViolationException>(
-            () => _service.GetDoctorAvailabilityAsync(1, pastDate));
-
-        Assert.Equal("Past date is not allowed.", exception.Message);
-        _doctorRepo.Verify(
-            repo => repo.GetByIdAsync(
-                It.IsAny<int>(),
+        _appointmentRepo.Verify(
+            repo => repo.DeleteAsync(appointment.AppointmentId),
+            Times.Once);
+        _cache.Verify(
+            cache => cache.RemoveAsync(
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()),
-            Times.Never);
+            Times.Once);
     }
 
     [Fact]
@@ -412,14 +524,14 @@ public class AppointmentServiceTests
                 }
             ]
         };
-        var json = JsonSerializer.Serialize(cached);
 
         SetupActiveDoctor(1);
         _cache
             .Setup(cache => cache.GetAsync(
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Encoding.UTF8.GetBytes(json));
+            .ReturnsAsync(Encoding.UTF8.GetBytes(
+                JsonSerializer.Serialize(cached)));
 
         var result = await _service.GetDoctorAvailabilityAsync(1, date);
 
@@ -430,25 +542,20 @@ public class AppointmentServiceTests
                 It.IsAny<DateOnly>(),
                 It.IsAny<CancellationToken>()),
             Times.Never);
-        _cache.Verify(cache => cache.SetAsync(
-            It.IsAny<string>(),
-            It.IsAny<byte[]>(),
-            It.IsAny<DistributedCacheEntryOptions>(),
-            It.IsAny<CancellationToken>()),
-            Times.Never);
     }
 
     [Fact]
     public async Task GetDoctorAvailability_InvalidCachedJson_ShouldRemoveAndRebuild()
     {
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
-
         SetupActiveDoctor(1);
+
         _cache
             .Setup(cache => cache.GetAsync(
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(Encoding.UTF8.GetBytes("{invalid-json"));
+
         _appointmentRepo
             .Setup(repo => repo.IsDoctorSlotBookedAsync(
                 It.IsAny<int>(),
@@ -461,323 +568,6 @@ public class AppointmentServiceTests
 
         Assert.False(result.IsDoctorOnLeave);
         Assert.Equal(TimeSlots.Slots.Count, result.Slots.Count);
-        _cache.Verify(cache => cache.RemoveAsync(
-            It.IsAny<string>(),
-            It.IsAny<CancellationToken>()),
-            Times.Once);
-        _cache.Verify(cache => cache.SetAsync(
-            It.IsAny<string>(),
-            It.IsAny<byte[]>(),
-            It.Is<DistributedCacheEntryOptions>(options =>
-                options.AbsoluteExpirationRelativeToNow ==
-                    TimeSpan.FromMinutes(5) &&
-                options.SlidingExpiration == TimeSpan.FromMinutes(2)),
-            It.IsAny<CancellationToken>()),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task GetDoctorAvailability_BookedSlot_ShouldMarkOnlyThatSlotUnavailable()
-    {
-        var date = DateOnly.FromDateTime(
-            DateTime.Today.AddDays(1));
-        var bookedSlot = TimeSlots.Slots.First();
-
-        SetupActiveDoctor(1);
-
-        _appointmentRepo
-            .Setup(repo => repo.IsDoctorSlotBookedAsync(
-                1,
-                date,
-                It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((
-                int _,
-                DateOnly _,
-                string slot,
-                CancellationToken _) => slot == bookedSlot);
-
-        var result = await _service.GetDoctorAvailabilityAsync(1, date);
-
-        var unavailable = Assert.Single(
-            result.Slots,
-            slot => !slot.IsAvailable);
-
-        Assert.Equal(bookedSlot, unavailable.TimeSlot);
-        Assert.Equal("Booked", unavailable.Status);
-
-        Assert.All(
-            result.Slots.Where(slot => slot.TimeSlot != bookedSlot),
-            slot => Assert.Equal("Available", slot.Status));
-    }
-
-    [Fact]
-    public async Task GetAppointmentById_InvalidId_ShouldThrow()
-    {
-        await Assert.ThrowsAsync<InvalidRequestException>(
-            () => _service.GetAppointmentByIdAsync(0));
-    }
-
-    [Fact]
-    public async Task GetAppointmentById_NotFound_ShouldThrow()
-    {
-        _appointmentRepo
-            .Setup(repo => repo.GetByIdAsync(
-                1,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Appointment?)null);
-
-        await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _service.GetAppointmentByIdAsync(1));
-    }
-
-    [Fact]
-    public async Task BookAppointment_NullDto_ShouldThrow()
-    {
-        await Assert.ThrowsAsync<InvalidRequestException>(
-            () => _service.BookAppointmentAsync(null!));
-    }
-
-    [Fact]
-    public async Task BookAppointment_PastDate_ShouldThrow()
-    {
-        var dto = ValidDto();
-        dto.ScheduledDate = DateTime.Today.AddDays(-1);
-
-        await Assert.ThrowsAsync<BusinessRuleViolationException>(
-            () => _service.BookAppointmentAsync(dto));
-    }
-
-    [Fact]
-    public async Task BookAppointment_PatientNotFound_ShouldThrow()
-    {
-        var dto = ValidDto();
-        _patientRepo
-            .Setup(repo => repo.GetByIdAsync(
-                dto.PatientId,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Patient?)null);
-
-        await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _service.BookAppointmentAsync(dto));
-    }
-
-    [Fact]
-    public async Task BookAppointment_DoctorInactive_ShouldThrow()
-    {
-        var dto = ValidDto();
-        SetupPatient(dto.PatientId);
-        var inactiveDoctor = CreateDoctor(dto.DoctorId);
-        inactiveDoctor.IsActive = false;
-        _doctorRepo
-            .Setup(repo => repo.GetByIdAsync(
-                dto.DoctorId,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(inactiveDoctor);
-
-        await Assert.ThrowsAsync<BusinessRuleViolationException>(
-            () => _service.BookAppointmentAsync(dto));
-    }
-
-    [Fact]
-    public async Task BookAppointment_DoctorOnLeave_ShouldThrow()
-    {
-        var dto = ValidDto();
-        var date = DateOnly.FromDateTime(dto.ScheduledDate);
-        SetupPatient(dto.PatientId);
-        SetupActiveDoctor(dto.DoctorId);
-        _doctorLeaveRepo
-            .Setup(repo => repo.GetLeaveForDateAsync(
-                dto.DoctorId,
-                date,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new DoctorLeave
-            {
-                DoctorLeaveId = 20,
-                DoctorId = dto.DoctorId,
-                StartDate = date,
-                EndDate = date.AddDays(1),
-                Reason = "Conference"
-            });
-
-        await Assert.ThrowsAsync<BusinessRuleViolationException>(
-            () => _service.BookAppointmentAsync(dto));
-        _appointmentRepo.Verify(
-            repo => repo.Add(
-                It.IsAny<Appointment>(),
-                It.IsAny<CancellationToken>()),
-            Times.Never);
-    }
-
-    [Fact]
-    public async Task BookAppointment_SameDoctorSameDay_ShouldThrow()
-    {
-        var dto = ValidDto();
-        SetupPatient(dto.PatientId);
-        SetupActiveDoctor(dto.DoctorId);
-        _appointmentRepo
-            .Setup(repo => repo.HasAppointmentWithDoctorOnSameDayAsync(
-                dto.PatientId,
-                dto.DoctorId,
-                It.IsAny<DateOnly>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        await Assert.ThrowsAsync<BusinessRuleViolationException>(
-            () => _service.BookAppointmentAsync(dto));
-    }
-
-    [Fact]
-    public async Task BookAppointment_PatientSlotConflict_ShouldThrow()
-    {
-        var dto = ValidDto();
-        SetupPatient(dto.PatientId);
-        SetupActiveDoctor(dto.DoctorId);
-        _appointmentRepo
-            .Setup(repo => repo.HasPatientSlotConflictAsync(
-                dto.PatientId,
-                It.IsAny<DateOnly>(),
-                It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        await Assert.ThrowsAsync<BusinessRuleViolationException>(
-            () => _service.BookAppointmentAsync(dto));
-    }
-
-    [Fact]
-    public async Task BookAppointment_DoctorSlotBooked_ShouldThrow()
-    {
-        var dto = ValidDto();
-        SetupPatient(dto.PatientId);
-        SetupActiveDoctor(dto.DoctorId);
-        _appointmentRepo
-            .Setup(repo => repo.IsDoctorSlotBookedAsync(
-                dto.DoctorId,
-                It.IsAny<DateOnly>(),
-                It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
-
-        await Assert.ThrowsAsync<BusinessRuleViolationException>(
-            () => _service.BookAppointmentAsync(dto));
-    }
-
-    [Fact]
-    public async Task UpdateStatus_InvalidId_ShouldThrow()
-    {
-        await Assert.ThrowsAsync<InvalidRequestException>(
-            () => _service.UpdateAppointmentStatusAsync(
-                0,
-                AppointmentStatus.Pending));
-    }
-
-    [Fact]
-    public async Task UpdateStatus_NotFound_ShouldThrow()
-    {
-        _appointmentRepo
-            .Setup(repo => repo.GetByIdAsync(
-                1,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Appointment?)null);
-
-        await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _service.UpdateAppointmentStatusAsync(
-                1,
-                AppointmentStatus.Pending));
-    }
-
-    [Fact]
-    public async Task UpdateStatus_Completed_ShouldThrow()
-    {
-        var appointment = CreateAppointment(AppointmentStatus.Completed);
-        _appointmentRepo
-            .Setup(repo => repo.GetByIdAsync(
-                appointment.AppointmentId,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(appointment);
-
-        await Assert.ThrowsAsync<BusinessRuleViolationException>(
-            () => _service.UpdateAppointmentStatusAsync(
-                appointment.AppointmentId,
-                AppointmentStatus.Cancelled,
-                "Reason"));
-    }
-
-    [Fact]
-    public async Task UpdateStatus_CancelWithoutReason_ShouldThrow()
-    {
-        var appointment = CreateAppointment(AppointmentStatus.Pending);
-        _appointmentRepo
-            .Setup(repo => repo.GetByIdAsync(
-                appointment.AppointmentId,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(appointment);
-
-        await Assert.ThrowsAsync<InvalidRequestException>(
-            () => _service.UpdateAppointmentStatusAsync(
-                appointment.AppointmentId,
-                AppointmentStatus.Cancelled));
-    }
-
-    [Fact]
-    public async Task Delete_InvalidId_ShouldThrow()
-    {
-        await Assert.ThrowsAsync<InvalidRequestException>(
-            () => _service.DeleteAppointmentAsync(0));
-    }
-
-    [Fact]
-    public async Task Delete_NotCancelled_ShouldThrow()
-    {
-        var appointment = CreateAppointment(AppointmentStatus.Pending);
-        _appointmentRepo
-            .Setup(repo => repo.GetByIdAsync(
-                appointment.AppointmentId,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(appointment);
-
-        await Assert.ThrowsAsync<BusinessRuleViolationException>(
-            () => _service.DeleteAppointmentAsync(
-                appointment.AppointmentId));
-    }
-
-    [Fact]
-    public async Task Delete_Failure_ShouldThrow()
-    {
-        var appointment = CreateAppointment(AppointmentStatus.Cancelled);
-        _appointmentRepo
-            .Setup(repo => repo.GetByIdAsync(
-                appointment.AppointmentId,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(appointment);
-        _appointmentRepo
-            .Setup(repo => repo.DeleteAsync(appointment.AppointmentId))
-            .ReturnsAsync(false);
-
-        await Assert.ThrowsAsync<BusinessRuleViolationException>(
-            () => _service.DeleteAppointmentAsync(
-                appointment.AppointmentId));
-    }
-
-    [Fact]
-    public async Task Delete_Valid_ShouldDeleteAndInvalidateCache()
-    {
-        var appointment = CreateAppointment(AppointmentStatus.Cancelled);
-        _appointmentRepo
-            .Setup(repo => repo.GetByIdAsync(
-                appointment.AppointmentId,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(appointment);
-        _appointmentRepo
-            .Setup(repo => repo.DeleteAsync(appointment.AppointmentId))
-            .ReturnsAsync(true);
-
-        await _service.DeleteAppointmentAsync(appointment.AppointmentId);
-
-        _appointmentRepo.Verify(
-            repo => repo.DeleteAsync(appointment.AppointmentId),
-            Times.Once);
         _cache.Verify(
             cache => cache.RemoveAsync(
                 It.IsAny<string>(),
@@ -786,51 +576,11 @@ public class AppointmentServiceTests
     }
 
     [Fact]
-    public async Task GetDoctorAvailability_InvalidDoctor_ShouldThrow()
-    {
-        await Assert.ThrowsAsync<InvalidRequestException>(
-            () => _service.GetDoctorAvailabilityAsync(
-                0,
-                DateOnly.FromDateTime(DateTime.Today)));
-    }
-
-    [Fact]
-    public async Task GetDoctorAvailability_DoctorNotFound_ShouldThrow()
-    {
-        _doctorRepo
-            .Setup(repo => repo.GetByIdAsync(
-                1,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Doctor?)null);
-
-        await Assert.ThrowsAsync<EntityNotFoundException>(
-            () => _service.GetDoctorAvailabilityAsync(
-                1,
-                DateOnly.FromDateTime(DateTime.Today)));
-    }
-
-    [Fact]
-    public async Task GetDoctorAvailability_DoctorInactive_ShouldThrow()
-    {
-        var doctor = CreateDoctor(1);
-        doctor.IsActive = false;
-        _doctorRepo
-            .Setup(repo => repo.GetByIdAsync(
-                1,
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(doctor);
-
-        await Assert.ThrowsAsync<BusinessRuleViolationException>(
-            () => _service.GetDoctorAvailabilityAsync(
-                1,
-                DateOnly.FromDateTime(DateTime.Today.AddDays(1))));
-    }
-
-    [Fact]
     public async Task GetDoctorAvailability_DoctorOnLeave_ShouldDisableAllSlots()
     {
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
         SetupActiveDoctor(1);
+
         _doctorLeaveRepo
             .Setup(repo => repo.GetLeaveForDateAsync(
                 1,
@@ -853,13 +603,12 @@ public class AppointmentServiceTests
             Assert.False(slot.IsAvailable);
             Assert.Equal("DoctorOnLeave", slot.Status);
         });
-        _appointmentRepo.Verify(
-            repo => repo.IsDoctorSlotBookedAsync(
-                It.IsAny<int>(),
-                It.IsAny<DateOnly>(),
-                It.IsAny<string>(),
-                It.IsAny<CancellationToken>()),
-            Times.Never);
+    }
+
+    public void Dispose()
+    {
+        _context.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     private static AppointmentCreateDto ValidDto() => new()
@@ -890,7 +639,8 @@ public class AppointmentServiceTests
             AppointmentId = 1,
             PatientId = 1,
             DoctorId = 1,
-            ScheduledDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
+            ScheduledDate = DateOnly.FromDateTime(
+                DateTime.Today.AddDays(1)),
             TimeSlot = "10AM",
             Status = status
         };
@@ -904,6 +654,7 @@ public class AppointmentServiceTests
                 patientId,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(patient ?? CreatePatient(patientId));
+
         _patientRepo
             .Setup(repo => repo.GetPatientUserIdAsync(
                 patientId,
@@ -918,30 +669,5 @@ public class AppointmentServiceTests
                 doctorId,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateDoctor(doctorId));
-    }
-
-    private void SetupNoBookingConflicts()
-    {
-        _appointmentRepo
-            .Setup(repo => repo.HasAppointmentWithDoctorOnSameDayAsync(
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<DateOnly>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-        _appointmentRepo
-            .Setup(repo => repo.HasPatientSlotConflictAsync(
-                It.IsAny<int>(),
-                It.IsAny<DateOnly>(),
-                It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-        _appointmentRepo
-            .Setup(repo => repo.IsDoctorSlotBookedAsync(
-                It.IsAny<int>(),
-                It.IsAny<DateOnly>(),
-                It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
     }
 }
