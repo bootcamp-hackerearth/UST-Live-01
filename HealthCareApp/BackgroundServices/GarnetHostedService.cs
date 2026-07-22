@@ -1,105 +1,105 @@
-﻿using Garnet;
+﻿//using Garnet;
 
-namespace HealthCareApp.BackgroundServices
-{
-    public sealed class GarnetHostedService : IHostedService, IDisposable
-    {
-        private const string GarnetPortArgument = "--port=3278";
-        private const int GarnetPort = 3278;
+//namespace HealthCareApp.BackgroundServices
+//{
+//    public sealed class GarnetHostedService : IHostedService, IDisposable
+//    {
+//        private const string GarnetPortArgument = "--port=3278";
+//        private const int GarnetPort = 3278;
 
-        private GarnetServer? server;
+//        private GarnetServer? server;
 
-        private bool disposed;
+//        private bool disposed;
 
-        private readonly ILogger<GarnetHostedService> logger;
+//        private readonly ILogger<GarnetHostedService> logger;
 
-        public GarnetHostedService(
-            ILogger<GarnetHostedService> logger)
-        {
-            this.logger = logger;
-        }
+//        public GarnetHostedService(
+//            ILogger<GarnetHostedService> logger)
+//        {
+//            this.logger = logger;
+//        }
 
-        public Task StartAsync(
-            CancellationToken cancellationToken)
-        {
-            try
-            {
-                server = new GarnetServer([GarnetPortArgument]);
+//        public Task StartAsync(
+//            CancellationToken cancellationToken)
+//        {
+//            try
+//            {
+//                server = new GarnetServer([GarnetPortArgument]);
 
-                server.Start();
+//                server.Start();
 
-                LogGarnetServerStarted();
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(
-                    ex,
-                    "Failed to start embedded Garnet server.");
-            }
+//                LogGarnetServerStarted();
+//            }
+//            catch (Exception ex)
+//            {
+//                logger.LogError(
+//                    ex,
+//                    "Failed to start embedded Garnet server.");
+//            }
 
-            return Task.CompletedTask;
-        }
+//            return Task.CompletedTask;
+//        }
 
-        public Task StopAsync(
-            CancellationToken cancellationToken)
-        {
-            DisposeServer();
+//        public Task StopAsync(
+//            CancellationToken cancellationToken)
+//        {
+//            DisposeServer();
 
-            LogGarnetServerStopped();
+//            LogGarnetServerStopped();
 
-            return Task.CompletedTask;
-        }
+//            return Task.CompletedTask;
+//        }
 
-        public void Dispose()
-        {
-            Dispose(true);
+//        public void Dispose()
+//        {
+//            Dispose(true);
 
-            GC.SuppressFinalize(this);
-        }
+//            GC.SuppressFinalize(this);
+//        }
 
-        private void Dispose(bool disposing)
-        {
-            if (disposed)
-            {
-                return;
-            }
+//        private void Dispose(bool disposing)
+//        {
+//            if (disposed)
+//            {
+//                return;
+//            }
 
-            if (disposing)
-            {
-                DisposeServer();
-            }
+//            if (disposing)
+//            {
+//                DisposeServer();
+//            }
 
-            disposed = true;
-        }
+//            disposed = true;
+//        }
 
-        private void DisposeServer()
-        {
-            server?.Dispose();
+//        private void DisposeServer()
+//        {
+//            server?.Dispose();
 
-            server = null;
-        }
+//            server = null;
+//        }
 
-        private void LogGarnetServerStarted()
-        {
-            if (!logger.IsEnabled(LogLevel.Information))
-            {
-                return;
-            }
+//        private void LogGarnetServerStarted()
+//        {
+//            if (!logger.IsEnabled(LogLevel.Information))
+//            {
+//                return;
+//            }
 
-            logger.LogInformation(
-                "Embedded Garnet server started on port {Port}.",
-                GarnetPort);
-        }
+//            logger.LogInformation(
+//                "Embedded Garnet server started on port {Port}.",
+//                GarnetPort);
+//        }
 
-        private void LogGarnetServerStopped()
-        {
-            if (!logger.IsEnabled(LogLevel.Information))
-            {
-                return;
-            }
+//        private void LogGarnetServerStopped()
+//        {
+//            if (!logger.IsEnabled(LogLevel.Information))
+//            {
+//                return;
+//            }
 
-            logger.LogInformation(
-                "Embedded Garnet server stopped.");
-        }
-    }
-}
+//            logger.LogInformation(
+//                "Embedded Garnet server stopped.");
+//        }
+//    }
+//}

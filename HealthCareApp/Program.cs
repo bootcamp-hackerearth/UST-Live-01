@@ -4,7 +4,6 @@ using HealthCareApp.Data;
 using HealthCareApp.Mapping;
 using HealthCareApp.Messaging.Consumers;
 using HealthCareApp.Middleware;
-using HealthCareApp.Options;
 using HealthCareApp.Repository.Impl;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Services;
@@ -38,24 +37,10 @@ builder.Services.AddControllers()
             System.Text.Json.JsonNamingPolicy.CamelCase;
     });
 
-// Register embedded Garnet server for local development.
-// This starts Garnet automatically when the backend API starts.
-builder.Services.AddHostedService<GarnetHostedService>();
-
-// Register Garnet/Redis options.
-builder.Services.Configure<GarnetOptions>(
-    builder.Configuration.GetSection("Garnet"));
-
-// Register distributed cache using embedded Garnet.
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    var garnetOptions = builder.Configuration
-        .GetSection("Garnet")
-        .Get<GarnetOptions>()!;
-
-    options.Configuration = garnetOptions.ConnectionString;
-    options.InstanceName = garnetOptions.InstanceName;
-});
+// Register in-memory distributed cache.
+// This replaces Garnet/Redis for AWS deployment.
+// CacheService still works because it depends on IDistributedCache.
+builder.Services.AddDistributedMemoryCache();
 
 // Register HealthAxisDbContext with SQL Server.
 builder.Services.AddDbContext<HealthAxisDbContext>(options =>
@@ -100,6 +85,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
+
+// Health check endpoint for AWS / Elastic Beanstalk validation.
+// Sprint 5 expects GET /health to return 200 for deployment health verification. [1](https://ustglobal-my.sharepoint.com/personal/310476_ust_com/Documents/Microsoft%20Copilot%20Chat%20Files/Sprint%205%20-%20Deliverables.pdf)
+builder.Services.AddHealthChecks();
 
 // Swagger/OpenAPI.
 builder.Services.AddEndpointsApiExplorer();
@@ -188,6 +177,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddHostedService<HeartbeatBackgroundService>();
 builder.Services.AddHostedService<NotificationCleanupService>();
 builder.Services.AddHostedService<OutboxPublisherBackgroundService>();
+
 // Register MassTransit with RabbitMQ.
 builder.Services.AddMassTransit(configurator =>
 {
@@ -212,7 +202,6 @@ builder.Services.AddMassTransit(configurator =>
             rabbitMqSection["AppointmentBookedQueue"]!,
             endpoint =>
             {
-
                 endpoint.UseMessageRetry(retryConfig =>
                 {
                     retryConfig.Interval(
@@ -266,8 +255,7 @@ app.UseExceptionHandler();
 
 // Serilog request logging middleware.
 // This logs HTTP method, path, status code, and elapsed time.
-// The diagnostic context fields can appear in Kibana as labels.StatusCode,
-// labels.RequestMethod, labels.RequestPath, and labels.UserAgent.
+// In AWS deployment, these logs can be checked from Elastic Beanstalk logs.
 app.UseSerilogRequestLogging(options =>
 {
     options.MessageTemplate =
@@ -296,6 +284,8 @@ app.UseCors(ClientCorsPolicy);
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapHealthChecks("/health");
 
 app.MapControllers();
 
