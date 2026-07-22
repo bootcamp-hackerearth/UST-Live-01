@@ -4,7 +4,6 @@ using HealthApp.Api.Handler;
 using HealthApp.Api.HostedServices;
 using HealthApp.Api.Mapping;
 using HealthApp.Api.Models;
-using HealthApp.Api.Options;
 using HealthApp.Api.Repositories.Impl;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Dependencies;
@@ -23,7 +22,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Serilog
-// Reads Console, File, and Elasticsearch sinks from appsettings.json.
+// Reads Console and File sinks from appsettings.json.
 builder.Host.UseSerilog((context, services, loggerConfiguration) =>
 {
     loggerConfiguration
@@ -205,19 +204,7 @@ builder.Services.AddMassTransit(configuration =>
         });
 });
 
-// Garnet / Redis distributed cache
-builder.Services.Configure<GarnetOptions>(
-    builder.Configuration.GetSection("Garnet"));
-
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    var garnetOptions = builder.Configuration
-        .GetSection("Garnet")
-        .Get<GarnetOptions>() ?? new GarnetOptions();
-
-    options.Configuration = garnetOptions.ConnectionString;
-    options.InstanceName = garnetOptions.InstanceName;
-});
+builder.Services.AddDistributedMemoryCache();
 
 // AutoMapper
 builder.Services.AddAutoMapper(configuration =>
