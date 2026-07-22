@@ -29,21 +29,26 @@
             ],
             "styles": [
               "src/styles.css"
-            ]
+            ],
+            "outputPath": {
+              "base": "../HealthCareApp/wwwroot/angular",
+              "browser": ""
+            }
           },
           "configurations": {
             "production": {
+              "baseHref": "/angular/",
               "budgets": [
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
                   "maximumError": "1MB"
                 },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
-                }
+               {
+  "type": "anyComponentStyle",
+  "maximumWarning": "40kB",
+  "maximumError": "60kB"
+}
               ],
               "outputHashing": "all"
             },

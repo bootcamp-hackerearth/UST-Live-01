@@ -34,7 +34,7 @@ interface ApiDoctorLeaveDto {
   providedIn: 'root'
 })
 export class DoctorLeaveApiService {
-  private readonly apiUrl = 'https://localhost:7250/api/DoctorLeaves';
+  private readonly apiUrl = '/api/api/DoctorLeaves';
 
   constructor(private readonly http: HttpClient) {
   }

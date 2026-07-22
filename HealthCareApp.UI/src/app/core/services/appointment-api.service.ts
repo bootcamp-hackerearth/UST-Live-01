@@ -48,7 +48,7 @@ interface ApiAppointmentDto {
   providedIn: 'root'
 })
 export class AppointmentApiService {
-  private readonly apiUrl = 'https://localhost:7250/api/Appointments';
+  private readonly apiUrl = '/api/api/Appointments';
 
   constructor(private readonly http: HttpClient) {
   }
