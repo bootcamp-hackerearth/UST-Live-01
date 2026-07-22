@@ -1,3 +1,5 @@
+using System.Text;
+
 using HealthAxisCore_Api.BackgroundServices;
 using HealthAxisCore_Api.Consumers;
 using HealthAxisCore_Api.Data;
@@ -11,15 +13,19 @@ using HealthAxisCore_Api.Repositories.Interface;
 using HealthAxisCore_Api.Services.Implementation;
 using HealthAxisCore_Api.Services.Implementations;
 using HealthAxisCore_Api.Services.Interfaces;
+
 using MassTransit;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
 using Serilog;
 using Serilog.Events;
-using System.Text;
+
+const string CorsPolicyName = "CorsPolicy";
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -27,189 +33,439 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    Log.Information("Starting HealthAxis API");
+    Log.Information("Starting HealthAxis API.");
 
-    var builder = WebApplication.CreateBuilder(args);
+    var builder =
+        WebApplication.CreateBuilder(args);
 
-    builder.Host.UseSerilog((context, services, configuration) =>
-    {
-        configuration
-            .ReadFrom.Configuration(context.Configuration)
-            .ReadFrom.Services(services)
-            .Enrich.FromLogContext();
-    });
+    ConfigureSerilog(builder);
 
     builder.Services.AddControllers();
 
-    builder.Services.AddDbContext<HealthAppDbContext>(options =>
-        options.UseSqlServer(
-            builder.Configuration.GetConnectionString("DefaultConnection")
-        ));
+    ConfigureDatabase(builder);
+    ConfigureIdentity(builder);
+    ConfigureAuthentication(builder);
+    ConfigureDistributedCache(builder);
+    ConfigureAutoMapper(builder);
 
-    builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-        .AddEntityFrameworkStores<HealthAppDbContext>()
-        .AddDefaultTokenProviders();
+    RegisterRepositories(builder.Services);
+    RegisterApplicationServices(builder.Services);
 
-    var jwtSettings = builder.Configuration.GetSection("Jwt");
-    var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
+    ConfigureMassTransit(builder);
+    ConfigureHostOptions(builder.Services);
+    RegisterBackgroundServices(builder.Services);
 
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-
-            ClockSkew = TimeSpan.Zero
-        };
-    });
-
-    builder.Services.Configure<GarnetOptions>(
-        builder.Configuration.GetSection(GarnetOptions.SectionName));
-
-    builder.Services.AddStackExchangeRedisCache(options =>
-    {
-        var garnetOptions =
-            builder.Configuration.GetSection(GarnetOptions.SectionName);
-
-        options.Configuration =
-            garnetOptions["ConnectionString"];
-
-        options.InstanceName =
-            garnetOptions["InstanceName"];
-    });
-
-    builder.Services.AddAutoMapper(cfg =>
-    {
-        cfg.AddProfile<MappingProfile>();
-    });
-
-    builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-    builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-    builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
-    builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-    builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
-    builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
-
-    builder.Services.AddScoped<IPatientService, PatientService>();
-    builder.Services.AddScoped<IDoctorService, DoctorService>();
-    builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-    builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
-    builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
-
-    builder.Services.AddScoped<IAuthService, AuthService>();
-    builder.Services.AddScoped<ICacheService, CacheService>();
-
-    builder.Services.AddMassTransit(x =>
-    {
-        x.AddConsumer<AppointmentBookedConsumer>();
-
-        x.UsingRabbitMq((context, cfg) =>
-        {
-            var rabbitMqSettings = builder.Configuration.GetSection("RabbitMQ");
-
-            cfg.Host(rabbitMqSettings["Host"], "/", h =>
-            {
-                h.Username(rabbitMqSettings["Username"]!);
-                h.Password(rabbitMqSettings["Password"]!);
-            });
-
-            cfg.ReceiveEndpoint("appointment-booked-queue", e =>
-            {
-                e.ConfigureConsumer<AppointmentBookedConsumer>(context);
-            });
-        });
-    });
-
-    builder.Services.Configure<HostOptions>(options =>
-    {
-        options.ShutdownTimeout = TimeSpan.FromSeconds(30);
-    });
-
-    builder.Services.AddHostedService<HeartbeatService>();
-    builder.Services.AddHostedService<NotificationCleanupService>();
-    builder.Services.AddHostedService<DoctorAvailabilityMonitorService>();
-
-    builder.Services.AddEndpointsApiExplorer();
-
-    builder.Services.AddSwaggerGen(options =>
-    {
-        options.SwaggerDoc("v1", new OpenApiInfo
-        {
-            Title = "HealthAxis API",
-            Version = "v1",
-            Description = "API for HealthAxis Healthcare System"
-        });
-
-        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        {
-            Name = "Authorization",
-            Type = SecuritySchemeType.Http,
-            Scheme = "bearer",
-            BearerFormat = "JWT",
-            In = ParameterLocation.Header,
-            Description = "Enter 'Bearer {your token}'"
-        });
-
-        options.AddSecurityRequirement(new OpenApiSecurityRequirement
-        {
-            {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                },
-                Array.Empty<string>()
-            }
-        });
-    });
-
-    const string CorsPolicy = "CorsPolicy";
-
-    builder.Services.AddCors(options =>
-    {
-        options.AddPolicy(CorsPolicy, policy =>
-        {
-            policy.WithOrigins(
-                    "http://localhost:4200",
-                    "https://localhost:7107"
-                )
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-
-        });
-    });
+    ConfigureSwagger(builder.Services);
+    ConfigureCors(builder.Services);
 
     var app = builder.Build();
 
-    using (var scope = app.Services.CreateScope())
+    await SeedIdentityDataAsync(app.Services);
+
+    ConfigureHttpPipeline(app);
+
+    await app.RunAsync();
+}
+catch (Exception exception)
+{
+    Log.Fatal(
+        exception,
+        "HealthAxis API terminated unexpectedly.");
+}
+finally
+{
+    Log.Information("HealthAxis API stopped.");
+
+    await Log.CloseAndFlushAsync();
+}
+
+static void ConfigureSerilog(
+    WebApplicationBuilder builder)
+{
+    builder.Host.UseSerilog(
+        (context, services, configuration) =>
+        {
+            configuration
+                .ReadFrom.Configuration(
+                    context.Configuration)
+                .ReadFrom.Services(services)
+                .Enrich.FromLogContext();
+        });
+}
+
+static void ConfigureDatabase(
+    WebApplicationBuilder builder)
+{
+    var connectionString =
+        builder.Configuration.GetConnectionString(
+            "DefaultConnection");
+
+    if (string.IsNullOrWhiteSpace(connectionString))
     {
-        var roleManager =
-            scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-        var userManager =
-            scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-        await RoleSeeder.SeedRolesAsync(roleManager);
-        await AdminSeeder.SeedAdminAsync(userManager);
+        throw new InvalidOperationException(
+            "The DefaultConnection connection string is missing.");
     }
 
+    builder.Services.AddDbContext<HealthAppDbContext>(
+        options =>
+        {
+            options.UseSqlServer(connectionString);
+        });
+}
+
+static void ConfigureIdentity(
+    WebApplicationBuilder builder)
+{
+    builder.Services
+        .AddIdentity<ApplicationUser, IdentityRole>()
+        .AddEntityFrameworkStores<HealthAppDbContext>()
+        .AddDefaultTokenProviders();
+}
+
+static void ConfigureAuthentication(
+    WebApplicationBuilder builder)
+{
+    var jwtSettings =
+        builder.Configuration.GetSection("Jwt");
+
+    var jwtKey = jwtSettings["Key"];
+
+    if (string.IsNullOrWhiteSpace(jwtKey))
+    {
+        throw new InvalidOperationException(
+            "The JWT signing key is missing.");
+    }
+
+    var signingKey =
+        Encoding.UTF8.GetBytes(jwtKey);
+
+    builder.Services
+        .AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+
+            options.DefaultChallengeScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters =
+                new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer =
+                        jwtSettings["Issuer"],
+
+                    ValidAudience =
+                        jwtSettings["Audience"],
+
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(
+                            signingKey),
+
+                    ClockSkew = TimeSpan.Zero
+                };
+        });
+
+    builder.Services.AddAuthorization();
+}
+
+static void ConfigureDistributedCache(
+    WebApplicationBuilder builder)
+{
+    var garnetSection =
+        builder.Configuration.GetSection(
+            GarnetOptions.SectionName);
+
+    var garnetConnectionString =
+        garnetSection["ConnectionString"];
+
+    if (string.IsNullOrWhiteSpace(
+        garnetConnectionString))
+    {
+        throw new InvalidOperationException(
+            "The Garnet connection string is missing.");
+    }
+
+    builder.Services.Configure<GarnetOptions>(
+        garnetSection);
+
+    builder.Services.AddStackExchangeRedisCache(
+        options =>
+        {
+            options.Configuration =
+                garnetConnectionString;
+
+            options.InstanceName =
+                garnetSection["InstanceName"];
+        });
+}
+
+static void ConfigureAutoMapper(
+    WebApplicationBuilder builder)
+{
+    builder.Services.AddAutoMapper(
+        configuration =>
+        {
+            configuration.AddProfile<
+                MappingProfile>();
+        });
+}
+
+static void RegisterRepositories(
+    IServiceCollection services)
+{
+    services.AddScoped(
+        typeof(IGenericRepository<>),
+        typeof(GenericRepository<>));
+
+    services.AddScoped<
+        IPatientRepository,
+        PatientRepository>();
+
+    services.AddScoped<
+        IDoctorRepository,
+        DoctorRepository>();
+
+    services.AddScoped<
+        IAppointmentRepository,
+        AppointmentRepository>();
+
+    services.AddScoped<
+        IHealthRecordRepository,
+        HealthRecordRepository>();
+
+    services.AddScoped<
+        IDoctorLeaveRepository,
+        DoctorLeaveRepository>();
+}
+
+static void RegisterApplicationServices(
+    IServiceCollection services)
+{
+    services.AddScoped<
+        IPatientService,
+        PatientService>();
+
+    services.AddScoped<
+        IDoctorService,
+        DoctorService>();
+
+    services.AddScoped<
+        IAppointmentService,
+        AppointmentService>();
+
+    services.AddScoped<
+        IHealthRecordService,
+        HealthRecordService>();
+
+    services.AddScoped<
+        IDoctorLeaveService,
+        DoctorLeaveService>();
+
+    services.AddScoped<
+        IAuthService,
+        AuthService>();
+
+    services.AddScoped<
+        ICacheService,
+        CacheService>();
+}
+
+static void ConfigureMassTransit(
+    WebApplicationBuilder builder)
+{
+    var rabbitMqSettings =
+        builder.Configuration.GetSection(
+            "RabbitMQ");
+
+    var host =
+        rabbitMqSettings["Host"];
+
+    var username =
+        rabbitMqSettings["Username"];
+
+    var password =
+        rabbitMqSettings["Password"];
+
+    if (string.IsNullOrWhiteSpace(host))
+    {
+        throw new InvalidOperationException(
+            "The RabbitMQ host is missing.");
+    }
+
+    if (string.IsNullOrWhiteSpace(username))
+    {
+        throw new InvalidOperationException(
+            "The RabbitMQ username is missing.");
+    }
+
+    if (string.IsNullOrWhiteSpace(password))
+    {
+        throw new InvalidOperationException(
+            "The RabbitMQ password is missing.");
+    }
+
+    builder.Services.AddMassTransit(
+        configuration =>
+        {
+            configuration.AddConsumer<
+                AppointmentBookedConsumer>();
+
+            configuration.UsingRabbitMq(
+                (context, rabbitMqConfiguration) =>
+                {
+                    rabbitMqConfiguration.Host(
+                        host,
+                        "/",
+                        hostConfiguration =>
+                        {
+                            hostConfiguration.Username(
+                                username);
+
+                            hostConfiguration.Password(
+                                password);
+                        });
+
+                    rabbitMqConfiguration.ReceiveEndpoint(
+                        "appointment-booked-queue",
+                        endpointConfiguration =>
+                        {
+                            endpointConfiguration
+                                .ConfigureConsumer<
+                                    AppointmentBookedConsumer>(
+                                        context);
+                        });
+                });
+        });
+}
+
+static void ConfigureHostOptions(
+    IServiceCollection services)
+{
+    services.Configure<HostOptions>(
+        options =>
+        {
+            options.ShutdownTimeout =
+                TimeSpan.FromSeconds(30);
+        });
+}
+
+static void RegisterBackgroundServices(
+    IServiceCollection services)
+{
+    services.AddHostedService<
+        HeartbeatService>();
+
+    services.AddHostedService<
+        NotificationCleanupService>();
+
+    services.AddHostedService<
+        DoctorAvailabilityMonitorService>();
+}
+
+static void ConfigureSwagger(
+    IServiceCollection services)
+{
+    services.AddEndpointsApiExplorer();
+
+    services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc(
+            "v1",
+            new OpenApiInfo
+            {
+                Title = "HealthAxis API",
+                Version = "v1",
+                Description =
+                    "API for HealthAxis Healthcare System"
+            });
+
+        options.AddSecurityDefinition(
+            "Bearer",
+            new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description =
+                    "Enter 'Bearer {your token}'"
+            });
+
+        options.AddSecurityRequirement(
+            new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference =
+                            new OpenApiReference
+                            {
+                                Type =
+                                    ReferenceType.SecurityScheme,
+
+                                Id = "Bearer"
+                            }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+    });
+}
+
+static void ConfigureCors(
+    IServiceCollection services)
+{
+    services.AddCors(options =>
+    {
+        options.AddPolicy(
+            CorsPolicyName,
+            policy =>
+            {
+                policy
+                    .WithOrigins(
+                        "http://localhost:4200",
+                        "https://localhost:7107")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
+    });
+}
+
+static async Task SeedIdentityDataAsync(
+    IServiceProvider serviceProvider)
+{
+    using var scope =
+        serviceProvider.CreateScope();
+
+    var roleManager =
+        scope.ServiceProvider
+            .GetRequiredService<
+                RoleManager<IdentityRole>>();
+
+    var userManager =
+        scope.ServiceProvider
+            .GetRequiredService<
+                UserManager<ApplicationUser>>();
+
+    await RoleSeeder.SeedRolesAsync(
+        roleManager);
+
+    await AdminSeeder.SeedAdminAsync(
+        userManager);
+}
+
+static void ConfigureHttpPipeline(
+    WebApplication app)
+{
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -218,48 +474,43 @@ try
 
     app.UseHttpsRedirection();
 
-    app.UseSerilogRequestLogging(options =>
-    {
-        options.MessageTemplate =
-            "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
-
-        options.GetLevel = (httpContext, elapsed, exception) =>
+    app.UseSerilogRequestLogging(
+        options =>
         {
-            if (exception != null)
-            {
-                return LogEventLevel.Error;
-            }
+            options.MessageTemplate =
+                "HTTP {RequestMethod} {RequestPath} " +
+                "responded {StatusCode} in " +
+                "{Elapsed:0.0000} ms";
 
-            if (httpContext.Response.StatusCode >= 500)
-            {
-                return LogEventLevel.Error;
-            }
+            options.GetLevel =
+                (httpContext, _, exception) =>
+                {
+                    if (
+                        exception != null ||
+                        httpContext.Response.StatusCode >= 500
+                    )
+                    {
+                        return LogEventLevel.Error;
+                    }
 
-            if (httpContext.Response.StatusCode >= 400)
-            {
-                return LogEventLevel.Warning;
-            }
+                    if (
+                        httpContext.Response.StatusCode >= 400
+                    )
+                    {
+                        return LogEventLevel.Warning;
+                    }
 
-            return LogEventLevel.Information;
-        };
-    });
+                    return LogEventLevel.Information;
+                };
+        });
 
-    app.UseMiddleware<GlobalExceptionHandler>();
+    app.UseMiddleware<
+        GlobalExceptionHandler>();
 
-    app.UseCors(CorsPolicy);
+    app.UseCors(CorsPolicyName);
+
     app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();
-
-    app.Run();
-}
-catch (Exception ex)
-{
-    Log.Fatal(ex, "HealthAxis API terminated unexpectedly");
-}
-finally
-{
-    Log.Information("HealthAxis API stopped");
-    Log.CloseAndFlush();
 }
