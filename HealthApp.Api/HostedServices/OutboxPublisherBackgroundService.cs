@@ -76,7 +76,6 @@ public class OutboxPublisherBackgroundService : BackgroundService
 
         if (messages.Count == 0)
         {
-            LogNoPendingMessages();
             return;
         }
 
@@ -179,18 +178,6 @@ public class OutboxPublisherBackgroundService : BackgroundService
             "OutboxPublisherServiceStopped");
     }
 
-    private void LogNoPendingMessages()
-    {
-        if (!_logger.IsEnabled(LogLevel.Information))
-        {
-            return;
-        }
-
-        _logger.LogInformation(
-            "Outbox polling completed with no eligible messages. Event type: {EventType}",
-            "OutboxPollingCompleted");
-    }
-
     private void LogMessagePublished(OutboxMessage message)
     {
         if (!_logger.IsEnabled(LogLevel.Information))
@@ -199,7 +186,7 @@ public class OutboxPublisherBackgroundService : BackgroundService
         }
 
         _logger.LogInformation(
-            "Outbox message {OutboxMessageId} with event {OutboxEventId} was published successfully. Event type: {EventType}",
+            "Outbox message {OutboxMessageId} with event {OutboxEventId} was published successfully to RabbitMQ. Event type: {EventType}",
             message.OutboxMessageId,
             message.EventId,
             "OutboxMessagePublished");
