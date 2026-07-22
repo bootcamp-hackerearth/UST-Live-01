@@ -6,7 +6,6 @@ using HealthAxisCore_Api.Data;
 using HealthAxisCore_Api.Mappings;
 using HealthAxisCore_Api.Middleware;
 using HealthAxisCore_Api.Models;
-using HealthAxisCore_Api.Options;
 using HealthAxisCore_Api.Repositories;
 using HealthAxisCore_Api.Repositories.Implementation;
 using HealthAxisCore_Api.Repositories.Interface;
@@ -45,7 +44,7 @@ try
     ConfigureDatabase(builder);
     ConfigureIdentity(builder);
     ConfigureAuthentication(builder);
-    ConfigureDistributedCache(builder);
+    ConfigureCaching(builder.Services);
     ConfigureAutoMapper(builder);
 
     RegisterRepositories(builder.Services);
@@ -128,12 +127,31 @@ static void ConfigureAuthentication(
     var jwtSettings =
         builder.Configuration.GetSection("Jwt");
 
-    var jwtKey = jwtSettings["Key"];
+    var jwtKey =
+        jwtSettings["Key"];
 
     if (string.IsNullOrWhiteSpace(jwtKey))
     {
         throw new InvalidOperationException(
             "The JWT signing key is missing.");
+    }
+
+    var issuer =
+        jwtSettings["Issuer"];
+
+    if (string.IsNullOrWhiteSpace(issuer))
+    {
+        throw new InvalidOperationException(
+            "The JWT issuer is missing.");
+    }
+
+    var audience =
+        jwtSettings["Audience"];
+
+    if (string.IsNullOrWhiteSpace(audience))
+    {
+        throw new InvalidOperationException(
+            "The JWT audience is missing.");
     }
 
     var signingKey =
@@ -158,11 +176,8 @@ static void ConfigureAuthentication(
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
 
-                    ValidIssuer =
-                        jwtSettings["Issuer"],
-
-                    ValidAudience =
-                        jwtSettings["Audience"],
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
 
                     IssuerSigningKey =
                         new SymmetricSecurityKey(
@@ -175,35 +190,23 @@ static void ConfigureAuthentication(
     builder.Services.AddAuthorization();
 }
 
-static void ConfigureDistributedCache(
-    WebApplicationBuilder builder)
+static void ConfigureCaching(
+    IServiceCollection services)
 {
-    var garnetSection =
-        builder.Configuration.GetSection(
-            GarnetOptions.SectionName);
+    /*
+     * The cache is now stored inside the API process.
+     *
+     * CacheService continues to use IDistributedCache, so DoctorService,
+     * DoctorLeaveService and DoctorAvailabilityMonitorService do not need
+     * to know that Garnet has been replaced.
+     *
+     * This cache is suitable for one API process on one EC2 instance.
+     */
+    services.AddDistributedMemoryCache();
 
-    var garnetConnectionString =
-        garnetSection["ConnectionString"];
-
-    if (string.IsNullOrWhiteSpace(
-        garnetConnectionString))
-    {
-        throw new InvalidOperationException(
-            "The Garnet connection string is missing.");
-    }
-
-    builder.Services.Configure<GarnetOptions>(
-        garnetSection);
-
-    builder.Services.AddStackExchangeRedisCache(
-        options =>
-        {
-            options.Configuration =
-                garnetConnectionString;
-
-            options.InstanceName =
-                garnetSection["InstanceName"];
-        });
+    services.AddScoped<
+        ICacheService,
+        CacheService>();
 }
 
 static void ConfigureAutoMapper(
@@ -272,9 +275,10 @@ static void RegisterApplicationServices(
         IAuthService,
         AuthService>();
 
-    services.AddScoped<
-        ICacheService,
-        CacheService>();
+    /*
+     * ICacheService is not registered here.
+     * It is registered once inside ConfigureCaching().
+     */
 }
 
 static void ConfigureMassTransit(

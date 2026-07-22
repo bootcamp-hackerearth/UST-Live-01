@@ -1,4 +1,4 @@
-﻿namespace HealthAxisCore_Api.Options
+﻿/*namespace HealthAxisCore_Api.Options
 {
     public class GarnetOptions
     {
@@ -8,4 +8,4 @@
 
         public string InstanceName { get; set; } = string.Empty;
     }
-}
+}*/

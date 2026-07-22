@@ -7,12 +7,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AutoMapper" Version="16.1.1" />
+		<PackageReference
+		  Include="AutoMapper"
+		  Version="16.1.1" />
 
-		<PackageReference Include="FluentAssertions" Version="8.10.0" />
+		<PackageReference
+		  Include="FluentAssertions"
+		  Version="8.10.0" />
 
-		<PackageReference Include="MassTransit" Version="8.4.1" />
-		<PackageReference Include="MassTransit.RabbitMQ" Version="8.4.1" />
+		<PackageReference
+		  Include="MassTransit"
+		  Version="8.4.1" />
+
+		<PackageReference
+		  Include="MassTransit.RabbitMQ"
+		  Version="8.4.1" />
 
 		<PackageReference
 		  Include="Microsoft.AspNetCore.Authentication.JwtBearer"
@@ -29,7 +38,9 @@
 		<PackageReference
 		  Include="Microsoft.EntityFrameworkCore.Tools"
 		  Version="10.0.9">
+
 			<PrivateAssets>all</PrivateAssets>
+
 			<IncludeAssets>
 				runtime;
 				build;
@@ -41,14 +52,12 @@
 		</PackageReference>
 
 		<PackageReference
-		  Include="Microsoft.Extensions.Caching.StackExchangeRedis"
-		  Version="10.0.9" />
-
-		<PackageReference
 		  Include="Microsoft.NET.Test.Sdk"
 		  Version="18.6.0" />
 
-		<PackageReference Include="Moq" Version="4.20.72" />
+		<PackageReference
+		  Include="Moq"
+		  Version="4.20.72" />
 
 		<PackageReference
 		  Include="Serilog.AspNetCore"
@@ -74,12 +83,16 @@
 		  Include="System.IdentityModel.Tokens.Jwt"
 		  Version="8.19.1" />
 
-		<PackageReference Include="xunit" Version="2.9.3" />
+		<PackageReference
+		  Include="xunit"
+		  Version="2.9.3" />
 
 		<PackageReference
 		  Include="xunit.runner.visualstudio"
 		  Version="3.1.5">
+
 			<PrivateAssets>all</PrivateAssets>
+
 			<IncludeAssets>
 				runtime;
 				build;
