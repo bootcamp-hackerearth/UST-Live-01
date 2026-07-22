@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   Observable,
@@ -44,7 +44,7 @@ interface JwtPayload {
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly apiUrl = '/api/api/Auth';
+  private readonly apiUrl = '/api/Auth';
 
   private readonly tokenKey = 'healthaxis_token';
   private readonly roleKey = 'healthaxis_role';

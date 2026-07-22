@@ -1,4 +1,4 @@
-export interface HealthRecordDto {
+﻿export interface HealthRecordDto {
   healthRecordId: number;
   patientId: number;
   patientName: string;

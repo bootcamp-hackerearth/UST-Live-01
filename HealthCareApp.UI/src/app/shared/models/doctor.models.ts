@@ -1,4 +1,4 @@
-export interface DoctorDto {
+﻿export interface DoctorDto {
   doctorId: number;
   doctorName: string;
   specialisation: string;

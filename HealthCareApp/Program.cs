@@ -12,6 +12,7 @@ using HealthCareApp.Services.Interface;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -87,7 +88,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // Health check endpoint for AWS / Elastic Beanstalk validation.
-// Sprint 5 expects GET /health to return 200 for deployment health verification. [1](https://ustglobal-my.sharepoint.com/personal/310476_ust_com/Documents/Microsoft%20Copilot%20Chat%20Files/Sprint%205%20-%20Deliverables.pdf)
 builder.Services.AddHealthChecks();
 
 // Swagger/OpenAPI.
@@ -254,8 +254,6 @@ using (var scope = app.Services.CreateScope())
 app.UseExceptionHandler();
 
 // Serilog request logging middleware.
-// This logs HTTP method, path, status code, and elapsed time.
-// In AWS deployment, these logs can be checked from Elastic Beanstalk logs.
 app.UseSerilogRequestLogging(options =>
 {
     options.MessageTemplate =
@@ -281,6 +279,21 @@ app.UseHttpsRedirection();
 
 app.UseCors(ClientCorsPolicy);
 
+// Static file support for Angular and Blazor files copied into API wwwroot.
+var staticFileContentTypeProvider = new FileExtensionContentTypeProvider();
+
+staticFileContentTypeProvider.Mappings[".wasm"] = "application/wasm";
+staticFileContentTypeProvider.Mappings[".dat"] = "application/octet-stream";
+staticFileContentTypeProvider.Mappings[".dll"] = "application/octet-stream";
+staticFileContentTypeProvider.Mappings[".json"] = "application/json";
+staticFileContentTypeProvider.Mappings[".br"] = "application/octet-stream";
+staticFileContentTypeProvider.Mappings[".gz"] = "application/gzip";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = staticFileContentTypeProvider
+});
+
 app.UseAuthentication();
 
 app.UseAuthorization();
@@ -289,6 +302,58 @@ app.MapHealthChecks("/health");
 
 app.MapControllers();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+// Safety redirect for old/cached Admin routes.
+app.MapGet("/admin", context =>
+{
+    context.Response.Redirect("/blazor/admin/dashboard");
+    return Task.CompletedTask;
+});
+
+app.MapGet("/admin/{*path}", (string path, HttpContext context) =>
+{
+    context.Response.Redirect($"/blazor/admin/{path}");
+    return Task.CompletedTask;
+});
+
+// Default route opens Angular app.
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/angular");
+    return Task.CompletedTask;
+});
+
+app.MapFallback(async context =>
+{
+    var requestPath = context.Request.Path.Value ?? string.Empty;
+
+    if (IsSpaRoute(requestPath, "/angular"))
+    {
+        await SendSpaIndexAsync(
+            context,
+            app.Environment.WebRootPath,
+            "angular");
+
+        return;
+    }
+
+    if (IsSpaRoute(requestPath, "/blazor"))
+    {
+        await SendSpaIndexAsync(
+            context,
+            app.Environment.WebRootPath,
+            "blazor");
+
+        return;
+    }
+
+    context.Response.StatusCode = StatusCodes.Status404NotFound;
+});
+
 try
 {
     await app.RunAsync();
@@ -296,4 +361,52 @@ try
 finally
 {
     await Log.CloseAndFlushAsync();
+}
+
+static bool IsSpaRoute(string requestPath, string spaBasePath)
+{
+    if (requestPath.Equals(spaBasePath, StringComparison.OrdinalIgnoreCase))
+    {
+        return true;
+    }
+
+    if (requestPath.Equals($"{spaBasePath}/", StringComparison.OrdinalIgnoreCase))
+    {
+        return true;
+    }
+
+    if (requestPath.StartsWith($"{spaBasePath}/", StringComparison.OrdinalIgnoreCase) &&
+        !Path.HasExtension(requestPath))
+    {
+        return true;
+    }
+
+    return false;
+}
+
+static async Task SendSpaIndexAsync(
+    HttpContext context,
+    string? webRootPath,
+    string spaFolderName)
+{
+    var safeWebRootPath = webRootPath ?? "wwwroot";
+
+    var indexPath = Path.Combine(
+        safeWebRootPath,
+        spaFolderName,
+        "index.html");
+
+    if (!File.Exists(indexPath))
+    {
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+
+        await context.Response.WriteAsync(
+            $"{spaFolderName} index.html was not found at: {indexPath}");
+
+        return;
+    }
+
+    context.Response.ContentType = "text/html";
+
+    await context.Response.SendFileAsync(indexPath);
 }

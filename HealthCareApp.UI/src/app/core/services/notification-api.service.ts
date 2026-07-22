@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
@@ -37,7 +37,7 @@ interface ApiNotificationDto {
   providedIn: 'root'
 })
 export class NotificationApiService {
-  private readonly apiUrl = '/api/api/Notifications';
+  private readonly apiUrl = '/api/Notifications';
 
   constructor(private readonly http: HttpClient) {
   }

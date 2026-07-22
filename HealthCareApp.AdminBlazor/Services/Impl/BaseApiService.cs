@@ -9,8 +9,7 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
     public abstract class BaseApiService
     {
         private const string TokenStorageKey = "token";
-        private const string LoginRedirectPath = "/login?sessionExpired=true";
-
+        private const string LoginRedirectPath = "/angular?sessionExpired=true";
         private readonly HttpClient _httpClient;
         private readonly IJSRuntime _jsRuntime;
         private readonly NavigationManager _navigationManager;

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
@@ -48,7 +48,7 @@ interface ApiAppointmentDto {
   providedIn: 'root'
 })
 export class AppointmentApiService {
-  private readonly apiUrl = '/api/api/Appointments';
+  private readonly apiUrl = '/api/Appointments';
 
   constructor(private readonly http: HttpClient) {
   }

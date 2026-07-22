@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+﻿import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
@@ -197,7 +197,7 @@ export class PatientDashboard implements OnInit, OnDestroy {
 
   handleAppointmentCancel(): void {
     this.loadDashboardData();
-    this.showToast('Appointment cancelled successfully ⚠️', 'warning');
+    this.showToast('Appointment cancelled successfully âš ï¸', 'warning');
   }
 
   handleProfileUpdated(): void {

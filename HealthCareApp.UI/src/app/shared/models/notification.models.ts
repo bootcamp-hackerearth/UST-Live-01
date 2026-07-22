@@ -1,4 +1,4 @@
-export interface NotificationDto {
+﻿export interface NotificationDto {
   notificationId: number;
   patientId: number | null;
   doctorId: number | null;

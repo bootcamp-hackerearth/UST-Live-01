@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { timeout } from 'rxjs';
@@ -356,8 +356,15 @@ export class Home implements OnInit {
     if (role === 'Admin') {
       const token = this.authService.getToken();
 
+      if (!token) {
+        this.authService.logout();
+        this.loginMessage = 'Admin session token was not found. Please login again.';
+        return;
+      }
+
       globalThis.location.href =
-        `https://localhost:7075/admin-login-bridge?token=${encodeURIComponent(token)}`;
+        `/blazor/admin-login-bridge?token=${encodeURIComponent(token)}`;
+
       return;
     }
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
@@ -52,7 +52,7 @@ interface ApiDoctorAvailabilityResponseDto {
   providedIn: 'root'
 })
 export class DoctorApiService {
-  private readonly apiUrl = '/api/api/Doctors';
+  private readonly apiUrl = '/api/Doctors';
 
   constructor(private readonly http: HttpClient) {
   }

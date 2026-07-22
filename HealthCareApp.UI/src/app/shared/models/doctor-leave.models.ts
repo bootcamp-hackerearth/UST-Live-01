@@ -1,4 +1,4 @@
-export interface CreateMyDoctorLeaveDto {
+﻿export interface CreateMyDoctorLeaveDto {
   startDate: string;
   endDate: string;
   reason: string;

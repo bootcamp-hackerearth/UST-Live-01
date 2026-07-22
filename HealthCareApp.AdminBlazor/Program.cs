@@ -1,4 +1,4 @@
-using HealthCareApp.AdminBlazor;
+﻿using HealthCareApp.AdminBlazor;
 using HealthCareApp.AdminBlazor.Auth;
 using HealthCareApp.AdminBlazor.Services.Impl;
 using HealthCareApp.AdminBlazor.Services.Interfaces;
@@ -12,17 +12,15 @@ builder.RootComponents.Add<App>("#app");
 
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+var blazorBaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 
-if (string.IsNullOrWhiteSpace(apiBaseUrl))
-{
-    throw new InvalidOperationException("ApiSettings:BaseUrl is missing from appsettings.json.");
-}
+var apiBaseAddress = new Uri(
+    blazorBaseAddress.GetLeftPart(UriPartial.Authority) + "/");
 
 builder.Services.AddScoped(_ =>
     new HttpClient
     {
-        BaseAddress = new Uri(apiBaseUrl)
+        BaseAddress = apiBaseAddress
     });
 
 builder.Services.AddAuthorizationCore();

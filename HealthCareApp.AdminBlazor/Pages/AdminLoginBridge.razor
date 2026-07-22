@@ -15,7 +15,7 @@
     private const string TokenStorageKey = "token";
 
     private string AngularHomeUrl =>
-        Configuration["AppUrls:AngularHomeUrl"] ?? "/";
+        Configuration["AppUrls:AngularHomeUrl"] ?? "/angular/";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -34,9 +34,12 @@
             return;
         }
 
-        await JS.InvokeVoidAsync("localStorage.setItem", TokenStorageKey, token);
+        await JS.InvokeVoidAsync(
+            "localStorage.setItem",
+            TokenStorageKey,
+            token);
 
-        Navigation.NavigateTo("/admin/dashboard", forceLoad: true);
+        Navigation.NavigateTo("/blazor/admin/dashboard", forceLoad: true);
     }
 
     private static string GetQueryValue(string queryString, string key)
@@ -48,7 +51,9 @@
 
         var query = queryString.TrimStart('?');
 
-        var pairs = query.Split('&', StringSplitOptions.RemoveEmptyEntries);
+        var pairs = query.Split(
+            '&',
+            StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var pair in pairs)
         {
