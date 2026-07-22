@@ -194,13 +194,13 @@ static void ConfigureCaching(
     IServiceCollection services)
 {
     /*
-     * The cache is now stored inside the API process.
+     * The cache is held inside the API process.
      *
-     * CacheService continues to use IDistributedCache, so DoctorService,
-     * DoctorLeaveService and DoctorAvailabilityMonitorService do not need
-     * to know that Garnet has been replaced.
+     * CacheService continues to depend on IDistributedCache,
+     * but the current implementation is in-memory rather than
+     * Garnet/Redis.
      *
-     * This cache is suitable for one API process on one EC2 instance.
+     * This configuration is suitable for one API process.
      */
     services.AddDistributedMemoryCache();
 
@@ -276,8 +276,7 @@ static void RegisterApplicationServices(
         AuthService>();
 
     /*
-     * ICacheService is not registered here.
-     * It is registered once inside ConfigureCaching().
+     * ICacheService is registered once in ConfigureCaching().
      */
 }
 
@@ -340,6 +339,24 @@ static void ConfigureMassTransit(
                         "appointment-booked-queue",
                         endpointConfiguration =>
                         {
+                            /*
+                             * This handles consumer-side failures.
+                             *
+                             * It is separate from the Outbox retry,
+                             * which handles publisher-side failures.
+                             */
+                            endpointConfiguration
+                                .UseMessageRetry(
+                                    retryConfiguration =>
+                                    {
+                                        retryConfiguration
+                                            .Interval(
+                                                retryCount: 3,
+                                                interval:
+                                                    TimeSpan
+                                                        .FromSeconds(5));
+                                    });
+
                             endpointConfiguration
                                 .ConfigureConsumer<
                                     AppointmentBookedConsumer>(
@@ -371,6 +388,13 @@ static void RegisterBackgroundServices(
 
     services.AddHostedService<
         DoctorAvailabilityMonitorService>();
+
+    /*
+     * Reads Pending or retryable Failed rows from
+     * OutboxMessages and publishes them through MassTransit.
+     */
+    services.AddHostedService<
+        OutboxPublisherBackgroundService>();
 }
 
 static void ConfigureSwagger(

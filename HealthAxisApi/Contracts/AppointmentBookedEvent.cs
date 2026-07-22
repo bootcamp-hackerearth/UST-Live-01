@@ -1,15 +1,21 @@
 ﻿namespace HealthAxisCore_Api.Contracts
 {
-    public class AppointmentBookedEvent
+    public sealed class AppointmentBookedEvent
     {
-        public int AppointmentId { get; set; }
+        public Guid EventId { get; init; }
 
-        public string PatientName { get; set; } = string.Empty;
+        public int AppointmentId { get; init; }
 
-        public int DoctorId { get; set; }
+        public int PatientId { get; init; }
 
-        public DateTime ScheduledDate { get; set; }
+        public string PatientName { get; init; } =
+            string.Empty;
 
-        public string TimeSlot { get; set; } = string.Empty;
+        public int DoctorId { get; init; }
+
+        public DateTime ScheduledDate { get; init; }
+
+        public string TimeSlot { get; init; } =
+            string.Empty;
     }
 }
