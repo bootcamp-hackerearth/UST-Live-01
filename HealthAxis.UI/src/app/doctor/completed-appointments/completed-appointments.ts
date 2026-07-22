@@ -49,8 +49,10 @@ const PRINT_DELAY_IN_MS = 250;
 export class CompletedAppointments {
   private readonly formBuilder = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
+
   private readonly appointmentService =
     inject(AppointmentService);
+
   private readonly healthRecordService =
     inject(HealthRecordService);
 
@@ -558,7 +560,7 @@ export class CompletedAppointments {
   printHealthRecordPdf(
     record: HealthRecord
   ): void {
-    const printWindow = window.open(
+    const printWindow = globalThis.open(
       '',
       '_blank',
       'width=900,height=700'
@@ -638,27 +640,45 @@ export class CompletedAppointments {
     );
 
     const printableDocument = `
-      <!DOCTYPE html>
+      <!doctype html>
+
       <html lang="en">
         <head>
           <meta charset="utf-8">
-          <title>Health Record #${recordId}</title>
+
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1"
+          >
+
+          <title>
+            Health Record #${recordId}
+          </title>
 
           <style>
             * {
               box-sizing: border-box;
             }
 
+            html,
             body {
               margin: 0;
+              padding: 0;
+            }
+
+            body {
               padding: 24px;
-              background: #f7f8fc;
               color: #111c36;
-              font-family: Arial, sans-serif;
+              background: #f7f8fc;
+              font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
             }
 
             .document {
-              width: min(820px, 100%);
+              width: 820px;
+              max-width: 100%;
               margin: 0 auto;
               padding: 30px;
               border: 1px solid #e1e5ee;
@@ -691,15 +711,18 @@ export class CompletedAppointments {
             .grid {
               margin-top: 20px;
               display: grid;
-              grid-template-columns: 1fr 1fr;
+              grid-template-columns:
+                repeat(2, minmax(0, 1fr));
               gap: 12px;
             }
 
             .box {
+              min-height: 74px;
               padding: 15px;
               border: 1px solid #e1e5ee;
               border-radius: 13px;
               background: #f8f9fd;
+              break-inside: avoid;
             }
 
             .box span {
@@ -707,13 +730,15 @@ export class CompletedAppointments {
               margin-bottom: 7px;
               color: #66758e;
               font-size: 11px;
-              font-weight: bold;
+              font-weight: 700;
               text-transform: uppercase;
             }
 
             .box strong {
               color: #111c36;
               font-size: 15px;
+              line-height: 1.4;
+              overflow-wrap: anywhere;
             }
 
             .section {
@@ -722,6 +747,7 @@ export class CompletedAppointments {
               border: 1px solid #ded8ff;
               border-radius: 14px;
               background: #faf9ff;
+              break-inside: avoid;
             }
 
             .section h2 {
@@ -734,6 +760,7 @@ export class CompletedAppointments {
               color: #3e4d67;
               line-height: 1.7;
               white-space: pre-wrap;
+              overflow-wrap: anywhere;
             }
 
             .footer {
@@ -744,16 +771,35 @@ export class CompletedAppointments {
               font-size: 12px;
             }
 
+            @page {
+              size: A4 portrait;
+              margin: 12mm;
+            }
+
             @media print {
+              html,
               body {
-                padding: 0;
                 background: #ffffff;
               }
 
+              body {
+                padding: 0;
+              }
+
               .document {
-                width: auto;
+                width: 100%;
+                max-width: none;
+                margin: 0;
+                padding: 0;
                 border: none;
                 border-radius: 0;
+              }
+
+              .header,
+              .box,
+              .section {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
               }
             }
           </style>
@@ -762,8 +808,13 @@ export class CompletedAppointments {
         <body>
           <main class="document">
             <header class="header">
-              <h1>HealthAxis Medical Record</h1>
-              <p>Completed consultation health record</p>
+              <h1>
+                HealthAxis Medical Record
+              </h1>
+
+              <p>
+                Completed consultation health record
+              </p>
             </header>
 
             <section class="grid">
@@ -774,7 +825,9 @@ export class CompletedAppointments {
 
               <div class="box">
                 <span>Appointment ID</span>
-                <strong>#${record.appointmentId}</strong>
+                <strong>
+                  #${record.appointmentId}
+                </strong>
               </div>
 
               <div class="box">
@@ -824,27 +877,46 @@ export class CompletedAppointments {
             </section>
 
             <footer class="footer">
-              This record was generated by the HealthAxis Doctor Portal.
+              This record was generated by the
+              HealthAxis Doctor Portal.
             </footer>
           </main>
-
-          <script>
-            window.onload = function () {
-              window.setTimeout(function () {
-                window.print();
-              }, ${PRINT_DELAY_IN_MS});
-            };
-
-            window.onafterprint = function () {
-              window.close();
-            };
-          </script>
         </body>
       </html>
     `;
 
-    printWindow.document.documentElement.innerHTML =
-      printableDocument;
+    const parser = new DOMParser();
+
+    const parsedDocument =
+      parser.parseFromString(
+        printableDocument,
+        'text/html'
+      );
+
+    const documentElement =
+      printWindow.document.importNode(
+        parsedDocument.documentElement,
+        true
+      );
+
+    printWindow.document.replaceChild(
+      documentElement,
+      printWindow.document.documentElement
+    );
+
+    printWindow.onafterprint = () => {
+      printWindow.close();
+    };
+
+    globalThis.setTimeout(
+      () => {
+        if (!printWindow.closed) {
+          printWindow.focus();
+          printWindow.print();
+        }
+      },
+      PRINT_DELAY_IN_MS
+    );
   }
 
   canAddHealthRecord(
@@ -938,8 +1010,10 @@ export class CompletedAppointments {
   getPatientName(
     appointment: Appointment
   ): string {
-    return appointment.patientName?.trim() ||
-      'Patient';
+    return (
+      appointment.patientName?.trim() ||
+      'Patient'
+    );
   }
 
   getDoctorDisplayName(
@@ -1180,10 +1254,12 @@ export class CompletedAppointments {
 
     const appointmentId = Number(value);
 
-    return Number.isInteger(appointmentId) &&
+    return (
+      Number.isInteger(appointmentId) &&
       appointmentId > 0
-      ? appointmentId
-      : null;
+        ? appointmentId
+        : null
+    );
   }
 
   private mergeHealthRecords(
@@ -1405,6 +1481,7 @@ export class CompletedAppointments {
 
     let hour = Number(timeMatch[1]);
     const minute = Number(timeMatch[2]);
+
     const period =
       timeMatch[3].toUpperCase();
 
@@ -1513,7 +1590,14 @@ export class CompletedAppointments {
     const date =
       this.createLocalDate(dateValue);
 
-    return date.toLocaleDateString();
+    return new Intl.DateTimeFormat(
+      'en-IN',
+      {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }
+    ).format(date);
   }
 
   private formatDateTimeForDisplay(
@@ -1530,7 +1614,17 @@ export class CompletedAppointments {
       return fallback;
     }
 
-    return date.toLocaleString();
+    return new Intl.DateTimeFormat(
+      'en-IN',
+      {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }
+    ).format(date);
   }
 
   private escapeHtml(

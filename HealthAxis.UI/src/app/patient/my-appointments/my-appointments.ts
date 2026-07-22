@@ -25,19 +25,33 @@ const STATUS_FILTERS = [
   'Cancelled'
 ] as const;
 
+const PAGE_SIZE = 8;
+const PRINT_DELAY_IN_MS = 300;
+const PRINT_WINDOW_FEATURES = 'width=900,height=700';
+
+const PENDING_STATUS = 'pending';
+const CONFIRMED_STATUS = 'confirmed';
+const COMPLETED_STATUS = 'completed';
+const CANCELLED_STATUS = 'cancelled';
+
 type StatusFilter = typeof STATUS_FILTERS[number];
 
 @Component({
   selector: 'app-my-appointments',
-  imports: [DatePipe, RouterLink],
+  imports: [
+    DatePipe,
+    RouterLink
+  ],
   templateUrl: './my-appointments.html',
   styleUrl: './my-appointments.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MyAppointments {
-  private readonly appointmentService = inject(AppointmentService);
-  private readonly patientService = inject(PatientService);
-  private readonly pageSize = 8;
+  private readonly appointmentService =
+    inject(AppointmentService);
+
+  private readonly patientService =
+    inject(PatientService);
 
   readonly appointments = signal<Appointment[]>([]);
   readonly healthRecords = signal<HealthRecord[]>([]);
@@ -49,66 +63,103 @@ export class MyAppointments {
   readonly successMessage = signal('');
 
   readonly searchText = signal('');
-  readonly selectedStatus = signal<StatusFilter>('All');
+  readonly selectedStatus =
+    signal<StatusFilter>('All');
+
   readonly currentPage = signal(1);
 
-  readonly cancelTarget = signal<Appointment | null>(null);
-  readonly selectedAppointment = signal<Appointment | null>(null);
-  readonly selectedHealthRecord = signal<HealthRecord | null>(null);
+  readonly cancelTarget =
+    signal<Appointment | null>(null);
+
+  readonly selectedAppointment =
+    signal<Appointment | null>(null);
+
+  readonly selectedHealthRecord =
+    signal<HealthRecord | null>(null);
+
   readonly cancellationReason = signal('');
 
   readonly statusFilters = STATUS_FILTERS;
 
-  readonly pendingCount = computed(() => this.countByStatus('Pending'));
-  readonly confirmedCount = computed(() => this.countByStatus('Confirmed'));
-  readonly completedCount = computed(() => this.countByStatus('Completed'));
-  readonly cancelledCount = computed(() => this.countByStatus('Cancelled'));
+  readonly pendingCount = computed(() =>
+    this.countByStatus(PENDING_STATUS)
+  );
+
+  readonly confirmedCount = computed(() =>
+    this.countByStatus(CONFIRMED_STATUS)
+  );
+
+  readonly completedCount = computed(() =>
+    this.countByStatus(COMPLETED_STATUS)
+  );
+
+  readonly cancelledCount = computed(() =>
+    this.countByStatus(CANCELLED_STATUS)
+  );
 
   readonly filteredAppointments = computed(() => {
-    const searchValue = this.searchText().trim().toLowerCase();
-    const status = this.selectedStatus();
+    const searchValue = this.searchText()
+      .trim()
+      .toLowerCase();
+
+    const selectedStatus = this.selectedStatus();
 
     return this.appointments()
       .filter((appointment) =>
-        this.matchesFilter(appointment, status, searchValue)
+        this.matchesFilter(
+          appointment,
+          selectedStatus,
+          searchValue
+        )
       )
       .sort(
         (first, second) =>
-          new Date(second.scheduledDate).getTime() -
-          new Date(first.scheduledDate).getTime()
+          this.getAppointmentDateValue(second) -
+          this.getAppointmentDateValue(first)
       );
   });
 
   readonly totalPages = computed(() => {
-    const totalItems = this.filteredAppointments().length;
-    const pages = Math.ceil(totalItems / this.pageSize);
+    const totalItems =
+      this.filteredAppointments().length;
 
-    return pages > 0 ? pages : 1;
+    const pageCount =
+      Math.ceil(totalItems / PAGE_SIZE);
+
+    return Math.max(pageCount, 1);
   });
 
   readonly pagedAppointments = computed(() => {
-    const startIndex = (this.currentPage() - 1) * this.pageSize;
+    const startIndex =
+      (this.currentPage() - 1) * PAGE_SIZE;
 
     return this.filteredAppointments().slice(
       startIndex,
-      startIndex + this.pageSize
+      startIndex + PAGE_SIZE
     );
   });
 
-  readonly nextAppointment = computed<Appointment | null>(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  readonly nextAppointment =
+    computed<Appointment | null>(() => {
+      const today = new Date();
 
-    const appointment = this.appointments()
-      .filter((item) => this.isUpcomingAppointment(item, today))
-      .sort(
-        (first, second) =>
-          new Date(first.scheduledDate).getTime() -
-          new Date(second.scheduledDate).getTime()
-      )[0];
+      today.setHours(0, 0, 0, 0);
 
-    return appointment ?? null;
-  });
+      const appointment = this.appointments()
+        .filter((item) =>
+          this.isUpcomingAppointment(
+            item,
+            today
+          )
+        )
+        .sort(
+          (first, second) =>
+            this.getAppointmentDateValue(first) -
+            this.getAppointmentDateValue(second)
+        )[0];
+
+      return appointment ?? null;
+    });
 
   constructor() {
     this.loadAppointments();
@@ -120,41 +171,56 @@ export class MyAppointments {
     this.errorMessage.set('');
     this.successMessage.set('');
 
-    this.appointmentService.getMyAppointments().subscribe({
-      next: (appointments) => {
-        this.appointments.set(appointments);
-        this.currentPage.set(1);
-        this.loading.set(false);
-      },
-      error: (error: unknown) => {
-        this.loading.set(false);
-        this.errorMessage.set(
-          getFriendlyErrorMessage(error, 'Could not load your appointments.')
-        );
-      }
-    });
+    this.appointmentService
+      .getMyAppointments()
+      .subscribe({
+        next: (appointments) => {
+          this.appointments.set(appointments);
+          this.currentPage.set(1);
+          this.loading.set(false);
+        },
+        error: (error: unknown) => {
+          this.loading.set(false);
+
+          this.errorMessage.set(
+            getFriendlyErrorMessage(
+              error,
+              'Could not load your appointments.'
+            )
+          );
+        }
+      });
   }
 
   loadHealthRecords(): void {
-    this.patientService.getMyHealthRecords().subscribe({
-      next: (records) => {
-        this.healthRecords.set(records);
-      },
-      error: () => {
-        this.healthRecords.set([]);
-      }
-    });
+    this.patientService
+      .getMyHealthRecords()
+      .subscribe({
+        next: (records) => {
+          this.healthRecords.set(records);
+        },
+        error: () => {
+          this.healthRecords.set([]);
+        }
+      });
   }
 
   onSearchInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
+    const input =
+      event.target as HTMLInputElement;
+
     this.searchText.set(input.value);
     this.currentPage.set(1);
   }
 
   onStatusChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    this.selectedStatus.set(select.value as StatusFilter);
+    const select =
+      event.target as HTMLSelectElement;
+
+    this.selectedStatus.set(
+      select.value as StatusFilter
+    );
+
     this.currentPage.set(1);
   }
 
@@ -166,30 +232,60 @@ export class MyAppointments {
 
   goToPreviousPage(): void {
     if (this.currentPage() > 1) {
-      this.currentPage.update((page) => page - 1);
+      this.currentPage.update(
+        (page) => page - 1
+      );
     }
   }
 
   goToNextPage(): void {
-    if (this.currentPage() < this.totalPages()) {
-      this.currentPage.update((page) => page + 1);
+    if (
+      this.currentPage() <
+      this.totalPages()
+    ) {
+      this.currentPage.update(
+        (page) => page + 1
+      );
     }
   }
 
-  onCancellationReasonInput(event: Event): void {
-    const textarea = event.target as HTMLTextAreaElement;
-    this.cancellationReason.set(textarea.value);
+  onCancellationReasonInput(
+    event: Event
+  ): void {
+    const textarea =
+      event.target as HTMLTextAreaElement;
+
+    this.cancellationReason.set(
+      textarea.value
+    );
   }
 
-  openAppointmentDetails(appointment: Appointment): void {
-    this.selectedAppointment.set(appointment);
+  openAppointmentDetails(
+    appointment: Appointment
+  ): void {
+    this.selectedAppointment.set(
+      appointment
+    );
   }
 
   closeAppointmentDetails(): void {
     this.selectedAppointment.set(null);
   }
 
-  openCancelDialog(appointment: Appointment): void {
+  onAppointmentBackdropClick(
+    event: MouseEvent
+  ): void {
+    if (
+      event.target ===
+      event.currentTarget
+    ) {
+      this.closeAppointmentDetails();
+    }
+  }
+
+  openCancelDialog(
+    appointment: Appointment
+  ): void {
     this.errorMessage.set('');
     this.successMessage.set('');
     this.cancelTarget.set(appointment);
@@ -206,10 +302,13 @@ export class MyAppointments {
   }
 
   confirmCancelAppointment(): void {
-    const appointment = this.cancelTarget();
+    const appointment =
+      this.cancelTarget();
 
     if (!appointment) {
-      this.errorMessage.set('Please select an appointment to cancel.');
+      this.errorMessage.set(
+        'Please select an appointment to cancel.'
+      );
       return;
     }
 
@@ -224,43 +323,67 @@ export class MyAppointments {
     this.errorMessage.set('');
     this.successMessage.set('');
 
-    this.appointmentService.updateAppointmentStatus(
-      appointment.appointmentId,
-      {
-        status: AppointmentStatusCode.Cancelled,
-        cancellationReason: this.getOptionalCancellationReason()
-      }
-    ).subscribe({
-      next: () => {
-        this.cancelling.set(false);
-        this.cancelTarget.set(null);
-        this.cancellationReason.set('');
-        this.successMessage.set('Appointment cancelled successfully.');
-        this.loadAppointments();
-      },
-      error: (error: unknown) => {
-        this.cancelling.set(false);
-        this.errorMessage.set(
-          getFriendlyErrorMessage(
-            error,
-            'Could not cancel appointment. Please try again.'
-          )
-        );
-      }
-    });
+    this.appointmentService
+      .updateAppointmentStatus(
+        appointment.appointmentId,
+        {
+          status:
+            AppointmentStatusCode.Cancelled,
+
+          cancellationReason:
+            this.getOptionalCancellationReason()
+        }
+      )
+      .subscribe({
+        next: () => {
+          this.cancelling.set(false);
+          this.cancelTarget.set(null);
+          this.cancellationReason.set('');
+
+          this.successMessage.set(
+            'Appointment cancelled successfully.'
+          );
+
+          this.loadAppointments();
+        },
+        error: (error: unknown) => {
+          this.cancelling.set(false);
+
+          this.errorMessage.set(
+            getFriendlyErrorMessage(
+              error,
+              'Could not cancel appointment. Please try again.'
+            )
+          );
+        }
+      });
   }
 
-  canCancel(appointment: Appointment): boolean {
-    const status = appointment.status.toLowerCase();
-    const isCancellableStatus = status === 'pending' || status === 'confirmed';
+  canCancel(
+    appointment: Appointment
+  ): boolean {
+    const status =
+      this.normalizeStatus(
+        appointment.status
+      );
 
-    return isCancellableStatus && !this.isPastAppointment(appointment);
+    const isCancellableStatus =
+      status === PENDING_STATUS ||
+      status === CONFIRMED_STATUS;
+
+    return (
+      isCancellableStatus &&
+      !this.isPastAppointment(appointment)
+    );
   }
 
   getAppointmentStatusText(
     appointment: Appointment
   ): string {
-    return appointment.status.trim();
+    return this.getSafeText(
+      appointment.status,
+      'Pending'
+    );
   }
 
   getAppointmentStatusClass(
@@ -271,43 +394,78 @@ export class MyAppointments {
     );
   }
 
+  getStatusClass(status: string): string {
+    const normalizedStatus =
+      this.normalizeStatus(status);
+
+    return `${
+      normalizedStatus || PENDING_STATUS
+    }-badge`;
+  }
+
   isPastPending(
     appointment: Appointment
   ): boolean {
     return (
-      appointment.status
-        .trim()
-        .toLowerCase() === 'pending' &&
+      this.normalizeStatus(
+        appointment.status
+      ) === PENDING_STATUS &&
       this.isPastAppointment(appointment)
     );
   }
 
-  canDownloadAppointmentPdf(appointment: Appointment): boolean {
-    const status = appointment.status.toLowerCase();
+  canDownloadAppointmentPdf(
+    appointment: Appointment
+  ): boolean {
+    const status =
+      this.normalizeStatus(
+        appointment.status
+      );
 
-    return status === 'pending' ||
-      status === 'confirmed' ||
-      status === 'completed';
+    return (
+      status === PENDING_STATUS ||
+      status === CONFIRMED_STATUS ||
+      status === COMPLETED_STATUS
+    );
   }
 
-  canViewHealthRecord(appointment: Appointment): boolean {
-    return appointment.status.toLowerCase() === 'completed';
+  canViewHealthRecord(
+    appointment: Appointment
+  ): boolean {
+    return (
+      this.normalizeStatus(
+        appointment.status
+      ) === COMPLETED_STATUS
+    );
   }
 
   getHealthRecordForAppointment(
     appointment: Appointment
   ): HealthRecord | undefined {
     return this.healthRecords().find(
-      (record) => record.appointmentId === appointment.appointmentId
+      (record) =>
+        record.appointmentId ===
+        appointment.appointmentId
     );
   }
 
-  hasHealthRecord(appointment: Appointment): boolean {
-    return Boolean(this.getHealthRecordForAppointment(appointment));
+  hasHealthRecord(
+    appointment: Appointment
+  ): boolean {
+    return Boolean(
+      this.getHealthRecordForAppointment(
+        appointment
+      )
+    );
   }
 
-  openHealthRecordDetails(appointment: Appointment): void {
-    const record = this.getHealthRecordForAppointment(appointment);
+  openHealthRecordDetails(
+    appointment: Appointment
+  ): void {
+    const record =
+      this.getHealthRecordForAppointment(
+        appointment
+      );
 
     if (!record) {
       this.errorMessage.set(
@@ -324,24 +482,43 @@ export class MyAppointments {
     this.selectedHealthRecord.set(null);
   }
 
-  getRecordId(record: HealthRecord): number {
-    return record.healthRecordId ?? record.recordId ?? record.appointmentId;
+  onHealthRecordBackdropClick(
+    event: MouseEvent
+  ): void {
+    if (
+      event.target ===
+      event.currentTarget
+    ) {
+      this.closeHealthRecordDetails();
+    }
   }
 
-  getStatusClass(status: string): string {
-    return `${status.trim().toLowerCase()}-badge`;
+  getRecordId(
+    record: HealthRecord
+  ): number {
+    return (
+      record.healthRecordId ??
+      record.recordId ??
+      record.appointmentId
+    );
   }
 
-  getDoctorDisplayName(name: string | null | undefined): string {
-    const cleanName = (name ?? '').trim();
+  getDoctorDisplayName(
+    name: string | null | undefined
+  ): string {
+    const cleanName =
+      (name ?? '').trim();
+
+    const lowerName =
+      cleanName.toLowerCase();
 
     if (!cleanName) {
       return 'Doctor not assigned';
     }
 
     if (
-      cleanName.toLowerCase().startsWith('dr.') ||
-      cleanName.toLowerCase().startsWith('dr ')
+      lowerName.startsWith('dr.') ||
+      lowerName.startsWith('dr ')
     ) {
       return cleanName;
     }
@@ -349,38 +526,50 @@ export class MyAppointments {
     return `Dr. ${cleanName}`;
   }
 
-  getSafeText(value: string | null | undefined, fallback: string): string {
-    const cleanValue = (value ?? '').trim();
-
-    return cleanValue || fallback;
+  getSafeText(
+    value: string | null | undefined,
+    fallback: string
+  ): string {
+    return value?.trim() || fallback;
   }
 
-  printAppointmentPdf(appointment: Appointment): void {
-    if (!this.canDownloadAppointmentPdf(appointment)) {
+  printAppointmentPdf(
+    appointment: Appointment
+  ): void {
+    if (
+      !this.canDownloadAppointmentPdf(
+        appointment
+      )
+    ) {
       this.errorMessage.set(
         'PDF is not available for cancelled appointments.'
       );
       return;
     }
 
-    const appointmentId = appointment.appointmentId;
+    const appointmentId =
+      appointment.appointmentId;
 
     const doctorName = this.escapeHtml(
-      this.getDoctorDisplayName(appointment.doctorName)
-    );
-
-    const specialisation = this.escapeHtml(
-      this.getSafeText(
-        appointment.specialisation,
-        'Not assigned'
+      this.getDoctorDisplayName(
+        appointment.doctorName
       )
     );
 
-    const appointmentDate = this.escapeHtml(
-      new Date(
-        appointment.scheduledDate
-      ).toLocaleDateString()
-    );
+    const specialisation =
+      this.escapeHtml(
+        this.getSafeText(
+          appointment.specialisation,
+          'Not assigned'
+        )
+      );
+
+    const appointmentDate =
+      this.escapeHtml(
+        this.formatDate(
+          appointment.scheduledDate
+        )
+      );
 
     const timeSlot = this.escapeHtml(
       this.getSafeText(
@@ -390,203 +579,110 @@ export class MyAppointments {
     );
 
     const status = this.escapeHtml(
-      appointment.status || 'Pending'
+      this.getSafeText(
+        appointment.status,
+        'Pending'
+      )
     );
 
-    const generatedOn = this.escapeHtml(
-      new Date().toLocaleString()
-    );
+    const generatedOn =
+      this.escapeHtml(
+        this.formatDateTime(
+          new Date()
+        )
+      );
 
-    const printContent = `
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="UTF-8" />
+    const documentContent = `
+      <header class="header appointment-header">
+        <h1>
+          HealthAxis Appointment Details
+        </h1>
 
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          />
+        <p>
+          Patient booked appointment document
+        </p>
 
-          <title>Appointment #${appointmentId}</title>
+        <span class="status">
+          ${status}
+        </span>
+      </header>
 
-          <style>
-            body {
-              margin: 0;
-              background: #f8fafc;
-              color: #0f172a;
-              font-family: Arial, sans-serif;
-            }
+      <section class="grid">
+        ${this.createDetailBox(
+          'Appointment ID',
+          `#${appointmentId}`
+        )}
 
-            .document {
-              width: 800px;
-              margin: 24px auto;
-              background: #ffffff;
-              border: 1px solid #e2e8f0;
-              border-radius: 18px;
-              padding: 32px;
-            }
+        ${this.createDetailBox(
+          'Doctor Name',
+          doctorName,
+          false
+        )}
 
-            .header {
-              background: linear-gradient(
-                135deg,
-                #0f172a,
-                #0284c7
-              );
-              color: #ffffff;
-              padding: 24px;
-              border-radius: 16px;
-              margin-bottom: 24px;
-            }
+        ${this.createDetailBox(
+          'Specialisation',
+          specialisation,
+          false
+        )}
 
-            .header h1 {
-              margin: 0;
-              font-size: 28px;
-            }
+        ${this.createDetailBox(
+          'Appointment Date',
+          appointmentDate,
+          false
+        )}
 
-            .header p {
-              margin: 8px 0 0;
-              color: #dbeafe;
-            }
+        ${this.createDetailBox(
+          'Time Slot',
+          timeSlot,
+          false
+        )}
 
-            .status {
-              display: inline-block;
-              margin-top: 14px;
-              padding: 8px 13px;
-              border-radius: 999px;
-              background: #dcfce7;
-              color: #15803d;
-              font-weight: bold;
-            }
+        ${this.createDetailBox(
+          'Status',
+          status,
+          false
+        )}
 
-            .grid {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 14px;
-            }
+        ${this.createDetailBox(
+          'Generated On',
+          generatedOn,
+          false
+        )}
+      </section>
 
-            .box {
-              border: 1px solid #dbeafe;
-              background: #f8fafc;
-              border-radius: 14px;
-              padding: 16px;
-            }
+      <section class="note">
+        Please check your appointment status
+        before visiting the hospital.
+        Completed appointments may have health
+        records available in the Health Records
+        section.
+      </section>
 
-            .box span {
-              display: block;
-              color: #64748b;
-              font-size: 12px;
-              font-weight: bold;
-              margin-bottom: 7px;
-            }
-
-            .box strong {
-              color: #0f172a;
-              font-size: 16px;
-            }
-
-            .note {
-              margin-top: 22px;
-              padding: 16px;
-              border-radius: 14px;
-              background: #eff6ff;
-              color: #334155;
-              line-height: 1.6;
-              font-size: 14px;
-            }
-
-            .footer {
-              margin-top: 24px;
-              padding-top: 14px;
-              border-top: 1px solid #e2e8f0;
-              color: #64748b;
-              font-size: 12px;
-            }
-
-            @media print {
-              body {
-                background: #ffffff;
-              }
-
-              .document {
-                width: auto;
-                margin: 0;
-                border: none;
-                border-radius: 0;
-              }
-            }
-          </style>
-        </head>
-
-        <body>
-          <main class="document">
-            <section class="header">
-              <h1>HealthAxis Appointment Details</h1>
-              <p>Patient booked appointment document</p>
-              <span class="status">${status}</span>
-            </section>
-
-            <section class="grid">
-              <div class="box">
-                <span>Appointment ID</span>
-                <strong>#${appointmentId}</strong>
-              </div>
-
-              <div class="box">
-                <span>Doctor Name</span>
-                <strong>${doctorName}</strong>
-              </div>
-
-              <div class="box">
-                <span>Specialisation</span>
-                <strong>${specialisation}</strong>
-              </div>
-
-              <div class="box">
-                <span>Appointment Date</span>
-                <strong>${appointmentDate}</strong>
-              </div>
-
-              <div class="box">
-                <span>Time Slot</span>
-                <strong>${timeSlot}</strong>
-              </div>
-
-              <div class="box">
-                <span>Status</span>
-                <strong>${status}</strong>
-              </div>
-
-              <div class="box">
-                <span>Generated On</span>
-                <strong>${generatedOn}</strong>
-              </div>
-            </section>
-
-            <section class="note">
-              Please check your appointment status before
-              visiting the hospital. Completed appointments
-              may have health records available in the
-              Health Records section.
-            </section>
-
-            <section class="footer">
-              This document is generated by HealthAxis
-              Patient Portal.
-            </section>
-          </main>
-        </body>
-      </html>
+      <footer class="footer">
+        This document is generated by
+        HealthAxis Patient Portal.
+      </footer>
     `;
 
+    const printableDocument =
+      this.createPrintableDocument(
+        `Appointment #${appointmentId}`,
+        documentContent
+      );
+
     this.openPrintableDocument(
-      printContent,
+      printableDocument,
       'Please allow popups to download or print the appointment.'
     );
   }
 
-  printHealthRecordForAppointment(appointment: Appointment): void {
-    const record = this.getHealthRecordForAppointment(appointment);
+  printHealthRecordForAppointment(
+    appointment: Appointment
+  ): void {
+    const record =
+      this.getHealthRecordForAppointment(
+        appointment
+      );
 
     if (!record) {
       this.errorMessage.set(
@@ -598,8 +694,11 @@ export class MyAppointments {
     this.printHealthRecordPdf(record);
   }
 
-  printHealthRecordPdf(record: HealthRecord): void {
-    const recordId = this.getRecordId(record);
+  printHealthRecordPdf(
+    record: HealthRecord
+  ): void {
+    const recordId =
+      this.getRecordId(record);
 
     const patientName = this.escapeHtml(
       this.getSafeText(
@@ -614,12 +713,13 @@ export class MyAppointments {
       )
     );
 
-    const specialisation = this.escapeHtml(
-      this.getSafeText(
-        record.specialisation,
-        'Not assigned'
-      )
-    );
+    const specialisation =
+      this.escapeHtml(
+        this.getSafeText(
+          record.specialisation,
+          'Not assigned'
+        )
+      );
 
     const diagnosis = this.escapeHtml(
       this.getSafeText(
@@ -628,12 +728,13 @@ export class MyAppointments {
       )
     );
 
-    const prescription = this.escapeHtml(
-      this.getSafeText(
-        record.prescription,
-        'No prescription added.'
-      )
-    );
+    const prescription =
+      this.escapeHtml(
+        this.getSafeText(
+          record.prescription,
+          'No prescription added.'
+        )
+      );
 
     const notes = this.escapeHtml(
       this.getSafeText(
@@ -643,196 +744,91 @@ export class MyAppointments {
     );
 
     const visitDate = this.escapeHtml(
-      new Date(
+      this.formatDate(
         record.visitDate
-      ).toLocaleDateString()
+      )
     );
 
-    const printContent = `
-      <!DOCTYPE html>
-      <html lang="en">
-        <head>
-          <meta charset="UTF-8" />
+    const documentContent = `
+      <header class="header record-header">
+        <h1>
+          HealthAxis Medical Record
+        </h1>
 
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          />
+        <p>
+          Patient health record document
+        </p>
+      </header>
 
-          <title>Health Record #${recordId}</title>
+      <section class="grid">
+        ${this.createDetailBox(
+          'Record ID',
+          `#${recordId}`
+        )}
 
-          <style>
-            body {
-              margin: 0;
-              background: #f8fafc;
-              color: #0f172a;
-              font-family: Arial, sans-serif;
-            }
+        ${this.createDetailBox(
+          'Appointment ID',
+          `#${record.appointmentId}`
+        )}
 
-            .document {
-              width: 800px;
-              margin: 24px auto;
-              background: #ffffff;
-              border: 1px solid #e2e8f0;
-              border-radius: 18px;
-              padding: 32px;
-            }
+        ${this.createDetailBox(
+          'Patient Name',
+          patientName,
+          false
+        )}
 
-            .header {
-              background: linear-gradient(
-                135deg,
-                #0f172a,
-                #047857
-              );
-              color: #ffffff;
-              padding: 24px;
-              border-radius: 16px;
-              margin-bottom: 24px;
-            }
+        ${this.createDetailBox(
+          'Doctor Name',
+          doctorName,
+          false
+        )}
 
-            .header h1 {
-              margin: 0;
-              font-size: 28px;
-            }
+        ${this.createDetailBox(
+          'Specialisation',
+          specialisation,
+          false
+        )}
 
-            .header p {
-              margin: 8px 0 0;
-              color: #d1fae5;
-            }
+        ${this.createDetailBox(
+          'Visit Date',
+          visitDate,
+          false
+        )}
+      </section>
 
-            .grid {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 14px;
-            }
+      ${this.createRecordSection(
+        'Diagnosis',
+        diagnosis,
+        'diagnosis-section'
+      )}
 
-            .box {
-              border: 1px solid #dbeafe;
-              background: #f8fafc;
-              border-radius: 14px;
-              padding: 16px;
-            }
+      ${this.createRecordSection(
+        'Prescription',
+        prescription,
+        'prescription-section'
+      )}
 
-            .box span {
-              display: block;
-              color: #64748b;
-              font-size: 12px;
-              font-weight: bold;
-              margin-bottom: 7px;
-            }
+      ${this.createRecordSection(
+        'Doctor Notes',
+        notes,
+        'notes-section'
+      )}
 
-            .box strong {
-              color: #0f172a;
-              font-size: 16px;
-            }
-
-            .section {
-              border: 1px solid #dbeafe;
-              border-radius: 14px;
-              padding: 16px;
-              margin-top: 16px;
-            }
-
-            .section h2 {
-              margin: 0 0 10px;
-              font-size: 18px;
-            }
-
-            .section p {
-              margin: 0;
-              line-height: 1.7;
-              white-space: pre-wrap;
-            }
-
-            .footer {
-              margin-top: 24px;
-              padding-top: 14px;
-              border-top: 1px solid #e2e8f0;
-              font-size: 12px;
-              color: #64748b;
-            }
-
-            @media print {
-              body {
-                background: #ffffff;
-              }
-
-              .document {
-                width: auto;
-                margin: 0;
-                border: none;
-                border-radius: 0;
-              }
-            }
-          </style>
-        </head>
-
-        <body>
-          <main class="document">
-            <section class="header">
-              <h1>HealthAxis Medical Record</h1>
-              <p>Patient health record document</p>
-            </section>
-
-            <section class="grid">
-              <div class="box">
-                <span>Record ID</span>
-                <strong>#${recordId}</strong>
-              </div>
-
-              <div class="box">
-                <span>Appointment ID</span>
-                <strong>#${record.appointmentId}</strong>
-              </div>
-
-              <div class="box">
-                <span>Patient Name</span>
-                <strong>${patientName}</strong>
-              </div>
-
-              <div class="box">
-                <span>Doctor Name</span>
-                <strong>${doctorName}</strong>
-              </div>
-
-              <div class="box">
-                <span>Specialisation</span>
-                <strong>${specialisation}</strong>
-              </div>
-
-              <div class="box">
-                <span>Visit Date</span>
-                <strong>${visitDate}</strong>
-              </div>
-            </section>
-
-            <section class="section">
-              <h2>Diagnosis</h2>
-              <p>${diagnosis}</p>
-            </section>
-
-            <section class="section">
-              <h2>Prescription</h2>
-              <p>${prescription}</p>
-            </section>
-
-            <section class="section">
-              <h2>Doctor Notes</h2>
-              <p>${notes}</p>
-            </section>
-
-            <section class="footer">
-              This record is generated by HealthAxis.
-              Please consult your doctor before changing
-              any medication.
-            </section>
-          </main>
-        </body>
-      </html>
+      <footer class="footer">
+        This record is generated by HealthAxis.
+        Please consult your doctor before
+        changing any medication.
+      </footer>
     `;
 
+    const printableDocument =
+      this.createPrintableDocument(
+        `Health Record #${recordId}`,
+        documentContent
+      );
+
     this.openPrintableDocument(
-      printContent,
+      printableDocument,
       'Please allow popups to download or print the health record.'
     );
   }
@@ -844,7 +840,7 @@ export class MyAppointments {
     const printWindow = globalThis.open(
       '',
       '_blank',
-      'width=900,height=700'
+      PRINT_WINDOW_FEATURES
     );
 
     if (!printWindow) {
@@ -854,76 +850,333 @@ export class MyAppointments {
       return;
     }
 
-    const printDocumentBlob = new Blob(
-      [printContent],
-      {
-        type: 'text/html;charset=utf-8'
-      }
+    const parser = new DOMParser();
+
+    const parsedDocument =
+      parser.parseFromString(
+        printContent,
+        'text/html'
+      );
+
+    const documentElement =
+      printWindow.document.importNode(
+        parsedDocument.documentElement,
+        true
+      );
+
+    printWindow.document.replaceChild(
+      documentElement,
+      printWindow.document.documentElement
     );
 
-    const printDocumentUrl =
-      globalThis.URL.createObjectURL(
-        printDocumentBlob
-      );
-
-    let isUrlRevoked = false;
-
-    const revokePrintDocumentUrl = (): void => {
-      if (isUrlRevoked) {
-        return;
-      }
-
-      globalThis.URL.revokeObjectURL(
-        printDocumentUrl
-      );
-
-      isUrlRevoked = true;
+    printWindow.onafterprint = () => {
+      printWindow.close();
     };
 
-    printWindow.addEventListener(
-      'load',
-      () => {
-        printWindow.focus();
+    printWindow.focus();
 
-        globalThis.setTimeout(() => {
+    globalThis.setTimeout(
+      () => {
+        if (!printWindow.closed) {
           printWindow.print();
-        }, 300);
-
-        globalThis.setTimeout(
-          revokePrintDocumentUrl,
-          60000
-        );
+        }
       },
-      {
-        once: true
-      }
+      PRINT_DELAY_IN_MS
     );
-
-    printWindow.addEventListener(
-      'afterprint',
-      () => {
-        revokePrintDocumentUrl();
-        printWindow.close();
-      },
-      {
-        once: true
-      }
-    );
-
-    printWindow.location.href =
-      printDocumentUrl;
   }
 
-  private getOptionalCancellationReason(): string | null {
-    const reason = this.cancellationReason().trim();
+  private createPrintableDocument(
+    title: string,
+    content: string
+  ): string {
+    return `
+      <!doctype html>
+
+      <html lang="en">
+        <head>
+          <meta charset="utf-8">
+
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1"
+          >
+
+          <title>
+            ${this.escapeHtml(title)}
+          </title>
+
+          <style>
+            ${this.getPrintableStyles()}
+          </style>
+        </head>
+
+        <body>
+          <main class="document">
+            ${content}
+          </main>
+        </body>
+      </html>
+    `;
+  }
+
+  private createDetailBox(
+    label: string,
+    value: string,
+    escapeValue = true
+  ): string {
+    const displayValue = escapeValue
+      ? this.escapeHtml(value)
+      : value;
+
+    return `
+      <div class="box">
+        <span>
+          ${this.escapeHtml(label)}
+        </span>
+
+        <strong>
+          ${displayValue}
+        </strong>
+      </div>
+    `;
+  }
+
+  private createRecordSection(
+    title: string,
+    content: string,
+    className: string
+  ): string {
+    return `
+      <section class="section ${className}">
+        <h2>
+          ${this.escapeHtml(title)}
+        </h2>
+
+        <p>${content}</p>
+      </section>
+    `;
+  }
+
+  private getPrintableStyles(): string {
+    return `
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        padding: 24px;
+        color: #0f172a;
+        background: #f8fafc;
+        font-family:
+          Arial,
+          Helvetica,
+          sans-serif;
+      }
+
+      .document {
+        width: 800px;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 30px;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        background: #ffffff;
+      }
+
+      .header {
+        margin-bottom: 22px;
+        padding: 23px;
+        border-radius: 15px;
+        color: #ffffff;
+      }
+
+      .appointment-header {
+        background:
+          linear-gradient(
+            135deg,
+            #0f172a,
+            #0284c7
+          );
+      }
+
+      .record-header {
+        background:
+          linear-gradient(
+            135deg,
+            #0f172a,
+            #047857
+          );
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 27px;
+        line-height: 1.2;
+      }
+
+      .header p {
+        margin: 8px 0 0;
+        color: #dbeafe;
+        font-size: 14px;
+      }
+
+      .status {
+        display: inline-block;
+        margin-top: 13px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        color: #15803d;
+        background: #dcfce7;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .box {
+        min-height: 76px;
+        padding: 14px;
+        border: 1px solid #dbeafe;
+        border-radius: 12px;
+        background: #f8fafc;
+        break-inside: avoid;
+      }
+
+      .box span {
+        display: block;
+        margin-bottom: 7px;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .box strong {
+        color: #0f172a;
+        font-size: 14px;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+      }
+
+      .section {
+        margin-top: 15px;
+        padding: 16px;
+        border: 1px solid #dbeafe;
+        border-radius: 13px;
+        break-inside: avoid;
+      }
+
+      .section h2 {
+        margin: 0 0 9px;
+        font-size: 17px;
+      }
+
+      .section p {
+        margin: 0;
+        color: #334155;
+        font-size: 14px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+
+      .diagnosis-section {
+        background: #fffaf0;
+      }
+
+      .prescription-section {
+        background: #eff6ff;
+      }
+
+      .notes-section {
+        background: #ecfdf5;
+      }
+
+      .note {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 12px;
+        color: #334155;
+        background: #eff6ff;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .footer {
+        margin-top: 22px;
+        padding-top: 13px;
+        border-top: 1px solid #e2e8f0;
+        color: #64748b;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      @page {
+        size: A4 portrait;
+        margin: 12mm;
+      }
+
+      @media print {
+        html,
+        body {
+          background: #ffffff;
+        }
+
+        body {
+          padding: 0;
+        }
+
+        .document {
+          width: 100%;
+          max-width: none;
+          margin: 0;
+          padding: 0;
+          border: none;
+          border-radius: 0;
+        }
+
+        .header,
+        .status,
+        .box,
+        .section,
+        .note {
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+      }
+    `;
+  }
+
+  private getOptionalCancellationReason():
+    string | null {
+    const reason =
+      this.cancellationReason().trim();
 
     return reason || null;
   }
 
-  private countByStatus(status: string): number {
-    return this.appointments().filter(
-      (appointment) => appointment.status.toLowerCase() === status.toLowerCase()
-    ).length;
+  private countByStatus(
+    status: string
+  ): number {
+    return this.appointments()
+      .filter(
+        (appointment) =>
+          this.normalizeStatus(
+            appointment.status
+          ) === status
+      )
+      .length;
   }
 
   private matchesFilter(
@@ -931,9 +1184,15 @@ export class MyAppointments {
     status: StatusFilter,
     searchValue: string
   ): boolean {
+    const normalizedStatus =
+      this.normalizeStatus(
+        appointment.status
+      );
+
     const matchesStatus =
       status === 'All' ||
-      appointment.status.toLowerCase() === status.toLowerCase();
+      normalizedStatus ===
+        status.toLowerCase();
 
     const searchableText = [
       appointment.doctorName,
@@ -944,52 +1203,88 @@ export class MyAppointments {
       appointment.appointmentId.toString(),
       appointment.cancellationReason
     ]
+      .filter(
+        (value): value is string =>
+          typeof value === 'string'
+      )
       .join(' ')
       .toLowerCase();
 
-    return matchesStatus && (!searchValue || searchableText.includes(searchValue));
-  }
-onAppointmentBackdropClick(event: MouseEvent): void {
-  if (event.target === event.currentTarget) {
-    this.closeAppointmentDetails();
-  }
-}
-
-onHealthRecordBackdropClick(event: MouseEvent): void {
-  if (event.target === event.currentTarget) {
-    this.closeHealthRecordDetails();
-  }
-}
-  private isPastAppointment(appointment: Appointment): boolean {
-    const appointmentStart = this.getAppointmentStartDateTime(appointment);
-
-    return appointmentStart.getTime() < Date.now();
-  }
-
-  private getAppointmentStartDateTime(appointment: Appointment): Date {
-    const appointmentDate = new Date(appointment.scheduledDate);
-    const timeParts = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(
-      appointment.timeSlot.trim()
+    return (
+      matchesStatus &&
+      (
+        !searchValue ||
+        searchableText.includes(
+          searchValue
+        )
+      )
     );
+  }
+
+  private isPastAppointment(
+    appointment: Appointment
+  ): boolean {
+    const appointmentStart =
+      this.getAppointmentStartDateTime(
+        appointment
+      );
+
+    return (
+      appointmentStart.getTime() <
+      Date.now()
+    );
+  }
+
+  private getAppointmentStartDateTime(
+    appointment: Appointment
+  ): Date {
+    const appointmentDate =
+      new Date(
+        appointment.scheduledDate
+      );
+
+    const timeParts =
+      /^(\d{1,2}):(\d{2})\s*(AM|PM)/i.exec(
+        appointment.timeSlot.trim()
+      );
 
     if (!timeParts) {
-      appointmentDate.setHours(23, 59, 59, 999);
+      appointmentDate.setHours(
+        23,
+        59,
+        59,
+        999
+      );
+
       return appointmentDate;
     }
 
     let hours = Number(timeParts[1]);
     const minutes = Number(timeParts[2]);
-    const period = timeParts[3].toUpperCase();
+    const period =
+      timeParts[3].toUpperCase();
 
-    if (period === 'PM' && hours !== 12) {
+    if (
+      period === 'PM' &&
+      hours !== 12
+    ) {
       hours += 12;
     }
 
-    if (period === 'AM' && hours === 12) {
+    if (
+      period === 'AM' &&
+      hours === 12
+    ) {
       hours = 0;
     }
 
-    appointmentDate.setHours(hours, minutes, 0, 0);
+    appointmentDate.setHours(
+      hours,
+      minutes,
+      0,
+      0
+    );
+
     return appointmentDate;
   }
 
@@ -997,17 +1292,114 @@ onHealthRecordBackdropClick(event: MouseEvent): void {
     appointment: Appointment,
     today: Date
   ): boolean {
-    const appointmentDate = new Date(appointment.scheduledDate);
-    appointmentDate.setHours(0, 0, 0, 0);
+    const appointmentDate =
+      new Date(
+        appointment.scheduledDate
+      );
 
-    const status = appointment.status.toLowerCase();
+    appointmentDate.setHours(
+      0,
+      0,
+      0,
+      0
+    );
 
-    return appointmentDate >= today &&
-      status !== 'cancelled' &&
-      status !== 'completed';
+    const status =
+      this.normalizeStatus(
+        appointment.status
+      );
+
+    return (
+      appointmentDate >= today &&
+      status !== CANCELLED_STATUS &&
+      status !== COMPLETED_STATUS
+    );
   }
 
-  private escapeHtml(value: string): string {
+  private getAppointmentDateValue(
+    appointment: Appointment
+  ): number {
+    const dateValue =
+      new Date(
+        appointment.scheduledDate
+      ).getTime();
+
+    return Number.isNaN(dateValue)
+      ? 0
+      : dateValue;
+  }
+
+  private normalizeStatus(
+    status: string
+  ): string {
+    return status
+      .trim()
+      .toLowerCase();
+  }
+
+  private formatDate(
+    value: string | Date | null | undefined
+  ): string {
+    const date = this.parseDate(value);
+
+    if (!date) {
+      return 'Not available';
+    }
+
+    return new Intl.DateTimeFormat(
+      'en-IN',
+      {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }
+    ).format(date);
+  }
+
+  private formatDateTime(
+    value: string | Date | null | undefined
+  ): string {
+    const date = this.parseDate(value);
+
+    if (!date) {
+      return 'Not available';
+    }
+
+    return new Intl.DateTimeFormat(
+      'en-IN',
+      {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }
+    ).format(date);
+  }
+
+  private parseDate(
+    value: string | Date | null | undefined
+  ): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const date =
+      value instanceof Date
+        ? value
+        : new Date(value);
+
+    return Number.isNaN(
+      date.getTime()
+    )
+      ? null
+      : date;
+  }
+
+  private escapeHtml(
+    value: string
+  ): string {
     return value
       .replaceAll('&', '&amp;')
       .replaceAll('<', '&lt;')

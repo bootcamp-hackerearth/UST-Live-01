@@ -12,10 +12,11 @@ import { HealthRecord } from '../../core/models/health-record.model';
 import { PatientService } from '../../core/services/patient.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
-type HealthRecordFilter =
-  | 'All'
-  | 'Final'
-  | 'Updated';
+type HealthRecordFilter = 'All' | 'Final' | 'Updated';
+
+const PRINT_WINDOW_FEATURES = 'width=900,height=700';
+const PRINT_DELAY_IN_MS = 300;
+const NOT_AVAILABLE = 'Not available';
 
 @Component({
   selector: 'app-health-records',
@@ -35,47 +36,24 @@ export class HealthRecords {
   readonly loading = signal(false);
   readonly errorMessage = signal('');
   readonly searchText = signal('');
-
   readonly selectedRecordFilter =
     signal<HealthRecordFilter>('All');
 
   readonly filteredRecords = computed(() => {
-    const searchValue =
-      this.searchText()
-        .trim()
-        .toLowerCase();
+    const searchValue = this.searchText()
+      .trim()
+      .toLowerCase();
 
-    const selectedFilter =
-      this.selectedRecordFilter();
+    const selectedFilter = this.selectedRecordFilter();
 
     return this.healthRecords()
-      .filter((record) => {
-        const isUpdated =
-          this.hasUpdated(record);
-
-        const matchesRecordFilter =
-          selectedFilter === 'All' ||
-          (
-            selectedFilter === 'Updated' &&
-            isUpdated
-          ) ||
-          (
-            selectedFilter === 'Final' &&
-            !isUpdated
-          );
-
-        const matchesSearch =
-          !searchValue ||
-          this.includesSearchValue(
-            record,
-            searchValue
-          );
-
-        return (
-          matchesRecordFilter &&
-          matchesSearch
-        );
-      })
+      .filter((record) =>
+        this.matchesFilter(
+          record,
+          selectedFilter,
+          searchValue
+        )
+      )
       .slice()
       .sort(
         (first, second) =>
@@ -97,9 +75,9 @@ export class HealthRecords {
   });
 
   readonly updatedRecordsCount = computed(() =>
-    this.healthRecords().filter(
-      (record) => this.hasUpdated(record)
-    ).length
+    this.healthRecords()
+      .filter((record) => this.hasUpdated(record))
+      .length
   );
 
   constructor() {
@@ -130,14 +108,12 @@ export class HealthRecords {
 
   onSearchInput(event: Event): void {
     const input = event.target as HTMLInputElement;
+
     this.searchText.set(input.value);
   }
 
-  onRecordFilterChange(
-    event: Event
-  ): void {
-    const select =
-      event.target as HTMLSelectElement;
+  onRecordFilterChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
 
     this.selectedRecordFilter.set(
       select.value as HealthRecordFilter
@@ -181,17 +157,15 @@ export class HealthRecords {
     name: string | null | undefined
   ): string {
     const cleanName = (name ?? '').trim();
+    const lowerName = cleanName.toLowerCase();
 
-    if (
-      !cleanName ||
-      cleanName.toLowerCase() === 'doctor'
-    ) {
+    if (!cleanName || lowerName === 'doctor') {
       return 'Doctor not assigned';
     }
 
     if (
-      cleanName.toLowerCase().startsWith('dr.') ||
-      cleanName.toLowerCase().startsWith('dr ')
+      lowerName.startsWith('dr.') ||
+      lowerName.startsWith('dr ')
     ) {
       return cleanName;
     }
@@ -203,357 +177,404 @@ export class HealthRecords {
     value: string | null | undefined,
     fallback: string
   ): string {
-    const cleanValue = (value ?? '').trim();
-
-    return cleanValue || fallback;
+    return value?.trim() || fallback;
   }
 
   getCreatedDateText(record: HealthRecord): string {
-    if (!record.createdAt) {
-      return 'Not available';
-    }
-
-    const createdDate = new Date(record.createdAt);
-
-    if (Number.isNaN(createdDate.getTime())) {
-      return 'Not available';
-    }
-
-    return createdDate.toLocaleString();
+    return this.formatDateTime(record.createdAt);
   }
 
- printHealthRecord(record: HealthRecord): void {
-  const printWindow = globalThis.open(
-    '',
-    '_blank',
-    'width=900,height=700'
-  );
-
-  if (!printWindow) {
-    this.errorMessage.set(
-      'Please allow popups to print or save the health record.'
+  printHealthRecord(record: HealthRecord): void {
+    const printWindow = globalThis.open(
+      '',
+      '_blank',
+      PRINT_WINDOW_FEATURES
     );
-    return;
+
+    if (!printWindow) {
+      this.errorMessage.set(
+        'Please allow popups to print or save the health record.'
+      );
+      return;
+    }
+
+    const printableDocument =
+      this.createHealthRecordDocument(record);
+
+    printWindow.document.open();
+    printWindow.document.write(printableDocument);
+    printWindow.document.close();
   }
 
-  const recordId = this.getRecordId(record);
+  private createHealthRecordDocument(
+    record: HealthRecord
+  ): string {
+    const recordId = this.getRecordId(record);
 
-  const patientName = this.escapeHtml(
-    this.getSafeText(
-      record.patientName,
-      'Patient'
-    )
-  );
+    const patientName = this.escapeHtml(
+      this.getSafeText(
+        record.patientName,
+        'Patient'
+      )
+    );
 
-  const doctorName = this.escapeHtml(
-    this.getDoctorDisplayName(
-      record.doctorName
-    )
-  );
+    const doctorName = this.escapeHtml(
+      this.getDoctorDisplayName(
+        record.doctorName
+      )
+    );
 
-  const specialisation = this.escapeHtml(
-    this.getSafeText(
-      record.specialisation,
-      'Not assigned'
-    )
-  );
+    const specialisation = this.escapeHtml(
+      this.getSafeText(
+        record.specialisation,
+        'Not assigned'
+      )
+    );
 
-  const diagnosis = this.escapeHtml(
-    this.getSafeText(
-      record.diagnosis,
-      'Diagnosis not provided.'
-    )
-  );
+    const diagnosis = this.escapeHtml(
+      this.getSafeText(
+        record.diagnosis,
+        'Diagnosis not provided.'
+      )
+    );
 
-  const prescription = this.escapeHtml(
-    this.getSafeText(
-      record.prescription,
-      'No prescription added.'
-    )
-  );
+    const prescription = this.escapeHtml(
+      this.getSafeText(
+        record.prescription,
+        'No prescription added.'
+      )
+    );
 
-  const notes = this.escapeHtml(
-    this.getSafeText(
-      record.notes,
-      'No doctor notes added.'
-    )
-  );
+    const notes = this.escapeHtml(
+      this.getSafeText(
+        record.notes,
+        'No doctor notes added.'
+      )
+    );
 
-  const visitDate =
-    new Date(record.visitDate)
-      .toLocaleDateString();
+    const visitDate = this.escapeHtml(
+      this.formatDate(record.visitDate)
+    );
 
-  const createdAt = this.escapeHtml(
-    this.getCreatedDateText(record)
-  );
+    const createdAt = this.escapeHtml(
+      this.formatDateTime(record.createdAt)
+    );
 
-  const updatedAt = this.escapeHtml(
-    record.updatedDate
-      ? new Date(record.updatedDate)
-          .toLocaleString()
-      : 'Not updated'
-  );
+    const updatedAt = this.escapeHtml(
+      record.updatedDate
+        ? this.formatDateTime(record.updatedDate)
+        : 'Not updated'
+    );
 
-  const printContent = `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
+    return `
+      <!doctype html>
 
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0"
-        />
+      <html lang="en">
+        <head>
+          <meta charset="utf-8">
 
-        <title>
-          Health Record #${recordId}
-        </title>
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1"
+          >
 
-        <style>
-          * {
-            box-sizing: border-box;
-          }
+          <title>Health Record #${recordId}</title>
 
-          body {
-            margin: 0;
-            padding: 24px;
-            font-family: Arial, sans-serif;
-            color: #111c36;
-            background: #f7f8fc;
-          }
+          <style>
+            * {
+              box-sizing: border-box;
+            }
 
-          .document {
-            width: 800px;
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 32px;
-            border: 1px solid #e6e8f0;
-            border-radius: 20px;
-            background: #ffffff;
-          }
-
-          .header {
-            padding: 24px;
-            border-radius: 17px;
-            color: #ffffff;
-            background: linear-gradient(
-              135deg,
-              #704dff,
-              #4d27e9
-            );
-          }
-
-          .header h1 {
-            margin: 0;
-            font-size: 26px;
-          }
-
-          .header p {
-            margin: 8px 0 0;
-            color: #eeeaff;
-          }
-
-          .grid {
-            margin-top: 22px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 13px;
-          }
-
-          .box {
-            padding: 14px;
-            border: 1px solid #e6e8f0;
-            border-radius: 13px;
-            background: #faf9ff;
-          }
-
-          .box span {
-            display: block;
-            margin-bottom: 6px;
-            color: #66738a;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-          }
-
-          .box strong {
-            color: #111c36;
-            font-size: 14px;
-          }
-
-          .section {
-            margin-top: 16px;
-            padding: 17px;
-            border: 1px solid #e6e8f0;
-            border-radius: 14px;
-          }
-
-          .section h2 {
-            margin: 0 0 10px;
-            color: #111c36;
-            font-size: 17px;
-          }
-
-          .section p {
-            margin: 0;
-            color: #334155;
-            line-height: 1.7;
-            white-space: pre-wrap;
-          }
-
-          .diagnosis {
-            background: #fffaf0;
-          }
-
-          .prescription {
-            background: #f1f7ff;
-          }
-
-          .notes {
-            background: #effbf7;
-          }
-
-          .footer {
-            margin-top: 24px;
-            padding-top: 14px;
-            border-top: 1px solid #e6e8f0;
-            color: #66738a;
-            font-size: 12px;
-            line-height: 1.6;
-          }
-
-          @media print {
+            html,
             body {
+              margin: 0;
               padding: 0;
-              background: #ffffff;
+            }
+
+            body {
+              padding: 24px;
+              color: #111c36;
+              background: #f7f8fc;
+              font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
             }
 
             .document {
-              width: auto;
-              border: none;
-              border-radius: 0;
+              width: 800px;
+              max-width: 100%;
+              margin: 0 auto;
+              padding: 30px;
+              border: 1px solid #e6e8f0;
+              border-radius: 18px;
+              background: #ffffff;
             }
-          }
-        </style>
-      </head>
 
-      <body>
-        <main class="document">
-          <header class="header">
-            <h1>HealthAxis Medical Record</h1>
+            .header {
+              padding: 23px;
+              border-radius: 15px;
+              color: #ffffff;
+              background:
+                linear-gradient(
+                  135deg,
+                  #704dff,
+                  #4d27e9
+                );
+            }
 
-            <p>
-              Patient Health Record Document
-            </p>
-          </header>
+            .header h1 {
+              margin: 0;
+              font-size: 26px;
+            }
 
-          <section class="grid">
-            <div class="box">
-              <span>Record ID</span>
-              <strong>#${recordId}</strong>
-            </div>
+            .header p {
+              margin: 8px 0 0;
+              color: #eeeaff;
+              font-size: 14px;
+            }
 
-            <div class="box">
-              <span>Appointment ID</span>
-              <strong>
-                #${record.appointmentId}
-              </strong>
-            </div>
+            .grid {
+              margin-top: 20px;
+              display: grid;
+              grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+              gap: 12px;
+            }
 
-            <div class="box">
-              <span>Patient Name</span>
-              <strong>${patientName}</strong>
-            </div>
+            .box {
+              min-height: 76px;
+              padding: 14px;
+              border: 1px solid #e6e8f0;
+              border-radius: 12px;
+              background: #faf9ff;
+            }
 
-            <div class="box">
-              <span>Doctor Name</span>
-              <strong>${doctorName}</strong>
-            </div>
+            .box span {
+              display: block;
+              margin-bottom: 7px;
+              color: #66738a;
+              font-size: 10px;
+              font-weight: 700;
+              text-transform: uppercase;
+              letter-spacing: 0.03em;
+            }
 
-            <div class="box">
-              <span>Specialisation</span>
-              <strong>${specialisation}</strong>
-            </div>
+            .box strong {
+              color: #111c36;
+              font-size: 14px;
+              line-height: 1.4;
+              overflow-wrap: anywhere;
+            }
 
-            <div class="box">
-              <span>Visit Date</span>
-              <strong>${visitDate}</strong>
-            </div>
+            .section {
+              margin-top: 15px;
+              padding: 16px;
+              border: 1px solid #e6e8f0;
+              border-radius: 13px;
+              break-inside: avoid;
+            }
 
-            <div class="box">
-              <span>Record Created</span>
-              <strong>${createdAt}</strong>
-            </div>
+            .section h2 {
+              margin: 0 0 9px;
+              color: #111c36;
+              font-size: 17px;
+            }
 
-            <div class="box">
-              <span>Last Updated</span>
-              <strong>${updatedAt}</strong>
-            </div>
-          </section>
+            .section p {
+              margin: 0;
+              color: #334155;
+              font-size: 14px;
+              line-height: 1.7;
+              white-space: pre-wrap;
+              overflow-wrap: anywhere;
+            }
 
-          <section class="section diagnosis">
-            <h2>Diagnosis</h2>
-            <p>${diagnosis}</p>
-          </section>
+            .diagnosis {
+              background: #fffaf0;
+            }
 
-          <section class="section prescription">
-            <h2>Prescription</h2>
-            <p>${prescription}</p>
-          </section>
+            .prescription {
+              background: #f1f7ff;
+            }
 
-          <section class="section notes">
-            <h2>Doctor Notes</h2>
-            <p>${notes}</p>
-          </section>
+            .notes {
+              background: #effbf7;
+            }
 
-          <footer class="footer">
-            This record was generated from HealthAxis.
-            Please consult your doctor before changing
-            any medication.
-          </footer>
-        </main>
-      </body>
-    </html>
-  `;
+            .footer {
+              margin-top: 22px;
+              padding-top: 13px;
+              border-top: 1px solid #e6e8f0;
+              color: #66738a;
+              font-size: 12px;
+              line-height: 1.6;
+            }
 
-  const printDocumentBlob = new Blob(
-    [printContent],
-    {
-      type: 'text/html;charset=utf-8'
-    }
-  );
+            @page {
+              size: A4 portrait;
+              margin: 12mm;
+            }
 
-  const printDocumentUrl =
-    globalThis.URL.createObjectURL(
-      printDocumentBlob
-    );
+            @media print {
+              html,
+              body {
+                background: #ffffff;
+              }
 
-  printWindow.addEventListener(
-    'load',
-    () => {
-      printWindow.focus();
-      printWindow.print();
+              body {
+                padding: 0;
+              }
 
-      globalThis.URL.revokeObjectURL(
-        printDocumentUrl
+              .document {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+                padding: 0;
+                border: none;
+                border-radius: 0;
+              }
+
+              .header,
+              .box,
+              .section {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+              }
+            }
+          </style>
+        </head>
+
+        <body>
+          <main class="document">
+            <header class="header">
+              <h1>HealthAxis Medical Record</h1>
+              <p>Patient Health Record Document</p>
+            </header>
+
+            <section class="grid">
+              <div class="box">
+                <span>Record ID</span>
+                <strong>#${recordId}</strong>
+              </div>
+
+              <div class="box">
+                <span>Appointment ID</span>
+                <strong>#${record.appointmentId}</strong>
+              </div>
+
+              <div class="box">
+                <span>Patient Name</span>
+                <strong>${patientName}</strong>
+              </div>
+
+              <div class="box">
+                <span>Doctor Name</span>
+                <strong>${doctorName}</strong>
+              </div>
+
+              <div class="box">
+                <span>Specialisation</span>
+                <strong>${specialisation}</strong>
+              </div>
+
+              <div class="box">
+                <span>Visit Date</span>
+                <strong>${visitDate}</strong>
+              </div>
+
+              <div class="box">
+                <span>Record Created</span>
+                <strong>${createdAt}</strong>
+              </div>
+
+              <div class="box">
+                <span>Last Updated</span>
+                <strong>${updatedAt}</strong>
+              </div>
+            </section>
+
+            <section class="section diagnosis">
+              <h2>Diagnosis</h2>
+              <p>${diagnosis}</p>
+            </section>
+
+            <section class="section prescription">
+              <h2>Prescription</h2>
+              <p>${prescription}</p>
+            </section>
+
+            <section class="section notes">
+              <h2>Doctor Notes</h2>
+              <p>${notes}</p>
+            </section>
+
+            <footer class="footer">
+              This record was generated from HealthAxis.
+              Please consult your doctor before changing
+              any medication.
+            </footer>
+          </main>
+
+          <script>
+            window.onload = function () {
+              window.setTimeout(function () {
+                window.focus();
+                window.print();
+              }, ${PRINT_DELAY_IN_MS});
+            };
+
+            window.onafterprint = function () {
+              window.close();
+            };
+          </script>
+        </body>
+      </html>
+    `;
+  }
+
+  private matchesFilter(
+    record: HealthRecord,
+    selectedFilter: HealthRecordFilter,
+    searchValue: string
+  ): boolean {
+    const isUpdated = this.hasUpdated(record);
+
+    const matchesRecordFilter =
+      selectedFilter === 'All' ||
+      (
+        selectedFilter === 'Updated' &&
+        isUpdated
+      ) ||
+      (
+        selectedFilter === 'Final' &&
+        !isUpdated
       );
-    },
-    {
-      once: true
-    }
-  );
 
-  printWindow.location.href =
-    printDocumentUrl;
-}
+    return (
+      matchesRecordFilter &&
+      (
+        !searchValue ||
+        this.includesSearchValue(
+          record,
+          searchValue
+        )
+      )
+    );
+  }
 
   private getRecordDateValue(
     record: HealthRecord
   ): number {
-    const dateValue =
-      record.createdAt ?? record.visitDate;
+    const value =
+      record.createdAt ??
+      record.visitDate;
 
-    return new Date(dateValue).getTime();
+    const dateValue = new Date(value).getTime();
+
+    return Number.isNaN(dateValue)
+      ? 0
+      : dateValue;
   }
 
   private includesSearchValue(
@@ -579,6 +600,64 @@ export class HealthRecords {
       .toLowerCase();
 
     return searchableText.includes(searchValue);
+  }
+
+  private formatDate(
+    value: string | Date | null | undefined
+  ): string {
+    const date = this.parseDate(value);
+
+    if (!date) {
+      return NOT_AVAILABLE;
+    }
+
+    return new Intl.DateTimeFormat(
+      'en-IN',
+      {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }
+    ).format(date);
+  }
+
+  private formatDateTime(
+    value: string | Date | null | undefined
+  ): string {
+    const date = this.parseDate(value);
+
+    if (!date) {
+      return NOT_AVAILABLE;
+    }
+
+    return new Intl.DateTimeFormat(
+      'en-IN',
+      {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }
+    ).format(date);
+  }
+
+  private parseDate(
+    value: string | Date | null | undefined
+  ): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const date =
+      value instanceof Date
+        ? value
+        : new Date(value);
+
+    return Number.isNaN(date.getTime())
+      ? null
+      : date;
   }
 
   private escapeHtml(value: string): string {
