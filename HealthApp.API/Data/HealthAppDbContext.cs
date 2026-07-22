@@ -1,5 +1,6 @@
 using HealthApp.API.Identity;
 using HealthApp.API.Models;
+using HealthApp.Shared.Constants;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,18 +10,27 @@ public class HealthAppDbContext : IdentityDbContext<ApplicationUser>
 {
     private const string SqlDefaultCurrentDate = "GETDATE()";
 
-    public HealthAppDbContext(DbContextOptions<HealthAppDbContext> options)
+    public HealthAppDbContext(
+        DbContextOptions<HealthAppDbContext> options)
         : base(options)
     {
     }
 
     public DbSet<Patient> Patients => Set<Patient>();
+
     public DbSet<Doctor> Doctors => Set<Doctor>();
+
     public DbSet<Appointment> Appointments => Set<Appointment>();
+
     public DbSet<HealthRecord> HealthRecords => Set<HealthRecord>();
+
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
     public DbSet<Notification> Notifications => Set<Notification>();
+
     public DbSet<DoctorLeave> DoctorLeaves => Set<DoctorLeave>();
+
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -53,7 +63,8 @@ public class HealthAppDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<HealthRecord>()
             .HasOne(healthRecord => healthRecord.Appointment)
             .WithOne(appointment => appointment.HealthRecord)
-            .HasForeignKey<HealthRecord>(healthRecord => healthRecord.AppointmentId)
+            .HasForeignKey<HealthRecord>(
+                healthRecord => healthRecord.AppointmentId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<Notification>()
@@ -82,6 +93,38 @@ public class HealthAppDbContext : IdentityDbContext<ApplicationUser>
                 doctorLeave.EndDate
             });
 
+        /*
+         * OutboxMessage configuration
+         */
+        builder.Entity<OutboxMessage>()
+            .HasKey(outboxMessage =>
+                outboxMessage.OutboxMessageId);
+
+        builder.Entity<OutboxMessage>()
+            .Property(outboxMessage =>
+                outboxMessage.EventType)
+            .IsRequired()
+            .HasMaxLength(200);
+
+        builder.Entity<OutboxMessage>()
+            .Property(outboxMessage =>
+                outboxMessage.Payload)
+            .IsRequired();
+
+        builder.Entity<OutboxMessage>()
+            .Property(outboxMessage =>
+                outboxMessage.ErrorMessage)
+            .HasMaxLength(
+                OutboxConstants.MaximumErrorMessageLength);
+
+        builder.Entity<OutboxMessage>()
+            .HasIndex(outboxMessage => new
+            {
+                outboxMessage.ProcessedDate,
+                outboxMessage.RetryCount,
+                outboxMessage.CreatedDate
+            });
+
         builder.Entity<Patient>()
             .Property(patient => patient.CreatedDate)
             .HasDefaultValueSql(SqlDefaultCurrentDate);
@@ -104,6 +147,10 @@ public class HealthAppDbContext : IdentityDbContext<ApplicationUser>
 
         builder.Entity<DoctorLeave>()
             .Property(doctorLeave => doctorLeave.CreatedDate)
+            .HasDefaultValueSql(SqlDefaultCurrentDate);
+
+        builder.Entity<OutboxMessage>()
+            .Property(outboxMessage => outboxMessage.CreatedDate)
             .HasDefaultValueSql(SqlDefaultCurrentDate);
     }
 }

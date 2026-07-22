@@ -1,4 +1,5 @@
 using AutoMapper;
+using HealthApp.API.Data;
 using HealthApp.API.Events;
 using HealthApp.API.Exceptions;
 using HealthApp.API.Models;
@@ -7,11 +8,11 @@ using HealthApp.API.Service.Interface;
 using HealthApp.Shared.Constants;
 using HealthApp.Shared.DTOs;
 using HealthApp.Shared.Enums;
-using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Globalization;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace HealthApp.API.Service.Impl;
 
@@ -22,8 +23,8 @@ public class AppointmentService(
     IDoctorLeaveRepository doctorLeaveRepository,
     IHttpContextAccessor httpContextAccessor,
     IDistributedCache distributedCache,
+    HealthAppDbContext dbContext,
     IMapper mapper,
-    IPublishEndpoint publishEndPoint,
     ILogger<AppointmentService> logger) : IAppointmentService
 {
     private const string AppointmentAccessDeniedMessage =
@@ -324,47 +325,72 @@ public class AppointmentService(
         appointment.CancellationReason = null;
         appointment.CreatedDate = DateTime.Now;
 
-        var savedAppointment = await appointmentRepository.AddAsync(appointment);
+        await using var transaction =
+            await dbContext.Database.BeginTransactionAsync();
 
-        logger.LogInformation(
-            "Appointment saved successfully. AppointmentId: {AppointmentId}, PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
-            savedAppointment.AppointmentId,
-            savedAppointment.PatientId,
-            savedAppointment.DoctorId,
-            savedAppointment.ScheduledDate,
-            savedAppointment.TimeSlots);
-
-        await TryInvalidateAvailabilityCacheAsync(
-            savedAppointment.DoctorId,
-            savedAppointment.ScheduledDate);
+        Appointment savedAppointment;
 
         try
         {
-            await publishEndPoint.Publish(new AppointmentBookedEvent
+            savedAppointment = await appointmentRepository.AddAsync(appointment);
+
+            logger.LogInformation(
+                "Appointment saved inside outbox transaction. AppointmentId: {AppointmentId}, PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
+                savedAppointment.AppointmentId,
+                savedAppointment.PatientId,
+                savedAppointment.DoctorId,
+                savedAppointment.ScheduledDate,
+                savedAppointment.TimeSlots);
+
+            var appointmentBookedEvent = new AppointmentBookedEvent
             {
                 AppointmentId = savedAppointment.AppointmentId,
                 PatientName = patient.PatientName,
                 DoctorId = savedAppointment.DoctorId,
                 ScheduledDate = savedAppointment.ScheduledDate,
                 TimeSlot = savedAppointment.TimeSlots
-            });
+            };
+
+            var outboxMessage = new OutboxMessage
+            {
+                OutboxMessageId = Guid.NewGuid(),
+                EventType = OutboxConstants.AppointmentBookedEventType,
+                Payload = JsonSerializer.Serialize(appointmentBookedEvent),
+                CreatedDate = DateTime.UtcNow,
+                ProcessedDate = null,
+                RetryCount = 0,
+                LastAttemptDate = null,
+                ErrorMessage = null
+            };
+
+            await dbContext.OutboxMessages.AddAsync(outboxMessage);
+            await dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             logger.LogInformation(
-                "AppointmentBookedEvent published to MassTransit/RabbitMQ. AppointmentId: {AppointmentId}, PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
+                "Appointment and outbox message committed successfully. AppointmentId: {AppointmentId}, OutboxMessageId: {OutboxMessageId}, EventType: {EventType}",
                 savedAppointment.AppointmentId,
-                savedAppointment.PatientId,
-                savedAppointment.DoctorId,
-                savedAppointment.ScheduledDate,
-                savedAppointment.TimeSlots);
+                outboxMessage.OutboxMessageId,
+                outboxMessage.EventType);
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
+            await transaction.RollbackAsync();
+
             logger.LogError(
-                ex,
-                "Appointment was saved, but AppointmentBookedEvent publishing to MassTransit/RabbitMQ failed. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}",
-                savedAppointment.AppointmentId,
-                savedAppointment.DoctorId);
+                exception,
+                "Appointment booking transaction failed. The appointment and outbox message were rolled back. PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
+                patient.PatientId,
+                dto.DoctorId,
+                appointmentDate,
+                dto.TimeSlot);
+
+            throw;
         }
+
+        await TryInvalidateAvailabilityCacheAsync(
+            savedAppointment.DoctorId,
+            savedAppointment.ScheduledDate);
 
         var appointmentWithDetails = await appointmentRepository
             .GetByIdWithDetailsAsync(savedAppointment.AppointmentId);

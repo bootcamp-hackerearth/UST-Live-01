@@ -2,6 +2,7 @@
 using HealthApp.API.Events;
 using HealthApp.API.Models;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthApp.API.Messaging;
 
@@ -23,6 +24,7 @@ public class AppointmentBookedConsumer
         ConsumeContext<AppointmentBookedEvent> context)
     {
         var appointmentBookedEvent = context.Message;
+        var cancellationToken = context.CancellationToken;
 
         _logger.LogInformation(
             "AppointmentBookedEvent received from MassTransit/RabbitMQ. " +
@@ -38,6 +40,36 @@ public class AppointmentBookedConsumer
 
         try
         {
+            /*
+             * Idempotency check:
+             * Check whether a notification has already been created
+             * for the same appointment and doctor.
+             */
+            var notificationAlreadyExists =
+                await _dbContext.Notifications
+                    .AsNoTracking()
+                    .AnyAsync(
+                        notification =>
+                            notification.AppointmentId ==
+                                appointmentBookedEvent.AppointmentId &&
+                            notification.DoctorId ==
+                                appointmentBookedEvent.DoctorId,
+                        cancellationToken);
+
+            if (notificationAlreadyExists)
+            {
+                _logger.LogInformation(
+                    "Duplicate AppointmentBookedEvent skipped because " +
+                    "a notification already exists. " +
+                    "MessageId: {MessageId}, AppointmentId: {AppointmentId}, " +
+                    "DoctorId: {DoctorId}",
+                    context.MessageId,
+                    appointmentBookedEvent.AppointmentId,
+                    appointmentBookedEvent.DoctorId);
+
+                return;
+            }
+
             var notification = new Notification
             {
                 DoctorId = appointmentBookedEvent.DoctorId,
@@ -62,16 +94,15 @@ public class AppointmentBookedConsumer
 
             await _dbContext.Notifications.AddAsync(
                 notification,
-                context.CancellationToken);
+                cancellationToken);
 
-            await _dbContext.SaveChangesAsync(
-                context.CancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation(
-                "Doctor notification saved successfully in " +
-                "Notifications table. NotificationId: {NotificationId}, " +
-                "AppointmentId: {AppointmentId}, DoctorId: {DoctorId}, " +
-                "IsRead: {IsRead}",
+                "Doctor notification saved successfully. " +
+                "NotificationId: {NotificationId}, " +
+                "AppointmentId: {AppointmentId}, " +
+                "DoctorId: {DoctorId}, IsRead: {IsRead}",
                 notification.NotificationId,
                 notification.AppointmentId,
                 notification.DoctorId,
@@ -87,7 +118,7 @@ public class AppointmentBookedConsumer
                 notification.NotificationId);
         }
         catch (OperationCanceledException)
-            when (context.CancellationToken.IsCancellationRequested)
+            when (cancellationToken.IsCancellationRequested)
         {
             _logger.LogWarning(
                 "AppointmentBookedEvent processing was cancelled. " +

@@ -28,13 +28,14 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    builder.Host.UseSerilog((context, services, loggerConfiguration) =>
-    {
-        loggerConfiguration
-            .ReadFrom.Configuration(context.Configuration)
-            .ReadFrom.Services(services)
-            .Enrich.FromLogContext();
-    });
+    builder.Host.UseSerilog(
+        (context, services, loggerConfiguration) =>
+        {
+            loggerConfiguration
+                .ReadFrom.Configuration(context.Configuration)
+                .ReadFrom.Services(services)
+                .Enrich.FromLogContext();
+        });
 
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
@@ -53,7 +54,8 @@ try
             {
                 Title = "HealthApp API",
                 Version = "v1",
-                Description = "Healthcare Appointment Management API"
+                Description =
+                    "Healthcare Appointment Management API"
             });
 
         options.AddSecurityDefinition(
@@ -66,7 +68,8 @@ try
                 Scheme = "bearer",
                 BearerFormat = "JWT",
                 Description =
-                    "Enter JWT token. Example: Bearer eyJhbGciOiJIUzI1NiIs..."
+                    "Enter JWT token. Example: " +
+                    "Bearer eyJhbGciOiJIUzI1NiIs..."
             });
 
         options.AddSecurityRequirement(document =>
@@ -79,6 +82,7 @@ try
     });
 
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
     builder.Services.AddProblemDetails();
 
     builder.Services.AddDbContext<HealthAppDbContext>(options =>
@@ -109,7 +113,8 @@ try
     var jwt = builder.Configuration.GetSection("Jwt");
 
     var jwtKey = jwt["Key"]
-        ?? throw new InvalidOperationException("Jwt:Key missing");
+        ?? throw new InvalidOperationException(
+            "Jwt:Key missing");
 
     builder.Services
         .AddAuthentication(options =>
@@ -150,7 +155,8 @@ try
                     ClockSkew = TimeSpan.Zero,
 
                     RoleClaimType = ClaimTypes.Role,
-                    NameClaimType = ClaimTypes.NameIdentifier
+                    NameClaimType =
+                        ClaimTypes.NameIdentifier
                 };
         });
 
@@ -158,15 +164,17 @@ try
 
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy("AllowAdminBlazor", policy =>
-        {
-            policy
-                .WithOrigins(
-                    "https://localhost:7083",
-                    "http://localhost:4200")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
+        options.AddPolicy(
+            "AllowAdminBlazor",
+            policy =>
+            {
+                policy
+                    .WithOrigins(
+                        "https://localhost:7083",
+                        "http://localhost:4200")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
     });
 
     builder.Services.AddHttpContextAccessor();
@@ -232,37 +240,40 @@ try
 
     builder.Services.AddMassTransit(configuration =>
     {
-        configuration.AddConsumer<AppointmentBookedConsumer>();
+        configuration.AddConsumer<
+            AppointmentBookedConsumer>();
 
-        configuration.UsingRabbitMq((context, rabbitMq) =>
-        {
-            rabbitMq.Host(
-                rabbitmqConfig["HostName"],
-                rabbitmqConfig["VirtualHost"],
-                host =>
-                {
-                    host.Username(
-                        rabbitmqConfig["UserName"]!);
-
-                    host.Password(
-                        rabbitmqConfig["Password"]!);
-                });
-
-            rabbitMq.ReceiveEndpoint(
-            rabbitmqConfig["AppointmentQueue"]!,
-            endpoint =>
+        configuration.UsingRabbitMq(
+            (context, rabbitMq) =>
             {
-                endpoint.UseMessageRetry(retry =>
-                {
-                    retry.Interval(
-                        3,
-                        TimeSpan.FromSeconds(5));
-                });
+                rabbitMq.Host(
+                    rabbitmqConfig["HostName"],
+                    rabbitmqConfig["VirtualHost"],
+                    host =>
+                    {
+                        host.Username(
+                            rabbitmqConfig["UserName"]!);
 
-                endpoint.ConfigureConsumer<
-                    AppointmentBookedConsumer>(context);
+                        host.Password(
+                            rabbitmqConfig["Password"]!);
+                    });
+
+                rabbitMq.ReceiveEndpoint(
+                    rabbitmqConfig["AppointmentQueue"]!,
+                    endpoint =>
+                    {
+                        endpoint.UseMessageRetry(retry =>
+                        {
+                            retry.Interval(
+                                3,
+                                TimeSpan.FromSeconds(5));
+                        });
+
+                        endpoint.ConfigureConsumer<
+                            AppointmentBookedConsumer>(
+                                context);
+                    });
             });
-        });
     });
 
     builder.Services.AddAutoMapper(configuration =>
@@ -291,6 +302,9 @@ try
 
     builder.Services.AddHostedService<
         NotificationCleanupService>();
+
+    builder.Services.AddHostedService<
+        OutboxBackgroundService>();
 
     var app = builder.Build();
 
@@ -342,12 +356,14 @@ try
         var services = scope.ServiceProvider;
 
         var logger =
-            services.GetRequiredService<ILogger<Program>>();
+            services.GetRequiredService<
+                ILogger<Program>>();
 
         try
         {
             var dbContext =
-                services.GetRequiredService<HealthAppDbContext>();
+                services.GetRequiredService<
+                    HealthAppDbContext>();
 
             await dbContext.Database.MigrateAsync();
 
