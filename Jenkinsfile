@@ -125,6 +125,7 @@ pipeline {
             steps {
                 bat 'echo web: dotnet HealthCareApp.dll > publish\\Procfile'
                 bat 'type publish\\Procfile'
+                bat 'dir publish'
             }
         }
 
