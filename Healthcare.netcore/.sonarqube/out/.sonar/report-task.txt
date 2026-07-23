@@ -1,6 +1,0 @@
-projectKey=Healthcare.netcore
-serverUrl=http://localhost:9000
-serverVersion=26.1.0.118079
-dashboardUrl=http://localhost:9000/dashboard?id=Healthcare.netcore
-ceTaskId=71954f5d-1549-4d4c-8547-5e6a5fd48b3a
-ceTaskUrl=http://localhost:9000/api/ce/task?id=71954f5d-1549-4d4c-8547-5e6a5fd48b3a

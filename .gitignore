@@ -6,9 +6,9 @@ obj/
 
 .sonarqube
 .angular
-/node_modules
+node_modules
 
-/artifacts
-/wwwroot
+artifacts
+wwwroot
 
-/TestResults
+TestResults

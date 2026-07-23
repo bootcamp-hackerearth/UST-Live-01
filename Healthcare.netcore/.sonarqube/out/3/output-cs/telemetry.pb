@@ -1,1 +1,0 @@
-‹RtC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Healthcare.netcore.Tests.csproj¢net10.0òCSharp14
