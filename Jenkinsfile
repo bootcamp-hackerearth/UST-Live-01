@@ -4,19 +4,25 @@ pipeline {
     environment {
         AWS_REGION = 'ap-south-2'
 
-        // Change this only if your Elastic Beanstalk application name is different
+        // Elastic Beanstalk Application name
         EB_APPLICATION_NAME = 'HealthCareApp'
 
-        // Your EB environment name
+        // Elastic Beanstalk Environment name
         EB_ENVIRONMENT_NAME = 'HealthCareApp-dev'
 
-        // Your Jenkins deployment S3 bucket
+        // Jenkins deployment S3 bucket
         S3_BUCKET = 'healthaxis-jenkins-bucket-847814614822-ap-south-2-an'
 
         DEPLOY_PACKAGE = 'deploy-package.zip'
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Show workspace files') {
             steps {
                 bat 'dir /b'
@@ -29,6 +35,9 @@ pipeline {
                 if exist artifacts rmdir /S /Q artifacts
                 if exist publish rmdir /S /Q publish
                 if exist deploy-package.zip del /Q deploy-package.zip
+
+                if exist HealthCareApp\\wwwroot\\angular rmdir /S /Q HealthCareApp\\wwwroot\\angular
+                if exist HealthCareApp\\wwwroot\\blazor rmdir /S /Q HealthCareApp\\wwwroot\\blazor
                 '''
             }
         }
@@ -48,9 +57,61 @@ pipeline {
             }
         }
 
-        stage('Build Angular and Blazor') {
+        stage('Build Angular') {
             steps {
-                bat 'powershell -ExecutionPolicy Bypass -File .\\build-frontends.ps1'
+                dir('HealthCareApp.UI') {
+                    bat 'npx ng build --configuration production'
+                }
+            }
+        }
+
+        stage('Publish Blazor Admin') {
+            steps {
+                bat 'dotnet publish HealthCareApp.AdminBlazor\\HealthCareApp.AdminBlazor.csproj -c Release -o artifacts\\adminblazor'
+            }
+        }
+
+        stage('Copy Blazor Admin into API wwwroot') {
+            steps {
+                bat '''
+                if exist HealthCareApp\\wwwroot\\blazor rmdir /S /Q HealthCareApp\\wwwroot\\blazor
+                mkdir HealthCareApp\\wwwroot\\blazor
+                xcopy /E /Y /I artifacts\\adminblazor\\wwwroot\\* HealthCareApp\\wwwroot\\blazor\\
+                '''
+            }
+        }
+
+        stage('Create Blazor fallback files') {
+            steps {
+                powershell '''
+                $frameworkPath = ".\\HealthCareApp\\wwwroot\\blazor\\_framework"
+
+                if (!(Test-Path $frameworkPath)) {
+                    Write-Error "Blazor _framework folder was not found at $frameworkPath"
+                    exit 1
+                }
+
+                $blazorJs = Get-ChildItem $frameworkPath -Filter "blazor.webassembly*.js" |
+                    Where-Object { $_.Name -ne "blazor.webassembly.js" } |
+                    Select-Object -First 1
+
+                if ($blazorJs -ne $null) {
+                    Copy-Item $blazorJs.FullName "$frameworkPath\\blazor.webassembly.js" -Force
+                }
+
+                $bootJson = Get-ChildItem $frameworkPath -Filter "blazor.boot*.json" |
+                    Where-Object { $_.Name -ne "blazor.boot.json" } |
+                    Select-Object -First 1
+
+                if ($bootJson -ne $null) {
+                    Copy-Item $bootJson.FullName "$frameworkPath\\blazor.boot.json" -Force
+                }
+
+                if (!(Test-Path "$frameworkPath\\blazor.webassembly.js")) {
+                    Write-Error "blazor.webassembly.js was not found."
+                    exit 1
+                }
+                '''
             }
         }
 
