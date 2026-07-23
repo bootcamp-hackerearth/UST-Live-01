@@ -1,95 +1,74 @@
 pipeline {
     agent any
 
-    options {
-        skipDefaultCheckout(true)
+   *options {
+        skipDefaultCheck*ut(true)
         timestamps()
-        disableConcurrentBuilds()
-    }
-
+    *   disableConcurrentBuilds()
+    }*
     environment {
-        DOTNET_CLI_TELEMETRY_OPTOUT = '1'
-        DOTNET_NOLOGO = '1'
+        DOTNET_*LI_TELEMETRY_OPTOUT = '1'
+        *OTNET_NOLOGO = '1'
 
-        AWS_REGION = 'ap-south-2'
-        EB_APPLICATION_NAME = 'HealthCareApp'
-        EB_ENVIRONMENT_NAME = 'HealthCareApp-dev'
-        S3_BUCKET = 'healthaxis-jenkins-bucket-847814614822-ap-south-2-an'
-        DEPLOY_PACKAGE = 'deploy-package.zip'
+        AWS_RE*ION = 'ap-south-2'
+        EB_APPL*CATION_NAME = 'HealthCareApp'
+    *   EB_ENVIRONMENT_NAME = 'HealthCa*eApp-dev'
+        S3_BUCKET = 'hea*thaxis-jenkins-bucket-847814614822*ap-south-2-an'
+        DEPLOY_PACK*GE = 'deploy-package.zip'
     }
 
-    stages {
-        stage('Checkout') {
+ *  stages {
+        stage('Checkout*) {
             steps {
-                checkout scm
+          *     checkout scm
+            }
+  *     }
+
+        stage('Verify Proj*ct Files') {
+            steps {
+ *              bat '''
+            *   echo Checking required project *iles...
+
+                if not ex*st HealthCareApp\\HealthCareApp.cs*roj (
+                    echo ERR*R: HealthCareApp project not found*
+                    exit /b 1
+   *            )
+
+                if *ot exist HealthCareApp.AdminBlazor*\HealthCareApp.AdminBlazor.csproj *
+                    echo ERROR: A*min Blazor project not found.
+    *               exit /b 1
+         *      )
+
+                if not ex*st HealthCareApp.UI\\package.json *
+                    echo ERROR: A*gular package.json not found.
+    *               exit /b 1
+         *      )
+
+                echo Requ*red project files found.
+         *      '''
+            }
+        }
+*        stage('Clean Previous Buil*') {
+            steps {
+         *      bat '''
+                if e*ist artifacts rmdir /S /Q artifact*
+                if exist publish *mdir /S /Q publish
+               *if exist deploy-package.zip del /F*/Q deploy-package.zip
+
+           *    if exist HealthCareApp\\wwwroot\\angular rmdir /S /Q HealthCareApp\\wwwroot\\angular
+                if exist HealthCareApp\\wwwroot\\blazor rmdir /S /Q HealthCareApp\\wwwroot\\blazor
+                '''
             }
         }
 
-        stage('Verify Project Files') {
+        stage('Restore .NET Projects') {
             steps {
                 bat '''
-                echo ===== Checking project files =====
-
-                if not exist HealthCareApp\\HealthCareApp.csproj (
-                    echo ERROR: HealthCareApp API project was not found.
-                    exit /b 1
-                )
-
-                if not exist HealthCareApp.AdminBlazor\\HealthCareApp.AdminBlazor.csproj (
-                    echo ERROR: HealthCareApp Admin Blazor project was not found.
-                    exit /b 1
-                )
-
-                if not exist HealthCareApp.UI\\package.json (
-                    echo ERROR: Angular package.json was not found.
-                    exit /b 1
-                )
-
-                echo ===== Available .NET projects =====
-                dir /S /B *.csproj
-
-                ec*o All required project files were *ound.
-                '''
-        *   }
-        }
-
-        stage('Cle*n Previous Build') {
-            s*eps {
-                bat '''
-    *           echo Cleaning previous *uild files...
-
-                if *xist artifacts rmdir /S /Q artifac*s
-                if exist publish*rmdir /S /Q publish
-              * if exist deploy-package.zip del /* /Q deploy-package.zip
-
-          *     if exist HealthCareApp\\wwwro*t\\angular rmdir /S /Q HealthCareA*p\\wwwroot\\angular
-              * if exist HealthCareApp\\wwwroot\\*lazor rmdir /S /Q HealthCareApp\\w*wroot\\blazor
-
-                ech* Previous build files cleaned succ*ssfully.
-                '''
-     *      }
-        }
-
-        stage('*estore .NET Projects') {
-         *  steps {
-                bat '''
-*               echo Restoring Heal*hCareApp API...
                 dotnet restore HealthCareApp\\HealthCareApp.csproj
+                if errorlevel 1 exit /b 1
 
-                if errorlevel 1 (
-                    echo ERROR: HealthCareApp API restore failed.
-                    exit /b 1
-                )
-
-                echo Restoring HealthCareApp Admin Blazor...
                 dotnet restore HealthCareApp.AdminBlazor\\HealthCareApp.AdminBlazor.csproj
-
-                if errorlevel 1 (
-                    echo ERROR: HealthCareApp Admin Blazor restore failed.
-                    exit /b 1
-                )
-
-                echo .NET restore completed successfully.
+                if errorlevel 1 exit /b 1
                 '''
             }
         }
@@ -98,23 +77,11 @@ pipeline {
             steps {
                 dir('HealthCareApp.UI') {
                     bat '''
-                    echo Installing Angular dependencies...
                     call npm ci
+                    if errorlevel 1 exit /b 1
 
-                    if errorlevel 1 (
-                        echo ERROR: npm ci failed.
-                        exit /b 1
-                    )
-
-                    echo Building Angular production application...
                     call npx ng build --configuration production
-
-                    if errorlevel 1 (
-                        echo ERROR: Angular production build failed.
-                        exit /b 1
-                    )
-
-                    echo Angular build completed successfully.
+                    if errorlevel 1 exit /b 1
                     '''
                 }
             }
@@ -124,13 +91,9 @@ pipeline {
             steps {
                 bat '''
                 if not exist HealthCareApp\\wwwroot\\angular\\index.html (
-                    echo ERROR: Angular index.html was not found.
-                    echo Expected path: HealthCareApp\\wwwroot\\angular\\index.html
+                    echo ERROR: Angular build output missing.
                     exit /b 1
                 )
-
-                echo Angular build files found successfully.
-                dir HealthCareApp\\wwwroot\\angular
                 '''
             }
         }
@@ -138,25 +101,17 @@ pipeline {
         stage('Publish Blazor Admin') {
             steps {
                 bat '''
-                echo Publishing Blazor Admin...
-
                 dotnet publish HealthCareApp.AdminBlazor\\HealthCareApp.AdminBlazor.csproj -c Release -o artifacts\\adminblazor --no-restore
-
-                if errorlevel 1 (
-                    echo ERROR: Blazor Admin publish failed.
-                    exit /b 1
-                )
-
-                echo Blazor Admin published successfully.
+                if errorlevel 1 exit /b 1
                 '''
             }
         }
 
-        stage('Copy Blazor into API') {
+        stage('Copy Blazor into API wwwroot') {
             steps {
                 bat '''
                 if not exist artifacts\\adminblazor\\wwwroot\\_framework (
-                    echo ERROR: Blazor WebAssembly framework files were not found.
+                    echo ERROR: Blazor framework files missing.
                     exit /b 1
                 )
 
@@ -165,18 +120,12 @@ pipeline {
                 mkdir HealthCareApp\\wwwroot\\blazor
 
                 xcopy /E /Y /I artifacts\\adminblazor\\wwwroot\\* HealthCareApp\\wwwroot\\blazor\\
-
-                if errorlevel 1 (
-                    echo ERROR: Copying Blazor files failed.
-                    exit /b 1
-                )
+                if errorlevel 1 exit /b 1
 
                 if not exist HealthCareApp\\wwwroot\\blazor\\index.html (
-                    echo ERROR: Blazor index.html was not copied.
+                    echo ERROR: Blazor index.html missing after copy.
                     exit /b 1
                 )
-
-                echo Blazor files copied successfully.
                 '''
             }
         }
@@ -189,14 +138,14 @@ pipeline {
                 $frameworkPath = ".\\HealthCareApp\\wwwroot\\blazor\\_framework"
 
                 if (!(Test-Path $frameworkPath)) {
-                    throw "Blazor _framework folder was not found at $frameworkPath"
+                    throw "Blazor _framework folder missing."
                 }
 
                 $blazorJs = Get-ChildItem $frameworkPath -Filter "blazor.webassembly*.js" |
                     Where-Object { $_.Name -ne "blazor.webassembly.js" } |
                     Select-Object -First 1
 
-                if ($blazorJs -ne $null) {
+                if ($null -ne $blazorJs) {
                     Copy-Item $blazorJs.FullName "$frameworkPath\\blazor.webassembly.js" -Force
                 }
 
@@ -204,15 +153,13 @@ pipeline {
                     Where-Object { $_.Name -ne "blazor.boot.json" } |
                     Select-Object -First 1
 
-                if ($bootJson -ne $null) {
+                if ($null -ne $bootJson) {
                     Copy-Item $bootJson.FullName "$frameworkPath\\blazor.boot.json" -Force
                 }
 
                 if (!(Test-Path "$frameworkPath\\blazor.webassembly.js")) {
-                    throw "blazor.webassembly.js was not found."
+                    throw "blazor.webassembly.js missing."
                 }
-
-                Write-Host "Blazor fallback files created successfully."
                 '''
             }
         }
@@ -220,16 +167,8 @@ pipeline {
         stage('Publish API') {
             steps {
                 bat '''
-                echo Publishing HealthCareApp API...
-
                 dotnet publish HealthCareApp\\HealthCareApp.csproj -c Release -o publish --no-restore --self-contained false
-
-                if errorlevel 1 (
-                    echo ERROR: HealthCareApp API publish failed.
-                    exit /b 1
-                )
-
-                echo HealthCareApp API published successfully.
+                if errorlevel 1 exit /b 1
                 '''
             }
         }
@@ -237,44 +176,16 @@ pipeline {
         stage('Prepare Elastic Beanstalk Package') {
             steps {
                 bat '''
-                echo Creating Elastic Beanstalk Procfile...
-
                 echo web: dotnet HealthCareApp.dll> publish\\Procfile
 
-                if not exist publish\\Procfile (
-                    echo ERROR: Procfile was not created.
-                    exit /b 1
-                )
+                if not exist publish\\Procfile exit /b 1
+                if not exist publish\\HealthCareApp.dll exit /b 1
+                if not exist publish\\HealthCareApp.runtimeconfig.json exit /b 1
+                if not exist publish\\HealthCareApp.deps.json exit /b 1
+                if not exist publish\\wwwroot\\angular\\index.html exit /b 1
+                if not exist publish\\wwwroot\\blazor\\index.html exit /b 1
 
-                if not exist publish\\HealthCareApp.dll (
-                    echo ERROR: HealthCareApp.dll was not found.
-                    exit /b 1
-                )
-
-                if not exist publish\\HealthCareApp.deps.json (
-                    echo ERROR: HealthCareApp.deps.json was not found.
-                    exit /b 1
-                )
-
-                if not exist publish\\HealthCareApp.runtimeconfig.json (
-                    echo ERROR: HealthCareApp.runtimeconfig.json was not found.
-                    exit /b 1
-                )
-
-                if not exist publish\\wwwroot\\angular\\index.html (
-                    echo ERROR: Angular files were not included in API publish.
-                    exit /b 1
-                )
-
-                if not exist publish\\wwwroot\\blazor\\index.html (
-                    echo ERROR: Blazor Admin files were not included in API publish.
-                    exit /b 1
-                )
-
-                echo ===== Procfile content =====
                 type publish\\Procfile
-
-                echo Elastic Beanstalk package files are ready.
                 '''
             }
         }
@@ -283,56 +194,25 @@ pipeline {
             steps {
                 dir('publish') {
                     bat '''
-                    echo Creating deployment ZIP...
-
                     jar -cMf ..\\deploy-package.zip .
-
-                    if errorlevel 1 (
-                        echo ERROR: Creating deployment ZIP failed.
-                        exit /b 1
-                    )
-
-                    if not exist ..\\deploy-package.zip (
-                        echo ERROR: deploy-package.zip was not created.
-                        exit /b 1
-                    )
+                    if errorlevel 1 exit /b 1
                     '''
                 }
 
                 bat '''
-                echo ===== Checking deployment ZIP =====
+                if not exist deploy-package.zip exit /b 1
 
                 jar -tf deploy-package.zip | findstr /I "Procfile"
-                if errorlevel 1 (
-                    echo ERROR: Procfile is missing from deployment ZIP.
-                    exit /b 1
-                )
+                if errorlevel 1 exit /b 1
 
                 jar -tf deploy-package.zip | findstr /I "HealthCareApp.dll"
-                if errorlevel 1 (
-                    echo ERROR: HealthCareApp.dll is missing from deployment ZIP.
-                    exit /b 1
-                )
-
-                jar -tf deploy-package.zip | findstr /I "HealthCareApp.runtimeconfig.json"
-                if errorlevel 1 (
-                    echo ERROR: Runtime config is missing from deployment ZIP.
-                    exit /b 1
-                )
+                if errorlevel 1 exit /b 1
 
                 jar -tf deploy-package.zip | findstr /I "wwwroot/angular/index.html"
-                if errorlevel 1 (
-                    echo ERROR: Angular index.html is missing from deployment ZIP.
-                    exit /b 1
-                )
+                if errorlevel 1 exit /b 1
 
                 jar -tf deploy-package.zip | findstr /I "wwwroot/blazor/index.html"
-                if errorlevel 1 (
-                    echo ERROR: Blazor index.html is missing from deployment ZIP.
-                    exit /b 1
-                )
-
-                echo Deployment ZIP created and verified successfully.
+                if errorlevel 1 exit /b 1
                 '''
             }
         }
@@ -341,16 +221,8 @@ pipeline {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-deploy-creds']]) {
                     bat '''
-                    echo Uploading deployment package to S3...
-
                     aws s3 cp deploy-package.zip s3://%S3_BUCKET%/deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%
-
-                    if errorlevel 1 (
-                        echo ERROR: Uploading deployment package to S3 failed.
-                        exit /b 1
-                    )
-
-                    echo Deployment package uploaded successfully.
+                    if errorlevel 1 exit /b 1
                     '''
                 }
             }
@@ -360,16 +232,8 @@ pipeline {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-deploy-creds']]) {
                     bat '''
-                    echo Creating Elastic Beanstalk application version v-%BUILD_NUMBER%...
-
                     aws elasticbeanstalk create-application-version --application-name "%EB_APPLICATION_NAME%" --version-label "v-%BUILD_NUMBER%" --description "Jenkins build %BUILD_NUMBER%" --source-bundle S3Bucket=%S3_BUCKET%,S3Key=deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%
-
-                    if errorlevel 1 (
-                        echo ERROR: Creating Elastic Beanstalk application version failed.
-                        exit /b 1
-                    )
-
-                    echo Application version v-%BUILD_NUMBER% created successfully.
+                    if errorlevel 1 exit /b 1
                     '''
                 }
             }
@@ -379,107 +243,58 @@ pipeline {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-deploy-creds']]) {
                     bat '''
-                    echo Deploying version v-%BUILD_NUMBER%...
-
                     aws elasticbeanstalk update-environment --environment-name "%EB_ENVIRONMENT_NAME%" --version-label "v-%BUILD_NUMBER%" --region %AWS_REGION%
-
-                    if errorlevel 1 (
-                        echo ERROR: Elastic Beanstalk update request failed.
-                        exit /b 1
-                    )
-
-                    echo Elastic Beanstalk deployment request submitted.
+                    if errorlevel 1 exit /b 1
                     '''
                 }
             }
         }
 
-        stage('Wait for Deployment Result') {
+        stage('Wait for EB Ready') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-deploy-creds']]) {
                     powershell '''
                     $ErrorActionPreference = "Stop"
 
                     $expectedVersion = "v-$env:BUILD_NUMBER"
-                    $maximumChecks = 60
+                    $maxChecks = 60
                     $delaySeconds = 15
-                    $environmentReady = $false
-                    $environmentCname = ""
 
-                    Write-Host "Waiting for Elastic Beanstalk deployment..."
-                    Write-Host "Expected version: $expectedVersion"
+                    for ($i = 1; $i -le $maxChecks; $i++) {
+                        $result = aws elasticbeanstalk describe-environments --environment-names $env:EB_ENVIRONMENT_NAME --region $env:AWS_REGION --output json | ConvertFrom-Json
+                        $envData = $result.Environments[0]
 
-                    for ($check = 1; $check -le $maximumChecks; $check++) {
-                        $json = aws elasticbeanstalk describe-environments --environment-names $env:EB_ENVIRONMENT_NAME --region $env:AWS_REGION --output json
-                        $response = $json | ConvertFrom-Json
+                        $status = $envData.Status
+                        $health = $envData.Health
+                        $version = $envData.VersionLabel
+                        $cname = $envData.CNAME
 
-                        if ($null -eq $response.Environments -or $response.Environments.Count -eq 0) {
-                            throw "Elastic Beanstalk environment was not found."
-                        }
-
-                        $environment = $response.Environments[0]
-
-                        $status = $environment.Status
-                        $health = $environment.Health
-                        $runningVersion = $environment.VersionLabel
-                        $environmentCname = $environment.CNAME
-
-                        Write-Host ""
-                        Write-Host "Check $check of $maximumChecks"
+                        Write-Host "Check $i"
                         Write-Host "Status: $status"
                         Write-Host "Health: $health"
-                        Write-Host "Running version: $runningVersion"
-                        Write-Host "CNAME: $environmentCname"
+                        Write-Host "Version: $version"
 
-                        if ($status -eq "Ready" -and $runningVersion -eq $expectedVersion) {
-                            $environmentReady = $true
-                            break
+                        if ($status -eq "Ready" -and $version -eq $expectedVersion) {
+                            Write-Host "Elastic Beanstalk is running expected version."
+
+                            $healthUrl = "http://$cname/health"
+                            Write-Host "Checking $healthUrl"
+
+                            try {
+                                $response = Invoke-WebRequest -Uri $healthUrl -UseBasicParsing -TimeoutSec 20
+                                Write-Host "Health endpoint returned HTTP $($response.StatusCode)"
+                            }
+                            catch {
+                                Write-Host "Health endpoint check failed: $($_.Exception.Message)"
+                            }
+
+                            exit 0
                         }
 
                         Start-Sleep -Seconds $delaySeconds
                     }
 
-                    if (-not $environmentReady) {
-                        throw "Deployment did not reach Ready state with expected version $expectedVersion."
-                    }
-
-                    Write-Host ""
-                    Write-Host "Elastic Beanstalk is running expected version $expectedVersion."
-                    Write-Host "Now checking application /health endpoint..."
-
-                    $healthUrl = "http://$environmentCname/health"
-                    Write-Host "Health URL: $healthUrl"
-
-                    $healthSuccess = $false
-
-                    for ($i = 1; $i -le 10; $i++) {
-                        try {
-                            $result = Invoke-WebRequest -Uri $healthUrl -UseBasicParsing -TimeoutSec 20
-
-                            Write-Host "Health check attempt $i returned HTTP $($result.StatusCode)."
-
-                            if ($result.StatusCode -eq 200) {
-                                $healthSuccess = $true
-                                break
-                            }
-                        }
-                        catch {
-                            Write-Host "Health check attempt $i failed: $($_.Exception.Message)"
-                        }
-
-                        Start-Sleep -Seconds 10
-                    }
-
-                    if (-not $healthSuccess) {
-                        throw "Application /health endpoint did not return HTTP 200."
-                    }
-
-                    Write-Host ""
-                    Write-Host "Deployment completed successfully."
-                    Write-Host "Elastic Beanstalk version: $expectedVersion"
-                    Write-Host "Application health endpoint is working."
-
-                    exit 0
+                    throw "Elastic Beanstalk did not reach Ready state with expected version."
                     '''
                 }
             }
@@ -488,22 +303,15 @@ pipeline {
 
     post {
         success {
-            echo 'HealthAxis was built and deployed successfully.'
-            echo 'Elastic Beanstalk is running the new application version.'
-            echo 'The /health endpoint returned HTTP 200.'
+            echo 'HealthAxis Jenkins deployment completed.'
         }
 
         failure {
-            echo 'HealthAxis deployment failed.'
-            echo 'Check the first failed stage in Jenkins Console Output.'
-            echo 'If only EB color is Red but /health works, check EB health configuration separately.'
+            echo 'HealthAxis Jenkins deployment failed. Check console output and EB logs.'
         }
 
         always {
-            archiveArtifacts(
-                artifacts: 'deploy-package.zip',
-                allowEmptyArchive: true
-            )
+            archiveArtifacts artifacts: 'deploy-package.zip', allowEmptyArchive: true
         }
     }
 }
