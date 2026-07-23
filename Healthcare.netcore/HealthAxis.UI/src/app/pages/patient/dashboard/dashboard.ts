@@ -25,10 +25,10 @@ export class Dashboard implements OnInit {
 
   upcomingAppointmentText = 'No upcoming appointments';
 
-  private readonly patientUrl = 'https://localhost:7130/api/patients/me';
-  private readonly doctorsUrl = 'https://localhost:7130/api/doctors';
-  private readonly appointmentsUrl = 'https://localhost:7130/api/appointments';
-  private readonly patientsUrl = 'https://localhost:7130/api/patients';
+  private readonly patientUrl = '/api/patients/me';
+  private readonly doctorsUrl = '/api/doctors';
+  private readonly appointmentsUrl = '/api/appointments';
+  private readonly patientsUrl = '/api/patients';
 
   ngOnInit() {
     if (globalThis.window !== undefined) {

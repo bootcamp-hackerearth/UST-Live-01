@@ -22,8 +22,8 @@ export class Dashboard implements OnInit {
   pendingAppointments = 0;
   completedAppointments = 0;
 
-  private readonly doctorsUrl = 'https://localhost:7130/api/doctors';
-  private readonly appointmentsUrl = 'https://localhost:7130/api/appointments';
+  private readonly doctorsUrl = '/api/doctors';
+  private readonly appointmentsUrl = '/api/appointments';
 
   ngOnInit() {
     if (globalThis.window !== undefined) {

@@ -14,7 +14,7 @@ export interface DoctorAvailability {
 })
 export class DoctorService {
 
-  private readonly baseUrl = 'https://localhost:7130/api/doctors';
+  private readonly baseUrl = '/api/doctors';
 
   constructor(private readonly http: HttpClient) {}
 

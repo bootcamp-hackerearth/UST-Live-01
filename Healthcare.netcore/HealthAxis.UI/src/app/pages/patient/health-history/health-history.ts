@@ -16,8 +16,8 @@ export class HealthHistory implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  private readonly healthRecordsUrl = 'https://localhost:7130/api/health-records';
-  private readonly doctorsUrl = 'https://localhost:7130/api/doctors';
+  private readonly healthRecordsUrl = '/api/health-records';
+  private readonly doctorsUrl = '/api/doctors';
 
   showFilters = false;
 

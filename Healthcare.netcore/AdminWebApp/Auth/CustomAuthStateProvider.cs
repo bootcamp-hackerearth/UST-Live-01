@@ -1,92 +1,177 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
 
 namespace AdminWebApp.Auth
 {
-    public class CustomAuthStateProvider : AuthenticationStateProvider
+    public class CustomAuthStateProvider
+        : AuthenticationStateProvider
     {
         private readonly IJSRuntime _jsRuntime;
+        private readonly HttpClient _httpClient;
 
-        public CustomAuthStateProvider(IJSRuntime jsRuntime)
+        public CustomAuthStateProvider(
+            IJSRuntime jsRuntime,
+            HttpClient httpClient)
         {
             _jsRuntime = jsRuntime;
+            _httpClient = httpClient;
         }
 
-        public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+        public override async Task<AuthenticationState>
+            GetAuthenticationStateAsync()
         {
             try
             {
-                string? token = await _jsRuntime.InvokeAsync<string>(
-                    "localStorage.getItem",
-                    "token");
+                var token =
+                    await _jsRuntime.InvokeAsync<string?>(
+                        "localStorage.getItem",
+                        "token");
 
                 if (string.IsNullOrWhiteSpace(token))
                 {
+                    ClearAuthorizationHeader();
                     return GetAnonymousState();
                 }
 
-                List<Claim> claims = ParseClaimsFromJwt(token);
+                var claims =
+                    ParseClaimsFromJwt(token);
 
-                ClaimsIdentity identity = new ClaimsIdentity(
+                if (claims.Count == 0)
+                {
+                    await RemoveStoredTokenAsync();
+
+                    ClearAuthorizationHeader();
+
+                    return GetAnonymousState();
+                }
+
+                SetAuthorizationHeader(token);
+
+                var identity = new ClaimsIdentity(
                     claims,
                     "jwt",
                     ClaimTypes.Name,
                     ClaimTypes.Role);
 
-                ClaimsPrincipal user = new ClaimsPrincipal(identity);
+                var user =
+                    new ClaimsPrincipal(identity);
 
                 return new AuthenticationState(user);
             }
             catch
             {
-                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "token");
+                await RemoveStoredTokenAsync();
+
+                ClearAuthorizationHeader();
+
                 return GetAnonymousState();
             }
         }
 
-        public void NotifyUserLoggedIn(string token)
+        public void NotifyUserLoggedIn(
+            string token)
         {
-            List<Claim> claims = ParseClaimsFromJwt(token);
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                ClearAuthorizationHeader();
 
-            ClaimsIdentity identity = new ClaimsIdentity(
+                NotifyAuthenticationStateChanged(
+                    Task.FromResult(
+                        GetAnonymousState()));
+
+                return;
+            }
+
+            var claims =
+                ParseClaimsFromJwt(token);
+
+            SetAuthorizationHeader(token);
+
+            var identity = new ClaimsIdentity(
                 claims,
                 "jwt",
                 ClaimTypes.Name,
                 ClaimTypes.Role);
 
-            ClaimsPrincipal user = new ClaimsPrincipal(identity);
+            var user =
+                new ClaimsPrincipal(identity);
+
+            var authenticationState =
+                new AuthenticationState(user);
 
             NotifyAuthenticationStateChanged(
-                Task.FromResult(new AuthenticationState(user)));
+                Task.FromResult(
+                    authenticationState));
         }
 
         public void NotifyUserLoggedOut()
         {
+            ClearAuthorizationHeader();
+
             NotifyAuthenticationStateChanged(
-                Task.FromResult(GetAnonymousState()));
+                Task.FromResult(
+                    GetAnonymousState()));
         }
 
-        private static AuthenticationState GetAnonymousState()
+        private void SetAuthorizationHeader(
+            string token)
         {
-            ClaimsPrincipal anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
-
-            return new AuthenticationState(anonymousUser);
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    token);
         }
 
-        private static List<Claim> ParseClaimsFromJwt(string jwt)
+        private void ClearAuthorizationHeader()
         {
-            List<Claim> claims = new List<Claim>();
+            _httpClient.DefaultRequestHeaders.Authorization =
+                null;
+        }
 
-            string[] parts = jwt.Split('.');
+        private async Task RemoveStoredTokenAsync()
+        {
+            try
+            {
+                await _jsRuntime.InvokeVoidAsync(
+                    "localStorage.removeItem",
+                    "token");
+            }
+            catch
+            {
+                // Ignore JavaScript errors while recovering
+                // from an invalid authentication state.
+            }
+        }
+
+        private static AuthenticationState
+            GetAnonymousState()
+        {
+            var anonymousUser =
+                new ClaimsPrincipal(
+                    new ClaimsIdentity());
+
+            return new AuthenticationState(
+                anonymousUser);
+        }
+
+        private static List<Claim>
+            ParseClaimsFromJwt(
+                string jwt)
+        {
+            var claims =
+                new List<Claim>();
+
+            var parts = jwt.Split('.');
 
             if (parts.Length < 2)
             {
                 return claims;
             }
 
-            string payload = parts[1]
+            var payload = parts[1]
                 .Replace('-', '+')
                 .Replace('_', '/');
 
@@ -101,57 +186,92 @@ namespace AdminWebApp.Auth
                     break;
             }
 
-            byte[] jsonBytes = Convert.FromBase64String(payload);
+            var jsonBytes =
+                Convert.FromBase64String(
+                    payload);
 
-            Dictionary<string, JsonElement>? keyValuePairs =
-                JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(jsonBytes);
+            var keyValuePairs =
+                JsonSerializer.Deserialize<
+                    Dictionary<string, JsonElement>>(
+                    jsonBytes);
 
             if (keyValuePairs == null)
             {
                 return claims;
             }
 
-            foreach (KeyValuePair<string, JsonElement> kvp in keyValuePairs)
+            foreach (var keyValuePair
+                     in keyValuePairs)
             {
-                if (kvp.Value.ValueKind == JsonValueKind.Array)
+                if (
+                    keyValuePair.Value.ValueKind ==
+                    JsonValueKind.Array)
                 {
-                    foreach (JsonElement item in kvp.Value.EnumerateArray())
+                    foreach (
+                        var item in
+                        keyValuePair.Value
+                            .EnumerateArray())
                     {
-                        AddClaim(claims, kvp.Key, item.ToString());
+                        AddClaim(
+                            claims,
+                            keyValuePair.Key,
+                            item.ToString());
                     }
                 }
                 else
                 {
-                    AddClaim(claims, kvp.Key, kvp.Value.ToString());
+                    AddClaim(
+                        claims,
+                        keyValuePair.Key,
+                        keyValuePair.Value.ToString());
                 }
             }
 
             return claims;
         }
 
-        private static void AddClaim(List<Claim> claims, string key, string value)
+        private static void AddClaim(
+            List<Claim> claims,
+            string key,
+            string value)
         {
-            claims.Add(new Claim(key, value));
+            claims.Add(
+                new Claim(key, value));
 
-            string lowerKey = key.ToLowerInvariant();
+            var lowerKey =
+                key.ToLowerInvariant();
 
-            if (lowerKey == "role" ||
+            if (
+                lowerKey == "role" ||
                 lowerKey == "roles" ||
                 lowerKey.EndsWith("/role"))
             {
-                claims.Add(new Claim(ClaimTypes.Role, value));
+                claims.Add(
+                    new Claim(
+                        ClaimTypes.Role,
+                        value));
             }
 
-            if (lowerKey == "email" ||
-                lowerKey.EndsWith("/emailaddress"))
+            if (
+                lowerKey == "email" ||
+                lowerKey.EndsWith(
+                    "/emailaddress"))
             {
-                claims.Add(new Claim(ClaimTypes.Email, value));
+                claims.Add(
+                    new Claim(
+                        ClaimTypes.Email,
+                        value));
             }
 
-            if (lowerKey == "sub" ||
-                lowerKey.EndsWith("/nameidentifier"))
+            if (
+                lowerKey == "sub" ||
+                lowerKey.EndsWith(
+                    "/nameidentifier"))
             {
-                claims.Add(new Claim(ClaimTypes.NameIdentifier, value));
+                claims.Add(
+                    new Claim(
+                        ClaimTypes.NameIdentifier,
+                        value));
             }
         }
     }

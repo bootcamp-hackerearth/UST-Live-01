@@ -18,7 +18,13 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
+            
             "tsConfig": "tsconfig.app.json",
+            "baseHref": "/angular/",
+            "outputPath":{
+              "base": "../Healthcare.netcore/wwwroot/angular",
+              "browser": ""
+            },
             "assets": [
               {
                 "glob": "**/*",
@@ -27,15 +33,8 @@
             ],
             "styles": [
               "src/styles.css"
-            ],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "security": {
-              "allowedHosts": []
-            },
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            ]
+            
           },
           "configurations": {
             "production": {

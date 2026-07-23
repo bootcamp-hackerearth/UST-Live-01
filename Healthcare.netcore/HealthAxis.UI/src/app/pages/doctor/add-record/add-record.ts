@@ -16,10 +16,10 @@ export class AddRecord implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly cdr = inject(ChangeDetectorRef);
 
-  private readonly doctorsUrl = 'https://localhost:7130/api/doctors';
-  private readonly appointmentsUrl = 'https://localhost:7130/api/appointments';
-  private readonly patientsUrl = 'https://localhost:7130/api/patients';
-  private readonly healthRecordsUrl = 'https://localhost:7130/api/health-records';
+  private readonly doctorsUrl = '/api/doctors';
+  private readonly appointmentsUrl = '/api/appointments';
+  private readonly patientsUrl = '/api/patients';
+  private readonly healthRecordsUrl = '/api/health-records';
 
   searchText = '';
   fromDate = '';

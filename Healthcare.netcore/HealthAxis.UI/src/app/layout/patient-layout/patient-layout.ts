@@ -19,7 +19,7 @@ export class PatientLayout implements OnInit {
   patientEmail = 'patient@healthaxis.com';
   patientInitial = 'P';
 
-  private readonly patientUrl = 'https://localhost:7130/api/patients/me';
+  private readonly patientUrl = '/api/patients/me';
 
   ngOnInit() {
     if (globalThis.window !== undefined) {

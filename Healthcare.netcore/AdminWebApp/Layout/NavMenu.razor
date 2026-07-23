@@ -1,4 +1,10 @@
-﻿@inject IJSRuntime JS
+﻿@using AdminWebApp.Auth
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.JSInterop
+@implements IDisposable
+
+@inject IJSRuntime JS
 @inject CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager Nav
 
@@ -15,30 +21,32 @@
     <nav class="sidebar-menu">
         <AuthorizeView Roles="Admin">
             <Authorized>
-                <NavLink class="sidebar-link" href="/dashboard" Match="NavLinkMatch.All">
-                    Dashboard
+                <NavLink class="sidebar-link" href="dashboard" Match="NavLinkMatch.All">
+                    <span>Dashboard</span>
                 </NavLink>
 
-                <NavLink class="sidebar-link" href="/doctors">
-                    Doctors
+                <NavLink class="sidebar-link" href="doctors">
+                    <span>Doctors</span>
                 </NavLink>
 
-                <NavLink class="sidebar-link" href="/appointments">
-                    Appointment Reports
+                <NavLink class="sidebar-link" href="appointments">
+                    <span>Appointment Reports</span>
                 </NavLink>
 
-                <NavLink class="sidebar-link" href="/patients">
-                    Patients
+                <NavLink class="sidebar-link" href="patients">
+                    <span>Patients</span>
                 </NavLink>
 
-                <button type="button" class="sidebar-link logout-btn" @onclick="HandleLogout">
+                <button type="button"
+                        class="sidebar-link logout-btn"
+                        @onclick="HandleLogout">
                     Logout
                 </button>
             </Authorized>
 
             <NotAuthorized>
-                <NavLink class="sidebar-link" href="/login">
-                    Login
+                <NavLink class="sidebar-link" href="/angular/login">
+                    <span>Login</span>
                 </NavLink>
             </NotAuthorized>
         </AuthorizeView>
@@ -46,6 +54,19 @@
 </div>
 
 @code {
+    protected override void OnInitialized()
+    {
+        AuthStateProvider.AuthenticationStateChanged +=
+            HandleAuthenticationStateChanged;
+    }
+
+    private void HandleAuthenticationStateChanged(
+        Task<AuthenticationState> authenticationStateTask)
+    {
+        _ = authenticationStateTask;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
     private async Task HandleLogout()
     {
         var confirmed = await JS.InvokeAsync<bool>(
@@ -57,10 +78,24 @@
             return;
         }
 
-        await JS.InvokeVoidAsync("localStorage.removeItem", "token");
+        await JS.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "token");
+
+        await JS.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "refreshToken");
 
         AuthStateProvider.NotifyUserLoggedOut();
 
-        Nav.NavigateTo("http://localhost:4200/login", true);
+        Nav.NavigateTo(
+            "/angular/login",
+            forceLoad: true);
+    }
+
+    public void Dispose()
+    {
+        AuthStateProvider.AuthenticationStateChanged -=
+            HandleAuthenticationStateChanged;
     }
 }

@@ -43,7 +43,7 @@ export class Register {
     .split('T')[0];
 
   private readonly registerUrl =
-    'https://localhost:7130/api/auth/register';
+    '/api/auth/register';
 
   get fullNameError(): string {
     if (!this.submitted) {

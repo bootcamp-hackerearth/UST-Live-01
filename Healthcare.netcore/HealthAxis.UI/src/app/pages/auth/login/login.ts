@@ -29,10 +29,10 @@ export class Login {
   isLoggingIn = false;
 
   private readonly apiBaseUrl =
-    'https://localhost:7130';
+    '';
 
   private readonly blazorAdminUrl =
-    'https://localhost:7273';
+    '/blazor';
 
   constructor(
     private readonly http: HttpClient,

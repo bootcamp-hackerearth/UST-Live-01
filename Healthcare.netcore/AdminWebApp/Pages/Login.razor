@@ -101,7 +101,7 @@
         if (!string.IsNullOrWhiteSpace(token))
         {
             AuthStateProvider.NotifyUserLoggedIn(token);
-            Nav.NavigateTo("/dashboard", true);
+            Nav.NavigateTo("dashboard");
         }
     }
 
@@ -113,7 +113,7 @@
 
         try
         {
-            var response = await Http.PostAsJsonAsync("api/auth/login", LoginRequest);
+            var response = await Http.PostAsJsonAsync("/api/auth/login", LoginRequest);
 
             StatusMessage = $"API Status: {(int)response.StatusCode}";
 
@@ -152,7 +152,7 @@
 
             AuthStateProvider.NotifyUserLoggedIn(authResponse.AccessToken);
 
-            Nav.NavigateTo("/dashboard", true);
+            Nav.NavigateTo("dashboard");
         }
         catch (Exception ex)
         {

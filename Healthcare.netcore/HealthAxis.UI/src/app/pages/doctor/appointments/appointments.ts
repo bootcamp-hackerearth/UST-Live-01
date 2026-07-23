@@ -25,16 +25,16 @@ export class Appointments implements OnInit {
   private readonly zone = inject(NgZone);
 
   private readonly doctorsUrl =
-    'https://localhost:7130/api/doctors';
+    '/api/doctors';
 
   private readonly appointmentsUrl =
-    'https://localhost:7130/api/appointments';
+    '/api/appointments';
 
   private readonly patientsUrl =
-    'https://localhost:7130/api/patients';
+    '/api/patients';
 
   private readonly healthRecordsUrl =
-    'https://localhost:7130/api/health-records';
+    '/api/health-records';
 
   searchText = '';
   selectedStatus = '';

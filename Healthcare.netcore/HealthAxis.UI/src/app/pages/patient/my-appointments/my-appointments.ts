@@ -30,13 +30,13 @@ export class MyAppointments implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
 
   private readonly appointmentsUrl =
-    'https://localhost:7130/api/appointments';
+    '/api/appointments';
 
   private readonly doctorsUrl =
-    'https://localhost:7130/api/doctors';
+    '/api/doctors';
 
   private readonly healthRecordsUrl =
-    'https://localhost:7130/api/health-records';
+    '/api/health-records';
 
   showFilters = false;
 

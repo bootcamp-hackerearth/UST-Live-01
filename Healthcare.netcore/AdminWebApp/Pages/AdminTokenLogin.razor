@@ -18,7 +18,7 @@
 
         if (string.IsNullOrWhiteSpace(accessToken))
         {
-            Nav.NavigateTo("/login", true);
+            Nav.NavigateTo("login");
             return;
         }
 
@@ -31,7 +31,7 @@
 
         AuthStateProvider.NotifyUserLoggedIn(accessToken);
 
-        Nav.NavigateTo("/dashboard", true);
+        Nav.NavigateTo("dashboard");
     }
 
     private static string? GetQueryValue(string query, string key)

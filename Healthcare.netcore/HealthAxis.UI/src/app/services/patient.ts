@@ -6,8 +6,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class PatientService {
 
-  private readonly patientBaseUrl = 'https://localhost:7130/api/patients';
-  private readonly authBaseUrl = 'https://localhost:7130/api/auth';
+  private readonly patientBaseUrl = '/api/patients';
+  private readonly authBaseUrl = '/api/auth';
 
   constructor(private readonly http: HttpClient) {}
 

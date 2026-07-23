@@ -1,4 +1,6 @@
 using AutoMapper;
+using HealthAxis.API.BackgroundServices;
+using HealthAxis.API.Consumers;
 using HealthAxis.API.Data;
 using HealthAxis.API.Middleware;
 using HealthAxis.API.Models.Auth;
@@ -6,217 +8,384 @@ using HealthAxis.API.Repositories.Implementations;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Implementations;
 using HealthAxis.API.Services.Interfaces;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-using System.Text;
-using HealthAxis.API.BackgroundServices;
 using Serilog;
-using Serilog.Events;
-using HealthAxis.API.Options;
-
-using HealthAxis.API.Consumers;
-using MassTransit;
+using System.Text;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSerilog((services, configuration) =>
-    configuration
-        .ReadFrom.Configuration(builder.Configuration)
-        .ReadFrom.Services(services)
-        .Enrich.FromLogContext());
-
-
-// ✅ Controllers
-builder.Services.AddControllers();
-//heartbeatservices
-builder.Services.AddHostedService<HeartbeatService>();
-builder.Services.AddHostedService<NotificationCleanupService>();
-
-
-
-// ✅ Global Exception Handler
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddProblemDetails();
-
-// ✅ Swagger + JWT Auth
-builder.Services.AddEndpointsApiExplorer();
-
-
-builder.Services.AddSwaggerGen(options =>
+try
 {
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "HealthAxis API",
-        Version = "v1"
-    });
+    var builder = WebApplication.CreateBuilder(args);
 
-    options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
-    {
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        Description = "Enter JWT token as: Bearer {your token}"
-    });
-
-    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-    {
-        [new OpenApiSecuritySchemeReference("bearer", document)] = new List<string>()
-    });
-});
-
-//CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-});
-
-// ✅ DbContext
-builder.Services.AddDbContext<HealthAxisDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// ✅ Identity
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<HealthAxisDbContext>()
-    .AddDefaultTokenProviders();
-
-// ✅ JWT Auth
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        var jwt = builder.Configuration.GetSection("Jwt");
-
-        options.TokenValidationParameters = new TokenValidationParameters
+    builder.Services.AddSerilog(
+        (services, configuration) =>
         {
-            ValidateIssuer = true,
-            ValidIssuer = jwt["Issuer"],
+            configuration
+                .ReadFrom.Configuration(
+                    builder.Configuration)
+                .ReadFrom.Services(services)
+                .Enrich.FromLogContext();
+        });
 
-            ValidateAudience = true,
-            ValidAudience = jwt["Audience"],
+    // Controllers
+    builder.Services.AddControllers();
 
-            ValidateLifetime = true,
+    // Hosted background services
+    builder.Services.AddHostedService<HeartbeatService>();
 
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwt["Key"]!)
-            )
-        };
-    });
+    builder.Services.AddHostedService<
+        NotificationCleanupService>();
 
-builder.Services.AddAuthorization();
+    // Global exception handling
+    builder.Services.AddExceptionHandler<
+        GlobalExceptionHandler>();
 
-// ✅ Generic Repository
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+    builder.Services.AddProblemDetails();
 
-// ✅ Patient
-builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-builder.Services.AddScoped<IPatientService, PatientService>();
+    // Swagger
+    builder.Services.AddEndpointsApiExplorer();
 
-// ✅ Doctor
-// ✅ Doctor
-builder.Services.AddScoped<IDoctorService, DoctorService>();
-
-
-// ✅ Appointment
-builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-
-// ✅ HealthRecord
-builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
-builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
-
-// ✅ Auth
-builder.Services.AddScoped<IAuthService, AuthService>();
-
-builder.Services.AddCors(p =>
-{
-    p.AddPolicy("CorsPolicy", cfg =>
+    builder.Services.AddSwaggerGen(options =>
     {
-        cfg.WithOrigins("https://localhost:7273")
+        options.SwaggerDoc(
+            "v1",
+            new OpenApiInfo
+            {
+                Title = "HealthAxis API",
+                Version = "v1"
+            });
 
-        .AllowAnyHeader().AllowAnyMethod();
+        options.AddSecurityDefinition(
+            "bearer",
+            new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                Description =
+                    "Enter JWT token as: Bearer {your token}"
+            });
+
+        options.AddSecurityRequirement(
+            document =>
+                new OpenApiSecurityRequirement
+                {
+                    [
+                        new OpenApiSecuritySchemeReference(
+                            "bearer",
+                            document)
+                    ] = new List<string>()
+                });
     });
-});
 
-// ✅ AutoMapper
-builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
-
-// ✅ MassTransit + RabbitMQ
-builder.Services.AddMassTransit(x =>
-{
-x.AddConsumer<AppointmentBookedConsumer>();
-
-x.UsingRabbitMq((context, cfg) =>
-{
-var rabbitConfig = builder.Configuration.GetSection("RabbitMq");
-
-cfg.Host(
-    rabbitConfig["HostName"],
-    rabbitConfig["VirtualHost"],
-    h =>
+    // CORS
+    builder.Services.AddCors(options =>
     {
-
-        h.Username(rabbitConfig["UserName"]!);
-        h.Password(rabbitConfig["Password"]!);
+        options.AddPolicy(
+            "AllowAll",
+            policy =>
+            {
+                policy
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
     });
 
-    cfg.ReceiveEndpoint(rabbitConfig["AppointmentQueue"]!, e =>
+    // Database
+    var connectionString =
+        builder.Configuration.GetConnectionString(
+            "DefaultConnection");
+
+    if (string.IsNullOrWhiteSpace(connectionString))
     {
-        e.ConfigureConsumer<AppointmentBookedConsumer>(context);
+        throw new InvalidOperationException(
+            "The DefaultConnection connection string is missing.");
+    }
+
+    builder.Services.AddDbContext<
+        HealthAxisDbContext>(
+        options =>
+            options.UseSqlServer(connectionString));
+
+    // ASP.NET Core Identity
+    builder.Services
+        .AddIdentity<
+            ApplicationUser,
+            IdentityRole>()
+        .AddEntityFrameworkStores<
+            HealthAxisDbContext>()
+        .AddDefaultTokenProviders();
+
+    // JWT authentication
+    var jwtSection =
+        builder.Configuration.GetSection("Jwt");
+
+    var jwtIssuer = jwtSection["Issuer"];
+    var jwtAudience = jwtSection["Audience"];
+    var jwtKey = jwtSection["Key"];
+
+    if (string.IsNullOrWhiteSpace(jwtIssuer))
+    {
+        throw new InvalidOperationException(
+            "Jwt:Issuer is missing.");
+    }
+
+    if (string.IsNullOrWhiteSpace(jwtAudience))
+    {
+        throw new InvalidOperationException(
+            "Jwt:Audience is missing.");
+    }
+
+    if (string.IsNullOrWhiteSpace(jwtKey))
+    {
+        throw new InvalidOperationException(
+            "Jwt:Key is missing.");
+    }
+
+    builder.Services
+        .AddAuthentication(
+            JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters =
+                new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtIssuer,
+
+                    ValidateAudience = true,
+                    ValidAudience = jwtAudience,
+
+                    ValidateLifetime = true,
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(
+                                jwtKey))
+                };
+        });
+
+    builder.Services.AddAuthorization();
+
+    // Generic repository
+    builder.Services.AddScoped(
+        typeof(IRepository<>),
+        typeof(Repository<>));
+
+    // Patient
+    builder.Services.AddScoped<
+        IPatientRepository,
+        PatientRepository>();
+
+    builder.Services.AddScoped<
+        IPatientService,
+        PatientService>();
+
+    // Doctor
+    builder.Services.AddScoped<
+        IDoctorService,
+        DoctorService>();
+
+    // Appointment
+    builder.Services.AddScoped<
+        IAppointmentRepository,
+        AppointmentRepository>();
+
+    builder.Services.AddScoped<
+        IAppointmentService,
+        AppointmentService>();
+
+    // Health record
+    builder.Services.AddScoped<
+        IHealthRecordRepository,
+        HealthRecordRepository>();
+
+    builder.Services.AddScoped<
+        IHealthRecordService,
+        HealthRecordService>();
+
+    // Authentication service
+    builder.Services.AddScoped<
+        IAuthService,
+        AuthService>();
+
+    // AutoMapper
+    builder.Services.AddAutoMapper(
+        configuration =>
+        {
+        },
+        AppDomain.CurrentDomain.GetAssemblies());
+
+    
+
+    // MassTransit and RabbitMQ remain enabled.
+    builder.Services.AddMassTransit(configuration =>
+    {
+        configuration.AddConsumer<
+            AppointmentBookedConsumer>();
+
+        configuration.UsingRabbitMq(
+            (context, rabbitMqConfiguration) =>
+            {
+                var rabbitConfig =
+                    builder.Configuration.GetSection(
+                        "RabbitMq");
+
+                var hostName =
+                    rabbitConfig["HostName"];
+
+                var virtualHost =
+                    rabbitConfig["VirtualHost"];
+
+                var userName =
+                    rabbitConfig["UserName"];
+
+                var password =
+                    rabbitConfig["Password"];
+
+                var appointmentQueue =
+                    rabbitConfig["AppointmentQueue"];
+
+                if (string.IsNullOrWhiteSpace(hostName))
+                {
+                    throw new InvalidOperationException(
+                        "RabbitMq:HostName is missing.");
+                }
+
+                if (string.IsNullOrWhiteSpace(virtualHost))
+                {
+                    throw new InvalidOperationException(
+                        "RabbitMq:VirtualHost is missing.");
+                }
+
+                if (string.IsNullOrWhiteSpace(userName))
+                {
+                    throw new InvalidOperationException(
+                        "RabbitMq:UserName is missing.");
+                }
+
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    throw new InvalidOperationException(
+                        "RabbitMq:Password is missing.");
+                }
+
+                if (
+                    string.IsNullOrWhiteSpace(
+                        appointmentQueue))
+                {
+                    throw new InvalidOperationException(
+                        "RabbitMq:AppointmentQueue is missing.");
+                }
+
+                rabbitMqConfiguration.Host(
+                    hostName,
+                    virtualHost,
+                    hostConfiguration =>
+                    {
+                        hostConfiguration.Username(
+                            userName);
+
+                        hostConfiguration.Password(
+                            password);
+                    });
+
+                rabbitMqConfiguration.ReceiveEndpoint(
+                    appointmentQueue,
+                    endpoint =>
+                    {
+                        endpoint.ConfigureConsumer<
+                            AppointmentBookedConsumer>(
+                            context);
+                    });
+            });
     });
-});
-});
-builder.Services.Configure<GarnetOptions>(
-    builder.Configuration.GetSection("Garnet"));
 
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    var garnetOptions = builder.Configuration
-        .GetSection("Garnet")
-        .Get<GarnetOptions>() ?? new GarnetOptions();
+    var app = builder.Build();
 
-    options.Configuration = garnetOptions.ConnectionString;
-    options.InstanceName = garnetOptions.InstanceName;
-});
+    // Structured HTTP request logging
+    app.UseSerilogRequestLogging();
 
-var app = builder.Build();
-app.UseSerilogRequestLogging();
+    // CORS
+    app.UseCors("AllowAll");
+
+    // Swagger is currently enabled only locally.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    app.UseHttpsRedirection();
+    var contentTypeProvider = new FileExtensionContentTypeProvider();
+    contentTypeProvider.Mappings[".dat"] = "application/octet-stream";
+    contentTypeProvider.Mappings[".wasm"] = "application/wasm";
+    app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = contentTypeProvider });
+    // Global exception handling
+    app.UseExceptionHandler();
+
+    // Authentication and authorization
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    // API controllers
+    app.MapControllers();
+    app.MapGet("/angular", async context =>
+    {
+        await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", "index.html"));
+    });
+    app.MapGet("/angular/{*path:nonfile}", async context =>
+    {
+        await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", "index.html"));
+    });
+    app.MapGet("/blazor", async context =>
+    {
+        await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+    });
+    app.MapGet("/blazor/{*path:nonfile}", async context =>
+    {
+        await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+    });
 
 
-app.UseCors("AllowAll");
+    // Seed roles and Admin account
+    using (var scope = app.Services.CreateScope())
+    {
+        var roleManager =
+            scope.ServiceProvider
+                .GetRequiredService<
+                    RoleManager<IdentityRole>>();
 
-// ✅ Swagger
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+        var userManager =
+            scope.ServiceProvider
+                .GetRequiredService<
+                    UserManager<ApplicationUser>>();
+
+        await RoleSeeder.SeedRoles(roleManager);
+
+        await AdminSeeder.SeedAdmin(userManager);
+    }
+
+    await app.RunAsync();
 }
-
-app.UseHttpsRedirection();
-
-// ✅ Global Exception Handler
-app.UseExceptionHandler();
-
-// ✅ Auth
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-
-// ✅ Role Seeder
-using (var scope = app.Services.CreateScope())
+catch (Exception exception)
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-    await RoleSeeder.SeedRoles(roleManager);
-    await AdminSeeder.SeedAdmin(userManager);
+    Log.Fatal(
+        exception,
+        "HealthAxis API terminated unexpectedly.");
 }
-
-await app.RunAsync();
+finally
+{
+    await Log.CloseAndFlushAsync();
+}

@@ -40,8 +40,8 @@ export class DoctorProfile implements OnInit {
     confirmPassword: ''
   };
 
-  private readonly authUrl = 'https://localhost:7130/api/auth/change-password';
-  private readonly doctorStatusUrl = 'https://localhost:7130/api/doctors/me/status';
+  private readonly authUrl = '/api/auth/change-password';
+  private readonly doctorStatusUrl = '/api/doctors/me/status';
 
   ngOnInit() {
     if (globalThis.window !== undefined) {
