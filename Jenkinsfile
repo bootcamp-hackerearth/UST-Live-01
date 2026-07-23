@@ -2,10 +2,20 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION = 'ap-south-1'
-        EB_APPLICATION_NAME = 'EmployeeAppApi-01'
-        EB_ENVIRONMENT_NAME = 'EmployeeAppApi-01-dev'
-        S3_BUCKET = 'employeeapp-deploy-reni-2026-574521703934-ap-south-1-an'
+        AWS_REGION = 'ap-south-2'
+
+        // IMPORTANT:
+        // This is Elastic Beanstalk Application name, not environment URL.
+        // If your EB application name is different, change only this value.
+        EB_APPLICATION_NAME = 'HealthCareApp'
+
+        // This is your Elastic Beanstalk environment name.
+        EB_ENVIRONMENT_NAME = 'HealthCareApp-dev'
+
+        // Your Jenkins deployment bucket.
+        S3_BUCKET = 'healthaxis-jenkins-bucket-847814614822-ap-south-2-an'
+
+        DEPLOY_PACKAGE = 'deploy-package.zip'
     }
 
     stages {
@@ -15,52 +25,70 @@ pipeline {
             }
         }
 
-        stage('Build Angular') {
+        stage('Clean old deployment files') {
             steps {
-                dir('EmployeeApp.NgClient') {
+                bat '''
+                if exist artifacts rmdir /S /Q artifacts
+                if exist publish rmdir /S /Q publish
+                if exist deploy-package.zip del /Q deploy-package.zip
+                '''
+            }
+        }
+
+        stage('Restore API packages') {
+            steps {
+                bat 'dotnet restore HealthCareApp.sln'
+            }
+        }
+
+        stage('Install Angular packages') {
+            steps {
+                dir('HealthCareApp.UI') {
                     bat 'npm ci'
-                    bat 'npm run build'
                 }
             }
         }
 
-        stage('Publish Blazor') {
+        stage('Build Angular and Blazor') {
             steps {
-                bat 'dotnet publish EmployeeClient\\EmployeeClient.csproj -c Release -o blazor-publish-temp'
-            }
-        }
-
-        stage('Copy Blazor into API wwwroot') {
-            steps {
-                bat 'if not exist EmployeeApp.Api\\wwwroot\\blazor mkdir EmployeeApp.Api\\wwwroot\\blazor'
-                bat 'xcopy /E /Y /I blazor-publish-temp\\wwwroot\\* EmployeeApp.Api\\wwwroot\\blazor\\'
+                bat 'powershell -ExecutionPolicy Bypass -File .\\build-frontends.ps1'
             }
         }
 
         stage('Publish API') {
             steps {
-                bat 'dotnet publish EmployeeApp.Api\\EmployeeApp.Api.csproj -c Release -o publish'
+                bat 'dotnet publish HealthCareApp\\HealthCareApp.csproj -c Release -o publish'
             }
         }
 
         stage('Zip published output') {
-    steps {
-        dir('publish') {
-            bat 'jar -cMf ../deploy-package.zip .'
-        }
-    }
-}
-
-        stage('Upload to S3 and Deploy to EB') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-deploy-creds']]) {
-                    bat "aws s3 cp deploy-package.zip s3://%S3_BUCKET%/deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%"
-
-                    bat "aws elasticbeanstalk create-application-version --application-name %EB_APPLICATION_NAME% --version-label v-%BUILD_NUMBER% --source-bundle S3Bucket=%S3_BUCKET%,S3Key=deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%"
-
-                    bat "aws elasticbeanstalk update-environment --environment-name %EB_ENVIRONMENT_NAME% --version-label v-%BUILD_NUMBER% --region %AWS_REGION%"
+                dir('publish') {
+                    bat 'powershell -NoProfile -Command "Compress-Archive -Path * -DestinationPath ..\\deploy-package.zip -Force"'
                 }
             }
+        }
+
+        stage('Upload to S3 and Deploy to Elastic Beanstalk') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-deploy-creds']]) {
+                    bat 'aws s3 cp %DEPLOY_PACKAGE% s3://%S3_BUCKET%/deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%'
+
+                    bat 'aws elasticbeanstalk create-application-version --application-name %EB_APPLICATION_NAME% --version-label v-%BUILD_NUMBER% --source-bundle S3Bucket=%S3_BUCKET%,S3Key=deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%'
+
+                    bat 'aws elasticbeanstalk update-environment --environment-name %EB_ENVIRONMENT_NAME% --version-label v-%BUILD_NUMBER% --region %AWS_REGION%'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'HealthAxis deployment completed successfully.'
+        }
+
+        failure {
+            echo 'HealthAxis deployment failed. Check Jenkins console output.'
         }
     }
 }
