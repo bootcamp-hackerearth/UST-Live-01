@@ -12,15 +12,6 @@
         appointment availability, and secure your account.
       </p>
     </div>
-
-    <button
-      type="button"
-      class="refresh-button"
-      [disabled]="loading()"
-      (click)="loadProfile()"
-    >
-      {{ loading() ? 'Refreshing...' : 'Refresh Profile' }}
-    </button>
   </section>
 
   @if (loading()) {
