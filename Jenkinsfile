@@ -1,61 +1,66 @@
+cd C:\Users\310476\Desktop\Healthcare.Sprint4\UST-Live-01
+
+@'
 pipeline {
     agent any
 
-options {
-        skipDefaultCheck*ut(true)
+    options {
+        skipDefaultCheckout(true)
         timestamps()
-disableConcurrentBuilds()
-    }*
-    environment {
-        DOTNET_*LI_TELEMETRY_OPTOUT = '1'
-OTNET_NOLOGO = '1'
-
-        AWS_RE*ION = 'ap-south-2'
-        EB_APPL*CATION_NAME = 'HealthCareApp'
-EB_ENVIRONMENT_NAME = 'HealthCa*eApp-dev'
-        S3_BUCKET = 'hea*thaxis-jenkins-bucket-847814614822*ap-south-2-an'
-        DEPLOY_PACK*GE = 'deploy-package.zip'
+        disableConcurrentBuilds()
     }
 
-stages {
-        stage('Checkout*) {
+    environment {
+        DOTNET_CLI_TELEMETRY_OPTOUT = '1'
+        DOTNET_NOLOGO = '1'
+
+        AWS_REGION = 'ap-south-2'
+        EB_APPLICATION_NAME = 'HealthCareApp'
+        EB_ENVIRONMENT_NAME = 'HealthCareApp-dev'
+        S3_BUCKET = 'healthaxis-jenkins-bucket-847814614822-ap-south-2-an'
+        DEPLOY_PACKAGE = 'deploy-package.zip'
+    }
+
+    stages {
+        stage('Checkout') {
             steps {
-checkout scm
-            }
-}
-
-        stage('Verify Proj*ct Files') {
-            steps {
-bat '''
-echo Checking required project *iles...
-
-                if not ex*st HealthCareApp\\HealthCareApp.cs*roj (
-                    echo ERR*R: HealthCareApp project not found*
-                    exit /b 1
-)
-
-                if *ot exist HealthCareApp.AdminBlazor*\HealthCareApp.AdminBlazor.csproj *
-                    echo ERROR: A*min Blazor project not found.
-exit /b 1
-)
-
-                if not ex*st HealthCareApp.UI\\package.json *
-                    echo ERROR: A*gular package.json not found.
-exit /b 1
-)
-
-                echo Requ*red project files found.
-'''
+                checkout scm
             }
         }
-stage('Clean Previous Buil*') {
-            steps {
-bat '''
-                if e*ist artifacts rmdir /S /Q artifact*
-                if exist publish *mdir /S /Q publish
-if exist deploy-package.zip del /F*/Q deploy-package.zip
 
-if exist HealthCareApp\\wwwroot\\angular rmdir /S /Q HealthCareApp\\wwwroot\\angular
+        stage('Verify Project Files') {
+            steps {
+                bat '''
+                echo Checking required project files...
+
+                if not exist HealthCareApp\\HealthCareApp.csproj (
+                    echo ERROR: HealthCareApp project not found.
+                    exit /b 1
+                )
+
+                if not exist HealthCareApp.AdminBlazor\\HealthCareApp.AdminBlazor.csproj (
+                    echo ERROR: Admin Blazor project not found.
+                    exit /b 1
+                )
+
+                if not exist HealthCareApp.UI\\package.json (
+                    echo ERROR: Angular package.json not found.
+                    exit /b 1
+                )
+
+                echo Required project files found.
+                '''
+            }
+        }
+
+        stage('Clean Previous Build') {
+            steps {
+                bat '''
+                if exist artifacts rmdir /S /Q artifacts
+                if exist publish rmdir /S /Q publish
+                if exist deploy-package.zip del /F /Q deploy-package.zip
+
+                if exist HealthCareApp\\wwwroot\\angular rmdir /S /Q HealthCareApp\\wwwroot\\angular
                 if exist HealthCareApp\\wwwroot\\blazor rmdir /S /Q HealthCareApp\\wwwroot\\blazor
                 '''
             }
@@ -116,7 +121,6 @@ if exist HealthCareApp\\wwwroot\\angular rmdir /S /Q HealthCareApp\\wwwroot\\ang
                 )
 
                 if exist HealthCareApp\\wwwroot\\blazor rmdir /S /Q HealthCareApp\\wwwroot\\blazor
-
                 mkdir HealthCareApp\\wwwroot\\blazor
 
                 xcopy /E /Y /I artifacts\\adminblazor\\wwwroot\\* HealthCareApp\\wwwroot\\blazor\\
@@ -175,17 +179,37 @@ if exist HealthCareApp\\wwwroot\\angular rmdir /S /Q HealthCareApp\\wwwroot\\ang
 
         stage('Prepare Elastic Beanstalk Package') {
             steps {
-                bat '''
-                echo web: dotnet HealthCareApp.dll> publish\\Procfile
+                powershell '''
+                $ErrorActionPreference = "Stop"
 
-                if not exist publish\\Procfile exit /b 1
-                if not exist publish\\HealthCareApp.dll exit /b 1
-                if not exist publish\\HealthCareApp.runtimeconfig.json exit /b 1
-                if not exist publish\\HealthCareApp.deps.json exit /b 1
-                if not exist publish\\wwwroot\\angular\\index.html exit /b 1
-                if not exist publish\\wwwroot\\blazor\\index.html exit /b 1
+                Set-Content -Path ".\\publish\\Procfile" -Value "web: dotnet HealthCareApp.dll" -Encoding ASCII
 
-                type publish\\Procfile
+                if (!(Test-Path ".\\publish\\Procfile")) {
+                    throw "Procfile missing."
+                }
+
+                if (!(Test-Path ".\\publish\\HealthCareApp.dll")) {
+                    throw "HealthCareApp.dll missing."
+                }
+
+                if (!(Test-Path ".\\publish\\HealthCareApp.runtimeconfig.json")) {
+                    throw "runtimeconfig missing."
+                }
+
+                if (!(Test-Path ".\\publish\\HealthCareApp.deps.json")) {
+                    throw "deps json missing."
+                }
+
+                if (!(Test-Path ".\\publish\\wwwroot\\angular\\index.html")) {
+                    throw "Angular index missing from publish."
+                }
+
+                if (!(Test-Path ".\\publish\\wwwroot\\blazor\\index.html")) {
+                    throw "Blazor index missing from publish."
+                }
+
+                Write-Host "Procfile content:"
+                Get-Content ".\\publish\\Procfile"
                 '''
             }
         }
@@ -277,7 +301,7 @@ if exist HealthCareApp\\wwwroot\\angular rmdir /S /Q HealthCareApp\\wwwroot\\ang
                         if ($status -eq "Ready" -and $version -eq $expectedVersion) {
                             Write-Host "Elastic Beanstalk is running expected version."
 
-                            $healthUrl = "http://$cname/health"
+                            $healthUrl = "http" + "://" + $cname + "/health"
                             Write-Host "Checking $healthUrl"
 
                             try {
@@ -315,3 +339,4 @@ if exist HealthCareApp\\wwwroot\\angular rmdir /S /Q HealthCareApp\\wwwroot\\ang
         }
     }
 }
+'@ | Set-Content -Path .\Jenkinsfile -Encoding ASCII
