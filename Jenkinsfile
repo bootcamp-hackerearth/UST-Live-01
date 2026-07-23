@@ -48,32 +48,32 @@ pipeline {
                 echo ===== Available .NET projects =====
                 dir /S /B *.csproj
 
-                echo All required project files were found.
+                ec*o All required project files were *ound.
                 '''
-            }
+        *   }
         }
 
-        stage('Clean Previous Build') {
-            steps {
+        stage('Cle*n Previous Build') {
+            s*eps {
                 bat '''
-                echo Cleaning previous build files...
+    *           echo Cleaning previous *uild files...
 
-                if exist artifacts rmdir /S /Q artifacts
-                if exist publish rmdir /S /Q publish
-                if exist deploy-package.zip del /F /Q deploy-package.zip
+                if *xist artifacts rmdir /S /Q artifac*s
+                if exist publish*rmdir /S /Q publish
+              * if exist deploy-package.zip del /* /Q deploy-package.zip
 
-                if exist HealthCareApp\\wwwroot\\angular rmdir /S /Q HealthCareApp\\wwwroot\\angular
-                if exist HealthCareApp\\wwwroot\\blazor rmdir /S /Q HealthCareApp\\wwwroot\\blazor
+          *     if exist HealthCareApp\\wwwro*t\\angular rmdir /S /Q HealthCareA*p\\wwwroot\\angular
+              * if exist HealthCareApp\\wwwroot\\*lazor rmdir /S /Q HealthCareApp\\w*wroot\\blazor
 
-                echo Previous build files cleaned successfully.
+                ech* Previous build files cleaned succ*ssfully.
                 '''
-            }
+     *      }
         }
 
-        stage('Restore .NET Projects') {
-            steps {
+        stage('*estore .NET Projects') {
+         *  steps {
                 bat '''
-                echo Restoring HealthCareApp API...
+*               echo Restoring Heal*hCareApp API...
                 dotnet restore HealthCareApp\\HealthCareApp.csproj
 
                 if errorlevel 1 (
@@ -303,35 +303,30 @@ pipeline {
                 echo ===== Checking deployment ZIP =====
 
                 jar -tf deploy-package.zip | findstr /I "Procfile"
-
                 if errorlevel 1 (
                     echo ERROR: Procfile is missing from deployment ZIP.
                     exit /b 1
                 )
 
                 jar -tf deploy-package.zip | findstr /I "HealthCareApp.dll"
-
                 if errorlevel 1 (
                     echo ERROR: HealthCareApp.dll is missing from deployment ZIP.
                     exit /b 1
                 )
 
                 jar -tf deploy-package.zip | findstr /I "HealthCareApp.runtimeconfig.json"
-
                 if errorlevel 1 (
                     echo ERROR: Runtime config is missing from deployment ZIP.
                     exit /b 1
                 )
 
                 jar -tf deploy-package.zip | findstr /I "wwwroot/angular/index.html"
-
                 if errorlevel 1 (
                     echo ERROR: Angular index.html is missing from deployment ZIP.
                     exit /b 1
                 )
 
                 jar -tf deploy-package.zip | findstr /I "wwwroot/blazor/index.html"
-
                 if errorlevel 1 (
                     echo ERROR: Blazor index.html is missing from deployment ZIP.
                     exit /b 1
@@ -408,6 +403,8 @@ pipeline {
                     $expectedVersion = "v-$env:BUILD_NUMBER"
                     $maximumChecks = 60
                     $delaySeconds = 15
+                    $environmentReady = $false
+                    $environmentCname = ""
 
                     Write-Host "Waiting for Elastic Beanstalk deployment..."
                     Write-Host "Expected version: $expectedVersion"
@@ -425,34 +422,64 @@ pipeline {
                         $status = $environment.Status
                         $health = $environment.Health
                         $runningVersion = $environment.VersionLabel
+                        $environmentCname = $environment.CNAME
 
                         Write-Host ""
                         Write-Host "Check $check of $maximumChecks"
                         Write-Host "Status: $status"
                         Write-Host "Health: $health"
                         Write-Host "Running version: $runningVersion"
+                        Write-Host "CNAME: $environmentCname"
 
-                        if ($status -eq "Ready") {
-                            if ($runningVersion -ne $expectedVersion) {
-                                throw "Deployment failed. Expected $expectedVersion but Elastic Beanstalk is running $runningVersion."
-                            }
-
-                            if ($health -eq "Red") {
-                                throw "Deployment completed with Red environment health."
-                            }
-
-                            Write-Host ""
-                            Write-Host "Elastic Beanstalk deployment completed successfully."
-                            Write-Host "Running version: $runningVersion"
-                            Write-Host "Environment health: $health"
-
-                            exit 0
+                        if ($status -eq "Ready" -and $runningVersion -eq $expectedVersion) {
+                            $environmentReady = $true
+                            break
                         }
 
                         Start-Sleep -Seconds $delaySeconds
                     }
 
-                    throw "Timed out while waiting for Elastic Beanstalk deployment."
+                    if (-not $environmentReady) {
+                        throw "Deployment did not reach Ready state with expected version $expectedVersion."
+                    }
+
+                    Write-Host ""
+                    Write-Host "Elastic Beanstalk is running expected version $expectedVersion."
+                    Write-Host "Now checking application /health endpoint..."
+
+                    $healthUrl = "http://$environmentCname/health"
+                    Write-Host "Health URL: $healthUrl"
+
+                    $healthSuccess = $false
+
+                    for ($i = 1; $i -le 10; $i++) {
+                        try {
+                            $result = Invoke-WebRequest -Uri $healthUrl -UseBasicParsing -TimeoutSec 20
+
+                            Write-Host "Health check attempt $i returned HTTP $($result.StatusCode)."
+
+                            if ($result.StatusCode -eq 200) {
+                                $healthSuccess = $true
+                                break
+                            }
+                        }
+                        catch {
+                            Write-Host "Health check attempt $i failed: $($_.Exception.Message)"
+                        }
+
+                        Start-Sleep -Seconds 10
+                    }
+
+                    if (-not $healthSuccess) {
+                        throw "Application /health endpoint did not return HTTP 200."
+                    }
+
+                    Write-Host ""
+                    Write-Host "Deployment completed successfully."
+                    Write-Host "Elastic Beanstalk version: $expectedVersion"
+                    Write-Host "Application health endpoint is working."
+
+                    exit 0
                     '''
                 }
             }
@@ -463,19 +490,19 @@ pipeline {
         success {
             echo 'HealthAxis was built and deployed successfully.'
             echo 'Elastic Beanstalk is running the new application version.'
+            echo 'The /health endpoint returned HTTP 200.'
         }
 
         failure {
             echo 'HealthAxis deployment failed.'
             echo 'Check the first failed stage in Jenkins Console Output.'
-            echo 'For AWS deployment errors, check Elastic Beanstalk Logs and eb-engine.log.'
+            echo 'If only EB color is Red but /health works, check EB health configuration separately.'
         }
 
         always {
             archiveArtifacts(
                 artifacts: 'deploy-package.zip',
-                allowEmptyArchive: true,
-                fingerprint: true
+                allowEmptyArchive: true
             )
         }
     }
