@@ -3,3 +3,12 @@ bin/
 obj/
 *.user
 *.suo
+
+.sonarqube
+.angular
+/node_modules
+
+/artifacts
+/wwwroot
+
+/TestResults
