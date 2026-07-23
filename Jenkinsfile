@@ -121,6 +121,13 @@ pipeline {
             }
         }
 
+        stage('Create Procfile') {
+            steps {
+                bat 'echo web: dotnet HealthCareApp.dll > publish\\Procfile'
+                bat 'type publish\\Procfile'
+            }
+        }
+
         stage('Zip published output') {
             steps {
                 dir('publish') {
