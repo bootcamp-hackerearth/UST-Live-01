@@ -14,9 +14,9 @@ pipeline {
         AWS_REGION = 'ap-south-2'
 
         // Enter the exact names from AWS
-        EB_APPLICATION_NAME = 'HealthAxis'
-        EB_ENVIRONMENT_NAME = 'HealthAxis-dev'
-        S3_BUCKET = 'YOUR-HEALTHAXIS-DEPLOYMENT-BUCKET'
+        EB_APPLICATION_NAME = 'HealthAxisAPI'
+        EB_ENVIRONMENT_NAME = 'HealthAxisAPI-dev'
+        S3_BUCKET = 'jenkins-bucket-379992420468-ap-south-2-an'
     }
 
     stages {
