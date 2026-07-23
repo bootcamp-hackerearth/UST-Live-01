@@ -4,15 +4,10 @@ pipeline {
     environment {
         AWS_REGION = 'ap-south-2'
 
-        // Elastic Beanstalk Application name
         EB_APPLICATION_NAME = 'HealthCareApp'
-
-        // Elastic Beanstalk Environment name
         EB_ENVIRONMENT_NAME = 'HealthCareApp-dev'
 
-        // Jenkins deployment S3 bucket
         S3_BUCKET = 'healthaxis-jenkins-bucket-847814614822-ap-south-2-an'
-
         DEPLOY_PACKAGE = 'deploy-package.zip'
     }
 
@@ -117,15 +112,39 @@ pipeline {
 
         stage('Publish API') {
             steps {
-                bat 'dotnet publish HealthCareApp\\HealthCareApp.csproj -c Release -o publish'
+                bat 'dotnet publish HealthCareApp\\HealthCareApp.csproj -c Release -o publish --self-contained false'
             }
         }
 
-        stage('Create Procfile') {
+        stage('Create Elastic Beanstalk Procfile') {
             steps {
-                bat 'echo web: dotnet HealthCareApp.dll > publish\\Procfile'
-                bat 'type publish\\Procfile'
-                bat 'dir publish'
+                powershell '''
+                $procfilePath = ".\\publish\\Procfile"
+                Set-Content -Path $procfilePath -Value "web: dotnet HealthCareApp.dll" -NoNewline -Encoding ASCII
+
+                if (!(Test-Path $procfilePath)) {
+                    Write-Error "Procfile was not created."
+                    exit 1
+                }
+
+                Write-Host "Procfile content:"
+                Get-Content $procfilePath
+                '''
+            }
+        }
+
+        stage('Verify publish output') {
+            steps {
+                bat '''
+                echo Checking publish folder...
+                dir publish
+
+                if not exist publish\\HealthCareApp.dll exit /b 1
+                if not exist publish\\HealthCareApp.runtimeconfig.json exit /b 1
+                if not exist publish\\Procfile exit /b 1
+                if not exist publish\\wwwroot\\angular exit /b 1
+                if not exist publish\\wwwroot\\blazor exit /b 1
+                '''
             }
         }
 
