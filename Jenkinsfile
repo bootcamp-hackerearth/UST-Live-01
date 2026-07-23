@@ -4,24 +4,22 @@ pipeline {
     environment {
         AWS_REGION = 'ap-south-2'
 
-        // IMPORTANT:
-        // This is Elastic Beanstalk Application name, not environment URL.
-        // If your EB application name is different, change only this value.
+        // Change this only if your Elastic Beanstalk application name is different
         EB_APPLICATION_NAME = 'HealthCareApp'
 
-        // This is your Elastic Beanstalk environment name.
+        // Your EB environment name
         EB_ENVIRONMENT_NAME = 'HealthCareApp-dev'
 
-        // Your Jenkins deployment bucket.
+        // Your Jenkins deployment S3 bucket
         S3_BUCKET = 'healthaxis-jenkins-bucket-847814614822-ap-south-2-an'
 
         DEPLOY_PACKAGE = 'deploy-package.zip'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Show workspace files') {
             steps {
-                checkout scm
+                bat 'dir /b'
             }
         }
 
@@ -35,9 +33,10 @@ pipeline {
             }
         }
 
-        stage('Restore API packages') {
+        stage('Restore .NET projects') {
             steps {
-                bat 'dotnet restore HealthCareApp.sln'
+                bat 'dotnet restore HealthCareApp\\HealthCareApp.csproj'
+                bat 'dotnet restore HealthCareApp.AdminBlazor\\HealthCareApp.AdminBlazor.csproj'
             }
         }
 
