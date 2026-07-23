@@ -21,7 +21,6 @@ namespace HealthAxis.API.Services.Implementation
         IMapper mapper,
         ILogger<AppointmentService> logger,
         IEventPublisher eventPublisher,
-        IDoctorService doctorService,
         INotificationService? notificationService = null)
         : IAppointmentService
     {
@@ -222,10 +221,6 @@ namespace HealthAxis.API.Services.Implementation
                     exception);
             }
 
-            await doctorService
-                .InvalidateAvailabilityCacheAsync(
-                    savedAppointment.DoctorId,
-                    savedAppointment.ScheduledDate);
 
             var appointmentBookedEvent =
                 CreateAppointmentBookedEvent(
@@ -282,10 +277,6 @@ namespace HealthAxis.API.Services.Implementation
                     AppointmentNotFound);
             }
 
-            await doctorService
-                .InvalidateAvailabilityCacheAsync(
-                    updatedAppointment.DoctorId,
-                    updatedAppointment.ScheduledDate);
 
             await CreateStatusNotificationsAsync(
                 updatedAppointment);
@@ -321,10 +312,6 @@ namespace HealthAxis.API.Services.Implementation
                 return null;
             }
 
-            await doctorService
-                .InvalidateAvailabilityCacheAsync(
-                    deletedAppointment.DoctorId,
-                    deletedAppointment.ScheduledDate);
 
             return await MapAppointmentAsync(
                 deletedAppointment);

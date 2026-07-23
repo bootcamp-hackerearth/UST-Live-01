@@ -141,41 +141,29 @@
         justify-content: space-between;
         gap: 18px;
         color: #ffffff;
-        background:
-            radial-gradient(
-                circle at top right,
-                rgba(124, 58, 237, 0.28),
-                transparent 30%
-            ),
-            linear-gradient(
-                135deg,
-                #020617,
-                #075985
-            );
-        box-shadow:
-            0 20px 50px
-            rgba(7, 89, 133, 0.2);
+        background: radial-gradient( circle at top right, rgba(124, 58, 237, 0.28), transparent 30% ), linear-gradient( 135deg, #020617, #075985 );
+        box-shadow: 0 20px 50px rgba(7, 89, 133, 0.2);
     }
 
-    .page-header p {
-        margin: 0;
-        color: #7dd3fc;
-        font-size: 13px;
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-    }
+        .page-header p {
+            margin: 0;
+            color: #7dd3fc;
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
 
-    .page-header h1 {
-        margin: 8px 0 6px;
-        font-size: 40px;
-    }
+        .page-header h1 {
+            margin: 8px 0 6px;
+            font-size: 40px;
+        }
 
-    .page-header span {
-        color: #dbeafe;
-        line-height: 1.6;
-        font-weight: 700;
-    }
+        .page-header span {
+            color: #dbeafe;
+            line-height: 1.6;
+            font-weight: 700;
+        }
 
     .refresh-button {
         min-width: 150px;
@@ -190,10 +178,10 @@
         cursor: pointer;
     }
 
-    .refresh-button:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-    }
+        .refresh-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
 
     .error-box,
     .info-box {
@@ -203,39 +191,23 @@
     }
 
     .error-box {
-        border:
-            1px solid
-            rgba(248, 113, 113, 0.35);
+        border: 1px solid rgba(248, 113, 113, 0.35);
         color: #fecaca;
-        background:
-            rgba(239, 68, 68, 0.18);
+        background: rgba(239, 68, 68, 0.18);
     }
 
     .info-box {
-        border:
-            1px solid
-            rgba(56, 189, 248, 0.35);
+        border: 1px solid rgba(56, 189, 248, 0.35);
         color: #bae6fd;
-        background:
-            rgba(14, 165, 233, 0.18);
+        background: rgba(14, 165, 233, 0.18);
     }
 
     .profile-card {
         padding: 28px;
-        border:
-            1px solid
-            rgba(148, 163, 184, 0.24);
+        border: 1px solid rgba(148, 163, 184, 0.24);
         border-radius: 30px;
-        background:
-            radial-gradient(
-                circle at top right,
-                rgba(56, 189, 248, 0.12),
-                transparent 35%
-            ),
-            rgba(15, 23, 42, 0.72);
-        box-shadow:
-            0 20px 50px
-            rgba(15, 23, 42, 0.25);
+        background: radial-gradient( circle at top right, rgba(56, 189, 248, 0.12), transparent 35% ), rgba(15, 23, 42, 0.72);
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
     }
 
     .profile-top {
@@ -253,17 +225,10 @@
         display: grid;
         place-items: center;
         color: #ffffff;
-        background:
-            linear-gradient(
-                135deg,
-                #0ea5e9,
-                #7c3aed
-            );
+        background: linear-gradient( 135deg, #0ea5e9, #7c3aed );
         font-size: 34px;
         font-weight: 900;
-        box-shadow:
-            0 14px 30px
-            rgba(14, 165, 233, 0.25);
+        box-shadow: 0 14px 30px rgba(14, 165, 233, 0.25);
     }
 
     .profile-top p {
@@ -289,45 +254,41 @@
 
     .profile-details-grid {
         display: grid;
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 16px;
     }
 
     .detail-box {
         min-width: 0;
         padding: 18px;
-        border:
-            1px solid
-            rgba(148, 163, 184, 0.24);
+        border: 1px solid rgba(148, 163, 184, 0.24);
         border-radius: 20px;
-        background:
-            rgba(30, 41, 59, 0.82);
+        background: rgba(30, 41, 59, 0.82);
     }
 
-    .detail-box span {
-        display: block;
-        margin-bottom: 8px;
-        color: #94a3b8;
-        font-size: 13px;
-        font-weight: 900;
-        text-transform: uppercase;
-    }
+        .detail-box span {
+            display: block;
+            margin-bottom: 8px;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
 
-    .detail-box strong {
-        display: block;
-        color: #ffffff;
-        font-size: 18px;
-        overflow-wrap: anywhere;
-    }
+        .detail-box strong {
+            display: block;
+            color: #ffffff;
+            font-size: 18px;
+            overflow-wrap: anywhere;
+        }
 
-    .detail-box small {
-        display: block;
-        margin-top: 8px;
-        color: #cbd5e1;
-        font-weight: 700;
-        line-height: 1.5;
-    }
+        .detail-box small {
+            display: block;
+            margin-top: 8px;
+            color: #cbd5e1;
+            font-weight: 700;
+            line-height: 1.5;
+        }
 
     .active-text {
         color: #86efac !important;
@@ -336,13 +297,10 @@
     .profile-note {
         margin-top: 20px;
         padding: 16px;
-        border:
-            1px solid
-            rgba(56, 189, 248, 0.24);
+        border: 1px solid rgba(56, 189, 248, 0.24);
         border-radius: 18px;
         color: #dbeafe;
-        background:
-            rgba(14, 165, 233, 0.12);
+        background: rgba(14, 165, 233, 0.12);
         line-height: 1.6;
         font-weight: 800;
     }
@@ -372,9 +330,15 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await AuthService.InitializeAsync();
+
         if (!AuthService.IsLoggedIn)
         {
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo(
+                "/angular/login?adminLogout=true",
+                forceLoad: true,
+                replace: true);
+
             return;
         }
 

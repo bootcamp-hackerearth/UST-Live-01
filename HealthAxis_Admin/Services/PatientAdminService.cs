@@ -10,10 +10,10 @@ namespace HealthAxis_Admin.Services
         private const int RequestTimeoutSeconds = 20;
 
         private const string PatientsEndpoint =
-            "api/admin/patients";
+            "/api/admin/patients";
 
         private const string ResetPasswordEndpoint =
-            "api/Auth/admin/reset-password";
+            "/api/Auth/admin/reset-password";
 
         private const string RequestFailedMessage =
             "Request failed.";

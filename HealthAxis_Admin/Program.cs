@@ -10,14 +10,13 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-const string apiBaseAddress = "https://localhost:7081/";
 
 builder.Services.AddTransient<AuthTokenHandler>();
 
 builder.Services
     .AddHttpClient("HealthAxisApi", client =>
     {
-        client.BaseAddress = new Uri(apiBaseAddress);
+        client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
     })
     .AddHttpMessageHandler<AuthTokenHandler>();
 

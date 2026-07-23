@@ -51,7 +51,7 @@ namespace HealthAxis.API.Tests.Services
                 _doctorRepositoryMock.Object,
                 _appointmentRepositoryMock.Object,
                 _mapperMock.Object,
-                _distributedCacheMock.Object,
+                //_distributedCacheMock.Object,
                 _loggerMock.Object);
         }
 
@@ -292,7 +292,7 @@ namespace HealthAxis.API.Tests.Services
             result.AvailableSlots.Should().NotContain("10:00 AM - 11:00 AM");
         }
 
-       
+
         [Fact]
         public async Task GetAvailabilityAsync_WhenDateIsPast_ThrowsValidationException()
         {

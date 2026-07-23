@@ -4,16 +4,15 @@ using HealthAxis.API.Data;
 using HealthAxis.API.Mappings;
 using HealthAxis.API.Messaging;
 using HealthAxis.API.Middlewares;
-using HealthAxis.API.Options;
 using HealthAxis.API.Repositories.Implementations;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services;
 using HealthAxis.API.Services.Implementation;
 using HealthAxis.API.Services.Interfaces;
-using HealthCare.Api.BackgroundServices;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -30,14 +29,16 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    builder.Host.UseSerilog((context, services, configuration) =>
-    {
-        configuration
-            .ReadFrom.Configuration(context.Configuration)
-            .ReadFrom.Services(services);
-    });
+    builder.Host.UseSerilog(
+        (context, services, configuration) =>
+        {
+            configuration
+                .ReadFrom.Configuration(context.Configuration)
+                .ReadFrom.Services(services);
+        });
 
-    builder.Services.AddControllers()
+    builder.Services
+        .AddControllers()
         .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.PropertyNamingPolicy =
@@ -57,7 +58,8 @@ try
             {
                 Title = "HealthAxis API",
                 Version = "v1",
-                Description = "Healthcare Appointment Management API"
+                Description =
+                    "Healthcare Appointment Management API"
             });
 
         options.AddSecurityDefinition(
@@ -69,7 +71,8 @@ try
                 Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
                 BearerFormat = "JWT",
-                Description = "Enter JWT token. Example: Bearer eyJhbGciOiJIUzI1NiIs..."
+                Description =
+                    "Enter JWT token. Example: Bearer eyJhbGciOiJIUzI1NiIs..."
             });
 
         options.AddSecurityRequirement(document =>
@@ -81,21 +84,41 @@ try
             });
     });
 
-    builder.Services.AddDbContext<ApplicationDbContext>(option =>
-    {
-        option.UseSqlServer(
-            builder.Configuration.GetConnectionString("DbConnection"));
-    });
+    var databaseConnection =
+        builder.Configuration.GetConnectionString("DbConnection");
 
-    builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+    if (string.IsNullOrWhiteSpace(databaseConnection))
     {
-        options.User.RequireUniqueEmail = true;
+        throw new InvalidOperationException(
+            "The DbConnection connection string is missing.");
+    }
 
-        options.Password.RequireDigit = true;
-        options.Password.RequireUppercase = true;
-        options.Password.RequireNonAlphanumeric = true;
-        options.Password.RequiredLength = 8;
-    })
+    builder.Services.AddDbContext<ApplicationDbContext>(
+        options =>
+        {
+            options.UseSqlServer(
+                databaseConnection,
+                sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay:
+                            TimeSpan.FromSeconds(10),
+                        errorNumbersToAdd: null);
+                });
+        });
+
+    builder.Services.AddIdentity<
+        IdentityUser,
+        IdentityRole>(options =>
+        {
+            options.User.RequireUniqueEmail = true;
+
+            options.Password.RequireDigit = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequiredLength = 8;
+        })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
@@ -131,59 +154,97 @@ try
     })
     .AddJwtBearer(options =>
     {
-        var jwt = builder.Configuration.GetSection("Jwt");
+        var jwtSection =
+            builder.Configuration.GetSection("Jwt");
 
-        options.TokenValidationParameters = new TokenValidationParameters
+        var jwtKey = jwtSection["Key"];
+
+        if (string.IsNullOrWhiteSpace(jwtKey))
         {
-            ValidateIssuer = true,
-            ValidIssuer = jwt["Issuer"],
+            throw new InvalidOperationException(
+                "The JWT signing key is missing.");
+        }
 
-            ValidateAudience = true,
-            ValidAudience = jwt["Audience"],
+        options.TokenValidationParameters =
+            new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwtSection["Issuer"],
 
-            ValidateLifetime = true,
+                ValidateAudience = true,
+                ValidAudience = jwtSection["Audience"],
 
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwt["Key"]!)),
+                ValidateLifetime = true,
 
-            ClockSkew = TimeSpan.Zero
-        };
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey =
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtKey)),
+
+                ClockSkew = TimeSpan.Zero
+            };
     });
 
     builder.Services.AddAuthorization();
 
     builder.Services.AddOpenApi();
 
-    builder.Services.AddScoped<IAdminService, AdminService>();
+    builder.Services.AddScoped<
+        IAdminService,
+        AdminService>();
 
-    builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+    builder.Services.AddScoped(
+        typeof(IRepository<>),
+        typeof(Repository<>));
 
-    builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+    builder.Services.AddScoped<
+        IPatientRepository,
+        PatientRepository>();
 
-    builder.Services.AddScoped<IPatientService, PatientService>();
+    builder.Services.AddScoped<
+        IPatientService,
+        PatientService>();
 
-    builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+    builder.Services.AddScoped<
+        IDoctorRepository,
+        DoctorRepository>();
 
-    builder.Services.AddScoped<IDoctorService, DoctorService>();
+    builder.Services.AddScoped<
+        IDoctorService,
+        DoctorService>();
 
-    builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+    builder.Services.AddScoped<
+        IAppointmentRepository,
+        AppointmentRepository>();
 
-    builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+    builder.Services.AddScoped<
+        IAppointmentService,
+        AppointmentService>();
 
-    builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
+    builder.Services.AddScoped<
+        IHealthRecordRepository,
+        HealthRecordRepository>();
 
-    builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
+    builder.Services.AddScoped<
+        IHealthRecordService,
+        HealthRecordService>();
 
-    builder.Services.AddScoped< INotificationService,NotificationService>();
+    builder.Services.AddScoped<
+        INotificationService,
+        NotificationService>();
 
-    builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<
+        IAuthService,
+        AuthService>();
 
-    builder.Services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
+    builder.Services.AddScoped<
+        IEventPublisher,
+        MassTransitEventPublisher>();
 
     builder.Services.AddMassTransit(configuration =>
     {
-        configuration.AddConsumer<AppointmentBookedConsumer>();
+        configuration.AddConsumer<
+            AppointmentBookedConsumer>();
 
         configuration.UsingRabbitMq(
             (context, rabbitMqConfig) =>
@@ -193,24 +254,25 @@ try
                     .GetSection("RabbitMq");
 
                 var hostName =
-                    rabbitMqSection["HostName"] ??
-                    "localhost";
+                    rabbitMqSection["HostName"]
+                    ?? "localhost";
 
                 var virtualHost =
-                    rabbitMqSection["VirtualHost"] ??
-                    "/";
+                    rabbitMqSection["VirtualHost"]
+                    ?? "/";
 
                 var userName =
-                    rabbitMqSection["UserName"] ??
-                    "guest";
+                    rabbitMqSection["UserName"]
+                    ?? "guest";
 
                 var password =
-                    rabbitMqSection["Password"] ??
-                    "guest";
+                    rabbitMqSection["Password"]
+                    ?? "guest";
 
-                var appointmentBookedQueue =
-                    rabbitMqSection["AppointmentBookedQueue"] ??
-                    "healthaxis.appointment.booked.queue";
+                var queueName =
+                    rabbitMqSection[
+                        "AppointmentBookedQueue"]
+                    ?? "healthaxis.appointment.booked.queue";
 
                 rabbitMqConfig.Host(
                     hostName,
@@ -222,15 +284,14 @@ try
                     });
 
                 rabbitMqConfig.ReceiveEndpoint(
-                    appointmentBookedQueue,
+                    queueName,
                     endpoint =>
                     {
-                        endpoint.UseMessageRetry(retry =>
-                        {
-                            retry.Interval(
-                                3,
-                                TimeSpan.FromSeconds(5));
-                        });
+                        endpoint.UseMessageRetry(
+                            retry =>
+                                retry.Interval(
+                                    3,
+                                    TimeSpan.FromSeconds(5)));
 
                         endpoint.ConfigureConsumer<
                             AppointmentBookedConsumer>(
@@ -238,51 +299,59 @@ try
                     });
             });
     });
-    builder.Services.AddHostedService<HeartbeatService>();
-    builder.Services.AddHostedService<NotificationCleanupService>();
 
-    builder.Services.AddAutoMapper(cfg =>
+    builder.Services.AddHostedService<
+        HeartbeatService>();
+
+    builder.Services.AddHostedService<
+        NotificationCleanupService>();
+
+    builder.Services.AddAutoMapper(configuration =>
     {
-        cfg.AddProfile<MappingProfile>();
+        configuration.AddProfile<MappingProfile>();
     });
 
-    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+    builder.Services.AddExceptionHandler<
+        GlobalExceptionHandler>();
+
     builder.Services.AddProblemDetails();
 
-    const string corsPolicyName = "AllowHealthAxisClients";
+    const string corsPolicyName =
+        "AllowHealthAxisClients";
 
-    string[] allowedOrigins =
-    [
+    var localOrigins = new[]
+    {
         "http://localhost:4200",
         "https://localhost:4200",
         "http://localhost:58189",
         "https://localhost:58189",
         "https://localhost:7172"
-    ];
+    };
+
+    var deployedOrigins = builder.Configuration
+        .GetSection("Cors:AllowedOrigins")
+        .Get<string[]>()
+        ?? [];
+
+    var allowedOrigins = localOrigins
+        .Concat(deployedOrigins)
+        .Where(origin =>
+            !string.IsNullOrWhiteSpace(origin))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
 
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy(corsPolicyName, policy =>
-        {
-            policy.WithOrigins(allowedOrigins)
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+        options.AddPolicy(
+            corsPolicyName,
+            policy =>
+            {
+                policy
+                    .WithOrigins(allowedOrigins)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
     });
-
-    builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection("Garnet"));
-
-    builder.Services.AddStackExchangeRedisCache(options =>
-    {
-        var garnetOptions = builder.Configuration.GetSection("Garnet").Get<GarnetOptions>() ?? new GarnetOptions();
-
-        options.Configuration = garnetOptions.ConnectionString;
-        options.InstanceName = garnetOptions.InstanceName;
-    });
-
-    builder.Services.AddSingleton<GarnetHostedService>();
-    builder.Services.AddHostedService(sp => sp.GetRequiredService<GarnetHostedService>());
-    
 
     var app = builder.Build();
 
@@ -297,6 +366,28 @@ try
 
     app.UseHttpsRedirection();
 
+    var contentTypeProvider =
+        new FileExtensionContentTypeProvider();
+
+    contentTypeProvider.Mappings[".dat"] =
+        "application/octet-stream";
+
+    contentTypeProvider.Mappings[".wasm"] =
+        "application/wasm";
+
+    contentTypeProvider.Mappings[".dll"] =
+        "application/octet-stream";
+
+    contentTypeProvider.Mappings[".blat"] =
+        "application/octet-stream";
+
+    app.UseStaticFiles(
+        new StaticFileOptions
+        {
+            ContentTypeProvider =
+                contentTypeProvider
+        });
+
     app.UseCors(corsPolicyName);
 
     app.UseSerilogRequestLogging();
@@ -306,13 +397,50 @@ try
 
     app.MapControllers();
 
+    // Open Angular when only the API root URL is requested.
+    app.MapGet("/", () =>
+        Results.Redirect("/angular/"));
+
+    // Serve Angular directly. There is intentionally no redirect here,
+    // which prevents the trailing-slash redirect loop.
+    app.MapGet("/angular", async context =>
+    {
+        await SendSpaIndexAsync(
+            context,
+            app.Environment.WebRootPath,
+            "angular");
+    });
+
+    // Support Angular client-side routes such as:
+    // /angular/login and /angular/patient/dashboard
+    app.MapFallbackToFile(
+        "/angular/{*path:nonfile}",
+        "angular/index.html");
+
+    // Serve Blazor directly. There is intentionally no redirect here.
+    app.MapGet("/blazor", async context =>
+    {
+        await SendSpaIndexAsync(
+            context,
+            app.Environment.WebRootPath,
+            "blazor");
+    });
+
+    // Support Blazor client-side routes such as:
+    // /blazor/external-login and /blazor/dashboard
+    app.MapFallbackToFile(
+        "/blazor/{*path:nonfile}",
+        "blazor/index.html");
+
     using (var scope = app.Services.CreateScope())
     {
         var roleManager =
-            scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            scope.ServiceProvider.GetRequiredService<
+                RoleManager<IdentityRole>>();
 
         var userManager =
-            scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            scope.ServiceProvider.GetRequiredService<
+                UserManager<IdentityUser>>();
 
         await RoleSeeder.SeedRolesAsync(roleManager);
 
@@ -321,7 +449,28 @@ try
             roleManager);
     }
 
-    Log.Information("HealthAxis API started successfully.");
+    app.Lifetime.ApplicationStarted.Register(() =>
+    {
+        foreach (var url in app.Urls)
+        {
+            var baseUrl = url.TrimEnd('/');
+
+            Log.Information(
+                "HealthAxis API: {Url}",
+                baseUrl);
+
+            Log.Information(
+                "Angular Portal: {Url}",
+                $"{baseUrl}/angular/");
+
+            Log.Information(
+                "Blazor Admin: {Url}",
+                $"{baseUrl}/blazor/");
+        }
+    });
+
+    Log.Information(
+        "HealthAxis API started successfully.");
 
     await app.RunAsync();
 }
@@ -334,4 +483,31 @@ catch (Exception exception)
 finally
 {
     await Log.CloseAndFlushAsync();
+}
+
+static async Task SendSpaIndexAsync(
+    HttpContext context,
+    string webRootPath,
+    string applicationFolder)
+{
+    var indexPath = Path.Combine(
+        webRootPath,
+        applicationFolder,
+        "index.html");
+
+    if (!File.Exists(indexPath))
+    {
+        context.Response.StatusCode =
+            StatusCodes.Status404NotFound;
+
+        await context.Response.WriteAsync(
+            $"{applicationFolder}/index.html was not found.");
+
+        return;
+    }
+
+    context.Response.ContentType =
+        "text/html; charset=utf-8";
+
+    await context.Response.SendFileAsync(indexPath);
 }

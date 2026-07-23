@@ -10,10 +10,10 @@ namespace HealthAxis_Admin.Services
         private const int RequestTimeoutSeconds = 20;
 
         private const string AppointmentDetailsEndpoint =
-            "api/admin/reports/appointments/details";
+            "/api/admin/reports/appointments/details";
 
         private const string AppointmentStatusEndpoint =
-            "api/admin/appointments";
+            "/api/admin/appointments";
 
         private const string RequestFailedMessage =
             "Request failed.";
@@ -187,4 +187,5 @@ namespace HealthAxis_Admin.Services
         }
     }
 }
+
 

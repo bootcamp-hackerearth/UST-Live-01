@@ -6,7 +6,7 @@ namespace HealthAxis_Admin.Services
 {
     public sealed class ReportService
     {
-        private const string AppointmentEndpoint = "api/appointments";
+        private const string AppointmentEndpoint = "/api/appointments";
 
         private readonly HttpClient _httpClient;
         

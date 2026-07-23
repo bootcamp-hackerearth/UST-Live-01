@@ -2,7 +2,6 @@
 @page "/login"
 @layout EmptyLayout
 @inject NavigationManager NavigationManager
-@inject IConfiguration Configuration
 
 <section class="redirect-page">
     <div class="redirect-card">
@@ -67,28 +66,23 @@
 </style>
 
 @code {
-    private const string LoginUrlConfigurationKey =
-        "ExternalUrls:MainLogin";
+    private const string AngularLoginPath =
+        "/angular/login";
+
+    private bool _redirectStarted;
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (!firstRender)
+        if (!firstRender || _redirectStarted)
         {
             return;
         }
 
-        var loginUrl =
-            Configuration[LoginUrlConfigurationKey];
-
-        if (string.IsNullOrWhiteSpace(loginUrl))
-        {
-            return;
-        }
+        _redirectStarted = true;
 
         NavigationManager.NavigateTo(
-            loginUrl,
+            AngularLoginPath,
             forceLoad: true,
             replace: true);
     }
 }
-

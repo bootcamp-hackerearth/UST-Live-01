@@ -9,7 +9,7 @@ namespace HealthAxis_Admin.Services
 {
     public sealed class AuthService
     {
-        private const string LoginEndpoint = "api/Auth/login";
+        private const string LoginEndpoint = "/api/Auth/login";
         private const string DefaultAdminName = "Admin";
 
         private readonly HttpClient _httpClient;

@@ -524,22 +524,20 @@
     private void GoToProfile()
     {
         showProfileMenu = false;
-        NavigationManager.NavigateTo("/admin-profile");
+
+        NavigationManager.NavigateTo(
+            "/blazor/admin-profile",
+            forceLoad: true);
     }
 
     private async Task Logout()
     {
-        await TokenService.ClearTokensAsync();
+        showProfileMenu = false;
 
-        var angularPortalUrl = Configuration["FrontendUrls:AngularPortal"]
-            ?? throw new InvalidOperationException(
-                "The Angular portal URL is not configured.");
-
-        var loginUrl =
-            $"{angularPortalUrl.TrimEnd('/')}/login?adminLogout=true";
+        await AuthService.LogoutAsync();
 
         NavigationManager.NavigateTo(
-            loginUrl,
+            "/angular/login?adminLogout=true",
             forceLoad: true,
             replace: true);
     }

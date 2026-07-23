@@ -6,10 +6,10 @@ namespace HealthAxis_Admin.Services
 {
     public sealed class AdminProfileService
     {
-        private const string ProfileEndpoint = "api/admin/profile";
+        private const string ProfileEndpoint = "/api/admin/profile";
 
         private const string ChangePasswordEndpoint =
-            "api/admin/profile/change-password";
+            "/api/admin/profile/change-password";
 
         private readonly HttpClient _httpClient;
 

@@ -1,5 +1,6 @@
 ﻿using HealthAxis_Admin.Services;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Globalization;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -10,6 +11,13 @@ namespace HealthAxis_Admin.Providers
     {
         private const string AdminRole = "Admin";
         private const string JwtAuthenticationType = "jwt";
+        private const string ExpirationClaimType = "exp";
+
+        private const string RoleClaimUri =
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+
+        private const string NameIdentifierClaimUri =
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
 
         private readonly TokenService _tokenService;
 
@@ -25,26 +33,36 @@ namespace HealthAxis_Admin.Providers
             var token =
                 await _tokenService.GetAccessTokenAsync();
 
-            if (string.IsNullOrWhiteSpace(token) ||
-                IsTokenExpired(token))
+            // Important:
+            // Do not clear storage when the token is temporarily missing.
+            // ExternalLogin.razor may currently be saving the token.
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return CreateAnonymousState();
+            }
+
+            var claims =
+                ParseClaimsFromJwt(token);
+
+            if (claims.Count == 0 ||
+                IsTokenExpired(claims) ||
+                !ContainsAdminRole(claims))
             {
                 await _tokenService.ClearTokensAsync();
 
                 return CreateAnonymousState();
             }
 
-            var identity = new ClaimsIdentity(
-                ParseClaimsFromJwt(token),
-                JwtAuthenticationType);
-
-            return new AuthenticationState(
-                new ClaimsPrincipal(identity));
+            return CreateAuthenticatedState(claims);
         }
 
         public void NotifyUserAuthenticated()
         {
+            var authenticationStateTask =
+                GetAuthenticationStateAsync();
+
             NotifyAuthenticationStateChanged(
-                GetAuthenticationStateAsync());
+                authenticationStateTask);
         }
 
         public void NotifyUserLoggedOut()
@@ -56,51 +74,86 @@ namespace HealthAxis_Admin.Providers
 
         public static bool IsAdminToken(string token)
         {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return false;
+            }
+
             var claims =
                 ParseClaimsFromJwt(token);
 
-            return claims.Any(claim =>
-                claim.Type == ClaimTypes.Role &&
-                claim.Value.Equals(
-                    AdminRole,
-                    StringComparison.OrdinalIgnoreCase));
+            return ContainsAdminRole(claims);
         }
 
         public static List<Claim> ParseClaimsFromJwt(
             string token)
         {
-            var claims = new List<Claim>();
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return [];
+            }
 
             var payload =
                 GetJwtPayload(token);
 
             if (string.IsNullOrWhiteSpace(payload))
             {
-                return claims;
+                return [];
             }
 
-            var jsonBytes =
-                Convert.FromBase64String(payload);
-
-            var keyValuePairs =
-                JsonSerializer.Deserialize<
-                    Dictionary<string, JsonElement>>(
-                        jsonBytes);
-
-            if (keyValuePairs is null)
+            try
             {
+                var jsonBytes =
+                    Convert.FromBase64String(payload);
+
+                var keyValuePairs =
+                    JsonSerializer.Deserialize<
+                        Dictionary<string, JsonElement>>(
+                            jsonBytes);
+
+                if (keyValuePairs is null)
+                {
+                    return [];
+                }
+
+                var claims =
+                    new List<Claim>();
+
+                foreach (var pair in keyValuePairs)
+                {
+                    AddClaim(
+                        claims,
+                        pair.Key,
+                        pair.Value);
+                }
+
                 return claims;
             }
-
-            foreach (var pair in keyValuePairs)
+            catch (FormatException)
             {
-                AddClaim(
+                return [];
+            }
+            catch (JsonException)
+            {
+                return [];
+            }
+        }
+
+        private static AuthenticationState
+            CreateAuthenticatedState(
+                IEnumerable<Claim> claims)
+        {
+            var identity =
+                new ClaimsIdentity(
                     claims,
-                    pair.Key,
-                    pair.Value);
-            }
+                    JwtAuthenticationType,
+                    ClaimTypes.Name,
+                    ClaimTypes.Role);
 
-            return claims;
+            var principal =
+                new ClaimsPrincipal(identity);
+
+            return new AuthenticationState(principal);
         }
 
         private static AuthenticationState
@@ -111,26 +164,38 @@ namespace HealthAxis_Admin.Providers
                     new ClaimsIdentity()));
         }
 
+        private static bool ContainsAdminRole(
+            IEnumerable<Claim> claims)
+        {
+            return claims.Any(claim =>
+                claim.Type == ClaimTypes.Role &&
+                claim.Value.Equals(
+                    AdminRole,
+                    StringComparison.OrdinalIgnoreCase));
+        }
+
         private static void AddClaim(
-            List<Claim> claims,
+            ICollection<Claim> claims,
             string claimType,
             JsonElement claimValue)
         {
+            if (claimValue.ValueKind is
+                JsonValueKind.Null or
+                JsonValueKind.Undefined)
+            {
+                return;
+            }
+
             var normalizedClaimType =
                 NormalizeClaimType(claimType);
 
             if (claimValue.ValueKind ==
                 JsonValueKind.Array)
             {
-                foreach (
-                    var value in
-                    claimValue.EnumerateArray())
-                {
-                    claims.Add(
-                        new Claim(
-                            normalizedClaimType,
-                            value.ToString()));
-                }
+                AddArrayClaims(
+                    claims,
+                    normalizedClaimType,
+                    claimValue);
 
                 return;
             }
@@ -141,66 +206,101 @@ namespace HealthAxis_Admin.Providers
                     claimValue.ToString()));
         }
 
+        private static void AddArrayClaims(
+            ICollection<Claim> claims,
+            string claimType,
+            JsonElement claimValues)
+        {
+            foreach (var claimValue in
+                     claimValues.EnumerateArray())
+            {
+                if (claimValue.ValueKind is
+                    JsonValueKind.Null or
+                    JsonValueKind.Undefined)
+                {
+                    continue;
+                }
+
+                claims.Add(
+                    new Claim(
+                        claimType,
+                        claimValue.ToString()));
+            }
+        }
+
         private static string NormalizeClaimType(
             string claimType)
         {
-            return claimType switch
+            if (claimType.Equals(
+                    "role",
+                    StringComparison.OrdinalIgnoreCase) ||
+                claimType.Equals(
+                    RoleClaimUri,
+                    StringComparison.Ordinal))
             {
-                "role" => ClaimTypes.Role,
-                "Role" => ClaimTypes.Role,
+                return ClaimTypes.Role;
+            }
 
-                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-                    => ClaimTypes.Role,
+            if (claimType.Equals(
+                    "email",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return ClaimTypes.Email;
+            }
 
-                "email" => ClaimTypes.Email,
-                "Email" => ClaimTypes.Email,
+            if (claimType.Equals(
+                    "sub",
+                    StringComparison.OrdinalIgnoreCase) ||
+                claimType.Equals(
+                    "nameid",
+                    StringComparison.OrdinalIgnoreCase) ||
+                claimType.Equals(
+                    NameIdentifierClaimUri,
+                    StringComparison.Ordinal))
+            {
+                return ClaimTypes.NameIdentifier;
+            }
 
-                "sub" => ClaimTypes.NameIdentifier,
-                "nameid" => ClaimTypes.NameIdentifier,
-
-                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-                    => ClaimTypes.NameIdentifier,
-
-                _ => claimType
-            };
+            return claimType;
         }
 
         private static string GetJwtPayload(
             string token)
         {
-            var parts = token.Split('.');
+            var tokenParts =
+                token.Split('.');
 
-            if (parts.Length < 2)
+            if (tokenParts.Length < 2)
             {
                 return string.Empty;
             }
 
-            var payload = parts[1]
-                .Replace('-', '+')
-                .Replace('_', '/');
+            var payload =
+                tokenParts[1]
+                    .Replace('-', '+')
+                    .Replace('_', '/');
 
-            var padding =
+            var missingPadding =
                 payload.Length % 4;
 
-            if (padding > 0)
+            if (missingPadding == 0)
             {
-                payload = payload.PadRight(
-                    payload.Length + 4 - padding,
-                    '=');
+                return payload;
             }
 
-            return payload;
+            return payload.PadRight(
+                payload.Length + 4 - missingPadding,
+                '=');
         }
 
         private static bool IsTokenExpired(
-            string token)
+            IEnumerable<Claim> claims)
         {
-            var claims =
-                ParseClaimsFromJwt(token);
-
             var expiryClaim =
-                claims.FirstOrDefault(
-                    claim => claim.Type == "exp");
+                claims.FirstOrDefault(claim =>
+                    claim.Type.Equals(
+                        ExpirationClaimType,
+                        StringComparison.Ordinal));
 
             if (expiryClaim is null)
             {
@@ -209,18 +309,26 @@ namespace HealthAxis_Admin.Providers
 
             if (!long.TryParse(
                     expiryClaim.Value,
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
                     out var expirySeconds))
             {
                 return true;
             }
 
-            var expiryDate =
-                DateTimeOffset.FromUnixTimeSeconds(
-                    expirySeconds);
+            try
+            {
+                var expiryDate =
+                    DateTimeOffset.FromUnixTimeSeconds(
+                        expirySeconds);
 
-            return expiryDate <=
-                DateTimeOffset.UtcNow;
+                return expiryDate <=
+                    DateTimeOffset.UtcNow;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return true;
+            }
         }
     }
 }
-

@@ -1,19 +1,34 @@
-﻿<CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(App).Assembly">
-        <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData"
-                                DefaultLayout="@typeof(MainLayout)">
-                <NotAuthorized>
-                    <RedirectToLogin />
-                </NotAuthorized>
+﻿@inject NavigationManager NavigationManager
 
-                <Authorizing>
-                    <p>Checking authorization...</p>
-                </Authorizing>
-            </AuthorizeRouteView>
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+
+        <Found Context="routeData">
+
+            @if (IsExternalLoginRoute())
+            {
+                <!-- External login must open without MainLayout. -->
+                <RouteView RouteData="@routeData" />
+            }
+            else
+            {
+                <AuthorizeRouteView RouteData="@routeData"
+                                    DefaultLayout="@typeof(MainLayout)">
+
+                    <NotAuthorized>
+                        <RedirectToLogin />
+                    </NotAuthorized>
+
+                    <Authorizing>
+                        <p>Checking authorization...</p>
+                    </Authorizing>
+
+                </AuthorizeRouteView>
+            }
 
             <FocusOnNavigate RouteData="@routeData"
                              Selector="h1" />
+
         </Found>
 
         <NotFound>
@@ -22,5 +37,19 @@
                 <p>The page you are looking for does not exist.</p>
             </LayoutView>
         </NotFound>
+
     </Router>
 </CascadingAuthenticationState>
+
+@code {
+    private bool IsExternalLoginRoute()
+    {
+        var relativePath =
+            NavigationManager.ToBaseRelativePath(
+                NavigationManager.Uri);
+
+        return relativePath.StartsWith(
+            "external-login",
+            StringComparison.OrdinalIgnoreCase);
+    }
+}

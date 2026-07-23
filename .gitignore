@@ -81,3 +81,9 @@ desktop.ini
 tmp/
 temp/
 *.tmp
+
+BlazorPublish/
+HealthAxis_Admin/artifacts/
+AwsPublish/
+BlazorPublish_New/
+HealthAxis.API/wwwroot/

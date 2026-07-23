@@ -14,16 +14,16 @@ namespace HealthAxis_Admin.Services
         private const int RequestTimeoutSeconds = 20;
 
         private const string DoctorEndpoint =
-            "api/admin/doctors";
+            "/api/admin/doctors";
 
         private const string DoctorPagedEndpoint =
-            "api/admin/doctors/paged";
+            "/api/admin/doctors/paged";
 
         private const string ResetPasswordEndpoint =
-            "api/Auth/admin/reset-password";
+            "/api/Auth/admin/reset-password";
 
         private const string AppointmentDetailsEndpoint =
-            "api/admin/reports/appointments/details";
+            "/api/admin/reports/appointments/details";
 
         private const string RequestFailedMessage =
             "Request failed.";

@@ -6,8 +6,8 @@ namespace HealthAxis_Admin.Services
 {
     public sealed class UserAdminService
     {
-        private const string UsersEndpoint = "api/admin/users";
-        private const string ResetPasswordEndpoint = "api/Auth/admin/reset-password";
+        private const string UsersEndpoint = "/api/admin/users";
+        private const string ResetPasswordEndpoint = "/api/Auth/admin/reset-password";
 
         private readonly HttpClient _httpClient;
 

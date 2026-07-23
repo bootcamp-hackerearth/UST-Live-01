@@ -306,14 +306,19 @@
 
     private void BackToDoctors()
     {
-        NavigationManager.NavigateTo("/doctors");
+        NavigationManager.NavigateTo(
+            "/blazor/doctors",
+            forceLoad: true);
     }
 
     private void GoToDoctors()
     {
         showCreatedDoctorDialog = false;
         createdDoctor = null;
-        NavigationManager.NavigateTo("/doctors");
+
+        NavigationManager.NavigateTo(
+            "/blazor/doctors",
+            forceLoad: true);
     }
 
     private void RegisterAnotherDoctor()
