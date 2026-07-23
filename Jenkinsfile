@@ -1,61 +1,61 @@
 pipeline {
     agent any
 
-   *options {
+options {
         skipDefaultCheck*ut(true)
         timestamps()
-    *   disableConcurrentBuilds()
+disableConcurrentBuilds()
     }*
     environment {
         DOTNET_*LI_TELEMETRY_OPTOUT = '1'
-        *OTNET_NOLOGO = '1'
+OTNET_NOLOGO = '1'
 
         AWS_RE*ION = 'ap-south-2'
         EB_APPL*CATION_NAME = 'HealthCareApp'
-    *   EB_ENVIRONMENT_NAME = 'HealthCa*eApp-dev'
+EB_ENVIRONMENT_NAME = 'HealthCa*eApp-dev'
         S3_BUCKET = 'hea*thaxis-jenkins-bucket-847814614822*ap-south-2-an'
         DEPLOY_PACK*GE = 'deploy-package.zip'
     }
 
- *  stages {
+stages {
         stage('Checkout*) {
             steps {
-          *     checkout scm
+checkout scm
             }
-  *     }
+}
 
         stage('Verify Proj*ct Files') {
             steps {
- *              bat '''
-            *   echo Checking required project *iles...
+bat '''
+echo Checking required project *iles...
 
                 if not ex*st HealthCareApp\\HealthCareApp.cs*roj (
                     echo ERR*R: HealthCareApp project not found*
                     exit /b 1
-   *            )
+)
 
                 if *ot exist HealthCareApp.AdminBlazor*\HealthCareApp.AdminBlazor.csproj *
                     echo ERROR: A*min Blazor project not found.
-    *               exit /b 1
-         *      )
+exit /b 1
+)
 
                 if not ex*st HealthCareApp.UI\\package.json *
                     echo ERROR: A*gular package.json not found.
-    *               exit /b 1
-         *      )
+exit /b 1
+)
 
                 echo Requ*red project files found.
-         *      '''
+'''
             }
         }
-*        stage('Clean Previous Buil*') {
+stage('Clean Previous Buil*') {
             steps {
-         *      bat '''
+bat '''
                 if e*ist artifacts rmdir /S /Q artifact*
                 if exist publish *mdir /S /Q publish
-               *if exist deploy-package.zip del /F*/Q deploy-package.zip
+if exist deploy-package.zip del /F*/Q deploy-package.zip
 
-           *    if exist HealthCareApp\\wwwroot\\angular rmdir /S /Q HealthCareApp\\wwwroot\\angular
+if exist HealthCareApp\\wwwroot\\angular rmdir /S /Q HealthCareApp\\wwwroot\\angular
                 if exist HealthCareApp\\wwwroot\\blazor rmdir /S /Q HealthCareApp\\wwwroot\\blazor
                 '''
             }
