@@ -86,7 +86,9 @@ builder.Services
     .AddEntityFrameworkStores<HealthAppDbContext>()
     .AddDefaultTokenProviders();
 
-// CORS
+// CORS is retained for local development when Angular and Blazor run
+// from their separate development servers. The combined deployment is
+// same-origin and does not depend on CORS.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
@@ -204,6 +206,7 @@ builder.Services.AddMassTransit(configuration =>
         });
 });
 
+// In-process cache used through the IDistributedCache abstraction.
 builder.Services.AddDistributedMemoryCache();
 
 // AutoMapper
@@ -259,11 +262,27 @@ try
     });
 
     app.UseHttpsRedirection();
+
+    // Serve Angular from wwwroot and Blazor WebAssembly from wwwroot/admin.
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
+
     app.UseExceptionHandler();
     app.UseCors("AllowBlazor");
     app.UseAuthentication();
     app.UseAuthorization();
+
     app.MapControllers();
+
+    // Blazor Admin Portal routes must be handled before the Angular fallback.
+    app.MapFallbackToFile(
+        "/admin/{*path:nonfile}",
+        "admin/index.html");
+
+    // All remaining non-file frontend routes belong to Angular.
+    app.MapFallbackToFile(
+        "{*path:nonfile}",
+        "index.html");
 
     Log.Information("HealthApp API started successfully");
 
