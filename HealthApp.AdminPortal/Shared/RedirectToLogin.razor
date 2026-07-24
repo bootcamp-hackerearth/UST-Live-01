@@ -2,7 +2,6 @@
 @using HealthApp.AdminPortal.Services.Interface
 
 @inject NavigationManager NavigationManager
-@inject IConfiguration Configuration
 @inject INotificationService NotificationService
 @inject AuthRedirectState AuthRedirectState
 
@@ -16,10 +15,6 @@
             NotificationService.Warning(message);
         }
 
-        var angularBaseUrl = Configuration["AngularApp:BaseUrl"];
-
-        NavigationManager.NavigateTo(
-            $"{angularBaseUrl}/login",
-            forceLoad: true);
+        NavigationManager.NavigateTo("/login", forceLoad: true);
     }
 }

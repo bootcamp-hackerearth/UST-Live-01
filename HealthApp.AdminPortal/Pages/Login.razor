@@ -5,7 +5,6 @@
 @using HealthApp.AdminPortal.Services.Interface
 
 @inject NavigationManager NavigationManager
-@inject IConfiguration Configuration
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ITokenService TokenService
 
@@ -14,28 +13,20 @@
         <div class="admin-login-bridge-icon">
             <i class="bi bi-shield-lock"></i>
         </div>
-
         <h3>@TitleText</h3>
-
         <p>@MessageText</p>
-
         @if (!string.IsNullOrWhiteSpace(ErrorText))
         {
-            <div class="alert alert-danger mt-3" role="alert">
-                @ErrorText
-            </div>
+            <div class="alert alert-danger mt-3" role="alert">@ErrorText</div>
         }
     </div>
 </div>
 
 @code {
     private bool _hasProcessedToken;
-
     private string TitleText { get; set; } = "Signing you in...";
-
     private string MessageText { get; set; } =
         "Please wait while we securely connect your admin session.";
-
     private string ErrorText { get; set; } = string.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -46,7 +37,6 @@
         }
 
         _hasProcessedToken = true;
-
         await ProcessTokenLoginAsync();
     }
 
@@ -58,17 +48,13 @@
 
             if (string.IsNullOrWhiteSpace(token))
             {
-                RedirectToAngularLogin();
+                NavigationManager.NavigateTo("/login", forceLoad: true);
                 return;
             }
 
             await TokenService.SetToken(token);
 
-            if (AuthenticationStateProvider is CustomAuthStateProvider customAuthProvider)
-            {
-                customAuthProvider.NotifyUserAuthentication(token);
-            }
-            else
+            if (AuthenticationStateProvider is not CustomAuthStateProvider customAuthProvider)
             {
                 TitleText = "Authentication provider error";
                 MessageText = "The admin portal authentication provider is not configured correctly.";
@@ -77,17 +63,17 @@
                 return;
             }
 
+            customAuthProvider.NotifyUserAuthentication(token);
             TitleText = "Login successful";
             MessageText = "Redirecting to admin dashboard...";
             StateHasChanged();
-
-            NavigationManager.NavigateTo("/dashboard", forceLoad: true);
+            NavigationManager.NavigateTo("dashboard");
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
             TitleText = "Login failed";
             MessageText = "Unable to complete admin login. Please login again from HealthApp.";
-            ErrorText = ex.Message;
+            ErrorText = exception.Message;
             StateHasChanged();
         }
     }
@@ -107,38 +93,21 @@
             query = query[1..];
         }
 
-        var queryParts = query.Split(
-            '&',
-            StringSplitOptions.RemoveEmptyEntries);
-
-        foreach (var part in queryParts)
+        foreach (var part in query.Split('&', StringSplitOptions.RemoveEmptyEntries))
         {
             var keyValue = part.Split('=', 2);
-
             if (keyValue.Length != 2)
             {
                 continue;
             }
 
             var key = Uri.UnescapeDataString(keyValue[0]);
-
-            if (!string.Equals(key, "token", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(key, "token", StringComparison.OrdinalIgnoreCase))
             {
-                continue;
+                return Uri.UnescapeDataString(keyValue[1]);
             }
-
-            return Uri.UnescapeDataString(keyValue[1]);
         }
 
         return null;
-    }
-
-    private void RedirectToAngularLogin()
-    {
-        var angularBaseUrl = Configuration["AngularApp:BaseUrl"];
-
-        NavigationManager.NavigateTo(
-            $"{angularBaseUrl}/login",
-            forceLoad: true);
     }
 }
