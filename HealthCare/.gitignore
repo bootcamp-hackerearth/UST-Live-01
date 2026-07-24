@@ -8,6 +8,8 @@ target/
 build/
 dist/
 wwwroot/
+packages/
+artifacts/
 
 # Sonar
 .sonarqube/
