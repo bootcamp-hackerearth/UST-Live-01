@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { API_CONFIG } from '../../config/api.config';
 
 @Component({
   selector: 'app-home',
@@ -9,7 +10,7 @@ import { Router, RouterLink } from '@angular/router';
   styleUrl: './home.css'
 })
 export class Home {
-  adminPortalUrl = 'https://localhost:7200';
+  adminPortalUrl = API_CONFIG.adminPortalUrl;
 
   constructor(private readonly router: Router) {}
 

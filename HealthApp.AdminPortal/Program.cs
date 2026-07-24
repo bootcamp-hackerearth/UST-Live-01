@@ -8,30 +8,29 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+// The admin portal is hosted at /admin/, while the API is hosted at /api
+// on the same origin. Resolve the site root so requests do not become
+// /admin/api/... when the application is deployed.
+var adminBaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+var siteRootAddress = new Uri(adminBaseAddress, "/");
 
-if (string.IsNullOrWhiteSpace(apiBaseUrl))
+builder.Services.AddScoped(_ => new HttpClient
 {
-    throw new InvalidOperationException("API base URL is not configured.");
-}
-
-builder.Services.AddScoped(sp => new HttpClient
-{
-    BaseAddress = new Uri(apiBaseUrl)
+    BaseAddress = siteRootAddress
 });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
-
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<IAdminDoctorLeaveService,AdminDoctorLeaveService>();
+builder.Services.AddScoped<IAdminDoctorLeaveService, AdminDoctorLeaveService>();
 
 builder.Services.AddScoped<AuthRedirectState>();
 
