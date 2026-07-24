@@ -188,7 +188,7 @@ else
             await ClearLoginDataAsync();
 
             NavigationManager.NavigateTo(
-                "/login",
+                "login",
                 replace: true);
         }
         catch (Exception ex)
@@ -282,7 +282,7 @@ else
 
     private void BackToReports()
     {
-        NavigationManager.NavigateTo("/appointment-reports");
+        NavigationManager.NavigateTo("appointment-reports");
     }
 
     private static string GetStatusClass(AppointmentStatus status)

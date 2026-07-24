@@ -14,7 +14,8 @@
 @code {
     private bool hasProcessed;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(
+        bool firstRender)
     {
         if (!firstRender || hasProcessed)
         {
@@ -29,82 +30,111 @@
                 await Js.InvokeAsync<AuthCallbackPayload?>(
                     "healthAxisAuth.readAuthPayloadFromHash");
 
-            if (payload == null ||
-                string.IsNullOrWhiteSpace(payload.AccessToken))
+            if (!IsValidAdminPayload(payload))
             {
                 RedirectToAngularLogin();
                 return;
             }
 
-            if (!string.Equals(
-                    payload.Role,
-                    "Admin",
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                RedirectToAngularLogin();
-                return;
-            }
+            await SaveAuthenticationDataAsync(payload!);
 
-            await Js.InvokeVoidAsync(
-                "localStorage.setItem",
-                "healthaxis_access_token",
-                payload.AccessToken);
-
-            await Js.InvokeVoidAsync(
-                "localStorage.setItem",
-                "healthaxis_refresh_token",
-                payload.RefreshToken ?? string.Empty);
-
-            await Js.InvokeVoidAsync(
-                "localStorage.setItem",
-                "healthaxis_user_role",
-                payload.Role ?? string.Empty);
-
-            await Js.InvokeVoidAsync(
-                "localStorage.setItem",
-                "healthaxis_user_email",
-                payload.Email ?? string.Empty);
-
-            await Js.InvokeVoidAsync(
-                "localStorage.setItem",
-                "healthaxis_user_id",
-                payload.UserId ?? string.Empty);
-
-            await Js.InvokeVoidAsync(
-                "localStorage.setItem",
-                "healthaxis_reference_id",
-                payload.ReferenceId.ToString());
-
+            // Client-side navigation within the Blazor application.
+            // Because Blazor is hosted under /blazor/, this resolves to:
+            // https://domain/blazor/dashboard
             NavigationManager.NavigateTo(
-                "/dashboard",
-                forceLoad: true,
+                "dashboard",
                 replace: true);
         }
-        catch
+        catch (Exception exception)
         {
+            Console.Error.WriteLine(
+                $"Admin authentication callback failed: {exception.Message}");
+
             RedirectToAngularLogin();
         }
     }
 
+    private static bool IsValidAdminPayload(
+        AuthCallbackPayload? payload)
+    {
+        return payload != null &&
+               !string.IsNullOrWhiteSpace(payload.AccessToken) &&
+               string.Equals(
+                   payload.Role,
+                   "Admin",
+                   StringComparison.OrdinalIgnoreCase);
+    }
+
+    private async Task SaveAuthenticationDataAsync(
+        AuthCallbackPayload payload)
+    {
+        await Js.InvokeVoidAsync(
+            "localStorage.setItem",
+            "healthaxis_access_token",
+            payload.AccessToken);
+
+        await Js.InvokeVoidAsync(
+            "localStorage.setItem",
+            "healthaxis_refresh_token",
+            payload.RefreshToken ?? string.Empty);
+
+        await Js.InvokeVoidAsync(
+            "localStorage.setItem",
+            "healthaxis_user_role",
+            payload.Role ?? string.Empty);
+
+        await Js.InvokeVoidAsync(
+            "localStorage.setItem",
+            "healthaxis_user_email",
+            payload.Email ?? string.Empty);
+
+        await Js.InvokeVoidAsync(
+            "localStorage.setItem",
+            "healthaxis_user_id",
+            payload.UserId ?? string.Empty);
+
+        await Js.InvokeVoidAsync(
+            "localStorage.setItem",
+            "healthaxis_reference_id",
+            payload.ReferenceId.ToString());
+    }
+
     private void RedirectToAngularLogin()
     {
+        // Resolve the Angular login URL from the current website origin.
+        // Local:
+        // https://localhost:7224/angular/login
+        //
+        // Deployed:
+        // https://deployment-domain/angular/login
+        string angularLoginUrl =
+            new Uri(
+                new Uri(NavigationManager.BaseUri),
+                "/angular/login")
+            .ToString();
+
         NavigationManager.NavigateTo(
-            "http://localhost:4200/login",
+            angularLoginUrl,
             forceLoad: true,
             replace: true);
     }
 
-    private class AuthCallbackPayload
+    private sealed class AuthCallbackPayload
     {
-        public string AccessToken { get; set; } = string.Empty;
+        public string AccessToken { get; set; } =
+            string.Empty;
 
-        public string RefreshToken { get; set; } = string.Empty;
+        public string RefreshToken { get; set; } =
+            string.Empty;
 
-        public string Role { get; set; } = string.Empty;
+        public string Role { get; set; } =
+            string.Empty;
 
-        public string Email { get; set; } = string.Empty;
+        public string Email { get; set; } =
+            string.Empty;
 
-        public string UserId { get; set; } = string.Empty;
+        public string UserId { get; set; } =
+            string.Empty;
 
         public int ReferenceId { get; set; }
     }

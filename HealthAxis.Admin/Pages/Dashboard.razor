@@ -170,7 +170,7 @@
         catch (UnauthorizedAccessException)
         {
             await ClearLoginDataAsync();
-            NavigationManager.NavigateTo("/login", replace: true);
+            NavigationManager.NavigateTo("login", replace: true);
         }
         catch (Exception ex)
         {

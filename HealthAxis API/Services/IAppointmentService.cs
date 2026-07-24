@@ -6,7 +6,7 @@ namespace HealthAxis.API.Services
     public interface IAppointmentService
         : IService<Appointment, AppointmentReadDto, AppointmentCreateDto, AppointmentUpdateDto>
     {
-        Task<AppointmentReadDto> CreateAsync(
+        new Task<AppointmentReadDto> CreateAsync(
             AppointmentCreateDto createDto,
             CancellationToken ct = default);
 

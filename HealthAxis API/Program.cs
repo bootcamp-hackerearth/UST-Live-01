@@ -1,4 +1,5 @@
 using HealthAxis.API.BackgroundServices;
+using Microsoft.AspNetCore.StaticFiles;
 using HealthAxis.API.Consumers;
 using HealthAxis.API.Data;
 using HealthAxis.API.Mappings;
@@ -25,9 +26,11 @@ try
 {
     Log.Information("Starting HealthAxis.API");
 
-    var builder =
+    WebApplicationBuilder builder =
         WebApplication.CreateBuilder(args);
 
+    // Serilog configuration is read from appsettings.json.
+    // Keep only the Console and File sinks in appsettings.json.
     builder.Services.AddSerilog((services, configuration) =>
     {
         configuration
@@ -36,70 +39,103 @@ try
             .Enrich.FromLogContext();
     });
 
+    // Background hosted services.
     builder.Services.AddHostedService<HealthAxisHeartbeatService>();
     builder.Services.AddHostedService<NotificationCleanupService>();
 
-    builder.Services.AddMassTransit(x =>
+    // RabbitMQ and MassTransit.
+    builder.Services.AddMassTransit(configuration =>
     {
-        x.AddConsumer<AppointmentBookedConsumer>();
+        configuration.AddConsumer<AppointmentBookedConsumer>();
 
-        x.UsingRabbitMq((context, cfg) =>
+        configuration.UsingRabbitMq((context, rabbitMq) =>
         {
-            cfg.Host("localhost", "/", h =>
-            {
-                h.Username("guest");
-                h.Password("guest");
-            });
+            IConfigurationSection rabbitMqSettings =
+                builder.Configuration.GetSection("RabbitMq");
 
-            cfg.ReceiveEndpoint(
-                "appointment-booked-notification-queue",
-                e =>
+            string rabbitMqHost =
+                rabbitMqSettings["Host"]
+                ?? throw new InvalidOperationException(
+                    "RabbitMQ host is missing.");
+
+            string rabbitMqVirtualHost =
+                rabbitMqSettings["VirtualHost"]
+                ?? "/";
+
+            string rabbitMqUsername =
+                rabbitMqSettings["Username"]
+                ?? throw new InvalidOperationException(
+                    "RabbitMQ username is missing.");
+
+            string rabbitMqPassword =
+                rabbitMqSettings["Password"]
+                ?? throw new InvalidOperationException(
+                    "RabbitMQ password is missing.");
+
+            rabbitMq.Host(
+                rabbitMqHost,
+                rabbitMqVirtualHost,
+                host =>
                 {
-                    e.ConfigureConsumer<AppointmentBookedConsumer>(
+                    host.Username(rabbitMqUsername);
+                    host.Password(rabbitMqPassword);
+                });
+
+            rabbitMq.ReceiveEndpoint(
+                "appointment-booked-notification-queue",
+                endpoint =>
+                {
+                    endpoint.ConfigureConsumer<AppointmentBookedConsumer>(
                         context);
                 });
         });
     });
 
-    builder.Services.AddControllers()
+    // Controllers and JSON serialization.
+    builder.Services
+        .AddControllers()
         .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.PropertyNamingPolicy =
                 JsonNamingPolicy.CamelCase;
         });
 
-    builder.Services.AddStackExchangeRedisCache(options =>
-    {
-        options.Configuration = "localhost:6379";
-        options.InstanceName = "HealthAxis:";
-    });
-
+    // Global exception handling.
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
     builder.Services.AddProblemDetails();
 
-    builder.Services.AddAutoMapper(config =>
+    // AutoMapper.
+    builder.Services.AddAutoMapper(configuration =>
     {
-        config.AddProfile<MappingProfile>();
+        configuration.AddProfile<MappingProfile>();
     });
 
+    // SQL Server DbContext.
     builder.Services.AddDbContext<HealthAxisDbContext>(options =>
     {
-        options.UseSqlServer(
-            builder.Configuration.GetConnectionString("HealthAxisDb"));
+        string connectionString =
+            builder.Configuration.GetConnectionString("HealthAxisDb")
+            ?? throw new InvalidOperationException(
+                "The HealthAxisDb connection string is missing.");
+
+        options.UseSqlServer(connectionString);
     });
 
-    builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-    {
-        options.User.RequireUniqueEmail = true;
+    // ASP.NET Core Identity.
+    builder.Services
+        .AddIdentity<IdentityUser, IdentityRole>(options =>
+        {
+            options.User.RequireUniqueEmail = true;
 
-        options.Password.RequireDigit = true;
-        options.Password.RequireUppercase = true;
-        options.Password.RequireNonAlphanumeric = true;
-        options.Password.RequiredLength = 8;
-    })
-    .AddEntityFrameworkStores<HealthAxisDbContext>()
-    .AddDefaultTokenProviders();
+            options.Password.RequireDigit = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireNonAlphanumeric = true;
+            options.Password.RequiredLength = 8;
+        })
+        .AddEntityFrameworkStores<HealthAxisDbContext>()
+        .AddDefaultTokenProviders();
 
+    // Prevent Identity from redirecting API requests to HTML login pages.
     builder.Services.ConfigureApplicationCookie(options =>
     {
         options.Events.OnRedirectToLogin = context =>
@@ -119,62 +155,79 @@ try
         };
     });
 
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme =
-            JwtBearerDefaults.AuthenticationScheme;
+    // JWT authentication.
+    builder.Services
+        .AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme =
+                JwtBearerDefaults.AuthenticationScheme;
 
-        options.DefaultChallengeScheme =
-            JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme =
+                JwtBearerDefaults.AuthenticationScheme;
 
-        options.DefaultScheme =
-            JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        IConfigurationSection jwt =
-            builder.Configuration.GetSection("Jwt");
+            options.DefaultScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            IConfigurationSection jwt =
+                builder.Configuration.GetSection("Jwt");
 
-        string jwtKey =
-            jwt["Key"]
-            ?? throw new InvalidOperationException("JWT Key is missing.");
+            string jwtKey =
+                jwt["Key"]
+                ?? throw new InvalidOperationException(
+                    "JWT Key is missing.");
 
-        options.TokenValidationParameters =
-            new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = jwt["Issuer"],
+            string jwtIssuer =
+                jwt["Issuer"]
+                ?? throw new InvalidOperationException(
+                    "JWT Issuer is missing.");
 
-                ValidateAudience = true,
-                ValidAudience = jwt["Audience"],
+            string jwtAudience =
+                jwt["Audience"]
+                ?? throw new InvalidOperationException(
+                    "JWT Audience is missing.");
 
-                ValidateLifetime = true,
+            options.TokenValidationParameters =
+                new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtIssuer,
 
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(jwtKey)),
+                    ValidateAudience = true,
+                    ValidAudience = jwtAudience,
 
-                RoleClaimType = ClaimTypes.Role,
+                    ValidateLifetime = true,
 
-                ClockSkew = TimeSpan.Zero
-            };
-    });
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(jwtKey)),
+
+                    RoleClaimType = ClaimTypes.Role,
+
+                    ClockSkew = TimeSpan.Zero
+                };
+        });
 
     builder.Services.AddAuthorization();
 
+    // CORS for Angular and Blazor frontends.
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("AllowFrontend", policy =>
         {
-            policy.WithOrigins(
+            policy
+                .WithOrigins(
                     "https://localhost:7051",
                     "http://localhost:5293",
                     "http://localhost:4200")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
+                .AllowAnyHeader()
+                .AllowAnyMethod();
         });
     });
 
+    // Swagger/OpenAPI.
     builder.Services.AddEndpointsApiExplorer();
 
     builder.Services.AddSwaggerGen(options =>
@@ -185,7 +238,8 @@ try
             {
                 Title = "HealthAxis API",
                 Version = "v1",
-                Description = "API for HealthAxis Healthcare System"
+                Description =
+                    "API for the HealthAxis Healthcare System"
             });
 
         options.AddSecurityDefinition(
@@ -197,7 +251,9 @@ try
                 Scheme = "bearer",
                 BearerFormat = "JWT",
                 In = ParameterLocation.Header,
-                Description = "Paste only the JWT token. Do not type the word Bearer manually."
+                Description =
+                    "Paste only the JWT token. " +
+                    "Do not type the word Bearer manually."
             });
 
         options.AddSecurityRequirement(
@@ -206,21 +262,25 @@ try
                 {
                     new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
+                        Reference =
+                            new OpenApiReference
+                            {
+                                Type =
+                                    ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
                     },
                     Array.Empty<string>()
                 }
             });
     });
 
+    // Generic repository.
     builder.Services.AddScoped(
         typeof(IRepository<>),
         typeof(Repository<>));
 
+    // Repositories.
     builder.Services.AddScoped<
         IPatientRepository,
         PatientRepository>();
@@ -237,6 +297,7 @@ try
         IHealthRecordRepository,
         HealthRecordRepository>();
 
+    // Application services.
     builder.Services.AddScoped<
         IAuthService,
         AuthService>();
@@ -261,11 +322,13 @@ try
         IAdminService,
         AdminService>();
 
-    var app =
-        builder.Build();
+    WebApplication app =
+    builder.Build();
 
+    // Global exception-handling middleware.
     app.UseExceptionHandler();
 
+    // Swagger is enabled only in Development.
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
@@ -280,13 +343,202 @@ try
         });
     }
 
+    // Structured HTTP request logging.
     app.UseSerilogRequestLogging(options =>
     {
         options.MessageTemplate =
-            "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+            "HTTP {RequestMethod} {RequestPath} responded " +
+            "{StatusCode} in {Elapsed:0.0000} ms";
     });
 
-    app.UseHttpsRedirection();
+    // Local Development supports HTTP and HTTPS through launchSettings.
+    // Elastic Beanstalk normally terminates HTTPS at its proxy.
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseHttpsRedirection();
+    }
+
+    // Resolve the exact physical frontend entry files.
+    string angularIndexPath =
+        Path.Combine(
+            app.Environment.WebRootPath,
+            "angular",
+            "index.html");
+
+    string blazorIndexPath =
+        Path.Combine(
+            app.Environment.WebRootPath,
+            "blazor",
+            "index.html");
+
+    // Log exactly which files the application will serve.
+    Log.Information(
+        "Web root path: {WebRootPath}",
+        app.Environment.WebRootPath);
+
+    Log.Information(
+        "Angular index path: {AngularIndexPath}, Exists: {Exists}",
+        angularIndexPath,
+        File.Exists(angularIndexPath));
+
+    Log.Information(
+        "Blazor index path: {BlazorIndexPath}, Exists: {Exists}",
+        blazorIndexPath,
+        File.Exists(blazorIndexPath));
+
+    if (File.Exists(blazorIndexPath))
+    {
+        string blazorIndexContent =
+            File.ReadAllText(blazorIndexPath);
+
+        Log.Information(
+            "Blazor index has correct base path: {HasCorrectBase}",
+            blazorIndexContent.Contains(
+                "href=\"/blazor/\"",
+                StringComparison.OrdinalIgnoreCase));
+    }
+
+    // Serve frontend index files without browser caching.
+    static async Task SendFrontendIndexAsync(
+        HttpContext context,
+        string indexPath,
+        string applicationName)
+    {
+        if (!File.Exists(indexPath))
+        {
+            context.Response.StatusCode =
+                StatusCodes.Status404NotFound;
+
+            await context.Response.WriteAsync(
+                $"{applicationName} index.html was not found.");
+
+            return;
+        }
+
+        context.Response.ContentType =
+            "text/html; charset=utf-8";
+
+        context.Response.Headers.CacheControl =
+            "no-store, no-cache, must-revalidate";
+
+        context.Response.Headers.Pragma =
+            "no-cache";
+
+        context.Response.Headers.Expires =
+            "0";
+
+        await context.Response.SendFileAsync(
+            indexPath);
+    }
+
+    // Intercept Angular and Blazor client-side routes.
+    //
+    // Examples handled here:
+    // /angular
+    // /angular/
+    // /angular/login
+    // /blazor
+    // /blazor/
+    // /blazor/auth-callback
+    // /blazor/dashboard
+    //
+    // Requests for physical files such as .css, .js, .wasm,
+    // .json, .dll and .dat continue to UseStaticFiles.
+    app.Use(async (context, next) =>
+    {
+        string requestPath =
+            context.Request.Path.Value
+            ?? string.Empty;
+
+        bool isAngularPath =
+            requestPath.Equals(
+                "/angular",
+                StringComparison.OrdinalIgnoreCase) ||
+            requestPath.StartsWith(
+                "/angular/",
+                StringComparison.OrdinalIgnoreCase);
+
+        bool isBlazorPath =
+            requestPath.Equals(
+                "/blazor",
+                StringComparison.OrdinalIgnoreCase) ||
+            requestPath.StartsWith(
+                "/blazor/",
+                StringComparison.OrdinalIgnoreCase);
+
+        bool isPhysicalFileRequest =
+            Path.HasExtension(requestPath);
+
+        if (isAngularPath &&
+            !isPhysicalFileRequest)
+        {
+            await SendFrontendIndexAsync(
+                context,
+                angularIndexPath,
+                "Angular");
+
+            return;
+        }
+
+        if (isBlazorPath &&
+            !isPhysicalFileRequest)
+        {
+            await SendFrontendIndexAsync(
+                context,
+                blazorIndexPath,
+                "Blazor");
+
+            return;
+        }
+
+        await next();
+    });
+
+    // Configure content types required by Blazor WebAssembly.
+    FileExtensionContentTypeProvider contentTypeProvider =
+        new FileExtensionContentTypeProvider();
+
+    contentTypeProvider.Mappings[".dat"] =
+        "application/octet-stream";
+
+    contentTypeProvider.Mappings[".wasm"] =
+        "application/wasm";
+
+    contentTypeProvider.Mappings[".dll"] =
+        "application/octet-stream";
+
+    contentTypeProvider.Mappings[".pdb"] =
+        "application/octet-stream";
+
+    // Serve physical files from wwwroot.
+    app.UseStaticFiles(
+        new StaticFileOptions
+        {
+            ContentTypeProvider =
+                contentTypeProvider,
+
+            OnPrepareResponse = context =>
+            {
+                string requestPath =
+                    context.Context.Request.Path.Value
+                    ?? string.Empty;
+
+                // Do not cache frontend entry files during development.
+                if (requestPath.EndsWith(
+                        "/index.html",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    context.Context.Response.Headers.CacheControl =
+                        "no-store, no-cache, must-revalidate";
+
+                    context.Context.Response.Headers.Pragma =
+                        "no-cache";
+
+                    context.Context.Response.Headers.Expires =
+                        "0";
+                }
+            }
+        });
 
     app.UseCors("AllowFrontend");
 
@@ -296,12 +548,28 @@ try
 
     app.MapControllers();
 
+    // In Production, open Angular when the root URL is requested.
+    // Swagger continues using the root URL during Development.
+    if (!app.Environment.IsDevelopment())
+    {
+        app.MapGet(
+            "/",
+            async context =>
+            {
+                await SendFrontendIndexAsync(
+                    context,
+                    angularIndexPath,
+                    "Angular");
+            });
+    }
+
     await app.RunAsync();
 }
-catch (Exception ex) when (ex is not HostAbortedException)
+catch (Exception exception)
+    when (exception is not HostAbortedException)
 {
     Log.Fatal(
-        ex,
+        exception,
         "HealthAxis.API terminated unexpectedly during startup");
 }
 finally

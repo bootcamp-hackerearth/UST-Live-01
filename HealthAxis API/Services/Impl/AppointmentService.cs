@@ -5,12 +5,15 @@ using HealthAxis.API.Messages;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories;
 using MassTransit;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace HealthAxis.API.Services
 {
     public class AppointmentService
-        : Service<Appointment, AppointmentReadDto, AppointmentCreateDto, AppointmentUpdateDto>,
+        : Service<
+            Appointment,
+            AppointmentReadDto,
+            AppointmentCreateDto,
+            AppointmentUpdateDto>,
           IAppointmentService
     {
         private readonly IAppointmentRepository _appointmentRepository;
@@ -19,7 +22,6 @@ namespace HealthAxis.API.Services
         private readonly IMapper _mapper;
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly ILogger<AppointmentService> _logger;
-        private readonly IDistributedCache _cache;
 
         public AppointmentService(
             IAppointmentRepository appointmentRepository,
@@ -27,8 +29,7 @@ namespace HealthAxis.API.Services
             IPatientRepository patientRepository,
             IMapper mapper,
             IPublishEndpoint publishEndpoint,
-            ILogger<AppointmentService> logger,
-            IDistributedCache cache)
+            ILogger<AppointmentService> logger)
             : base(appointmentRepository, mapper)
         {
             _appointmentRepository = appointmentRepository;
@@ -37,7 +38,6 @@ namespace HealthAxis.API.Services
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
             _logger = logger;
-            _cache = cache;
         }
 
         public new async Task<AppointmentReadDto> CreateAsync(
@@ -155,7 +155,8 @@ namespace HealthAxis.API.Services
             bool doctorAlreadyBooked =
                 appointments.Any(appointment =>
                     appointment.DoctorId == createDto.DoctorId &&
-                    appointment.ScheduledDate.Date == createDto.ScheduledDate.Date &&
+                    appointment.ScheduledDate.Date ==
+                        createDto.ScheduledDate.Date &&
                     appointment.TimeSlot == createDto.TimeSlot &&
                     appointment.Status != AppointmentStatus.Cancelled);
 
@@ -176,7 +177,8 @@ namespace HealthAxis.API.Services
             bool patientAlreadyBookedAtSameTime =
                 appointments.Any(appointment =>
                     appointment.PatientId == createDto.PatientId &&
-                    appointment.ScheduledDate.Date == createDto.ScheduledDate.Date &&
+                    appointment.ScheduledDate.Date ==
+                        createDto.ScheduledDate.Date &&
                     appointment.TimeSlot == createDto.TimeSlot &&
                     appointment.Status != AppointmentStatus.Cancelled);
 
@@ -208,20 +210,6 @@ namespace HealthAxis.API.Services
                     appointmentToCreate,
                     ct);
 
-            string availabilityCacheKey =
-                $"doctors:{createdAppointment.DoctorId}:availability:{createdAppointment.ScheduledDate:yyyy-MM-dd}";
-
-            await _cache.RemoveAsync(
-                availabilityCacheKey,
-                ct);
-
-            _logger.LogInformation(
-                "Garnet availability cache invalidated. DoctorId {DoctorId}, AppointmentId {AppointmentId}, ScheduledDate {ScheduledDate}, CacheKey {CacheKey}",
-                createdAppointment.DoctorId,
-                createdAppointment.AppointmentId,
-                createdAppointment.ScheduledDate.ToString("yyyy-MM-dd"),
-                availabilityCacheKey);
-
             _logger.LogInformation(
                 "Appointment booked successfully. AppointmentId {AppointmentId}, PatientId {PatientId}, DoctorId {DoctorId}, PatientName {PatientName}, ScheduledDate {ScheduledDate}, TimeSlot {TimeSlot}",
                 createdAppointment.AppointmentId,
@@ -233,11 +221,20 @@ namespace HealthAxis.API.Services
 
             AppointmentBookedEvent appointmentBookedEvent = new()
             {
-                AppointmentId = createdAppointment.AppointmentId,
-                PatientName = patient.FullName,
-                DoctorId = createdAppointment.DoctorId,
-                ScheduledDate = createdAppointment.ScheduledDate,
-                TimeSlot = createdAppointment.TimeSlot
+                AppointmentId =
+                    createdAppointment.AppointmentId,
+
+                PatientName =
+                    patient.FullName,
+
+                DoctorId =
+                    createdAppointment.DoctorId,
+
+                ScheduledDate =
+                    createdAppointment.ScheduledDate,
+
+                TimeSlot =
+                    createdAppointment.TimeSlot
             };
 
             _logger.LogInformation(
@@ -262,8 +259,9 @@ namespace HealthAxis.API.Services
                 ct);
         }
 
-        public async Task<List<AppointmentReadDto>> GetAllWithDetailsAsync(
-            CancellationToken ct = default)
+        public async Task<List<AppointmentReadDto>>
+            GetAllWithDetailsAsync(
+                CancellationToken ct = default)
         {
             List<Appointment> appointments =
                 await _appointmentRepository.GetAllAsync(ct);
@@ -273,9 +271,10 @@ namespace HealthAxis.API.Services
                 ct);
         }
 
-        public async Task<List<AppointmentReadDto>> GetAppointmentsByPatientIdAsync(
-            int patientId,
-            CancellationToken ct = default)
+        public async Task<List<AppointmentReadDto>>
+            GetAppointmentsByPatientIdAsync(
+                int patientId,
+                CancellationToken ct = default)
         {
             List<Appointment> appointments =
                 await _appointmentRepository.GetAllAsync(ct);
@@ -293,9 +292,10 @@ namespace HealthAxis.API.Services
                 ct);
         }
 
-        public async Task<List<AppointmentReadDto>> GetAppointmentsByDoctorIdAsync(
-            int doctorId,
-            CancellationToken ct = default)
+        public async Task<List<AppointmentReadDto>>
+            GetAppointmentsByDoctorIdAsync(
+                int doctorId,
+                CancellationToken ct = default)
         {
             List<Appointment> appointments =
                 await _appointmentRepository.GetAllAsync(ct);
@@ -336,16 +336,20 @@ namespace HealthAxis.API.Services
             AppointmentStatus oldStatus =
                 appointment.Status;
 
-            if (statusUpdateDto.Status == AppointmentStatus.Confirmed)
+            if (statusUpdateDto.Status ==
+                AppointmentStatus.Confirmed)
             {
                 appointment.Confirm();
             }
-            else if (statusUpdateDto.Status == AppointmentStatus.Cancelled)
+            else if (statusUpdateDto.Status ==
+                     AppointmentStatus.Cancelled)
             {
                 appointment.Cancel(
-                    statusUpdateDto.CancellationReason ?? string.Empty);
+                    statusUpdateDto.CancellationReason ??
+                    string.Empty);
             }
-            else if (statusUpdateDto.Status == AppointmentStatus.Completed)
+            else if (statusUpdateDto.Status ==
+                     AppointmentStatus.Completed)
             {
                 appointment.Complete();
             }
@@ -368,8 +372,9 @@ namespace HealthAxis.API.Services
                 ct);
         }
 
-        public async Task<List<AppointmentReportDto>> GetAppointmentReportAsync(
-            CancellationToken ct = default)
+        public async Task<List<AppointmentReportDto>>
+            GetAppointmentReportAsync(
+                CancellationToken ct = default)
         {
             List<Appointment> appointments =
                 await _appointmentRepository.GetAllAsync(ct);
@@ -383,19 +388,28 @@ namespace HealthAxis.API.Services
                         {
                             Date = group.Key,
 
-                            TotalCount = group.Count(),
+                            TotalCount =
+                                group.Count(),
 
-                            ScheduledCount = group.Count(appointment =>
-                                appointment.Status == AppointmentStatus.Scheduled),
+                            ScheduledCount =
+                                group.Count(appointment =>
+                                    appointment.Status ==
+                                    AppointmentStatus.Scheduled),
 
-                            ConfirmedCount = group.Count(appointment =>
-                                appointment.Status == AppointmentStatus.Confirmed),
+                            ConfirmedCount =
+                                group.Count(appointment =>
+                                    appointment.Status ==
+                                    AppointmentStatus.Confirmed),
 
-                            CancelledCount = group.Count(appointment =>
-                                appointment.Status == AppointmentStatus.Cancelled),
+                            CancelledCount =
+                                group.Count(appointment =>
+                                    appointment.Status ==
+                                    AppointmentStatus.Cancelled),
 
-                            CompletedCount = group.Count(appointment =>
-                                appointment.Status == AppointmentStatus.Completed)
+                            CompletedCount =
+                                group.Count(appointment =>
+                                    appointment.Status ==
+                                    AppointmentStatus.Completed)
                         })
                     .OrderBy(reportItem =>
                         reportItem.Date)
@@ -409,9 +423,10 @@ namespace HealthAxis.API.Services
             return report;
         }
 
-        private async Task<List<AppointmentReadDto>> MapAppointmentsWithNamesAsync(
-            List<Appointment> appointments,
-            CancellationToken ct)
+        private async Task<List<AppointmentReadDto>>
+            MapAppointmentsWithNamesAsync(
+                List<Appointment> appointments,
+                CancellationToken ct)
         {
             List<Doctor> doctors =
                 await _doctorRepository.GetAllAsync(ct);
@@ -426,28 +441,45 @@ namespace HealthAxis.API.Services
                     .Select(appointment =>
                     {
                         Doctor? doctor =
-                            doctors.FirstOrDefault(doctor =>
-                                doctor.DoctorId == appointment.DoctorId);
+                            doctors.FirstOrDefault(item =>
+                                item.DoctorId ==
+                                appointment.DoctorId);
 
                         Patient? patient =
-                            patients.FirstOrDefault(patient =>
-                                patient.PatientId == appointment.PatientId);
+                            patients.FirstOrDefault(item =>
+                                item.PatientId ==
+                                appointment.PatientId);
 
                         return new AppointmentReadDto
                         {
-                            AppointmentId = appointment.AppointmentId,
+                            AppointmentId =
+                                appointment.AppointmentId,
 
-                            PatientId = appointment.PatientId,
-                            PatientName = patient?.FullName ?? "Unknown Patient",
+                            PatientId =
+                                appointment.PatientId,
 
-                            DoctorId = appointment.DoctorId,
-                            DoctorName = doctor?.FullName ?? "Unknown Doctor",
+                            PatientName =
+                                patient?.FullName ??
+                                "Unknown Patient",
 
-                            ScheduledDate = appointment.ScheduledDate,
-                            TimeSlot = appointment.TimeSlot,
+                            DoctorId =
+                                appointment.DoctorId,
 
-                            Status = appointment.Status,
-                            CancellationReason = appointment.CancellationReason
+                            DoctorName =
+                                doctor?.FullName ??
+                                "Unknown Doctor",
+
+                            ScheduledDate =
+                                appointment.ScheduledDate,
+
+                            TimeSlot =
+                                appointment.TimeSlot,
+
+                            Status =
+                                appointment.Status,
+
+                            CancellationReason =
+                                appointment.CancellationReason
                         };
                     })
                     .ToList();
@@ -455,9 +487,10 @@ namespace HealthAxis.API.Services
             return result;
         }
 
-        private async Task<AppointmentReadDto> MapAppointmentWithNamesAsync(
-            Appointment appointment,
-            CancellationToken ct)
+        private async Task<AppointmentReadDto>
+            MapAppointmentWithNamesAsync(
+                Appointment appointment,
+                CancellationToken ct)
         {
             Doctor? doctor =
                 await _doctorRepository.GetByIdAsync(
@@ -471,19 +504,34 @@ namespace HealthAxis.API.Services
 
             return new AppointmentReadDto
             {
-                AppointmentId = appointment.AppointmentId,
+                AppointmentId =
+                    appointment.AppointmentId,
 
-                PatientId = appointment.PatientId,
-                PatientName = patient?.FullName ?? "Unknown Patient",
+                PatientId =
+                    appointment.PatientId,
 
-                DoctorId = appointment.DoctorId,
-                DoctorName = doctor?.FullName ?? "Unknown Doctor",
+                PatientName =
+                    patient?.FullName ??
+                    "Unknown Patient",
 
-                ScheduledDate = appointment.ScheduledDate,
-                TimeSlot = appointment.TimeSlot,
+                DoctorId =
+                    appointment.DoctorId,
 
-                Status = appointment.Status,
-                CancellationReason = appointment.CancellationReason
+                DoctorName =
+                    doctor?.FullName ??
+                    "Unknown Doctor",
+
+                ScheduledDate =
+                    appointment.ScheduledDate,
+
+                TimeSlot =
+                    appointment.TimeSlot,
+
+                Status =
+                    appointment.Status,
+
+                CancellationReason =
+                    appointment.CancellationReason
             };
         }
 

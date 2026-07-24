@@ -11,7 +11,7 @@ import { RegisterPatientRequest } from '../models/register-patient-request';
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly apiBaseUrl = 'https://localhost:7224/api';
+  private readonly apiBaseUrl = '/api';
 
   constructor(private readonly http: HttpClient) {}
 

@@ -3,8 +3,6 @@ using HealthAxis.API.DTOs.Doctors;
 using HealthAxis.API.Enums;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories;
-using Microsoft.Extensions.Caching.Distributed;
-using System.Text.Json;
 
 namespace HealthAxis.API.Services
 {
@@ -15,19 +13,16 @@ namespace HealthAxis.API.Services
         private readonly IDoctorRepository _doctorRepository;
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IMapper _mapper;
-        private readonly IDistributedCache _cache;
 
         public DoctorService(
             IDoctorRepository doctorRepository,
             IAppointmentRepository appointmentRepository,
-            IMapper mapper,
-            IDistributedCache cache)
+            IMapper mapper)
             : base(doctorRepository, mapper)
         {
             _doctorRepository = doctorRepository;
             _appointmentRepository = appointmentRepository;
             _mapper = mapper;
-            _cache = cache;
         }
 
         public async Task<DoctorAvailabilityDto?> GetAvailabilityAsync(
@@ -100,51 +95,6 @@ namespace HealthAxis.API.Services
             DateTime date,
             CancellationToken ct = default)
         {
-            string cacheKey =
-                $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}";
-
-            string? cachedSlots =
-                await _cache.GetStringAsync(
-                    cacheKey,
-                    ct);
-
-            if (!string.IsNullOrWhiteSpace(cachedSlots))
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-
-                Console.WriteLine();
-                Console.WriteLine("====================================");
-                Console.WriteLine("CACHE HIT - DOCTOR AVAILABILITY");
-                Console.WriteLine("====================================");
-                Console.WriteLine($"Doctor Id : {doctorId}");
-                Console.WriteLine($"Date      : {date:yyyy-MM-dd}");
-                Console.WriteLine($"Key       : {cacheKey}");
-                Console.WriteLine("Source    : Garnet Cache");
-                Console.WriteLine("====================================");
-                Console.WriteLine();
-
-                Console.ResetColor();
-
-                return JsonSerializer.Deserialize<List<string>>(
-                           cachedSlots)
-                       ?? new List<string>();
-            }
-
-            Console.ForegroundColor = ConsoleColor.Yellow;
-
-            Console.WriteLine();
-            Console.WriteLine("====================================");
-            Console.WriteLine("CACHE MISS - LOADING FROM DATABASE");
-            Console.WriteLine("====================================");
-            Console.WriteLine($"Doctor Id : {doctorId}");
-            Console.WriteLine($"Date      : {date:yyyy-MM-dd}");
-            Console.WriteLine($"Key       : {cacheKey}");
-            Console.WriteLine("Source    : SQL Server");
-            Console.WriteLine("====================================");
-            Console.WriteLine();
-
-            Console.ResetColor();
-
             Doctor? doctor =
                 await _doctorRepository.GetByIdAsync(
                     doctorId,
@@ -213,33 +163,6 @@ namespace HealthAxis.API.Services
                             !IsPastSlot(slot))
                         .ToList();
             }
-
-            await _cache.SetStringAsync(
-                cacheKey,
-                JsonSerializer.Serialize(
-                    availableSlots),
-                new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow =
-                        TimeSpan.FromMinutes(5)
-                },
-                ct);
-
-            Console.ForegroundColor = ConsoleColor.Cyan;
-
-            Console.WriteLine();
-            Console.WriteLine("====================================");
-            Console.WriteLine("CACHE STORED IN GARNET");
-            Console.WriteLine("====================================");
-            Console.WriteLine($"Doctor Id : {doctorId}");
-            Console.WriteLine($"Date      : {date:yyyy-MM-dd}");
-            Console.WriteLine($"Key       : {cacheKey}");
-            Console.WriteLine($"TTL       : 5 Minutes");
-            Console.WriteLine($"Slots     : {availableSlots.Count}");
-            Console.WriteLine("====================================");
-            Console.WriteLine();
-
-            Console.ResetColor();
 
             return availableSlots;
         }

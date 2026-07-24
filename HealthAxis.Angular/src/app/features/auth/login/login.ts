@@ -9,12 +9,15 @@ import {
 import { Router, RouterLink } from '@angular/router';
 
 import { LoginRequest } from '../../../core/models/login-request';
-import { AuthService } from '../../../core/services/auth.service';
 import { TokenService } from '../../../core/models/token.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink
+  ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
@@ -25,21 +28,20 @@ export class Login {
 
   loginForm: FormGroup;
 
-  private readonly blazorAdminUrl =
-    'https://localhost:7051/auth-callback';
-
   constructor(
     private readonly fb: FormBuilder,
     private readonly authService: AuthService,
     private readonly tokenService: TokenService,
-    private  readonly router: Router
+    private readonly router: Router
   ) {
     this.loginForm = this.fb.group({
       email: [
         '',
         [
           Validators.required,
-          Validators.pattern(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
+          Validators.pattern(
+            /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+          )
         ]
       ],
       password: [
@@ -58,7 +60,8 @@ export class Login {
   }
 
   togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+    this.showPassword =
+      !this.showPassword;
   }
 
   submitLogin(): void {
@@ -71,7 +74,8 @@ export class Login {
 
     this.isSubmitting = true;
 
-    const formValue = this.loginForm.value;
+    const formValue =
+      this.loginForm.value;
 
     const request: LoginRequest = {
       email: formValue.email ?? '',
@@ -79,13 +83,16 @@ export class Login {
     };
 
     this.authService.login(request).subscribe({
-      next: (response) => {
+      next: response => {
         this.tokenService.saveAuthData(response);
         this.redirectByRole(response);
       },
 
       error: (error: HttpErrorResponse) => {
-        console.log('Login error:', error);
+        console.log(
+          'Login error:',
+          error
+        );
 
         this.errorMessage =
           error.error?.message ??
@@ -100,7 +107,9 @@ export class Login {
     });
   }
 
-  private redirectByRole(response: any): void {
+  private redirectByRole(
+    response: any
+  ): void {
     const normalizedRole =
       response.role?.toLowerCase();
 
@@ -110,20 +119,30 @@ export class Login {
     }
 
     if (normalizedRole === 'patient') {
-      this.router.navigate(['/patient/dashboard']);
+      this.router.navigate([
+        '/patient/dashboard'
+      ]);
+
       return;
     }
 
     if (normalizedRole === 'doctor') {
-      this.router.navigate(['/doctor/dashboard']);
+      this.router.navigate([
+        '/doctor/dashboard'
+      ]);
+
       return;
     }
 
-    this.errorMessage = 'Unknown user role. Please contact support.';
+    this.errorMessage =
+      'Unknown user role. Please contact support.';
+
     this.tokenService.clearAuthData();
   }
 
-  private redirectAdminToBlazor(response: any): void {
+  private redirectAdminToBlazor(
+    response: any
+  ): void {
     const payload = {
       accessToken: response.accessToken,
       refreshToken: response.refreshToken,
@@ -135,10 +154,18 @@ export class Login {
 
     const encodedPayload =
       encodeURIComponent(
-        btoa(JSON.stringify(payload))
+        btoa(
+          JSON.stringify(payload)
+        )
       );
 
-    window.location.href =
-      `${this.blazorAdminUrl}#auth=${encodedPayload}`;
+    const blazorCallbackUrl =
+      `${window.location.origin}` +
+      `/blazor/auth-callback` +
+      `#auth=${encodedPayload}`;
+
+    window.location.assign(
+      blazorCallbackUrl
+    );
   }
 }

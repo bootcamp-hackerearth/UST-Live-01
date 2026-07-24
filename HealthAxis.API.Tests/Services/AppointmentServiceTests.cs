@@ -6,7 +6,6 @@ using HealthAxis.API.Models;
 using HealthAxis.API.Repositories;
 using HealthAxis.API.Services;
 using MassTransit;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -20,7 +19,6 @@ namespace HealthAxis.API.Tests.Services
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<IPublishEndpoint> _publishEndpointMock;
         private readonly Mock<ILogger<AppointmentService>> _loggerMock;
-        private readonly Mock<IDistributedCache> _cacheMock;
 
         private readonly AppointmentService _appointmentService;
 
@@ -44,18 +42,9 @@ namespace HealthAxis.API.Tests.Services
             _loggerMock =
                 new Mock<ILogger<AppointmentService>>();
 
-            _cacheMock =
-                new Mock<IDistributedCache>();
-
             _publishEndpointMock
                 .Setup(publisher => publisher.Publish(
                     It.IsAny<AppointmentBookedEvent>(),
-                    It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            _cacheMock
-                .Setup(cache => cache.RemoveAsync(
-                    It.IsAny<string>(),
                     It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
@@ -66,8 +55,7 @@ namespace HealthAxis.API.Tests.Services
                     _patientRepositoryMock.Object,
                     _mapperMock.Object,
                     _publishEndpointMock.Object,
-                    _loggerMock.Object,
-                    _cacheMock.Object);
+                    _loggerMock.Object);
         }
 
         [Fact]
@@ -374,12 +362,6 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()),
                 Times.Once);
 
-            _cacheMock.Verify(
-                cache => cache.RemoveAsync(
-                    $"doctors:{createDto.DoctorId}:availability:{createDto.ScheduledDate:yyyy-MM-dd}",
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-
             _publishEndpointMock.Verify(
                 publisher => publisher.Publish(
                     It.Is<AppointmentBookedEvent>(appointmentEvent =>
@@ -496,12 +478,6 @@ namespace HealthAxis.API.Tests.Services
                     It.Is<Appointment>(appointment =>
                         appointment.ScheduledDate == createDto.ScheduledDate.Date &&
                         appointment.Status == AppointmentStatus.Scheduled),
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-
-            _cacheMock.Verify(
-                cache => cache.RemoveAsync(
-                    $"doctors:{createDto.DoctorId}:availability:{createDto.ScheduledDate:yyyy-MM-dd}",
                     It.IsAny<CancellationToken>()),
                 Times.Once);
 

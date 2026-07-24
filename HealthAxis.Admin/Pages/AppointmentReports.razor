@@ -185,7 +185,7 @@ else
             await ClearLoginDataAsync();
 
             NavigationManager.NavigateTo(
-                "/login",
+                "login",
                 replace: true);
         }
         catch (Exception ex)
@@ -201,7 +201,7 @@ else
     private void NavigateToDetails(DateTime date)
     {
         NavigationManager.NavigateTo(
-            $"/appointment-reports/details/{date:yyyy-MM-dd}");
+            $"appointment-reports/details/{date:yyyy-MM-dd}");
     }
 
     private async Task PreviousPageAsync()

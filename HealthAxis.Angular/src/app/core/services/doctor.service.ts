@@ -13,7 +13,7 @@ import { Patient } from '../models/patient.model';
   providedIn: 'root'
 })
 export class DoctorService {
-  private readonly apiBaseUrl = 'https://localhost:7224/api';
+  private readonly apiBaseUrl = '/api';
 
   constructor(private readonly http: HttpClient) {}
 

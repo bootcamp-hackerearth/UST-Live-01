@@ -4,7 +4,6 @@ using HealthAxis.API.Enums;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories;
 using HealthAxis.API.Services;
-using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 
 namespace HealthAxis.API.Tests.Services
@@ -14,7 +13,6 @@ namespace HealthAxis.API.Tests.Services
         private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
         private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IDistributedCache> _cacheMock;
 
         private readonly DoctorService _doctorService;
 
@@ -29,35 +27,11 @@ namespace HealthAxis.API.Tests.Services
             _mapperMock =
                 new Mock<IMapper>();
 
-            _cacheMock =
-                new Mock<IDistributedCache>();
-
-            _cacheMock
-                .Setup(cache => cache.GetAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync((byte[]?)null);
-
-            _cacheMock
-                .Setup(cache => cache.SetAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<byte[]>(),
-                    It.IsAny<DistributedCacheEntryOptions>(),
-                    It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            _cacheMock
-                .Setup(cache => cache.RemoveAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
             _doctorService =
                 new DoctorService(
                     _doctorRepositoryMock.Object,
                     _appointmentRepositoryMock.Object,
-                    _mapperMock.Object,
-                    _cacheMock.Object);
+                    _mapperMock.Object);
         }
 
         [Fact]
@@ -471,6 +445,7 @@ namespace HealthAxis.API.Tests.Services
         [Fact]
         public async Task GetAvailableSlotsAsync_WhenNoAppointmentsExist_ReturnsAllSlots()
         {
+            // Arrange
             const int doctorId = 1;
             DateTime date = DateTime.Today.AddDays(1);
 
@@ -492,19 +467,18 @@ namespace HealthAxis.API.Tests.Services
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Appointment>());
 
+            // Act
             List<string> result =
                 await _doctorService.GetAvailableSlotsAsync(
                     doctorId,
                     date);
 
+            // Assert
             Assert.Equal(GetAllSlots().Count, result.Count);
             Assert.Equal(GetAllSlots(), result);
 
-            _cacheMock.Verify(
-                cache => cache.SetAsync(
-                    $"doctors:{doctorId}:availability:{date:yyyy-MM-dd}",
-                    It.IsAny<byte[]>(),
-                    It.IsAny<DistributedCacheEntryOptions>(),
+            _appointmentRepositoryMock.Verify(
+                repository => repository.GetAllAsync(
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }

@@ -4,15 +4,26 @@
 
 @inject NavigationManager NavigationManager
 
-<div style="padding: 40px; font-family: Segoe UI, Arial;">
+<div style="padding: 40px; font-family: 'Segoe UI', Arial, sans-serif;">
     Redirecting to HealthAxis login...
 </div>
 
 @code {
     protected override void OnInitialized()
     {
+        Uri applicationOrigin =
+            new(
+                new Uri(NavigationManager.BaseUri),
+                "/");
+
+        string angularLoginUrl =
+            new Uri(
+                applicationOrigin,
+                "angular/login")
+            .ToString();
+
         NavigationManager.NavigateTo(
-            "http://localhost:4200/login",
+            angularLoginUrl,
             forceLoad: true,
             replace: true);
     }
