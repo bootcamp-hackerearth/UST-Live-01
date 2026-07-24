@@ -44,7 +44,6 @@ namespace HealthAxisCore_Api.Tests.Services
                 _doctorRepositoryMock.Object,
                 _mapperMock.Object,
                 _publishEndpointMock.Object,
-                _distributedCacheMock.Object,
                 _dbContext);
         }
 

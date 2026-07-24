@@ -1,5 +1,7 @@
-﻿@page "/auth/external-login"
+﻿@page "/external-login"
+
 @attribute [AllowAnonymous]
+
 @layout PublicLayout
 
 @using Microsoft.AspNetCore.Authorization
@@ -9,7 +11,9 @@
 @inject AdminHandoffService AdminHandoffService
 @inject TokenService TokenService
 
-<h1 class="page-title">Signing you in...</h1>
+<h1 class="page-title">
+    Signing you in...
+</h1>
 
 <div class="table-card glass">
     @if (!string.IsNullOrWhiteSpace(errorMessage))
@@ -18,7 +22,9 @@
     }
     else
     {
-        <p>Please wait while HealthAxis verifies your admin session.</p>
+        <p>
+            Please wait while HealthAxis verifies your admin session.
+        </p>
     }
 </div>
 
@@ -27,7 +33,8 @@
 
     private bool hasStarted;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(
+        bool firstRender)
     {
         if (!firstRender || hasStarted)
         {
@@ -36,39 +43,94 @@
 
         hasStarted = true;
 
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-
-        var query = QueryHelpers.ParseQuery(uri.Query);
-
-        var code = query.TryGetValue("code", out var codeValue)
-            ? codeValue.ToString()
-            : string.Empty;
-
-        if (string.IsNullOrWhiteSpace(code))
+        try
         {
-            errorMessage = "Invalid admin handoff request. Handoff code is missing.";
-            StateHasChanged();
-            return;
+            var currentUri =
+                NavigationManager.ToAbsoluteUri(
+                    NavigationManager.Uri);
+
+            var query =
+                QueryHelpers.ParseQuery(
+                    currentUri.Query);
+
+            var code =
+                query.TryGetValue(
+                    "code",
+                    out var codeValue)
+                    ? codeValue.ToString()
+                    : string.Empty;
+
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                errorMessage =
+                    "Invalid admin handoff request. " +
+                    "The handoff code is missing.";
+
+                StateHasChanged();
+
+                return;
+            }
+
+            var exchangeResult =
+                await AdminHandoffService
+                    .ExchangeAndStoreAsync(code);
+
+            if (!exchangeResult.IsSuccess)
+            {
+                errorMessage =
+                    string.IsNullOrWhiteSpace(
+                        exchangeResult.ErrorMessage)
+                        ? "The admin handoff code could not be exchanged."
+                        : exchangeResult.ErrorMessage;
+
+                StateHasChanged();
+
+                return;
+            }
+
+            var savedToken =
+                await TokenService.GetAccessTokenAsync();
+
+            if (string.IsNullOrWhiteSpace(savedToken))
+            {
+                errorMessage =
+                    "The admin token was exchanged, but it was " +
+                    "not saved in browser storage.";
+
+                StateHasChanged();
+
+                return;
+            }
+
+            // CHANGED:
+            //
+            // Do not use "/dashboard".
+            //
+            // A leading slash navigates to the website root:
+            // /dashboard
+            //
+            // The Blazor application is hosted under /blazor/, so a
+            // base-relative route must be used:
+            // /blazor/dashboard
+            NavigationManager.NavigateTo(
+                "dashboard",
+                replace: true);
         }
-
-        var exchangeResult = await AdminHandoffService.ExchangeAndStoreAsync(code);
-
-        if (!exchangeResult.IsSuccess)
+        catch (HttpRequestException)
         {
-            errorMessage = exchangeResult.ErrorMessage;
+            errorMessage =
+                "HealthAxis could not connect to the admin " +
+                "authentication service.";
+
             StateHasChanged();
-            return;
         }
-
-        var savedToken = await TokenService.GetAccessTokenAsync();
-
-        if (string.IsNullOrWhiteSpace(savedToken))
+        catch (Exception)
         {
-            errorMessage = "Admin token was exchanged but was not saved in browser storage.";
-            StateHasChanged();
-            return;
-        }
+            errorMessage =
+                "An unexpected error occurred while completing " +
+                "the admin sign-in.";
 
-        NavigationManager.NavigateTo("/dashboard");
+            StateHasChanged();
+        }
     }
 }

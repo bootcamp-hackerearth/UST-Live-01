@@ -4,9 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthAxisCore_Api.Data
 {
-    public class AppDbContext : IdentityDbContext<ApplicationUser>
+    public class AppDbContext
+        : IdentityDbContext<ApplicationUser>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        public AppDbContext(
+            DbContextOptions<AppDbContext> options)
+            : base(options)
         {
         }
 
@@ -24,83 +27,182 @@ namespace HealthAxisCore_Api.Data
 
         public DbSet<Notification> Notifications { get; set; }
 
-        public DbSet<CancelledAppointmentArchive> CancelledAppointmentArchives { get; set; }
+        public DbSet<CancelledAppointmentArchive>
+            CancelledAppointmentArchives
+        { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(
+            ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
+            // ====================================================
+            // ApplicationUser relationships
+            // ====================================================
+
             builder.Entity<ApplicationUser>()
-                .HasOne(u => u.Patient)
+                .HasOne(user => user.Patient)
                 .WithOne()
-                .HasForeignKey<ApplicationUser>(u => u.PatientId)
+                .HasForeignKey<ApplicationUser>(
+                    user => user.PatientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<ApplicationUser>()
-                .HasOne(u => u.Doctor)
+                .HasOne(user => user.Doctor)
                 .WithOne()
-                .HasForeignKey<ApplicationUser>(u => u.DoctorId)
+                .HasForeignKey<ApplicationUser>(
+                    user => user.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<ApplicationUser>()
-                .HasMany(u => u.RefreshTokens)
-                .WithOne(r => r.ApplicationUser)
-                .HasForeignKey(r => r.ApplicationUserId)
+                .HasMany(user => user.RefreshTokens)
+                .WithOne(
+                    refreshToken =>
+                        refreshToken.ApplicationUser)
+                .HasForeignKey(
+                    refreshToken =>
+                        refreshToken.ApplicationUserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<Appointment>()
-                .HasOne(a => a.Patient)
-                .WithMany()
-                .HasForeignKey(a => a.PatientId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // ====================================================
+            // Appointment relationships
+            // ====================================================
 
             builder.Entity<Appointment>()
-                .HasOne(a => a.Doctor)
+                .HasOne(appointment => appointment.Patient)
                 .WithMany()
-                .HasForeignKey(a => a.DoctorId)
+                .HasForeignKey(
+                    appointment => appointment.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Appointment>()
+                .HasOne(appointment => appointment.Doctor)
+                .WithMany()
+                .HasForeignKey(
+                    appointment => appointment.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ====================================================
+            // Appointment field configuration
+            // ====================================================
+
+            // CHANGED:
+            // This matches the deployed SQL Server column:
+            //
+            // TimeSlot NVARCHAR(20) NOT NULL
+            //
+            // Without HasMaxLength, EF Core would treat the string
+            // as NVARCHAR(MAX), which cannot be used as an index key.
+            builder.Entity<Appointment>()
+                .Property(appointment => appointment.TimeSlot)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            // ====================================================
+            // Appointment unique indexes
+            // ====================================================
+
+            // CHANGED:
+            // Prevents a doctor from having more than one
+            // appointment on the same date and time slot.
+            //
+            // The explicit database name matches the index already
+            // created in the deployed SQL Server database.
+            builder.Entity<Appointment>()
+                .HasIndex(appointment => new
+                {
+                    appointment.DoctorId,
+                    appointment.ScheduledDate,
+                    appointment.TimeSlot
+                })
+                .IsUnique()
+                .HasDatabaseName(
+                    "UX_Appointments_DoctorId_ScheduledDate_TimeSlot");
+
+            // CHANGED:
+            // Prevents a patient from having more than one
+            // appointment on the same date and time slot.
+            //
+            // The explicit database name matches the index already
+            // created in the deployed SQL Server database.
+            builder.Entity<Appointment>()
+                .HasIndex(appointment => new
+                {
+                    appointment.PatientId,
+                    appointment.ScheduledDate,
+                    appointment.TimeSlot
+                })
+                .IsUnique()
+                .HasDatabaseName(
+                    "UX_Appointments_PatientId_ScheduledDate_TimeSlot");
+
+            // ====================================================
+            // HealthRecord relationships
+            // ====================================================
+
+            builder.Entity<HealthRecord>()
+                .HasOne(healthRecord => healthRecord.Patient)
+                .WithMany()
+                .HasForeignKey(
+                    healthRecord => healthRecord.PatientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<HealthRecord>()
-                .HasOne(h => h.Patient)
+                .HasOne(healthRecord => healthRecord.Doctor)
                 .WithMany()
-                .HasForeignKey(h => h.PatientId)
+                .HasForeignKey(
+                    healthRecord => healthRecord.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<HealthRecord>()
-                .HasOne(h => h.Doctor)
+                .HasOne(healthRecord => healthRecord.Appointment)
                 .WithMany()
-                .HasForeignKey(h => h.DoctorId)
+                .HasForeignKey(
+                    healthRecord =>
+                        healthRecord.AppointmentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<HealthRecord>()
-                .HasOne(h => h.Appointment)
+            // ====================================================
+            // Notification relationships
+            // ====================================================
+
+            builder.Entity<Notification>()
+                .HasOne(notification => notification.Doctor)
                 .WithMany()
-                .HasForeignKey(h => h.AppointmentId)
+                .HasForeignKey(
+                    notification => notification.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Notification>()
-                .HasOne(n => n.Doctor)
+                .HasOne(
+                    notification =>
+                        notification.Appointment)
                 .WithMany()
-                .HasForeignKey(n => n.DoctorId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Notification>()
-                .HasOne(n => n.Appointment)
-                .WithMany()
-                .HasForeignKey(n => n.AppointmentId)
+                .HasForeignKey(
+                    notification =>
+                        notification.AppointmentId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            builder.Entity<CancelledAppointmentArchive>()
-                .HasIndex(a => a.OriginalAppointmentId);
+            // ====================================================
+            // Cancelled appointment archive indexes
+            // ====================================================
 
             builder.Entity<CancelledAppointmentArchive>()
-                .HasIndex(a => a.PatientId);
+                .HasIndex(
+                    archive =>
+                        archive.OriginalAppointmentId);
 
             builder.Entity<CancelledAppointmentArchive>()
-                .HasIndex(a => a.DoctorId);
+                .HasIndex(
+                    archive => archive.PatientId);
 
             builder.Entity<CancelledAppointmentArchive>()
-                .HasIndex(a => a.ScheduledDate);
+                .HasIndex(
+                    archive => archive.DoctorId);
+
+            builder.Entity<CancelledAppointmentArchive>()
+                .HasIndex(
+                    archive => archive.ScheduledDate);
         }
     }
 }

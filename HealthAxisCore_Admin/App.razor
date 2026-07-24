@@ -13,7 +13,22 @@
                     .Trim('/');
             }
 
-            @if (currentPath.StartsWith("auth/external-login", StringComparison.OrdinalIgnoreCase))
+            @*
+                CHANGED:
+
+                Angular redirects an authenticated admin to:
+
+                /blazor/external-login?code=...
+
+                Because the Blazor base path is /blazor/, the base-relative
+                route seen here is:
+
+                external-login
+            *@
+
+            @if (currentPath.StartsWith(
+                "external-login",
+                StringComparison.OrdinalIgnoreCase))
             {
                 <RouteView RouteData="@routeData"
                            DefaultLayout="@typeof(PublicLayout)" />
@@ -22,6 +37,7 @@
             {
                 <AuthorizeRouteView RouteData="@routeData"
                                     DefaultLayout="@typeof(MainLayout)">
+
                     <NotAuthorized>
                         <RedirectToLogin />
                     </NotAuthorized>
@@ -29,6 +45,7 @@
                     <Authorizing>
                         <p>Checking authorization...</p>
                     </Authorizing>
+
                 </AuthorizeRouteView>
             }
 
@@ -38,7 +55,9 @@
 
         <NotFound>
             <LayoutView Layout="@typeof(MainLayout)">
-                <h1 class="page-title">Page not found</h1>
+                <h1 class="page-title">
+                    Page not found
+                </h1>
             </LayoutView>
         </NotFound>
     </Router>

@@ -164,13 +164,18 @@ namespace HealthAxisCore_Api.Migrations
 
                     b.Property<string>("TimeSlot")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("AppointmentId");
 
-                    b.HasIndex("DoctorId");
+                    b.HasIndex("DoctorId", "ScheduledDate", "TimeSlot")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Appointments_DoctorId_ScheduledDate_TimeSlot");
 
-                    b.HasIndex("PatientId");
+                    b.HasIndex("PatientId", "ScheduledDate", "TimeSlot")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Appointments_PatientId_ScheduledDate_TimeSlot");
 
                     b.ToTable("Appointments");
                 });

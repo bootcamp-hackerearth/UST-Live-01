@@ -20,6 +20,9 @@ export class AuthService {
   private readonly refreshTokenKey = 'healthaxis_refresh_token';
   private readonly currentUserKey = 'healthaxis_user';
 
+  // CHANGED:
+  // environment.apiBaseUrl is "/api".
+  // Therefore, this becomes "/api/auth".
   private readonly apiUrl = `${environment.apiBaseUrl}/auth`;
 
   private readonly currentUserSignal = signal<CurrentUser | null>(
@@ -35,7 +38,8 @@ export class AuthService {
   readonly accessToken = this.accessTokenSignal.asReadonly();
 
   readonly isAuthenticated = computed(() =>
-    !!this.accessTokenSignal() && !!this.currentUserSignal()
+    !!this.accessTokenSignal() &&
+    !!this.currentUserSignal()
   );
 
   readonly currentRole = computed(() =>
@@ -59,7 +63,10 @@ export class AuthService {
 
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.httpClient
-      .post<AuthResponse>(`${this.apiUrl}/login`, request)
+      .post<AuthResponse>(
+        `${this.apiUrl}/login`,
+        request
+      )
       .pipe(
         tap(response => {
           this.saveSession(response);
@@ -68,7 +75,59 @@ export class AuthService {
       );
   }
 
-  changePassword(request: ChangePasswordRequest): Observable<string> {
+  registerPatient(
+    request: RegisterPatientRequest
+  ): Observable<AuthResponse> {
+    return this.httpClient
+      .post<AuthResponse>(
+        `${this.apiUrl}/register`,
+        request
+      )
+      .pipe(
+        tap(response => {
+          this.saveSession(response);
+          this.redirectByRole(response.role);
+        })
+      );
+  }
+
+  changeFirstLoginPassword(
+    request: ChangeFirstLoginPasswordRequest
+  ): Observable<string> {
+    return this.httpClient
+      .post(
+        `${this.apiUrl}/change-first-login-password`,
+        request,
+        {
+          responseType: 'text'
+        }
+      )
+      .pipe(
+        tap(() => {
+          const currentUser = this.currentUserSignal();
+
+          if (!currentUser) {
+            return;
+          }
+
+          const updatedUser: CurrentUser = {
+            ...currentUser,
+            firstLogin: false
+          };
+
+          localStorage.setItem(
+            this.currentUserKey,
+            JSON.stringify(updatedUser)
+          );
+
+          this.currentUserSignal.set(updatedUser);
+        })
+      );
+  }
+
+  changePassword(
+    request: ChangePasswordRequest
+  ): Observable<string> {
     return this.httpClient.post(
       `${this.apiUrl}/change-password`,
       request,
@@ -76,17 +135,6 @@ export class AuthService {
         responseType: 'text'
       }
     );
-  }
-
-  registerPatient(request: RegisterPatientRequest): Observable<AuthResponse> {
-    return this.httpClient
-      .post<AuthResponse>(`${this.apiUrl}/register`, request)
-      .pipe(
-        tap(response => {
-          this.saveSession(response);
-          this.redirectByRole(response.role);
-        })
-      );
   }
 
   logout(): void {
@@ -145,58 +193,65 @@ export class AuthService {
   }
 
   getErrorMessage(error: unknown): string {
-    const fallbackMessage = 'Something went wrong. Please try again.';
+    const fallbackMessage =
+      'Something went wrong. Please try again.';
 
     if (!error || typeof error !== 'object') {
       return fallbackMessage;
     }
 
     const httpError = error as {
-      error?: {
+      status?: number;
+      message?: string;
+      error?:
+      | string
+      | {
         message?: string;
         detail?: string;
         title?: string;
+        errors?: Record<string, string[]>;
       };
-      message?: string;
     };
 
-    return httpError.error?.message ||
-      httpError.error?.detail ||
-      httpError.error?.title ||
-      httpError.message ||
-      fallbackMessage;
-  }
+    if (
+      typeof httpError.error === 'string' &&
+      httpError.error.trim().length > 0
+    ) {
+      return httpError.error;
+    }
 
-  changeFirstLoginPassword(
-    request: ChangeFirstLoginPasswordRequest
-  ): Observable<string> {
-    return this.httpClient.post(
-      `${this.apiUrl}/change-first-login-password`,
-      request,
-      {
-        responseType: 'text'
+    if (
+      httpError.error &&
+      typeof httpError.error === 'object'
+    ) {
+      if (httpError.error.message) {
+        return httpError.error.message;
       }
-    ).pipe(
-      tap(() => {
-        const currentUser = this.currentUserSignal();
 
-        if (!currentUser) {
-          return;
+      if (httpError.error.detail) {
+        return httpError.error.detail;
+      }
+
+      if (httpError.error.title) {
+        return httpError.error.title;
+      }
+
+      if (httpError.error.errors) {
+        const validationMessages = Object.values(
+          httpError.error.errors
+        ).flat();
+
+        if (validationMessages.length > 0) {
+          return validationMessages.join(' ');
         }
+      }
+    }
 
-        const updatedUser: CurrentUser = {
-          ...currentUser,
-          firstLogin: false
-        };
+    if (httpError.status === 0) {
+      return 'Unable to connect to the HealthAxis server. Please try again.';
+    }
 
-        localStorage.setItem(
-          this.currentUserKey,
-          JSON.stringify(updatedUser)
-        );
-
-        this.currentUserSignal.set(updatedUser);
-      })
-    );
+    return httpError.message || fallbackMessage;
   }
 
   private saveSession(response: AuthResponse): void {
@@ -210,22 +265,40 @@ export class AuthService {
       firstLogin: response.firstLogin
     };
 
-    localStorage.setItem(this.accessTokenKey, response.accessToken);
-    localStorage.setItem(this.refreshTokenKey, response.refreshToken);
-    localStorage.setItem(this.currentUserKey, JSON.stringify(currentUser));
+    localStorage.setItem(
+      this.accessTokenKey,
+      response.accessToken
+    );
+
+    localStorage.setItem(
+      this.refreshTokenKey,
+      response.refreshToken
+    );
+
+    localStorage.setItem(
+      this.currentUserKey,
+      JSON.stringify(currentUser)
+    );
 
     this.accessTokenSignal.set(response.accessToken);
     this.currentUserSignal.set(currentUser);
   }
 
   private loadCurrentUserFromStorage(): CurrentUser | null {
-    const userJson = localStorage.getItem(this.currentUserKey);
+    const userJson = localStorage.getItem(
+      this.currentUserKey
+    );
 
     if (!userJson) {
       return null;
     }
 
-    return JSON.parse(userJson) as CurrentUser;
+    try {
+      return JSON.parse(userJson) as CurrentUser;
+    } catch {
+      localStorage.removeItem(this.currentUserKey);
+      return null;
+    }
   }
 
   private redirectAdminToBlazor(): void {
@@ -239,7 +312,11 @@ export class AuthService {
           `${environment.adminAppUrl}?${queryParams.toString()}`;
       },
       error: error => {
-        console.error('Admin handoff create failed:', error);
+        console.error(
+          'Admin handoff create failed:',
+          error
+        );
+
         this.router.navigate(['/forbidden']);
       }
     });

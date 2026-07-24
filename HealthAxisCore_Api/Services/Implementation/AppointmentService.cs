@@ -9,7 +9,6 @@ using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Interfaces;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using Serilog;
 using System.Globalization;
 using System.Security.Claims;
@@ -21,7 +20,6 @@ namespace HealthAxisCore_Api.Services.Implementation
         IDoctorRepository doctorRepository,
         IMapper mapper,
         IPublishEndpoint publishEndpoint,
-        IDistributedCache distributedCache,
         AppDbContext dbContext
     ) : IAppointmentService
     {
@@ -142,20 +140,20 @@ namespace HealthAxisCore_Api.Services.Implementation
                 appointment,
                 ct);
 
-            var availabilityCacheKey =
-                BuildDoctorAvailabilityCacheKey(
-                    savedAppointment.DoctorId,
-                    savedAppointment.ScheduledDate);
-
-            await distributedCache.RemoveAsync(
-                availabilityCacheKey,
-                ct);
-
-            Logger.Debug(
-                "[CACHE-INVALIDATE] Doctor availability cache removed | DoctorId={DoctorId} | Date={Date} | Key={CacheKey}",
-                savedAppointment.DoctorId,
-                savedAppointment.ScheduledDate.Date.ToString("yyyy-MM-dd"),
-                availabilityCacheKey);
+            /*
+             * Redis/Garnet caching disabled.
+             *
+             * Previously this method removed the doctor availability cache key after booking:
+             *
+             * var availabilityCacheKey =
+             *     BuildDoctorAvailabilityCacheKey(
+             *         savedAppointment.DoctorId,
+             *         savedAppointment.ScheduledDate);
+             *
+             * await distributedCache.RemoveAsync(
+             *     availabilityCacheKey,
+             *     ct);
+             */
 
             var savedAppointmentDetails =
                 await appointmentRepository.GetDetailsAsync(
@@ -345,26 +343,31 @@ namespace HealthAxisCore_Api.Services.Implementation
                 StatusCancelled,
                 ct);
 
-            var availabilityCacheKey =
-                BuildDoctorAvailabilityCacheKey(
-                    appointment.DoctorId,
-                    appointment.ScheduledDate);
-
-            await distributedCache.RemoveAsync(
-                availabilityCacheKey,
-                ct);
+            /*
+             * Redis/Garnet caching disabled.
+             *
+             * Previously this method removed the doctor availability cache key after cancellation:
+             *
+             * var availabilityCacheKey =
+             *     BuildDoctorAvailabilityCacheKey(
+             *         appointment.DoctorId,
+             *         appointment.ScheduledDate);
+             *
+             * await distributedCache.RemoveAsync(
+             *     availabilityCacheKey,
+             *     ct);
+             */
 
             dbContext.Appointments.Remove(appointment);
 
             await dbContext.SaveChangesAsync(ct);
 
             Logger.Warning(
-                "[APPOINTMENT-ARCHIVED] Cancelled appointment moved to archive and removed from active table | AppointmentId={AppointmentId} | PatientId={PatientId} | DoctorId={DoctorId} | CancelledBy={CancelledByRole} | CacheKey={CacheKey}",
+                "[APPOINTMENT-ARCHIVED] Cancelled appointment moved to archive and removed from active table | AppointmentId={AppointmentId} | PatientId={PatientId} | DoctorId={DoctorId} | CancelledBy={CancelledByRole}",
                 appointment.AppointmentId,
                 appointment.PatientId,
                 appointment.DoctorId,
-                cancelledByRole,
-                availabilityCacheKey);
+                cancelledByRole);
 
             return cancelledDto;
         }
@@ -500,13 +503,6 @@ namespace HealthAxisCore_Api.Services.Implementation
                 throw new InvalidException(
                     "Appointments must be booked at least 2 hours before the scheduled time.");
             }
-        }
-
-        private static string BuildDoctorAvailabilityCacheKey(
-            int doctorId,
-            DateTime scheduledDate)
-        {
-            return $"doctors:{doctorId}:availability:{scheduledDate:yyyy-MM-dd}";
         }
 
         private static void EnsureWithinDoctorWorkingHours(string timeSlot)

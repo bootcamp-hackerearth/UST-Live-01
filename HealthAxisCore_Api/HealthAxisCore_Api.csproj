@@ -8,8 +8,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Remove="logs\**" />
+		<Content Remove="logs\**" />
+		<EmbeddedResource Remove="logs\**" />
+		<None Remove="logs\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="16.1.1" />
-		<PackageReference Include="Elastic.Serilog.Sinks" Version="9.0.0" />
 		<PackageReference Include="MassTransit" Version="8.5.10" />
 		<PackageReference Include="MassTransit.RabbitMQ" Version="8.5.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
@@ -42,7 +48,7 @@
 			<SonarQubeExclude>true</SonarQubeExclude>
 		</Compile>
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.coverage.exclusions">
 			<Value>
@@ -75,8 +81,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="logs\" />
 		<Folder Include="Migrations\" />
+		<Folder Include="wwwroot\angular\" />
+		<Folder Include="wwwroot\blazor\" />
 	</ItemGroup>
 
 </Project>

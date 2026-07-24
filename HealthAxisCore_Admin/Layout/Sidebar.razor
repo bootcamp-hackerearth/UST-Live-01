@@ -9,25 +9,25 @@
     </div>
 
     <nav>
-        <NavLink href="/dashboard"
+        <NavLink href="dashboard"
                  class="sidebar-link"
                  activeClass="active">
             Dashboard
         </NavLink>
 
-        <NavLink href="/doctors"
+        <NavLink href="doctors"
                  class="sidebar-link"
                  activeClass="active">
             Doctors
         </NavLink>
 
-        <NavLink href="/users"
+        <NavLink href="users"
                  class="sidebar-link"
                  activeClass="active">
             Users
         </NavLink>
 
-        <NavLink href="/appointment-reports"
+        <NavLink href="appointment-reports"
                  class="sidebar-link"
                  activeClass="active">
             Reports
@@ -76,6 +76,9 @@
     {
         await AuthService.LogoutAsync();
 
-        NavigationManager.NavigateTo("/login", true);
+        NavigationManager.NavigateTo(
+           "/angular/login",
+           forceLoad: true,
+           replace: true);
     }
 }

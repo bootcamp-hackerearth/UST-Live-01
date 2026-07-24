@@ -75,9 +75,23 @@ export class Login {
       return;
     }
 
+    // CHANGED:
+    // Remove accidental leading/trailing spaces and normalize the email.
+    const email = String(
+      this.loginForm.value.email ?? ''
+    )
+      .trim()
+      .toLowerCase();
+
+    // Do not trim passwords because spaces may be legitimate password
+    // characters.
+    const password = String(
+      this.loginForm.value.password ?? ''
+    );
+
     const request: LoginRequest = {
-      email: this.loginForm.value.email,
-      password: this.loginForm.value.password
+      email,
+      password
     };
 
     this.isLoading.set(true);
@@ -88,6 +102,7 @@ export class Login {
       },
       error: error => {
         this.isLoading.set(false);
+
         this.errorMessage.set(
           this.authService.getErrorMessage(error)
         );
