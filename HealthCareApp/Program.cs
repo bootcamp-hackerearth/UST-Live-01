@@ -1,24 +1,31 @@
-using HealthCareApp.BackgroundServices;
+﻿using HealthCareApp.BackgroundServices;
+using HealthCareApp.Consumers;
 using HealthCareApp.Data;
 using HealthCareApp.Mapping;
 using HealthCareApp.Middleware;
+using HealthCareApp.Options;
 using HealthCareApp.Repository.Impl;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Services;
 using HealthCareApp.Services.Impl;
 using HealthCareApp.Services.Interface;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
-using MassTransit;
-using HealthCareApp.Consumers;
 using System.Text;
-using HealthCareApp.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsProduction() &&
+    string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
+{
+    builder.WebHost.UseUrls("http://+:5000");
+}
 
 #region Serilog
 
@@ -38,8 +45,16 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
+        var rabbitMqHost =
+            builder.Configuration["RabbitMQ:Host"] ?? "localhost";
+
+        var rabbitMqPort =
+            builder.Configuration.GetValue<ushort>("RabbitMQ:Port", 5672);
+
         cfg.Host(
-            builder.Configuration["RabbitMQ:Host"],
+            rabbitMqHost,
+            rabbitMqPort,
+            "/",
             h =>
             {
                 h.Username(
@@ -63,18 +78,9 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
-builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection("Garnet"));
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    var garnetOptions = builder.Configuration.GetSection("Garnet").Get<GarnetOptions>() ?? new GarnetOptions();
-    options.Configuration = garnetOptions?.ConnectionString ?? "localhost:6379";
-    options.InstanceName = garnetOptions?.InstanceName ?? "HealthCareApp:";
-});
-
 builder.Services.Configure<NotificationCleanupOptions>(
     builder.Configuration.GetSection("NotificationCleanup"));
 
-// Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -82,13 +88,12 @@ builder.Services.AddControllers()
             System.Text.Json.JsonNamingPolicy.CamelCase;
     });
 
-// Register HealthAxisDbContext with SQL Server.
+builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddDbContext<HealthAxisDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DbCon")
-    ));
+        builder.Configuration.GetConnectionString("DbCon")));
 
-// Register ASP.NET Core Identity.
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.User.RequireUniqueEmail = true;
@@ -102,7 +107,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<HealthAxisDbContext>()
 .AddDefaultTokenProviders();
 
-// Register JWT Authentication.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -120,8 +124,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwt["Key"]!)
-            ),
+                Encoding.UTF8.GetBytes(jwt["Key"]!)),
 
             ClockSkew = TimeSpan.Zero
         };
@@ -129,7 +132,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// Swagger/OpenAPI.
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
@@ -155,40 +157,33 @@ builder.Services.AddSwaggerGen(options =>
         });
 });
 
-// Register DbContext for generic repository constructor.
 builder.Services.AddScoped<DbContext, HealthAxisDbContext>();
 
-// Register AutoMapper.
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MappingProfile>();
 });
 
-// Register generic repository.
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-// Register entity-specific repositories.
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 
-// Register services.
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
-builder.Services.AddScoped<ICacheService,CacheService>();
+builder.Services.AddScoped<ICacheService, NoOpCacheService>();
 builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
 builder.Services.AddScoped<IPatientNotificationService, PatientNotificationService>();
 
-// Register background services.
 builder.Services.AddHostedService<HeartbeatBackgroundService>();
 builder.Services.AddHostedService<NotificationCleanupBackgroundService>();
 builder.Services.AddHostedService<OutboxPublisherBackgroundService>();
 
-// Register Global Exception Handler.
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
@@ -212,35 +207,54 @@ var app = builder.Build();
 
 #region Seed Roles and Admin
 
-using (var scope = app.Services.CreateScope())
+var seedDataEnabled =
+    builder.Configuration.GetValue("SeedData:Enabled", true);
+
+var failStartupOnSeedError =
+    builder.Configuration.GetValue("SeedData:FailStartupOnError", true);
+
+if (seedDataEnabled)
 {
-    var roleManager =
-        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    try
+    {
+        using var scope = app.Services.CreateScope();
 
-    var userManager =
-        scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+        var roleManager =
+            scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    await RoleSeeder.SeedRoleAsync(roleManager);
+        var userManager =
+            scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-    await AdminSeeder.SeedAdminAsync(
-        userManager,
-        roleManager,
-        builder.Configuration);
+        await RoleSeeder.SeedRoleAsync(roleManager);
+
+        await AdminSeeder.SeedAdminAsync(
+            userManager,
+            roleManager,
+            builder.Configuration);
+
+        Log.Information("Database role/admin seeding completed successfully.");
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Database role/admin seeding failed during application startup.");
+
+        if (failStartupOnSeedError)
+        {
+            throw;
+        }
+    }
 }
 
 #endregion
 
-// Global exception handler middleware.
 app.UseExceptionHandler();
 
-// Serilog request logging.
 app.UseSerilogRequestLogging(options =>
 {
     options.MessageTemplate =
         "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
 });
 
-// Configure HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -249,6 +263,38 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/admin", out var remainingPath))
+    {
+        var targetPath = "/blazor/admin" + remainingPath;
+
+        var queryString = context.Request.QueryString.HasValue
+            ? context.Request.QueryString.Value
+            : string.Empty;
+
+        context.Response.Redirect(targetPath + queryString);
+
+        return;
+    }
+
+    await next();
+});
+
+var contentTypeProvider = new FileExtensionContentTypeProvider();
+
+contentTypeProvider.Mappings[".data"] = "application/octet-stream";
+contentTypeProvider.Mappings[".wasm"] = "application/wasm";
+contentTypeProvider.Mappings[".blat"] = "application/octet-stream";
+contentTypeProvider.Mappings[".dll"] = "application/octet-stream";
+contentTypeProvider.Mappings[".dat"] = "application/octet-stream";
+contentTypeProvider.Mappings[".json"] = "application/json";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = contentTypeProvider
+});
+
 app.UseCors(ClientCorsPolicy);
 
 app.UseAuthentication();
@@ -256,6 +302,16 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet("/", () => Results.Redirect("/angular"));
+
+app.MapFallbackToFile(
+    "/angular/{*path:nonfile}",
+    "angular/index.html");
+
+app.MapFallbackToFile(
+    "/blazor/{*path:nonfile}",
+    "blazor/index.html");
 
 try
 {

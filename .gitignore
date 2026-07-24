@@ -4,16 +4,17 @@
 *.suo
 *.userosscache
 *.sln.docstates
-
+ 
 # Build artifacts
 **/bin/
 **/obj/
 packages/
-
+artifacts/
+ 
 # Logs
 Logs/
 *.log
-
+ 
 # Test results and coverage
 TestResults/
 .TestResults/
@@ -21,20 +22,63 @@ coverage.xml
 *.coverage
 *.coveragexml
 coverage.cobertura.xml
-
+ 
 # SonarQube / SonarScanner
 .sonar/
 .sonarqube/
 sonar-project.properties.user
 .scannerwork/
-
+ 
 # Local caches
 *.lscache
-
-# .NET local tool manifest if you do not want to share local tools
+ 
+# .NET local tools
 dotnet-tools.json
-
+ 
 # Node / Angular
 node_modules/
 dist/
 .angular/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+ 
+# Angular/Blazor generated frontend bundles copied into API wwwroot
+HealthCareApp/wwwroot/angular/
+HealthCareApp/wwwroot/blazor/
+ 
+# Accidental Angular root build output inside API wwwroot
+HealthCareApp/wwwroot/3rdpartylicenses.txt
+HealthCareApp/wwwroot/chunk-*.js
+HealthCareApp/wwwroot/main-*.js
+HealthCareApp/wwwroot/polyfills-*.js
+HealthCareApp/wwwroot/styles-*.css
+HealthCareApp/wwwroot/index.html
+HealthCareApp/wwwroot/prerendered-routes.json
+ 
+# Environment / local secret files
+.env
+.env.*
+*.local
+*.local.json
+**/appsettings.Local.json
+**/appsettings.*.local.json
+ 
+# Optional: ignore local development settings if it contains real passwords
+# Uncomment only if appsettings.Development.json has secrets and should not be committed
+# **/appsettings.Development.json
+ 
+# AWS / deployment temporary files
+.aws/
+.elasticbeanstalk/
+*.zip
+*.publishsettings
+ 
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+ 
+# Editor files
+.vscode/.history/
+.idea/

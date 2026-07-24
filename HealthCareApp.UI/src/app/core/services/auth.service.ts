@@ -40,7 +40,7 @@ interface JwtPayload {
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly apiUrl = 'https://localhost:7250/api/Auth';
+  private readonly apiUrl = '/api/Auth';
 
   private readonly tokenKey = 'healthaxis_token';
   private readonly roleKey = 'healthaxis_role';

@@ -48,7 +48,7 @@ interface ApiAppointmentDto {
   providedIn: 'root'
 })
 export class AppointmentApiService {
-  private readonly apiUrl = 'https://localhost:7250/api/Appointments';
+  private readonly apiUrl = '/api/Appointments';
 
   constructor(private readonly http: HttpClient) {
   }
@@ -215,7 +215,6 @@ export class AppointmentApiService {
     if (!dateValue) {
       return '';
     }
-    
 
     return dateValue.split('T')[0];
   }

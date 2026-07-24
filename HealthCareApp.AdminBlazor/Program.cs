@@ -13,18 +13,18 @@ builder.RootComponents.Add<App>("#app");
 
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
-
-if (string.IsNullOrWhiteSpace(apiBaseUrl))
-{
-    throw new InvalidOperationException("ApiSettings:BaseUrl is missing from appsettings.json.");
-}
-
 builder.Services.AddScoped(_ =>
-    new HttpClient
+{
+    var applicationBaseUri = new Uri(builder.HostEnvironment.BaseAddress);
+
+    var apiBaseUri = new Uri(
+        applicationBaseUri.GetLeftPart(UriPartial.Authority) + "/");
+
+    return new HttpClient
     {
-        BaseAddress = new Uri(apiBaseUrl)
-    });
+        BaseAddress = apiBaseUri
+    };
+});
 
 builder.Services.AddAuthorizationCore();
 

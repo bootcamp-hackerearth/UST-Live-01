@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-
 import {
-  DoctorAvailabilityResponseDto,ApiDoctorAvailabilityResponseDto,DoctorDto
+  DoctorAvailabilityResponseDto,
+  ApiDoctorAvailabilityResponseDto,
+  DoctorDto
 } from '../../shared/models/doctor.models';
 
 export interface SlotAvailabilityDto {
@@ -34,7 +35,7 @@ interface ApiSlotAvailabilityDto {
   providedIn: 'root'
 })
 export class DoctorApiService {
-  private readonly apiUrl = 'https://localhost:7250/api/Doctors';
+  private readonly apiUrl = '/api/Doctors';
 
   constructor(private readonly http: HttpClient) {
   }
@@ -66,35 +67,35 @@ export class DoctorApiService {
   }
 
   getDoctorAvailability(
-  doctorId: number,
-  date?: string
-): Observable<DoctorAvailabilityResponseDto> {
-  const url = date
-    ? `${this.apiUrl}/${doctorId}/availability?date=${date}`
-    : `${this.apiUrl}/${doctorId}/availability`;
+    doctorId: number,
+    date?: string
+  ): Observable<DoctorAvailabilityResponseDto> {
+    const url = date
+      ? `${this.apiUrl}/${doctorId}/availability?date=${date}`
+      : `${this.apiUrl}/${doctorId}/availability`;
 
-  return this.http
-    .get<ApiDoctorAvailabilityResponseDto>(url)
-    .pipe(
-      map((response: ApiDoctorAvailabilityResponseDto) => {
-        const apiSlots = response.slots ?? response.Slots ?? [];
+    return this.http
+      .get<ApiDoctorAvailabilityResponseDto>(url)
+      .pipe(
+        map((response: ApiDoctorAvailabilityResponseDto) => {
+          const apiSlots = response.slots ?? response.Slots ?? [];
 
-        return {
-          doctorId: response.doctorId ?? response.DoctorId ?? doctorId,
-          date: response.date ?? response.Date ?? date ?? '',
-          isDoctorOnLeave:
-            response.isDoctorOnLeave ??
-            response.IsDoctorOnLeave ??
-            false,
-          message: response.message ?? response.Message ?? '',
-          slots: apiSlots.map((slot: ApiSlotAvailabilityDto) => ({
-            timeSlot: slot.timeSlot ?? slot.TimeSlot ?? '',
-            isBooked: slot.isBooked ?? slot.IsBooked ?? false
-          }))
-        };
-      })
-    );
-}
+          return {
+            doctorId: response.doctorId ?? response.DoctorId ?? doctorId,
+            date: response.date ?? response.Date ?? date ?? '',
+            isDoctorOnLeave:
+              response.isDoctorOnLeave ??
+              response.IsDoctorOnLeave ??
+              false,
+            message: response.message ?? response.Message ?? '',
+            slots: apiSlots.map((slot: ApiSlotAvailabilityDto) => ({
+              timeSlot: slot.timeSlot ?? slot.TimeSlot ?? '',
+              isBooked: slot.isBooked ?? slot.IsBooked ?? false
+            }))
+          };
+        })
+      );
+  }
 
   private mapDoctor(doctor: ApiDoctorDto): DoctorDto {
     return {

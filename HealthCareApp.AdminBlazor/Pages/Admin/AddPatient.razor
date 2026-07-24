@@ -129,7 +129,7 @@
 
         if (!isAuthenticated)
         {
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo("login");
         }
     }
 
@@ -147,7 +147,7 @@
 
             await PatientService.CreatePatientAsync(patient);
 
-            Navigation.NavigateTo("/admin/patients");
+            Navigation.NavigateTo("admin/patients");
         }
         catch (Exception ex)
         {
@@ -157,6 +157,6 @@
 
     private void BackToPatients()
     {
-        Navigation.NavigateTo("/admin/patients");
+        Navigation.NavigateTo("admin/patients");
     }
 }

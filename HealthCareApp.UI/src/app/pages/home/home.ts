@@ -236,7 +236,10 @@ export class Home {
       },
       error: (error: unknown) => {
         this.isLoggingIn = false;
-        this.setModalMessage(this.getErrorMessage(error, 'Login failed. Please try again.'), 'error');
+        this.setModalMessage(
+          this.getErrorMessage(error, 'Login failed. Please try again.'),
+          'error'
+        );
       }
     });
   }
@@ -306,13 +309,12 @@ export class Home {
     }
 
     if (role === 'Admin') {
-
       const token = this.authService.getToken();
 
       globalThis.location.href =
-        `https://localhost:7075/admin-login-bridge?token=${encodeURIComponent(token)}`;
-      return;
+        `/blazor/admin-login-bridge?token=${encodeURIComponent(token)}`;
 
+      return;
     }
 
     this.router.navigate(['/route-unavailable']);
@@ -431,65 +433,65 @@ export class Home {
   }
 
   private getErrorMessage(error: unknown, fallbackMessage: string): string {
-  const apiError = this.getApiError(error);
+    const apiError = this.getApiError(error);
 
-  if (!apiError) {
-    return fallbackMessage;
+    if (!apiError) {
+      return fallbackMessage;
+    }
+
+    if (apiError.name === 'TimeoutError') {
+      return 'The server is taking too long to respond. Please try again.';
+    }
+
+    return (
+      this.getErrorBodyMessage(apiError.error) ||
+      apiError.message ||
+      fallbackMessage
+    );
   }
 
-  if (apiError.name === 'TimeoutError') {
-    return 'The server is taking too long to respond. Please try again.';
+  private getApiError(error: unknown): ApiErrorResponse | undefined {
+    if (!this.hasApiErrorShape(error)) {
+      return undefined;
+    }
+
+    return error as ApiErrorResponse;
   }
 
-  return (
-    this.getErrorBodyMessage(apiError.error) ||
-    apiError.message ||
-    fallbackMessage
-  );
-}
-
-private getApiError(error: unknown): ApiErrorResponse | undefined {
-  if (!this.hasApiErrorShape(error)) {
-    return undefined;
+  private hasApiErrorShape(error: unknown): boolean {
+    return (
+      typeof error === 'object' &&
+      error !== null &&
+      'error' in error
+    );
   }
 
-  return error as ApiErrorResponse;
-}
+  private getErrorBodyMessage(errorBody?: ApiErrorBody | string): string {
+    if (!errorBody) {
+      return '';
+    }
 
-private hasApiErrorShape(error: unknown): boolean {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'error' in error
-  );
-}
+    if (typeof errorBody === 'string') {
+      return errorBody.trim();
+    }
 
-private getErrorBodyMessage(errorBody?: ApiErrorBody | string): string {
-  if (!errorBody) {
-    return '';
+    return (
+      errorBody.message ||
+      errorBody.Message ||
+      errorBody.title ||
+      this.getFirstValidationError(errorBody.errors)
+    );
   }
 
-  if (typeof errorBody === 'string') {
-    return errorBody.trim();
+  private getFirstValidationError(
+    errors?: Record<string, string[]>
+  ): string {
+    if (!errors) {
+      return '';
+    }
+
+    return Object.values(errors)[0]?.[0] ?? '';
   }
-
-  return (
-    errorBody.message ||
-    errorBody.Message ||
-    errorBody.title ||
-    this.getFirstValidationError(errorBody.errors)
-  );
-}
-
-private getFirstValidationError(
-  errors?: Record<string, string[]>
-): string {
-  if (!errors) {
-    return '';
-  }
-
-  return Object.values(errors)[0]?.[0] ?? '';
-}
 
   private isEmailValid(email: string): boolean {
     if (!email || email.length > 254) {
@@ -531,10 +533,9 @@ private getFirstValidationError(
     return true;
   }
 
- private hasWhitespace(value: string): boolean {
-  return Array.from(value).some(character =>
-    (character.codePointAt(0) ?? 0) <= 32
-  );
-}
-
+  private hasWhitespace(value: string): boolean {
+    return Array.from(value).some(character =>
+      (character.codePointAt(0) ?? 0) <= 32
+    );
+  }
 }

@@ -29,7 +29,7 @@ interface ApiPatientDto {
   providedIn: 'root'
 })
 export class PatientApiService {
-  private readonly apiUrl = 'https://localhost:7250/api/Patients';
+  private readonly apiUrl = '/api/Patients';
 
   constructor(private readonly http: HttpClient) {
   }

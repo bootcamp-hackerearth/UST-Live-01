@@ -115,7 +115,7 @@
 
         if (!isAuthenticated)
         {
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo("login");
         }
     }
 
@@ -131,11 +131,11 @@
 
         await AppointmentService.CreateAppointmentAsync(appointment);
 
-        Navigation.NavigateTo("/admin/appointments");
+        Navigation.NavigateTo("admin/appointments");
     }
 
     private void BackToAppointments()
     {
-        Navigation.NavigateTo("/admin/appointments");
+        Navigation.NavigateTo("admin/appointments");
     }
 }

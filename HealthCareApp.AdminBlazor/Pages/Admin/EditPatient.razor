@@ -145,7 +145,7 @@ else
 
         if (!isAuthenticated)
         {
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo("login");
             return;
         }
 
@@ -220,10 +220,10 @@ else
             return;
         }
 
-        Navigation.NavigateTo("/admin/patients");
+        Navigation.NavigateTo("admin/patients");
     }
     private void BackToPatients()
     {
-        Navigation.NavigateTo("/admin/patients");
+        Navigation.NavigateTo("admin/patients");
     }
 }

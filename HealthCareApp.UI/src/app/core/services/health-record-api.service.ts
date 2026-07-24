@@ -26,7 +26,7 @@ export interface AddHealthRecordRequest {
   providedIn: 'root'
 })
 export class HealthRecordApiService {
-  private readonly apiUrl = 'https://localhost:7250/api/HealthRecords';
+  private readonly apiUrl = '/api/HealthRecords';
 
   constructor(private readonly http: HttpClient) {
   }

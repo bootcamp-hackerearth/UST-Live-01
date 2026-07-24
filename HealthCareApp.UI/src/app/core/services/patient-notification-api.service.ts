@@ -37,7 +37,7 @@ interface ApiPatientNotificationDto {
   providedIn: 'root'
 })
 export class PatientNotificationApiService {
-  private readonly apiUrl = 'https://localhost:7250/api/PatientNotifications';
+  private readonly apiUrl = '/api/PatientNotifications';
 
   constructor(private readonly http: HttpClient) {
   }
