@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION = 'ap-south-1'
         EB_APPLICATION_NAME = 'Healthcarenetcore'
         EB_ENVIRONMENT_NAME = 'Healthcarenetcore-dev'
-        S3_BUCKET = 'healthaxis-jenkins-vyshnavi-2026'
+        S3_BUCKET = 'health-jenkins-624426145084-ap-south-1-an'
     }
 
     stages {
