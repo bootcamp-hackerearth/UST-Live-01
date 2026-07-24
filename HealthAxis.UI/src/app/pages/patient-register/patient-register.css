@@ -222,7 +222,7 @@
 }
 
 .form-header h2 {
-  margin: 9px 0 9px;
+  margin: 9px 0;
   color: var(--heading-color);
   font-size: 33px;
   line-height: 1.12;
@@ -239,8 +239,10 @@
 }
 
 .alert {
+  width: 100%;
   margin-bottom: 16px;
   padding: 12px 14px;
+  display: block;
   border-radius: 12px;
   font-size: 13px;
   line-height: 1.5;
@@ -286,6 +288,7 @@ input,
 select {
   width: 100%;
   height: 48px;
+  min-width: 0;
   padding: 0 15px;
   border: 1px solid #cbd5e1;
   border-radius: 11px;
@@ -325,6 +328,113 @@ select:focus {
   line-height: 1.35;
   font-weight: 700;
 }
+
+/* Password fields */
+
+.password-input-wrapper {
+  width: 100%;
+  height: 48px;
+  position: relative;
+  display: block;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  height: 48px;
+  padding-right: 52px;
+  display: block;
+}
+
+/* Hide Microsoft Edge and browser-provided password icons */
+
+.password-input-wrapper input::-ms-reveal,
+.password-input-wrapper input::-ms-clear {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.password-input-wrapper input::-webkit-credentials-auto-fill-button,
+.password-input-wrapper input::-webkit-contacts-auto-fill-button {
+  position: absolute;
+  right: 0;
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.password-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+
+  height: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 2;
+
+  display: grid;
+  place-items: center;
+
+  border: 0 !important;
+  border-radius: 8px;
+  outline: none;
+
+  color: #64748b;
+  background: transparent !important;
+
+  line-height: 1;
+  cursor: pointer;
+
+  box-shadow: none !important;
+  transform: none !important;
+
+  transition:
+    color 180ms ease,
+    background-color 180ms ease;
+}
+
+.password-toggle:hover {
+  color: var(--primary-color);
+  background: var(--primary-light) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.password-toggle:active {
+  transform: none !important;
+}
+
+.password-toggle:focus-visible {
+  color: var(--primary-color);
+  background: var(--primary-light) !important;
+  box-shadow:
+    0 0 0 3px rgba(21, 90, 199, 0.16) !important;
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+/* Main submit button */
 
 .submit-button {
   width: 100%;
@@ -452,59 +562,4 @@ select:focus {
   .form-header h2 {
     font-size: 29px;
   }
-}
-
-/* Password visibility button */
-
-.password-input-wrapper {
-  width: 100%;
-  position: relative;
-}
-
-.password-input-wrapper input {
-  padding-right: 54px;
-}
-
-.password-toggle {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  position: absolute;
-  top: 50%;
-  right: 6px;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  border: none;
-  border-radius: 9px;
-  outline: none;
-  background: transparent;
-  color: #64748b;
-  cursor: pointer;
-  box-shadow: none;
-  transform: translateY(-50%);
-  transition:
-    color 180ms ease,
-    background-color 180ms ease;
-}
-
-.password-toggle:hover {
-  color: #155ac7;
-  background: #eff6ff;
-}
-
-.password-toggle:focus-visible {
-  color: #155ac7;
-  background: #eff6ff;
-  box-shadow: 0 0 0 3px rgba(21, 90, 199, 0.16);
-}
-
-.password-toggle svg {
-  width: 21px;
-  height: 21px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }

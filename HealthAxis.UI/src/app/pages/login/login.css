@@ -499,3 +499,16 @@ input.input-error {
     font-size: 30px;
   }
 }
+.password-input-wrapper input::-ms-reveal,
+.password-input-wrapper input::-ms-clear {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.password-input-wrapper input::-webkit-credentials-auto-fill-button,
+.password-input-wrapper input::-webkit-contacts-auto-fill-button {
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+}
