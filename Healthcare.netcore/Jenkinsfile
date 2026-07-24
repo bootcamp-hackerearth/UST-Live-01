@@ -9,6 +9,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -17,8 +18,8 @@ pipeline {
 
         stage('Build Angular') {
             steps {
-                dir('HealthAxis.UI') {
-                    bat 'npm ci'
+                dir('Healthcare.netcore\\HealthAxis.UI') {
+                    bat 'npm install'
                     bat 'npm run build'
                 }
             }
@@ -26,34 +27,38 @@ pipeline {
 
         stage('Publish Blazor') {
             steps {
-                bat 'dotnet publish AdminWebApp\\AdminWebApp.csproj -c Release -o blazor-publish-temp'
+                bat 'dotnet publish Healthcare.netcore\\AdminWebApp\\AdminWebApp.csproj -c Release -o blazor-publish-temp'
             }
         }
 
         stage('Copy Blazor into API wwwroot') {
             steps {
-                bat 'if not exist Healthcare.netcore\\wwwroot\\blazor mkdir Healthcare.netcore\\wwwroot\\blazor'
-                bat 'xcopy /E /Y /I blazor-publish-temp\\wwwroot\\* Healthcare.netcore\\wwwroot\\blazor\\'
+                bat 'if not exist Healthcare.netcore\\Healthcare.netcore\\wwwroot\\blazor mkdir Healthcare.netcore\\Healthcare.netcore\\wwwroot\\blazor'
+                bat 'xcopy /E /Y /I blazor-publish-temp\\wwwroot\\* Healthcare.netcore\\Healthcare.netcore\\wwwroot\\blazor\\'
             }
         }
 
         stage('Publish API') {
             steps {
-                bat 'dotnet publish Healthcare.netcore\\Healthcare.netcore.csproj -c Release -o publish'
+                bat 'dotnet publish Healthcare.netcore\\Healthcare.netcore\\Healthcare.netcore.csproj -c Release -o publish'
             }
         }
 
         stage('Zip published output') {
-    steps {
-        dir('publish') {
-            bat 'jar -cMf ../deploy-package.zip .'
+            steps {
+                dir('publish') {
+                    bat 'jar -cMf ../deploy-package.zip .'
+                }
+            }
         }
-    }
-}
 
         stage('Upload to S3 and Deploy to EB') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-deploy-creds']]) {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-deploy-creds']
+                ]) {
+
                     bat "aws s3 cp deploy-package.zip s3://%S3_BUCKET%/deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%"
 
                     bat "aws elasticbeanstalk create-application-version --application-name %EB_APPLICATION_NAME% --version-label v-%BUILD_NUMBER% --source-bundle S3Bucket=%S3_BUCKET%,S3Key=deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%"
