@@ -10,7 +10,7 @@
 
 @code {
 
-    [SupplyParameterFromQuery]
+    [SupplyParameterFromQuery(Name = "token")]
     public string? Token { get; set; }
 
     private bool isLoading = true;
@@ -25,7 +25,7 @@
             await Task.Delay(50);
 
             // Redirect to admin dashboard
-            Navigation.NavigateTo("/dashboard", true);
+            Navigation.NavigateTo("dashboard", true);
         }
 
         isLoading = false;

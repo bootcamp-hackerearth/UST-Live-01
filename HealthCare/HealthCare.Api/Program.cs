@@ -10,6 +10,7 @@ using HealthCare.Api.Services.Interfaces;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -53,7 +54,7 @@ namespace HealthCare.Api
                         // RabbitMQ connection configuration
                         cfg.Host(builder.Configuration["RabbitMq:Host"] ?? "localhost", h =>
                         {
-                                h.Username(builder.Configuration["RabbitMq:Username"]);
+                            h.Username(builder.Configuration["RabbitMq:Username"] ?? "guest");
                             h.Password(builder.Configuration["RabbitMq:Password"] ?? "guest");
                         });
 
@@ -150,15 +151,6 @@ namespace HealthCare.Api
                 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
                 builder.Services.AddEndpointsApiExplorer();
 
-                //cache
-                builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection("Garnet"));
-                builder.Services.AddStackExchangeRedisCache(options =>
-                {
-                    var garnetOptions = builder.Configuration.GetSection("Garnet").Get<GarnetOptions>() ?? new GarnetOptions();
-                    options.Configuration = garnetOptions.ConnectionString;
-                    options.InstanceName = garnetOptions.InstanceName;
-                });
-
                 //swagger
 
                 builder.Services.AddSwaggerGen(options =>
@@ -195,7 +187,7 @@ namespace HealthCare.Api
                     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
                     await RoleSeeder.SeedRoleAsync(roleManager);
-                    await AdminSeeder.SeedAdminAsync( userManager,roleManager,builder.Configuration);
+                    await AdminSeeder.SeedAdminAsync(userManager, roleManager, builder.Configuration);
 
                 }
 
@@ -216,7 +208,29 @@ namespace HealthCare.Api
 
                 app.UseAuthorization();
 
+                //deployment
+                var contentTypeProvider=new FileExtensionContentTypeProvider();
+                contentTypeProvider.Mappings[".data"] = "application/octet-stream";
+                contentTypeProvider.Mappings[".wasm"] = "application/wasm";
+                app.UseStaticFiles(new StaticFileOptions{ ContentTypeProvider = contentTypeProvider });
+
                 app.MapControllers();
+                app.MapGet("/angular", async context =>
+                {
+                    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular","index.html"));
+                });
+                app.MapGet("/angular/{*path:nonfile}", async context =>
+                {
+                    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", "index.html"));
+                });
+                app.MapGet("/blazor", async context =>
+                {
+                    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+                });
+                app.MapGet("/blazor/{*path:nonfile}", async context =>
+                {
+                    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+                });
 
                 await app.RunAsync();
             }

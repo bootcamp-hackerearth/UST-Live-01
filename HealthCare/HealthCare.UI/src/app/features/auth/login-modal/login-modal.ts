@@ -79,7 +79,7 @@ export class LoginModal {
           } else if (role === 'Admin') {
 
             window.location.href =
-              `https://localhost:7125/login-redirect?token=${res.accessToken}`;
+              `${window.location.origin}/blazor/login-redirect?token=${res.accessToken}`;
           }
         },
 

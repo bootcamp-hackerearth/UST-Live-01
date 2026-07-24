@@ -44,7 +44,6 @@ namespace HealthCare.Api.Tests
                 _context,
                 _mapperMock.Object,
                 _appointmentRepoMock.Object,
-                 _cacheMock.Object, 
                  _loggerMock.Object
             );
         }

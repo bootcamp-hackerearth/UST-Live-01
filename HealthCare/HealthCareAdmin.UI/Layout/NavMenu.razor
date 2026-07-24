@@ -6,10 +6,10 @@
     <div class="logo">🏥 Admin</div>
 
     <nav>
-        <NavLink href="/dashboard" class="nav-item">Dashboard</NavLink>
-        <NavLink href="/doctor/list" class="nav-item">Doctors</NavLink>
-        <NavLink href="/patient/list" class="nav-item">Patients</NavLink>
-        <NavLink href="/appointments/report" class="nav-item">Reports</NavLink>
+        <a href="/blazor/dashboard" class="nav-item">Dashboard</a>
+        <a href="/blazor/doctor/list" class="nav-item">Doctors</a>
+        <a href="/blazor/patient/list" class="nav-item"> Patients</a>
+        <a href="/blazor/appointments/report" class="nav-item">Reports</a>
     </nav>
 
     <!-- ✅ LOGOUT AT BOTTOM -->
@@ -75,7 +75,7 @@
 
         await JS.InvokeVoidAsync("localStorage.removeItem", "token");
 
-        await JS.InvokeVoidAsync("window.location.assign","http://localhost:4200");
+        await JS.InvokeVoidAsync("window.location.assign","/angular/login");
     }
 
 }

@@ -14,27 +14,42 @@ namespace HealthCareAdmin.UI
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-
-
             builder.Services.AddScoped<AuthHandler>();
 
-            var apiBase = new Uri("https://localhost:7225/");
-            builder.Services.AddHttpClient<AuthService>(c =>
+            var blazorBaseUri =
+                new Uri(builder.HostEnvironment.BaseAddress);
+
+            var apiBaseUri =
+                new Uri(
+                    $"{blazorBaseUri.Scheme}://{blazorBaseUri.Authority}/");
+
+            builder.Services.AddHttpClient<AuthService>(client =>
             {
-                c.BaseAddress = apiBase;
+                client.BaseAddress = apiBaseUri;
             });
 
-            builder.Services.AddHttpClient<AppointmentService>(c => c.BaseAddress = apiBase)
-                            .AddHttpMessageHandler<AuthHandler>();
+            builder.Services
+                .AddHttpClient<AppointmentService>(client =>
+                {
+                    client.BaseAddress = apiBaseUri;
+                })
+                .AddHttpMessageHandler<AuthHandler>();
 
-            builder.Services.AddHttpClient<DoctorService>(c => c.BaseAddress = apiBase)
-                            .AddHttpMessageHandler<AuthHandler>();
+            builder.Services
+                .AddHttpClient<DoctorService>(client =>
+                {
+                    client.BaseAddress = apiBaseUri;
+                })
+                .AddHttpMessageHandler<AuthHandler>();
 
-            builder.Services.AddHttpClient<PatientService>(c => c.BaseAddress = apiBase)
-                            .AddHttpMessageHandler<AuthHandler>();
+            builder.Services
+                .AddHttpClient<PatientService>(client =>
+                {
+                    client.BaseAddress = apiBaseUri;
+                })
+                .AddHttpMessageHandler<AuthHandler>();
 
             await builder.Build().RunAsync();
         }
     }
-
 }
