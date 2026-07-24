@@ -53,7 +53,7 @@ namespace HealthCare.Api
                         // RabbitMQ connection configuration
                         cfg.Host(builder.Configuration["RabbitMq:Host"] ?? "localhost", h =>
                         {
-                            h.Username(builder.Configuration["RabbitMq:Username"] ?? "guest");
+                                h.Username(builder.Configuration["RabbitMq:Username"]);
                             h.Password(builder.Configuration["RabbitMq:Password"] ?? "guest");
                         });
 
