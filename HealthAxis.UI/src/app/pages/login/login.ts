@@ -34,26 +34,29 @@ export class Login {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  private readonly emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  private readonly emailPattern =
+    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
   readonly loading = signal(false);
   readonly errorMessage = signal('');
+  readonly showPassword = signal(false);
 
-  readonly loginForm = this.formBuilder.nonNullable.group({
-    email: [
-      '',
-      [
-        Validators.required,
-        Validators.pattern(this.emailPattern)
+  readonly loginForm =
+    this.formBuilder.nonNullable.group({
+      email: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(this.emailPattern)
+        ]
+      ],
+      password: [
+        '',
+        [
+          Validators.required
+        ]
       ]
-    ],
-    password: [
-      '',
-      [
-        Validators.required
-      ]
-    ]
-  });
+    });
 
   constructor() {
     this.handleLoginQueryParams();
@@ -72,22 +75,34 @@ export class Login {
 
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
-      this.errorMessage.set(this.getFormErrorMessage());
+      this.errorMessage.set(
+        this.getFormErrorMessage()
+      );
       return;
     }
 
     this.loading.set(true);
 
-    this.authService.login(this.loginForm.getRawValue()).subscribe({
-      next: () => {
-        this.loading.set(false);
-        this.authService.redirectByRole();
-      },
-      error: (error: unknown) => {
-        this.loading.set(false);
-        this.errorMessage.set(this.getLoginErrorMessage(error));
-      }
-    });
+    this.authService
+      .login(this.loginForm.getRawValue())
+      .subscribe({
+        next: () => {
+          this.loading.set(false);
+          this.authService.redirectByRole();
+        },
+        error: (error: unknown) => {
+          this.loading.set(false);
+          this.errorMessage.set(
+            this.getLoginErrorMessage(error)
+          );
+        }
+      });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword.update(
+      (isVisible) => !isVisible
+    );
   }
 
   clearError(): void {
@@ -109,7 +124,8 @@ export class Login {
   }
 
   private handleLoginQueryParams(): void {
-    const queryParams = this.route.snapshot.queryParamMap;
+    const queryParams =
+      this.route.snapshot.queryParamMap;
 
     const isAdminLogout =
       queryParams.get('adminLogout') === 'true';
@@ -151,21 +167,30 @@ export class Login {
     return 'Please enter valid login details.';
   }
 
-  private getLoginErrorMessage(error: unknown): string {
+  private getLoginErrorMessage(
+    error: unknown
+  ): string {
     if (error instanceof HttpErrorResponse) {
       if (error.status === 0) {
-        return 'Unable to connect to server. Please try again.';
+        return 'Unable to connect to the server. Please try again.';
       }
 
-      if (error.status === 400 || error.status === 401) {
-        return 'Invalid email or password.';
+      if (
+        error.status === 400 ||
+        error.status === 401
+      ) {
+        return 'Incorrect email or password.';
       }
 
       if (error.status === 403) {
         return 'You are not allowed to access this portal.';
       }
+
+      if (error.status >= 500) {
+        return 'The server is temporarily unavailable. Please try again.';
+      }
     }
 
-    return 'Login failed. Please try again.';
+    return 'Unable to complete login. Please try again.';
   }
 }

@@ -16,11 +16,17 @@ import {
   RouterLink
 } from '@angular/router';
 
-import { RegisterPatientRequest } from '../../core/models/auth.model';
-import { Gender } from '../../core/models/gender.enum';
-import { AuthService } from '../../core/services/auth.service';
+import {
+  RegisterPatientRequest
+} from '../../core/models/auth.model';
+import {
+  Gender
+} from '../../core/models/gender.enum';
+import {
+  AuthService
+} from '../../core/services/auth.service';
 
-const REDIRECT_DELAY_IN_MS = 1000;
+const REDIRECT_DELAY_IN_MS = 3000;
 
 @Component({
   selector: 'app-patient-register',
@@ -33,13 +39,23 @@ const REDIRECT_DELAY_IN_MS = 1000;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientRegister {
-  private readonly formBuilder = inject(FormBuilder);
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
+  private readonly formBuilder =
+    inject(FormBuilder);
+
+  private readonly authService =
+    inject(AuthService);
+
+  private readonly router =
+    inject(Router);
 
   readonly loading = signal(false);
+  readonly registrationCompleted = signal(false);
+
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
+
+  readonly showPassword = signal(false);
+  readonly showConfirmPassword = signal(false);
 
   readonly genderOptions = [
     {
@@ -56,65 +72,67 @@ export class PatientRegister {
     }
   ] as const;
 
-  readonly registerForm = this.formBuilder.nonNullable.group(
-    {
-      fullName: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(80),
-          Validators.pattern(/^[A-Za-z ]+$/)
+  readonly registerForm =
+    this.formBuilder.nonNullable.group(
+      {
+        fullName: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(3),
+            Validators.maxLength(80),
+            Validators.pattern(/^[A-Za-z ]+$/)
+          ]
+        ],
+        dateOfBirth: [
+          '',
+          [
+            Validators.required,
+            PatientRegister.noFutureDateValidator
+          ]
+        ],
+        gender: [
+          '',
+          [
+            Validators.required
+          ]
+        ],
+        phoneNumber: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(/^[1-9]\d{9}$/)
+          ]
+        ],
+        email: [
+          '',
+          [
+            Validators.required,
+            Validators.email
+          ]
+        ],
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(8),
+            Validators.pattern(
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/
+            )
+          ]
+        ],
+        confirmPassword: [
+          '',
+          [
+            Validators.required
+          ]
         ]
-      ],
-      dateOfBirth: [
-        '',
-        [
-          Validators.required,
-          PatientRegister.noFutureDateValidator
-        ]
-      ],
-      gender: [
-        '',
-        [
-          Validators.required
-        ]
-      ],
-      phoneNumber: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(/^[1-9]\d{9}$/)
-        ]
-      ],
-      email: [
-        '',
-        [
-          Validators.required,
-          Validators.email
-        ]
-      ],
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/
-          )
-        ]
-      ],
-      confirmPassword: [
-        '',
-        [
-          Validators.required
-        ]
-      ]
-    },
-    {
-      validators: PatientRegister.passwordsMatchValidator
-    }
-  );
+      },
+      {
+        validators:
+          PatientRegister.passwordsMatchValidator
+      }
+    );
 
   get fullName() {
     return this.registerForm.controls.fullName;
@@ -145,6 +163,13 @@ export class PatientRegister {
   }
 
   registerPatient(): void {
+    if (
+      this.loading() ||
+      this.registrationCompleted()
+    ) {
+      return;
+    }
+
     this.errorMessage.set('');
     this.successMessage.set('');
 
@@ -153,7 +178,8 @@ export class PatientRegister {
       return;
     }
 
-    const formValue = this.registerForm.getRawValue();
+    const formValue =
+      this.registerForm.getRawValue();
 
     const request: RegisterPatientRequest = {
       fullName: formValue.fullName.trim(),
@@ -167,29 +193,48 @@ export class PatientRegister {
 
     this.loading.set(true);
 
-    this.authService.registerPatient(request).subscribe({
-      next: () => {
-        this.loading.set(false);
+    this.authService
+      .registerPatient(request)
+      .subscribe({
+        next: () => {
+          this.loading.set(false);
+          this.registrationCompleted.set(true);
 
-        this.successMessage.set(
-          'Patient registered successfully. Please login now.'
-        );
+          this.successMessage.set(
+            'Patient account created successfully. Redirecting you to login...'
+          );
 
-        globalThis.setTimeout(() => {
-          void this.router.navigate(['/login']);
-        }, REDIRECT_DELAY_IN_MS);
-      },
-      error: (error: unknown) => {
-        this.loading.set(false);
+          this.registerForm.disable({
+            emitEvent: false
+          });
 
-        this.errorMessage.set(
-          this.getFriendlyMessage(
-            error,
-            'Registration failed. Please check your details and try again.'
-          )
-        );
-      }
-    });
+          globalThis.setTimeout(() => {
+            void this.router.navigate(['/login']);
+          }, REDIRECT_DELAY_IN_MS);
+        },
+        error: (error: unknown) => {
+          this.loading.set(false);
+
+          this.errorMessage.set(
+            this.getFriendlyMessage(
+              error,
+              'Registration failed. Please check your details and try again.'
+            )
+          );
+        }
+      });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword.update(
+      (isVisible) => !isVisible
+    );
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword.update(
+      (isVisible) => !isVisible
+    );
   }
 
   private getFriendlyMessage(
@@ -201,7 +246,8 @@ export class PatientRegister {
     };
 
     if (
-      typeof possibleError.friendlyMessage === 'string'
+      typeof possibleError.friendlyMessage ===
+      'string'
     ) {
       return possibleError.friendlyMessage;
     }
@@ -238,9 +284,8 @@ export class PatientRegister {
       return null;
     }
 
-    const selectedDate = new Date(
-      control.value
-    );
+    const selectedDate =
+      new Date(control.value);
 
     const today = new Date();
 

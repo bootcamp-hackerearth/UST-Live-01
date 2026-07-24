@@ -300,6 +300,57 @@ input.input-error {
   background: #fffafa;
 }
 
+.password-input-wrapper {
+  width: 100%;
+  position: relative;
+}
+
+.password-input-wrapper input {
+  padding-right: 54px;
+}
+
+.password-toggle {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 9px;
+  outline: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  box-shadow: none;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease;
+}
+
+.password-toggle:hover {
+  color: var(--primary-color);
+  background: var(--primary-light);
+}
+
+.password-toggle:focus-visible {
+  color: var(--primary-color);
+  background: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(21, 90, 199, 0.16);
+}
+
+.password-toggle svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .field-error {
   min-height: 22px;
   margin-top: 6px;

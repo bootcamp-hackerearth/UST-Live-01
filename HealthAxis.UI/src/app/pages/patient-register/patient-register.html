@@ -10,7 +10,9 @@
 
         <div class="showcase-brand">
 
-          <span class="brand-symbol" aria-hidden="true">
+          <span
+            class="brand-symbol"
+            aria-hidden="true">
             <span class="brand-cross"></span>
           </span>
 
@@ -82,13 +84,18 @@
         </div>
 
         @if (errorMessage()) {
-          <div class="alert error-alert" role="alert">
+          <div
+            class="alert error-alert"
+            role="alert"
+            aria-live="assertive">
             {{ errorMessage() }}
           </div>
         }
 
         @if (successMessage()) {
-          <output class="alert success-alert">
+          <output
+            class="alert success-alert"
+            aria-live="polite">
             {{ successMessage() }}
           </output>
         }
@@ -153,7 +160,10 @@
 
               <small class="field-error">
 
-                @if (dateOfBirth.invalid && dateOfBirth.touched) {
+                @if (
+                  dateOfBirth.invalid &&
+                  dateOfBirth.touched
+                ) {
 
                   @if (dateOfBirth.errors?.['required']) {
                     Date of birth is required.
@@ -218,7 +228,10 @@
               />
 
               <small class="field-error">
-                @if (phoneNumber.invalid && phoneNumber.touched) {
+                @if (
+                  phoneNumber.invalid &&
+                  phoneNumber.touched
+                ) {
                   Enter a valid 10 digit phone number.
                 }
               </small>
@@ -253,16 +266,68 @@
                 Password
               </label>
 
-              <input
-                id="password"
-                type="password"
-                formControlName="password"
-                placeholder="Create a password"
-                autocomplete="new-password"
-              />
+              <div class="password-input-wrapper">
+
+                <input
+                  id="password"
+                  [type]="
+                    showPassword()
+                      ? 'text'
+                      : 'password'
+                  "
+                  formControlName="password"
+                  placeholder="Create a password"
+                  autocomplete="new-password"
+                />
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  [attr.aria-label]="
+                    showPassword()
+                      ? 'Hide password'
+                      : 'Show password'
+                  "
+                  [attr.title]="
+                    showPassword()
+                      ? 'Hide password'
+                      : 'Show password'
+                  "
+                  [attr.aria-pressed]="showPassword()"
+                  (click)="togglePasswordVisibility()">
+
+                  @if (showPassword()) {
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true">
+                      <path
+                        d="M3 3l18 18M10.6 10.7a2 2 0 0 0 2.7 2.7M9.9 4.2A10.8 10.8 0 0 1 12 4c5.5 0 9.5 5.3 9.5 5.3a14.8 14.8 0 0 1-2.7 3.3M6.2 6.2C3.9 7.7 2.5 9.3 2.5 9.3S6.5 14.7 12 14.7c1 0 2-.2 2.9-.5"
+                      />
+                    </svg>
+                  } @else {
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true">
+                      <path
+                        d="M2.5 12S6.5 6.5 12 6.5 21.5 12 21.5 12 17.5 17.5 12 17.5 2.5 12 2.5 12Z"
+                      />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="2.5"
+                      />
+                    </svg>
+                  }
+
+                </button>
+
+              </div>
 
               <small class="field-error">
-                @if (password.invalid && password.touched) {
+                @if (
+                  password.invalid &&
+                  password.touched
+                ) {
                   Use 8 characters with uppercase, lowercase,
                   number, and special character.
                 }
@@ -276,13 +341,66 @@
                 Confirm Password
               </label>
 
-              <input
-                id="confirmPassword"
-                type="password"
-                formControlName="confirmPassword"
-                placeholder="Re-enter your password"
-                autocomplete="new-password"
-              />
+              <div class="password-input-wrapper">
+
+                <input
+                  id="confirmPassword"
+                  [type]="
+                    showConfirmPassword()
+                      ? 'text'
+                      : 'password'
+                  "
+                  formControlName="confirmPassword"
+                  placeholder="Re-enter your password"
+                  autocomplete="new-password"
+                />
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  [attr.aria-label]="
+                    showConfirmPassword()
+                      ? 'Hide confirm password'
+                      : 'Show confirm password'
+                  "
+                  [attr.title]="
+                    showConfirmPassword()
+                      ? 'Hide confirm password'
+                      : 'Show confirm password'
+                  "
+                  [attr.aria-pressed]="
+                    showConfirmPassword()
+                  "
+                  (click)="
+                    toggleConfirmPasswordVisibility()
+                  ">
+
+                  @if (showConfirmPassword()) {
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true">
+                      <path
+                        d="M3 3l18 18M10.6 10.7a2 2 0 0 0 2.7 2.7M9.9 4.2A10.8 10.8 0 0 1 12 4c5.5 0 9.5 5.3 9.5 5.3a14.8 14.8 0 0 1-2.7 3.3M6.2 6.2C3.9 7.7 2.5 9.3 2.5 9.3S6.5 14.7 12 14.7c1 0 2-.2 2.9-.5"
+                      />
+                    </svg>
+                  } @else {
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true">
+                      <path
+                        d="M2.5 12S6.5 6.5 12 6.5 21.5 12 21.5 12 17.5 17.5 12 17.5 2.5 12 2.5 12Z"
+                      />
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="2.5"
+                      />
+                    </svg>
+                  }
+
+                </button>
+
+              </div>
 
               <small class="field-error">
 
@@ -309,9 +427,14 @@
           <button
             type="submit"
             class="submit-button"
-            [disabled]="loading()">
+            [disabled]="
+              loading() ||
+              registrationCompleted()
+            ">
 
-            @if (loading()) {
+            @if (registrationCompleted()) {
+              Account Created Successfully
+            } @else if (loading()) {
               Creating Patient Account...
             } @else {
               Create Patient Account
@@ -341,4 +464,3 @@
   </div>
 
 </section>
-
