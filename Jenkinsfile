@@ -11,11 +11,9 @@ pipeline {
     environment {
         AWS_REGION = 'ap-south-1'
 
-        // Change these only if your Elastic Beanstalk app/environment names are different
         EB_APPLICATION_NAME = 'HealthAxisCoreApi0'
         EB_ENVIRONMENT_NAME = 'HealthAxisCoreApi0-dev'
 
-        // Change this only if your actual S3 bucket name is different
         S3_BUCKET = 'jenkins-deploy-110704'
 
         DEPLOY_PACKAGE = 'deploy-package.zip'
@@ -101,57 +99,16 @@ pipeline {
             }
         }
 
-        stage('Copy Angular into API') {
+        stage('Verify Angular Build') {
             steps {
                 powershell '''
                 $ErrorActionPreference = "Stop"
 
-                $apiAngularPath = ".\\HealthAxisCore_Api\\wwwroot\\angular"
-
-                if (Test-Path $apiAngularPath) {
-                    Remove-Item $apiAngularPath -Recurse -Force
+                if (!(Test-Path ".\\HealthAxisCore_Api\\wwwroot\\angular\\index.html")) {
+                    throw "Angular index.html missing."
                 }
 
-                New-Item -ItemType Directory -Path $apiAngularPath -Force | Out-Null
-
-                $possiblePaths = @(
-                    ".\\HealthAxisCore_Angular\\dist\\HealthAxisCore_Angular\\browser",
-                    ".\\HealthAxisCore_Angular\\dist\\HealthAxisCore_Angular",
-                    ".\\HealthAxisCore_Angular\\dist\\health-axis-core-angular\\browser",
-                    ".\\HealthAxisCore_Angular\\dist\\health-axis-core-angular"
-                )
-
-                $angularDistPath = $null
-
-                foreach ($path in $possiblePaths) {
-                    if (Test-Path "$path\\index.html") {
-                        $angularDistPath = $path
-                        break
-                    }
-                }
-
-                if ($null -eq $angularDistPath) {
-                    throw "Angular build output not found. Check dist folder name."
-                }
-
-                Copy-Item "$angularDistPath\\*" $apiAngularPath -Recurse -Force
-
-                if (!(Test-Path "$apiAngularPath\\index.html")) {
-                    throw "Angular index.html missing after copy."
-                }
-
-                Write-Host "Angular copied from $angularDistPath to $apiAngularPath"
-                '''
-            }
-        }
-
-        stage('Verify Angular Build') {
-            steps {
-                bat '''
-                if not exist HealthAxisCore_Api\\wwwroot\\angular\\index.html (
-                    echo ERROR: Angular output missing.
-                    exit /b 1
-                )
+                Write-Host "Angular build verified."
                 '''
             }
         }
