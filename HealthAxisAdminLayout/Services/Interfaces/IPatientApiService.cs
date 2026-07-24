@@ -1,4 +1,4 @@
-﻿using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.Common;
 using HealthAxis.Shared.DTOs.Patient;
 
 namespace HealthAxisAdminLayout.Services.Interfaces
@@ -25,3 +25,4 @@ namespace HealthAxisAdminLayout.Services.Interfaces
         Task<bool> DeletePatientAsync(int id);
     }
 }
+

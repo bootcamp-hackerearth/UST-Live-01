@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Headers;
+using System.Net.Http.Headers;
 using HealthAxisAdminLayout.Services.Interfaces;
 
 namespace HealthAxisAdminLayout.Handlers
@@ -16,7 +16,7 @@ namespace HealthAxisAdminLayout.Handlers
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            // ✅ LOAD TOKEN FROM LOCAL STORAGE (CRITICAL FIX)
+            // ? LOAD TOKEN FROM LOCAL STORAGE (CRITICAL FIX)
             await _authState.LoadFromStorageAsync();
 
             var token = _authState.Token;
@@ -31,3 +31,5 @@ namespace HealthAxisAdminLayout.Handlers
         }
     }
 }
+
+

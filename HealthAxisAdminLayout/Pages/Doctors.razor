@@ -1,7 +1,9 @@
 ﻿@page "/admin/doctors"
+
 @attribute [Authorize(Roles = "Admin")]
 
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Configuration
 @using Microsoft.JSInterop
 @using HealthAxis.Shared.DTOs.Doctor
 @using HealthAxis.Shared.DTOs.Appointment
@@ -11,6 +13,7 @@
 
 @layout HealthAxisAdminLayout.Layout.AdminLayout
 
+@inject IConfiguration Configuration
 @inject IDoctorApiService DoctorService
 @inject IAppointmentApiService AppointmentService
 @inject IJSRuntime JS
@@ -19,12 +22,20 @@
 
     <div class="doctor-hero">
         <div>
-            <div class="dashboard-kicker">Doctor Management</div>
+            <div class="dashboard-kicker">
+                Doctor Management
+            </div>
+
             <h1>Doctors</h1>
-            <p>Register, update, activate, and manage HealthAxis doctor profiles.</p>
+
+            <p>
+                Register, update, activate, and manage
+                HealthAxis doctor profiles.
+            </p>
         </div>
 
-        <button class="doctor-add-btn" @onclick="OpenCreateForm">
+        <button class="doctor-add-btn"
+                @onclick="OpenCreateForm">
             + Add Doctor
         </button>
     </div>
@@ -45,7 +56,8 @@
                     <h3>Temporary Password Generated</h3>
 
                     <p>
-                        Share these credentials with the doctor. This password is shown only after doctor creation.
+                        Share these credentials with the doctor.
+                        This password is shown only after doctor creation.
                     </p>
                 </div>
 
@@ -70,7 +82,10 @@
 
                 <div>
                     <span>Temporary Password</span>
-                    <strong class="doctor-temp-password">@temporaryPassword</strong>
+
+                    <strong class="doctor-temp-password">
+                        @temporaryPassword
+                    </strong>
                 </div>
 
             </div>
@@ -90,7 +105,8 @@
             </div>
 
             <div class="doctor-temp-warning">
-                Ask the doctor to login from the main HealthAxis portal and change the password on first login.
+                Ask the doctor to login from the main HealthAxis
+                portal and change the password on first login.
             </div>
 
         </div>
@@ -102,11 +118,22 @@
 
             <div class="doctor-form-header">
                 <div>
-                    <h3>@(isEditMode ? "Edit Doctor" : "Add Doctor")</h3>
-                    <p>@(isEditMode ? "Update doctor profile information." : "Create a new doctor profile.")</p>
+                    <h3>
+                        @(isEditMode
+                            ? "Edit Doctor"
+                            : "Add Doctor")
+                    </h3>
+
+                    <p>
+                        @(isEditMode
+                            ? "Update doctor profile information."
+                            : "Create a new doctor profile.")
+                    </p>
                 </div>
 
-                <button class="doctor-outline-btn" @onclick="CloseForm" disabled="@isLoading">
+                <button class="doctor-outline-btn"
+                        @onclick="CloseForm"
+                        disabled="@isLoading">
                     Close
                 </button>
             </div>
@@ -124,31 +151,50 @@
             <div class="doctor-form-grid">
 
                 <div class="doctor-field">
-                    <label for="doctorName">Doctor Name</label>
+                    <label for="doctorName">
+                        Doctor Name
+                    </label>
+
                     <input id="doctorName"
                            placeholder="Enter doctor name"
                            @bind="doctorForm.DoctorName" />
                 </div>
 
                 <div class="doctor-field">
-                    <label for="doctorEmail">Email</label>
+                    <label for="doctorEmail">
+                        Email
+                    </label>
+
                     <input id="doctorEmail"
                            placeholder="Enter email"
                            @bind="doctorForm.Email" />
                 </div>
 
                 <div class="doctor-field">
-                    <label for="doctorSpecialisation">Specialisation</label>
-                    <select id="doctorSpecialisation" @bind="doctorForm.Specialisation">
-                        @foreach (var spec in Enum.GetValues<SpecialisationType>())
+                    <label for="doctorSpecialisation">
+                        Specialisation
+                    </label>
+
+                    <select id="doctorSpecialisation"
+                            @bind="doctorForm.Specialisation">
+
+                        @foreach (
+                            var specialisation in
+                            Enum.GetValues<SpecialisationType>())
                         {
-                            <option value="@spec">@spec</option>
+                            <option value="@specialisation">
+                                @specialisation
+                            </option>
                         }
+
                     </select>
                 </div>
 
                 <div class="doctor-field">
-                    <label for="doctorExperience">Experience</label>
+                    <label for="doctorExperience">
+                        Experience
+                    </label>
+
                     <input id="doctorExperience"
                            type="number"
                            min="0"
@@ -157,7 +203,10 @@
                 </div>
 
                 <div class="doctor-field">
-                    <label for="doctorConsultationFee">Consultation Fee</label>
+                    <label for="doctorConsultationFee">
+                        Consultation Fee
+                    </label>
+
                     <input id="doctorConsultationFee"
                            type="number"
                            min="0"
@@ -167,10 +216,19 @@
                 </div>
 
                 <div class="doctor-field">
-                    <label for="doctorStatus">Status</label>
-                    <select id="doctorStatus" @bind="doctorForm.IsActive">
-                        <option value="true">Active</option>
-                        <option value="false">Inactive</option>
+                    <label for="doctorStatus">
+                        Status
+                    </label>
+
+                    <select id="doctorStatus"
+                            @bind="doctorForm.IsActive">
+                        <option value="true">
+                            Active
+                        </option>
+
+                        <option value="false">
+                            Inactive
+                        </option>
                     </select>
                 </div>
 
@@ -180,7 +238,9 @@
                 <button class="doctor-save-btn"
                         @onclick="SaveDoctor"
                         disabled="@isLoading">
-                    @(isEditMode ? "Update Doctor" : "Create Doctor")
+                    @(isEditMode
+                        ? "Update Doctor"
+                        : "Create Doctor")
                 </button>
 
                 <button class="doctor-cancel-btn"
@@ -201,7 +261,10 @@
                 <h2>@TotalDoctors</h2>
                 <p>Doctor profiles in HealthAxis</p>
             </div>
-            <div class="doctor-stat-icon">+</div>
+
+            <div class="doctor-stat-icon">
+                +
+            </div>
         </div>
 
         <div class="doctor-stat-card doctor-stat-teal">
@@ -210,7 +273,10 @@
                 <h2>@ActiveDoctors</h2>
                 <p>Visible on current page</p>
             </div>
-            <div class="doctor-stat-icon">●</div>
+
+            <div class="doctor-stat-icon">
+                ●
+            </div>
         </div>
 
         <div class="doctor-stat-card doctor-stat-red">
@@ -219,7 +285,10 @@
                 <h2>@InactiveDoctors</h2>
                 <p>Visible on current page</p>
             </div>
-            <div class="doctor-stat-icon">○</div>
+
+            <div class="doctor-stat-icon">
+                ○
+            </div>
         </div>
 
         <div class="doctor-stat-card doctor-stat-orange">
@@ -229,7 +298,9 @@
                 <p>Currently unavailable doctors</p>
             </div>
 
-            <div class="doctor-stat-icon">⏸</div>
+            <div class="doctor-stat-icon">
+                ⏸
+            </div>
         </div>
 
         <div class="doctor-stat-card doctor-stat-purple">
@@ -238,7 +309,10 @@
                 <h2>@SpecialisationCount</h2>
                 <p>Visible on current page</p>
             </div>
-            <div class="doctor-stat-icon">□</div>
+
+            <div class="doctor-stat-icon">
+                □
+            </div>
         </div>
 
     </div>
@@ -248,7 +322,11 @@
         <div class="doctor-directory-header">
             <div>
                 <h3>Doctor Directory</h3>
-                <p>Search, filter, and maintain doctor account visibility.</p>
+
+                <p>
+                    Search, filter, and maintain doctor
+                    account visibility.
+                </p>
             </div>
 
             <span class="doctor-count-pill">
@@ -269,21 +347,42 @@
             <select class="doctor-filter-select"
                     value="@selectedSpecialisation"
                     @onchange="OnSpecialisationChanged">
-                <option value="All">All Specialisations</option>
 
-                @foreach (var spec in Enum.GetValues<SpecialisationType>())
+                <option value="All">
+                    All Specialisations
+                </option>
+
+                @foreach (
+                    var specialisation in
+                    Enum.GetValues<SpecialisationType>())
                 {
-                    <option value="@spec.ToString()">@spec</option>
+                    <option value="@specialisation.ToString()">
+                        @specialisation
+                    </option>
                 }
+
             </select>
 
             <select class="doctor-filter-select"
                     value="@selectedStatus"
                     @onchange="OnStatusChanged">
-                <option value="All">All Status</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-                <option value="OnLeave">On Leave</option>
+
+                <option value="All">
+                    All Status
+                </option>
+
+                <option value="Active">
+                    Active
+                </option>
+
+                <option value="Inactive">
+                    Inactive
+                </option>
+
+                <option value="OnLeave">
+                    On Leave
+                </option>
+
             </select>
 
         </div>
@@ -292,15 +391,27 @@
         {
             <div class="doctor-status-legend">
                 <div>
-                    <span class="status-icon active">✓</span>
+                    <span class="status-icon active">
+                        ✓
+                    </span>
+
                     <strong>Active</strong>
-                    <p>Doctor profile is enabled and available.</p>
+
+                    <p>
+                        Doctor profile is enabled and available.
+                    </p>
                 </div>
 
                 <div>
-                    <span class="status-icon inactive">!</span>
+                    <span class="status-icon inactive">
+                        !
+                    </span>
+
                     <strong>Inactive</strong>
-                    <p>Doctor profile is disabled and unavailable.</p>
+
+                    <p>
+                        Doctor profile is disabled and unavailable.
+                    </p>
                 </div>
             </div>
         }
@@ -340,19 +451,30 @@
                     </thead>
 
                     <tbody>
+
                         @foreach (var doctor in doctors)
                         {
                             <tr>
                                 <td>
                                     <div class="doctor-profile-cell">
                                         <div class="doctor-avatar">
-                                            @GetInitials(doctor.DoctorName)
+                                            @GetInitials(
+                                                doctor.DoctorName)
                                         </div>
 
                                         <div class="doctor-profile-text">
-                                            <strong>@doctor.DoctorName</strong>
-                                            <span>@doctor.Email</span>
-                                            <small>Doctor ID: @doctor.DoctorId</small>
+                                            <strong>
+                                                @doctor.DoctorName
+                                            </strong>
+
+                                            <span>
+                                                @doctor.Email
+                                            </span>
+
+                                            <small>
+                                                Doctor ID:
+                                                @doctor.DoctorId
+                                            </small>
                                         </div>
                                     </div>
                                 </td>
@@ -379,17 +501,24 @@
                                     <button class="doctor-status-icon-btn"
                                             title="Click to view status meaning"
                                             @onclick="ToggleStatusLegend">
+
                                         @if (doctor.IsOnLeave)
                                         {
-                                            <span class="status-icon onleave">⏸</span>
+                                            <span class="status-icon onleave">
+                                                ⏸
+                                            </span>
                                         }
                                         else if (doctor.IsActive)
                                         {
-                                            <span class="status-icon active">✓</span>
+                                            <span class="status-icon active">
+                                                ✓
+                                            </span>
                                         }
                                         else
                                         {
-                                            <span class="status-icon inactive">!</span>
+                                            <span class="status-icon inactive">
+                                                !
+                                            </span>
                                         }
 
                                     </button>
@@ -397,6 +526,7 @@
 
                                 <td>
                                     <div class="doctor-action-group">
+
                                         <button class="doctor-edit-btn"
                                                 @onclick="@(() => StartEdit(doctor))"
                                                 disabled="@isLoading">
@@ -406,7 +536,9 @@
                                         <button class="doctor-status-btn"
                                                 @onclick="@(() => ToggleStatus(doctor))"
                                                 disabled="@isLoading">
-                                            @(doctor.IsActive ? "Deactivate" : "Activate")
+                                            @(doctor.IsActive
+                                                ? "Deactivate"
+                                                : "Activate")
                                         </button>
 
                                         <button class="doctor-appointments-btn"
@@ -414,10 +546,12 @@
                                                 disabled="@isLoading">
                                             Appointments
                                         </button>
+
                                     </div>
                                 </td>
                             </tr>
                         }
+
                     </tbody>
 
                 </table>
@@ -425,7 +559,10 @@
                 <div class="hx-pagination">
 
                     <div class="hx-pagination-info">
-                        Showing @GetStartItemIndex() - @GetEndItemIndex() of @totalCount
+                        Showing @GetStartItemIndex()
+                        -
+                        @GetEndItemIndex()
+                        of @totalCount
                     </div>
 
                     <div class="hx-pagination-actions">
@@ -433,10 +570,14 @@
                         <select class="hx-page-size-select"
                                 value="@pageSize"
                                 @onchange="OnPageSizeChanged">
+
                             @foreach (var size in pageSizeOptions)
                             {
-                                <option value="@size">@size / page</option>
+                                <option value="@size">
+                                    @size / page
+                                </option>
                             }
+
                         </select>
 
                         <button @onclick="PreviousPage"
@@ -445,7 +586,10 @@
                         </button>
 
                         <span>
-                            Page @currentPage of @(totalPages == 0 ? 1 : totalPages)
+                            Page @currentPage of
+                            @(totalPages == 0
+                                ? 1
+                                : totalPages)
                         </span>
 
                         <button @onclick="NextPage"
@@ -465,12 +609,17 @@
     @if (showAppointmentsModal)
     {
         <div class="doctor-modal-backdrop">
+
             <div class="doctor-appointments-modal">
 
                 <div class="doctor-modal-header">
                     <div>
                         <h3>Doctor Appointments</h3>
-                        <p>Appointments for Dr. @selectedDoctorName</p>
+
+                        <p>
+                            Appointments for Dr.
+                            @selectedDoctorName
+                        </p>
                     </div>
 
                     <button class="doctor-modal-close-btn"
@@ -487,12 +636,17 @@
                 {
                     <div class="doctor-empty-appointments">
                         <h4>No appointments found</h4>
-                        <p>This doctor does not have any appointments yet.</p>
+
+                        <p>
+                            This doctor does not have any
+                            appointments yet.
+                        </p>
                     </div>
                 }
                 else
                 {
                     <div class="doctor-appointments-table-wrapper">
+
                         <table class="doctor-appointments-table">
 
                             <thead>
@@ -507,32 +661,60 @@
                             </thead>
 
                             <tbody>
-                                @foreach (var appointment in doctorAppointments)
+
+                                @foreach (
+                                    var appointment in
+                                    doctorAppointments)
                                 {
                                     <tr>
-                                        <td>#@appointment.AppointmentId</td>
-                                        <td>Patient @appointment.PatientId</td>
-                                        <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
-                                        <td>@FormatDoctorAppointmentTime(appointment.TimeSlot)</td>
+                                        <td>
+                                            #@appointment.AppointmentId
+                                        </td>
+
+                                        <td>
+                                            Patient
+                                            @appointment.PatientId
+                                        </td>
+
+                                        <td>
+                                            @appointment
+                                            .ScheduledDate
+                                            .ToString(
+                                            "dd-MMM-yyyy")
+                                        </td>
+
+                                        <td>
+                                            @FormatDoctorAppointmentTime(
+                                                appointment.TimeSlot)
+                                        </td>
+
                                         <td>
                                             <span class="@GetDoctorAppointmentStatusClass(appointment.Status)">
-                                                @GetAppointmentStatusText(appointment.Status)
+                                                @GetAppointmentStatusText(
+                                                    appointment.Status)
                                             </span>
                                         </td>
+
                                         <td>
-                                            @(string.IsNullOrWhiteSpace(appointment.CancellationReason)
+                                            @(string.IsNullOrWhiteSpace(
+                                                appointment
+                                                    .CancellationReason)
                                                 ? "-"
-                                                : appointment.CancellationReason)
+                                                : appointment
+                                                    .CancellationReason)
                                         </td>
                                     </tr>
                                 }
+
                             </tbody>
 
                         </table>
+
                     </div>
                 }
 
             </div>
+
         </div>
     }
 
@@ -542,23 +724,35 @@
               OnConfirm="ConfirmToggleStatus" />
 
 @code {
-    private List<DoctorResponseDto> doctors = new();
+    private string AngularLoginUrl =>
+        Configuration[
+            "NavigationSettings:AngularLoginUrl"]
+        ?? "/angular/login";
 
-    private CreateDoctorDto doctorForm = new();
+    private List<DoctorResponseDto> doctors =
+        new();
+
+    private CreateDoctorDto doctorForm =
+        new();
 
     private GenericModal? statusModal;
 
     private DoctorResponseDto? selectedDoctor;
 
-    private string message = string.Empty;
+    private string message =
+        string.Empty;
 
-    private string messageCssClass = "alert alert-info";
+    private string messageCssClass =
+        "alert alert-info";
 
-    private string searchText = string.Empty;
+    private string searchText =
+        string.Empty;
 
-    private string selectedSpecialisation = "All";
+    private string selectedSpecialisation =
+        "All";
 
-    private string selectedStatus = "All";
+    private string selectedStatus =
+        "All";
 
     private bool isLoading;
 
@@ -570,15 +764,18 @@
 
     private int editingDoctorId;
 
-    private readonly List<string> validationErrors = new();
+    private readonly List<string> validationErrors =
+        new();
 
     private bool showAppointmentsModal;
 
     private bool isAppointmentsLoading;
 
-    private string selectedDoctorName = string.Empty;
+    private string selectedDoctorName =
+        string.Empty;
 
-    private List<AppointmentResponseDto> doctorAppointments = new();
+    private List<AppointmentResponseDto>
+        doctorAppointments = new();
 
     private int currentPage = 1;
 
@@ -588,29 +785,42 @@
 
     private int totalPages;
 
-    private readonly int[] pageSizeOptions = new[] { 5, 10, 20 };
+    private readonly int[] pageSizeOptions =
+        new[] { 5, 10, 20 };
 
-    private string temporaryPassword = string.Empty;
+    private string temporaryPassword =
+        string.Empty;
 
-    private string createdDoctorEmail = string.Empty;
+    private string createdDoctorEmail =
+        string.Empty;
 
-    private string createdDoctorName = string.Empty;
+    private string createdDoctorName =
+        string.Empty;
 
     private bool showTempPasswordBox;
 
-    private int TotalDoctors => totalCount;
+    private int TotalDoctors =>
+        totalCount;
 
     private int ActiveDoctors =>
-    doctors.Count(d => d.IsActive && !d.IsOnLeave);
+        doctors.Count(doctor =>
+            doctor.IsActive &&
+            !doctor.IsOnLeave);
 
     private int InactiveDoctors =>
-        doctors.Count(d => !d.IsActive);
+        doctors.Count(doctor =>
+            !doctor.IsActive);
 
     private int OnLeaveDoctors =>
-        doctors.Count(d => d.IsOnLeave);
+        doctors.Count(doctor =>
+            doctor.IsOnLeave);
 
-
-    private int SpecialisationCount => doctors.Select(d => d.Specialisation).Distinct().Count();
+    private int SpecialisationCount =>
+        doctors
+            .Select(doctor =>
+                doctor.Specialisation)
+            .Distinct()
+            .Count();
 
     protected override async Task OnInitializedAsync()
     {
@@ -623,13 +833,14 @@
 
         try
         {
-            var result = await DoctorService.GetDoctorsPagedAsync(
-                currentPage,
-                pageSize,
-                searchText,
-                selectedSpecialisation,
-                selectedStatus
-            );
+            var result =
+                await DoctorService
+                    .GetDoctorsPagedAsync(
+                        currentPage,
+                        pageSize,
+                        searchText,
+                        selectedSpecialisation,
+                        selectedStatus);
 
             doctors = result.Items;
             totalCount = result.TotalCount;
@@ -637,7 +848,8 @@
         }
         catch
         {
-            SetErrorMessage("Failed to load doctors.");
+            SetErrorMessage(
+                "Failed to load doctors.");
         }
         finally
         {
@@ -645,33 +857,54 @@
         }
     }
 
-    private async Task OnSearchChanged(ChangeEventArgs e)
+    private async Task OnSearchChanged(
+        ChangeEventArgs eventArguments)
     {
-        searchText = e.Value?.ToString() ?? string.Empty;
+        searchText =
+            eventArguments.Value?.ToString() ??
+            string.Empty;
+
         currentPage = 1;
+
         await LoadDoctors();
     }
 
-    private async Task OnSpecialisationChanged(ChangeEventArgs e)
+    private async Task OnSpecialisationChanged(
+        ChangeEventArgs eventArguments)
     {
-        selectedSpecialisation = e.Value?.ToString() ?? "All";
+        selectedSpecialisation =
+            eventArguments.Value?.ToString() ??
+            "All";
+
         currentPage = 1;
+
         await LoadDoctors();
     }
 
-    private async Task OnStatusChanged(ChangeEventArgs e)
+    private async Task OnStatusChanged(
+        ChangeEventArgs eventArguments)
     {
-        selectedStatus = e.Value?.ToString() ?? "All";
+        selectedStatus =
+            eventArguments.Value?.ToString() ??
+            "All";
+
         currentPage = 1;
+
         await LoadDoctors();
     }
 
-    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    private async Task OnPageSizeChanged(
+        ChangeEventArgs eventArguments)
     {
-        if (int.TryParse(e.Value?.ToString(), out var selectedSize))
+        if (
+            int.TryParse(
+                eventArguments.Value?.ToString(),
+                out var selectedSize)
+        )
         {
             pageSize = selectedSize;
             currentPage = 1;
+
             await LoadDoctors();
         }
     }
@@ -681,6 +914,7 @@
         if (currentPage > 1)
         {
             currentPage--;
+
             await LoadDoctors();
         }
     }
@@ -690,6 +924,7 @@
         if (currentPage < totalPages)
         {
             currentPage++;
+
             await LoadDoctors();
         }
     }
@@ -701,53 +936,76 @@
             return 0;
         }
 
-        return ((currentPage - 1) * pageSize) + 1;
+        return
+            ((currentPage - 1) * pageSize) + 1;
     }
 
     private int GetEndItemIndex()
     {
-        var end = currentPage * pageSize;
+        var end =
+            currentPage * pageSize;
 
-        return end > totalCount ? totalCount : end;
+        return end > totalCount
+            ? totalCount
+            : end;
     }
 
     private void OpenCreateForm()
     {
         ResetForm();
+
         showForm = true;
         message = string.Empty;
+
         validationErrors.Clear();
     }
 
-    private void StartEdit(DoctorResponseDto doctor)
+    private void StartEdit(
+        DoctorResponseDto doctor)
     {
         showForm = true;
         isEditMode = true;
         editingDoctorId = doctor.DoctorId;
+
         validationErrors.Clear();
+
         message = string.Empty;
 
-        doctorForm = new CreateDoctorDto
-        {
-            DoctorName = doctor.DoctorName,
-            Email = doctor.Email,
-            Specialisation = doctor.Specialisation,
-            YearsOfExperience = doctor.YearsOfExperience,
-            ConsultationFee = doctor.ConsultationFee,
-            IsActive = doctor.IsActive
-        };
+        doctorForm =
+            new CreateDoctorDto
+            {
+                DoctorName =
+                    doctor.DoctorName,
+
+                Email =
+                    doctor.Email,
+
+                Specialisation =
+                    doctor.Specialisation,
+
+                YearsOfExperience =
+                    doctor.YearsOfExperience,
+
+                ConsultationFee =
+                    doctor.ConsultationFee,
+
+                IsActive =
+                    doctor.IsActive
+            };
     }
 
     private void CloseForm()
     {
         ResetForm();
+
         showForm = false;
         message = string.Empty;
     }
 
     private void ToggleStatusLegend()
     {
-        showStatusLegend = !showStatusLegend;
+        showStatusLegend =
+            !showStatusLegend;
     }
 
     private async Task SaveDoctor()
@@ -760,9 +1018,15 @@
         isLoading = true;
         message = string.Empty;
 
-        temporaryPassword = string.Empty;
-        createdDoctorEmail = string.Empty;
-        createdDoctorName = string.Empty;
+        temporaryPassword =
+            string.Empty;
+
+        createdDoctorEmail =
+            string.Empty;
+
+        createdDoctorName =
+            string.Empty;
+
         showTempPasswordBox = false;
 
         try
@@ -781,8 +1045,7 @@
             SetErrorMessage(
                 isEditMode
                     ? "Error occurred while updating doctor."
-                    : "Error occurred while creating doctor."
-            );
+                    : "Error occurred while creating doctor.");
         }
         finally
         {
@@ -792,13 +1055,18 @@
 
     private async Task SaveEditedDoctor()
     {
-        var success = await DoctorService.UpdateDoctorAsync(editingDoctorId, doctorForm);
+        var success =
+            await DoctorService.UpdateDoctorAsync(
+                editingDoctorId,
+                doctorForm);
 
         if (success)
         {
-            SetSuccessMessage("Doctor updated successfully.");
+            SetSuccessMessage(
+                "Doctor updated successfully.");
 
             ResetForm();
+
             showForm = false;
             currentPage = 1;
 
@@ -806,36 +1074,59 @@
         }
         else
         {
-            SetErrorMessage("Failed to update doctor.");
+            SetErrorMessage(
+                "Failed to update doctor.");
         }
     }
 
     private async Task SaveNewDoctor()
     {
-        var createdDoctor = await DoctorService.CreateDoctorAsync(doctorForm);
+        var createdDoctor =
+            await DoctorService.CreateDoctorAsync(
+                doctorForm);
 
         if (createdDoctor == null)
         {
-            SetErrorMessage("Failed to create doctor.");
+            SetErrorMessage(
+                "Failed to create doctor.");
+
             return;
         }
 
-        temporaryPassword = createdDoctor.DisplayTemporaryPassword ?? string.Empty;
-        createdDoctorEmail = createdDoctor.Email ?? doctorForm.Email;
-        createdDoctorName = createdDoctor.DoctorName ?? doctorForm.DoctorName;
+        temporaryPassword =
+            createdDoctor
+                .DisplayTemporaryPassword ??
+            string.Empty;
 
-        showTempPasswordBox = !string.IsNullOrWhiteSpace(temporaryPassword);
+        createdDoctorEmail =
+            createdDoctor.Email ??
+            doctorForm.Email;
+
+        createdDoctorName =
+            createdDoctor.DoctorName ??
+            doctorForm.DoctorName;
+
+        showTempPasswordBox =
+            !string.IsNullOrWhiteSpace(
+                temporaryPassword);
 
         if (showTempPasswordBox)
         {
-            SetSuccessMessage("Doctor created successfully. Share the temporary password with the doctor.");
+            SetSuccessMessage(
+                "Doctor created successfully. " +
+                "Share the temporary password " +
+                "with the doctor.");
         }
         else
         {
-            SetSuccessMessage("Doctor created successfully, but temporary password was not returned by backend.");
+            SetSuccessMessage(
+                "Doctor created successfully, " +
+                "but temporary password was not " +
+                "returned by backend.");
         }
 
         ResetForm();
+
         showForm = false;
         currentPage = 1;
 
@@ -845,30 +1136,50 @@
     private void CloseTempPasswordBox()
     {
         showTempPasswordBox = false;
-        temporaryPassword = string.Empty;
-        createdDoctorEmail = string.Empty;
-        createdDoctorName = string.Empty;
+
+        temporaryPassword =
+            string.Empty;
+
+        createdDoctorEmail =
+            string.Empty;
+
+        createdDoctorName =
+            string.Empty;
     }
 
     private async Task CopyTempPassword()
     {
-        if (string.IsNullOrWhiteSpace(temporaryPassword))
+        if (
+            string.IsNullOrWhiteSpace(
+                temporaryPassword)
+        )
         {
-            SetErrorMessage("Temporary password is not available.");
+            SetErrorMessage(
+                "Temporary password is not available.");
+
             return;
         }
 
-        await JS.InvokeVoidAsync("navigator.clipboard.writeText", temporaryPassword);
+        await JS.InvokeVoidAsync(
+            "navigator.clipboard.writeText",
+            temporaryPassword);
 
-        SetSuccessMessage("Temporary password copied.");
+        SetSuccessMessage(
+            "Temporary password copied.");
     }
 
     private async Task CopyDoctorCredentials()
     {
-        if (string.IsNullOrWhiteSpace(createdDoctorEmail) ||
-            string.IsNullOrWhiteSpace(temporaryPassword))
+        if (
+            string.IsNullOrWhiteSpace(
+                createdDoctorEmail) ||
+            string.IsNullOrWhiteSpace(
+                temporaryPassword)
+        )
         {
-            SetErrorMessage("Doctor login details are not available.");
+            SetErrorMessage(
+                "Doctor login details are not available.");
+
             return;
         }
 
@@ -877,15 +1188,19 @@
             $"Doctor: {createdDoctorName}\n" +
             $"Email: {createdDoctorEmail}\n" +
             $"Temporary Password: {temporaryPassword}\n" +
-            $"Login URL: http://localhost:4200/login\n" +
-            $"Please change your password after first login.";
+            $"Login URL: {AngularLoginUrl}\n" +
+            "Please change your password after first login.";
 
-        await JS.InvokeVoidAsync("navigator.clipboard.writeText", loginDetails);
+        await JS.InvokeVoidAsync(
+            "navigator.clipboard.writeText",
+            loginDetails);
 
-        SetSuccessMessage("Doctor login details copied.");
+        SetSuccessMessage(
+            "Doctor login details copied.");
     }
 
-    private async Task ToggleStatus(DoctorResponseDto doctor)
+    private async Task ToggleStatus(
+        DoctorResponseDto doctor)
     {
         if (doctor.IsActive)
         {
@@ -893,7 +1208,8 @@
 
             statusModal?.Show(
                 "Deactivate Doctor",
-                $"Are you sure you want to deactivate Dr. {doctor.DoctorName}?",
+                $"Are you sure you want to deactivate " +
+                $"Dr. {doctor.DoctorName}?",
                 "Deactivate",
                 "btn btn-warning");
 
@@ -907,21 +1223,26 @@
     {
         if (selectedDoctor != null)
         {
-            await UpdateDoctorStatus(selectedDoctor);
+            await UpdateDoctorStatus(
+                selectedDoctor);
+
             selectedDoctor = null;
         }
     }
 
-    private async Task UpdateDoctorStatus(DoctorResponseDto doctor)
+    private async Task UpdateDoctorStatus(
+        DoctorResponseDto doctor)
     {
         isLoading = true;
         message = string.Empty;
 
         try
         {
-            var success = await DoctorService.SetDoctorStatusAsync(
-                doctor.DoctorId,
-                !doctor.IsActive);
+            var success =
+                await DoctorService
+                    .SetDoctorStatusAsync(
+                        doctor.DoctorId,
+                        !doctor.IsActive);
 
             if (success)
             {
@@ -934,12 +1255,14 @@
             }
             else
             {
-                SetErrorMessage("Failed to update doctor status.");
+                SetErrorMessage(
+                    "Failed to update doctor status.");
             }
         }
         catch
         {
-            SetErrorMessage("Error updating doctor status.");
+            SetErrorMessage(
+                "Error updating doctor status.");
         }
         finally
         {
@@ -947,20 +1270,30 @@
         }
     }
 
-    private async Task OpenDoctorAppointments(DoctorResponseDto doctor)
+    private async Task OpenDoctorAppointments(
+        DoctorResponseDto doctor)
     {
         showAppointmentsModal = true;
         isAppointmentsLoading = true;
-        selectedDoctorName = doctor.DoctorName ?? string.Empty;
-        doctorAppointments = new();
+
+        selectedDoctorName =
+            doctor.DoctorName ??
+            string.Empty;
+
+        doctorAppointments =
+            new();
 
         try
         {
-            doctorAppointments = await AppointmentService.GetAppointmentsByDoctorAsync(doctor.DoctorId);
+            doctorAppointments =
+                await AppointmentService
+                    .GetAppointmentsByDoctorAsync(
+                        doctor.DoctorId);
         }
         catch
         {
-            SetErrorMessage("Failed to load doctor appointments.");
+            SetErrorMessage(
+                "Failed to load doctor appointments.");
         }
         finally
         {
@@ -971,8 +1304,12 @@
     private void CloseAppointmentsModal()
     {
         showAppointmentsModal = false;
-        selectedDoctorName = string.Empty;
-        doctorAppointments = new();
+
+        selectedDoctorName =
+            string.Empty;
+
+        doctorAppointments =
+            new();
     }
 
     private bool ValidateDoctorForm()
@@ -989,69 +1326,109 @@
             return true;
         }
 
-        SetErrorMessage("Please fix the validation errors.");
+        SetErrorMessage(
+            "Please fix the validation errors.");
+
         return false;
     }
 
     private void ValidateDoctorName()
     {
-        if (string.IsNullOrWhiteSpace(doctorForm.DoctorName))
+        if (
+            string.IsNullOrWhiteSpace(
+                doctorForm.DoctorName)
+        )
         {
-            validationErrors.Add("Doctor name is required.");
+            validationErrors.Add(
+                "Doctor name is required.");
+
             return;
         }
 
-        if (doctorForm.DoctorName.Trim().Length < 3)
+        if (
+            doctorForm.DoctorName.Trim().Length <
+            3
+        )
         {
-            validationErrors.Add("Doctor name must be at least 3 characters.");
+            validationErrors.Add(
+                "Doctor name must be at least " +
+                "3 characters.");
         }
     }
 
     private void ValidateDoctorEmail()
     {
-        if (string.IsNullOrWhiteSpace(doctorForm.Email))
+        if (
+            string.IsNullOrWhiteSpace(
+                doctorForm.Email)
+        )
         {
-            validationErrors.Add("Email is required.");
+            validationErrors.Add(
+                "Email is required.");
+
             return;
         }
 
         if (!IsValidEmail(doctorForm.Email))
         {
-            validationErrors.Add("Enter a valid email address.");
+            validationErrors.Add(
+                "Enter a valid email address.");
         }
     }
 
     private void ValidateDoctorExperience()
     {
-        if (doctorForm.YearsOfExperience < 0)
+        if (
+            doctorForm.YearsOfExperience <
+            0
+        )
         {
-            validationErrors.Add("Experience cannot be negative.");
+            validationErrors.Add(
+                "Experience cannot be negative.");
         }
 
-        if (doctorForm.YearsOfExperience > 60)
+        if (
+            doctorForm.YearsOfExperience >
+            60
+        )
         {
-            validationErrors.Add("Experience cannot be greater than 60 years.");
+            validationErrors.Add(
+                "Experience cannot be greater " +
+                "than 60 years.");
         }
     }
 
     private void ValidateDoctorFee()
     {
-        if (doctorForm.ConsultationFee <= 0)
+        if (
+            doctorForm.ConsultationFee <=
+            0
+        )
         {
-            validationErrors.Add("Consultation fee must be greater than 0.");
+            validationErrors.Add(
+                "Consultation fee must be " +
+                "greater than 0.");
         }
 
-        if (doctorForm.ConsultationFee > 100000)
+        if (
+            doctorForm.ConsultationFee >
+            100000
+        )
         {
-            validationErrors.Add("Consultation fee is too high.");
+            validationErrors.Add(
+                "Consultation fee is too high.");
         }
     }
 
-    private static bool IsValidEmail(string email)
+    private static bool IsValidEmail(
+        string email)
     {
         try
         {
-            var address = new System.Net.Mail.MailAddress(email);
+            var address =
+                new System.Net.Mail.MailAddress(
+                    email);
+
             return address.Address == email;
         }
         catch
@@ -1062,24 +1439,31 @@
 
     private void ResetForm()
     {
-        doctorForm = new CreateDoctorDto
-        {
-            IsActive = true
-        };
+        doctorForm =
+            new CreateDoctorDto
+            {
+                IsActive = true
+            };
 
         isEditMode = false;
         editingDoctorId = 0;
+
         validationErrors.Clear();
     }
 
-    private static string GetInitials(string? name)
+    private static string GetInitials(
+        string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
             return "DR";
         }
 
-        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var parts =
+            name.Split(
+                ' ',
+                StringSplitOptions
+                    .RemoveEmptyEntries);
 
         if (parts.Length == 1)
         {
@@ -1088,10 +1472,14 @@
                 : parts[0].ToUpper();
         }
 
-        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+        return
+            $"{parts[0][0]}{parts[1][0]}"
+                .ToUpper();
     }
 
-    private static string FormatDoctorAppointmentTime(object? timeSlot)
+    private static string
+        FormatDoctorAppointmentTime(
+            object? timeSlot)
     {
         if (timeSlot == null)
         {
@@ -1100,59 +1488,97 @@
 
         if (timeSlot is TimeOnly timeOnly)
         {
-            return timeOnly.ToString("hh:mm tt");
+            return timeOnly.ToString(
+                "hh:mm tt");
         }
 
         if (timeSlot is TimeSpan timeSpan)
         {
-            return DateTime.Today.Add(timeSpan).ToString("hh:mm tt");
+            return DateTime.Today
+                .Add(timeSpan)
+                .ToString("hh:mm tt");
         }
 
         if (timeSlot is DateTime dateTime)
         {
-            return dateTime.ToString("hh:mm tt");
+            return dateTime.ToString(
+                "hh:mm tt");
         }
 
-        var value = timeSlot.ToString();
+        var value =
+            timeSlot.ToString();
 
         return string.IsNullOrWhiteSpace(value)
             ? "-"
             : value;
     }
 
-    private static string GetAppointmentStatusText(AppointmentStatus status)
+    private static string
+        GetAppointmentStatusText(
+            AppointmentStatus status)
     {
         return status switch
         {
-            AppointmentStatus.Pending => "Pending",
-            AppointmentStatus.Confirmed => "Confirmed",
-            AppointmentStatus.Cancelled => "Cancelled",
-            AppointmentStatus.Completed => "Completed",
+            AppointmentStatus.Pending =>
+                "Pending",
+
+            AppointmentStatus.Confirmed =>
+                "Confirmed",
+
+            AppointmentStatus.Cancelled =>
+                "Cancelled",
+
+            AppointmentStatus.Completed =>
+                "Completed",
+
+            AppointmentStatus.DoctorUnavailable =>
+                "Doctor Unavailable",
+
             _ => "Unknown"
         };
     }
 
-    private static string GetDoctorAppointmentStatusClass(AppointmentStatus status)
+    private static string
+        GetDoctorAppointmentStatusClass(
+            AppointmentStatus status)
     {
         return status switch
         {
-            AppointmentStatus.Pending => "doctor-appt-status pending",
-            AppointmentStatus.Confirmed => "doctor-appt-status confirmed",
-            AppointmentStatus.Cancelled => "doctor-appt-status cancelled",
-            AppointmentStatus.Completed => "doctor-appt-status completed",
-            _ => "doctor-appt-status pending"
+            AppointmentStatus.Pending =>
+                "doctor-appt-status pending",
+
+            AppointmentStatus.Confirmed =>
+                "doctor-appt-status confirmed",
+
+            AppointmentStatus.Cancelled =>
+                "doctor-appt-status cancelled",
+
+            AppointmentStatus.Completed =>
+                "doctor-appt-status completed",
+
+            AppointmentStatus.DoctorUnavailable =>
+                "doctor-appt-status cancelled",
+
+            _ =>
+                "doctor-appt-status pending"
         };
     }
 
-    private void SetSuccessMessage(string text)
+    private void SetSuccessMessage(
+        string text)
     {
         message = text;
-        messageCssClass = "alert alert-info";
+
+        messageCssClass =
+            "alert alert-info";
     }
 
-    private void SetErrorMessage(string text)
+    private void SetErrorMessage(
+        string text)
     {
         message = text;
-        messageCssClass = "alert alert-danger";
+
+        messageCssClass =
+            "alert alert-danger";
     }
 }

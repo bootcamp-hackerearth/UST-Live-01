@@ -20,7 +20,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.StaticFiles;
 using Serilog;
 using Serilog.Events;
 
@@ -502,6 +503,15 @@ static void ConfigureHttpPipeline(
 
     app.UseHttpsRedirection();
 
+    
+
+    app.UseDefaultFiles();
+
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        ServeUnknownFileTypes = true
+    });
+
     app.UseSerilogRequestLogging(
         options =>
         {
@@ -532,13 +542,63 @@ static void ConfigureHttpPipeline(
                 };
         });
 
-    app.UseMiddleware<
-        GlobalExceptionHandler>();
+    app.UseMiddleware<GlobalExceptionHandler>();
 
     app.UseCors(CorsPolicyName);
 
     app.UseAuthentication();
+
     app.UseAuthorization();
 
+    app.MapGet("/angular", context =>
+    {
+        context.Response.Redirect(
+            "/angular/index.html");
+
+        return Task.CompletedTask;
+    });
+
+    app.MapGet("/blazor", context =>
+    {
+        context.Response.Redirect(
+            "/blazor/index.html");
+
+        return Task.CompletedTask;
+    });
+
     app.MapControllers();
+    app.MapFallback(async context =>
+    {
+        var path = context.Request.Path.Value ?? string.Empty;
+
+        if (path.StartsWith("/blazor/", StringComparison.OrdinalIgnoreCase)
+            && !Path.HasExtension(path))
+        {
+            context.Response.ContentType = "text/html";
+
+            await context.Response.SendFileAsync(
+                Path.Combine(
+                    app.Environment.WebRootPath,
+                    "blazor",
+                    "index.html"));
+
+            return;
+        }
+
+        if (path.StartsWith("/angular/", StringComparison.OrdinalIgnoreCase)
+            && !Path.HasExtension(path))
+        {
+            context.Response.ContentType = "text/html";
+
+            await context.Response.SendFileAsync(
+                Path.Combine(
+                    app.Environment.WebRootPath,
+                    "angular",
+                    "index.html"));
+
+            return;
+        }
+
+        context.Response.StatusCode = StatusCodes.Status404NotFound;
+    });
 }

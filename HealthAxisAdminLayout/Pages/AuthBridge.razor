@@ -1,4 +1,5 @@
-﻿@page "/auth-bridge"
+﻿@inject IConfiguration Configuration
+@page "/auth-bridge"
 @using HealthAxisAdminLayout.Layout
 @layout EmptyLayout
 
@@ -18,7 +19,9 @@
 </div>
 
 @code {
-    private const string AngularLoginUrl = "http://localhost:4200/login";
+    private string AngularLoginUrl =>
+    Configuration["NavigationSettings:AngularLoginUrl"]
+    ?? "/angular/login";
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,7 +48,7 @@
         await JS.InvokeVoidAsync("authLocalStorage.setItem", "referenceId", referenceId ?? "");
         await JS.InvokeVoidAsync("authLocalStorage.setItem", "isFirstLogin", isFirstLogin ?? "false");
 
-        Navigation.NavigateTo("/admin/dashboard", true);
+        Navigation.NavigateTo("admin/dashboard", true);
     }
 
     private static Dictionary<string, string> ParseQueryString(string query)

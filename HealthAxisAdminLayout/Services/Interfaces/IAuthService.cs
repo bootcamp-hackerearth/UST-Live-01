@@ -1,4 +1,4 @@
-﻿using HealthAxis.Shared.DTOs.Auth;
+using HealthAxis.Shared.DTOs.Auth;
 using HealthAxis.Shared.DTOs.User;
 
 namespace HealthAxisAdminLayout.Services.Interfaces
@@ -20,3 +20,4 @@ namespace HealthAxisAdminLayout.Services.Interfaces
             Task<bool> IsAdminAsync();
         }
     }
+

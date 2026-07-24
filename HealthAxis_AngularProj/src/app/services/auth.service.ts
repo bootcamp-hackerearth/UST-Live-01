@@ -4,9 +4,9 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private readonly API = 'https://localhost:7054/api/Auth';
+  private readonly API = '/api/Auth';
 
-  private readonly ADMIN_PORTAL_URL = 'https://localhost:7107';
+  private readonly ADMIN_PORTAL_URL = '/blazor';
 
   constructor(private readonly http: HttpClient) {}
 

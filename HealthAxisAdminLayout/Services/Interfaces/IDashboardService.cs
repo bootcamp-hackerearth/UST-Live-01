@@ -1,4 +1,4 @@
-﻿using HealthAxisAdminLayout.DTOs.Dashboard;
+using HealthAxisAdminLayout.DTOs.Dashboard;
 
 namespace HealthAxisAdminLayout.Services.Interfaces
 {
@@ -7,3 +7,4 @@ namespace HealthAxisAdminLayout.Services.Interfaces
         Task<AdminDashboardDto> GetDashboardAsync();
     }
 }
+

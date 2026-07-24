@@ -1,4 +1,4 @@
-﻿using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.Common;
 using HealthAxis.Shared.DTOs.Doctor;
 
 
@@ -27,3 +27,4 @@ namespace HealthAxisAdminLayout.Services.Interfaces
         Task<bool> SetDoctorStatusAsync(int doctorId, bool status);
     }
 }
+

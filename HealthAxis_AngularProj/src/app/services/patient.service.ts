@@ -4,7 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 @Injectable({ providedIn: 'root' })
 export class PatientService {
 
-  private API = 'https://localhost:7054/api';
+  private API = '/api';
 
   constructor(private http: HttpClient) {}
 

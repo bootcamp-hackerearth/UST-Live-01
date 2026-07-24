@@ -1,4 +1,4 @@
-﻿using HealthAxis.Shared.DTOs.HealthRecord;
+using HealthAxis.Shared.DTOs.HealthRecord;
 
 namespace HealthAxisAdminLayout.Services.Interfaces
 {
@@ -9,3 +9,4 @@ namespace HealthAxisAdminLayout.Services.Interfaces
         Task<bool> DeleteHealthRecordAsync(int id);
     }
 }
+

@@ -74,4 +74,9 @@
 		<ProjectReference Include="..\HealthAxis_Shared\HealthAxis.Shared.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\angular\" />
+	  <Folder Include="wwwroot\blazor\" />
+	</ItemGroup>
+
 </Project>

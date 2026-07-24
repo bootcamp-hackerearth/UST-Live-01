@@ -1,4 +1,4 @@
-﻿using HealthAxisAdminLayout.Services.Interfaces;
+using HealthAxisAdminLayout.Services.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 namespace HealthAxisAdminLayout.Auth;
@@ -46,3 +46,5 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         return new AuthenticationState(user);
     }
 }
+
+

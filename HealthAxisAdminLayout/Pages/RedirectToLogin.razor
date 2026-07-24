@@ -1,9 +1,12 @@
-﻿@using Microsoft.AspNetCore.Components
+﻿@inject IConfiguration Configuration
+@using Microsoft.AspNetCore.Components
 @using HealthAxisAdminLayout.Pages
 @inject NavigationManager Navigation
 
 @code {
-    private const string AngularLoginUrl = "http://localhost:4200/login";
+    private string AngularLoginUrl =>
+    Configuration["NavigationSettings:AngularLoginUrl"]
+    ?? "/angular/login";
 
     protected override void OnInitialized()
     {

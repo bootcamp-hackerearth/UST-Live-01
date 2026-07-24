@@ -1,4 +1,4 @@
-﻿using HealthAxis.Shared.DTOs.Auth;
+using HealthAxis.Shared.DTOs.Auth;
 using HealthAxis.Shared.DTOs.User;
 using HealthAxis.Shared;
     
@@ -20,5 +20,7 @@ namespace HealthAxisAdminLayout.Services.Interfaces
     Task LogoutAsync();
 }
 }
+
+
 
 

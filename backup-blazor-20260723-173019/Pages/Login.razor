@@ -1,0 +1,26 @@
+﻿@page "/login"
+@using HealthAxisAdminLayout.Layout
+@layout EmptyLayout
+
+@inject NavigationManager Navigation
+
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Segoe UI,Arial;background:#f7fbfa;">
+    <div style="text-align:center;padding:32px;border-radius:20px;background:white;box-shadow:0 20px 60px rgba(2,44,44,0.12);">
+        <h3 style="margin-bottom:8px;color:#0f3f39;">
+            Redirecting to HealthAxis login...
+        </h3>
+
+        <p style="color:#637a76;margin:0;">
+            Please sign in from the main HealthAxis portal.
+        </p>
+    </div>
+</div>
+
+@code {
+    private const string AngularLoginUrl = "http://localhost:4200/login";
+
+    protected override void OnInitialized()
+    {
+        Navigation.NavigateTo(AngularLoginUrl, true);
+    }
+}

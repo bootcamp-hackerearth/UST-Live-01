@@ -1,4 +1,4 @@
-﻿using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.Common;
 using HealthAxis.Shared.DTOs.Doctor;
 
 using HealthAxisAdminLayout.Services.Interfaces;
@@ -17,7 +17,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
 
         public async Task<List<DoctorResponseDto>> GetDoctorsAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<DoctorResponseDto>>("api/doctor");
+            var result = await _http.GetFromJsonAsync<List<DoctorResponseDto>>("doctor");
 
             return result ?? new List<DoctorResponseDto>();
         }
@@ -50,7 +50,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
                 query.Add($"status={Uri.EscapeDataString(status)}");
             }
 
-            var url = $"api/doctor/paged?{string.Join("&", query)}";
+            var url = $"doctor/paged?{string.Join("&", query)}";
 
             var result = await _http.GetFromJsonAsync<PagedResponseDto<DoctorResponseDto>>(url);
 
@@ -59,12 +59,12 @@ namespace HealthAxisAdminLayout.Services.Implementations
 
         public async Task<DoctorResponseDto?> GetDoctorByIdAsync(int id)
         {
-            return await _http.GetFromJsonAsync<DoctorResponseDto>($"api/doctor/{id}");
+            return await _http.GetFromJsonAsync<DoctorResponseDto>($"doctor/{id}");
         }
 
         public async Task<CreateDoctorResultDto?> CreateDoctorAsync(CreateDoctorDto dto)
         {
-            var response = await _http.PostAsJsonAsync("api/doctor", dto);
+            var response = await _http.PostAsJsonAsync("doctor", dto);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -78,14 +78,14 @@ namespace HealthAxisAdminLayout.Services.Implementations
 
         public async Task<bool> UpdateDoctorAsync(int id, CreateDoctorDto dto)
         {
-            var response = await _http.PutAsJsonAsync($"api/doctor/{id}", dto);
+            var response = await _http.PutAsJsonAsync($"doctor/{id}", dto);
 
             return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> DeleteDoctorAsync(int id)
         {
-            var response = await _http.DeleteAsync($"api/doctor/{id}");
+            var response = await _http.DeleteAsync($"doctor/{id}");
 
             return response.IsSuccessStatusCode;
         }
@@ -93,7 +93,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<bool> SetDoctorStatusAsync(int doctorId, bool status)
         {
             var response = await _http.PatchAsync(
-                $"api/doctor/status/{doctorId}?status={status}",
+                $"doctor/status/{doctorId}?status={status}",
                 null
             );
 
@@ -101,3 +101,4 @@ namespace HealthAxisAdminLayout.Services.Implementations
         }
     }
 }
+

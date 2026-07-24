@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Json;
+using System.Net.Http.Json;
 using HealthAxis.Shared.DTOs.HealthRecord;
 using HealthAxisAdminLayout.Services.Interfaces;
 
@@ -16,7 +16,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<List<HealthRecordResponseDto>> GetHealthRecordsAsync()
         {
             var result = await _http.GetFromJsonAsync<List<HealthRecordResponseDto>>(
-                "api/healthrecord"
+                "healthrecord"
             );
 
             return result ?? new List<HealthRecordResponseDto>();
@@ -25,10 +25,12 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<bool> DeleteHealthRecordAsync(int id)
         {
             var response = await _http.DeleteAsync(
-                $"api/healthrecord/{id}"
+                $"healthrecord/{id}"
             );
 
             return response.IsSuccessStatusCode;
         }
     }
 }
+
+

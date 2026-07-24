@@ -1,4 +1,4 @@
-﻿using HealthAxis.Shared.DTOs.Appointment;
+using HealthAxis.Shared.DTOs.Appointment;
 using HealthAxis.Shared.DTOs.Common;
 using HealthAxis.Shared.Enums;
 
@@ -32,3 +32,4 @@ namespace HealthAxisAdminLayout.Services.Interfaces
         Task<bool> DeleteAppointmentAsync(int appointmentId);
     }
 }
+

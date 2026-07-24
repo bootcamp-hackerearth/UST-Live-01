@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -21,7 +21,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<List<PatientResponseDto>> GetPatientsAsync()
         {
             var result = await _http.GetFromJsonAsync<List<PatientResponseDto>>(
-                "api/patient"
+                "patient"
             );
 
             return result ?? new List<PatientResponseDto>();
@@ -30,7 +30,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<PatientResponseDto?> GetPatientByIdAsync(int id)
         {
             return await _http.GetFromJsonAsync<PatientResponseDto>(
-                $"api/patient/{id}"
+                $"patient/{id}"
             );
         }
 
@@ -49,8 +49,8 @@ namespace HealthAxisAdminLayout.Services.Implementations
             }
 
             var url = query.Count == 0
-                ? "api/patient/search"
-                : $"api/patient/search?{string.Join("&", query)}";
+                ? "patient/search"
+                : $"patient/search?{string.Join("&", query)}";
 
             var result = await _http.GetFromJsonAsync<List<PatientResponseDto>>(url);
 
@@ -79,7 +79,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
                 query.Add($"gender={Uri.EscapeDataString(gender)}");
             }
 
-            var url = $"api/patient/paged?{string.Join("&", query)}";
+            var url = $"patient/paged?{string.Join("&", query)}";
 
             var result = await _http.GetFromJsonAsync<PagedResponseDto<PatientResponseDto>>(url);
 
@@ -89,7 +89,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<bool> CreatePatientAsync(CreatePatientDto dto)
         {
             var response = await _http.PostAsJsonAsync(
-                "api/patient",
+                "patient",
                 dto
             );
 
@@ -99,7 +99,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<bool> UpdatePatientAsync(int id, UpdatePatientDto dto)
         {
             var response = await _http.PutAsJsonAsync(
-                $"api/patient/{id}",
+                $"patient/{id}",
                 dto
             );
 
@@ -109,10 +109,11 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<bool> DeletePatientAsync(int id)
         {
             var response = await _http.DeleteAsync(
-                $"api/patient/{id}"
+                $"patient/{id}"
             );
 
             return response.IsSuccessStatusCode;
         }
     }
 }
+

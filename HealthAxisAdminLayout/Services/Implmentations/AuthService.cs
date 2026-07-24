@@ -1,4 +1,4 @@
-﻿using HealthAxis.Shared.DTOs.Auth;
+using HealthAxis.Shared.DTOs.Auth;
 using HealthAxis.Shared.DTOs.User;
 using HealthAxisAdminLayout.Services.Interfaces;
 using System.Net.Http.Json;
@@ -19,7 +19,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<AuthResponseDto?> LoginAsync(LoginDto LoginDto)
         {
             var response = await _http.PostAsJsonAsync(
-                "api/auth/login",
+                "auth/login",
                 LoginDto
             );
 
@@ -70,3 +70,5 @@ namespace HealthAxisAdminLayout.Services.Implementations
         }
     }
 }
+
+

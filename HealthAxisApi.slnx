@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
+    <File Path="build-frontends.ps1" />
   </Folder>
   <Project Path="HealthAxisAdminLayout/HealthAxisAdminLayout.csproj" Id="7cefd2d1-df6f-4222-a06b-9e4d75ef4380" />
   <Project Path="HealthAxisApi/HealthAxisCore_Api.csproj" />

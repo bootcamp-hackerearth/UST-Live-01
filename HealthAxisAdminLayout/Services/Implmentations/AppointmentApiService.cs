@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -24,7 +24,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<List<AppointmentResponseDto>> GetAppointmentsAsync()
         {
             var result = await _http.GetFromJsonAsync<List<AppointmentResponseDto>>(
-                "api/appointment"
+                "appointment"
             );
 
             return result ?? new List<AppointmentResponseDto>();
@@ -33,7 +33,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<List<AppointmentResponseDto>> GetAppointmentsByDoctorAsync(int doctorId)
         {
             var response = await _http.GetAsync(
-                $"api/appointment/doctor/{doctorId}"
+                $"appointment/doctor/{doctorId}"
             );
 
             if (response.IsSuccessStatusCode)
@@ -93,7 +93,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
                 query.Add($"endDate={endDate.Value:yyyy-MM-dd}");
             }
 
-            var url = $"api/appointment/paged?{string.Join("&", query)}";
+            var url = $"appointment/paged?{string.Join("&", query)}";
 
             var result = await _http.GetFromJsonAsync<PagedResponseDto<AppointmentResponseDto>>(url);
 
@@ -123,8 +123,8 @@ namespace HealthAxisAdminLayout.Services.Implementations
             }
 
             var url = query.Count == 0
-                ? "api/appointment/filter"
-                : $"api/appointment/filter?{string.Join("&", query)}";
+                ? "appointment/filter"
+                : $"appointment/filter?{string.Join("&", query)}";
 
             var result = await _http.GetFromJsonAsync<List<AppointmentResponseDto>>(url);
 
@@ -134,7 +134,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<bool> ConfirmAppointmentAsync(int appointmentId)
         {
             var response = await _http.PostAsync(
-                $"api/appointment/confirm/{appointmentId}",
+                $"appointment/confirm/{appointmentId}",
                 null
             );
 
@@ -146,7 +146,7 @@ namespace HealthAxisAdminLayout.Services.Implementations
             var encodedReason = Uri.EscapeDataString(reason);
 
             var response = await _http.PostAsync(
-                $"api/appointment/cancel/{appointmentId}?reason={encodedReason}",
+                $"appointment/cancel/{appointmentId}?reason={encodedReason}",
                 null
             );
 
@@ -156,10 +156,11 @@ namespace HealthAxisAdminLayout.Services.Implementations
         public async Task<bool> DeleteAppointmentAsync(int appointmentId)
         {
             var response = await _http.DeleteAsync(
-                $"api/appointment/{appointmentId}"
+                $"appointment/{appointmentId}"
             );
 
             return response.IsSuccessStatusCode;
         }
     }
 }
+

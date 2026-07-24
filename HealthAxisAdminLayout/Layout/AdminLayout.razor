@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿@inject IConfiguration Configuration
+@inherits LayoutComponentBase
 
 @using HealthAxisAdminLayout.Services.Interfaces
 
@@ -20,22 +21,22 @@
 
         <nav class="hx-sidebar-nav">
 
-            <NavLink class="hx-nav-link" href="/admin/dashboard" Match="NavLinkMatch.All">
+            <NavLink class="hx-nav-link" href="admin/dashboard" Match="NavLinkMatch.All">
                 <span class="hx-nav-icon">▣</span>
                 <span>Dashboard</span>
             </NavLink>
 
-            <NavLink class="hx-nav-link" href="/admin/doctors">
+            <NavLink class="hx-nav-link" href="admin/doctors">
                 <span class="hx-nav-icon">+</span>
                 <span>Doctors</span>
             </NavLink>
 
-            <NavLink class="hx-nav-link" href="/admin/patients">
+            <NavLink class="hx-nav-link" href="admin/patients">
                 <span class="hx-nav-icon">●</span>
                 <span>Patients</span>
             </NavLink>
 
-            <NavLink class="hx-nav-link" href="/admin/appointments">
+            <NavLink class="hx-nav-link" href="admin/appointments">
                 <span class="hx-nav-icon">◷</span>
                 <span>Appointments</span>
             </NavLink>
@@ -81,7 +82,9 @@
 </div>
 
 @code {
-    private const string AngularLoginUrl = "http://localhost:4200/login";
+    private string AngularLoginUrl =>
+    Configuration["NavigationSettings:AngularLoginUrl"]
+    ?? "/angular/login";
 
     private string adminEmail = "Admin";
 
