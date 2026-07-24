@@ -350,80 +350,180 @@ namespace HealthAxis.API.Services.Implementation
                 int? doctorId,
                 CancellationToken cancellationToken)
         {
-            var notifications =
-                await GetRecipientQuery(
-                        patientId,
-                        doctorId)
-                    .AsNoTracking()
-                    .OrderByDescending(
-                        notification =>
-                            notification.CreatedDate)
-                    .ThenByDescending(
-                        notification =>
-                            notification.NotificationId)
-                    .ToListAsync(cancellationToken);
+            try
+            {
+                var notifications =
+                    await GetRecipientQuery(
+                            patientId,
+                            doctorId)
+                        .AsNoTracking()
+                        .OrderByDescending(
+                            notification =>
+                                notification.CreatedDate)
+                        .ThenByDescending(
+                            notification =>
+                                notification.NotificationId)
+                        .Select(notification =>
+                            new NotificationDto
+                            {
+                                NotificationId =
+                                    notification.NotificationId,
 
-            var appointmentIds = notifications
-                .Where(
-                    notification =>
+                                AppointmentId =
+                                    notification.AppointmentId,
+
+                                Title =
+                                    notification.Title ??
+                                    string.Empty,
+
+                                Message =
+                                    notification.Message ??
+                                    string.Empty,
+
+                                NotificationType =
+                                    notification.NotificationType ??
+                                    "General",
+
+                                IsRead =
+                                    notification.IsRead,
+
+                                CreatedDate =
+                                    notification.CreatedDate
+                            })
+                        .ToListAsync(cancellationToken);
+
+                if (notifications.Count == 0)
+                {
+                    return notifications;
+                }
+
+                var appointmentIds = notifications
+                    .Where(notification =>
                         notification.AppointmentId.HasValue)
-                .Select(
-                    notification =>
+                    .Select(notification =>
                         notification.AppointmentId!.Value)
-                .Distinct()
-                .ToList();
+                    .Distinct()
+                    .ToList();
 
-            var appointments =
-                await GetAppointmentsAsync(
-                    appointmentIds,
-                    cancellationToken);
+                var doctorDetails =
+                    await GetDoctorDetailsByAppointmentAsync(
+                        appointmentIds,
+                        cancellationToken);
 
-            return notifications
-                .Select(notification =>
-                    CreateNotificationDto(
-                        notification,
-                        FindDoctor(
-                            notification,
-                            appointments)))
-                .ToList();
+                foreach (var notification in notifications)
+                {
+                    if (
+                        notification.AppointmentId is int appointmentId &&
+                        doctorDetails.TryGetValue(
+                            appointmentId,
+                            out var doctorDetail)
+                    )
+                    {
+                        notification.DoctorName =
+                            doctorDetail.DoctorName;
+
+                        notification.DoctorSpecialisation =
+                            doctorDetail.DoctorSpecialisation;
+                    }
+                }
+
+                return notifications;
+            }
+            catch (OperationCanceledException)
+                when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(
+                    exception,
+                    "Failed to load notifications. PatientId: {PatientId}, DoctorId: {DoctorId}.",
+                    patientId,
+                    doctorId);
+
+                throw;
+            }
         }
 
-        private async Task<Dictionary<int, Appointment>>
-            GetAppointmentsAsync(
+        private async Task<
+            Dictionary<int, NotificationDoctorDetails>>
+            GetDoctorDetailsByAppointmentAsync(
                 List<int> appointmentIds,
                 CancellationToken cancellationToken)
         {
             if (appointmentIds.Count == 0)
             {
-                return new Dictionary<int, Appointment>();
+                return [];
             }
 
-            return await dbContext.Appointments
-                .AsNoTracking()
-                .Include(appointment => appointment.Doctor)
-                .Where(appointment =>
-                    appointmentIds.Contains(
-                        appointment.AppointmentId))
-                .ToDictionaryAsync(
-                    appointment =>
+            var appointmentDoctorLinks =
+                await dbContext.Appointments
+                    .AsNoTracking()
+                    .Where(appointment =>
+                        appointmentIds.Contains(
+                            appointment.AppointmentId))
+                    .Select(appointment => new
+                    {
                         appointment.AppointmentId,
-                    cancellationToken);
-        }
+                        appointment.DoctorId
+                    })
+                    .ToListAsync(cancellationToken);
 
-        private static Doctor? FindDoctor(
-            Notification notification,
-            Dictionary<int, Appointment> appointments)
-        {
-            if (!notification.AppointmentId.HasValue)
+            if (appointmentDoctorLinks.Count == 0)
             {
-                return null;
+                return [];
             }
 
-            return appointments.TryGetValue(
-                notification.AppointmentId.Value,
-                out var appointment)
-                ? appointment.Doctor
-                : null;
+            var doctorIds = appointmentDoctorLinks
+                .Select(item => item.DoctorId)
+                .Distinct()
+                .ToList();
+
+            var doctorRows =
+                await dbContext.Doctors
+                    .AsNoTracking()
+                    .Where(doctor =>
+                        doctorIds.Contains(
+                            doctor.DoctorId))
+                    .Select(doctor => new
+                    {
+                        doctor.DoctorId,
+                        doctor.FullName,
+                        doctor.Specialisation
+                    })
+                    .ToListAsync(cancellationToken);
+
+            var doctorsById = doctorRows
+                .ToDictionary(
+                    doctor => doctor.DoctorId,
+                    doctor =>
+                        new NotificationDoctorDetails(
+                            doctor.FullName ??
+                            string.Empty,
+                            doctor.Specialisation.ToString()));
+
+            var result =
+                new Dictionary<
+                    int,
+                    NotificationDoctorDetails>();
+
+            foreach (
+                var appointmentLink
+                in appointmentDoctorLinks)
+            {
+                if (
+                    doctorsById.TryGetValue(
+                        appointmentLink.DoctorId,
+                        out var doctorDetail)
+                )
+                {
+                    result[appointmentLink.AppointmentId] =
+                        doctorDetail;
+                }
+            }
+
+            return result;
         }
 
         private async Task<List<Notification>>
@@ -824,41 +924,7 @@ namespace HealthAxis.API.Services.Implementation
                 "A valid notification recipient is required.");
         }
 
-        private static NotificationDto
-            CreateNotificationDto(
-                Notification notification,
-                Doctor? doctor)
-        {
-            return new NotificationDto
-            {
-                NotificationId =
-                    notification.NotificationId,
 
-                AppointmentId =
-                    notification.AppointmentId,
-
-                Title =
-                    notification.Title,
-
-                Message =
-                    notification.Message,
-
-                NotificationType =
-                    notification.NotificationType,
-
-                IsRead =
-                    notification.IsRead,
-
-                CreatedDate =
-                    notification.CreatedDate,
-
-                DoctorName =
-                    doctor?.FullName,
-
-                DoctorSpecialisation =
-                    doctor?.Specialisation.ToString()
-            };
-        }
 
         private static Notification
             CreateAppointmentBookedNotification(
@@ -918,6 +984,11 @@ namespace HealthAxis.API.Services.Implementation
                    sqlException.Number ==
                        UniqueConstraintErrorNumber;
         }
+
+        private readonly record struct
+            NotificationDoctorDetails(
+                string DoctorName,
+                string DoctorSpecialisation);
 
         private static void ValidateRecipientId(
             int recipientId)
