@@ -14,10 +14,6 @@ pipeline {
         )
     }
 
-    /*
-     * After the first manual build succeeds, this trigger checks
-     * the configured SCM for changes approximately every 5 minutes.
-     */
     triggers {
         pollSCM('H/5 * * * *')
     }
@@ -41,18 +37,15 @@ pipeline {
         PUBLISH_DIRECTORY = 'publish'
         DEPLOY_PACKAGE = 'deploy-package.zip'
 
-        /*
-         * Required on this workstation so Node.js uses
-         * the Windows system certificate store.
-         */
         NODE_OPTIONS = '--use-system-ca'
 
-        /*
-         * Prevent Git from waiting for invisible interactive input.
-         * The GitHub repository is public, so no credential is needed.
-         */
+        AWS_CA_BUNDLE = 'C:\\ProgramData\\Jenkins\\.jenkins\\certs\\company-ca-bundle.pem'
+
         GIT_TERMINAL_PROMPT = '0'
         GIT_ASKPASS = 'echo'
+
+        DOTNET_CLI_TELEMETRY_OPTOUT = '1'
+        DOTNET_NOLOGO = '1'
     }
 
     stages {
@@ -66,10 +59,10 @@ pipeline {
                     disableDeferredWipeout: true
                 )
 
-                echo 'Checking out the public HealthAxis repository.'
+                echo 'Checking out the HealthAxis feature branch.'
 
                 timeout(
-                    time: 10,
+                    time: 20,
                     unit: 'MINUTES'
                 ) {
                     checkout([
@@ -77,13 +70,17 @@ pipeline {
 
                         branches: [
                             [
-                                name: "*/${env.REPOSITORY_BRANCH}"
+                                name: '*/Feature/Sprint5_Pod1_Ayushi'
                             ]
                         ],
 
                         userRemoteConfigs: [
                             [
-                                url: env.REPOSITORY_URL
+                                url: 'https://github.com/bootcamp-hackerearth/UST-Live-01.git',
+
+                                refspec:
+                                    '+refs/heads/Feature/Sprint5_Pod1_Ayushi:' +
+                                    'refs/remotes/origin/Feature/Sprint5_Pod1_Ayushi'
                             ]
                         ],
 
@@ -93,12 +90,12 @@ pipeline {
                                 shallow: true,
                                 depth: 1,
                                 noTags: true,
-                                honorRefspec: false,
-                                timeout: 10
+                                honorRefspec: true,
+                                timeout: 20
                             ],
                             [
                                 $class: 'CheckoutOption',
-                                timeout: 10
+                                timeout: 20
                             ]
                         ]
                     ])
@@ -112,6 +109,9 @@ pipeline {
                     echo ==========================================
 
                     git rev-parse HEAD
+                    if errorlevel 1 exit /b 1
+
+                    git branch --show-current
                     if errorlevel 1 exit /b 1
 
                     git log -1 --pretty=oneline
@@ -189,18 +189,17 @@ pipeline {
 
                     if not exist build-frontends.ps1 (
                         echo ERROR: build-frontends.ps1 was not found.
-                        echo The HealthAxis project may not be located at the repository root.
                         exit /b 1
                     )
 
                     if not exist "%API_PROJECT%" (
-                        echo ERROR: HealthAxis API project was not found:
+                        echo ERROR: HealthAxis API project was not found.
                         echo %API_PROJECT%
                         exit /b 1
                     )
 
                     if not exist "%BLAZOR_PROJECT%" (
-                        echo ERROR: Blazor project was not found:
+                        echo ERROR: Blazor project was not found.
                         echo %BLAZOR_PROJECT%
                         exit /b 1
                     )
@@ -227,11 +226,9 @@ pipeline {
 
                     if not exist "%ANGULAR_PROJECT%\\package-lock.json" (
                         echo ERROR: Angular package-lock.json was not found.
-                        echo Commit package-lock.json so Jenkins can use npm ci.
                         exit /b 1
                     )
 
-                    echo.
                     echo All required HealthAxis project files were found.
                 '''
             }
@@ -246,17 +243,9 @@ pipeline {
                     echo Removing previous generated outputs
                     echo ==========================================
 
-                    if exist artifacts (
-                        rmdir /S /Q artifacts
-                    )
-
-                    if exist publish (
-                        rmdir /S /Q publish
-                    )
-
-                    if exist deploy-package.zip (
-                        del /F /Q deploy-package.zip
-                    )
+                    if exist artifacts rmdir /S /Q artifacts
+                    if exist publish rmdir /S /Q publish
+                    if exist deploy-package.zip del /F /Q deploy-package.zip
 
                     if exist HealthAxisApi\\wwwroot\\angular (
                         rmdir /S /Q HealthAxisApi\\wwwroot\\angular
@@ -273,27 +262,32 @@ pipeline {
 
         stage('Restore API Dependencies') {
             steps {
-                bat '''
-                    @echo off
+                timeout(
+                    time: 15,
+                    unit: 'MINUTES'
+                ) {
+                    bat '''
+                        @echo off
 
-                    echo ==========================================
-                    echo Restoring HealthAxis API dependencies
-                    echo ==========================================
+                        echo ==========================================
+                        echo Restoring HealthAxis API dependencies
+                        echo ==========================================
 
-                    dotnet restore "%API_PROJECT%"
+                        dotnet restore "%API_PROJECT%"
 
-                    if errorlevel 1 (
-                        echo ERROR: API dependency restore failed.
-                        exit /b 1
-                    )
-                '''
+                        if errorlevel 1 (
+                            echo ERROR: API dependency restore failed.
+                            exit /b 1
+                        )
+                    '''
+                }
             }
         }
 
         stage('Build Angular and Blazor') {
             steps {
                 timeout(
-                    time: 30,
+                    time: 40,
                     unit: 'MINUTES'
                 ) {
                     bat '''
@@ -339,7 +333,7 @@ pipeline {
                     )
 
                     if not exist HealthAxisApi\\wwwroot\\blazor\\_framework (
-                        echo ERROR: Blazor _framework directory was not generated.
+                        echo ERROR: Blazor _framework was not generated.
                         exit /b 1
                     )
 
@@ -390,68 +384,22 @@ pipeline {
                         Join-Path $env:WORKSPACE "publish"
 
                     $requiredPaths = @(
-                        @{
-                            Path = Join-Path `
-                                $publishDirectory `
-                                "HealthAxisCore_Api.dll"
-
-                            Description =
-                                "Published HealthAxis API DLL"
-                        },
-                        @{
-                            Path = Join-Path `
-                                $publishDirectory `
-                                "HealthAxisCore_Api.runtimeconfig.json"
-
-                            Description =
-                                "HealthAxis runtime configuration"
-                        },
-                        @{
-                            Path = Join-Path `
-                                $publishDirectory `
-                                "HealthAxisCore_Api.deps.json"
-
-                            Description =
-                                "HealthAxis dependency configuration"
-                        },
-                        @{
-                            Path = Join-Path `
-                                $publishDirectory `
-                                "wwwroot\\angular\\index.html"
-
-                            Description =
-                                "Published Angular index.html"
-                        },
-                        @{
-                            Path = Join-Path `
-                                $publishDirectory `
-                                "wwwroot\\blazor\\index.html"
-
-                            Description =
-                                "Published Blazor index.html"
-                        },
-                        @{
-                            Path = Join-Path `
-                                $publishDirectory `
-                                "wwwroot\\blazor\\_framework"
-
-                            Description =
-                                "Published Blazor framework directory"
-                        }
+                        "HealthAxisCore_Api.dll",
+                        "HealthAxisCore_Api.runtimeconfig.json",
+                        "HealthAxisCore_Api.deps.json",
+                        "wwwroot\\angular\\index.html",
+                        "wwwroot\\blazor\\index.html",
+                        "wwwroot\\blazor\\_framework"
                     )
 
-                    foreach ($requiredPath in $requiredPaths) {
-                        if (
-                            -not (
-                                Test-Path `
-                                    -LiteralPath $requiredPath.Path
-                            )
-                        ) {
-                            throw (
-                                $requiredPath.Description +
-                                " was not found: " +
-                                $requiredPath.Path
-                            )
+                    foreach ($relativePath in $requiredPaths) {
+                        $fullPath =
+                            Join-Path `
+                                $publishDirectory `
+                                $relativePath
+
+                        if (-not (Test-Path -LiteralPath $fullPath)) {
+                            throw "Required publish output was not found: $fullPath"
                         }
                     }
 
@@ -521,36 +469,52 @@ pipeline {
                     )
 
                     jar -tf deploy-package.zip | findstr /I /X "Procfile"
-                    if errorlevel 1 (
-                        echo ERROR: Procfile is missing from ZIP root.
-                        exit /b 1
-                    )
+                    if errorlevel 1 exit /b 1
 
-                    jar -tf deploy-package.zip | findstr /I "HealthAxisCore_Api.dll"
-                    if errorlevel 1 (
-                        echo ERROR: HealthAxis API DLL is missing from ZIP.
-                        exit /b 1
-                    )
+                    jar -tf deploy-package.zip | findstr /I /X "HealthAxisCore_Api.dll"
+                    if errorlevel 1 exit /b 1
 
-                    jar -tf deploy-package.zip | findstr /I "HealthAxisCore_Api.runtimeconfig.json"
-                    if errorlevel 1 (
-                        echo ERROR: runtimeconfig.json is missing from ZIP.
-                        exit /b 1
-                    )
+                    jar -tf deploy-package.zip | findstr /I /X "HealthAxisCore_Api.runtimeconfig.json"
+                    if errorlevel 1 exit /b 1
 
-                    jar -tf deploy-package.zip | findstr /I "wwwroot/angular/index.html"
-                    if errorlevel 1 (
-                        echo ERROR: Angular index.html is missing from ZIP.
-                        exit /b 1
-                    )
+                    jar -tf deploy-package.zip | findstr /I /X "wwwroot/angular/index.html"
+                    if errorlevel 1 exit /b 1
 
-                    jar -tf deploy-package.zip | findstr /I "wwwroot/blazor/index.html"
-                    if errorlevel 1 (
-                        echo ERROR: Blazor index.html is missing from ZIP.
-                        exit /b 1
-                    )
+                    jar -tf deploy-package.zip | findstr /I /X "wwwroot/blazor/index.html"
+                    if errorlevel 1 exit /b 1
 
                     echo Deployment ZIP verified successfully.
+                '''
+            }
+        }
+
+        stage('Verify AWS Certificate Bundle') {
+            steps {
+                bat '''
+                    @echo off
+
+                    echo ==========================================
+                    echo Verifying AWS CA certificate bundle
+                    echo ==========================================
+
+                    echo AWS CA bundle:
+                    echo %AWS_CA_BUNDLE%
+
+                    if not exist "%AWS_CA_BUNDLE%" (
+                        echo ERROR: AWS CA bundle was not found.
+                        echo Expected file:
+                        echo %AWS_CA_BUNDLE%
+                        exit /b 1
+                    )
+
+                    findstr /C:"BEGIN CERTIFICATE" "%AWS_CA_BUNDLE%" > nul
+
+                    if errorlevel 1 (
+                        echo ERROR: AWS CA bundle is not PEM encoded.
+                        exit /b 1
+                    )
+
+                    echo AWS CA certificate bundle was found.
                 '''
             }
         }
@@ -575,9 +539,11 @@ pipeline {
 
                         if errorlevel 1 (
                             echo ERROR: Jenkins cannot authenticate to AWS.
-                            echo Verify aws-deploy-creds and AWS certificate trust.
+                            echo Check the CA bundle and aws-deploy-creds.
                             exit /b 1
                         )
+
+                        echo Jenkins successfully authenticated to AWS.
                     '''
                 }
             }
@@ -593,6 +559,7 @@ pipeline {
                 ]) {
                     bat '''
                         @echo off
+                        setlocal EnableExtensions EnableDelayedExpansion
 
                         echo ==========================================
                         echo Verifying AWS deployment resources
@@ -603,41 +570,39 @@ pipeline {
                             --region "%AWS_REGION%"
 
                         if errorlevel 1 (
-                            echo ERROR: Jenkins cannot access the S3 deployment bucket.
+                            echo ERROR: Jenkins cannot access the S3 bucket.
                             exit /b 1
                         )
 
-                        for /f "delims=" %%A in ('
-                            aws elasticbeanstalk describe-applications ^
-                                --application-names "%EB_APPLICATION_NAME%" ^
-                                --region "%AWS_REGION%" ^
-                                --query "Applications[0].ApplicationName" ^
-                                --output text
-                        ') do set "FOUND_APPLICATION=%%A"
+                        set "FOUND_APPLICATION="
 
-                        if /I not "%FOUND_APPLICATION%"=="%EB_APPLICATION_NAME%" (
+                        for /f "usebackq delims=" %%A in (`aws elasticbeanstalk describe-applications --application-names "%EB_APPLICATION_NAME%" --region "%AWS_REGION%" --query "Applications[0].ApplicationName" --output text`) do (
+                            set "FOUND_APPLICATION=%%A"
+                        )
+
+                        if /I not "!FOUND_APPLICATION!"=="%EB_APPLICATION_NAME%" (
                             echo ERROR: Elastic Beanstalk application was not found.
                             echo Expected: %EB_APPLICATION_NAME%
-                            echo Found: %FOUND_APPLICATION%
+                            echo Found: !FOUND_APPLICATION!
                             exit /b 1
                         )
 
-                        for /f "delims=" %%E in ('
-                            aws elasticbeanstalk describe-environments ^
-                                --environment-names "%EB_ENVIRONMENT_NAME%" ^
-                                --region "%AWS_REGION%" ^
-                                --query "Environments[0].EnvironmentName" ^
-                                --output text
-                        ') do set "FOUND_ENVIRONMENT=%%E"
+                        set "FOUND_ENVIRONMENT="
 
-                        if /I not "%FOUND_ENVIRONMENT%"=="%EB_ENVIRONMENT_NAME%" (
+                        for /f "usebackq delims=" %%E in (`aws elasticbeanstalk describe-environments --environment-names "%EB_ENVIRONMENT_NAME%" --region "%AWS_REGION%" --query "Environments[0].EnvironmentName" --output text`) do (
+                            set "FOUND_ENVIRONMENT=%%E"
+                        )
+
+                        if /I not "!FOUND_ENVIRONMENT!"=="%EB_ENVIRONMENT_NAME%" (
                             echo ERROR: Elastic Beanstalk environment was not found.
                             echo Expected: %EB_ENVIRONMENT_NAME%
-                            echo Found: %FOUND_ENVIRONMENT%
+                            echo Found: !FOUND_ENVIRONMENT!
                             exit /b 1
                         )
 
                         echo AWS resources verified successfully.
+
+                        endlocal
                     '''
                 }
             }
@@ -653,6 +618,7 @@ pipeline {
                 ]) {
                     bat '''
                         @echo off
+                        setlocal
 
                         set "S3_KEY=healthaxis/deploy-package-%BUILD_NUMBER%.zip"
 
@@ -673,6 +639,8 @@ pipeline {
 
                         echo Uploaded:
                         echo s3://%S3_BUCKET%/%S3_KEY%
+
+                        endlocal
                     '''
                 }
             }
@@ -688,12 +656,13 @@ pipeline {
                 ]) {
                     bat '''
                         @echo off
+                        setlocal
 
                         set "VERSION_LABEL=healthaxis-%BUILD_NUMBER%"
                         set "S3_KEY=healthaxis/deploy-package-%BUILD_NUMBER%.zip"
 
                         echo ==========================================
-                        echo Creating Elastic Beanstalk application version
+                        echo Creating Elastic Beanstalk version
                         echo ==========================================
 
                         aws elasticbeanstalk create-application-version ^
@@ -704,12 +673,13 @@ pipeline {
                             --region "%AWS_REGION%"
 
                         if errorlevel 1 (
-                            echo ERROR: Elastic Beanstalk application version creation failed.
+                            echo ERROR: Application version creation failed.
                             exit /b 1
                         )
 
-                        echo Created version:
-                        echo %VERSION_LABEL%
+                        echo Created version: %VERSION_LABEL%
+
+                        endlocal
                     '''
                 }
             }
@@ -725,6 +695,7 @@ pipeline {
                 ]) {
                     bat '''
                         @echo off
+                        setlocal
 
                         set "VERSION_LABEL=healthaxis-%BUILD_NUMBER%"
 
@@ -738,11 +709,13 @@ pipeline {
                             --region "%AWS_REGION%"
 
                         if errorlevel 1 (
-                            echo ERROR: Elastic Beanstalk environment update failed.
+                            echo ERROR: Elastic Beanstalk update failed.
                             exit /b 1
                         )
 
                         echo Deployment request accepted.
+
+                        endlocal
                     '''
                 }
             }
@@ -757,7 +730,7 @@ pipeline {
                     ]
                 ]) {
                     timeout(
-                        time: 20,
+                        time: 25,
                         unit: 'MINUTES'
                     ) {
                         powershell '''
@@ -766,7 +739,7 @@ pipeline {
                             $expectedVersion =
                                 "healthaxis-$env:BUILD_NUMBER"
 
-                            $maximumChecks = 80
+                            $maximumChecks = 100
                             $delaySeconds = 15
 
                             for (
@@ -784,10 +757,7 @@ pipeline {
                                         --output json
 
                                 if ($LASTEXITCODE -ne 0) {
-                                    throw (
-                                        "Unable to query the " +
-                                        "Elastic Beanstalk environment."
-                                    )
+                                    throw "Unable to query Elastic Beanstalk."
                                 }
 
                                 $result =
@@ -798,10 +768,7 @@ pipeline {
                                     $null -eq $result.Environments -or
                                     $result.Environments.Count -eq 0
                                 ) {
-                                    throw (
-                                        "Elastic Beanstalk environment " +
-                                        "was not found."
-                                    )
+                                    throw "Elastic Beanstalk environment was not found."
                                 }
 
                                 $environment =
@@ -837,9 +804,8 @@ pipeline {
                                 ) {
                                     if ($health -eq "Red") {
                                         throw (
-                                            "Elastic Beanstalk deployed " +
-                                            "the version, but environment " +
-                                            "health is Red."
+                                            "The expected version was deployed, " +
+                                            "but environment health is Red."
                                         )
                                     }
 
@@ -857,8 +823,8 @@ pipeline {
                             }
 
                             throw (
-                                "Elastic Beanstalk did not reach " +
-                                "Ready state with the expected version."
+                                "Elastic Beanstalk did not reach Ready " +
+                                "state with the expected version."
                             )
                         '''
                     }
