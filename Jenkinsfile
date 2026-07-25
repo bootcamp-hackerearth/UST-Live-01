@@ -39,7 +39,11 @@ pipeline {
 
         NODE_OPTIONS = '--use-system-ca'
 
-        AWS_CA_BUNDLE = 'C:\\ProgramData\\Jenkins\\.jenkins\\certs\\company-ca-bundle.pem'
+        /*
+         * Jenkins resolves the aws-ca-bundle Secret File credential
+         * into a temporary file and assigns its path to this variable.
+         */
+        AWS_CA_BUNDLE = credentials('aws-ca-bundle')
 
         GIT_TERMINAL_PROMPT = '0'
         GIT_ASKPASS = 'echo'
@@ -109,9 +113,6 @@ pipeline {
                     echo ==========================================
 
                     git rev-parse HEAD
-                    if errorlevel 1 exit /b 1
-
-                    git branch --show-current
                     if errorlevel 1 exit /b 1
 
                     git log -1 --pretty=oneline
@@ -205,7 +206,7 @@ pipeline {
                     )
 
                     if not exist HealthAxisAdminLayout\\wwwroot\\index.html (
-                        echo ERROR: Blazor source index.html was not found.
+                        echo ERROR: Blazor index.html was not found.
                         exit /b 1
                     )
 
@@ -219,17 +220,17 @@ pipeline {
                         exit /b 1
                     )
 
-                    if not exist "%ANGULAR_PROJECT%\\angular.json" (
-                        echo ERROR: Angular angular.json was not found.
-                        exit /b 1
-                    )
-
                     if not exist "%ANGULAR_PROJECT%\\package-lock.json" (
                         echo ERROR: Angular package-lock.json was not found.
                         exit /b 1
                     )
 
-                    echo All required HealthAxis project files were found.
+                    if not exist "%ANGULAR_PROJECT%\\angular.json" (
+                        echo ERROR: Angular angular.json was not found.
+                        exit /b 1
+                    )
+
+                    echo All required project files were found.
                 '''
             }
         }
@@ -305,7 +306,7 @@ pipeline {
                             -File ".\\build-frontends.ps1"
 
                         if errorlevel 1 (
-                            echo ERROR: Frontend build script failed.
+                            echo ERROR: Frontend build failed.
                             exit /b 1
                         )
                     '''
@@ -319,7 +320,7 @@ pipeline {
                     @echo off
 
                     echo ==========================================
-                    echo Verifying generated frontend artifacts
+                    echo Verifying frontend artifacts
                     echo ==========================================
 
                     if not exist HealthAxisApi\\wwwroot\\angular\\index.html (
@@ -333,7 +334,7 @@ pipeline {
                     )
 
                     if not exist HealthAxisApi\\wwwroot\\blazor\\_framework (
-                        echo ERROR: Blazor _framework was not generated.
+                        echo ERROR: Blazor framework directory was not generated.
                         exit /b 1
                     )
 
@@ -342,7 +343,7 @@ pipeline {
                         exit /b 1
                     )
 
-                    echo Angular and Blazor artifacts verified successfully.
+                    echo Frontend artifacts verified successfully.
                 '''
             }
         }
@@ -446,7 +447,7 @@ pipeline {
                         jar -cMf ..\\deploy-package.zip .
 
                         if errorlevel 1 (
-                            echo ERROR: Deployment ZIP creation failed.
+                            echo ERROR: ZIP creation failed.
                             exit /b 1
                         )
                     '''
@@ -460,7 +461,7 @@ pipeline {
                     @echo off
 
                     echo ==========================================
-                    echo Verifying deployment ZIP contents
+                    echo Verifying deployment ZIP
                     echo ==========================================
 
                     if not exist deploy-package.zip (
@@ -469,57 +470,41 @@ pipeline {
                     )
 
                     jar -tf deploy-package.zip | findstr /I /X "Procfile"
-                    if errorlevel 1 exit /b 1
+                    if errorlevel 1 (
+                        echo ERROR: Procfile is missing from ZIP.
+                        exit /b 1
+                    )
 
                     jar -tf deploy-package.zip | findstr /I /X "HealthAxisCore_Api.dll"
-                    if errorlevel 1 exit /b 1
+                    if errorlevel 1 (
+                        echo ERROR: API DLL is missing from ZIP.
+                        exit /b 1
+                    )
 
                     jar -tf deploy-package.zip | findstr /I /X "HealthAxisCore_Api.runtimeconfig.json"
-                    if errorlevel 1 exit /b 1
+                    if errorlevel 1 (
+                        echo ERROR: runtimeconfig is missing from ZIP.
+                        exit /b 1
+                    )
 
                     jar -tf deploy-package.zip | findstr /I /X "wwwroot/angular/index.html"
-                    if errorlevel 1 exit /b 1
+                    if errorlevel 1 (
+                        echo ERROR: Angular index.html is missing from ZIP.
+                        exit /b 1
+                    )
 
                     jar -tf deploy-package.zip | findstr /I /X "wwwroot/blazor/index.html"
-                    if errorlevel 1 exit /b 1
+                    if errorlevel 1 (
+                        echo ERROR: Blazor index.html is missing from ZIP.
+                        exit /b 1
+                    )
 
                     echo Deployment ZIP verified successfully.
                 '''
             }
         }
 
-        stage('Verify AWS Certificate Bundle') {
-            steps {
-                bat '''
-                    @echo off
-
-                    echo ==========================================
-                    echo Verifying AWS CA certificate bundle
-                    echo ==========================================
-
-                    echo AWS CA bundle:
-                    echo %AWS_CA_BUNDLE%
-
-                    if not exist "%AWS_CA_BUNDLE%" (
-                        echo ERROR: AWS CA bundle was not found.
-                        echo Expected file:
-                        echo %AWS_CA_BUNDLE%
-                        exit /b 1
-                    )
-
-                    findstr /C:"BEGIN CERTIFICATE" "%AWS_CA_BUNDLE%" > nul
-
-                    if errorlevel 1 (
-                        echo ERROR: AWS CA bundle is not PEM encoded.
-                        exit /b 1
-                    )
-
-                    echo AWS CA certificate bundle was found.
-                '''
-            }
-        }
-
-        stage('Verify AWS Credentials') {
+        stage('Verify AWS Certificate and Credentials') {
             steps {
                 withCredentials([
                     [
@@ -531,20 +516,31 @@ pipeline {
                         @echo off
 
                         echo ==========================================
-                        echo Verifying Jenkins AWS credentials
+                        echo Verifying AWS certificate and credentials
                         echo ==========================================
+
+                        if not exist "%AWS_CA_BUNDLE%" (
+                            echo ERROR: Jenkins CA bundle credential file was not found.
+                            exit /b 1
+                        )
+
+                        findstr /C:"BEGIN CERTIFICATE" "%AWS_CA_BUNDLE%" > nul
+
+                        if errorlevel 1 (
+                            echo ERROR: Jenkins CA bundle is not PEM encoded.
+                            exit /b 1
+                        )
 
                         aws sts get-caller-identity ^
                             --region "%AWS_REGION%"
 
                         if errorlevel 1 (
-                            echo ERROR: Jenkins cannot authenticate to AWS.
-                            echo Check the CA bundle and aws-deploy-creds.
+                            echo ERROR: Jenkins cannot authenticate securely to AWS.
                             exit /b 1
                         )
 
                         echo Jenkins successfully authenticated to AWS.
-                    '''
+                '''
                 }
             }
         }
@@ -557,52 +553,76 @@ pipeline {
                         credentialsId: 'aws-deploy-creds'
                     ]
                 ]) {
-                    bat '''
-                        @echo off
-                        setlocal EnableExtensions EnableDelayedExpansion
+                    powershell '''
+                        $ErrorActionPreference = "Stop"
 
-                        echo ==========================================
-                        echo Verifying AWS deployment resources
-                        echo ==========================================
+                        Write-Host "Verifying S3 bucket..."
 
-                        aws s3api head-bucket ^
-                            --bucket "%S3_BUCKET%" ^
-                            --region "%AWS_REGION%"
+                        aws s3api head-bucket `
+                            --bucket $env:S3_BUCKET `
+                            --region $env:AWS_REGION
 
-                        if errorlevel 1 (
-                            echo ERROR: Jenkins cannot access the S3 bucket.
-                            exit /b 1
-                        )
+                        if ($LASTEXITCODE -ne 0) {
+                            throw "Jenkins cannot access the S3 deployment bucket."
+                        }
 
-                        set "FOUND_APPLICATION="
+                        Write-Host "Verifying Elastic Beanstalk application..."
 
-                        for /f "usebackq delims=" %%A in (`aws elasticbeanstalk describe-applications --application-names "%EB_APPLICATION_NAME%" --region "%AWS_REGION%" --query "Applications[0].ApplicationName" --output text`) do (
-                            set "FOUND_APPLICATION=%%A"
-                        )
+                        $applicationName =
+                            aws elasticbeanstalk `
+                                describe-applications `
+                                --application-names `
+                                    $env:EB_APPLICATION_NAME `
+                                --region `
+                                    $env:AWS_REGION `
+                                --query `
+                                    "Applications[0].ApplicationName" `
+                                --output text
 
-                        if /I not "!FOUND_APPLICATION!"=="%EB_APPLICATION_NAME%" (
-                            echo ERROR: Elastic Beanstalk application was not found.
-                            echo Expected: %EB_APPLICATION_NAME%
-                            echo Found: !FOUND_APPLICATION!
-                            exit /b 1
-                        )
+                        if ($LASTEXITCODE -ne 0) {
+                            throw "Elastic Beanstalk application lookup failed."
+                        }
 
-                        set "FOUND_ENVIRONMENT="
+                        if (
+                            $applicationName.Trim() -ne
+                            $env:EB_APPLICATION_NAME
+                        ) {
+                            throw (
+                                "Elastic Beanstalk application was not found. " +
+                                "Expected: $env:EB_APPLICATION_NAME. " +
+                                "Found: $applicationName"
+                            )
+                        }
 
-                        for /f "usebackq delims=" %%E in (`aws elasticbeanstalk describe-environments --environment-names "%EB_ENVIRONMENT_NAME%" --region "%AWS_REGION%" --query "Environments[0].EnvironmentName" --output text`) do (
-                            set "FOUND_ENVIRONMENT=%%E"
-                        )
+                        Write-Host "Verifying Elastic Beanstalk environment..."
 
-                        if /I not "!FOUND_ENVIRONMENT!"=="%EB_ENVIRONMENT_NAME%" (
-                            echo ERROR: Elastic Beanstalk environment was not found.
-                            echo Expected: %EB_ENVIRONMENT_NAME%
-                            echo Found: !FOUND_ENVIRONMENT!
-                            exit /b 1
-                        )
+                        $environmentName =
+                            aws elasticbeanstalk `
+                                describe-environments `
+                                --environment-names `
+                                    $env:EB_ENVIRONMENT_NAME `
+                                --region `
+                                    $env:AWS_REGION `
+                                --query `
+                                    "Environments[0].EnvironmentName" `
+                                --output text
 
-                        echo AWS resources verified successfully.
+                        if ($LASTEXITCODE -ne 0) {
+                            throw "Elastic Beanstalk environment lookup failed."
+                        }
 
-                        endlocal
+                        if (
+                            $environmentName.Trim() -ne
+                            $env:EB_ENVIRONMENT_NAME
+                        ) {
+                            throw (
+                                "Elastic Beanstalk environment was not found. " +
+                                "Expected: $env:EB_ENVIRONMENT_NAME. " +
+                                "Found: $environmentName"
+                            )
+                        }
+
+                        Write-Host "AWS resources verified successfully."
                     '''
                 }
             }
@@ -804,7 +824,7 @@ pipeline {
                                 ) {
                                     if ($health -eq "Red") {
                                         throw (
-                                            "The expected version was deployed, " +
+                                            "Expected version was deployed, " +
                                             "but environment health is Red."
                                         )
                                     }
