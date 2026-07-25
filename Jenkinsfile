@@ -32,7 +32,7 @@ pipeline {
         S3_BUCKET = 'heathaxis-jenkins-bucket-527133285403-ap-southeast-2-an'
 
         REPOSITORY_URL = 'https://github.com/bootcamp-hackerearth/UST-Live-01.git'
-        REPOSITORY_BRANCH = 'main'
+        REPOSITORY_BRANCH = 'Feature/Sprint5_Pod1_Ayushi'
 
         API_PROJECT = 'HealthAxisApi\\HealthAxisCore_Api.csproj'
         BLAZOR_PROJECT = 'HealthAxisAdminLayout\\HealthAxisAdminLayout.csproj'
