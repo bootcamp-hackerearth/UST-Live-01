@@ -8,7 +8,7 @@ on:
 
 env:
   AWS_REGION: ap-south-2
-  EB_APPLICATION_NAME: HealthAxisApi-dev
+  EB_APPLICATION_NAME: HealthAxisApi
   EB_ENVIRONMENT_NAME: HealthAxisApi-dev
   S3_BUCKET: my-jenkins-bucket-945125812699-ap-south-2-an
 
