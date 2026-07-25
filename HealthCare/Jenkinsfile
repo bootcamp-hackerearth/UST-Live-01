@@ -1,6 +1,5 @@
 pipeline {
     agent any
-    
 
     environment {
         AWS_REGION = 'ap-south-1'
@@ -10,6 +9,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -18,7 +18,7 @@ pipeline {
 
         stage('Build Angular') {
             steps {
-                dir('HealthCare.UI') {
+                dir('HealthCare/HealthCare.UI') {
                     bat 'npm ci'
                     bat 'npm run build'
                 }
@@ -27,41 +27,110 @@ pipeline {
 
         stage('Publish Blazor') {
             steps {
-                bat 'dotnet publish HealthCareAdmin.UI\\HealthCareAdmin.UI.csproj -c Release -o blazor-publish-temp'
+                bat '''
+                dotnet publish HealthCare\\HealthCareAdmin.UI\\HealthCareAdmin.UI.csproj ^
+                -c Release ^
+                -o blazor-publish-temp
+                '''
             }
         }
 
         stage('Copy Blazor into API wwwroot') {
             steps {
-                bat 'if not exist HealthCare.Api\\wwwroot\\blazor mkdir HealthCare.Api\\wwwroot\\blazor'
-                bat 'xcopy /E /Y /I blazor-publish-temp\\wwwroot\\* HealthCare.Api\\wwwroot\\blazor\\'
+                bat '''
+                if not exist HealthCare\\HealthCare.Api\\wwwroot\\blazor (
+                    mkdir HealthCare\\HealthCare.Api\\wwwroot\\blazor
+                )
+                '''
+
+                bat '''
+                xcopy /E /Y /I blazor-publish-temp\\wwwroot\\* ^
+                HealthCare\\HealthCare.Api\\wwwroot\\blazor\\
+                '''
             }
         }
 
         stage('Publish API') {
             steps {
-                bat 'dotnet publish HealthCare.Api\\HealthCare.Api.csproj -c Release -o publish'
+                bat '''
+                dotnet publish HealthCare\\HealthCare.Api\\HealthCare.Api.csproj ^
+                -c Release ^
+                -o publish
+                '''
             }
         }
 
-        stage('Zip published output') {
-    steps {
-        dir('publish') {
-            bat 'jar -cMf ../deploy-package.zip .'
-        }
-    }
-}
-
-        stage('Upload to S3 and Deploy to EB') {
+        stage('Zip Published Output') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-deploy-creds']]) {
-                    bat "aws s3 cp deploy-package.zip s3://%S3_BUCKET%/deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%"
-
-                    bat "aws elasticbeanstalk create-application-version --application-name %EB_APPLICATION_NAME% --version-label v-%BUILD_NUMBER% --source-bundle S3Bucket=%S3_BUCKET%,S3Key=deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%"
-
-                    bat "aws elasticbeanstalk update-environment --environment-name %EB_ENVIRONMENT_NAME% --version-label v-%BUILD_NUMBER% --region %AWS_REGION%"
+                dir('publish') {
+                    bat 'jar -cMf ../deploy-package.zip .'
                 }
             }
+        }
+
+        stage('Upload to S3') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-deploy-creds']
+                ]) {
+
+                    bat '''
+                    aws s3 cp deploy-package.zip ^
+                    s3://%S3_BUCKET%/deploy-package-%BUILD_NUMBER%.zip ^
+                    --region %AWS_REGION%
+                    '''
+                }
+            }
+        }
+
+        stage('Create EB Application Version') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-deploy-creds']
+                ]) {
+
+                    bat '''
+                    aws elasticbeanstalk create-application-version ^
+                    --application-name %EB_APPLICATION_NAME% ^
+                    --version-label v-%BUILD_NUMBER% ^
+                    --source-bundle S3Bucket=%S3_BUCKET%,S3Key=deploy-package-%BUILD_NUMBER%.zip ^
+                    --region %AWS_REGION%
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Elastic Beanstalk') {
+            steps {
+                withCredentials([
+                    [$class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-deploy-creds']
+                ]) {
+
+                    bat '''
+                    aws elasticbeanstalk update-environment ^
+                    --environment-name %EB_ENVIRONMENT_NAME% ^
+                    --version-label v-%BUILD_NUMBER% ^
+                    --region %AWS_REGION%
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment completed successfully.'
+        }
+
+        failure {
+            echo 'Deployment failed.'
+        }
+
+        always {
+            cleanWs()
         }
     }
 }
