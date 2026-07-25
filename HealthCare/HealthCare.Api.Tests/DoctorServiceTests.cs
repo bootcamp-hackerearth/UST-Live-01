@@ -8,7 +8,7 @@ using HealthCare.Api.Services.Implementations;
 using HealthCare.Shared.DTOs;
 using HealthCare.Shared.DTOs.Doctor;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
+
 using Moq;
 using System.Text;
 using System.Text.Json;
@@ -20,7 +20,7 @@ public class DoctorServiceTests
     private readonly Mock<IDoctorRepository> _repositoryMock;
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
     private readonly Mock<IMapper> _mapperMock;
-    private readonly Mock<IDistributedCache> _cacheMock;
+
 
     private readonly HealthCareDbContext _context;
     private readonly DoctorService _service;
@@ -30,7 +30,6 @@ public class DoctorServiceTests
         _repositoryMock = new Mock<IDoctorRepository>();
         _appointmentRepositoryMock = new Mock<IAppointmentRepository>();
         _mapperMock = new Mock<IMapper>();
-        _cacheMock = new Mock<IDistributedCache>();
 
         var options = new DbContextOptionsBuilder<HealthCareDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -44,9 +43,8 @@ public class DoctorServiceTests
             _repositoryMock.Object,
             _appointmentRepositoryMock.Object,
             _context,
-            _mapperMock.Object,
-            _cacheMock.Object
-        );
+            _mapperMock.Object
+            );
     }
 
     private void SeedDoctorsAndAppointments()
@@ -450,101 +448,12 @@ public class DoctorServiceTests
         );
     }
 
-    [Fact]
-    public async Task AvailableDoctors_ReturnsFromRepository_WhenCacheMiss()
-    {
-        // Arrange
-        var date = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
-        var specialisation = "Cardiology";
+    
 
-        var doctors = new List<DoctorListDto>
-        {
-            new DoctorListDto()
-        };
+       
+    
 
-        _cacheMock
-            .Setup(c => c.GetAsync(
-                It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((byte[]?)null);
-
-        _cacheMock
-            .Setup(c => c.SetAsync(
-                It.IsAny<string>(),
-                It.IsAny<byte[]>(),
-                It.IsAny<DistributedCacheEntryOptions>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
-
-        _repositoryMock
-            .Setup(r => r.AvailableDoctors(specialisation, date))
-            .ReturnsAsync(doctors);
-
-        // Act
-        var result = await _service.AvailableDoctors(specialisation, date);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Single(result);
-
-        _repositoryMock.Verify(
-            r => r.AvailableDoctors(specialisation, date),
-            Times.Once
-        );
-
-        _cacheMock.Verify(
-            c => c.SetAsync(
-                It.IsAny<string>(),
-                It.IsAny<byte[]>(),
-                It.IsAny<DistributedCacheEntryOptions>(),
-                It.IsAny<CancellationToken>()),
-            Times.Once
-        );
-    }
-
-    [Fact]
-    public async Task AvailableDoctors_ReturnsFromCache_WhenCacheHit()
-    {
-        // Arrange
-        var date = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
-        var specialisation = "Cardiology";
-
-        var cachedDoctors = new List<DoctorListDto>
-        {
-            new DoctorListDto()
-        };
-
-        var cachedJson = JsonSerializer.Serialize(cachedDoctors);
-        var cachedBytes = Encoding.UTF8.GetBytes(cachedJson);
-
-        _cacheMock
-            .Setup(c => c.GetAsync(
-                It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(cachedBytes);
-
-        // Act
-        var result = await _service.AvailableDoctors(specialisation, date);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Single(result);
-
-        _repositoryMock.Verify(
-            r => r.AvailableDoctors(It.IsAny<string>(), It.IsAny<DateOnly>()),
-            Times.Never
-        );
-
-        _cacheMock.Verify(
-            c => c.SetAsync(
-                It.IsAny<string>(),
-                It.IsAny<byte[]>(),
-                It.IsAny<DistributedCacheEntryOptions>(),
-                It.IsAny<CancellationToken>()),
-            Times.Never
-        );
-    }
-
+   
     [Fact]
     public async Task GetSummaryAsync_ReturnsSummary()
     {

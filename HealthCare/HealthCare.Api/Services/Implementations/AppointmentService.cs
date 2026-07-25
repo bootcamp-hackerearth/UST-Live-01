@@ -12,7 +12,6 @@ using HealthCare.Shared.DTOs.Appointment;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Microsoft.Extensions.Caching.Distributed;
 
 namespace HealthCare.Api.Services.Implementations
 {
@@ -23,14 +22,13 @@ namespace HealthCare.Api.Services.Implementations
         private readonly HealthCareDbContext _context;
         private readonly IMapper _mapper;
         private readonly IPublishEndpoint _publishEndpoint;
-        private readonly IDistributedCache _cache;
 
         public AppointmentService(
             IAppointmentRepository repository,
             IDoctorService doctorService,
             HealthCareDbContext context,
             IMapper mapper,
-            IPublishEndpoint publishEndpoint, IDistributedCache cache)
+            IPublishEndpoint publishEndpoint)
         {
             _repository = repository;
             _doctorService = doctorService;
@@ -38,7 +36,6 @@ namespace HealthCare.Api.Services.Implementations
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
 
-            _cache = cache;
         }
 
         
@@ -144,7 +141,7 @@ namespace HealthCare.Api.Services.Implementations
 
                 await _repository.AddAsync(appointment);
                 await _context.SaveChangesAsync();
-                await InvalidateDoctorAvailabilityCache( appointment.DoctorId,appointment.ScheduledDate);
+          
 
 
 
@@ -240,15 +237,6 @@ namespace HealthCare.Api.Services.Implementations
                 await _repository.UpdateAsync(appointment);
                 await _context.SaveChangesAsync();
 
-                // Invalidate old cache
-                await InvalidateDoctorAvailabilityCache(
-                    oldDoctorId,
-                    oldScheduledDate);
-
-                // Invalidate new cache
-                await InvalidateDoctorAvailabilityCache(
-                    appointment.DoctorId,
-                    appointment.ScheduledDate);
 
                 Log.Information(
                     "Appointment updated successfully. AppointmentId: {AppointmentId}",
@@ -310,7 +298,7 @@ namespace HealthCare.Api.Services.Implementations
 
                 await _repository.UpdateAsync(appointment);
                 await _context.SaveChangesAsync();
-                await InvalidateDoctorAvailabilityCache(appointment.DoctorId,appointment.ScheduledDate);
+                
 
                 Log.Information(
                     "Appointment status updated successfully. AppointmentId: {AppointmentId}, OldStatus: {OldStatus}, NewStatus: {NewStatus}",
@@ -377,9 +365,6 @@ namespace HealthCare.Api.Services.Implementations
 
                 await _repository.DeleteAsync(id);
                 await _context.SaveChangesAsync();
-
-                // Invalidate doctor availability cache
-                await InvalidateDoctorAvailabilityCache(doctorId, scheduledDate);
 
                 Log.Information(
                     "Appointment deleted successfully. AppointmentId: {AppointmentId}",
@@ -598,45 +583,6 @@ namespace HealthCare.Api.Services.Implementations
             return summary;
         }
 
-        private static string GetAvailableDoctorsCacheKey(
-    string specialisation,
-    DateOnly date)
-        {
-            var safeSpecialisation = specialisation
-                .Trim()
-                .ToLower()
-                .Replace(" ", "-");
-
-            return $"doctors:available:{safeSpecialisation}:{date:yyyy-MM-dd}";
-        }
-
-        private async Task InvalidateDoctorAvailabilityCache(
-            int doctorId,
-            DateOnly date)
-        {
-            var doctor = await _context.Doctors
-                .AsNoTracking()
-                .FirstOrDefaultAsync(d => d.DoctorId == doctorId);
-
-            if (doctor is null)
-            {
-                Log.Warning(
-                    "Cache invalidation skipped. Doctor not found. DoctorId: {DoctorId}",
-                    doctorId);
-
-                return;
-            }
-
-            var cacheKey = GetAvailableDoctorsCacheKey(
-                doctor.Specialisation,
-                date);
-
-            await _cache.RemoveAsync(cacheKey);
-
-            Log.Information(
-                "Doctor availability cache invalidated. DoctorId: {DoctorId}, Date: {Date}",
-                doctorId,
-                date);
-        }
+       
     }
 }

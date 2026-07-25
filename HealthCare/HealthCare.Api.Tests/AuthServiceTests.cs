@@ -23,7 +23,6 @@ public class AuthServiceTests
     private readonly Mock<IPatientRepository> _patientRepoMock;
     private readonly Mock<IDoctorRepository> _doctorRepoMock;
     private readonly Mock<IJwtService> _jwtServiceMock;
-    private readonly Mock<IDistributedCache> _cacheMock;
 
     private readonly HealthCareDbContext _context;
     private readonly AuthService _service;
@@ -35,7 +34,6 @@ public class AuthServiceTests
         _patientRepoMock = new Mock<IPatientRepository>();
         _doctorRepoMock = new Mock<IDoctorRepository>();
         _jwtServiceMock = new Mock<IJwtService>();
-        _cacheMock = new Mock<IDistributedCache>();
 
         var options = new DbContextOptionsBuilder<HealthCareDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -49,8 +47,7 @@ public class AuthServiceTests
             _patientRepoMock.Object,
             _doctorRepoMock.Object,
             _jwtServiceMock.Object,
-            _context,
-            _cacheMock.Object
+            _context
         );
     }
 
@@ -230,88 +227,7 @@ public class AuthServiceTests
         );
     }
 
-    [Fact]
-    public async Task RegisterDoctorAsync_CreatesUserDoctorSlotsAndInvalidatesCache_WhenValid()
-    {
-        // Arrange
-        var dto = new CreateDoctorDto
-        {
-            Email = "doctor@test.com",
-            Password = "Password@123",
-            Specialisation = "Cardiology",
-            TimeSlots = new List<string> { "09:00", "10:00" }
-        };
-
-        var doctor = new Doctor
-        {
-            DoctorId = 10,
-            FullName = "Dr Test",
-            Specialisation = dto.Specialisation
-        };
-
-        _userManagerMock
-            .Setup(u => u.FindByEmailAsync(dto.Email))
-            .ReturnsAsync((User?)null);
-
-        _userManagerMock
-            .Setup(u => u.CreateAsync(It.IsAny<User>(), dto.Password))
-            .Callback<User, string>((user, password) =>
-            {
-                user.Id = "doctor-user-1";
-            })
-            .ReturnsAsync(IdentityResult.Success);
-
-        _userManagerMock
-            .Setup(u => u.AddToRoleAsync(It.IsAny<User>(), "Doctor"))
-            .ReturnsAsync(IdentityResult.Success);
-
-        _mapperMock
-            .Setup(m => m.Map<Doctor>(dto))
-            .Returns(doctor);
-
-        _doctorRepoMock
-            .Setup(r => r.AddAsync(It.IsAny<Doctor>()))
-            .Returns(Task.CompletedTask);
-
-        _doctorRepoMock
-            .Setup(r => r.CreateSlots(doctor.DoctorId, dto.TimeSlots))
-            .Returns(Task.CompletedTask);
-
-        _cacheMock
-            .Setup(c => c.RemoveAsync(
-                It.IsAny<string>(),
-                It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
-
-        // Act
-        await _service.RegisterDoctorAsync(dto);
-
-        // Assert
-        Assert.Equal("doctor-user-1", doctor.UserId);
-
-        _doctorRepoMock.Verify(
-            r => r.AddAsync(doctor),
-            Times.Once
-        );
-
-        _doctorRepoMock.Verify(
-            r => r.CreateSlots(doctor.DoctorId, dto.TimeSlots),
-            Times.Once
-        );
-
-        _userManagerMock.Verify(
-            u => u.AddToRoleAsync(It.IsAny<User>(), "Doctor"),
-            Times.Once
-        );
-
-        _cacheMock.Verify(
-            c => c.RemoveAsync(
-                It.Is<string>(key => key.StartsWith("doctors:available:cardiology:")),
-                It.IsAny<CancellationToken>()),
-            Times.Exactly(30)
-        );
-    }
-
+    
     [Fact]
     public async Task LoginAsync_ReturnsPatientToken_WhenPatientLoginIsValid()
     {

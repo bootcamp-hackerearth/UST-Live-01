@@ -22,7 +22,6 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly HealthCareDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IDistributedCache _cache;
       
       
         private const string NotFoundExceptionMessage = "Doctor not found.";
@@ -31,14 +30,12 @@ namespace HealthCare.Api.Services.Implementations
      IDoctorRepository repository,
      IAppointmentRepository appointmentRepository,
      HealthCareDbContext context,
-     IMapper mapper,
-     IDistributedCache cache)
+     IMapper mapper)
         {
             _repository = repository;
             _appointmentRepository = appointmentRepository;
             _context = context;
             _mapper = mapper;
-            _cache = cache;
         }
 
 
@@ -163,7 +160,6 @@ namespace HealthCare.Api.Services.Implementations
 
             await _repository.UpdateAsync(doctor);
             await _context.SaveChangesAsync();
-            await InvalidateDoctorCache(doctor.Specialisation);
         }
 
         public async Task DeleteAsync(int id)
@@ -199,7 +195,6 @@ namespace HealthCare.Api.Services.Implementations
         {
             await _repository.CreateSlots(id, timeslots);
             await _context.SaveChangesAsync();
-            await InvalidateDoctorCache(id);
  
         }
 
@@ -260,7 +255,6 @@ namespace HealthCare.Api.Services.Implementations
                 await _repository.CreateLeaves(id, leavesToCreate);
                 await _context.SaveChangesAsync();
 
-                await InvalidateDoctorCache(id);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 
             }
 
@@ -274,91 +268,15 @@ namespace HealthCare.Api.Services.Implementations
                 throw new InvalidOperationException("Cannot check availability for a past date.");
             }
 
-            var cacheKey = GetAvailableDoctorsCacheKey(specialisation, date);
-
-            var cachedDoctors = await _cache.GetStringAsync(cacheKey);
-
-            if (!string.IsNullOrWhiteSpace(cachedDoctors))
-            {
-                Log.Information("Cache HIT for key: {CacheKey}", cacheKey);
-
-                var cachedResult = JsonSerializer.Deserialize<List<DoctorListDto>>(cachedDoctors);
-
-                if (cachedResult != null)
-                {
-                    return cachedResult;
-                }
-            }
-
-            Log.Information("Cache MISS for key: {CacheKey}", cacheKey);
+            
 
             var doctors = await _repository.AvailableDoctors(specialisation, date);
 
-            await _cache.SetStringAsync(
-                cacheKey,
-                JsonSerializer.Serialize(doctors),
-                new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-                }
-            );
-
-            Log.Information("Cache SET for key: {CacheKey} with 5 minutes TTL", cacheKey);
-
             return doctors;
         }
-        private static string GetAvailableDoctorsCacheKey(string specialisation, DateOnly date)
-        {
-            var safeSpecialisation = specialisation
-                .Trim()
-                .ToLower()
-                .Replace(" ", "-");
+        
 
-            return $"doctors:available:{safeSpecialisation}:{date:yyyy-MM-dd}";
-        }
-
-        private async Task InvalidateDoctorCache(string specialisation)
-        {
-            if (string.IsNullOrWhiteSpace(specialisation))
-                return;
-
-            var safeSpecialisation = specialisation
-                .Trim()
-                .ToLower()
-                .Replace(" ", "-");
-
-            for (int i = 0; i < 30; i++)
-            {
-                var date = DateOnly.FromDateTime(DateTime.Today.AddDays(i));
-
-                var cacheKey = $"doctors:available:{safeSpecialisation}:{date:yyyy-MM-dd}";
-
-                await _cache.RemoveAsync(cacheKey);
-            }
-
-            Log.Information(
-                "Doctor availability cache invalidated for Specialisation: {Specialisation}",
-                specialisation
-            );
-        }
-
-        private async Task InvalidateDoctorCache(int doctorId)
-        {
-            var doctor = await _repository.GetByIdAsync(doctorId);
-
-            if (doctor is null)
-            {
-                Log.Warning(
-                    "Doctor cache invalidation skipped. Doctor not found. DoctorId: {DoctorId}",
-                    doctorId
-                );
-
-                return;
-            }
-
-            await InvalidateDoctorCache(doctor.Specialisation);
-        }
-
+       
 
         public async Task<DoctorSummaryDto> GetSummaryAsync()
         {
