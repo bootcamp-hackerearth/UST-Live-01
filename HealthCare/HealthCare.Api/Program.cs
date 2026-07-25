@@ -1,6 +1,6 @@
-using HealthCare.Api.Messaging;
 using HealthCare.Api.Data;
 using HealthCare.Api.Mapping;
+using HealthCare.Api.Messaging;
 using HealthCare.Api.Middleware;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Implementations;
@@ -10,13 +10,13 @@ using HealthCare.Api.Services.Interfaces;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-
+using Serilog;
 using System.Security.Claims;
 using System.Text;
-using Serilog;
 
 namespace HealthCare.Api
 {
@@ -201,9 +201,36 @@ namespace HealthCare.Api
 
             app.UseAuthentication();
 
+
             app.UseAuthorization();
 
+
             app.MapControllers();
+
+            //deployment
+            var contentTypeProvider = new FileExtensionContentTypeProvider();
+            contentTypeProvider.Mappings[".data"] = "application/octet-stream";
+            contentTypeProvider.Mappings[".wasm"] = "application/wasm";
+            app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = contentTypeProvider });
+
+            app.MapControllers();
+            app.MapGet("/angular", async context =>
+            {
+                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", "index.html"));
+            });
+            app.MapGet("/angular/{*path:nonfile}", async context =>
+            {
+                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", "index.html"));
+            });
+            app.MapGet("/blazor", async context =>
+            {
+                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+            });
+            app.MapGet("/blazor/{*path:nonfile}", async context =>
+            {
+                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+            });
+
 
             try
             {

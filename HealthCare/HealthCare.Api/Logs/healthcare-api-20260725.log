@@ -54,3 +54,241 @@
 2026-07-25 12:55:36.764 +05:30 [INF] HTTP OPTIONS /api/appointments/doctor/upcoming responded 204 in 0.1888 ms
 2026-07-25 12:55:36.869 +05:30 [INF] Appointments fetched by doctor. DoctorId: 5, Count: 1
 2026-07-25 12:55:36.874 +05:30 [INF] HTTP GET /api/appointments/doctor/upcoming responded 200 in 98.2324 ms
+2026-07-25 12:59:19.368 +05:30 [INF] Usage Telemetry: {"id":"b07b0000-e56a-1944-207b-08deea1dbc90","created":"2026-07-25T12:54:17.1704027\u002B05:30","host":{"framework_version":"10.0.10","mass_transit_version":"8.5.10.0","operating_system_version":"Microsoft Windows NT 10.0.26200.0","time_zone_info":"(UTC\u002B05:30) Chennai, Kolkata, Mumbai, New Delhi","commit_hash":"62ab339afa3bac2e9b3fe1769d0d35d7e44778e9"},"bus":[{"created":"2026-07-25T12:54:17.1744942\u002B05:30","configured":"2026-07-25T12:54:17.9589542\u002B05:30","started":"2026-07-25T12:54:19.2037610\u002B05:30","name":"IBus","endpoints":[{"name":"appointment.events.queue","type":"RabbitMQ","prefetch_count":16,"consumer_count":1,"message_count":1},{"name":"_bus_","type":"RabbitMQ","prefetch_count":16}]}]}
+2026-07-25 14:02:13.739 +05:30 [INF] Configured endpoint appointment.events.queue, Consumer: HealthCare.Api.Messaging.AppointmentBookedConsumer
+2026-07-25 14:02:13.970 +05:30 [INF] Now listening on: http://localhost:5225
+2026-07-25 14:02:13.973 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-25 14:02:13.975 +05:30 [INF] Hosting environment: Development
+2026-07-25 14:02:13.976 +05:30 [INF] Content root path: C:\Users\310508\source\repos\UST-Live-01\HealthCare\HealthCare.Api
+2026-07-25 14:02:14.104 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-25 14:02:27.117 +05:30 [INF] Application is shutting down...
+2026-07-25 14:02:27.178 +05:30 [INF] Bus stopped: "rabbitmq://localhost/"
+2026-07-25 14:02:38.297 +05:30 [INF] Configured endpoint appointment.events.queue, Consumer: HealthCare.Api.Messaging.AppointmentBookedConsumer
+2026-07-25 14:02:38.478 +05:30 [INF] Now listening on: http://localhost:5225
+2026-07-25 14:02:38.480 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-25 14:02:38.483 +05:30 [INF] Hosting environment: Development
+2026-07-25 14:02:38.485 +05:30 [INF] Content root path: C:\Users\310508\source\repos\UST-Live-01\HealthCare\HealthCare.Api
+2026-07-25 14:02:38.607 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-25 14:03:01.146 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-07-25 14:03:01.226 +05:30 [INF] HTTP GET /angular responded 200 in 137.9426 ms
+2026-07-25 14:03:01.276 +05:30 [INF] HTTP GET /angular/chunk-ZCCCSRDL.js responded 200 in 35.6331 ms
+2026-07-25 14:03:01.276 +05:30 [INF] HTTP GET /angular/styles-IRV2JRNT.css responded 200 in 29.9924 ms
+2026-07-25 14:03:01.279 +05:30 [INF] HTTP GET /angular/main-MCJBAYH4.js responded 200 in 39.4625 ms
+2026-07-25 14:03:01.281 +05:30 [INF] HTTP GET /angular/chunk-L5RKZUM4.js responded 200 in 40.7470 ms
+2026-07-25 14:03:01.511 +05:30 [INF] HTTP GET /angular/media/bootstrap-icons-CVBWLLHT.woff2 responded 200 in 2.7524 ms
+2026-07-25 14:03:35.204 +05:30 [INF] HTTP GET /angular/login responded 200 in 6.7666 ms
+2026-07-25 14:04:30.038 +05:30 [INF] HTTP GET /.well-known/appspecific/com.chrome.devtools.json responded 404 in 2.0132 ms
+2026-07-25 14:07:38.662 +05:30 [INF] Usage Telemetry: {"id":"480a0000-e56a-1944-ac87-08deea274901","created":"2026-07-25T14:02:38.2660424\u002B05:30","host":{"framework_version":"10.0.10","mass_transit_version":"8.5.10.0","operating_system_version":"Microsoft Windows NT 10.0.26200.0","time_zone_info":"(UTC\u002B05:30) Chennai, Kolkata, Mumbai, New Delhi","commit_hash":"62ab339afa3bac2e9b3fe1769d0d35d7e44778e9"},"bus":[{"created":"2026-07-25T14:02:38.2672333\u002B05:30","configured":"2026-07-25T14:02:38.4007170\u002B05:30","started":"2026-07-25T14:02:38.6056839\u002B05:30","name":"IBus","endpoints":[{"name":"appointment.events.queue","type":"RabbitMQ","prefetch_count":16,"consumer_count":1,"message_count":1},{"name":"_bus_","type":"RabbitMQ","prefetch_count":16}]}]}
+2026-07-25 14:15:45.667 +05:30 [INF] HTTP GET /angular responded 200 in 3.6213 ms
+2026-07-25 14:15:45.721 +05:30 [INF] HTTP GET /angular/chunk-ZCCCSRDL.js responded 200 in 3.0917 ms
+2026-07-25 14:15:45.737 +05:30 [INF] HTTP GET /angular/main-MCJBAYH4.js responded 200 in 18.5333 ms
+2026-07-25 14:15:45.743 +05:30 [INF] HTTP GET /angular/chunk-L5RKZUM4.js responded 200 in 23.9352 ms
+2026-07-25 14:15:45.745 +05:30 [INF] HTTP GET /angular/styles-IRV2JRNT.css responded 200 in 3.2909 ms
+2026-07-25 14:15:45.847 +05:30 [INF] HTTP GET /angular/media/bootstrap-icons-CVBWLLHT.woff2 responded 200 in 9.1600 ms
+2026-07-25 14:15:45.882 +05:30 [INF] HTTP GET /angular/favicon.ico responded 200 in 10.6553 ms
+2026-07-25 14:16:01.261 +05:30 [INF] HTTP GET /.well-known/appspecific/com.chrome.devtools.json responded 404 in 0.4876 ms
+2026-07-25 14:20:54.490 +05:30 [INF] Application is shutting down...
+2026-07-25 14:20:54.550 +05:30 [INF] Bus stopped: "rabbitmq://localhost/"
+2026-07-25 14:21:07.579 +05:30 [INF] Configured endpoint appointment.events.queue, Consumer: HealthCare.Api.Messaging.AppointmentBookedConsumer
+2026-07-25 14:21:07.744 +05:30 [INF] Now listening on: http://localhost:5225
+2026-07-25 14:21:07.746 +05:30 [INF] Application started. Press Ctrl+C to shut down.
+2026-07-25 14:21:07.747 +05:30 [INF] Hosting environment: Development
+2026-07-25 14:21:07.749 +05:30 [INF] Content root path: C:\Users\310508\source\repos\UST-Live-01\HealthCare\HealthCare.Api
+2026-07-25 14:21:07.861 +05:30 [INF] Bus started: "rabbitmq://localhost/"
+2026-07-25 14:21:12.930 +05:30 [WRN] Failed to determine the https port for redirect.
+2026-07-25 14:21:12.995 +05:30 [INF] HTTP GET /angular/login responded 200 in 104.2734 ms
+2026-07-25 14:21:13.045 +05:30 [INF] HTTP GET /angular/main-KIR3DSZ4.js responded 200 in 40.8010 ms
+2026-07-25 14:21:13.045 +05:30 [INF] HTTP GET /angular/chunk-FGZ52TTH.js responded 200 in 40.8480 ms
+2026-07-25 14:21:13.045 +05:30 [INF] HTTP GET /angular/chunk-Z46JLXGG.js responded 200 in 40.8311 ms
+2026-07-25 14:21:13.076 +05:30 [INF] HTTP GET /.well-known/appspecific/com.chrome.devtools.json responded 404 in 10.0252 ms
+2026-07-25 14:21:35.440 +05:30 [INF] HTTP GET /angular responded 200 in 4.3461 ms
+2026-07-25 14:21:35.515 +05:30 [INF] HTTP GET /angular/chunk-Z46JLXGG.js responded 304 in 4.2212 ms
+2026-07-25 14:21:35.515 +05:30 [INF] HTTP GET /angular/chunk-FGZ52TTH.js responded 304 in 4.1080 ms
+2026-07-25 14:21:35.515 +05:30 [INF] HTTP GET /angular/main-KIR3DSZ4.js responded 304 in 1.2543 ms
+2026-07-25 14:21:57.717 +05:30 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2026-07-25 14:21:58.348 +05:30 [INF] HTTP POST /api/auth/login responded 200 in 919.7552 ms
+2026-07-25 14:21:58.375 +05:30 [INF] HTTP GET /blazor/auth-callback responded 200 in 2.7123 ms
+2026-07-25 14:21:58.402 +05:30 [INF] HTTP GET /blazor/css/app.css responded 200 in 11.8140 ms
+2026-07-25 14:21:58.408 +05:30 [INF] HTTP GET /blazor/HealthCare.Admin.styles.css responded 200 in 18.1177 ms
+2026-07-25 14:21:58.408 +05:30 [INF] HTTP GET /blazor/_framework/dotnet.n2dqok604b.js responded 200 in 22.1869 ms
+2026-07-25 14:21:58.409 +05:30 [INF] HTTP GET /blazor/_framework/blazor.webassembly.958z1vx7fr.js responded 200 in 15.6483 ms
+2026-07-25 14:21:58.423 +05:30 [INF] HTTP GET /blazor/lib/bootstrap/dist/css/bootstrap.min.css responded 200 in 38.6679 ms
+2026-07-25 14:21:58.775 +05:30 [INF] HTTP GET /blazor/_framework/dotnet.native.puryxhmhq9.js responded 200 in 3.8802 ms
+2026-07-25 14:21:58.776 +05:30 [INF] HTTP GET /blazor/_framework/dotnet.runtime.web2r9gqbh.js responded 200 in 4.8186 ms
+2026-07-25 14:21:58.798 +05:30 [INF] HTTP GET /blazor/_framework/System.Runtime.InteropServices.JavaScript.xs6yu76bks.wasm responded 200 in 3.1685 ms
+2026-07-25 14:21:58.812 +05:30 [INF] HTTP GET /blazor/_framework/AutoMapper.8m7mmr1hnm.wasm responded 200 in 16.8574 ms
+2026-07-25 14:21:58.814 +05:30 [INF] HTTP GET /blazor/_framework/HealthCare.Admin.3par81m5vy.wasm responded 200 in 8.0553 ms
+2026-07-25 14:21:58.815 +05:30 [INF] HTTP GET /blazor/_framework/Azure.Core.8xk79iv8nh.wasm responded 200 in 20.2456 ms
+2026-07-25 14:21:58.817 +05:30 [INF] HTTP GET /blazor/_framework/Azure.Identity.q3kp98qd6v.wasm responded 200 in 17.6800 ms
+2026-07-25 14:21:58.825 +05:30 [INF] HTTP GET /blazor/_framework/HealthCare.Shared.dmzxzfoh9y.wasm responded 200 in 3.5094 ms
+2026-07-25 14:21:58.838 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.AspNetCore.Components.Forms.xbum8u3r0e.wasm responded 200 in 2.0835 ms
+2026-07-25 14:21:58.839 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.AspNetCore.Components.Web.sdsf2i40gj.wasm responded 200 in 2.2205 ms
+2026-07-25 14:21:58.851 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.AspNetCore.Components.WebAssembly.jym0ebmgt8.wasm responded 200 in 1.5776 ms
+2026-07-25 14:21:58.852 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.AspNetCore.Components.7ewzfo4zo9.wasm responded 200 in 2.5807 ms
+2026-07-25 14:21:58.865 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.CSharp.qtcsihmg1f.wasm responded 200 in 2.3208 ms
+2026-07-25 14:21:58.877 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.EntityFrameworkCore.Abstractions.mz9tyb1h65.wasm responded 200 in 1.2496 ms
+2026-07-25 14:21:58.900 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Data.SqlClient.3806qc8pna.wasm responded 200 in 36.8076 ms
+2026-07-25 14:21:58.903 +05:30 [INF] HTTP GET /blazor/_framework/dotnet.native.u31nt9bth6.wasm responded 200 in 131.8606 ms
+2026-07-25 14:21:58.907 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.EntityFrameworkCore.SqlServer.g5qtfapcam.wasm responded 200 in 15.2340 ms
+2026-07-25 14:21:58.910 +05:30 [INF] HTTP GET /blazor/_framework/System.Private.CoreLib.ghdgmcv5hw.wasm responded 200 in 117.2955 ms
+2026-07-25 14:21:58.913 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Caching.Abstractions.01ss24ub42.wasm responded 200 in 2.4786 ms
+2026-07-25 14:21:58.921 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Caching.Memory.3zjcwwobid.wasm responded 200 in 2.6581 ms
+2026-07-25 14:21:58.926 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Configuration.Abstractions.e3j0aurk2r.wasm responded 200 in 1.6732 ms
+2026-07-25 14:21:58.936 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Configuration.Json.qiwbq8ugx5.wasm responded 200 in 3.9127 ms
+2026-07-25 14:21:58.938 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.DependencyInjection.857rzh5ynj.wasm responded 200 in 1.5914 ms
+2026-07-25 14:21:58.938 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Configuration.lr61ofcgfm.wasm responded 200 in 1.9022 ms
+2026-07-25 14:21:58.949 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.DependencyInjection.Abstractions.th1ld61zai.wasm responded 200 in 1.9559 ms
+2026-07-25 14:21:58.956 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Logging.Abstractions.1oweuxr4az.wasm responded 200 in 2.0436 ms
+2026-07-25 14:21:58.956 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Logging.igobmllaak.wasm responded 200 in 1.7826 ms
+2026-07-25 14:21:58.956 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Options.1l6cdb1ucc.wasm responded 200 in 1.3881 ms
+2026-07-25 14:21:58.972 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Primitives.yxjt7vtatl.wasm responded 200 in 1.6291 ms
+2026-07-25 14:21:58.980 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Extensions.Validation.9q24f4ufiz.wasm responded 200 in 1.5153 ms
+2026-07-25 14:21:58.982 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Identity.Client.Extensions.Msal.ks83314uaf.wasm responded 200 in 1.2415 ms
+2026-07-25 14:21:58.997 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.EntityFrameworkCore.Relational.pq79ulc3xl.wasm responded 200 in 114.3147 ms
+2026-07-25 14:21:59.000 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.IdentityModel.Abstractions.57ajzgxepp.wasm responded 200 in 2.1236 ms
+2026-07-25 14:21:59.034 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.IdentityModel.JsonWebTokens.finj600102.wasm responded 200 in 23.2141 ms
+2026-07-25 14:21:59.034 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.IdentityModel.Logging.zcqml6bdh7.wasm responded 200 in 20.4915 ms
+2026-07-25 14:21:59.040 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Identity.Client.ykww7211k6.wasm responded 200 in 59.5225 ms
+2026-07-25 14:21:59.043 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.IdentityModel.Protocols.homtf5mctj.wasm responded 200 in 12.4174 ms
+2026-07-25 14:21:59.059 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.EntityFrameworkCore.wer0str0la.wasm responded 200 in 166.9950 ms
+2026-07-25 14:21:59.066 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.JSInterop.WebAssembly.r99mmn9mmt.wasm responded 200 in 2.1082 ms
+2026-07-25 14:21:59.068 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.IdentityModel.Protocols.OpenIdConnect.45hz3ik893.wasm responded 200 in 5.8552 ms
+2026-07-25 14:21:59.099 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.IdentityModel.Tokens.d9dddnbjyj.wasm responded 200 in 4.0797 ms
+2026-07-25 14:21:59.104 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.SqlServer.Server.yamodpu5qp.wasm responded 200 in 3.9710 ms
+2026-07-25 14:21:59.109 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.JSInterop.02ltnto31o.wasm responded 200 in 2.5499 ms
+2026-07-25 14:21:59.112 +05:30 [INF] HTTP GET /blazor/_framework/System.cvgusyd4es.wasm responded 200 in 3.1402 ms
+2026-07-25 14:21:59.114 +05:30 [INF] HTTP GET /blazor/_framework/Microsoft.Win32.Primitives.q7qe8y8zau.wasm responded 200 in 1.7317 ms
+2026-07-25 14:21:59.121 +05:30 [INF] HTTP GET /blazor/_framework/System.ClientModel.dhw1jmor6y.wasm responded 200 in 6.0459 ms
+2026-07-25 14:21:59.121 +05:30 [INF] HTTP GET /blazor/_framework/System.Collections.Concurrent.bd3ro02coq.wasm responded 200 in 3.6100 ms
+2026-07-25 14:21:59.128 +05:30 [INF] HTTP GET /blazor/_framework/System.Collections.Immutable.v7vrfiqe17.wasm responded 200 in 3.5721 ms
+2026-07-25 14:21:59.128 +05:30 [INF] HTTP GET /blazor/_framework/System.Collections.NonGeneric.fm0w0zllx1.wasm responded 200 in 1.4714 ms
+2026-07-25 14:21:59.131 +05:30 [INF] HTTP GET /blazor/_framework/System.Collections.Specialized.9px7ijgkhy.wasm responded 200 in 2.1789 ms
+2026-07-25 14:21:59.134 +05:30 [INF] HTTP GET /blazor/_framework/System.Collections.ex359mqi1e.wasm responded 200 in 2.2184 ms
+2026-07-25 14:21:59.140 +05:30 [INF] HTTP GET /blazor/_framework/System.ComponentModel.Annotations.xm5wxlgir5.wasm responded 200 in 5.3255 ms
+2026-07-25 14:21:59.142 +05:30 [INF] HTTP GET /blazor/_framework/System.ComponentModel.Primitives.zxay4cdv6a.wasm responded 200 in 1.9512 ms
+2026-07-25 14:21:59.147 +05:30 [INF] HTTP GET /blazor/_framework/System.ComponentModel.8ovt7nqh7c.wasm responded 200 in 2.3512 ms
+2026-07-25 14:21:59.151 +05:30 [INF] HTTP GET /blazor/_framework/System.ComponentModel.TypeConverter.64je8880a4.wasm responded 200 in 2.9708 ms
+2026-07-25 14:21:59.159 +05:30 [INF] HTTP GET /blazor/_framework/System.Console.f1o81sryll.wasm responded 200 in 2.0100 ms
+2026-07-25 14:21:59.166 +05:30 [INF] HTTP GET /blazor/_framework/System.Configuration.ConfigurationManager.h4r5q8xowu.wasm responded 200 in 15.5474 ms
+2026-07-25 14:21:59.168 +05:30 [INF] HTTP GET /blazor/_framework/System.Data.Common.hi1b3smxr7.wasm responded 200 in 2.7969 ms
+2026-07-25 14:21:59.168 +05:30 [INF] HTTP GET /blazor/_framework/System.Diagnostics.EventLog.yy9ehxokrt.wasm responded 200 in 1.2370 ms
+2026-07-25 14:21:59.170 +05:30 [INF] HTTP GET /blazor/_framework/System.Diagnostics.DiagnosticSource.ih7ailyccd.wasm responded 200 in 3.1435 ms
+2026-07-25 14:21:59.180 +05:30 [INF] HTTP GET /blazor/_framework/System.Diagnostics.FileVersionInfo.5xa0awlo19.wasm responded 200 in 1.8179 ms
+2026-07-25 14:21:59.180 +05:30 [INF] HTTP GET /blazor/_framework/System.Diagnostics.Process.x23h1li4c7.wasm responded 200 in 2.3573 ms
+2026-07-25 14:21:59.193 +05:30 [INF] HTTP GET /blazor/_framework/System.Diagnostics.TextWriterTraceListener.yixvmxezel.wasm responded 200 in 2.0442 ms
+2026-07-25 14:21:59.194 +05:30 [INF] HTTP GET /blazor/_framework/System.Diagnostics.TraceSource.ed6eis8hw0.wasm responded 200 in 1.6729 ms
+2026-07-25 14:21:59.198 +05:30 [INF] HTTP GET /blazor/_framework/System.Formats.Asn1.lybbsxjb6j.wasm responded 200 in 1.5761 ms
+2026-07-25 14:21:59.198 +05:30 [INF] HTTP GET /blazor/_framework/System.Diagnostics.Tracing.cwmne1u7ug.wasm responded 200 in 1.6920 ms
+2026-07-25 14:21:59.198 +05:30 [INF] HTTP GET /blazor/_framework/System.IO.FileSystem.AccessControl.27owishtho.wasm responded 200 in 1.8957 ms
+2026-07-25 14:21:59.201 +05:30 [INF] HTTP GET /blazor/_framework/System.IO.Compression.g6wl15cvem.wasm responded 200 in 1.8455 ms
+2026-07-25 14:21:59.223 +05:30 [INF] HTTP GET /blazor/_framework/System.IO.Pipelines.uznrqn6wwr.wasm responded 200 in 1.2163 ms
+2026-07-25 14:21:59.223 +05:30 [INF] HTTP GET /blazor/_framework/System.IO.FileSystem.Watcher.zlj1lv718m.wasm responded 200 in 6.3711 ms
+2026-07-25 14:21:59.223 +05:30 [INF] HTTP GET /blazor/_framework/System.IdentityModel.Tokens.Jwt.28de5g3cun.wasm responded 200 in 5.5660 ms
+2026-07-25 14:21:59.224 +05:30 [INF] HTTP GET /blazor/_framework/System.Linq.8elmz39ua0.wasm responded 200 in 1.6031 ms
+2026-07-25 14:21:59.225 +05:30 [INF] HTTP GET /blazor/_framework/System.Linq.Queryable.hmjutrykee.wasm responded 200 in 1.3401 ms
+2026-07-25 14:21:59.276 +05:30 [INF] HTTP GET /blazor/_framework/System.Linq.Expressions.hfmzseaqsu.wasm responded 200 in 54.3744 ms
+2026-07-25 14:21:59.279 +05:30 [INF] HTTP GET /blazor/_framework/System.Memory.Data.0l4fa57vc1.wasm responded 200 in 2.4105 ms
+2026-07-25 14:21:59.279 +05:30 [INF] HTTP GET /blazor/_framework/System.Memory.lniktlgqb2.wasm responded 200 in 1.8673 ms
+2026-07-25 14:21:59.280 +05:30 [INF] HTTP GET /blazor/_framework/System.Net.Http.Json.6ydj3em1ch.wasm responded 200 in 2.0338 ms
+2026-07-25 14:21:59.285 +05:30 [INF] HTTP GET /blazor/_framework/System.Net.Http.zzxzy83kc9.wasm responded 200 in 6.1180 ms
+2026-07-25 14:21:59.297 +05:30 [INF] HTTP GET /blazor/_framework/System.Net.HttpListener.mx4zefjhy0.wasm responded 200 in 2.3838 ms
+2026-07-25 14:21:59.307 +05:30 [INF] HTTP GET /blazor/_framework/System.Net.Security.m7uhlqi74j.wasm responded 200 in 1.5172 ms
+2026-07-25 14:21:59.307 +05:30 [INF] HTTP GET /blazor/_framework/System.Net.Primitives.nlweko6rf5.wasm responded 200 in 1.7201 ms
+2026-07-25 14:21:59.307 +05:30 [INF] HTTP GET /blazor/_framework/System.Net.NetworkInformation.t83fhyuzw2.wasm responded 200 in 1.4424 ms
+2026-07-25 14:21:59.314 +05:30 [INF] HTTP GET /blazor/_framework/System.Net.WebClient.880pjkvlf2.wasm responded 200 in 1.9915 ms
+2026-07-25 14:21:59.314 +05:30 [INF] HTTP GET /blazor/_framework/System.Net.Sockets.nxg75tgjaj.wasm responded 200 in 1.9913 ms
+2026-07-25 14:21:59.315 +05:30 [INF] HTTP GET /blazor/_framework/System.ObjectModel.9470taurld.wasm responded 200 in 1.6520 ms
+2026-07-25 14:21:59.330 +05:30 [INF] HTTP GET /blazor/_framework/System.Private.Xml.Linq.4reo8zspes.wasm responded 200 in 1.6129 ms
+2026-07-25 14:21:59.330 +05:30 [INF] HTTP GET /blazor/_framework/System.Private.Uri.01vgu5vg0b.wasm responded 200 in 1.7717 ms
+2026-07-25 14:21:59.333 +05:30 [INF] HTTP GET /blazor/_framework/System.Reflection.Emit.z6zva198o1.wasm responded 200 in 1.4136 ms
+2026-07-25 14:21:59.341 +05:30 [INF] HTTP GET /blazor/_framework/System.Reflection.Emit.ILGeneration.mrej57e4s7.wasm responded 200 in 2.5271 ms
+2026-07-25 14:21:59.341 +05:30 [INF] HTTP GET /blazor/_framework/System.Reflection.Primitives.6n0zme69c4.wasm responded 200 in 1.7105 ms
+2026-07-25 14:21:59.350 +05:30 [INF] HTTP GET /blazor/_framework/System.Runtime.InteropServices.n6jlhu9kvy.wasm responded 200 in 1.4293 ms
+2026-07-25 14:21:59.351 +05:30 [INF] HTTP GET /blazor/_framework/System.Runtime.Numerics.uqwuuab53g.wasm responded 200 in 1.6466 ms
+2026-07-25 14:21:59.358 +05:30 [INF] HTTP GET /blazor/_framework/System.Runtime.Serialization.Primitives.nsxx2crer4.wasm responded 200 in 1.3254 ms
+2026-07-25 14:21:59.358 +05:30 [INF] HTTP GET /blazor/_framework/System.Runtime.Serialization.Formatters.iot9fdphl2.wasm responded 200 in 1.7126 ms
+2026-07-25 14:21:59.358 +05:30 [INF] HTTP GET /blazor/_framework/System.Runtime.kbmtjmuxg3.wasm responded 200 in 1.3033 ms
+2026-07-25 14:21:59.372 +05:30 [INF] HTTP GET /blazor/_framework/System.Security.AccessControl.z87awzn1eh.wasm responded 200 in 1.9713 ms
+2026-07-25 14:21:59.373 +05:30 [INF] HTTP GET /blazor/_framework/System.Security.Claims.jtafqugv1m.wasm responded 200 in 1.4702 ms
+2026-07-25 14:21:59.373 +05:30 [INF] HTTP GET /blazor/_framework/System.Security.Cryptography.ProtectedData.mhm09hjv4f.wasm responded 200 in 1.6233 ms
+2026-07-25 14:21:59.373 +05:30 [INF] HTTP GET /blazor/_framework/System.Security.Cryptography.vevydc83m5.wasm responded 200 in 1.6821 ms
+2026-07-25 14:21:59.376 +05:30 [INF] HTTP GET /blazor/_framework/System.Security.Principal.Windows.wb3b15pbqb.wasm responded 200 in 1.6633 ms
+2026-07-25 14:21:59.395 +05:30 [INF] HTTP GET /blazor/_framework/System.Text.Encoding.Extensions.iuq4o6rl0u.wasm responded 200 in 1.0761 ms
+2026-07-25 14:21:59.395 +05:30 [INF] HTTP GET /blazor/_framework/System.Private.Xml.wfeh64vj35.wasm responded 200 in 66.3745 ms
+2026-07-25 14:21:59.396 +05:30 [INF] HTTP GET /blazor/_framework/System.Text.Encodings.Web.kn440n14c6.wasm responded 200 in 1.4461 ms
+2026-07-25 14:21:59.396 +05:30 [INF] HTTP GET /blazor/_framework/System.Threading.i0t4fnuy8g.wasm responded 200 in 1.0370 ms
+2026-07-25 14:21:59.397 +05:30 [INF] HTTP GET /blazor/_framework/System.Text.RegularExpressions.mc29ftzl2y.wasm responded 200 in 1.7964 ms
+2026-07-25 14:21:59.409 +05:30 [INF] HTTP GET /blazor/_framework/System.Text.Json.obswcq6e7r.wasm responded 200 in 14.2251 ms
+2026-07-25 14:21:59.412 +05:30 [INF] HTTP GET /blazor/_framework/System.Threading.Thread.er1z5plew4.wasm responded 200 in 2.7172 ms
+2026-07-25 14:21:59.412 +05:30 [INF] HTTP GET /blazor/_framework/System.Transactions.Local.d21c6vm40d.wasm responded 200 in 2.2030 ms
+2026-07-25 14:21:59.412 +05:30 [INF] HTTP GET /blazor/_framework/System.Xml.Linq.xorxxf2zgs.wasm responded 200 in 1.6943 ms
+2026-07-25 14:21:59.422 +05:30 [INF] HTTP GET /blazor/_framework/System.Xml.ReaderWriter.781vjcu40c.wasm responded 200 in 4.4877 ms
+2026-07-25 14:21:59.433 +05:30 [INF] HTTP GET /blazor/_framework/System.Xml.XDocument.ql1k5sb7hx.wasm responded 200 in 2.5198 ms
+2026-07-25 14:21:59.441 +05:30 [INF] HTTP GET /blazor/_framework/icudt_EFIGS.tptq2av103.dat responded 404 in 0.6719 ms
+2026-07-25 14:21:59.442 +05:30 [INF] HTTP GET /blazor/_framework/System.Xml.XmlSerializer.dvt0rs1uvp.wasm responded 200 in 2.8597 ms
+2026-07-25 14:21:59.442 +05:30 [INF] HTTP GET /blazor/_framework/netstandard.1r4f085e1g.wasm responded 200 in 1.7427 ms
+2026-07-25 14:21:59.443 +05:30 [INF] HTTP GET /blazor/favicon.png responded 200 in 1.2752 ms
+2026-07-25 14:22:03.850 +05:30 [INF] HTTP GET /.well-known/appspecific/com.chrome.devtools.json responded 404 in 0.5294 ms
+2026-07-25 14:22:03.915 +05:30 [INF] HTTP GET /blazor/lib/bootstrap/dist/css/bootstrap.min.css.map responded 200 in 4.8666 ms
+2026-07-25 14:22:03.944 +05:30 [INF] HTTP GET /blazor/_framework/dotnet.runtime.js.map responded 404 in 0.6664 ms
+2026-07-25 14:22:08.871 +05:30 [INF] HTTP GET /blazor/auth-callback responded 200 in 2.0117 ms
+2026-07-25 14:22:08.918 +05:30 [INF] HTTP GET /.well-known/appspecific/com.chrome.devtools.json responded 404 in 0.4126 ms
+2026-07-25 14:22:08.970 +05:30 [INF] HTTP GET /blazor/_framework/dotnet.runtime.js.map responded 404 in 0.8948 ms
+2026-07-25 14:22:20.573 +05:30 [INF] HTTP GET /angular responded 200 in 1.4787 ms
+2026-07-25 14:22:20.606 +05:30 [INF] HTTP GET /angular/chunk-FGZ52TTH.js responded 304 in 0.7903 ms
+2026-07-25 14:22:20.608 +05:30 [INF] HTTP GET /angular/chunk-Z46JLXGG.js responded 304 in 0.7154 ms
+2026-07-25 14:22:20.609 +05:30 [INF] HTTP GET /angular/main-KIR3DSZ4.js responded 304 in 0.4213 ms
+2026-07-25 14:22:20.650 +05:30 [INF] HTTP GET /angular/styles-IRV2JRNT.css responded 200 in 38.0326 ms
+2026-07-25 14:22:20.798 +05:30 [INF] HTTP GET /angular/media/bootstrap-icons-CVBWLLHT.woff2 responded 200 in 18.4956 ms
+2026-07-25 14:22:32.054 +05:30 [ERR] Exception occurred while processing POST /api/auth/login
+System.UnauthorizedAccessException: Invalid email or password
+   at HealthCare.Api.Services.Implementations.AuthService.LoginAsync(LoginDto dto) in C:\Users\310508\source\repos\UST-Live-01\HealthCare\HealthCare.Api\Services\Implementations\AuthService.cs:line 106
+   at HealthCare.Api.Controllers.AuthController.Login(LoginDto dto) in C:\Users\310508\source\repos\UST-Live-01\HealthCare\HealthCare.Api\Controllers\AuthController.cs:line 43
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddlewareImpl.<Invoke>g__Awaited|10_0(ExceptionHandlerMiddlewareImpl middleware, HttpContext context, Task task)
+2026-07-25 14:22:32.109 +05:30 [INF] HTTP POST /api/auth/login responded 401 in 267.4838 ms
+2026-07-25 14:22:34.929 +05:30 [INF] HTTP GET /angular/styles-IRV2JRNT.css responded 304 in 0.5765 ms
+2026-07-25 14:22:34.961 +05:30 [INF] HTTP GET /.well-known/appspecific/com.chrome.devtools.json responded 404 in 0.4191 ms
+2026-07-25 14:22:53.434 +05:30 [INF] HTTP GET /angular/login responded 200 in 2.4925 ms
+2026-07-25 14:22:53.450 +05:30 [INF] HTTP GET /angular/chunk-Z46JLXGG.js responded 304 in 0.4485 ms
+2026-07-25 14:22:53.450 +05:30 [INF] HTTP GET /angular/main-KIR3DSZ4.js responded 304 in 0.9883 ms
+2026-07-25 14:22:53.450 +05:30 [INF] HTTP GET /angular/chunk-FGZ52TTH.js responded 304 in 0.5113 ms
+2026-07-25 14:22:53.462 +05:30 [INF] HTTP GET /angular/styles-IRV2JRNT.css responded 304 in 2.0098 ms
+2026-07-25 14:22:53.548 +05:30 [INF] HTTP GET /.well-known/appspecific/com.chrome.devtools.json responded 404 in 0.6378 ms
+2026-07-25 14:23:07.014 +05:30 [ERR] Exception occurred while processing POST /api/auth/login
+System.UnauthorizedAccessException: Invalid email or password
+   at HealthCare.Api.Services.Implementations.AuthService.LoginAsync(LoginDto dto) in C:\Users\310508\source\repos\UST-Live-01\HealthCare\HealthCare.Api\Services\Implementations\AuthService.cs:line 106
+   at HealthCare.Api.Controllers.AuthController.Login(LoginDto dto) in C:\Users\310508\source\repos\UST-Live-01\HealthCare\HealthCare.Api\Controllers\AuthController.cs:line 43
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddlewareImpl.<Invoke>g__Awaited|10_0(ExceptionHandlerMiddlewareImpl middleware, HttpContext context, Task task)
+2026-07-25 14:23:07.026 +05:30 [INF] HTTP POST /api/auth/login responded 401 in 149.1989 ms
+2026-07-25 14:24:17.908 +05:30 [INF] HTTP GET /angular/login responded 200 in 1.7130 ms
+2026-07-25 14:24:17.926 +05:30 [INF] HTTP GET /angular/main-KIR3DSZ4.js responded 304 in 0.9002 ms
+2026-07-25 14:24:17.926 +05:30 [INF] HTTP GET /angular/chunk-FGZ52TTH.js responded 304 in 0.9002 ms
+2026-07-25 14:24:17.926 +05:30 [INF] HTTP GET /angular/chunk-Z46JLXGG.js responded 304 in 0.8754 ms
+2026-07-25 14:24:17.938 +05:30 [INF] HTTP GET /angular/styles-IRV2JRNT.css responded 304 in 4.5719 ms
+2026-07-25 14:24:18.032 +05:30 [INF] HTTP GET /.well-known/appspecific/com.chrome.devtools.json responded 404 in 0.4328 ms

@@ -29,7 +29,7 @@ namespace HealthCare.Admin
 
                 return new HttpClient(jwtHandler)
                 {
-                    BaseAddress = new Uri("https://localhost:7234/")
+                    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
                 };
             });
 
