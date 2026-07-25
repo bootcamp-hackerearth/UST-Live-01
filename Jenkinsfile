@@ -100,7 +100,7 @@ pipeline {
             steps {
                 dir('HealthCareApp.UI') {
                     bat '''
-                    call npm ci
+                    call npm install
                     if errorlevel 1 exit /b 1
  
                     call npx ng build --configuration production
