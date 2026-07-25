@@ -17,10 +17,36 @@ pipeline {
  
     stages {
         stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
+    steps {
+        deleteDir()
+
+        checkout([
+            $class: 'GitSCM',
+            branches: [[
+                name: '*/Feature/Sprint5_Pod1_RickyJoywinRobinson'
+            ]],
+            userRemoteConfigs: [[
+                url: 'https://github.com/bootcamp-hackerearth/UST-Live-01.git',
+                credentialsId: 'git-deploy-creds',
+                refspec: '+refs/heads/Feature/Sprint5_Pod1_RickyJoywinRobinson:refs/remotes/origin/Feature/Sprint5_Pod1_RickyJoywinRobinson'
+            ]],
+            extensions: [
+                [
+                    $class: 'CloneOption',
+                    shallow: true,
+                    depth: 1,
+                    noTags: true,
+                    reference: '',
+                    timeout: 30,
+                    honorRefspec: true
+                ],
+                [
+                    $class: 'CleanBeforeCheckout'
+                ]
+            ]
+        ])
+    }
+}
  
         stage('Clean Previous Build') {
             steps {
