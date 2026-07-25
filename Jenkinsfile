@@ -14,51 +14,109 @@ pipeline {
         )
     }
 
+    /*
+     * After the first manual build succeeds, this trigger checks
+     * the configured SCM for changes approximately every 5 minutes.
+     */
     triggers {
-        /*
-         * Jenkins checks for new commits approximately every
-         * five minutes.
-         *
-         * Remove this block during initial testing if you want
-         * to trigger builds manually.
-         */
         pollSCM('H/5 * * * *')
     }
 
     environment {
         AWS_REGION = 'ap-southeast-2'
+        AWS_DEFAULT_REGION = 'ap-southeast-2'
 
         EB_APPLICATION_NAME = 'HealthAxis-app'
         EB_ENVIRONMENT_NAME = 'HealthAxis-app-dev'
 
         S3_BUCKET = 'heathaxis-jenkins-bucket-527133285403-ap-southeast-2-an'
 
+        REPOSITORY_URL = 'https://github.com/bootcamp-hackerearth/UST-Live-01.git'
+        REPOSITORY_BRANCH = 'main'
+
         API_PROJECT = 'HealthAxisApi\\HealthAxisCore_Api.csproj'
-        ANGULAR_PROJECT = 'HealthAxis_AngularProj'
         BLAZOR_PROJECT = 'HealthAxisAdminLayout\\HealthAxisAdminLayout.csproj'
+        ANGULAR_PROJECT = 'HealthAxis_AngularProj'
 
         PUBLISH_DIRECTORY = 'publish'
         DEPLOY_PACKAGE = 'deploy-package.zip'
 
         /*
-         * Required on this workstation so Node.js uses the
-         * Windows system certificate store.
+         * Required on this workstation so Node.js uses
+         * the Windows system certificate store.
          */
         NODE_OPTIONS = '--use-system-ca'
 
-        AWS_PROFILE = 'default'
-        AWS_DEFAULT_REGION = 'ap-southeast-2'
+        /*
+         * Prevent Git from waiting for invisible interactive input.
+         * The GitHub repository is public, so no credential is needed.
+         */
+        GIT_TERMINAL_PROMPT = '0'
+        GIT_ASKPASS = 'echo'
     }
 
     stages {
         stage('Clean Workspace and Checkout') {
             steps {
+                echo 'Cleaning the Jenkins workspace.'
+
                 cleanWs(
                     deleteDirs: true,
-                    notFailBuild: false
+                    notFailBuild: false,
+                    disableDeferredWipeout: true
                 )
 
-                checkout scm
+                echo 'Checking out the public HealthAxis repository.'
+
+                timeout(
+                    time: 10,
+                    unit: 'MINUTES'
+                ) {
+                    checkout([
+                        $class: 'GitSCM',
+
+                        branches: [
+                            [
+                                name: "*/${env.REPOSITORY_BRANCH}"
+                            ]
+                        ],
+
+                        userRemoteConfigs: [
+                            [
+                                url: env.REPOSITORY_URL
+                            ]
+                        ],
+
+                        extensions: [
+                            [
+                                $class: 'CloneOption',
+                                shallow: true,
+                                depth: 1,
+                                noTags: true,
+                                honorRefspec: false,
+                                timeout: 10
+                            ],
+                            [
+                                $class: 'CheckoutOption',
+                                timeout: 10
+                            ]
+                        ]
+                    ])
+                }
+
+                bat '''
+                    @echo off
+
+                    echo ==========================================
+                    echo Checked-out Git revision
+                    echo ==========================================
+
+                    git rev-parse HEAD
+                    if errorlevel 1 exit /b 1
+
+                    git log -1 --pretty=oneline
+                    if errorlevel 1 exit /b 1
+                '''
             }
         }
 
@@ -80,7 +138,7 @@ pipeline {
                     node --version
                     if errorlevel 1 exit /b 1
 
-                    npm --version
+                    call npm --version
                     if errorlevel 1 exit /b 1
 
                     aws --version
@@ -90,6 +148,9 @@ pipeline {
                     if errorlevel 1 exit /b 1
 
                     jar --version
+                    if errorlevel 1 exit /b 1
+
+                    powershell.exe -NoProfile -Command "$PSVersionTable.PSVersion"
                     if errorlevel 1 exit /b 1
 
                     echo.
@@ -128,16 +189,19 @@ pipeline {
 
                     if not exist build-frontends.ps1 (
                         echo ERROR: build-frontends.ps1 was not found.
+                        echo The HealthAxis project may not be located at the repository root.
                         exit /b 1
                     )
 
-                    if not exist HealthAxisApi\\HealthAxisCore_Api.csproj (
-                        echo ERROR: HealthAxis API project was not found.
+                    if not exist "%API_PROJECT%" (
+                        echo ERROR: HealthAxis API project was not found:
+                        echo %API_PROJECT%
                         exit /b 1
                     )
 
-                    if not exist HealthAxisAdminLayout\\HealthAxisAdminLayout.csproj (
-                        echo ERROR: Blazor project was not found.
+                    if not exist "%BLAZOR_PROJECT%" (
+                        echo ERROR: Blazor project was not found:
+                        echo %BLAZOR_PROJECT%
                         exit /b 1
                     )
 
@@ -151,13 +215,19 @@ pipeline {
                         exit /b 1
                     )
 
-                    if not exist HealthAxis_AngularProj\\package.json (
+                    if not exist "%ANGULAR_PROJECT%\\package.json" (
                         echo ERROR: Angular package.json was not found.
                         exit /b 1
                     )
 
-                    if not exist HealthAxis_AngularProj\\angular.json (
+                    if not exist "%ANGULAR_PROJECT%\\angular.json" (
                         echo ERROR: Angular angular.json was not found.
+                        exit /b 1
+                    )
+
+                    if not exist "%ANGULAR_PROJECT%\\package-lock.json" (
+                        echo ERROR: Angular package-lock.json was not found.
+                        echo Commit package-lock.json so Jenkins can use npm ci.
                         exit /b 1
                     )
 
@@ -167,7 +237,7 @@ pipeline {
             }
         }
 
-        stage('Clean Previous Outputs') {
+        stage('Clean Previous Generated Outputs') {
             steps {
                 bat '''
                     @echo off
@@ -222,25 +292,30 @@ pipeline {
 
         stage('Build Angular and Blazor') {
             steps {
-                bat '''
-                    @echo off
+                timeout(
+                    time: 30,
+                    unit: 'MINUTES'
+                ) {
+                    bat '''
+                        @echo off
 
-                    echo ==========================================
-                    echo Building Angular and Blazor frontends
-                    echo ==========================================
+                        echo ==========================================
+                        echo Building Angular and Blazor frontends
+                        echo ==========================================
 
-                    powershell.exe ^
-                        -NoLogo ^
-                        -NoProfile ^
-                        -NonInteractive ^
-                        -ExecutionPolicy Bypass ^
-                        -File ".\\build-frontends.ps1"
+                        powershell.exe ^
+                            -NoLogo ^
+                            -NoProfile ^
+                            -NonInteractive ^
+                            -ExecutionPolicy Bypass ^
+                            -File ".\\build-frontends.ps1"
 
-                    if errorlevel 1 (
-                        echo ERROR: Frontend build script failed.
-                        exit /b 1
-                    )
-                '''
+                        if errorlevel 1 (
+                            echo ERROR: Frontend build script failed.
+                            exit /b 1
+                        )
+                    '''
+                }
             }
         }
 
@@ -280,24 +355,29 @@ pipeline {
 
         stage('Publish HealthAxis API') {
             steps {
-                bat '''
-                    @echo off
+                timeout(
+                    time: 20,
+                    unit: 'MINUTES'
+                ) {
+                    bat '''
+                        @echo off
 
-                    echo ==========================================
-                    echo Publishing HealthAxis API
-                    echo ==========================================
+                        echo ==========================================
+                        echo Publishing HealthAxis API
+                        echo ==========================================
 
-                    dotnet publish "%API_PROJECT%" ^
-                        -c Release ^
-                        -o "%PUBLISH_DIRECTORY%" ^
-                        --no-restore ^
-                        --self-contained false
+                        dotnet publish "%API_PROJECT%" ^
+                            -c Release ^
+                            -o "%PUBLISH_DIRECTORY%" ^
+                            --no-restore ^
+                            --self-contained false
 
-                    if errorlevel 1 (
-                        echo ERROR: HealthAxis API publish failed.
-                        exit /b 1
-                    )
-                '''
+                        if errorlevel 1 (
+                            echo ERROR: HealthAxis API publish failed.
+                            exit /b 1
+                        )
+                    '''
+                }
             }
         }
 
@@ -519,32 +599,41 @@ pipeline {
                         echo ==========================================
 
                         aws s3api head-bucket ^
-                            --bucket "%S3_BUCKET%"
+                            --bucket "%S3_BUCKET%" ^
+                            --region "%AWS_REGION%"
 
                         if errorlevel 1 (
                             echo ERROR: Jenkins cannot access the S3 deployment bucket.
                             exit /b 1
                         )
 
-                        aws elasticbeanstalk describe-applications ^
-                            --application-names "%EB_APPLICATION_NAME%" ^
-                            --region "%AWS_REGION%" ^
-                            --query "Applications[0].ApplicationName" ^
-                            --output text
+                        for /f "delims=" %%A in ('
+                            aws elasticbeanstalk describe-applications ^
+                                --application-names "%EB_APPLICATION_NAME%" ^
+                                --region "%AWS_REGION%" ^
+                                --query "Applications[0].ApplicationName" ^
+                                --output text
+                        ') do set "FOUND_APPLICATION=%%A"
 
-                        if errorlevel 1 (
-                            echo ERROR: Elastic Beanstalk application lookup failed.
+                        if /I not "%FOUND_APPLICATION%"=="%EB_APPLICATION_NAME%" (
+                            echo ERROR: Elastic Beanstalk application was not found.
+                            echo Expected: %EB_APPLICATION_NAME%
+                            echo Found: %FOUND_APPLICATION%
                             exit /b 1
                         )
 
-                        aws elasticbeanstalk describe-environments ^
-                            --environment-names "%EB_ENVIRONMENT_NAME%" ^
-                            --region "%AWS_REGION%" ^
-                            --query "Environments[0].EnvironmentName" ^
-                            --output text
+                        for /f "delims=" %%E in ('
+                            aws elasticbeanstalk describe-environments ^
+                                --environment-names "%EB_ENVIRONMENT_NAME%" ^
+                                --region "%AWS_REGION%" ^
+                                --query "Environments[0].EnvironmentName" ^
+                                --output text
+                        ') do set "FOUND_ENVIRONMENT=%%E"
 
-                        if errorlevel 1 (
-                            echo ERROR: Elastic Beanstalk environment lookup failed.
+                        if /I not "%FOUND_ENVIRONMENT%"=="%EB_ENVIRONMENT_NAME%" (
+                            echo ERROR: Elastic Beanstalk environment was not found.
+                            echo Expected: %EB_ENVIRONMENT_NAME%
+                            echo Found: %FOUND_ENVIRONMENT%
                             exit /b 1
                         )
 
