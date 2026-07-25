@@ -1,6 +1,7 @@
 ﻿@page "/admin-token-login"
 
 @using AdminWebApp.Auth
+@using Microsoft.JSInterop
 
 @inject NavigationManager Nav
 @inject IJSRuntime JS
@@ -13,28 +14,49 @@
     {
         var uri = Nav.ToAbsoluteUri(Nav.Uri);
 
-        var accessToken = GetQueryValue(uri.Query, "accessToken");
-        var refreshToken = GetQueryValue(uri.Query, "refreshToken");
+        var accessToken = GetQueryValue(
+            uri.Query,
+            "accessToken");
+
+        var refreshToken = GetQueryValue(
+            uri.Query,
+            "refreshToken");
 
         if (string.IsNullOrWhiteSpace(accessToken))
         {
-            Nav.NavigateTo("login");
+            Nav.NavigateTo(
+                "/angular/login",
+                forceLoad: true,
+                replace: true);
+
             return;
         }
 
-        await JS.InvokeVoidAsync("localStorage.setItem", "token", accessToken);
+        await JS.InvokeVoidAsync(
+            "localStorage.setItem",
+            "token",
+            accessToken);
 
         if (!string.IsNullOrWhiteSpace(refreshToken))
         {
-            await JS.InvokeVoidAsync("localStorage.setItem", "refreshToken", refreshToken);
+            await JS.InvokeVoidAsync(
+                "localStorage.setItem",
+                "refreshToken",
+                refreshToken);
         }
 
-        AuthStateProvider.NotifyUserLoggedIn(accessToken);
+        AuthStateProvider.NotifyUserLoggedIn(
+            accessToken);
 
-        Nav.NavigateTo("dashboard");
+        Nav.NavigateTo(
+            "dashboard",
+            forceLoad: true,
+            replace: true);
     }
 
-    private static string? GetQueryValue(string query, string key)
+    private static string GetQueryValue(
+        string query,
+        string key)
     {
         if (string.IsNullOrWhiteSpace(query))
         {
@@ -43,18 +65,25 @@
 
         if (query.StartsWith('?'))
         {
-            query = query.Substring(1);
+            query = query[1..];
         }
 
-        var pairs = query.Split('&', StringSplitOptions.RemoveEmptyEntries);
+        var pairs = query.Split(
+            '&',
+            StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var pair in pairs)
         {
             var parts = pair.Split('=', 2);
 
-            if (parts.Length == 2 && parts[0] == key)
+            if (parts.Length == 2 &&
+                string.Equals(
+                    parts[0],
+                    key,
+                    StringComparison.Ordinal))
             {
-                return Uri.UnescapeDataString(parts[1]);
+                return Uri.UnescapeDataString(
+                    parts[1]);
             }
         }
 
