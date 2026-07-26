@@ -19,7 +19,7 @@ pipeline {
         stage('Build Angular') {
             steps {
                 dir('HealthCare/HealthCare.UI') {
-                    bat 'npm install'
+                    bat 'npm ci'
                     bat 'npm run build'
                 }
             }
