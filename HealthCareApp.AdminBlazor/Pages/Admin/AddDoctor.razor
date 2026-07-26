@@ -371,13 +371,22 @@
 
         try
         {
-            await JSRuntime.InvokeVoidAsync(
-                "navigator.clipboard.writeText",
+            var copied = await JSRuntime.InvokeAsync<bool>(
+                "healthAxisClipboard.copyText",
                 createdDoctor.TemporaryPassword);
 
-            ToastService.ShowSuccess(
-                "Copied",
-                "Temporary password copied to clipboard.");
+            if (copied)
+            {
+                ToastService.ShowSuccess(
+                    "Copied",
+                    "Temporary password copied to clipboard.");
+            }
+            else
+            {
+                ToastService.ShowError(
+                    "Copy Failed",
+                    "Unable to copy temporary password. Please copy it manually.");
+            }
         }
         catch
         {
@@ -386,7 +395,6 @@
                 "Unable to copy temporary password. Please copy it manually.");
         }
     }
-
     private static string GetFriendlyCreateDoctorErrorMessage(string exceptionMessage)
     {
         if (exceptionMessage.Contains("409", StringComparison.OrdinalIgnoreCase) ||
