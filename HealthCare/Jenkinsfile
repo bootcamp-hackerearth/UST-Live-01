@@ -18,8 +18,8 @@ pipeline {
 
         stage('Build Angular') {
             steps {
-                dir('HealthCare.UI') {
-                    bat 'npm ci'
+                dir('HealthCare/HealthCare.UI') {
+                    bat 'npm install'
                     bat 'npm run build'
                 }
             }
@@ -27,27 +27,27 @@ pipeline {
 
         stage('Publish Blazor') {
             steps {
-                bat 'dotnet publish HealthCareAdmin.UI\\HealthCareAdmin.UI.csproj -c Release -o blazor-publish-temp'
+                bat 'dotnet publish HealthCare\\HealthCareAdmin.UI\\HealthCareAdmin.UI.csproj -c Release -o blazor-publish-temp'
             }
         }
 
         stage('Copy Blazor into API wwwroot') {
             steps {
                 bat '''
-                if not exist HealthCare.Api\\wwwroot\\blazor (
-                    mkdir HealthCare.Api\\wwwroot\\blazor
+                if not exist HealthCare\\HealthCare.Api\\wwwroot\\blazor (
+                    mkdir HealthCare\\HealthCare.Api\\wwwroot\\blazor
                 )
                 '''
 
                 bat '''
-                xcopy /E /Y /I blazor-publish-temp\\wwwroot\\* HealthCare.Api\\wwwroot\\blazor\\
+                xcopy /E /Y /I blazor-publish-temp\\wwwroot\\* HealthCare\\HealthCare.Api\\wwwroot\\blazor\\
                 '''
             }
         }
 
         stage('Publish API') {
             steps {
-                bat 'dotnet publish HealthCare.Api\\HealthCare.Api.csproj -c Release -o publish'
+                bat 'dotnet publish HealthCare\\HealthCare.Api\\HealthCare.Api.csproj -c Release -o publish'
             }
         }
 
