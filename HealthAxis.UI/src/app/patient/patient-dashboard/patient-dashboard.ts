@@ -14,6 +14,11 @@ import { AppointmentService } from '../../core/services/appointment.service';
 import { PatientService } from '../../core/services/patient.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
+const PENDING_STATUS = 'pending';
+const CONFIRMED_STATUS = 'confirmed';
+const COMPLETED_STATUS = 'completed';
+const CANCELLED_STATUS = 'cancelled';
+
 @Component({
   selector: 'app-patient-dashboard',
   imports: [
@@ -32,33 +37,40 @@ export class PatientDashboard {
   readonly appointments = signal<Appointment[]>([]);
   readonly errorMessage = signal('');
 
+  readonly greeting = this.getGreeting();
+
+  readonly patientDisplayName = computed(() => {
+    const fullName = this.patient()?.fullName?.trim();
+    return fullName || 'Patient';
+  });
+
   readonly pendingCount = computed(() =>
-    this.countByStatus('Pending')
+    this.countByStatus(PENDING_STATUS)
   );
 
   readonly confirmedCount = computed(() =>
-    this.countByStatus('Confirmed')
+    this.countByStatus(CONFIRMED_STATUS)
   );
 
   readonly completedCount = computed(() =>
-    this.countByStatus('Completed')
+    this.countByStatus(COMPLETED_STATUS)
   );
 
   readonly cancelledCount = computed(() =>
-    this.countByStatus('Cancelled')
+    this.countByStatus(CANCELLED_STATUS)
   );
 
   readonly upcomingAppointment =
     computed<Appointment | null>(() => {
-      const today = this.getTodayDateOnly();
+      const currentTime = Date.now();
 
       const appointment = this.appointments()
         .filter((item) =>
-          this.isUpcomingAppointment(item, today)
+          this.isUpcomingAppointment(item, currentTime)
         )
         .sort((first, second) =>
-          this.getAppointmentDateValue(first) -
-          this.getAppointmentDateValue(second)
+          this.getAppointmentStartValue(first) -
+          this.getAppointmentStartValue(second)
         )[0];
 
       return appointment ?? null;
@@ -68,17 +80,25 @@ export class PatientDashboard {
     this.loadDashboard();
   }
 
-  getPatientFirstName(): string {
-    const fullName = this.patient()?.fullName?.trim();
+  getStatusClass(status: string): string {
+    switch (this.normalizeStatus(status)) {
+      case CONFIRMED_STATUS:
+        return 'status-confirmed';
 
-    if (!fullName) {
-      return 'Patient';
+      case COMPLETED_STATUS:
+        return 'status-completed';
+
+      case CANCELLED_STATUS:
+        return 'status-cancelled';
+
+      default:
+        return 'status-pending';
     }
-
-    return fullName.split(' ')[0];
   }
 
   private loadDashboard(): void {
+    this.errorMessage.set('');
+
     this.patientService.getMyProfile().subscribe({
       next: (patient) => {
         this.patient.set(patient);
@@ -111,40 +131,122 @@ export class PatientDashboard {
   private countByStatus(status: string): number {
     return this.appointments().filter(
       (appointment) =>
-        appointment.status.toLowerCase() ===
-        status.toLowerCase()
+        this.normalizeStatus(appointment.status) === status
     ).length;
   }
 
   private isUpcomingAppointment(
     appointment: Appointment,
-    today: Date
+    currentTime: number
   ): boolean {
+    const status =
+      this.normalizeStatus(appointment.status);
+
+    const isActiveStatus =
+      status === PENDING_STATUS ||
+      status === CONFIRMED_STATUS;
+
+    return isActiveStatus &&
+      this.getAppointmentStartValue(appointment) >=
+        currentTime;
+  }
+
+  private getAppointmentStartValue(
+    appointment: Appointment
+  ): number {
     const appointmentDate =
       new Date(appointment.scheduledDate);
 
-    appointmentDate.setHours(0, 0, 0, 0);
+    if (Number.isNaN(appointmentDate.getTime())) {
+      return Number.MAX_SAFE_INTEGER;
+    }
 
-    const status = appointment.status.toLowerCase();
+    const startTime =
+      this.parseTimeSlotStart(appointment.timeSlot);
 
-    return appointmentDate >= today &&
-      status !== 'cancelled' &&
-      status !== 'completed';
+    if (startTime) {
+      appointmentDate.setHours(
+        startTime.hours,
+        startTime.minutes,
+        0,
+        0
+      );
+    } else {
+      appointmentDate.setHours(0, 0, 0, 0);
+    }
+
+    return appointmentDate.getTime();
   }
 
-  private getAppointmentDateValue(
-    appointment: Appointment
-  ): number {
-    return new Date(
-      appointment.scheduledDate
-    ).getTime();
+  private parseTimeSlotStart(
+    timeSlot: string | null | undefined
+  ): {
+    hours: number;
+    minutes: number;
+  } | null {
+    const startTimeText =
+      timeSlot?.split('-')[0]?.trim();
+
+    if (!startTimeText) {
+      return null;
+    }
+
+    const match =
+      /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(
+        startTimeText
+      );
+
+    if (!match) {
+      return null;
+    }
+
+    const [, hourText, minuteText, periodText] =
+      match;
+
+    let hours = Number.parseInt(hourText, 10);
+    const minutes =
+      Number.parseInt(minuteText, 10);
+
+    if (
+      hours < 1 ||
+      hours > 12 ||
+      minutes < 0 ||
+      minutes > 59
+    ) {
+      return null;
+    }
+
+    const period = periodText.toUpperCase();
+
+    if (period === 'AM' && hours === 12) {
+      hours = 0;
+    } else if (period === 'PM' && hours !== 12) {
+      hours += 12;
+    }
+
+    return {
+      hours,
+      minutes
+    };
   }
 
-  private getTodayDateOnly(): Date {
-    const today = new Date();
+  private normalizeStatus(
+    status: string | null | undefined
+  ): string {
+    return status?.trim().toLowerCase() ?? '';
+  }
 
-    today.setHours(0, 0, 0, 0);
+  private getGreeting(): string {
+    const currentHour = new Date().getHours();
 
-    return today;
+    if (currentHour < 12) {
+      return 'Good morning';
+    }
+
+    if (currentHour < 17) {
+      return 'Good afternoon';
+    }
+
+    return 'Good evening';
   }
 }
