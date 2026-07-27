@@ -102,8 +102,8 @@
   display: block;
   margin-top: 6px;
   color: var(--text-dark);
-  font-size: clamp(42px, 5.2vw, 62px);
-  line-height: 1;
+  font-size: clamp(30px, 3.4vw, 44px);
+  line-height: 1.05;
   overflow-wrap: anywhere;
 }
 
@@ -686,7 +686,7 @@
   }
 
   .patient-name {
-    font-size: 39px;
+    font-size: 30px;
   }
 
   .welcome-actions {

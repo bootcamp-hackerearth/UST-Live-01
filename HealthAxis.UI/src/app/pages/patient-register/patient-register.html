@@ -453,7 +453,10 @@
 
         <p class="bottom-text">
           Already registered?
-          <a routerLink="/login">
+          <a
+            routerLink="/login"
+            [queryParams]="flowQueryParams()"
+          >
             Login here
           </a>
         </p>

@@ -12,11 +12,15 @@ import {
 } from '@angular/forms';
 import {
   ActivatedRoute,
+  Params,
   Router,
   RouterLink
 } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
+
+const BOOK_APPOINTMENT_ROUTE =
+  '/patient/book-appointment';
 
 @Component({
   selector: 'app-login',
@@ -29,17 +33,27 @@ import { AuthService } from '../../core/services/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Login {
-  private readonly formBuilder = inject(FormBuilder);
-  private readonly authService = inject(AuthService);
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+  private readonly formBuilder =
+    inject(FormBuilder);
+
+  private readonly authService =
+    inject(AuthService);
+
+  private readonly route =
+    inject(ActivatedRoute);
+
+  private readonly router =
+    inject(Router);
 
   private readonly emailPattern =
     /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+  private bookingReturnUrl = '';
+
   readonly loading = signal(false);
   readonly errorMessage = signal('');
   readonly showPassword = signal(false);
+  readonly flowQueryParams = signal<Params>({});
 
   readonly loginForm =
     this.formBuilder.nonNullable.group({
@@ -47,7 +61,9 @@ export class Login {
         '',
         [
           Validators.required,
-          Validators.pattern(this.emailPattern)
+          Validators.pattern(
+            this.emailPattern
+          )
         ]
       ],
       password: [
@@ -59,6 +75,7 @@ export class Login {
     });
 
   constructor() {
+    this.captureBookingFlow();
     this.handleLoginQueryParams();
   }
 
@@ -75,9 +92,11 @@ export class Login {
 
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+
       this.errorMessage.set(
         this.getFormErrorMessage()
       );
+
       return;
     }
 
@@ -88,10 +107,11 @@ export class Login {
       .subscribe({
         next: () => {
           this.loading.set(false);
-          this.authService.redirectByRole();
+          this.redirectAfterLogin();
         },
         error: (error: unknown) => {
           this.loading.set(false);
+
           this.errorMessage.set(
             this.getLoginErrorMessage(error)
           );
@@ -123,17 +143,91 @@ export class Login {
     return '';
   }
 
+  private captureBookingFlow(): void {
+    const queryParams =
+      this.route.snapshot.queryParamMap;
+
+    const returnUrl =
+      queryParams.get('returnUrl');
+
+    if (
+      returnUrl !==
+      BOOK_APPOINTMENT_ROUTE
+    ) {
+      return;
+    }
+
+    this.bookingReturnUrl =
+      BOOK_APPOINTMENT_ROUTE;
+
+    const flowParams: Params = {
+      returnUrl:
+        BOOK_APPOINTMENT_ROUTE
+    };
+
+    const doctorId =
+      Number(queryParams.get('doctorId'));
+
+    if (
+      Number.isInteger(doctorId) &&
+      doctorId > 0
+    ) {
+      flowParams['doctorId'] =
+        doctorId;
+    }
+
+    const specialisation =
+      queryParams
+        .get('specialisation')
+        ?.trim();
+
+    if (specialisation) {
+      flowParams['specialisation'] =
+        specialisation;
+    }
+
+    this.flowQueryParams.set(flowParams);
+  }
+
+  private redirectAfterLogin(): void {
+    if (
+      this.authService.getRole() !== 'Patient' ||
+      !this.bookingReturnUrl
+    ) {
+      this.authService.redirectByRole();
+      return;
+    }
+
+    const flowParams = {
+      ...this.flowQueryParams()
+    };
+
+    delete flowParams['returnUrl'];
+
+    void this.router.navigate(
+      [this.bookingReturnUrl],
+      {
+        queryParams: flowParams
+      }
+    );
+  }
+
   private handleLoginQueryParams(): void {
     const queryParams =
       this.route.snapshot.queryParamMap;
 
     const isAdminLogout =
-      queryParams.get('adminLogout') === 'true';
+      queryParams.get('adminLogout') ===
+      'true';
 
     const isSessionExpired =
-      queryParams.get('sessionExpired') === 'true';
+      queryParams.get('sessionExpired') ===
+      'true';
 
-    if (isAdminLogout || isSessionExpired) {
+    if (
+      isAdminLogout ||
+      isSessionExpired
+    ) {
       this.authService.clearSession();
     }
 
@@ -143,7 +237,10 @@ export class Login {
       );
     }
 
-    if (isAdminLogout || isSessionExpired) {
+    if (
+      isAdminLogout ||
+      isSessionExpired
+    ) {
       void this.router.navigate([], {
         queryParams: {
           adminLogout: null,
@@ -157,14 +254,18 @@ export class Login {
 
   private getFormErrorMessage(): string {
     if (this.email.invalid) {
-      return 'Please enter a valid email address.';
+      return (
+        'Please enter a valid email address.'
+      );
     }
 
     if (this.password.invalid) {
       return 'Please enter your password.';
     }
 
-    return 'Please enter valid login details.';
+    return (
+      'Please enter valid login details.'
+    );
   }
 
   private getLoginErrorMessage(
@@ -172,25 +273,35 @@ export class Login {
   ): string {
     if (error instanceof HttpErrorResponse) {
       if (error.status === 0) {
-        return 'Unable to connect to the server. Please try again.';
+        return (
+          'Unable to connect to the server. Please try again.'
+        );
       }
 
       if (
         error.status === 400 ||
         error.status === 401
       ) {
-        return 'Incorrect email or password.';
+        return (
+          'Incorrect email or password.'
+        );
       }
 
       if (error.status === 403) {
-        return 'You are not allowed to access this portal.';
+        return (
+          'You are not allowed to access this portal.'
+        );
       }
 
       if (error.status >= 500) {
-        return 'The server is temporarily unavailable. Please try again.';
+        return (
+          'The server is temporarily unavailable. Please try again.'
+        );
       }
     }
 
-    return 'Unable to complete login. Please try again.';
+    return (
+      'Unable to complete login. Please try again.'
+    );
   }
 }

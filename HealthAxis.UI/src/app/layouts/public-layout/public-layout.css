@@ -6,21 +6,26 @@
   box-sizing: border-box;
 }
 
+button {
+  font: inherit;
+}
+
 .public-header {
   position: sticky;
   top: 0;
   z-index: 1000;
   background: #b51230;
-  box-shadow: 0 5px 20px rgba(72, 10, 28, 0.18);
+  box-shadow:
+    0 5px 20px rgba(72, 10, 28, 0.18);
 }
 
 .main-navbar {
   min-height: 86px;
-  padding: 0 6%;
+  padding: 0 4.5%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 30px;
+  gap: 28px;
   background:
     linear-gradient(
       100deg,
@@ -47,7 +52,8 @@
   display: grid;
   place-items: center;
   background: #ffffff;
-  box-shadow: 0 8px 20px rgba(68, 6, 20, 0.14);
+  box-shadow:
+    0 8px 20px rgba(68, 6, 20, 0.14);
 }
 
 .medical-cross {
@@ -101,20 +107,29 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 38px;
+  gap: 23px;
 }
 
-.navigation-links a {
+.navigation-links a,
+.section-link {
   position: relative;
   padding: 13px 0;
+  border: none;
   color: #ffffff;
+  background: transparent;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
   white-space: nowrap;
+  cursor: pointer;
 }
 
-.navigation-links a:not(.login-link)::after {
+.section-link::after,
+.navigation-links a:not(
+  .login-link
+):not(
+  .register-link
+)::after {
   content: "";
   position: absolute;
   left: 50%;
@@ -127,46 +142,68 @@
     right 180ms ease;
 }
 
-.navigation-links a:hover::after,
-.navigation-links a.active::after {
+.section-link:hover::after,
+.navigation-links a:hover::after {
   left: 0;
   right: 0;
 }
 
-.login-link {
+.login-link,
+.register-link {
   min-width: 88px;
   min-height: 44px;
-  padding: 12px 22px !important;
+  padding: 12px 19px !important;
   border-radius: 10px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.login-link {
   color: #a70e2b !important;
   background: #ffffff;
-  box-shadow: 0 8px 20px rgba(67, 5, 19, 0.14);
+  box-shadow:
+    0 8px 20px rgba(67, 5, 19, 0.14);
 }
 
 .login-link:hover {
   background: #fff4f6;
 }
 
-@media (max-width: 960px) {
+.register-link {
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.register-link:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.login-link.active,
+.register-link.active {
+  outline:
+    2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1120px) {
   .main-navbar {
     min-height: auto;
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding-top: 14px;
+    padding-bottom: 14px;
     flex-direction: column;
   }
 
   .navigation-links {
     width: 100%;
     justify-content: center;
-    gap: 24px;
+    gap: 20px;
     flex-wrap: wrap;
   }
 }
 
-@media (max-width: 620px) {
+@media (max-width: 700px) {
   .brand-logo {
     width: 46px;
     height: 46px;
@@ -178,15 +215,19 @@
 
   .navigation-links {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
 
-  .navigation-links a {
+  .navigation-links a,
+  .section-link {
+    width: 100%;
     text-align: center;
   }
 
-  .login-link {
+  .login-link,
+  .register-link {
     width: 100%;
   }
 }

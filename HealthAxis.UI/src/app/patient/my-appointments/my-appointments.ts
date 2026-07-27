@@ -587,8 +587,7 @@ export class MyAppointments {
 
     return (
       status === PENDING_STATUS ||
-      status === CONFIRMED_STATUS ||
-      status === COMPLETED_STATUS
+      status === CONFIRMED_STATUS
     );
   }
 
@@ -705,7 +704,7 @@ export class MyAppointments {
       )
     ) {
       this.errorMessage.set(
-        'PDF is not available for cancelled appointments.'
+        'Appointment PDF is available only for pending or confirmed appointments.'
       );
       return;
     }

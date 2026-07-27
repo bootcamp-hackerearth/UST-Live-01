@@ -1,10 +1,19 @@
 <header class="public-header">
 
-  <nav class="main-navbar">
-
-    <a routerLink="/" class="brand" aria-label="HealthAxis home">
-
-      <span class="brand-logo" aria-hidden="true">
+  <nav
+    class="main-navbar"
+    aria-label="Public navigation"
+  >
+    <a
+      href="/"
+      class="brand"
+      aria-label="HealthAxis home"
+      (click)="navigateToSection('home', $event)"
+    >
+      <span
+        class="brand-logo"
+        aria-hidden="true"
+      >
         <span class="medical-cross"></span>
       </span>
 
@@ -12,37 +21,57 @@
         <strong>HealthAxis</strong>
         <small>Digital Hospital</small>
       </span>
-
     </a>
 
     <div class="navigation-links">
-
-      <a
-        routerLink="/"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }">
+      <button
+        type="button"
+        class="section-link"
+        (click)="navigateToSection('home')"
+      >
         Home
-      </a>
+      </button>
 
-      <a href="/#find-doctor">
-        Find Doctor
-      </a>
+      <button
+        type="button"
+        class="section-link"
+        (click)="navigateToSection('about-us')"
+      >
+        About Us
+      </button>
 
-      <a
-        routerLink="/register"
-        routerLinkActive="active">
-        Patient Registration
-      </a>
+      <button
+        type="button"
+        class="section-link"
+        (click)="navigateToSection('find-doctors')"
+      >
+        Find Doctors
+      </button>
+
+      <button
+        type="button"
+        class="section-link"
+        (click)="navigateToSection('contact')"
+      >
+        Contact
+      </button>
 
       <a
         routerLink="/login"
         routerLinkActive="active"
-        class="login-link">
+        class="login-link"
+      >
         Login
       </a>
 
+      <a
+        routerLink="/register"
+        routerLinkActive="active"
+        class="register-link"
+      >
+        Register
+      </a>
     </div>
-
   </nav>
 
 </header>

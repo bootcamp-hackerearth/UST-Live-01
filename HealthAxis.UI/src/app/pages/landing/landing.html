@@ -1,29 +1,51 @@
 <main class="home-page">
 
-  <section class="hero-section">
+  <section
+    id="home"
+    class="hero-section scroll-section"
+  >
     <div class="hero-content">
 
-      <p class="hero-welcome">Welcome to</p>
+      <p class="hero-welcome">
+        Welcome to
+      </p>
 
       <h1>HealthAxis</h1>
 
-      <h2>Online Healthcare Appointments Management System</h2>
+      <h2>
+        Online Healthcare Appointments Management System
+      </h2>
 
       <p class="hero-tagline">
         Your health. Our priority.
       </p>
 
       <p class="hero-description">
-        Book appointments, find active doctors, track visit status, and manage
-        health records securely through one connected healthcare platform.
+        Find an available specialist, continue securely through
+        login or registration, and book your appointment from one
+        connected healthcare platform.
       </p>
 
       <div class="hero-actions">
-        <a routerLink="/login" class="primary-action">
+        <button
+          type="button"
+          class="primary-action book-now-action"
+          (click)="scrollToDoctorFinder()"
+        >
+          Book Appointment
+        </button>
+
+        <a
+          routerLink="/login"
+          class="secondary-action"
+        >
           Login
         </a>
 
-        <a routerLink="/register" class="secondary-action">
+        <a
+          routerLink="/register"
+          class="text-action"
+        >
           Register
         </a>
       </div>
@@ -33,9 +55,16 @@
 
   <section class="quick-actions">
 
-    <a href="#find-doctor" class="quick-action-card">
-      <span class="quick-action-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
+    <button
+      type="button"
+      class="quick-action-card"
+      (click)="scrollToDoctorFinder()"
+    >
+      <span
+        class="quick-action-icon"
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 24 24">
           <circle cx="12" cy="7" r="4"></circle>
           <path d="M5 21v-2a7 7 0 0114 0v2"></path>
           <path d="M18 8v6M15 11h6"></path>
@@ -43,15 +72,30 @@
       </span>
 
       <span class="quick-action-text">
-        <strong>Find a Doctor</strong>
-        <small>Search by specialisation and availability.</small>
+        <strong>Find Doctors</strong>
+        <small>
+          Select a specialisation and view available doctors.
+        </small>
       </span>
-    </a>
+    </button>
 
-    <a routerLink="/login" class="quick-action-card">
-      <span class="quick-action-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+    <button
+      type="button"
+      class="quick-action-card"
+      (click)="scrollToDoctorFinder()"
+    >
+      <span
+        class="quick-action-icon"
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 24 24">
+          <rect
+            x="3"
+            y="5"
+            width="18"
+            height="16"
+            rx="2"
+          ></rect>
           <path d="M8 3v4M16 3v4M3 10h18"></path>
           <path d="M12 13v5M9.5 15.5h5"></path>
         </svg>
@@ -59,153 +103,301 @@
 
       <span class="quick-action-text">
         <strong>Book Appointment</strong>
-        <small>Select a doctor, date, and time slot.</small>
+        <small>
+          Choose a doctor now and continue after authentication.
+        </small>
       </span>
-    </a>
+    </button>
 
-    <a routerLink="/login" class="quick-action-card">
-      <span class="quick-action-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
+    <a
+      routerLink="/login"
+      class="quick-action-card"
+    >
+      <span
+        class="quick-action-icon"
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 24 24">
           <path d="M7 3h10v18H7z"></path>
-          <path d="M9 3V1h6v2M10 8h4M10 12h4M10 16h4"></path>
+          <path d="M9 3V1h6v2"></path>
+          <path d="M10 8h4M10 12h4M10 16h4"></path>
         </svg>
       </span>
 
       <span class="quick-action-text">
         <strong>Health Records</strong>
-        <small>View diagnosis, prescriptions, and visit history.</small>
+        <small>
+          Login to view diagnosis, prescriptions, and visit history.
+        </small>
       </span>
     </a>
 
   </section>
 
-  <section class="find-doctor-section" id="find-doctor">
-
+  <section
+    id="find-doctors"
+    class="find-doctor-section scroll-section"
+  >
     <div class="section-heading">
-      <span>Find a Doctor</span>
+      <span>Find Doctors</span>
 
       <h2>Choose the right specialist</h2>
 
       <p>
-        Search doctors using specialisation, consultation fee, experience,
-        and active availability.
+        Select a specialisation to see active doctors who are
+        currently available for appointment booking.
       </p>
     </div>
 
-    <div class="doctor-search-card">
-
+    <div class="doctor-filter-card">
       <div class="search-field">
-        <label for="hospital">Hospital</label>
+        <label for="publicSpecialisation">
+          Specialisation
+        </label>
 
-        <select id="hospital">
-          <option>HealthAxis Hospital</option>
+        <select
+          id="publicSpecialisation"
+          [value]="selectedSpecialisation()"
+          (change)="onSpecialisationChange($event)"
+        >
+          <option value="">
+            Select Specialisation
+          </option>
+
+          @for (
+            specialisation of specialisations();
+            track specialisation
+          ) {
+            <option [value]="specialisation">
+              {{ specialisation }}
+            </option>
+          }
         </select>
       </div>
 
-      <div class="search-field">
-        <label for="specialisation">Specialisation</label>
+      <div class="filter-summary">
+        <strong>
+          {{ availableDoctors().length }}
+        </strong>
 
-        <select id="specialisation">
-          <option>Select Specialisation</option>
-          <option>Cardiology</option>
-          <option>Dermatology</option>
-          <option>General Medicine</option>
-          <option>Neurology</option>
-          <option>Ophthalmology</option>
-          <option>Orthopedic</option>
-          <option>Urology</option>
-        </select>
+        <span>
+          available doctors
+        </span>
       </div>
-
-      <div class="search-field">
-        <label for="doctor">Doctor</label>
-
-        <select id="doctor">
-          <option>Select Doctor</option>
-          <option>Login to find doctors</option>
-        </select>
-      </div>
-
-      <a routerLink="/login" class="find-doctor-button">
-        Find Doctor
-      </a>
-
     </div>
 
+    @if (doctorErrorMessage()) {
+      <div
+        class="doctor-message error-message"
+        role="alert"
+      >
+        {{ doctorErrorMessage() }}
+      </div>
+    } @else if (loadingDoctors()) {
+      <div
+        class="doctor-message"
+        aria-live="polite"
+      >
+        Loading available doctors...
+      </div>
+    } @else if (!selectedSpecialisation()) {
+      <div class="doctor-message">
+        Select a specialisation to view available doctors.
+      </div>
+    } @else if (availableDoctors().length === 0) {
+      <div class="doctor-message">
+        No active doctors are available in this specialisation.
+      </div>
+    } @else {
+      <div class="public-doctor-grid">
+        @for (
+          doctor of availableDoctors();
+          track doctor.doctorId
+        ) {
+          <article
+            class="public-doctor-card"
+            [class.selected]="
+              selectedDoctorId() === doctor.doctorId
+            "
+          >
+            <div class="public-doctor-header">
+              <span
+                class="public-doctor-avatar"
+                aria-hidden="true"
+              >
+                {{ getDoctorInitial(doctor.fullName) }}
+              </span>
+
+              <div>
+                <h3>
+                  {{ getDoctorDisplayName(doctor.fullName) }}
+                </h3>
+
+                <p>
+                  {{ doctor.specialisation }}
+                </p>
+              </div>
+
+              <span class="availability-badge">
+                Available
+              </span>
+            </div>
+
+            <div class="public-doctor-details">
+              <div>
+                <span>Experience</span>
+                <strong>
+                  {{ doctor.yearsOfExperience }} years
+                </strong>
+              </div>
+
+              <div>
+                <span>Consultation Fee</span>
+                <strong>
+                  ₹{{ doctor.consultationFee }}
+                </strong>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="select-public-doctor"
+              [class.selected]="
+                selectedDoctorId() === doctor.doctorId
+              "
+              (click)="selectDoctor(doctor)"
+            >
+              @if (
+                selectedDoctorId() === doctor.doctorId
+              ) {
+                Doctor Selected
+              } @else {
+                Select Doctor
+              }
+            </button>
+          </article>
+        }
+      </div>
+    }
+
+    @if (selectedDoctor(); as doctor) {
+      <section
+        class="continue-booking-card"
+        aria-labelledby="continueBookingTitle"
+      >
+        <div>
+          <span>Selected Doctor</span>
+
+          <h3 id="continueBookingTitle">
+            {{ getDoctorDisplayName(doctor.fullName) }}
+          </h3>
+
+          <p>
+            {{ doctor.specialisation }} ·
+            {{ doctor.yearsOfExperience }} years experience
+          </p>
+        </div>
+
+        <div class="continue-actions">
+          <a
+            routerLink="/login"
+            [queryParams]="bookingQueryParams()"
+            class="continue-login-button"
+          >
+            Login to Book
+          </a>
+
+          <a
+            routerLink="/register"
+            [queryParams]="bookingQueryParams()"
+            class="continue-register-button"
+          >
+            Register to Book
+          </a>
+        </div>
+      </section>
+    }
   </section>
 
-  <section class="about-section">
-
+  <section
+    id="about-us"
+    class="about-section scroll-section"
+  >
     <div class="about-image">
       <div class="about-image-label">
         <strong>HealthAxis</strong>
-        <span>Connected healthcare management</span>
+        <span>
+          Connected healthcare management
+        </span>
       </div>
     </div>
 
     <div class="about-content">
-
       <span class="section-label">
-        About HealthAxis
+        About Us
       </span>
 
       <h2>
-        One connected healthcare system for patients, doctors, and admins.
+        One connected healthcare system for patients,
+        doctors, and administrators.
       </h2>
 
       <p>
-        HealthAxis makes appointment booking, doctor workflow, patient care,
-        and administrative reporting simple and secure.
+        HealthAxis makes appointment booking, doctor workflow,
+        patient care, and administrative reporting simple and
+        secure.
       </p>
 
       <p>
-        Patients can register, book appointments, track visit status, and view
-        health records. Doctors can manage appointments and create medical
-        records. Admins can manage doctors, patients, users, and reports.
+        Patients can register, book appointments, track visit
+        status, and view health records. Doctors can manage
+        appointments and create medical records.
       </p>
 
       <div class="about-points">
-
         <article>
           <strong>Hassle-Free</strong>
-          <span>Book appointment Quickly and Easily</span>
+          <span>
+            Book appointments quickly and easily
+          </span>
         </article>
 
         <article>
           <strong>Smart Booking</strong>
-          <span>Doctor and time-slot validation</span>
+          <span>
+            Doctor and time-slot validation
+          </span>
         </article>
 
         <article>
           <strong>Digital Records</strong>
-          <span>Health record management</span>
+          <span>
+            Secure health-record management
+          </span>
         </article>
-
       </div>
-
     </div>
-
   </section>
 
   <section class="departments-section">
-
     <div class="section-heading">
       <span>Hospital Departments</span>
 
       <h2>Specialised care for every patient</h2>
 
       <p>
-        Choose a department and book a consultation with an active doctor.
+        Choose a department and book a consultation with an
+        active doctor.
       </p>
     </div>
 
     <div class="department-grid">
-
       <article>
         <span class="department-number">01</span>
         <h3>Cardiology</h3>
         <p>
-          Consultations for heart health and cardiovascular concerns.
+          Consultations for heart health and cardiovascular
+          concerns.
         </p>
       </article>
 
@@ -213,7 +405,8 @@
         <span class="department-number">02</span>
         <h3>Neurology</h3>
         <p>
-          Specialist care for brain and nervous system conditions.
+          Specialist care for brain and nervous-system
+          conditions.
         </p>
       </article>
 
@@ -221,7 +414,8 @@
         <span class="department-number">03</span>
         <h3>Orthopedic</h3>
         <p>
-          Medical support for bones, joints, and injury recovery.
+          Medical support for bones, joints, and injury
+          recovery.
         </p>
       </article>
 
@@ -232,31 +426,32 @@
           Regular health consultations and general medical care.
         </p>
       </article>
-
     </div>
-
   </section>
 
-  <section class="contact-section" id="contact">
-
+  <section
+    id="contact"
+    class="contact-section scroll-section"
+  >
     <div class="contact-introduction">
-      <span>Contact HealthAxis</span>
+      <span>Contact</span>
 
       <h2>
         Healthcare support in one connected platform
       </h2>
 
       <p>
-        Contact our hospital desk for appointment and patient account support.
+        Contact our hospital desk for appointment and patient
+        account support.
       </p>
     </div>
 
     <div class="contact-details">
-
       <article>
         <strong>Hospital Location</strong>
         <p>
-          HealthAxis Hospital, HITEC City Road, Hyderabad, Telangana
+          HealthAxis Hospital, HITEC City Road,
+          Hyderabad, Telangana
         </p>
       </article>
 
@@ -272,24 +467,23 @@
 
       <article>
         <strong>Working Hours</strong>
-        <p>Monday to Saturday, 9:00 AM to 6:00 PM</p>
+        <p>
+          Monday to Saturday, 9:00 AM to 6:00 PM
+        </p>
       </article>
-
     </div>
-
   </section>
 
   <footer class="home-footer">
-
     <div>
       <strong>HealthAxis</strong>
       <span>Digital Hospital</span>
     </div>
 
     <p>
-      Copyright © 2026 HealthAxis. Healthcare Appointment Management System.
+      Copyright © 2026 HealthAxis. Healthcare Appointment
+      Management System.
     </p>
-
   </footer>
 
 </main>

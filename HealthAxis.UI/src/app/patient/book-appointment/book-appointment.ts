@@ -12,7 +12,10 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import {
+  ActivatedRoute,
+  RouterLink
+} from '@angular/router';
 import { forkJoin } from 'rxjs';
 
 import { AppointmentService } from '../../core/services/appointment.service';
@@ -72,7 +75,11 @@ export class BookAppointment {
   private readonly formBuilder = inject(FormBuilder);
   private readonly patientService = inject(PatientService);
   private readonly doctorService = inject(DoctorService);
-  private readonly appointmentService = inject(AppointmentService);
+  private readonly appointmentService =
+    inject(AppointmentService);
+
+  private readonly route =
+    inject(ActivatedRoute);
 
   private readonly doctorPageSize = 6;
   private availabilityRequestId = 0;
@@ -415,8 +422,14 @@ export class BookAppointment {
       doctors: this.doctorService.getAllDoctors()
     }).subscribe({
       next: ({ patient, doctors }) => {
+        const normalizedDoctors =
+          this.extractDoctors(doctors);
+
         this.patient.set(patient);
-        this.doctors.set(this.extractDoctors(doctors));
+        this.doctors.set(normalizedDoctors);
+        this.applyRequestedDoctorSelection(
+          normalizedDoctors
+        );
         this.loading.set(false);
       },
       error: (error: unknown) => {
@@ -429,6 +442,100 @@ export class BookAppointment {
         );
       }
     });
+  }
+
+  private applyRequestedDoctorSelection(
+    doctors: readonly Doctor[]
+  ): void {
+    const queryParams =
+      this.route.snapshot.queryParamMap;
+
+    const requestedDoctorId =
+      Number(queryParams.get('doctorId'));
+
+    const requestedSpecialisation =
+      queryParams
+        .get('specialisation')
+        ?.trim() ?? '';
+
+    const requestedDoctor =
+      Number.isInteger(
+        requestedDoctorId
+      ) &&
+      requestedDoctorId > 0
+        ? doctors.find(
+            (doctor) =>
+              doctor.doctorId ===
+                requestedDoctorId &&
+              doctor.isActive
+          )
+        : undefined;
+
+    if (requestedDoctor) {
+      this.setRequestedSpecialisation(
+        requestedDoctor.specialisation
+      );
+
+      this.selectDoctor(requestedDoctor);
+      this.moveToSelectedDoctorPage(
+        requestedDoctor
+      );
+
+      return;
+    }
+
+    if (requestedSpecialisation) {
+      const matchingSpecialisation =
+        this.specialisations().find(
+          (specialisation) =>
+            specialisation
+              .toLowerCase() ===
+            requestedSpecialisation
+              .toLowerCase()
+        );
+
+      if (matchingSpecialisation) {
+        this.setRequestedSpecialisation(
+          matchingSpecialisation
+        );
+      }
+    }
+  }
+
+  private setRequestedSpecialisation(
+    specialisation: string
+  ): void {
+    this.selectedSpecialisation.set(
+      specialisation
+    );
+
+    this.bookingForm.controls
+      .specialisation
+      .setValue(specialisation);
+
+    this.resetDoctorPage();
+  }
+
+  private moveToSelectedDoctorPage(
+    doctor: Doctor
+  ): void {
+    const doctorIndex =
+      this.filteredDoctors().findIndex(
+        (item) =>
+          item.doctorId ===
+          doctor.doctorId
+      );
+
+    if (doctorIndex < 0) {
+      return;
+    }
+
+    this.currentDoctorPage.set(
+      Math.floor(
+        doctorIndex /
+        this.doctorPageSize
+      ) + 1
+    );
   }
 
   private extractDoctors(response: unknown): Doctor[] {

@@ -12,6 +12,8 @@ import {
   Validators
 } from '@angular/forms';
 import {
+  ActivatedRoute,
+  Params,
   Router,
   RouterLink
 } from '@angular/router';
@@ -27,6 +29,9 @@ import {
 } from '../../core/services/auth.service';
 
 const REDIRECT_DELAY_IN_MS = 3000;
+
+const BOOK_APPOINTMENT_ROUTE =
+  '/patient/book-appointment';
 
 @Component({
   selector: 'app-patient-register',
@@ -45,17 +50,25 @@ export class PatientRegister {
   private readonly authService =
     inject(AuthService);
 
+  private readonly route =
+    inject(ActivatedRoute);
+
   private readonly router =
     inject(Router);
 
   readonly loading = signal(false);
-  readonly registrationCompleted = signal(false);
+  readonly registrationCompleted =
+    signal(false);
 
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
 
   readonly showPassword = signal(false);
-  readonly showConfirmPassword = signal(false);
+  readonly showConfirmPassword =
+    signal(false);
+
+  readonly flowQueryParams =
+    signal<Params>({});
 
   readonly genderOptions = [
     {
@@ -81,14 +94,17 @@ export class PatientRegister {
             Validators.required,
             Validators.minLength(3),
             Validators.maxLength(80),
-            Validators.pattern(/^[A-Za-z ]+$/)
+            Validators.pattern(
+              /^[A-Za-z ]+$/
+            )
           ]
         ],
         dateOfBirth: [
           '',
           [
             Validators.required,
-            PatientRegister.noFutureDateValidator
+            PatientRegister
+              .noFutureDateValidator
           ]
         ],
         gender: [
@@ -101,7 +117,9 @@ export class PatientRegister {
           '',
           [
             Validators.required,
-            Validators.pattern(/^[1-9]\d{9}$/)
+            Validators.pattern(
+              /^[1-9]\d{9}$/
+            )
           ]
         ],
         email: [
@@ -130,36 +148,56 @@ export class PatientRegister {
       },
       {
         validators:
-          PatientRegister.passwordsMatchValidator
+          PatientRegister
+            .passwordsMatchValidator
       }
     );
 
+  constructor() {
+    this.captureBookingFlow();
+  }
+
   get fullName() {
-    return this.registerForm.controls.fullName;
+    return (
+      this.registerForm.controls.fullName
+    );
   }
 
   get dateOfBirth() {
-    return this.registerForm.controls.dateOfBirth;
+    return (
+      this.registerForm.controls.dateOfBirth
+    );
   }
 
   get gender() {
-    return this.registerForm.controls.gender;
+    return (
+      this.registerForm.controls.gender
+    );
   }
 
   get phoneNumber() {
-    return this.registerForm.controls.phoneNumber;
+    return (
+      this.registerForm.controls.phoneNumber
+    );
   }
 
   get email() {
-    return this.registerForm.controls.email;
+    return (
+      this.registerForm.controls.email
+    );
   }
 
   get password() {
-    return this.registerForm.controls.password;
+    return (
+      this.registerForm.controls.password
+    );
   }
 
   get confirmPassword() {
-    return this.registerForm.controls.confirmPassword;
+    return (
+      this.registerForm.controls
+        .confirmPassword
+    );
   }
 
   registerPatient(): void {
@@ -181,15 +219,23 @@ export class PatientRegister {
     const formValue =
       this.registerForm.getRawValue();
 
-    const request: RegisterPatientRequest = {
-      fullName: formValue.fullName.trim(),
-      dateOfBirth: formValue.dateOfBirth,
-      gender: formValue.gender as Gender,
-      phoneNumber: formValue.phoneNumber.trim(),
-      email: formValue.email.trim(),
-      password: formValue.password,
-      confirmPassword: formValue.confirmPassword
-    };
+    const request:
+      RegisterPatientRequest = {
+        fullName:
+          formValue.fullName.trim(),
+        dateOfBirth:
+          formValue.dateOfBirth,
+        gender:
+          formValue.gender as Gender,
+        phoneNumber:
+          formValue.phoneNumber.trim(),
+        email:
+          formValue.email.trim(),
+        password:
+          formValue.password,
+        confirmPassword:
+          formValue.confirmPassword
+      };
 
     this.loading.set(true);
 
@@ -198,10 +244,14 @@ export class PatientRegister {
       .subscribe({
         next: () => {
           this.loading.set(false);
-          this.registrationCompleted.set(true);
+
+          this.registrationCompleted
+            .set(true);
 
           this.successMessage.set(
-            'Patient account created successfully. Redirecting you to login...'
+            this.isBookingFlow()
+              ? 'Patient account created successfully. Redirecting you to login to continue booking...'
+              : 'Patient account created successfully. Redirecting you to login...'
           );
 
           this.registerForm.disable({
@@ -209,7 +259,13 @@ export class PatientRegister {
           });
 
           globalThis.setTimeout(() => {
-            void this.router.navigate(['/login']);
+            void this.router.navigate(
+              ['/login'],
+              {
+                queryParams:
+                  this.flowQueryParams()
+              }
+            );
           }, REDIRECT_DELAY_IN_MS);
         },
         error: (error: unknown) => {
@@ -237,6 +293,53 @@ export class PatientRegister {
     );
   }
 
+  private captureBookingFlow(): void {
+    const queryParams =
+      this.route.snapshot.queryParamMap;
+
+    if (
+      queryParams.get('returnUrl') !==
+      BOOK_APPOINTMENT_ROUTE
+    ) {
+      return;
+    }
+
+    const flowParams: Params = {
+      returnUrl:
+        BOOK_APPOINTMENT_ROUTE
+    };
+
+    const doctorId =
+      Number(queryParams.get('doctorId'));
+
+    if (
+      Number.isInteger(doctorId) &&
+      doctorId > 0
+    ) {
+      flowParams['doctorId'] =
+        doctorId;
+    }
+
+    const specialisation =
+      queryParams
+        .get('specialisation')
+        ?.trim();
+
+    if (specialisation) {
+      flowParams['specialisation'] =
+        specialisation;
+    }
+
+    this.flowQueryParams.set(flowParams);
+  }
+
+  private isBookingFlow(): boolean {
+    return (
+      this.flowQueryParams()['returnUrl'] ===
+      BOOK_APPOINTMENT_ROUTE
+    );
+  }
+
   private getFriendlyMessage(
     error: unknown,
     fallback: string
@@ -246,10 +349,12 @@ export class PatientRegister {
     };
 
     if (
-      typeof possibleError.friendlyMessage ===
-      'string'
+      typeof possibleError
+        .friendlyMessage === 'string'
     ) {
-      return possibleError.friendlyMessage;
+      return (
+        possibleError.friendlyMessage
+      );
     }
 
     return fallback;
@@ -262,7 +367,9 @@ export class PatientRegister {
       control.get('password')?.value;
 
     const confirmPassword =
-      control.get('confirmPassword')?.value;
+      control.get(
+        'confirmPassword'
+      )?.value;
 
     if (
       password &&
@@ -303,12 +410,8 @@ export class PatientRegister {
       0
     );
 
-    if (selectedDate > today) {
-      return {
-        futureDate: true
-      };
-    }
-
-    return null;
+    return selectedDate > today
+      ? { futureDate: true }
+      : null;
   }
 }

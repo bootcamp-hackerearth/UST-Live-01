@@ -19,6 +19,9 @@ const CONFIRMED_STATUS = 'confirmed';
 const COMPLETED_STATUS = 'completed';
 const CANCELLED_STATUS = 'cancelled';
 
+const DATE_ONLY_PATTERN =
+  /^(\d{4})-(\d{2})-(\d{2})$/;
+
 @Component({
   selector: 'app-patient-dashboard',
   imports: [
@@ -30,16 +33,20 @@ const CANCELLED_STATUS = 'cancelled';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientDashboard {
-  private readonly patientService = inject(PatientService);
-  private readonly appointmentService = inject(AppointmentService);
+  private readonly patientService =
+    inject(PatientService);
+
+  private readonly appointmentService =
+    inject(AppointmentService);
 
   readonly patient = signal<Patient | null>(null);
   readonly appointments = signal<Appointment[]>([]);
   readonly errorMessage = signal('');
 
-
   readonly patientDisplayName = computed(() => {
-    const fullName = this.patient()?.fullName?.trim();
+    const fullName =
+      this.patient()?.fullName?.trim();
+
     return fullName || 'Patient';
   });
 
@@ -65,11 +72,15 @@ export class PatientDashboard {
 
       const appointment = this.appointments()
         .filter((item) =>
-          this.isUpcomingAppointment(item, currentTime)
+          this.isUpcomingAppointment(
+            item,
+            currentTime
+          )
         )
-        .sort((first, second) =>
-          this.getAppointmentStartValue(first) -
-          this.getAppointmentStartValue(second)
+        .sort(
+          (first, second) =>
+            this.getAppointmentStartValue(first) -
+            this.getAppointmentStartValue(second)
         )[0];
 
       return appointment ?? null;
@@ -79,7 +90,9 @@ export class PatientDashboard {
     this.loadDashboard();
   }
 
-  getStatusClass(status: string): string {
+  getStatusClass(
+    status: string | null | undefined
+  ): string {
     switch (this.normalizeStatus(status)) {
       case CONFIRMED_STATUS:
         return 'status-confirmed';
@@ -96,61 +109,87 @@ export class PatientDashboard {
   }
 
   getStatusLabel(
-  status: string | null | undefined
-): string {
-  switch (this.normalizeStatus(status)) {
-    case CONFIRMED_STATUS:
-      return 'Confirmed';
+    status: string | null | undefined
+  ): string {
+    switch (this.normalizeStatus(status)) {
+      case CONFIRMED_STATUS:
+        return 'Confirmed';
 
-    case COMPLETED_STATUS:
-      return 'Completed';
+      case COMPLETED_STATUS:
+        return 'Completed';
 
-    case CANCELLED_STATUS:
-      return 'Cancelled';
+      case CANCELLED_STATUS:
+        return 'Cancelled';
 
-    case PENDING_STATUS:
-    default:
-      return 'Pending';
+      case PENDING_STATUS:
+      default:
+        return 'Pending';
+    }
   }
-}
 
   private loadDashboard(): void {
     this.errorMessage.set('');
 
-    this.patientService.getMyProfile().subscribe({
-      next: (patient) => {
-        this.patient.set(patient);
-      },
-      error: (error: unknown) => {
-        this.errorMessage.set(
-          getFriendlyErrorMessage(
-            error,
-            'Could not load patient profile.'
-          )
-        );
-      }
-    });
+    this.patientService
+      .getMyProfile()
+      .subscribe({
+        next: (patient) => {
+          this.patient.set(patient);
+        },
+        error: (error: unknown) => {
+          this.appendDashboardError(
+            getFriendlyErrorMessage(
+              error,
+              'Could not load patient profile.'
+            )
+          );
+        }
+      });
 
-    this.appointmentService.getMyAppointments().subscribe({
-      next: (appointments) => {
-        this.appointments.set(appointments);
-      },
-      error: (error: unknown) => {
-        this.errorMessage.set(
-          getFriendlyErrorMessage(
-            error,
-            'Could not load appointments.'
-          )
-        );
-      }
-    });
+    this.appointmentService
+      .getMyAppointments()
+      .subscribe({
+        next: (appointments) => {
+          this.appointments.set(appointments);
+        },
+        error: (error: unknown) => {
+          this.appendDashboardError(
+            getFriendlyErrorMessage(
+              error,
+              'Could not load appointments.'
+            )
+          );
+        }
+      });
   }
 
-  private countByStatus(status: string): number {
-    return this.appointments().filter(
-      (appointment) =>
-        this.normalizeStatus(appointment.status) === status
-    ).length;
+  private countByStatus(
+    status: string
+  ): number {
+    const currentTime = Date.now();
+
+    return this.appointments()
+      .filter((appointment) => {
+        const normalizedStatus =
+          this.normalizeStatus(
+            appointment.status
+          );
+
+        if (normalizedStatus !== status) {
+          return false;
+        }
+
+        if (status === PENDING_STATUS) {
+          return (
+            this.getAppointmentStartValue(
+              appointment
+            ) >= currentTime
+          );
+        }
+
+        return true;
+      })
+      .length;
   }
 
   private isUpcomingAppointment(
@@ -158,29 +197,38 @@ export class PatientDashboard {
     currentTime: number
   ): boolean {
     const status =
-      this.normalizeStatus(appointment.status);
+      this.normalizeStatus(
+        appointment.status
+      );
 
     const isActiveStatus =
       status === PENDING_STATUS ||
       status === CONFIRMED_STATUS;
 
-    return isActiveStatus &&
-      this.getAppointmentStartValue(appointment) >=
-        currentTime;
+    return (
+      isActiveStatus &&
+      this.getAppointmentStartValue(
+        appointment
+      ) >= currentTime
+    );
   }
 
   private getAppointmentStartValue(
     appointment: Appointment
   ): number {
     const appointmentDate =
-      new Date(appointment.scheduledDate);
+      this.parseAppointmentDate(
+        appointment.scheduledDate
+      );
 
-    if (Number.isNaN(appointmentDate.getTime())) {
+    if (!appointmentDate) {
       return Number.MAX_SAFE_INTEGER;
     }
 
     const startTime =
-      this.parseTimeSlotStart(appointment.timeSlot);
+      this.parseTimeSlotStart(
+        appointment.timeSlot
+      );
 
     if (startTime) {
       appointmentDate.setHours(
@@ -194,6 +242,58 @@ export class PatientDashboard {
     }
 
     return appointmentDate.getTime();
+  }
+
+  private parseAppointmentDate(
+    scheduledDate: string
+  ): Date | null {
+    const value = scheduledDate.trim();
+
+    if (!value) {
+      return null;
+    }
+
+    const dateOnlyMatch =
+      DATE_ONLY_PATTERN.exec(value);
+
+    if (dateOnlyMatch) {
+      const [
+        ,
+        yearText,
+        monthText,
+        dayText
+      ] = dateOnlyMatch;
+
+      const year =
+        Number.parseInt(yearText, 10);
+
+      const month =
+        Number.parseInt(monthText, 10);
+
+      const day =
+        Number.parseInt(dayText, 10);
+
+      const localDate = new Date(
+        year,
+        month - 1,
+        day
+      );
+
+      const isValidDate =
+        localDate.getFullYear() === year &&
+        localDate.getMonth() === month - 1 &&
+        localDate.getDate() === day;
+
+      return isValidDate
+        ? localDate
+        : null;
+    }
+
+    const parsedDate = new Date(value);
+
+    return Number.isNaN(parsedDate.getTime())
+      ? null
+      : parsedDate;
   }
 
   private parseTimeSlotStart(
@@ -218,10 +318,16 @@ export class PatientDashboard {
       return null;
     }
 
-    const [, hourText, minuteText, periodText] =
-      match;
+    const [
+      ,
+      hourText,
+      minuteText,
+      periodText
+    ] = match;
 
-    let hours = Number.parseInt(hourText, 10);
+    let hours =
+      Number.parseInt(hourText, 10);
+
     const minutes =
       Number.parseInt(minuteText, 10);
 
@@ -234,11 +340,18 @@ export class PatientDashboard {
       return null;
     }
 
-    const period = periodText.toUpperCase();
+    const period =
+      periodText.toUpperCase();
 
-    if (period === 'AM' && hours === 12) {
+    if (
+      period === 'AM' &&
+      hours === 12
+    ) {
       hours = 0;
-    } else if (period === 'PM' && hours !== 12) {
+    } else if (
+      period === 'PM' &&
+      hours !== 12
+    ) {
       hours += 12;
     }
 
@@ -248,10 +361,27 @@ export class PatientDashboard {
     };
   }
 
+  private appendDashboardError(
+    message: string
+  ): void {
+    const currentMessage =
+      this.errorMessage().trim();
+
+    if (!currentMessage) {
+      this.errorMessage.set(message);
+      return;
+    }
+
+    if (!currentMessage.includes(message)) {
+      this.errorMessage.set(
+        `${currentMessage} ${message}`
+      );
+    }
+  }
+
   private normalizeStatus(
     status: string | null | undefined
   ): string {
     return status?.trim().toLowerCase() ?? '';
   }
-
 }

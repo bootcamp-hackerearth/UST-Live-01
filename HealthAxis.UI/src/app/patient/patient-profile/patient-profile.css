@@ -469,6 +469,13 @@
   padding-right: 48px;
 }
 
+.password-input-wrapper input::-ms-reveal,
+.password-input-wrapper input::-ms-clear {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 .password-visibility-button {
   position: absolute;
   top: 50%;
