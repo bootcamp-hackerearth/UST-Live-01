@@ -1,38 +1,60 @@
 <div class="doctor-search-page">
   <header class="page-header">
-    <div>
+    <div class="page-heading">
       <h1>Find Doctors</h1>
-      <p>Search doctors by name, ID, or specialisation and book your appointment.</p>
+
+      <p>
+        Search doctors by name, ID, or specialisation and book
+        your appointment.
+      </p>
     </div>
 
-    <a routerLink="/patient/dashboard" class="secondary-btn">
+    <a
+      routerLink="/patient/dashboard"
+      class="secondary-btn back-button"
+    >
       Back to Dashboard
     </a>
   </header>
 
   <section class="search-card">
     <div class="search-row">
-      <div class="search-box">
-        <span>⌕</span>
+      <label class="search-box">
+        <span aria-hidden="true">⌕</span>
+
         <input
-          type="text"
+          type="search"
+          aria-label="Search doctors"
+          placeholder="Search by doctor name, ID, or specialisation"
           [(ngModel)]="searchText"
           (ngModelChange)="onSearchChanged()"
         />
-      </div>
+      </label>
 
-      <select
+      <label class="filter-field">
+        <span class="field-label">Specialisation</span>
+
+        <select
+          aria-label="Filter by specialisation"
           [(ngModel)]="selectedSpecialisation"
           (ngModelChange)="onSpecialisationChanged()"
         >
-        @for (specialisation of specialisations; track specialisation.value) {
-          <option [value]="specialisation.value">
-            {{ specialisation.label }}
-          </option>
-        }
-      </select>
+          @for (
+            specialisation of specialisations;
+            track specialisation.value
+          ) {
+            <option [value]="specialisation.value">
+              {{ specialisation.label }}
+            </option>
+          }
+        </select>
+      </label>
 
-      <button class="secondary-btn" type="button" (click)="clearFilters()">
+      <button
+        class="clear-btn"
+        type="button"
+        (click)="clearFilters()"
+      >
         Clear
       </button>
     </div>
@@ -45,39 +67,78 @@
   }
 
   @if (isLoading) {
-    <div class="page-card">
-      <p>Loading doctors...</p>
+    <div class="loading-state">
+      <div class="loading-indicator"></div>
+      <strong>Loading doctors...</strong>
+      <span>Please wait while available doctors are loaded.</span>
     </div>
   } @else {
-@if (filteredDoctors.length === 0) {
-        <div class="empty-state">
+    @if (filteredDoctors.length === 0) {
+      <div class="empty-state">
         <strong>No doctors found</strong>
-        <span>Try changing your search text or specialisation filter.</span>
+
+        <span>
+          Try changing your search text or specialisation filter.
+        </span>
+
+        <button
+          type="button"
+          class="secondary-btn"
+          (click)="clearFilters()"
+        >
+          Clear Filters
+        </button>
       </div>
     } @else {
+      <div class="results-summary">
+        <span>
+          {{ totalItems }}
+          {{ totalItems === 1 ? 'doctor' : 'doctors' }} found
+        </span>
+      </div>
+
       <section class="doctor-grid">
-       @for (doctor of pagedDoctors; track doctor.doctorId) {
+        @for (
+          doctor of pagedDoctors;
+          track doctor.doctorId
+        ) {
           <article class="doctor-card">
             <div class="doctor-card-header">
-              <div class="doctor-avatar doctor-icon-avatar">
-              <span class="doctor-symbol">🩺</span>
-            </div>
+              <div
+                class="doctor-avatar"
+                aria-hidden="true"
+              >
+                <span class="doctor-symbol">🩺</span>
+              </div>
 
-              <div>
+              <div class="doctor-heading">
                 <h2>{{ doctor.fullName }}</h2>
-                <p>{{ getSpecialisationName(doctor.specialisation) }}</p>
+
+                <p>
+                  {{
+                    getSpecialisationName(
+                      doctor.specialisation
+                    )
+                  }}
+                </p>
               </div>
             </div>
 
             <div class="doctor-meta">
               <div>
                 <span>Experience</span>
-                <strong>{{ doctor.yearsOfExperience }} years</strong>
+
+                <strong>
+                  {{ doctor.yearsOfExperience }} years
+                </strong>
               </div>
 
               <div>
                 <span>Consultation Fee</span>
-                <strong>{{ formatFee(doctor.consultationFee) }}</strong>
+
+                <strong>
+                  {{ formatFee(doctor.consultationFee) }}
+                </strong>
               </div>
             </div>
 
@@ -87,18 +148,29 @@
                 [class.active]="doctor.isActive"
                 [class.inactive]="!doctor.isActive"
               >
-                {{ doctor.isActive ? 'Available' : 'Inactive' }}
+                {{
+                  doctor.isActive
+                    ? 'Available'
+                    : 'Inactive'
+                }}
               </span>
 
               @if (doctor.isActive) {
                 <a
                   class="book-btn"
-                  [routerLink]="['/patient/book-appointment', doctor.doctorId]"
+                  [routerLink]="[
+                    '/patient/book-appointment',
+                    doctor.doctorId
+                  ]"
                 >
                   Book Appointment
                 </a>
               } @else {
-                <button class="book-btn disabled" disabled>
+                <button
+                  class="book-btn disabled"
+                  type="button"
+                  disabled
+                >
                   Not Available
                 </button>
               }
@@ -106,20 +178,15 @@
           </article>
         }
       </section>
-      <section class="doctor-grid">
-  @for (doctor of pagedDoctors; track doctor.doctorId) {
-    <!-- existing doctor card here -->
-  }
-</section>
 
-<app-pagination
-  [currentPage]="currentPage"
-  [pageSize]="pageSize"
-  [totalItems]="totalItems"
-  (pageChanged)="onPageChanged($event)"
-></app-pagination>
-
-
+      <div class="pagination-wrapper">
+        <app-pagination
+          [currentPage]="currentPage"
+          [pageSize]="pageSize"
+          [totalItems]="totalItems"
+          (pageChanged)="onPageChanged($event)"
+        ></app-pagination>
+      </div>
     }
   }
 </div>
