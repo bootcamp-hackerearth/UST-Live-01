@@ -210,6 +210,11 @@ namespace HealthCare.Api
             app.UseAuthorization();
 
             app.MapControllers();
+            app.MapGet("/", context =>
+            {
+                context.Response.Redirect("/angular");
+                return Task.CompletedTask;
+            });
             app.MapGet("/angular", async context =>
             {
                 await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", "index.html"));
