@@ -1,6 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, of, throwError } from 'rxjs';
+import {
+  HttpClient,
+  HttpErrorResponse
+} from '@angular/common/http';
+import {
+  Observable,
+  catchError,
+  of,
+  throwError
+} from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
@@ -14,6 +22,7 @@ import {
 })
 export class HealthRecordService {
   private readonly http = inject(HttpClient);
+
   private readonly healthRecordUrl =
     `${environment.apiBaseUrl}/health-records`;
 
@@ -25,13 +34,22 @@ export class HealthRecordService {
         `${this.healthRecordUrl}/patient/${patientId}`
       )
       .pipe(
-        catchError((error: HttpErrorResponse) => {
-          if (error.status === 404) {
-            return of([]);
-          }
+        catchError(
+          HealthRecordService.handleListError
+        )
+      );
+  }
 
-          return throwError(() => error);
-        })
+  getMyDoctorHealthRecords():
+    Observable<HealthRecord[]> {
+    return this.http
+      .get<HealthRecord[]>(
+        `${this.healthRecordUrl}/doctor/my`
+      )
+      .pipe(
+        catchError(
+          HealthRecordService.handleListError
+        )
       );
   }
 
@@ -43,7 +61,9 @@ export class HealthRecordService {
     );
   }
 
-  getHealthRecordById(id: number): Observable<HealthRecord> {
+  getHealthRecordById(
+    id: number
+  ): Observable<HealthRecord> {
     return this.http.get<HealthRecord>(
       `${this.healthRecordUrl}/${id}`
     );
@@ -66,5 +86,15 @@ export class HealthRecordService {
       `${this.healthRecordUrl}/${id}`,
       data
     );
+  }
+
+  private static handleListError(
+    error: HttpErrorResponse
+  ): Observable<HealthRecord[]> {
+    if (error.status === 404) {
+      return of([]);
+    }
+
+    return throwError(() => error);
   }
 }

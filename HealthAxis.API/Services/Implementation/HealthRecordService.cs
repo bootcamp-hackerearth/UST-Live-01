@@ -64,6 +64,30 @@ namespace HealthAxis.API.Services.Implementation
                 .ToList();
         }
 
+        public async Task<List<HealthRecordDto>>
+            GetByDoctorIdAsync(int doctorId)
+        {
+            if (doctorId <= 0)
+            {
+                return new List<HealthRecordDto>();
+            }
+
+            var records = await _context.HealthRecords
+                .AsNoTracking()
+                .Include(record => record.Patient)
+                .Include(record => record.Doctor)
+                .Where(record =>
+                    record.DoctorId == doctorId)
+                .OrderByDescending(record =>
+                    record.CreatedAt ??
+                    record.VisitDate)
+                .ToListAsync();
+
+            return records
+                .Select(MapHealthRecord)
+                .ToList();
+        }
+
         public async Task<HealthRecordDto?>
             GetByIdAsync(int id)
         {

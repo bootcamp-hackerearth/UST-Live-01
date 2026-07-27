@@ -138,6 +138,41 @@ namespace HealthAxis.API.Controller
             return Ok(records);
         }
 
+        [HttpGet("doctor/my")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult>
+            GetMyDoctorHealthRecords()
+        {
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = InvalidToken
+                });
+            }
+
+            var doctor =
+                await _doctorService.GetByUserIdAsync(
+                    userId);
+
+            if (doctor == null)
+            {
+                return NotFound(new
+                {
+                    message = DoctorProfileNotFound
+                });
+            }
+
+            var records =
+                await _healthRecordService
+                    .GetByDoctorIdAsync(
+                        doctor.DoctorId);
+
+            return Ok(records);
+        }
+
         [HttpGet(
             "appointment/{appointmentId:int}/history")]
         [Authorize(Roles = "Doctor")]

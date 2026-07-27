@@ -12,11 +12,7 @@ import {
   Validators
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import {
-  catchError,
-  forkJoin,
-  of
-} from 'rxjs';
+import { forkJoin } from 'rxjs';
 
 import { Appointment } from '../../core/models/appointment.model';
 import { AppointmentService } from '../../core/services/appointment.service';
@@ -225,24 +221,42 @@ export class DoctorHealthRecords {
       this.errorMessage.set('');
     }
 
-    this.appointmentService
-      .getMyDoctorAppointments()
-      .subscribe({
-        next: (appointments) => {
-          this.appointments.set(appointments);
-          this.loadHealthRecordsForTreatedPatients();
-        },
-        error: (error: unknown) => {
-          this.loading.set(false);
+    forkJoin({
+      appointments:
+        this.appointmentService
+          .getMyDoctorAppointments(),
 
-          this.errorMessage.set(
-            getFriendlyErrorMessage(
-              error,
-              'Could not load doctor appointments.'
-            )
-          );
-        }
-      });
+      records:
+        this.healthRecordService
+          .getMyDoctorHealthRecords()
+    }).subscribe({
+      next: ({ appointments, records }) => {
+        this.appointments.set(appointments);
+
+        const preparedRecords = records.map(
+          (record) => this.prepareRecord(record)
+        );
+
+        this.healthRecords.set(
+          this.getUniqueRecords(
+            preparedRecords
+          )
+        );
+
+        this.ensureCurrentPageIsValid();
+        this.loading.set(false);
+      },
+      error: (error: unknown) => {
+        this.loading.set(false);
+
+        this.errorMessage.set(
+          getFriendlyErrorMessage(
+            error,
+            'Could not load doctor health records.'
+          )
+        );
+      }
+    });
   }
 
   onSearchInput(event: Event): void {
@@ -1003,91 +1017,6 @@ export class DoctorHealthRecords {
       },
       PRINT_DELAY_IN_MS
     );
-  }
-
-  private loadHealthRecordsForTreatedPatients(): void {
-    const patientIds = [
-      ...new Set(
-        this.completedAppointments().map(
-          (appointment) =>
-            appointment.patientId
-        )
-      )
-    ];
-
-    if (patientIds.length === 0) {
-      this.healthRecords.set([]);
-      this.currentPage.set(1);
-      this.loading.set(false);
-      return;
-    }
-
-    let failedRequests = 0;
-
-    const requests = patientIds.map(
-      (patientId) =>
-        this.healthRecordService
-          .getHealthRecordsByPatientId(
-            patientId
-          )
-          .pipe(
-            catchError(() => {
-              failedRequests += 1;
-
-              return of(
-                [] as HealthRecord[]
-              );
-            })
-          )
-    );
-
-    forkJoin(requests).subscribe({
-      next: (recordsByPatient) => {
-        const completedAppointmentIds =
-          new Set(
-            this.completedAppointments().map(
-              (appointment) =>
-                appointment.appointmentId
-            )
-          );
-
-        const records = recordsByPatient
-          .flat()
-          .map((record) =>
-            this.prepareRecord(record)
-          )
-          .filter((record) =>
-            completedAppointmentIds.has(
-              this.getAppointmentId(
-                record
-              )
-            )
-          );
-
-        this.healthRecords.set(
-          this.getUniqueRecords(records)
-        );
-
-        this.ensureCurrentPageIsValid();
-        this.loading.set(false);
-
-        if (failedRequests > 0) {
-          this.errorMessage.set(
-            'Some patient health records could not be loaded. Refresh the page to try again.'
-          );
-        }
-      },
-      error: (error: unknown) => {
-        this.loading.set(false);
-
-        this.errorMessage.set(
-          getFriendlyErrorMessage(
-            error,
-            'Could not load health records.'
-          )
-        );
-      }
-    });
   }
 
   private prepareRecord(
