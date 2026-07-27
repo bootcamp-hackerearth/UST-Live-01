@@ -11,7 +11,7 @@ pipeline {
         AWS_REGION = 'ap-south-1'
         EB_APPLICATION_NAME = 'HealthAppApi'
         EB_ENVIRONMENT_NAME = 'HealthAppApi-dev'
-        S3_BUCKET = 'REPLACE_WITH_YOUR_AP_SOUTH_1_BUCKET_NAME'
+        S3_BUCKET = 'healthapp-jenkins-deploy-435556620781-ap-south-1-an'
         DEPLOY_PACKAGE = 'deploy-package.zip'
         VERSION_LABEL = "jenkins-${BUILD_NUMBER}"
     }
