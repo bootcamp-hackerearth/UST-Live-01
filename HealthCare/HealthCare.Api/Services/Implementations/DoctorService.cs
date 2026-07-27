@@ -214,22 +214,30 @@ namespace HealthCare.Api.Services.Implementations
                 .ToList();
         }
 
-        public async Task<CreateLeaveResultDto> CreateLeave(int id, List<CreateLeaveDto> leaves)
+        public async Task<CreateLeaveResultDto> CreateLeave(
+    int id,
+    List<CreateLeaveDto> leaves)
         {
             var result = new CreateLeaveResultDto();
+            var today = DateOnly.FromDateTime(DateTime.Today);
 
-            var existingLeaves = await _repository.GetLeavesByDoctorId(id);
+            var existingLeaves =
+                await _repository.GetLeavesByDoctorId(id);
+
             var existingLeaveDates = existingLeaves
-                .Select(l => l.LeaveDate)
+                .Select(leave => leave.LeaveDate)
                 .ToHashSet();
 
             var leavesToCreate = new List<CreateLeaveDto>();
 
+            var allSlots = await GetSlots(id);
+
             foreach (var leave in leaves)
             {
-                if (leave.LeaveDate < DateOnly.FromDateTime(DateTime.Today))
+                if (leave.LeaveDate <= today)
                 {
-                    throw new InvalidOperationException("Cannot create leave for a past date.");
+                    throw new InvalidOperationException(
+                        "Leave can only be created from tomorrow onwards.");
                 }
 
                 if (existingLeaveDates.Contains(leave.LeaveDate))
@@ -238,24 +246,29 @@ namespace HealthCare.Api.Services.Implementations
                     continue;
                 }
 
-                var availableSlots = await AvailableTimeSlotsCheck(leave.LeaveDate, id);
-                var allSlots = await GetSlots(id);
+                var availableSlots = await AvailableTimeSlotsCheck(
+                    leave.LeaveDate,
+                    id);
 
                 if (availableSlots.Count != allSlots.Count)
-                {   // Doctor has confirmed/pending appointments that day cancel them and proceed
-                    await _appointmentRepository.CancelAppointmentsByDoctorDate(id, leave.LeaveDate);
-                    result.CreatedWithCancelledAppointments.Add(leave.LeaveDate);
+                {
+                    result.CreatedWithCancelledAppointments.Add(
+                        leave.LeaveDate);
                 }
 
                 leavesToCreate.Add(leave);
+
+                // Prevent duplicate dates in the same request.
+                existingLeaveDates.Add(leave.LeaveDate);
             }
 
             if (leavesToCreate.Count > 0)
             {
-                await _repository.CreateLeaves(id, leavesToCreate);
+                await _repository.CreateLeaves(
+                    id,
+                    leavesToCreate);
+
                 await _context.SaveChangesAsync();
-
-
             }
 
             return result;

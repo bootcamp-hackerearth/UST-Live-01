@@ -11,7 +11,7 @@
 
 @code {
     private const string AngularLoginUrl =
-        "http://localhost:59971/login";
+        "/angular/login";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -53,7 +53,7 @@
         SessionExpirationService.Reset();
 
         Navigation.NavigateTo(
-            "/Home",
+            "/blazor/Home",
             forceLoad: true,
             replace: true);
     }

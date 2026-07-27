@@ -185,7 +185,7 @@
 
             await DoctorService.CreateDoctorAsync(doctorModel);
 
-            NavigationManager.NavigateTo("/doctor");
+            NavigationManager.NavigateTo("/blazor/doctor");
         }
         catch (Exception ex)
         {
@@ -200,7 +200,7 @@
 
     private void Cancel()
     {
-        NavigationManager.NavigateTo("/doctor");
+        NavigationManager.NavigateTo("/blazor/doctor");
     }
     private List<string> specialisationOptions = new()
 {

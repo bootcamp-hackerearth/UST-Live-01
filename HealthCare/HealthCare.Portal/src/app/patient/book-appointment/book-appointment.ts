@@ -12,7 +12,7 @@ import { DoctorService } from '../../core/services/doctor.service';
   styleUrl: './book-appointment.css'
 })
 export class BookAppointment {
-  minDate = this.getTodayDate();
+  minDate = this.getTomorrowDate();
 
   selectedDate = signal('');
   selectedSpecialisation = signal('');
@@ -52,12 +52,13 @@ export class BookAppointment {
     private appointmentService: AppointmentService
   ) { }
 
-  getTodayDate(): string {
-    const today = new Date();
+  getTomorrowDate(): string {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const day = String(tomorrow.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
   }

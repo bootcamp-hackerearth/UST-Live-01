@@ -12,7 +12,7 @@ import { CreateLeaveRequest } from '../../core/models/portal.models';
   styleUrl: './add-leaves.css'
 })
 export class AddLeaves {
-  minDate = this.getTodayDate();
+  minDate = this.getTomorrowDate();
 
   leaveDate = signal('');
   reason = signal('');
@@ -23,13 +23,26 @@ export class AddLeaves {
   successMessage = signal('');
   errorMessage = signal('');
 
-  hasSelectedLeaves = computed(() => this.selectedLeaves().length > 0);
+  hasSelectedLeaves = computed(
+    () => this.selectedLeaves().length > 0
+  );
 
   constructor(private doctorService: DoctorService) { }
 
-  getTodayDate(): string {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
+  getTomorrowDate(): string {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const year = tomorrow.getFullYear();
+    const month = String(
+      tomorrow.getMonth() + 1
+    ).padStart(2, '0');
+
+    const day = String(
+      tomorrow.getDate()
+    ).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
   addLeave(): void {
@@ -41,12 +54,21 @@ export class AddLeaves {
       return;
     }
 
+    if (this.leaveDate() < this.minDate) {
+      this.errorMessage.set(
+        'Leave can only be added from tomorrow onwards.'
+      );
+      return;
+    }
+
     const alreadyAdded = this.selectedLeaves().some(
       leave => leave.leaveDate === this.leaveDate()
     );
 
     if (alreadyAdded) {
-      this.errorMessage.set('This leave date is already added');
+      this.errorMessage.set(
+        'This leave date is already added'
+      );
       return;
     }
 
@@ -77,31 +99,48 @@ export class AddLeaves {
     this.errorMessage.set('');
 
     if (this.selectedLeaves().length === 0) {
-      this.errorMessage.set('Please add at least one leave date');
+      this.errorMessage.set(
+        'Please add at least one leave date'
+      );
       return;
     }
 
-    const leavesToSubmit: CreateLeaveRequest[] = this.selectedLeaves().map(
-      leave => ({
+    const containsInvalidDate =
+      this.selectedLeaves().some(
+        leave => leave.leaveDate < this.minDate
+      );
+
+    if (containsInvalidDate) {
+      this.errorMessage.set(
+        'Leave can only be added from tomorrow onwards.'
+      );
+      return;
+    }
+
+    const leavesToSubmit: CreateLeaveRequest[] =
+      this.selectedLeaves().map(leave => ({
         leaveDate: leave.leaveDate,
         reason: this.reason() || leave.reason
-      })
-    );
+      }));
 
     this.isSubmitting.set(true);
 
     this.doctorService.addLeaves(leavesToSubmit).subscribe({
       next: () => {
-        this.successMessage.set('Leaves added successfully');
+        this.successMessage.set(
+          'Leaves added successfully'
+        );
 
         this.selectedLeaves.set([]);
         this.leaveDate.set('');
         this.reason.set('');
         this.isSubmitting.set(false);
       },
+
       error: (error) => {
         this.errorMessage.set(
-          error?.error?.message || 'Failed to add leaves'
+          error?.error?.message ||
+          'Failed to add leaves'
         );
 
         this.isSubmitting.set(false);

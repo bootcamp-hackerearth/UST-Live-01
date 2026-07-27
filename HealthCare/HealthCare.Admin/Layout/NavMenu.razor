@@ -10,31 +10,32 @@
 
     <nav class="hc-nav-menu">
 
-        <NavLink class="hc-nav-item" href="/home" Match="NavLinkMatch.All">
+        <a href="/blazor/home" class="hc-nav-link">
             <span class="bi bi-speedometer2"></span>
             <span>Dashboard</span>
-        </NavLink>
+        </a>
 
-        <NavLink class="hc-nav-item" href="/patient" Match="NavLinkMatch.Prefix">
-            <i class="bi bi-people-fill"></i>
+        <a href="/blazor/patient" class="hc-nav-link">
+            <span class="bi bi-people-fill"></span>
             <span>Patient Management</span>
-        </NavLink>
+        </a>
 
-        <NavLink class="hc-nav-item" href="/doctor" Match="NavLinkMatch.Prefix">
+        <a href="/blazor/doctor" class="hc-nav-link">
             <span class="bi bi-person-badge-fill"></span>
             <span>Doctor Management</span>
-        </NavLink>
+        </a>
 
-        <NavLink class="hc-nav-item" href="/appointmentreport" Match="NavLinkMatch.Prefix">
+        <a href="/blazor/appointmentreport" class="hc-nav-link">
             <span class="bi bi-calendar-check-fill"></span>
             <span>Appointment Management</span>
-        </NavLink> 
+        </a>
 
     </nav>
 
-    <!-- ✅ Logout Button -->
     <div class="logout-section">
-        <button class="logout-btn" @onclick="Logout">
+        <button type="button"
+                class="logout-btn"
+                @onclick="Logout">
             <span class="bi bi-box-arrow-right"></span>
             <span>Logout</span>
         </button>
@@ -43,11 +44,19 @@
 </div>
 
 @code {
-   private async Task Logout()
-{
-    await JS.InvokeVoidAsync("localStorage.removeItem", "accesstoken");
-    await JS.InvokeVoidAsync("localStorage.removeItem", "role");
+    private async Task Logout()
+    {
+        await JS.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "accesstoken");
 
-        Navigation.NavigateTo("http://localhost:59971/login", true);//Angular login page port
-} 
-} 
+        await JS.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "role");
+
+        Navigation.NavigateTo(
+            "/angular/login",
+            forceLoad: true,
+            replace: true);
+    }
+}

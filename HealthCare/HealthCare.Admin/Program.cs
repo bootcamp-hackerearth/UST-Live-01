@@ -9,27 +9,30 @@ namespace HealthCare.Admin
     {
         public static async Task Main(string[] args)
         {
-            var builder =
-                WebAssemblyHostBuilder.CreateDefault(args);
+            var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            // One shared instance for both App.razor and the HTTP handler.
             builder.Services.AddSingleton<SessionExpirationService>();
-
             builder.Services.AddTransient<JwtAuthorizationHandler>();
 
             builder.Services.AddScoped<HttpClient>(serviceProvider =>
             {
-                var jwtHandler =
-                    serviceProvider.GetRequiredService<JwtAuthorizationHandler>();
+                var jwtHandler = serviceProvider
+                    .GetRequiredService<JwtAuthorizationHandler>();
 
                 jwtHandler.InnerHandler = new HttpClientHandler();
 
+                var blazorBaseAddress =
+                    new Uri(builder.HostEnvironment.BaseAddress);
+
+                var applicationRoot = new Uri(
+                    $"{blazorBaseAddress.Scheme}://{blazorBaseAddress.Authority}/");
+
                 return new HttpClient(jwtHandler)
                 {
-                    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+                    BaseAddress = applicationRoot
                 };
             });
 

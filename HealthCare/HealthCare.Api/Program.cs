@@ -194,6 +194,11 @@ namespace HealthCare.Api
             }
 
             app.UseHttpsRedirection();
+            //deployment
+            var contentTypeProvider = new FileExtensionContentTypeProvider();
+            contentTypeProvider.Mappings[".dat"] = "application/octet-stream";
+            contentTypeProvider.Mappings[".wasm"] = "application/wasm";
+            app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = contentTypeProvider });
 
             app.UseRouting();
 
@@ -203,15 +208,6 @@ namespace HealthCare.Api
 
 
             app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            //deployment
-            var contentTypeProvider = new FileExtensionContentTypeProvider();
-            contentTypeProvider.Mappings[".data"] = "application/octet-stream";
-            contentTypeProvider.Mappings[".wasm"] = "application/wasm";
-            app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = contentTypeProvider });
 
             app.MapControllers();
             app.MapGet("/angular", async context =>

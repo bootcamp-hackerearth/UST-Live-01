@@ -4,7 +4,7 @@
     left: 0;
     height: 100vh;
     width: 280px;
-    background: linear-gradient(135deg,#6A11CB 0%,#8E2DE2 50%,#C471ED 100%);
+    background: linear-gradient(135deg, #6A11CB 0%, #8E2DE2 50%, #C471ED 100%);
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -37,12 +37,11 @@
     gap: 10px;
 }
 
-/* Force override link styles */
-.hc-nav-item,
-.hc-nav-item:link,
-.hc-nav-item:visited,
-.hc-nav-item:hover,
-.hc-nav-item:active {
+.hc-nav-link,
+.hc-nav-link:link,
+.hc-nav-link:visited,
+.hc-nav-link:hover,
+.hc-nav-link:active {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -52,21 +51,22 @@
     border-radius: 12px;
     font-size: 16px;
     font-weight: 500;
-    transition: all .3s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-    .hc-nav-item:hover {
-        background: rgba(255,255,255,.15);
+    .hc-nav-link:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateX(2px);
     }
 
-    .hc-nav-item.active {
-        background: rgba(255,255,255,.25);
-        font-weight: 700;
+    .hc-nav-link:focus-visible {
+        outline: 2px solid white;
+        outline-offset: 2px;
     }
 
 .logout-section {
     margin-top: auto;
-    padding: 16px;
+    padding: 16px 0 0;
 }
 
 .logout-btn {
@@ -82,10 +82,19 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
     .logout-btn:hover {
         background: #bb2d3b;
         transform: translateY(-1px);
-    } 
+    }
+
+@media (max-width: 768px) {
+    .hc-sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-height: auto;
+    }
+}
