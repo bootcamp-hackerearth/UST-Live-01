@@ -23,3 +23,49 @@ coverage.xml
 dotnet-tools.json
 
 /packages/
+
+# Node and Angular dependencies
+**/node_modules/
+HealthApp.Angular/dist/
+HealthApp.Angular/.angular/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary combined frontend build output
+.build-artifacts/
+
+# Generated Angular and Blazor files copied into the API
+HealthApp.Api/wwwroot/
+
+# Final publish and deployment output
+artifacts/
+publish/
+deploy.zip
+*.publishsettings
+
+# Coverage output
+coverage/
+*.coverage
+*.coveragexml
+coverage.cobertura.xml
+
+# Local environment and secret override files
+.env
+.env.*
+*.local
+*.local.json
+**/appsettings.Local.json
+**/appsettings.*.local.json
+
+# AWS local tooling state
+.aws/
+.elasticbeanstalk/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+.ebextensions/
+Build-CombinedHealthApp.ps1

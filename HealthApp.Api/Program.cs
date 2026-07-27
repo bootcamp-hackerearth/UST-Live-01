@@ -13,6 +13,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -263,9 +264,20 @@ try
 
     app.UseHttpsRedirection();
 
-    // Serve Angular from wwwroot and Blazor WebAssembly from wwwroot/admin.
     app.UseDefaultFiles();
-    app.UseStaticFiles();
+
+    var contentTypeProvider = new FileExtensionContentTypeProvider();
+
+    contentTypeProvider.Mappings[".dat"] =
+        "application/octet-stream";
+
+    contentTypeProvider.Mappings[".wasm"] =
+        "application/wasm";
+
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        ContentTypeProvider = contentTypeProvider
+    });
 
     app.UseExceptionHandler();
     app.UseCors("AllowBlazor");
