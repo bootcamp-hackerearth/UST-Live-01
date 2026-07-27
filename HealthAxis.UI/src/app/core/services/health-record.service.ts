@@ -1,8 +1,8 @@
-import { Injectable, inject } from '@angular/core';
 import {
   HttpClient,
   HttpErrorResponse
 } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import {
   Observable,
   catchError,
@@ -17,6 +17,9 @@ import {
   UpdateHealthRecordRequest
 } from '../models/health-record.model';
 
+const HEALTH_RECORD_API_PATH =
+  '/health-records';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -24,7 +27,7 @@ export class HealthRecordService {
   private readonly http = inject(HttpClient);
 
   private readonly healthRecordUrl =
-    `${environment.apiBaseUrl}/health-records`;
+    `${environment.apiBaseUrl}${HEALTH_RECORD_API_PATH}`;
 
   getHealthRecordsByPatientId(
     patientId: number

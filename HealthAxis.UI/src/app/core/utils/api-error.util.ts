@@ -1,4 +1,5 @@
-type ErrorDictionary = Record<string, unknown>;
+type ErrorDictionary =
+  Record<string, unknown>;
 
 interface FriendlyApiError {
   friendlyMessage?: unknown;
@@ -17,13 +18,15 @@ export function getFriendlyErrorMessage(
   error: unknown,
   fallbackMessage: string
 ): string {
-  const friendlyMessage = getFriendlyMessage(error);
+  const friendlyMessage =
+    getFriendlyMessage(error);
 
   if (friendlyMessage) {
     return friendlyMessage;
   }
 
-  const validationMessage = getValidationMessage(error);
+  const validationMessage =
+    getValidationMessage(error);
 
   if (validationMessage) {
     return validationMessage;
@@ -31,66 +34,117 @@ export function getFriendlyErrorMessage(
 
   const apiMessage = getApiMessage(error);
 
-  if (apiMessage) {
-    return apiMessage;
-  }
-
-  return fallbackMessage;
+  return apiMessage || fallbackMessage;
 }
 
-function getFriendlyMessage(error: unknown): string {
-  if (!isRecord(error)) {
-    return '';
+function getFriendlyMessage(
+  error: unknown
+): string {
+  const directMessage =
+    getStringProperty(
+      error,
+      'friendlyMessage'
+    );
+
+  if (directMessage) {
+    return directMessage;
   }
 
-  const apiError = error as FriendlyApiError;
-
-  if (typeof apiError.friendlyMessage === 'string') {
-    return apiError.friendlyMessage;
-  }
-
-  return '';
+  return getStringProperty(
+    getErrorBody(error),
+    'friendlyMessage'
+  );
 }
 
-function getValidationMessage(error: unknown): string {
+function getValidationMessage(
+  error: unknown
+): string {
   const errorBody = getErrorBody(error);
 
   if (!isRecord(errorBody)) {
     return '';
   }
 
-  const problemDetails = errorBody as ValidationProblemDetails;
+  const problemDetails =
+    errorBody as ValidationProblemDetails;
 
   if (!isRecord(problemDetails.errors)) {
     return '';
   }
 
-  const messages = Object.values(problemDetails.errors)
-    .flatMap((value) => Array.isArray(value) ? value : [])
-    .filter((value): value is string => typeof value === 'string');
+  const messages = Object
+    .values(problemDetails.errors)
+    .flatMap(toMessageList)
+    .map((message) => message.trim())
+    .filter(Boolean);
 
-  return messages.join(' ');
+  return [...new Set(messages)].join(' ');
 }
 
-function getApiMessage(error: unknown): string {
+function toMessageList(
+  value: unknown
+): string[] {
+  if (typeof value === 'string') {
+    return [value];
+  }
+
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter(
+    (item): item is string =>
+      typeof item === 'string'
+  );
+}
+
+function getApiMessage(
+  error: unknown
+): string {
   const errorBody = getErrorBody(error);
+
+  if (typeof errorBody === 'string') {
+    return normalizeMessage(errorBody);
+  }
 
   if (!isRecord(errorBody)) {
     return '';
   }
 
-  const possibleMessage = errorBody['message'];
-  const possibleTitle = errorBody['title'];
+  return (
+    getStringProperty(errorBody, 'message') ||
+    getStringProperty(errorBody, 'title')
+  );
+}
 
-  if (typeof possibleMessage === 'string') {
-    return possibleMessage;
+function getStringProperty(
+  value: unknown,
+  propertyName: string
+): string {
+  if (!isRecord(value)) {
+    return '';
   }
 
-  if (typeof possibleTitle === 'string') {
-    return possibleTitle;
+  const propertyValue = value[propertyName];
+
+  return typeof propertyValue === 'string'
+    ? normalizeMessage(propertyValue)
+    : '';
+}
+
+function normalizeMessage(
+  message: string
+): string {
+  const normalizedMessage = message.trim();
+
+  if (
+    !normalizedMessage ||
+    normalizedMessage.startsWith('<')
+  ) {
+    return '';
   }
 
-  return '';
+  return normalizedMessage;
 }
 
 function getErrorBody(error: unknown): unknown {
@@ -100,13 +154,14 @@ function getErrorBody(error: unknown): unknown {
 
   const apiError = error as FriendlyApiError;
 
-  if (apiError.error) {
-    return apiError.error;
-  }
-
-  return error;
+  return apiError.error ?? error;
 }
 
-function isRecord(value: unknown): value is ErrorDictionary {
-  return typeof value === 'object' && value !== null;
+function isRecord(
+  value: unknown
+): value is ErrorDictionary {
+  return (
+    typeof value === 'object' &&
+    value !== null
+  );
 }

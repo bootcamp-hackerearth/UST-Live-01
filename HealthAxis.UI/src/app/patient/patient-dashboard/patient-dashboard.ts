@@ -95,6 +95,25 @@ export class PatientDashboard {
     }
   }
 
+  getStatusLabel(
+  status: string | null | undefined
+): string {
+  switch (this.normalizeStatus(status)) {
+    case CONFIRMED_STATUS:
+      return 'Confirmed';
+
+    case COMPLETED_STATUS:
+      return 'Completed';
+
+    case CANCELLED_STATUS:
+      return 'Cancelled';
+
+    case PENDING_STATUS:
+    default:
+      return 'Pending';
+  }
+}
+
   private loadDashboard(): void {
     this.errorMessage.set('');
 

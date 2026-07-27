@@ -46,6 +46,9 @@ const ROLE_CLAIM =
 const EMAIL_CLAIM =
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
 
+const MILLISECONDS_PER_MINUTE =
+  60 * 1000;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -463,7 +466,7 @@ export class AuthService {
 
     return new Date(
       Date.now() +
-      safeMinutes * 60 * 1000
+      safeMinutes * MILLISECONDS_PER_MINUTE
     ).toISOString();
   }
 
@@ -508,42 +511,42 @@ export class AuthService {
       : '';
   }
 
-private decodeToken(
-  token: string
-): JwtPayload {
-  try {
-    const payloadPart =
-      token.split('.')[1];
+  private decodeToken(
+    token: string
+  ): JwtPayload {
+    try {
+      const payloadPart =
+        token.split('.')[1];
 
-    if (!payloadPart) {
+      if (!payloadPart) {
+        return {};
+      }
+
+      const base64 =
+        payloadPart
+          .replaceAll('-', '+')
+          .replaceAll('_', '/');
+
+      const paddedBase64 =
+        base64.padEnd(
+          Math.ceil(base64.length / 4) * 4,
+          '='
+        );
+
+      const parsedPayload: unknown =
+        JSON.parse(
+          atob(paddedBase64)
+        );
+
+      return this.isRecord(
+        parsedPayload
+      )
+        ? parsedPayload
+        : {};
+    } catch {
       return {};
     }
-
-    const base64 =
-      payloadPart
-        .replaceAll('-', '+')
-        .replaceAll('_', '/');
-
-    const paddedBase64 =
-      base64.padEnd(
-        Math.ceil(base64.length / 4) * 4,
-        '='
-      );
-
-    const parsedPayload: unknown =
-      JSON.parse(
-        atob(paddedBase64)
-      );
-
-    return this.isRecord(
-      parsedPayload
-    )
-      ? parsedPayload
-      : {};
-  } catch {
-    return {};
   }
-}
 
   private isRecord(
     value: unknown
@@ -581,6 +584,8 @@ private decodeToken(
       return true;
     }
 
+    const expiryTimes: number[] = [];
+
     const expiresAt =
       localStorage.getItem(
         this.expiresAtKey
@@ -590,44 +595,39 @@ private decodeToken(
       const storedExpiryTime =
         new Date(expiresAt).getTime();
 
-      if (
-        Number.isFinite(
-          storedExpiryTime
-        )
-      ) {
-        return (
-          Date.now() >=
-          storedExpiryTime
-        );
+      if (Number.isFinite(storedExpiryTime)) {
+        expiryTimes.push(storedExpiryTime);
       }
     }
 
-    const payload =
-      this.decodeToken(token);
-
     const expiryValue =
-      payload.exp;
+      this.decodeToken(token).exp;
 
-    if (!expiryValue) {
+    if (expiryValue !== undefined) {
+      const expirySeconds =
+        typeof expiryValue === 'string'
+          ? Number(expiryValue)
+          : expiryValue;
+
+      if (!Number.isFinite(expirySeconds)) {
+        return true;
+      }
+
+      expiryTimes.push(
+        expirySeconds * 1000
+      );
+    }
+
+    if (expiryTimes.length === 0) {
       return false;
     }
 
-    const expirySeconds =
-      typeof expiryValue === 'string'
-        ? Number(expiryValue)
-        : expiryValue;
+    const currentTime = Date.now();
 
-    if (
-      !Number.isFinite(
-        expirySeconds
-      )
-    ) {
-      return true;
-    }
-
-    return (
-      Date.now() >=
-      expirySeconds * 1000
+    return expiryTimes.some(
+      (expiryTime) =>
+        currentTime >= expiryTime
     );
   }
+
 }

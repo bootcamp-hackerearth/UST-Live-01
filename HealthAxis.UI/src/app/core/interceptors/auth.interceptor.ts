@@ -1,5 +1,7 @@
 import {
+  HttpContextToken,
   HttpErrorResponse,
+  HttpEvent,
   HttpHandlerFn,
   HttpInterceptorFn,
   HttpRequest
@@ -7,53 +9,74 @@ import {
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  BehaviorSubject,
+  Observable,
   catchError,
-  filter,
+  finalize,
+  shareReplay,
   switchMap,
-  take,
   throwError
 } from 'rxjs';
 
+import {
+  RefreshTokenResponse
+} from '../models/auth.model';
 import { AuthService } from '../services/auth.service';
 
-const ACCESS_TOKEN_KEY = 'healthaxis_access_token';
-const RETRY_AFTER_REFRESH_HEADER = 'X-Retry-After-Refresh';
+const RETRY_AFTER_REFRESH =
+  new HttpContextToken<boolean>(() => false);
 
-let isRefreshingToken = false;
+let refreshRequest$:
+  Observable<RefreshTokenResponse> | null = null;
 
-const refreshedTokenSubject = new BehaviorSubject<string | null>(null);
+export const authInterceptor: HttpInterceptorFn =
+  (
+    request,
+    next
+  ): Observable<HttpEvent<unknown>> => {
+    const authService = inject(AuthService);
+    const router = inject(Router);
 
-export const authInterceptor: HttpInterceptorFn = (request, next) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+    const requestWithToken = addAccessToken(
+      request,
+      authService.getToken()
+    );
 
-  const requestWithToken = addAccessToken(request);
+    return next(requestWithToken).pipe(
+      catchError((error: unknown) => {
+        if (
+          !shouldTryRefresh(
+            error,
+            requestWithToken
+          )
+        ) {
+          return throwError(() => error);
+        }
 
-  return next(requestWithToken).pipe(
-    catchError((error: unknown) => {
-      if (!shouldTryRefresh(error, requestWithToken)) {
-        return throwError(() => error);
-      }
+        return refreshAndRetry(
+          requestWithToken,
+          next,
+          authService,
+          router
+        );
+      })
+    );
+  };
 
-      return refreshTokenAndRetryRequest(
-        requestWithToken,
-        next,
-        authService,
-        router
-      );
-    })
-  );
-};
-
-function addAccessToken(request: HttpRequest<unknown>): HttpRequest<unknown> {
-  const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
-
-  if (!accessToken || isAuthEndpoint(request.url)) {
+function addAccessToken(
+  request: HttpRequest<unknown>,
+  accessToken: string | null
+): HttpRequest<unknown> {
+  if (
+    !accessToken ||
+    isAuthEndpoint(request.url)
+  ) {
     return request;
   }
 
-  return addAuthorizationHeader(request, accessToken);
+  return addAuthorizationHeader(
+    request,
+    accessToken
+  );
 }
 
 function addAuthorizationHeader(
@@ -71,89 +94,94 @@ function shouldTryRefresh(
   error: unknown,
   request: HttpRequest<unknown>
 ): boolean {
-  if (!(error instanceof HttpErrorResponse)) {
-    return false;
-  }
-
-  if (error.status !== 401) {
-    return false;
-  }
-
-  if (isAuthEndpoint(request.url)) {
-    return false;
-  }
-
-  return !request.headers.has(RETRY_AFTER_REFRESH_HEADER);
+  return (
+    error instanceof HttpErrorResponse &&
+    error.status === 401 &&
+    !isAuthEndpoint(request.url) &&
+    !request.context.get(RETRY_AFTER_REFRESH)
+  );
 }
 
-function refreshTokenAndRetryRequest(
+function refreshAndRetry(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn,
   authService: AuthService,
   router: Router
-) {
-  if (isRefreshingToken) {
-    return waitForRefreshAndRetry(request, next);
+): Observable<HttpEvent<unknown>> {
+  return getRefreshRequest(authService).pipe(
+    catchError((refreshError: unknown) =>
+      handleRefreshFailure(
+        refreshError,
+        authService,
+        router
+      )
+    ),
+    switchMap((response) => {
+      const retryRequest =
+        addAuthorizationHeader(
+          request,
+          response.accessToken
+        ).clone({
+          context: request.context.set(
+            RETRY_AFTER_REFRESH,
+            true
+          )
+        });
+
+      return next(retryRequest);
+    })
+  );
+}
+
+function getRefreshRequest(
+  authService: AuthService
+): Observable<RefreshTokenResponse> {
+  if (!refreshRequest$) {
+    refreshRequest$ = authService
+      .refreshToken()
+      .pipe(
+        finalize(() => {
+          refreshRequest$ = null;
+        }),
+        shareReplay({
+          bufferSize: 1,
+          refCount: false
+        })
+      );
   }
 
-  isRefreshingToken = true;
-  refreshedTokenSubject.next(null);
-
-  return authService.refreshToken().pipe(
-    switchMap((response) => {
-      isRefreshingToken = false;
-      refreshedTokenSubject.next(response.accessToken);
-
-      const retryRequest = request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${response.accessToken}`,
-          [RETRY_AFTER_REFRESH_HEADER]: 'true'
-        }
-      });
-
-      return next(retryRequest);
-    }),
-    catchError((refreshError: unknown) => {
-      isRefreshingToken = false;
-      refreshedTokenSubject.next(null);
-
-      authService.clearSession();
-
-      void router.navigate(['/login'], {
-        queryParams: {
-          sessionExpired: 'true'
-        }
-      });
-
-      return throwError(() => refreshError);
-    })
-  );
+  return refreshRequest$;
 }
 
-function waitForRefreshAndRetry(
-  request: HttpRequest<unknown>,
-  next: HttpHandlerFn
-) {
-  return refreshedTokenSubject.pipe(
-    filter(Boolean),
-    take(1),
-    switchMap((newAccessToken) => {
-      const retryRequest = request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${newAccessToken}`,
-          [RETRY_AFTER_REFRESH_HEADER]: 'true'
-        }
-      });
+function handleRefreshFailure(
+  refreshError: unknown,
+  authService: AuthService,
+  router: Router
+): Observable<never> {
+  const hadActiveSession =
+    Boolean(authService.getToken());
 
-      return next(retryRequest);
-    })
-  );
+  authService.clearSession();
+
+  if (hadActiveSession) {
+    void router.navigate(['/login'], {
+      queryParams: {
+        sessionExpired: 'true'
+      }
+    });
+  }
+
+  return throwError(() => refreshError);
 }
 
-function isAuthEndpoint(url: string): boolean {
+function isAuthEndpoint(
+  url: string
+): boolean {
   const lowerUrl = url.toLowerCase();
 
-  return lowerUrl.includes('/auth/login') ||
+  return (
+    lowerUrl.includes('/auth/login') ||
     lowerUrl.includes('/auth/register') ||
-    lowerUrl.includes('/auth/refresh-token');
+    lowerUrl.includes('/auth/refresh-token')
+  );
 }

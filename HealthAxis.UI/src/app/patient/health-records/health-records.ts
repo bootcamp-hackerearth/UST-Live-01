@@ -182,16 +182,6 @@ export class HealthRecords {
     this.selectedRecord.set(null);
   }
 
-  closeHealthRecordDetails(): void {
-    this.closeRecordDetails();
-  }
-
-  onHealthRecordBackdropClick(event: Event): void {
-    if (event.target === event.currentTarget) {
-      this.closeRecordDetails();
-    }
-  }
-
   getRecordId(record: HealthRecord): number {
     return record.healthRecordId ??
       record.recordId ??
@@ -628,11 +618,7 @@ export class HealthRecords {
       record.createdAt ??
       record.visitDate;
 
-    const dateValue = new Date(value).getTime();
-
-    return Number.isNaN(dateValue)
-      ? 0
-      : dateValue;
+    return this.parseDate(value)?.getTime() ?? 0;
   }
 
   private includesSearchValue(
@@ -731,9 +717,14 @@ export class HealthRecords {
         day
       );
 
-      return Number.isNaN(localDate.getTime())
-        ? null
-        : localDate;
+      const isValidDate =
+        localDate.getFullYear() === year &&
+        localDate.getMonth() === month - 1 &&
+        localDate.getDate() === day;
+
+      return isValidDate
+        ? localDate
+        : null;
     }
 
     const normalizedValue =

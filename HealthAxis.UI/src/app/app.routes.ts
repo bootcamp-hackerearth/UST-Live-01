@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 
-import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 
 import { DashboardLayout } from './layouts/dashboard-layout/dashboard-layout';
@@ -46,7 +45,6 @@ export const routes: Routes = [
     path: 'patient',
     component: DashboardLayout,
     canActivate: [
-      authGuard,
       roleGuard
     ],
     data: {
@@ -93,7 +91,6 @@ export const routes: Routes = [
     path: 'doctor',
     component: DashboardLayout,
     canActivate: [
-      authGuard,
       roleGuard
     ],
     data: {

@@ -3,12 +3,6 @@
   <section class="page-header">
 
     <div>
-      <a
-        routerLink="/patient/dashboard"
-        class="back-link"
-      >
-        Back to Dashboard
-      </a>
 
       <span class="page-label">
         Patient Medical Records
@@ -21,15 +15,6 @@
         and completed consultation history.
       </p>
     </div>
-
-    <button
-      type="button"
-      class="refresh-button"
-      [disabled]="loading()"
-      (click)="loadHealthRecords()"
-    >
-      {{ loading() ? 'Refreshing...' : 'Refresh Records' }}
-    </button>
 
   </section>
 
@@ -121,6 +106,8 @@
 
       <input
         type="search"
+        maxlength="100"
+        aria-label="Search health records"
         placeholder="Search doctor, diagnosis, prescription, or date"
         [value]="searchText()"
         (input)="onSearchInput($event)"
@@ -164,7 +151,10 @@
 
   @if (loading()) {
     <section class="loading-card">
-      <span class="loader"></span>
+      <span
+        class="loader"
+        aria-hidden="true"
+      ></span>
       <strong>Loading your health records...</strong>
     </section>
   }
@@ -350,7 +340,7 @@
       type="button"
       class="record-dialog-backdrop-button"
       aria-label="Close health record details"
-      (click)="closeHealthRecordDetails()"
+      (click)="closeRecordDetails()"
     ></button>
 
     <dialog

@@ -11,7 +11,6 @@ import {
   inject,
   signal
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 
 import { ChangePasswordRequest } from '../../core/models/auth.model';
 import { Doctor } from '../../core/models/doctor.model';
@@ -26,8 +25,7 @@ const STRONG_PASSWORD_PATTERN =
 @Component({
   selector: 'app-doctor-profile',
   imports: [
-    ReactiveFormsModule,
-    RouterLink
+    ReactiveFormsModule
   ],
   templateUrl: './doctor-profile.html',
   styleUrl: './doctor-profile.css',

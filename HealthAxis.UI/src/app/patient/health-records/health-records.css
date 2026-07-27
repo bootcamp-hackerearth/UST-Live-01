@@ -46,19 +46,6 @@
     );
 }
 
-.back-link {
-  display: block;
-  width: fit-content;
-  margin-bottom: 18px;
-  color: #53627d;
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 750;
-}
-
-.back-link:hover {
-  color: var(--purple);
-}
 
 .page-label {
   color: var(--purple);
@@ -85,30 +72,6 @@
   font-weight: 600;
 }
 
-.refresh-button {
-  min-width: 148px;
-  min-height: 48px;
-  padding: 0 18px;
-  border: none;
-  border-radius: 12px;
-  color: #ffffff;
-  background:
-    linear-gradient(
-      135deg,
-      #704dff,
-      #4d27e9
-    );
-  font: inherit;
-  font-size: 12px;
-  font-weight: 850;
-  cursor: pointer;
-  box-shadow: 0 12px 28px rgba(91, 61, 245, 0.22);
-}
-
-.refresh-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
 
 .dashboard-alert {
   padding: 13px 15px;
