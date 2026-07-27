@@ -39,7 +39,7 @@ Assert-Ok "Blazor restore failed."
 Write-Host "Building Angular..." -ForegroundColor Cyan
 Push-Location $angular
 try {
-    if (Test-Path "package-lock.json") { npm ci } else { npm install }
+    npm install
     Assert-Ok "Angular dependency installation failed."
     npx ng build --configuration production --base-href / --output-path $angularOut
     Assert-Ok "Angular build failed."
