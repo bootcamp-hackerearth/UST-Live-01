@@ -41,7 +41,7 @@
                 '''
 
                 bat '''
-                xcopy /E /Y /I blazor-publish-temp\\wwwroot\\*HealthApp.Api\\wwwroot\\blazor\\
+                xcopy /E /Y /I blazor-publish-temp\\wwwroot\\* HealthApp.Api\\wwwroot\\blazor\\
                 '''
             }
         }
