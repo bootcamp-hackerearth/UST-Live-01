@@ -3,7 +3,7 @@
     <article class="summary-card">
       <div class="summary-icon blue-icon">▦</div>
 
-      <div>
+      <div class="summary-content">
         <span>Total Appointments</span>
         <strong>{{ totalAppointments }}</strong>
         <p>Your overall consultation activity.</p>
@@ -13,7 +13,7 @@
     <article class="summary-card">
       <div class="summary-icon cyan-icon">⌛</div>
 
-      <div>
+      <div class="summary-content">
         <span>Upcoming</span>
         <strong>{{ upcomingCount }}</strong>
         <p>Appointments requiring your attention.</p>
@@ -23,7 +23,7 @@
     <article class="summary-card">
       <div class="summary-icon green-icon">✓</div>
 
-      <div>
+      <div class="summary-content">
         <span>Completed Visits</span>
         <strong>{{ completedCount }}</strong>
         <p>Consultations completed so far.</p>
@@ -33,7 +33,7 @@
     <article class="summary-card">
       <div class="summary-icon orange-icon">▤</div>
 
-      <div>
+      <div class="summary-content">
         <span>Health Records</span>
         <strong>{{ healthRecordCount }}</strong>
         <p>Medical records available to review.</p>
@@ -49,7 +49,10 @@
           <p>Your next scheduled or confirmed consultations.</p>
         </div>
 
-        <a routerLink="/patient/appointments" class="panel-link">
+        <a
+          routerLink="/patient/appointments"
+          class="panel-link"
+        >
           View All
         </a>
       </div>
@@ -68,25 +71,45 @@
         @if (upcomingAppointments.length === 0) {
           <div class="empty-state">
             <strong>No upcoming appointments</strong>
-            <span>Book a consultation with an available doctor.</span>
 
-            <a routerLink="/patient/doctors" class="primary-btn">
+            <span>
+              Book a consultation with an available doctor.
+            </span>
+
+            <a
+              routerLink="/patient/doctors"
+              class="primary-btn"
+            >
               Find Doctors
             </a>
           </div>
         } @else {
           <div class="appointment-list">
-            @for (appointment of upcomingAppointments; track appointment.appointmentId) {
+            @for (
+              appointment of upcomingAppointments;
+              track appointment.appointmentId
+            ) {
               <div class="appointment-item">
-                <div class="doctor-avatar">
-                  {{ getDoctorDisplayName(appointment).charAt(0).toUpperCase() }}
-                </div>
+                <div class="appointment-main">
+                  <div class="doctor-avatar">
+                    {{
+                      getDoctorDisplayName(appointment)
+                        .charAt(0)
+                        .toUpperCase()
+                    }}
+                  </div>
 
-                <div class="appointment-info">
-                  <strong>{{ getDoctorDisplayName(appointment) }}</strong>
-                  <span>
-                    {{ formatDate(appointment.scheduledDate) }} · {{ appointment.timeSlot }}
-                  </span>
+                  <div class="appointment-info">
+                    <strong>
+                      {{ getDoctorDisplayName(appointment) }}
+                    </strong>
+
+                    <span>
+                      {{ formatDate(appointment.scheduledDate) }}
+                      ·
+                      {{ appointment.timeSlot }}
+                    </span>
+                  </div>
                 </div>
 
                 <span
@@ -109,7 +132,10 @@
           <p>Latest diagnosis, prescription, and visit notes.</p>
         </div>
 
-        <a routerLink="/patient/health-history" class="panel-link">
+        <a
+          routerLink="/patient/health-history"
+          class="panel-link"
+        >
           View History
         </a>
       </div>
@@ -128,13 +154,19 @@
         @if (recentHealthRecords.length === 0) {
           <div class="empty-state">
             <strong>No health records yet</strong>
-            <span>Your completed consultation records will appear here.</span>
+
+            <span>
+              Your completed consultation records will appear here.
+            </span>
           </div>
         } @else {
           <div class="record-list">
-            @for (record of recentHealthRecords; track record.healthRecordId) {
+            @for (
+              record of recentHealthRecords;
+              track record.healthRecordId
+            ) {
               <div class="record-item">
-                <div>
+                <div class="record-heading">
                   <strong>{{ record.diagnosis }}</strong>
                   <span>{{ formatDate(record.visitDate) }}</span>
                 </div>
@@ -150,31 +182,45 @@
 
   <section class="care-section">
     <article class="care-card">
-      <div class="care-icon">⚕</div>
+      <div class="care-details">
+        <div class="care-icon">⚕</div>
 
-      <div>
-        <h2>Need a consultation?</h2>
-        <p>
-          Search doctors by specialisation and book from available time slots.
-        </p>
+        <div>
+          <h2>Need a consultation?</h2>
+
+          <p>
+            Search doctors by specialisation and book from
+            available time slots.
+          </p>
+        </div>
       </div>
 
-      <a routerLink="/patient/doctors" class="primary-btn">
+      <a
+        routerLink="/patient/doctors"
+        class="primary-btn"
+      >
         Book Appointment
       </a>
     </article>
 
     <article class="care-card soft-card">
-      <div class="care-icon">▧</div>
+      <div class="care-details">
+        <div class="care-icon">▧</div>
 
-      <div>
-        <h2>Review your medical timeline</h2>
-        <p>
-          Check prescriptions, diagnoses, and notes from completed consultations.
-        </p>
+        <div>
+          <h2>Review your medical timeline</h2>
+
+          <p>
+            Check prescriptions, diagnoses, and notes from
+            completed consultations.
+          </p>
+        </div>
       </div>
 
-      <a routerLink="/patient/health-history" class="secondary-btn">
+      <a
+        routerLink="/patient/health-history"
+        class="secondary-btn"
+      >
         Open Records
       </a>
     </article>
