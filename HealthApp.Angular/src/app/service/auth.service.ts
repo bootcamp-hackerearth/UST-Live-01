@@ -10,7 +10,7 @@ import { LoginRequest } from '../login/login-request.model';
 })
 export class AuthService {
 
-  private readonly baseUrl = 'http://localhost:5066/api/auth';
+  private readonly baseUrl = '/api/auth';
 
   constructor(private readonly http: HttpClient) {}
 
@@ -20,8 +20,10 @@ export class AuthService {
       .pipe(
         tap(res => {
           if (res.success) {
-            localStorage.setItem('token', res.accessToken);
-            localStorage.setItem('role', res.role);
+            localStorage.setItem('token',res.accessToken);
+            localStorage.setItem('role',res.role);
+            localStorage.setItem('authToken', res.accessToken);
+            localStorage.setItem('authRole', res.role);
           }
         })
       );
@@ -47,13 +49,13 @@ export class AuthService {
     localStorage.clear();
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
-  }
+getToken(): string | null {
+  return localStorage.getItem('token');
+}
 
-  getRole(): string | null {
-    return localStorage.getItem('role');
-  }
+getRole(): string | null {
+  return localStorage.getItem('role');
+}
 
   isLoggedIn(): boolean {
     return !!this.getToken();

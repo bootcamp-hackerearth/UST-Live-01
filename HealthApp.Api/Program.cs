@@ -1,11 +1,7 @@
-using Elastic.CommonSchema;
-using Elastic.Ingest.Elasticsearch;
-using Elastic.Ingest.Elasticsearch.DataStreams;
-using Elastic.Serilog.Sinks;
-using Elastic.Transport;
 using HealthApp.Api.BackgroundServices;
 using HealthApp.Api.Data;
 using HealthApp.Api.Mappings;
+using HealthApp.Api.Messaging.Consumer;
 using HealthApp.Api.Messaging.Publisher;
 using HealthApp.Api.Middleware;
 using HealthApp.Api.Options;
@@ -23,14 +19,11 @@ using Serilog;
 using System.Text;
 using System.Text.Json;
 
-
-
-Serilog.Log.Logger = new LoggerConfiguration()
+Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
-Serilog.Log.Information("HealthAxis API is starting up...");
-
+Log.Information("HealthAxis API is starting up...");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,46 +32,13 @@ builder.Host.UseSerilog((context, services, configuration) =>
     configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
-        .Enrich.FromLogContext()
-        .WriteTo.Console();
-
-    var elasticUrl = context.Configuration["Elasticsearch:Url"];
-
-    if (!string.IsNullOrWhiteSpace(elasticUrl) &&
-        Uri.TryCreate(elasticUrl, UriKind.Absolute, out var elasticUri))
-    {
-        try
-        {
-            configuration.WriteTo.Elasticsearch(
-                new[] { elasticUri },
-                opts =>
-                {
-                    opts.DataStream = new DataStreamName( "logs","healthaxis","api");
-
-                    opts.BootstrapMethod = BootstrapMethod.None;
-                });
-
-            Serilog.Log.Information("Elasticsearch logging configured: {ElasticUrl}",elasticUrl);
-        }
-        catch (Exception ex)
-        {
-            Serilog.Log.Warning(ex,"Elasticsearch logging setup failed. Continuing with console logging.");
-        }
-    }
-    else
-    {
-        Serilog.Log.Warning("Elasticsearch URL is missing or invalid. Continuing with console logging only.");
-    }
+        .Enrich.FromLogContext();
 });
-
-
-
-
-
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.JsonSerializerOptions.PropertyNamingPolicy =
+        JsonNamingPolicy.CamelCase;
 });
 
 builder.Services.AddDbContext<HealthAppDbContext>(options =>
@@ -157,14 +117,13 @@ builder.Services.AddCors(options =>
     });
 });
 
+
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 builder.Services.AddScoped<IDoctorLeaveRepository, DoctorLeaveRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
@@ -173,22 +132,19 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IDoctorLeaveService, DoctorLeaveService>();
-builder.Services.AddHostedService<NotificationCleanupBackgroundService>();
+
+builder.Services.AddDistributedMemoryCache();
 
 
 builder.Services.AddScoped<IAppointmentEventPublisher, AppointmentEventPublisher>();
-builder.Services.AddHostedService<NotificationCleanupBackgroundService>();
-
-
-
-builder.Services.Configure<RabbitMqOptions>(
-    builder.Configuration.GetSection("RabbitMq"));
 
 builder.Services.Configure<RabbitMqOptions>(
     builder.Configuration.GetSection("RabbitMq"));
 
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<AppointmentEventConsumer>();
+
     x.UsingRabbitMq((context, cfg) =>
     {
         var rabbitMqOptions = builder.Configuration
@@ -203,29 +159,31 @@ builder.Services.AddMassTransit(x =>
                 h.Username(rabbitMqOptions.UserName);
                 h.Password(rabbitMqOptions.Password);
             });
-   
+
+        cfg.ReceiveEndpoint(
+            rabbitMqOptions.AppointmentBookedQueue,
+            endpoint =>
+            {
+                endpoint.UseMessageRetry(retryConfig =>
+                {
+                    retryConfig.Interval(
+                        retryCount: 3,
+                        interval: TimeSpan.FromSeconds(5));
+                });
+
+                endpoint.ConfigureConsumer<AppointmentEventConsumer>(context);
+            });
+    });
 });
-});
 
-builder.Services.Configure<GarnetOptions>(builder.Configuration.GetSection("Garnet"));
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    var garnetoptions = builder.Configuration.GetSection("Garnet")
-    .Get<GarnetOptions>() ?? new GarnetOptions();
-
-
-    options.Configuration = garnetoptions.ConnectionString;
-    options.InstanceName = garnetoptions.InstanceName;
-});
-
-
-
+builder.Services.AddHostedService<NotificationCleanupBackgroundService>();
 builder.Services.AddHostedService<HeartbeatBackgroundService>();
 
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MappingProfile>();
 });
+
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -246,6 +204,46 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
+
+app.UseStaticFiles();
+
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/angular");
+    return Task.CompletedTask;
+});
+
+app.MapFallbackToFile(
+    "/angular/{*path:nonfile}",
+    "angular/index.html");
+
+app.MapFallbackToFile(
+    "/blazor/{*path:nonfile}",
+    "blazor/index.html");
+
+app.MapGet("/blazor", async context =>
+
+{
+    await context.Response.SendFileAsync(
+        Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+});
+
+app.MapGet("/blazor/{*path:nonfile}", async context =>
+{
+    await context.Response.SendFileAsync(
+        Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+});
+
+
+
+
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -253,9 +251,10 @@ app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var roleManager =
+        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
     await RoleSeeder.seedroleAsync(roleManager);
 }
-
 
 await app.RunAsync();

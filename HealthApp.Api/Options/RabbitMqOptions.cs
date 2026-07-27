@@ -12,6 +12,6 @@
 
         public string VirtualHost { get; set; } = "/";
 
-        public string HealthcareQueueName { get; set; } = "HealthcareQueue";
+        public string AppointmentBookedQueue { get; set; } = "appointment-booked-queue";
     }
 }

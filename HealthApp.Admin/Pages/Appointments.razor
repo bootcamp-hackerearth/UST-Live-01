@@ -1,0 +1,415 @@
+@page "/appointments"
+
+
+@using HealthApp.Shared.Dto
+@using Microsoft.AspNetCore.Components.Web
+@using HealthApp.Admin.Services.Interface
+
+@inject IAppointmentService AppointmentService
+
+
+<PageTitle>Appointments</PageTitle>
+
+<div class="page">
+
+    <div class="header">
+        <div>
+            <h2>Appointments</h2>
+            <p>Manage appointment schedules and consultation details</p>
+        </div>
+    </div>
+
+    <div class="toolbar">
+
+        <div class="toolbar-left">
+            <input class="input search"
+                   placeholder="Search ID or Status..."
+                   @bind="searchText"
+                   @onkeypress="HandleKeyPress" />
+
+            <button class="btn primary" @onclick="Search">Search</button>
+        </div>
+
+        <div class="toolbar-right">
+            <input class="input filter"
+                   placeholder="Doctor Name..."
+                   @bind="doctorFilter" />
+
+            <input class="input filter"
+                   placeholder="Patient Name..."
+                   @bind="patientFilter" />
+
+            <button class="btn info" @onclick="FilterByDoctorPatient">Filter</button>
+            <button class="btn light" @onclick="Reset">Reset</button>
+        </div>
+
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="empty">Loading appointments...</div>
+    }
+    else if (!appointments.Any())
+    {
+        <div class="empty">No appointments found.</div>
+    }
+    else
+    {
+        <div class="card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Doctor</th>
+                        <th>Patient</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var a in appointments)
+                    {
+                        <tr>
+                            <td>@a.AppointmentId</td>
+                            <td>Id: @a.DoctorId <br /> @a.DoctorName</td>
+                            <td>Id: @a.PatientId <br /> @a.PatientName</td>
+                            <td>@a.ScheduledDate.ToString("dd-MM-yyyy")</td>
+                            <td>@a.TimeSlot</td>
+
+                            <td>
+                                <span class="badge @(a.Status?.ToLower())">
+                                    @a.Status
+                                </span>
+                            </td>
+
+                            <td>@a.CancellationReason</td>
+
+                            <td>
+                                <button class="mini view"
+                                        @onclick="() => ViewAppointment(a)">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <div class="pagination">
+        <button class="btn light"
+                disabled="@(pageNumber == 1)"
+                @onclick="PrevPage">
+            Prev
+        </button>
+
+        <span>Page @pageNumber of @TotalPages</span>
+
+        <button class="btn light"
+                disabled="@(pageNumber >= TotalPages)"
+                @onclick="NextPage">
+            Next
+        </button>
+    </div>
+
+</div>
+
+@if (viewAppointment != null)
+{
+    <div class="modal">
+        <div class="modal-box">
+
+            <h3>Appointment Details</h3>
+
+            <p><b>ID:</b> @viewAppointment.AppointmentId</p>
+            <p><b>Doctor:</b> @viewAppointment.DoctorName</p>
+            <p><b>Patient:</b> @viewAppointment.PatientName</p>
+            <p><b>Date:</b> @viewAppointment.ScheduledDate.ToString("dd-MM-yyyy")</p>
+            <p><b>Time:</b> @viewAppointment.TimeSlot</p>
+            <p><b>Status:</b> @viewAppointment.Status</p>
+            <p><b>Reason:</b> @viewAppointment.CancellationReason</p>
+
+            <button class="btn light" @onclick="CloseView">Close</button>
+        </div>
+    </div>
+}
+
+@code {
+
+    private List<AppointmentDto> appointments = new();
+    private List<AppointmentDto> allAppointments = new(); 
+
+    private string searchText = "";
+    private string doctorFilter = "";
+    private string patientFilter = "";
+
+    private bool isLoading = true;
+    private AppointmentDto? viewAppointment;
+
+    private int pageNumber = 1;
+    private int pageSize = 10;
+    private int totalRecords = 0;
+
+    private int TotalPages => (int)Math.Ceiling((double)totalRecords / pageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAppointments();
+    }
+
+    private async Task LoadAppointments()
+    {
+        isLoading = true;
+
+        try
+        {
+            var result = await AppointmentService
+                .GetPagedAppointmentsAsync(pageNumber, pageSize);
+
+            var data = result.Data;
+
+            var filtered = data.Where(a =>
+
+                (string.IsNullOrWhiteSpace(searchText) ||
+                    a.AppointmentId.ToString().Contains(searchText) ||
+                    (a.Status?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false))
+
+                &&
+
+                (string.IsNullOrWhiteSpace(doctorFilter) ||
+                    (a.DoctorName?.Contains(doctorFilter, StringComparison.OrdinalIgnoreCase) ?? false))
+
+                &&
+
+                (string.IsNullOrWhiteSpace(patientFilter) ||
+                    (a.PatientName?.Contains(patientFilter, StringComparison.OrdinalIgnoreCase) ?? false))
+
+            ).ToList();
+
+            appointments = filtered;
+
+            totalRecords = string.IsNullOrWhiteSpace(searchText)
+                            && string.IsNullOrWhiteSpace(doctorFilter)
+                            && string.IsNullOrWhiteSpace(patientFilter)
+                            ? result.TotalRecords  
+                            : filtered.Count;  
+
+        }
+        catch
+        {
+            appointments = new List<AppointmentDto>();
+            totalRecords = 0;
+        }
+
+        isLoading = false;
+    }
+    private async Task Search()
+    {
+        pageNumber = 1;
+        await LoadAppointments();
+    }
+
+    private async Task FilterByDoctorPatient()
+    {
+        pageNumber = 1;
+        await LoadAppointments();
+    }
+
+    private async Task Reset()
+    {
+        searchText = "";
+        doctorFilter = "";
+        patientFilter = "";
+        pageNumber = 1;
+
+        await LoadAppointments();
+    }
+
+    private async Task NextPage()
+    {
+        if (pageNumber < TotalPages)
+        {
+            pageNumber++;
+            await LoadAppointments();
+        }
+    }
+
+    private async Task PrevPage()
+    {
+        if (pageNumber > 1)
+        {
+            pageNumber--;
+            await LoadAppointments();
+        }
+    }
+
+    private async Task ViewAppointment(AppointmentDto a)
+    {
+        var full = await AppointmentService.GetAppointmentByIdAsync(a.AppointmentId);
+        viewAppointment = full ?? a;
+    }
+
+    private void CloseView() => viewAppointment = null;
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            pageNumber = 1;
+            await LoadAppointments();
+        }
+    }
+}
+
+
+            
+<style>
+
+    .page {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .header h2 {
+        font-size: 32px;
+        margin: 0;
+        font-weight: 800;
+    }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .toolbar-left, .toolbar-right {
+        display: flex;
+        gap: 10px;
+    }
+
+    .input {
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid #d1d5db;
+    }
+
+    .search {
+        width: 250px;
+    }
+
+    .filter {
+        width: 120px;
+    }
+
+    .btn {
+        border: none;
+        padding: 10px 16px;
+        border-radius: 12px;
+        font-weight: 700;
+    }
+
+    .primary {
+        background: #2563eb;
+        color: white;
+    }
+
+    .info {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .light {
+        background: #f3f4f6;
+    }
+
+    .card {
+        background: white;
+        padding: 20px;
+        border-radius: 18px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .table th {
+            background: #f8fafc;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+
+        .table td, .table th {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+
+    .confirmed {
+        background: #dcfce7;
+        color: green;
+    }
+
+    .pending {
+        background: #fef3c7;
+    }
+
+    .cancelled {
+        background: #fee2e2;
+        color: red;
+    }
+
+    .completed {
+        background: #dbeafe;
+    }
+
+    .mini {
+        padding: 6px 10px;
+        border-radius: 8px;
+        border: none;
+    }
+
+    .view {
+        background: #dbeafe;
+    }
+
+    .empty {
+        text-align: center;
+        padding: 30px;
+    }
+
+    .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-box {
+        background: white;
+        padding: 20px;
+        border-radius: 14px;
+        width: 400px;
+    }
+
+    @@media(max-width: 768px) {
+        .toolbar {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+
+</style>

@@ -49,13 +49,14 @@ export class LoginComponent {
           );
           return;
         }
-
         localStorage.setItem('token', res.accessToken);
         localStorage.setItem('role', res.role);
+        localStorage.setItem('authToken', res.accessToken);
+        localStorage.setItem('authRole', res.role);
 
         switch (res.role) {
           case 'Admin':
-            globalThis.location.href = 'https://localhost:7002/';
+            globalThis.location.assign('/blazor/');
             break;
 
           case 'Doctor':

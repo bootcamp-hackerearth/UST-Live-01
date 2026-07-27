@@ -9,7 +9,7 @@ import { Notification } from '../models/notification/notification.model';
 })
 export class NotificationService {
 
-  private baseUrl = 'http://localhost:5066/api/notifications';
+  private baseUrl = '/api/notifications';
 
   constructor(private http: HttpClient) {}
 

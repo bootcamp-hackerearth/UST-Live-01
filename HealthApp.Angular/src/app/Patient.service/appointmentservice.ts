@@ -12,7 +12,7 @@ import {
 })
 export class AppointmentService {
 
-  private readonly baseUrl = 'http://localhost:5066/api/appointments';
+  private readonly baseUrl = '/api/appointments';
 
   availabilityMessage = '';
   isDoctorOnLeave = false;

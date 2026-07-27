@@ -1,0 +1,299 @@
+@page "/profile"
+
+<PageTitle>My Profile</PageTitle>
+
+<div class="profile-page">
+
+    <div class="profile-header-card">
+        <div class="profile-header-left">
+            <div class="profile-avatar">A</div>
+
+            <div class="profile-header-text">
+                <p class="profile-eyebrow">Account Overview</p>
+                <h1>My Profile</h1>
+                <p class="profile-subtitle">
+                    View administrator account details and profile information for HealthApp.
+                </p>
+            </div>
+        </div>
+
+        <div class="profile-status-wrap">
+            <span class="profile-status">Admin Access</span>
+        </div>
+    </div>
+
+    <div class="profile-grid">
+
+        <div class="profile-card">
+            <h2>Personal Information</h2>
+
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <label>Full Name</label>
+                    <div class="detail-value">System Administrator</div>
+                </div>
+
+                <div class="detail-item">
+                    <label>Email</label>
+                    <div class="detail-value">admin@gmail.com</div>
+                </div>
+
+                <div class="detail-item">
+                    <label>Role</label>
+                    <div class="detail-value">Admin</div>
+                </div>
+
+                <div class="detail-item">
+                    <label>Department</label>
+                    <div class="detail-value">Administration</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-card side-card">
+            <h2>Access Summary</h2>
+
+            <div class="summary-list">
+                <div class="summary-row">
+                    <span class="summary-label">Portal Access</span>
+                    <span class="summary-value good">Active</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Authentication Type</span>
+                    <span class="summary-value">Administrator Login</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Environment</span>
+                    <span class="summary-value">HealthApp Admin Console</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Account Status</span>
+                    <span class="summary-value good">Enabled</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="profile-card description-card">
+        <h2>Description</h2>
+        <p>
+            This is the administrator profile page for HealthApp. The administrator can use this
+            account to manage doctors, patients, appointments, and health records from the admin portal.
+        </p>
+    </div>
+
+</div>
+
+<style>
+    .profile-page {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .profile-header-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid rgba(15, 23, 42, 0.05);
+        border-radius: 24px;
+        padding: 26px;
+        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .profile-header-left {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .profile-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #2563eb, #06b6d4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 30px;
+        font-weight: 800;
+        box-shadow: 0 12px 24px rgba(37, 99, 235, 0.25);
+        flex-shrink: 0;
+    }
+
+    .profile-header-text h1 {
+        margin: 0;
+        font-size: 36px;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.1;
+    }
+
+    .profile-eyebrow {
+        margin: 0 0 8px 0;
+        color: #2563eb;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .profile-subtitle {
+        margin: 8px 0 0 0;
+        color: #64748b;
+        font-size: 16px;
+        line-height: 1.6;
+        max-width: 680px;
+    }
+
+    .profile-status-wrap {
+        display: flex;
+        align-items: center;
+    }
+
+    .profile-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 14px;
+        font-weight: 700;
+        border: 1px solid #dbeafe;
+        white-space: nowrap;
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+    }
+
+    .profile-card {
+        background: white;
+        border: 1px solid rgba(15, 23, 42, 0.05);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.05);
+    }
+
+    .profile-card h2 {
+        margin: 0 0 18px 0;
+        font-size: 22px;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .detail-item {
+        background: #f8fbff;
+        border: 1px solid #e5edf8;
+        border-radius: 16px;
+        padding: 16px;
+    }
+
+    .detail-item label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .detail-value {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .summary-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 14px 0;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .summary-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .summary-label {
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .summary-value {
+        color: #0f172a;
+        font-size: 14px;
+        font-weight: 700;
+        text-align: right;
+    }
+
+    .summary-value.good {
+        color: #15803d;
+    }
+
+    .description-card p {
+        margin: 0;
+        color: #475569;
+        font-size: 16px;
+        line-height: 1.8;
+    }
+
+    @@media (max-width: 1100px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .profile-header-card {
+            padding: 20px;
+        }
+
+        .profile-header-left {
+            align-items: flex-start;
+        }
+
+        .profile-header-text h1 {
+            font-size: 30px;
+        }
+
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-card {
+            padding: 20px;
+        }
+    }
+</style>

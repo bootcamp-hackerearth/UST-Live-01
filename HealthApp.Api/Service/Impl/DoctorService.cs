@@ -13,25 +13,21 @@ namespace HealthApp.Api.Service.Impl
     {
         private readonly IDoctorRepository _repo;
         private readonly IMapper _mapper;
-        private readonly IDistributedCache _cache;
+        //private readonly IDistributedCache _cache;
 
-        public DoctorService(IDoctorRepository repo, IMapper mapper,IDistributedCache cache)
+        public DoctorService(IDoctorRepository repo, IMapper mapper)
         {
             _repo = repo;
             _mapper = mapper;
-            _cache = cache;
+           // _cache = cache;
         }
 
-        private const string patientCacheKeyPrefix = "patient:all";
+        //private const string patientCacheKeyPrefix = "patient:all";
 
-        private  readonly DistributedCacheEntryOptions cacheOptions = new()
-        {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
-        };
-
-
-
-
+        //private  readonly DistributedCacheEntryOptions cacheOptions = new()
+        //{
+        //    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+        //};
 
 
 
@@ -212,12 +208,12 @@ namespace HealthApp.Api.Service.Impl
 
         public async Task<(List<DoctorDto> Items, int TotalCount)> GetPagedActiveDoctorsAsync(int pageNumber,int pageSize)
         {
-            var cached = await _cache.GetStringAsync(patientCacheKeyPrefix);
-            if (!string.IsNullOrWhiteSpace(cached))
-            {
-                var doctor= JsonSerializer.Deserialize<List<DoctorDto>>(cached);
-                if (doctor != null) return (doctor, doctor.Count);
-            }
+            ////var cached = await _cache.GetStringAsync(patientCacheKeyPrefix);
+            //if (!string.IsNullOrWhiteSpace(cached))
+            //{
+            //    var doctor= JsonSerializer.Deserialize<List<DoctorDto>>(cached);
+            //    if (doctor != null) return (doctor, doctor.Count);
+            //}
 
 
             if (pageNumber <= 0)
@@ -230,7 +226,7 @@ namespace HealthApp.Api.Service.Impl
 
             var result = _mapper.Map<List<DoctorDto>>(doctors);
 
-            await _cache.SetStringAsync(patientCacheKeyPrefix, JsonSerializer.Serialize(doctors), cacheOptions);
+            //await _cache.SetStringAsync(patientCacheKeyPrefix, JsonSerializer.Serialize(doctors), cacheOptions);
 
 
             return (result, totalCount);

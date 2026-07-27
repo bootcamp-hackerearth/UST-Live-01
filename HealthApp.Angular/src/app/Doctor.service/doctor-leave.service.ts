@@ -10,7 +10,7 @@ import {
 })
 export class DoctorLeaveService {
 
-  private readonly apiUrl = 'http://localhost:5066/api/doctor-leaves';
+  private readonly apiUrl = '/api/doctor-leaves';
 
   constructor(private readonly http: HttpClient) {}
 

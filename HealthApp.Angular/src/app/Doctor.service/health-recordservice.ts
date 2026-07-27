@@ -6,7 +6,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class HealthRecordService {
 
-  private readonly baseUrl = 'http://localhost:5066/api/HealthRecordApi';
+  private readonly baseUrl = '/api/HealthRecordApi';
 
   constructor(private readonly http: HttpClient) {}
 

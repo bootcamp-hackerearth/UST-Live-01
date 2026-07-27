@@ -1,0 +1,518 @@
+@page "/doctors"
+
+
+@using HealthApp.Shared.Dto
+@using Microsoft.AspNetCore.Components.Web
+
+@inject IDoctorService DoctorService
+@inject IAuthService AuthService
+
+<PageTitle>Doctors</PageTitle>
+
+<div class="page">
+
+    <div class="header">
+        <div>
+            <h2>Doctors</h2>
+            <p>Manage doctor information</p>
+        </div>
+
+        <button class="btn primary" @onclick="ShowAddForm">+ Add Doctor</button>
+    </div>
+
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <input class="input search"
+                   placeholder="Search by Name or Email..."
+                   @bind="searchText"
+                   @onkeypress="HandleKeyPress" />
+
+            <button class="btn primary" @onclick="ApplyFilters">Search</button>
+        </div>
+
+        <div class="toolbar-right">
+            <select class="input filter" @bind="specialisationSearch">
+                <option value="">All Specialisations</option>
+                <option>Endocrinologist</option>
+                <option>Oncologist</option>
+                <option>Gynecologist</option>
+                <option>OrthopedicSurgeon</option>
+                <option>Psychiatrist</option>
+                <option>Pediatrician</option>
+                <option>Neurologist</option>
+                <option>Dermatologist</option>
+                <option>Cardiologist</option>
+                <option>GeneralPractitioner</option>
+                <option>ENT</option>
+            </select>
+
+            <button class="btn info" @onclick="ApplyFilters">Filter</button>
+            <button class="btn light" @onclick="Reset">Reset</button>
+        </div>
+    </div>
+
+    @if (showForm)
+    {
+        <div class="card">
+            <h3>@(isEdit ? "Edit Doctor" : "Add Doctor")</h3>
+
+            <EditForm Model="selectedDoctor" OnValidSubmit="SaveDoctor">
+                <DataAnnotationsValidator />
+
+                <div class="grid">
+
+                    <div class="form-field">
+                        <label>Name</label>
+                        <InputText class="input" placeholder="Name" @bind-Value="selectedDoctor.FullName" />
+                        <ValidationMessage For="@(() => selectedDoctor.FullName)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Specialisation</label>
+                        <InputSelect class="input" @bind-Value="selectedDoctor.Specialisation">
+                            <option value="">Select Specialisation</option>
+                            <option>Endocrinologist</option>
+                            <option>Oncologist</option>
+                            <option>Gynecologist</option>
+                            <option>OrthopedicSurgeon</option>
+                            <option>Psychiatrist</option>
+                            <option>Pediatrician</option>
+                            <option>Neurologist</option>
+                            <option>Dermatologist</option>
+                            <option>Cardiologist</option>
+                            <option>GeneralPractitioner</option>
+                            <option>ENT</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => selectedDoctor.Specialisation)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Email</label>
+                        <InputText class="input" placeholder="Email" @bind-Value="selectedDoctor.Email" />
+                        <ValidationMessage For="@(() => selectedDoctor.Email)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Phone</label>
+                        <InputText class="input" placeholder="Phone" @bind-Value="selectedDoctor.DoctorPhoneNumber" />
+                        <ValidationMessage For="@(() => selectedDoctor.DoctorPhoneNumber)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Consultation Fee</label>
+                        <InputNumber class="input" placeholder="Fee" @bind-Value="selectedDoctor.ConsultationFee" />
+                        <ValidationMessage For="@(() => selectedDoctor.ConsultationFee)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Practice Start Date</label>
+
+                        <InputDate class="input"
+                                   @bind-Value="selectedDoctor.PracticeStartDate"
+                                   max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+
+                        <ValidationMessage For="@(() => selectedDoctor.PracticeStartDate)" />
+                    </div>
+
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn success">Save</button>
+                    <button type="button" class="btn light" @onclick="CancelForm">Cancel</button>
+                </div>
+            </EditForm>
+        </div>
+    }
+
+    <div class="card">
+        <table class="table">
+            <tbody>
+                @foreach (var d in doctors)
+                {
+                    <tr>
+                        <td>@d.DoctorId</td>
+                        <td>@d.FullName</td>
+                        <td>@d.Specialisation</td>
+                        <td>@d.Email</td>
+                        <td>@d.DoctorPhoneNumber</td>
+                        <td>?@d.ConsultationFee</td>
+
+                        <td>
+                            <button class="toggle-btn @(d.IsActive == true ? "active" : "inactive")"
+                                    @onclick="() => ToggleStatus(d)">
+                                @(d.IsActive == true ? "Active" : "Inactive")
+                            </button>
+                        </td>
+
+                        <td>
+                            <button class="mini view" @onclick="() => ViewDoctor(d)">View</button>
+                            <button class="mini edit" @onclick="() => EditDoctor(d)">Edit</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<div class="pagination">
+    <button class="btn light" disabled="@(pageNumber == 1)" @onclick="PrevPage">Prev</button>
+    <span>Page @pageNumber of @TotalPages</span>
+    <button class="btn light" disabled="@(pageNumber >= TotalPages)" @onclick="NextPage">Next</button>
+</div>
+@if (viewDoctor != null)
+{
+    <div class="modal">
+        <div class="modal-box">
+            <h3>Doctor Details</h3>
+
+            <p><b>Name:</b> @viewDoctor.FullName</p>
+            <p><b>Email:</b> @viewDoctor.Email</p>
+            <p><b>Specialisation:</b> @viewDoctor.Specialisation</p>
+            <p><b>Phone:</b> @viewDoctor.DoctorPhoneNumber</p>
+            <p><b>Fee:</b> ?@viewDoctor.ConsultationFee</p>
+
+            <button class="btn light" @onclick="CloseView">Close</button>
+        </div>
+    </div>
+}
+
+@code {
+
+    private List<DoctorDto> doctors = new();
+
+    private string searchText = "";
+    private string specialisationSearch = "";
+
+    private int pageNumber = 1;
+    private int pageSize = 10;
+    private int totalRecords = 0;
+
+    private int TotalPages => (int)Math.Ceiling((double)totalRecords / pageSize);
+
+    private bool showForm = false;
+    private bool isEdit = false;
+
+    private DoctorDto selectedDoctor = new();
+    private DoctorDto? viewDoctor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.InitializeAsync();
+        await LoadDoctors();
+    }
+
+    private async Task LoadDoctors()
+    {
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            var response = await DoctorService.GetAllDoctorsAsync(1, 1000);
+
+            var filtered = response.Data.Where(d =>
+                (!string.IsNullOrEmpty(d.FullName) &&
+                 d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                ||
+                (!string.IsNullOrEmpty(d.Email) &&
+                 d.Email.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            ).ToList();
+
+            if (!string.IsNullOrWhiteSpace(specialisationSearch))
+            {
+                filtered = filtered.Where(d =>
+                    d.Specialisation != null &&
+                    d.Specialisation.Contains(specialisationSearch, StringComparison.OrdinalIgnoreCase)
+                ).ToList();
+            }
+
+            totalRecords = filtered.Count;
+
+            doctors = filtered
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+
+        else if (!string.IsNullOrWhiteSpace(specialisationSearch))
+        {
+            var response = await DoctorService
+                .SearchBySpecialisationAsync(specialisationSearch, pageNumber, pageSize);
+
+            doctors = response.Data;
+            totalRecords = response.TotalRecords;
+        }
+
+        else
+        {
+            var response = await DoctorService
+                .GetAllDoctorsAsync(pageNumber, pageSize);
+
+            doctors = response.Data;
+            totalRecords = response.TotalRecords;
+        }
+    }
+
+
+    private async Task ApplyFilters()
+    {
+        pageNumber = 1;
+        await LoadDoctors();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await ApplyFilters();
+    }
+
+    private async Task Reset()
+    {
+        searchText = "";
+        specialisationSearch = "";
+        pageNumber = 1;
+        await LoadDoctors();
+    }
+
+    private async Task NextPage()
+    {
+        if (pageNumber < TotalPages)
+        {
+            pageNumber++;
+            await LoadDoctors();
+        }
+    }
+
+    private async Task PrevPage()
+    {
+        if (pageNumber > 1)
+        {
+            pageNumber--;
+            await LoadDoctors();
+        }
+    }
+
+    private async Task ToggleStatus(DoctorDto d)
+    {
+        d.IsActive = !(d.IsActive ?? false);
+        await DoctorService.UpdateDoctorAsync(d.DoctorId, d);
+    }
+
+    private void ShowAddForm()
+    {
+        selectedDoctor = new DoctorDto();
+        isEdit = false;
+        showForm = true;
+    }
+
+    private void EditDoctor(DoctorDto d)
+    {
+        selectedDoctor = new DoctorDto
+        {
+            DoctorId = d.DoctorId,
+            FullName = d.FullName,
+            Email = d.Email,
+            Specialisation = d.Specialisation,
+            DoctorPhoneNumber = d.DoctorPhoneNumber,
+            ConsultationFee = d.ConsultationFee,
+            PracticeStartDate = d.PracticeStartDate,
+            IsActive = d.IsActive
+        };
+
+        isEdit = true;
+        showForm = true;
+    }
+
+    private void ViewDoctor(DoctorDto d)
+    {
+        viewDoctor = d;
+    }
+
+    private void CloseView()
+    {
+        viewDoctor = null;
+    }
+
+    private async Task SaveDoctor()
+    {
+        if (isEdit)
+            await DoctorService.UpdateDoctorAsync(selectedDoctor.DoctorId, selectedDoctor);
+        else
+            await DoctorService.CreateDoctorAsync(selectedDoctor);
+
+        showForm = false;
+        await LoadDoctors();
+    }
+
+    private void CancelForm()
+    {
+        showForm = false;
+    }
+}
+
+
+        
+<style>
+
+    .page {
+        padding: 20px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .header h2 {
+            font-size: 32px;
+            margin: 0;
+        }
+    .toolbar {
+        margin-top: 15px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .input {
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #d1d5db;
+    }
+
+    .btn {
+        border: none;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .primary {
+        background: #2563eb;
+        color: white;
+    }
+
+    .secondary {
+        background: #e0ecff;
+        color: #2563eb;
+    }
+
+    .info {
+        background: #dbf4ff;
+        color: #0369a1;
+    }
+
+    .success {
+        background: #16a34a;
+        color: white;
+    }
+
+    .light {
+        background: #f3f4f6;
+    }
+
+    .card {
+        margin-top: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 18px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .table th, .table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .active {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .inactive {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .mini {
+        padding: 6px 10px;
+        border-radius: 8px;
+        border: none;
+        margin-right: 5px;
+    }
+
+    .view {
+        background: #dbeafe;
+    }
+
+    .edit {
+        background: #fef3c7;
+    }
+
+    .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-box {
+        background: white;
+        padding: 25px;
+        border-radius: 16px;
+        width: 400px;
+    }
+
+    @@media(max-width: 768px) {
+        .grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .form-field label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+    .validation-message {
+        color: #dc2626;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 2px;
+    }
+
+    .input.invalid,
+    .input.input-validation-error {
+        border-color: #dc2626;
+        background: #fff7f7;
+    }
+
+    .input.valid {
+        border-color: #16a34a;
+    }
+
+</style>

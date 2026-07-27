@@ -1,0 +1,32 @@
+@page "/error"
+@using System.Diagnostics
+
+<PageTitle>Error</PageTitle>
+
+<h1 class="text-danger">Something went wrong</h1>
+
+<h2 class="text-danger">
+    An error occurred while processing your request.
+</h2>
+
+@if (ShowRequestId)
+{
+    <p>
+        <strong>Error Reference:</strong> <code>@RequestId</code>
+    </p>
+}
+
+<p>
+    Please try again later or contact the HealthApp administrator if the problem continues.
+</p>
+
+@code {
+    private string? RequestId { get; set; }
+
+    private bool ShowRequestId => !string.IsNullOrWhiteSpace(RequestId);
+
+    protected override void OnInitialized()
+    {
+        RequestId = Activity.Current?.Id;
+    }
+}

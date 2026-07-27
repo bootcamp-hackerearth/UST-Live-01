@@ -20,17 +20,17 @@ namespace HealthApp.Api.Service.Impl
         private readonly IAppointmentEventPublisher _appointmentEventPublisher;
         private readonly IDoctorLeaveRepository _doctorLeaveRepository;
         private readonly INotificationService _notificationService;
-        private readonly IDistributedCache _cache;
+        //private readonly IDistributedCache _cache;
 
         private const string AppointmentEntity = "Appointment";
 
-        private const string DoctorAvailabilityCachePrefix =
-            "appointment:doctor:availability";
+        //private const string DoctorAvailabilityCachePrefix =
+        //    "appointment:doctor:availability";
 
-        private readonly DistributedCacheEntryOptions cacheOptions = new()
-        {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-        };
+        //private readonly DistributedCacheEntryOptions cacheOptions = new()
+        //{
+        //    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+        //};
 
         public AppointmentService(
             IAppointmentRepository repo,
@@ -40,7 +40,7 @@ namespace HealthApp.Api.Service.Impl
             INotificationService notificationService,
             IAppointmentEventPublisher appointmentEventPublisher,
             IDoctorLeaveRepository doctorLeaveRepository,
-            IDistributedCache cache)
+            IDistributedCache @object)
         {
             _repo = repo;
             _patientRepository = patientRepository;
@@ -49,7 +49,7 @@ namespace HealthApp.Api.Service.Impl
             _notificationService = notificationService;
             _appointmentEventPublisher = appointmentEventPublisher;
             _doctorLeaveRepository = doctorLeaveRepository;
-            _cache = cache;
+            //_cache = cache;
         }
 
         public async Task<object> Add(AppointmentDto dto, string identityUserId)
@@ -86,17 +86,19 @@ namespace HealthApp.Api.Service.Impl
 
             await _repo.addAsync(appointment);
 
-            await RemoveDoctorAvailabilityCacheAsync(
-                appointment.DoctorId,
-                appointment.ScheduledDate);
+            //await RemoveDoctorAvailabilityCacheAsync(appointment.DoctorId,appointment.ScheduledDate);
 
-            var doctor = await _doctorRepository.getbyidAsync(dto.DoctorId);
+            var doctor = await _doctorRepository
+                .getbyidAsync(dto.DoctorId);
 
             var appointmentBookEvent = new AppointmentBookEvent
             {
                 AppointmentId = appointment.AppointmentId,
-                PatientName = patient.FullName!,
+                PatientId = patient.PatientId,
+                DoctorId = appointment.DoctorId,
+                PatientName = patient.FullName ?? "Patient",
                 DoctorName = doctor?.FullName ?? "Doctor",
+                DoctorIdentityUserId = doctor?.IdentityUserId ?? string.Empty,
                 ScheduledDate = dto.ScheduledDate,
                 TimeSlot = dto.TimeSlot
             };
@@ -115,9 +117,7 @@ namespace HealthApp.Api.Service.Impl
             var appointment = await _repo.getbyidAsync(appointmentId);
 
             if (appointment == null)
-                throw new EntityNotFoundException(
-                    AppointmentEntity,
-                    appointmentId);
+                throw new EntityNotFoundException(AppointmentEntity,appointmentId);
 
             await LoadNavigation(appointment);
 
@@ -140,9 +140,7 @@ namespace HealthApp.Api.Service.Impl
                     AppointmentEntity,
                     appointmentId);
 
-            await RemoveDoctorAvailabilityCacheAsync(
-                saved.DoctorId,
-                saved.ScheduledDate);
+            //await RemoveDoctorAvailabilityCacheAsync(saved.DoctorId,saved.ScheduledDate);
 
             await SendAppointmentCancelledNotification(saved, reason);
 
@@ -160,9 +158,7 @@ namespace HealthApp.Api.Service.Impl
                     AppointmentEntity,
                     appointmentId);
 
-            await RemoveDoctorAvailabilityCacheAsync(
-                saved.DoctorId,
-                saved.ScheduledDate);
+            //await RemoveDoctorAvailabilityCacheAsync(saved.DoctorId,saved.ScheduledDate);
 
             await SendAppointmentConfirmedNotification(saved);
 
@@ -180,9 +176,7 @@ namespace HealthApp.Api.Service.Impl
                     AppointmentEntity,
                     appointmentId);
 
-            await RemoveDoctorAvailabilityCacheAsync(
-                saved.DoctorId,
-                saved.ScheduledDate);
+            //await RemoveDoctorAvailabilityCacheAsync(saved.DoctorId,saved.ScheduledDate);
 
             return _mapper.Map<AppointmentDto>(saved);
         }
@@ -193,22 +187,22 @@ namespace HealthApp.Api.Service.Impl
         {
             var selectedDate = date.Date;
 
-            var cacheKey = GetDoctorAvailabilityCacheKey(doctorId,selectedDate);
+            //var cacheKey = GetDoctorAvailabilityCacheKey(doctorId,selectedDate);
 
-            var cachedValue = await _cache.GetStringAsync(cacheKey);
+            ////var cachedValue = await _cache.GetStringAsync(cacheKey);
 
-            if (!string.IsNullOrWhiteSpace(cachedValue))
-            {
-                var cachedResponse =
-                    JsonSerializer.Deserialize<DoctorAvailabilityResponseDto>(cachedValue);
+            //if (!string.IsNullOrWhiteSpace(cachedValue))
+            //{
+            //    var cachedResponse =
+            //        JsonSerializer.Deserialize<DoctorAvailabilityResponseDto>(cachedValue);
 
-                if (cachedResponse != null)
-                {
-                    return cachedResponse;
-                }
+            //    if (cachedResponse != null)
+            //    {
+            //        return cachedResponse;
+            //    }
 
-                await _cache.RemoveAsync(cacheKey);
-            }
+            //    await _cache.RemoveAsync(cacheKey);
+            //}
 
             var allSlots = new List<string>
             {
@@ -271,10 +265,7 @@ namespace HealthApp.Api.Service.Impl
 
             var serializedResponse = JsonSerializer.Serialize(response);
 
-            await _cache.SetStringAsync(
-                cacheKey,
-                serializedResponse,
-                cacheOptions);
+            //await _cache.SetStringAsync(cacheKey,serializedResponse,cacheOptions);
 
             return response;
         }
@@ -450,22 +441,22 @@ namespace HealthApp.Api.Service.Impl
             });
         }
 
-        private static string GetDoctorAvailabilityCacheKey(
-            int doctorId,
-            DateTime date)
-        {
-            return $"{DoctorAvailabilityCachePrefix}:{doctorId}:{date.Date:yyyyMMdd}";
-        }
+        //private static string GetDoctorAvailabilityCacheKey(
+        //    int doctorId,
+        //    DateTime date)
+        //{
+        //    return $"{DoctorAvailabilityCachePrefix}:{doctorId}:{date.Date:yyyyMMdd}";
+        //}
 
-        private async Task RemoveDoctorAvailabilityCacheAsync(
-            int doctorId,
-            DateTime date)
-        {
-            var cacheKey = GetDoctorAvailabilityCacheKey(
-                doctorId,
-                date);
+        //private async Task RemoveDoctorAvailabilityCacheAsync(
+        //    int doctorId,
+        //    DateTime date)
+        //{
+        //    var cacheKey = GetDoctorAvailabilityCacheKey(
+        //        doctorId,
+        //        date);
 
-            await _cache.RemoveAsync(cacheKey);
-        }
+        //    await _cache.RemoveAsync(cacheKey);
+        //}
     }
 }

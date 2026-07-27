@@ -1,0 +1,14 @@
+﻿using HealthApp.Shared.Dto;
+
+namespace HealthApp.Admin.Services.Interface
+{
+    public interface IDoctorLeaveService
+    {
+        Task<PagedResponse<DoctorLeaveDto>> GetAllDoctorLeavesAsync(
+            int pageNumber,
+            int pageSize);
+
+        Task<List<DoctorLeaveDto>> GetDoctorLeavesAsync(int doctorId);
+
+    }
+}

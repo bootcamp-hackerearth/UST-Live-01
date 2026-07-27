@@ -9,7 +9,7 @@ import { Patient } from '../models/patient/patient.model';
 })
 export class PatientService {
 
-  private readonly baseUrl = 'http://localhost:5066/api/PatientApi';
+  private readonly baseUrl = '/api/PatientApi';
 
   constructor(private readonly http: HttpClient) {}
 

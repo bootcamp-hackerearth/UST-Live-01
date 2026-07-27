@@ -1,0 +1,40 @@
+﻿@using HealthApp.Admin.Pages
+@using Microsoft.AspNetCore.Components.Routing
+@using HealthApp.Admin.Layout
+@using HealthApp.Admin.Services.Interface
+
+@inject NavigationManager Navigation
+@inject IAuthService AuthService
+
+@if (!_ready)
+{
+    <div>Loading...</div>
+}
+else
+{
+    <Router AppAssembly="@typeof(App).Assembly">
+
+        <Found Context="routeData">
+            
+            <RouteView RouteData="@routeData"                       
+                       DefaultLayout="@typeof(MainLayout)" />
+            
+        </Found>
+
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <h1>Page Not Found</h1>
+            </LayoutView>
+        </NotFound>
+    </Router>
+}
+
+@code {
+    private bool _ready;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.InitializeAsync();
+        _ready = true;
+    }
+}

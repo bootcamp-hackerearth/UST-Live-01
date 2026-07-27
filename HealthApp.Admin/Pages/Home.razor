@@ -1,0 +1,293 @@
+@page "/"
+
+@using HealthApp.Admin.Services.Interface
+
+@inject IDoctorService DoctorService
+@inject IPatientService PatientService
+@inject IAppointmentService AppointmentService
+
+<PageTitle>HealthApp Dashboard</PageTitle>
+
+<div class="dashboard">
+
+
+    <div class="hero">
+        <div>
+            <span class="badge">HealthApp Administration</span>
+            <h2>Welcome to Admin Portal</h2>
+            <p>
+                Manage doctors, patients, appointments and system data efficiently
+                using a centralized control dashboard.
+            </p>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="card blue">
+            <div class="card-top">
+                <span>Doctors</span>
+            </div>
+            <h3>@doctorCount</h3>
+            <p>Registered specialists in system</p>
+        </div>
+
+        <div class="card purple">
+            <div class="card-top">
+                <span>Patients</span>
+            </div>
+            <h3>@patientCount</h3>
+            <p>Total patient records available</p>
+        </div>
+
+        <div class="card green">
+            <div class="card-top">
+                <span>Appointments</span>
+            </div>
+            <h3>@appointmentCount</h3>
+            <p>Upcoming scheduled visits</p>
+        </div>
+    </div>
+
+    <div class="grid">
+
+        <div class="panel">
+            <h3>Quick Access</h3>
+
+            <div class="list">
+                <div class="row">
+                    <div>
+                        <strong>Doctors Management</strong>
+                        <span>Manage doctor profiles and specialization</span>
+                    </div>
+                    <a href="doctors">Open</a>
+                </div>
+
+                <div class="row">
+                    <div>
+                        <strong>Patients Records</strong>
+                        <span>View and manage patient details</span>
+                    </div>
+                    <a href="patients">Open</a>
+                </div>
+
+                <div class="row">
+                    <div>
+                        <strong>Appointments</strong>
+                        <span>Monitor schedules and bookings</span>
+                    </div>
+                    <a href="appointments">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile">
+            <h3>Administrator</h3>
+            <p>Manage account settings and personal information.</p>
+            <a href="profile">Open Profile</a>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+
+    .dashboard {
+        padding: 20px;
+        background: #f3f6fb;
+        min-height: 100vh;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        .top-bar h1 {
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+    .top-actions {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+
+        .top-actions a {
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+    .logout {
+        background: #ef4444;
+        border: none;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .hero {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        margin-bottom: 20px;
+    }
+
+    .badge {
+        background: #e0ecff;
+        color: #2563eb;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .hero h2 {
+        margin-top: 10px;
+        font-size: 28px;
+    }
+
+    .hero p {
+        color: #64748b;
+        margin-top: 8px;
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        background: white;
+        padding: 20px;
+        border-radius: 18px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+
+    .card-top {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .card h3 {
+        font-size: 28px;
+        margin: 0;
+    }
+
+    .card p {
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    .blue {
+        border-top: 4px solid #2563eb;
+    }
+
+    .purple {
+        border-top: 4px solid #7c3aed;
+    }
+
+    .green {
+        border-top: 4px solid #16a34a;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 15px;
+    }
+
+    .panel {
+        background: white;
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+        .panel h3 {
+            margin-bottom: 15px;
+        }
+    .row {
+        display: flex;
+        justify-content: space-between;
+        background: #f8fafc;
+        padding: 14px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+    }
+
+        .row strong {
+            display: block;
+        }
+
+        .row span {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .row a {
+            text-decoration: none;
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+    .profile {
+        background: white;
+        padding: 20px;
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+        .profile p {
+            color: #64748b;
+            margin-top: 10px;
+        }
+
+        .profile a {
+            margin-top: 15px;
+            background: #0f172a;
+            color: white;
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+    @@media (max-width: 900px) {
+        .stats {
+            grid-template-columns: 1fr;
+        }
+
+        .grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+</style>
+
+@code {
+    private int doctorCount;
+    private int patientCount;
+    private int appointmentCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        doctorCount = await DoctorService.GetDoctorCountAsync();
+        patientCount = await PatientService.GetPatientCountAsync();
+        appointmentCount = await AppointmentService.GetAppointmentCountAsync();
+    }
+}
