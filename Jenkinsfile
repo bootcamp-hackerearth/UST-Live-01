@@ -246,7 +246,7 @@ pipeline {
 
         stage('Upload Package to S3') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-deploy-creds']]) {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds-deploy']]) {
                     bat '''
                     aws s3 cp "%DEPLOY_PACKAGE%" "s3://%S3_BUCKET%/healthapp/deploy-package-%BUILD_NUMBER%.zip" --region "%AWS_REGION%"
                     if errorlevel 1 exit /b 1
@@ -257,7 +257,7 @@ pipeline {
 
         stage('Create Elastic Beanstalk Version') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-deploy-creds']]) {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds-deploy']]) {
                     bat '''
                     aws elasticbeanstalk create-application-version ^
                     --application-name "%EB_APPLICATION_NAME%" ^
@@ -273,7 +273,7 @@ pipeline {
 
         stage('Deploy to Elastic Beanstalk') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-deploy-creds']]) {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds-deploy']]) {
                     bat '''
                     aws elasticbeanstalk update-environment ^
                     --environment-name "%EB_ENVIRONMENT_NAME%" ^
@@ -287,7 +287,7 @@ pipeline {
 
         stage('Wait for Elastic Beanstalk') {
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-deploy-creds']]) {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds-deploy']]) {
                     powershell '''
                     $ErrorActionPreference = "Stop"
                     $maxChecks = 60
