@@ -1,10 +1,18 @@
-import { Component, HostListener, OnInit } from '@angular/core';
 import {
+  Component,
+  HostListener,
+  OnInit
+} from '@angular/core';
+
+import {
+  NavigationEnd,
   Router,
   RouterLink,
   RouterLinkActive,
   RouterOutlet
 } from '@angular/router';
+
+import { filter } from 'rxjs';
 
 import { TokenService } from '../../core/models/token.service';
 
@@ -21,12 +29,25 @@ import { TokenService } from '../../core/models/token.service';
 export class PatientLayout implements OnInit {
   displayName = 'Patient';
   userEmail = '';
+
   isUserMenuOpen = false;
+  isSidebarOpen = false;
 
   constructor(
     private readonly tokenService: TokenService,
     private readonly router: Router
-  ) {}
+  ) {
+    this.router.events
+      .pipe(
+        filter(
+          event => event instanceof NavigationEnd
+        )
+      )
+      .subscribe(() => {
+        this.closeSidebar();
+        this.closeUserMenu();
+      });
+  }
 
   ngOnInit(): void {
     const email =
@@ -39,11 +60,29 @@ export class PatientLayout implements OnInit {
     }
   }
 
+  toggleSidebar(event: MouseEvent): void {
+    event.stopPropagation();
+
+    this.isSidebarOpen =
+      !this.isSidebarOpen;
+
+    this.isUserMenuOpen = false;
+    this.updateBodyScroll();
+  }
+
+  closeSidebar(): void {
+    this.isSidebarOpen = false;
+    this.updateBodyScroll();
+  }
+
   toggleUserMenu(event: MouseEvent): void {
     event.stopPropagation();
 
     this.isUserMenuOpen =
       !this.isUserMenuOpen;
+
+    this.isSidebarOpen = false;
+    this.updateBodyScroll();
   }
 
   closeUserMenu(): void {
@@ -51,6 +90,9 @@ export class PatientLayout implements OnInit {
   }
 
   logout(): void {
+    this.closeSidebar();
+    this.closeUserMenu();
+
     this.tokenService.clearAuthData();
 
     this.router.navigate(['/login']);
@@ -58,10 +100,32 @@ export class PatientLayout implements OnInit {
 
   @HostListener('document:click')
   onDocumentClick(): void {
-    this.isUserMenuOpen = false;
+    this.closeUserMenu();
   }
 
-  private getFirstNameFromEmail(email: string): string {
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (window.innerWidth > 980) {
+      this.closeSidebar();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapePressed(): void {
+    this.closeSidebar();
+    this.closeUserMenu();
+  }
+
+  private updateBodyScroll(): void {
+    document.body.style.overflow =
+      this.isSidebarOpen
+        ? 'hidden'
+        : '';
+  }
+
+  private getFirstNameFromEmail(
+    email: string
+  ): string {
     const namePart =
       email.split('@')[0];
 
