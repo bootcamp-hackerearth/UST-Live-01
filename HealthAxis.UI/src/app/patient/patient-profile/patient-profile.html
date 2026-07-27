@@ -230,13 +230,49 @@
               Current Password
             </label>
 
-            <input
-              id="currentPassword"
-              type="password"
-              placeholder="Enter current password"
-              autocomplete="current-password"
-              formControlName="currentPassword"
-            />
+            <div class="password-input-wrapper">
+              <input
+                id="currentPassword"
+                [type]="
+                  isPasswordVisible('current')
+                    ? 'text'
+                    : 'password'
+                "
+                placeholder="Enter current password"
+                autocomplete="current-password"
+                formControlName="currentPassword"
+              />
+
+              <button
+                type="button"
+                class="password-visibility-button"
+                [attr.aria-label]="
+                  isPasswordVisible('current')
+                    ? 'Hide current password'
+                    : 'Show current password'
+                "
+                [attr.aria-pressed]="
+                  isPasswordVisible('current')
+                "
+                (click)="
+                  togglePasswordVisibility('current')
+                "
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"
+                  ></path>
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="3"
+                  ></circle>
+                </svg>
+              </button>
+            </div>
 
             <small class="field-error">
               @if (
@@ -255,13 +291,47 @@
               New Password
             </label>
 
-            <input
-              id="newPassword"
-              type="password"
-              placeholder="Create a strong password"
-              autocomplete="new-password"
-              formControlName="newPassword"
-            />
+            <div class="password-input-wrapper">
+              <input
+                id="newPassword"
+                [type]="
+                  isPasswordVisible('new')
+                    ? 'text'
+                    : 'password'
+                "
+                placeholder="Create a strong password"
+                autocomplete="new-password"
+                formControlName="newPassword"
+              />
+
+              <button
+                type="button"
+                class="password-visibility-button"
+                [attr.aria-label]="
+                  isPasswordVisible('new')
+                    ? 'Hide new password'
+                    : 'Show new password'
+                "
+                [attr.aria-pressed]="
+                  isPasswordVisible('new')
+                "
+                (click)="togglePasswordVisibility('new')"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"
+                  ></path>
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="3"
+                  ></circle>
+                </svg>
+              </button>
+            </div>
 
             <small class="field-error">
               @if (
@@ -280,13 +350,49 @@
               Confirm New Password
             </label>
 
-            <input
-              id="confirmPassword"
-              type="password"
-              placeholder="Re-enter new password"
-              autocomplete="new-password"
-              formControlName="confirmPassword"
-            />
+            <div class="password-input-wrapper">
+              <input
+                id="confirmPassword"
+                [type]="
+                  isPasswordVisible('confirm')
+                    ? 'text'
+                    : 'password'
+                "
+                placeholder="Re-enter new password"
+                autocomplete="new-password"
+                formControlName="confirmPassword"
+              />
+
+              <button
+                type="button"
+                class="password-visibility-button"
+                [attr.aria-label]="
+                  isPasswordVisible('confirm')
+                    ? 'Hide confirm password'
+                    : 'Show confirm password'
+                "
+                [attr.aria-pressed]="
+                  isPasswordVisible('confirm')
+                "
+                (click)="
+                  togglePasswordVisibility('confirm')
+                "
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"
+                  ></path>
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="3"
+                  ></circle>
+                </svg>
+              </button>
+            </div>
 
             <small class="field-error">
               @if (
@@ -436,6 +542,10 @@
                   Date of birth is required.
                 }
 
+                @if (dateOfBirth.errors?.['invalidDate']) {
+                  Enter a valid date of birth.
+                }
+
                 @if (dateOfBirth.errors?.['futureDate']) {
                   Date of birth cannot be in the future.
                 }
@@ -529,6 +639,15 @@
           </div>
 
         </div>
+
+        @if (editErrorMessage()) {
+          <div
+            class="edit-form-error"
+            role="alert"
+          >
+            {{ editErrorMessage() }}
+          </div>
+        }
 
         <div class="modal-actions">
 

@@ -106,7 +106,7 @@
             <div>
               <strong>Notifications</strong>
 
-              <span>
+              <span aria-live="polite">
                 {{ unreadNotificationCount() }}
                 unread
               </span>
@@ -117,7 +117,7 @@
               class="mark-all-button"
               [disabled]="
                 markAllUpdating() ||
-                unreadNotificationCount() === 0
+                !hasUnreadNotifications()
               "
               (click)="markAllNotificationsAsRead()"
             >
@@ -391,27 +391,6 @@
       </div>
 
       <div class="notification-dialog-body">
-        <!-- <div class="notification-dialog-meta">
-          <span class="notification-type">
-            {{
-              getNotificationTypeLabel(
-                notification.notificationType
-              )
-            }}
-          </span>
-
-          <span
-            class="notification-read-status"
-            [class.unread]="!notification.isRead"
-          >
-            {{
-              notification.isRead
-                ? 'Read'
-                : 'Unread'
-            }}
-          </span>
-        </div> -->
-
         @if (
           getDoctorDisplayName(notification);
           as doctorDisplayName

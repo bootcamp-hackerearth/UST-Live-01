@@ -1,7 +1,8 @@
 <aside class="sidebar">
   <a
-    routerLink="/"
+    [routerLink]="homeRoute()"
     class="brand-card"
+    (click)="requestNavigation()"
   >
     <span
       class="brand-symbol"
@@ -31,6 +32,7 @@
       <a
         [routerLink]="item.path"
         routerLinkActive="active"
+        (click)="requestNavigation()"
       >
         <span
           class="menu-icon"
@@ -133,6 +135,7 @@
     <a
       [routerLink]="contactRoute()"
       class="contact-button"
+      (click)="requestNavigation()"
     >
       <span
         class="bottom-icon"

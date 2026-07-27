@@ -128,27 +128,9 @@ export class PatientDashboard {
   }
 
   private countByStatus(status: string): number {
-    const currentTime = Date.now();
-
     return this.appointments().filter(
-      (appointment) => {
-        const normalizedStatus =
-          this.normalizeStatus(
-            appointment.status
-          );
-
-        if (normalizedStatus !== status) {
-          return false;
-        }
-
-        if (status === PENDING_STATUS) {
-          return this.getAppointmentStartValue(
-            appointment
-          ) > currentTime;
-        }
-
-        return true;
-      }
+      (appointment) =>
+        this.normalizeStatus(appointment.status) === status
     ).length;
   }
 

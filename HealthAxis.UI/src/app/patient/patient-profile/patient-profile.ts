@@ -23,6 +23,26 @@ import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 const PASSWORD_PATTERN =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
 
+const DATE_ONLY_PATTERN =
+  /^(\d{4})-(\d{2})-(\d{2})$/;
+
+type PasswordField =
+  | 'current'
+  | 'new'
+  | 'confirm';
+
+interface PasswordVisibilityState {
+  readonly current: boolean;
+  readonly new: boolean;
+  readonly confirm: boolean;
+}
+
+const HIDDEN_PASSWORDS: PasswordVisibilityState = {
+  current: false,
+  new: false,
+  confirm: false
+};
+
 @Component({
   selector: 'app-patient-profile',
   imports: [
@@ -46,7 +66,13 @@ export class PatientProfile {
   readonly successDialogMessage = signal('');
   readonly passwordSuccessMessage = signal('');
   readonly passwordErrorMessage = signal('');
+  readonly editErrorMessage = signal('');
   readonly isEditDialogOpen = signal(false);
+
+  readonly passwordVisibility =
+    signal<PasswordVisibilityState>({
+      ...HIDDEN_PASSWORDS
+    });
 
   readonly maxDate = this.formatDateForInput(new Date());
 
@@ -56,14 +82,6 @@ export class PatientProfile {
     return name
       ? name.charAt(0).toUpperCase()
       : 'P';
-  });
-
-  readonly memberSince = computed(() => {
-    const createdDate = this.patient()?.createdDate;
-
-    return createdDate
-      ? new Date(createdDate)
-      : null;
   });
 
   readonly editForm = this.formBuilder.nonNullable.group({
@@ -170,6 +188,23 @@ export class PatientProfile {
     return this.passwordForm.controls.confirmPassword;
   }
 
+  isPasswordVisible(
+    field: PasswordField
+  ): boolean {
+    return this.passwordVisibility()[field];
+  }
+
+  togglePasswordVisibility(
+    field: PasswordField
+  ): void {
+    this.passwordVisibility.update(
+      (currentState) => ({
+        ...currentState,
+        [field]: !currentState[field]
+      })
+    );
+  }
+
   loadProfile(): void {
     this.loading.set(true);
     this.errorMessage.set('');
@@ -202,11 +237,12 @@ export class PatientProfile {
 
     this.errorMessage.set('');
     this.successDialogMessage.set('');
+    this.editErrorMessage.set('');
 
     this.editForm.reset({
       fullName: currentPatient.fullName,
-      dateOfBirth: this.formatDateForInput(
-        new Date(currentPatient.dateOfBirth)
+      dateOfBirth: this.getDateInputValue(
+        currentPatient.dateOfBirth
       ),
       gender: currentPatient.gender,
       phoneNumber: currentPatient.phoneNumber,
@@ -226,15 +262,17 @@ export class PatientProfile {
     }
 
     this.isEditDialogOpen.set(false);
+    this.editErrorMessage.set('');
   }
 
   updatePatientDetails(): void {
     this.errorMessage.set('');
     this.successDialogMessage.set('');
+    this.editErrorMessage.set('');
 
     if (this.editForm.invalid) {
       this.editForm.markAllAsTouched();
-      this.errorMessage.set(
+      this.editErrorMessage.set(
         'Please correct the patient details.'
       );
       return;
@@ -261,12 +299,13 @@ export class PatientProfile {
     this.saving.set(true);
 
     this.patientService
-      .updatePatientById(currentPatient.patientId, request)
+      .updateMyProfile(request)
       .subscribe({
         next: (updatedPatient: Patient) => {
           this.patient.set(updatedPatient);
           this.saving.set(false);
           this.isEditDialogOpen.set(false);
+          this.editErrorMessage.set('');
 
           this.successDialogMessage.set(
             'Patient details updated successfully.'
@@ -275,7 +314,7 @@ export class PatientProfile {
         error: (error: unknown) => {
           this.saving.set(false);
 
-          this.errorMessage.set(
+          this.editErrorMessage.set(
             getFriendlyErrorMessage(
               error,
               'Could not update patient details.'
@@ -317,6 +356,10 @@ export class PatientProfile {
           currentPassword: '',
           newPassword: '',
           confirmPassword: ''
+        });
+
+        this.passwordVisibility.set({
+          ...HIDDEN_PASSWORDS
         });
 
         this.passwordSuccessMessage.set(
@@ -380,6 +423,23 @@ export class PatientProfile {
     return '';
   }
 
+  private getDateInputValue(
+    dateValue: string
+  ): string {
+    const localDate =
+      PatientProfile.parseDateOnly(dateValue);
+
+    if (localDate) {
+      return this.formatDateForInput(localDate);
+    }
+
+    const parsedDate = new Date(dateValue);
+
+    return Number.isNaN(parsedDate.getTime())
+      ? ''
+      : this.formatDateForInput(parsedDate);
+  }
+
   private formatDateForInput(date: Date): string {
     const year = date.getFullYear();
     const month = `${date.getMonth() + 1}`.padStart(2, '0');
@@ -395,14 +455,55 @@ export class PatientProfile {
       return null;
     }
 
-    const selectedDate = new Date(control.value);
-    const today = new Date();
+    const selectedDate =
+      PatientProfile.parseDateOnly(
+        String(control.value)
+      );
 
-    selectedDate.setHours(0, 0, 0, 0);
+    if (!selectedDate) {
+      return {
+        invalidDate: true
+      };
+    }
+
+    const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     return selectedDate > today
       ? { futureDate: true }
+      : null;
+  }
+
+  private static parseDateOnly(
+    dateValue: string
+  ): Date | null {
+    const match =
+      DATE_ONLY_PATTERN.exec(dateValue.trim());
+
+    if (!match) {
+      return null;
+    }
+
+    const [, yearText, monthText, dayText] =
+      match;
+
+    const year = Number.parseInt(yearText, 10);
+    const month = Number.parseInt(monthText, 10);
+    const day = Number.parseInt(dayText, 10);
+
+    const parsedDate = new Date(
+      year,
+      month - 1,
+      day
+    );
+
+    const isValidDate =
+      parsedDate.getFullYear() === year &&
+      parsedDate.getMonth() === month - 1 &&
+      parsedDate.getDate() === day;
+
+    return isValidDate
+      ? parsedDate
       : null;
   }
 

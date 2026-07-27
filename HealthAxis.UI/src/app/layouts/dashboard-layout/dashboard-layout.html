@@ -12,6 +12,7 @@
 
     <aside class="sidebar-area">
       <app-sidebar
+        (navigationRequested)="handleSidebarNavigation()"
         (logoutRequested)="openLogoutDialog()"
       ></app-sidebar>
 

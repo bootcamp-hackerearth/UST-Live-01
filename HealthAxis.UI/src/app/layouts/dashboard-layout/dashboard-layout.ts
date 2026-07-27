@@ -50,8 +50,14 @@ export class DashboardLayout {
     this.isSidebarClosed.set(true);
   }
 
+  handleSidebarNavigation(): void {
+    if (this.isCompactViewport()) {
+      this.closeSidebar();
+    }
+  }
+
   openLogoutDialog(): void {
-    this.closeSidebarOnCompactViewport();
+    this.handleSidebarNavigation();
     this.isLogoutDialogOpen.set(true);
   }
 
@@ -90,16 +96,15 @@ export class DashboardLayout {
       !this.wasCompactViewport
     ) {
       this.closeSidebar();
+    } else if (
+      !isCompactViewport &&
+      this.wasCompactViewport
+    ) {
+      this.isSidebarClosed.set(false);
     }
 
     this.wasCompactViewport =
       isCompactViewport;
-  }
-
-  private closeSidebarOnCompactViewport(): void {
-    if (this.isCompactViewport()) {
-      this.closeSidebar();
-    }
   }
 
   private isCompactViewport(): boolean {

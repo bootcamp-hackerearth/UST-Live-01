@@ -461,6 +461,51 @@
   font-weight: 650;
 }
 
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-input-wrapper input {
+  padding-right: 48px;
+}
+
+.password-visibility-button {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  border: none;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  color: #596782;
+  background: transparent;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.password-visibility-button:hover {
+  color: var(--purple);
+  background: var(--purple-light);
+}
+
+.password-visibility-button:focus-visible {
+  outline: 3px solid rgba(91, 61, 245, 0.16);
+  outline-offset: 1px;
+}
+
+.password-visibility-button svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .form-group input:focus,
 .form-group select:focus {
   border-color: var(--purple);
@@ -610,6 +655,18 @@
 
 .full-width {
   grid-column: 1 / -1;
+}
+
+.edit-form-error {
+  margin-top: 15px;
+  padding: 12px 14px;
+  border: 1px solid #ffc8ce;
+  border-radius: 11px;
+  color: #b42330;
+  background: #fff0f1;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 750;
 }
 
 .modal-actions {

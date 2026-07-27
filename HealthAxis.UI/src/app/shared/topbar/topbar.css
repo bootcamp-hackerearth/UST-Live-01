@@ -4,6 +4,9 @@
   --text-dark: #111c36;
   --text-muted: #596782;
 
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   display: block;
 }
 

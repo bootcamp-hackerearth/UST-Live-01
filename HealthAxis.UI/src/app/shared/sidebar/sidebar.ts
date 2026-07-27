@@ -39,6 +39,7 @@ interface SidebarMenuItem {
 export class Sidebar {
   readonly authService = inject(AuthService);
 
+  readonly navigationRequested = output<void>();
   readonly logoutRequested = output<void>();
 
   private readonly patientMenu:
@@ -113,13 +114,35 @@ export class Sidebar {
     return [];
   });
 
-  readonly contactRoute = computed(() => {
-    return this.authService.role() === 'Doctor'
-      ? '/doctor/contact-us'
-      : '/patient/contact-us';
-  });
+  readonly homeRoute = computed(() =>
+    this.getPortalRoute('dashboard')
+  );
+
+  readonly contactRoute = computed(() =>
+    this.getPortalRoute('contact-us')
+  );
+
+  requestNavigation(): void {
+    this.navigationRequested.emit();
+  }
 
   requestLogout(): void {
     this.logoutRequested.emit();
+  }
+
+  private getPortalRoute(
+    routeSegment: string
+  ): string {
+    const role = this.authService.role();
+
+    if (role === 'Doctor') {
+      return `/doctor/${routeSegment}`;
+    }
+
+    if (role === 'Patient') {
+      return `/patient/${routeSegment}`;
+    }
+
+    return '/login';
   }
 }

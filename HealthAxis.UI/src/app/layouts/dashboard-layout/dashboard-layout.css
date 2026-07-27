@@ -41,13 +41,7 @@
   z-index: 600;
   width: var(--sidebar-width);
   height: var(--viewport-height);
-
-  /*
-    This must remain visible. The collapse button is partly outside
-    the sidebar edge, so overflow: hidden was cutting it off.
-  */
   overflow: visible;
-
   border-right: 1px solid var(--border-color);
   background: #ffffff;
   box-shadow:

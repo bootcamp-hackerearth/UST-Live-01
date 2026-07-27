@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
+  computed,
   OnDestroy,
   inject,
   output,
@@ -80,6 +81,15 @@ export class Topbar implements OnDestroy {
     signal<PortalNotification[]>([]);
 
   readonly unreadNotificationCount = signal(0);
+
+  readonly hasUnreadNotifications = computed(
+    () =>
+      this.unreadNotificationCount() > 0 ||
+      this.notifications().some(
+        (notification) => !notification.isRead
+      )
+  );
+
   readonly notificationsLoading = signal(false);
   readonly notificationError = signal('');
   readonly markAllUpdating = signal(false);
@@ -210,7 +220,7 @@ export class Topbar implements OnDestroy {
   markAllNotificationsAsRead(): void {
     if (
       this.markAllUpdating() ||
-      this.unreadNotificationCount() === 0
+      !this.hasUnreadNotifications()
     ) {
       return;
     }
@@ -332,14 +342,6 @@ export class Topbar implements OnDestroy {
     return this.parseUtcDate(createdDate);
   }
 
-  getNotificationTypeLabel(
-    notificationType: string
-  ): string {
-    return notificationType
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
-      .trim();
-  }
-
   getNotificationMessage(
     notification: PortalNotification
   ): string {
@@ -386,7 +388,8 @@ export class Topbar implements OnDestroy {
   }
 
   getGreeting(): string {
-    const hour = new Date().getHours();
+    const hour =
+      this.currentTime().getHours();
 
     if (hour < 12) {
       return 'Good Morning';
@@ -721,6 +724,21 @@ export class Topbar implements OnDestroy {
       .subscribe({
         next: (notifications) => {
           this.notifications.set(notifications);
+
+          const visibleUnreadCount =
+            notifications.filter(
+              (notification) =>
+                !notification.isRead
+            ).length;
+
+          this.unreadNotificationCount.update(
+            (currentCount) =>
+              Math.max(
+                currentCount,
+                visibleUnreadCount
+              )
+          );
+
           this.notificationsLoading.set(false);
         },
         error: (error: unknown) => {
