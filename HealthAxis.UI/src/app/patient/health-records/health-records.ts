@@ -16,7 +16,10 @@ type HealthRecordFilter = 'All' | 'Final' | 'Updated';
 
 const PRINT_WINDOW_FEATURES = 'width=900,height=700';
 const PRINT_DELAY_IN_MS = 300;
+const PAGE_SIZE = 8;
 const NOT_AVAILABLE = 'Not available';
+const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_ZONE_PATTERN = /(?:z|[+-]\d{2}:\d{2})$/i;
 
 @Component({
   selector: 'app-health-records',
@@ -39,6 +42,8 @@ export class HealthRecords {
   readonly selectedRecordFilter =
     signal<HealthRecordFilter>('All');
 
+  readonly currentPage = signal(1);
+
   readonly filteredRecords = computed(() => {
     const searchValue = this.searchText()
       .trim()
@@ -60,6 +65,29 @@ export class HealthRecords {
           this.getRecordDateValue(second) -
           this.getRecordDateValue(first)
       );
+  });
+
+  readonly totalPages = computed(() => {
+    const pageCount = Math.ceil(
+      this.filteredRecords().length / PAGE_SIZE
+    );
+
+    return Math.max(pageCount, 1);
+  });
+
+  readonly pagedRecords = computed(() => {
+    const page = Math.min(
+      this.currentPage(),
+      this.totalPages()
+    );
+
+    const startIndex =
+      (page - 1) * PAGE_SIZE;
+
+    return this.filteredRecords().slice(
+      startIndex,
+      startIndex + PAGE_SIZE
+    );
   });
 
   readonly latestRecord = computed<HealthRecord | null>(() => {
@@ -91,6 +119,7 @@ export class HealthRecords {
     this.patientService.getMyHealthRecords().subscribe({
       next: (records) => {
         this.healthRecords.set(records);
+        this.currentPage.set(1);
         this.loading.set(false);
       },
       error: (error: unknown) => {
@@ -110,6 +139,7 @@ export class HealthRecords {
     const input = event.target as HTMLInputElement;
 
     this.searchText.set(input.value);
+    this.currentPage.set(1);
   }
 
   onRecordFilterChange(event: Event): void {
@@ -118,11 +148,30 @@ export class HealthRecords {
     this.selectedRecordFilter.set(
       select.value as HealthRecordFilter
     );
+
+    this.currentPage.set(1);
   }
 
   clearFilters(): void {
     this.searchText.set('');
     this.selectedRecordFilter.set('All');
+    this.currentPage.set(1);
+  }
+
+  goToPreviousPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(
+        (page) => page - 1
+      );
+    }
+  }
+
+  goToNextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(
+        (page) => page + 1
+      );
+    }
   }
 
   openRecordDetails(record: HealthRecord): void {
@@ -150,7 +199,7 @@ export class HealthRecords {
   }
 
   hasUpdated(record: HealthRecord): boolean {
-    return Boolean(record.updatedDate);
+    return Boolean(record.updatedDate?.trim());
   }
 
   getDoctorDisplayName(
@@ -180,8 +229,16 @@ export class HealthRecords {
     return value?.trim() || fallback;
   }
 
-  getCreatedDateText(record: HealthRecord): string {
-    return this.formatDateTime(record.createdAt);
+  getDisplayDate(
+    value: string | null | undefined
+  ): Date | null {
+    return this.parseDate(value);
+  }
+
+  getDisplayDateTime(
+    value: string | null | undefined
+  ): Date | null {
+    return this.parseDate(value);
   }
 
   printHealthRecord(record: HealthRecord): void {
@@ -195,6 +252,7 @@ export class HealthRecords {
       this.errorMessage.set(
         'Please allow popups to print or save the health record.'
       );
+
       return;
     }
 
@@ -204,6 +262,18 @@ export class HealthRecords {
     printWindow.document.open();
     printWindow.document.write(printableDocument);
     printWindow.document.close();
+
+    printWindow.onafterprint = (): void => {
+      printWindow.close();
+    };
+
+    printWindow.focus();
+
+    globalThis.setTimeout(() => {
+      if (!printWindow.closed) {
+        printWindow.print();
+      }
+    }, PRINT_DELAY_IN_MS);
   }
 
   private createHealthRecordDocument(
@@ -516,18 +586,6 @@ export class HealthRecords {
             </footer>
           </main>
 
-          <script>
-            window.onload = function () {
-              window.setTimeout(function () {
-                window.focus();
-                window.print();
-              }, ${PRINT_DELAY_IN_MS});
-            };
-
-            window.onafterprint = function () {
-              window.close();
-            };
-          </script>
         </body>
       </html>
     `;
@@ -650,10 +708,40 @@ export class HealthRecords {
       return null;
     }
 
-    const date =
-      value instanceof Date
-        ? value
-        : new Date(value);
+    if (value instanceof Date) {
+      return Number.isNaN(value.getTime())
+        ? null
+        : value;
+    }
+
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue) {
+      return null;
+    }
+
+    if (DATE_ONLY_PATTERN.test(trimmedValue)) {
+      const [year, month, day] = trimmedValue
+        .split('-')
+        .map(Number);
+
+      const localDate = new Date(
+        year,
+        month - 1,
+        day
+      );
+
+      return Number.isNaN(localDate.getTime())
+        ? null
+        : localDate;
+    }
+
+    const normalizedValue =
+      TIME_ZONE_PATTERN.test(trimmedValue)
+        ? trimmedValue
+        : `${trimmedValue}Z`;
+
+    const date = new Date(normalizedValue);
 
     return Number.isNaN(date.getTime())
       ? null

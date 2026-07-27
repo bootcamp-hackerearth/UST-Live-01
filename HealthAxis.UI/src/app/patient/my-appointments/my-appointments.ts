@@ -2,11 +2,16 @@ import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   computed,
   inject,
   signal
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  ActivatedRoute,
+  RouterLink
+} from '@angular/router';
 
 import {
   Appointment,
@@ -25,9 +30,23 @@ const STATUS_FILTERS = [
   'Cancelled'
 ] as const;
 
+const DATE_FILTERS = [
+  'All Dates',
+  'This Week',
+  'Custom'
+] as const;
+
 const PAGE_SIZE = 8;
-const PRINT_DELAY_IN_MS = 300;
+const PRINT_DELAY_IN_MS = 350;
 const PRINT_WINDOW_FEATURES = 'width=900,height=700';
+const CONFIRMED_CANCELLATION_CUTOFF_IN_MS =
+  2 * 60 * 60 * 1000;
+
+const CANCELLED_BY_PATIENT =
+  'Cancelled by patient';
+
+const CANCELLATION_REASON_MARKER =
+  'Reason:';
 
 const PENDING_STATUS = 'pending';
 const CONFIRMED_STATUS = 'confirmed';
@@ -35,6 +54,7 @@ const COMPLETED_STATUS = 'completed';
 const CANCELLED_STATUS = 'cancelled';
 
 type StatusFilter = typeof STATUS_FILTERS[number];
+type DateFilter = typeof DATE_FILTERS[number];
 
 @Component({
   selector: 'app-my-appointments',
@@ -53,6 +73,12 @@ export class MyAppointments {
   private readonly patientService =
     inject(PatientService);
 
+  private readonly activatedRoute =
+    inject(ActivatedRoute);
+
+  private readonly destroyRef =
+    inject(DestroyRef);
+
   readonly appointments = signal<Appointment[]>([]);
   readonly healthRecords = signal<HealthRecord[]>([]);
 
@@ -61,10 +87,18 @@ export class MyAppointments {
 
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
+  readonly cancelErrorMessage = signal('');
 
   readonly searchText = signal('');
+
   readonly selectedStatus =
     signal<StatusFilter>('All');
+
+  readonly selectedDateFilter =
+    signal<DateFilter>('All Dates');
+
+  readonly customStartDate = signal('');
+  readonly customEndDate = signal('');
 
   readonly currentPage = signal(1);
 
@@ -80,6 +114,27 @@ export class MyAppointments {
   readonly cancellationReason = signal('');
 
   readonly statusFilters = STATUS_FILTERS;
+  readonly dateFilters = DATE_FILTERS;
+
+  readonly customDateRangeError = computed(() => {
+    const startDate = this.parseLocalDate(
+      this.customStartDate()
+    );
+
+    const endDate = this.parseLocalDate(
+      this.customEndDate()
+    );
+
+    if (
+      startDate &&
+      endDate &&
+      startDate.getTime() > endDate.getTime()
+    ) {
+      return 'Start date cannot be after end date.';
+    }
+
+    return '';
+  });
 
   readonly pendingCount = computed(() =>
     this.countByStatus(PENDING_STATUS)
@@ -110,7 +165,8 @@ export class MyAppointments {
           appointment,
           selectedStatus,
           searchValue
-        )
+        ) &&
+        this.matchesDateFilter(appointment)
       )
       .sort(
         (first, second) =>
@@ -141,15 +197,13 @@ export class MyAppointments {
 
   readonly nextAppointment =
     computed<Appointment | null>(() => {
-      const today = new Date();
-
-      today.setHours(0, 0, 0, 0);
+      const currentTime = Date.now();
 
       const appointment = this.appointments()
         .filter((item) =>
           this.isUpcomingAppointment(
             item,
-            today
+            currentTime
           )
         )
         .sort(
@@ -162,8 +216,37 @@ export class MyAppointments {
     });
 
   constructor() {
+    this.applyStatusFilterFromRoute();
     this.loadAppointments();
     this.loadHealthRecords();
+  }
+
+  private applyStatusFilterFromRoute(): void {
+    this.activatedRoute.queryParamMap
+      .pipe(
+        takeUntilDestroyed(
+          this.destroyRef
+        )
+      )
+      .subscribe((parameters) => {
+        const statusParameter =
+          parameters.get('status')
+            ?.trim()
+            .toLowerCase();
+
+        const matchingStatus =
+          STATUS_FILTERS.find(
+            (status) =>
+              status.toLowerCase() ===
+              statusParameter
+          ) ?? 'All';
+
+        this.selectedStatus.set(
+          matchingStatus
+        );
+
+        this.currentPage.set(1);
+      });
   }
 
   loadAppointments(): void {
@@ -224,9 +307,44 @@ export class MyAppointments {
     this.currentPage.set(1);
   }
 
+  onDateFilterChange(event: Event): void {
+    const select =
+      event.target as HTMLSelectElement;
+
+    this.selectedDateFilter.set(
+      select.value as DateFilter
+    );
+
+    if (select.value !== 'Custom') {
+      this.customStartDate.set('');
+      this.customEndDate.set('');
+    }
+
+    this.currentPage.set(1);
+  }
+
+  onCustomStartDateChange(event: Event): void {
+    const input =
+      event.target as HTMLInputElement;
+
+    this.customStartDate.set(input.value);
+    this.currentPage.set(1);
+  }
+
+  onCustomEndDateChange(event: Event): void {
+    const input =
+      event.target as HTMLInputElement;
+
+    this.customEndDate.set(input.value);
+    this.currentPage.set(1);
+  }
+
   clearFilters(): void {
     this.searchText.set('');
     this.selectedStatus.set('All');
+    this.selectedDateFilter.set('All Dates');
+    this.customStartDate.set('');
+    this.customEndDate.set('');
     this.currentPage.set(1);
   }
 
@@ -288,6 +406,16 @@ export class MyAppointments {
   ): void {
     this.errorMessage.set('');
     this.successMessage.set('');
+    this.cancelErrorMessage.set('');
+
+    if (!this.canCancel(appointment)) {
+      this.errorMessage.set(
+        'This appointment can no longer be cancelled.'
+      );
+
+      return;
+    }
+
     this.cancelTarget.set(appointment);
     this.cancellationReason.set('');
   }
@@ -299,6 +427,7 @@ export class MyAppointments {
 
     this.cancelTarget.set(null);
     this.cancellationReason.set('');
+    this.cancelErrorMessage.set('');
   }
 
   confirmCancelAppointment(): void {
@@ -306,20 +435,26 @@ export class MyAppointments {
       this.cancelTarget();
 
     if (!appointment) {
-      this.errorMessage.set(
+      this.cancelErrorMessage.set(
         'Please select an appointment to cancel.'
       );
+
       return;
     }
 
     if (!this.canCancel(appointment)) {
-      this.errorMessage.set(
-        'Only future pending or confirmed appointments can be cancelled.'
+      this.cancelErrorMessage.set(
+        'This appointment can no longer be cancelled.'
       );
+
       return;
     }
 
+    const cancellationReason =
+      this.getCancellationReason();
+
     this.cancelling.set(true);
+    this.cancelErrorMessage.set('');
     this.errorMessage.set('');
     this.successMessage.set('');
 
@@ -330,26 +465,30 @@ export class MyAppointments {
           status:
             AppointmentStatusCode.Cancelled,
 
-          cancellationReason:
-            this.getOptionalCancellationReason()
+          cancellationReason
         }
       )
       .subscribe({
-        next: () => {
+        next: (updatedAppointment) => {
           this.cancelling.set(false);
           this.cancelTarget.set(null);
           this.cancellationReason.set('');
+          this.cancelErrorMessage.set('');
+
+          this.replaceAppointment(
+            updatedAppointment
+          );
 
           this.successMessage.set(
             'Appointment cancelled successfully.'
           );
 
-          this.loadAppointments();
+          this.adjustCurrentPage();
         },
         error: (error: unknown) => {
           this.cancelling.set(false);
 
-          this.errorMessage.set(
+          this.cancelErrorMessage.set(
             getFriendlyErrorMessage(
               error,
               'Could not cancel appointment. Please try again.'
@@ -367,14 +506,31 @@ export class MyAppointments {
         appointment.status
       );
 
-    const isCancellableStatus =
-      status === PENDING_STATUS ||
-      status === CONFIRMED_STATUS;
+    const appointmentStart =
+      this.getAppointmentStartDateTime(
+        appointment
+      );
 
-    return (
-      isCancellableStatus &&
-      !this.isPastAppointment(appointment)
-    );
+    if (!appointmentStart) {
+      return false;
+    }
+
+    const currentTime = Date.now();
+    const appointmentStartTime =
+      appointmentStart.getTime();
+
+    if (status === PENDING_STATUS) {
+      return appointmentStartTime >
+        currentTime;
+    }
+
+    if (status === CONFIRMED_STATUS) {
+      return appointmentStartTime >
+        currentTime +
+          CONFIRMED_CANCELLATION_CUTOFF_IN_MS;
+    }
+
+    return false;
   }
 
   getAppointmentStatusText(
@@ -847,42 +1003,27 @@ export class MyAppointments {
       this.errorMessage.set(
         popupErrorMessage
       );
+
       return;
     }
 
-    const parser = new DOMParser();
-
-    const parsedDocument =
-      parser.parseFromString(
-        printContent,
-        'text/html'
-      );
-
-    const documentElement =
-      printWindow.document.importNode(
-        parsedDocument.documentElement,
-        true
-      );
-
-    printWindow.document.replaceChild(
-      documentElement,
-      printWindow.document.documentElement
+    printWindow.document.open();
+    printWindow.document.write(
+      printContent
     );
+    printWindow.document.close();
 
-    printWindow.onafterprint = () => {
+    printWindow.onafterprint = (): void => {
       printWindow.close();
     };
 
     printWindow.focus();
 
-    globalThis.setTimeout(
-      () => {
-        if (!printWindow.closed) {
-          printWindow.print();
-        }
-      },
-      PRINT_DELAY_IN_MS
-    );
+    globalThis.setTimeout(() => {
+      if (!printWindow.closed) {
+        printWindow.print();
+      }
+    }, PRINT_DELAY_IN_MS);
   }
 
   private createPrintableDocument(
@@ -1158,24 +1299,72 @@ export class MyAppointments {
     `;
   }
 
-  private getOptionalCancellationReason():
-    string | null {
+  private getCancellationReason(): string {
     const reason =
       this.cancellationReason().trim();
 
-    return reason || null;
+    if (!reason) {
+      return CANCELLED_BY_PATIENT;
+    }
+
+    return `${CANCELLED_BY_PATIENT}. ` +
+      `${CANCELLATION_REASON_MARKER} ${reason}`;
+  }
+
+  private replaceAppointment(
+    updatedAppointment: Appointment
+  ): void {
+    this.appointments.update(
+      (currentAppointments) =>
+        currentAppointments.map(
+          (appointment) =>
+            appointment.appointmentId ===
+              updatedAppointment.appointmentId
+              ? updatedAppointment
+              : appointment
+        )
+    );
+
+    this.selectedAppointment.update(
+      (appointment) =>
+        appointment?.appointmentId ===
+          updatedAppointment.appointmentId
+          ? updatedAppointment
+          : appointment
+    );
+  }
+
+  private adjustCurrentPage(): void {
+    this.currentPage.set(
+      Math.min(
+        this.currentPage(),
+        this.totalPages()
+      )
+    );
   }
 
   private countByStatus(
     status: string
   ): number {
     return this.appointments()
-      .filter(
-        (appointment) =>
+      .filter((appointment) => {
+        const normalizedStatus =
           this.normalizeStatus(
             appointment.status
-          ) === status
-      )
+          );
+
+        if (normalizedStatus !== status) {
+          return false;
+        }
+
+        if (status === PENDING_STATUS) {
+          return !this.isPastAppointment(
+            appointment
+          );
+        }
+
+        return true;
+      })
       .length;
   }
 
@@ -1189,10 +1378,20 @@ export class MyAppointments {
         appointment.status
       );
 
-    const matchesStatus =
+    const statusMatches =
       status === 'All' ||
       normalizedStatus ===
         status.toLowerCase();
+
+    const excludesPastPending =
+      status === 'Pending' &&
+      this.isPastAppointment(
+        appointment
+      );
+
+    const matchesStatus =
+      statusMatches &&
+      !excludesPastPending;
 
     const searchableText = [
       appointment.doctorName,
@@ -1221,6 +1420,99 @@ export class MyAppointments {
     );
   }
 
+  private matchesDateFilter(
+    appointment: Appointment
+  ): boolean {
+    const dateFilter =
+      this.selectedDateFilter();
+
+    if (dateFilter === 'All Dates') {
+      return true;
+    }
+
+    const appointmentDate =
+      this.parseLocalDate(
+        appointment.scheduledDate
+      );
+
+    if (!appointmentDate) {
+      return false;
+    }
+
+    appointmentDate.setHours(0, 0, 0, 0);
+
+    if (dateFilter === 'This Week') {
+      const weekStart =
+        this.getCurrentWeekStart();
+
+      const weekEnd =
+        new Date(weekStart);
+
+      weekEnd.setDate(
+        weekEnd.getDate() + 6
+      );
+
+      weekEnd.setHours(23, 59, 59, 999);
+
+      return (
+        appointmentDate >= weekStart &&
+        appointmentDate <= weekEnd
+      );
+    }
+
+    const startDate =
+      this.parseLocalDate(
+        this.customStartDate()
+      );
+
+    const endDate =
+      this.parseLocalDate(
+        this.customEndDate()
+      );
+
+    if (
+      startDate &&
+      endDate &&
+      startDate > endDate
+    ) {
+      return true;
+    }
+
+    if (
+      startDate &&
+      appointmentDate < startDate
+    ) {
+      return false;
+    }
+
+    if (endDate) {
+      endDate.setHours(23, 59, 59, 999);
+
+      if (appointmentDate > endDate) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private getCurrentWeekStart(): Date {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const daysSinceMonday =
+      dayOfWeek === 0
+        ? 6
+        : dayOfWeek - 1;
+
+    today.setDate(
+      today.getDate() - daysSinceMonday
+    );
+
+    today.setHours(0, 0, 0, 0);
+
+    return today;
+  }
+
   private isPastAppointment(
     appointment: Appointment
   ): boolean {
@@ -1229,19 +1521,22 @@ export class MyAppointments {
         appointment
       );
 
-    return (
-      appointmentStart.getTime() <
-      Date.now()
-    );
+    return !appointmentStart ||
+      appointmentStart.getTime() <=
+        Date.now();
   }
 
   private getAppointmentStartDateTime(
     appointment: Appointment
-  ): Date {
+  ): Date | null {
     const appointmentDate =
-      new Date(
+      this.parseLocalDate(
         appointment.scheduledDate
       );
+
+    if (!appointmentDate) {
+      return null;
+    }
 
     const timeParts =
       /^(\d{1,2}):(\d{2})\s*(AM|PM)/i.exec(
@@ -1263,6 +1558,15 @@ export class MyAppointments {
     const minutes = Number(timeParts[2]);
     const period =
       timeParts[3].toUpperCase();
+
+    if (
+      hours < 1 ||
+      hours > 12 ||
+      minutes < 0 ||
+      minutes > 59
+    ) {
+      return null;
+    }
 
     if (
       period === 'PM' &&
@@ -1290,51 +1594,91 @@ export class MyAppointments {
 
   private isUpcomingAppointment(
     appointment: Appointment,
-    today: Date
+    currentTime: number
   ): boolean {
-    const appointmentDate =
-      new Date(
-        appointment.scheduledDate
-      );
-
-    appointmentDate.setHours(
-      0,
-      0,
-      0,
-      0
-    );
-
     const status =
       this.normalizeStatus(
         appointment.status
       );
 
-    return (
-      appointmentDate >= today &&
-      status !== CANCELLED_STATUS &&
-      status !== COMPLETED_STATUS
+    const isActiveStatus =
+      status === PENDING_STATUS ||
+      status === CONFIRMED_STATUS;
+
+    if (!isActiveStatus) {
+      return false;
+    }
+
+    const appointmentStart =
+      this.getAppointmentStartDateTime(
+        appointment
+      );
+
+    return Boolean(
+      appointmentStart &&
+      appointmentStart.getTime() >=
+        currentTime
     );
   }
 
   private getAppointmentDateValue(
     appointment: Appointment
   ): number {
-    const dateValue =
-      new Date(
-        appointment.scheduledDate
-      ).getTime();
+    return this
+      .getAppointmentStartDateTime(
+        appointment
+      )
+      ?.getTime() ?? 0;
+  }
 
-    return Number.isNaN(dateValue)
-      ? 0
-      : dateValue;
+  private parseLocalDate(
+    value: string | null | undefined
+  ): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    const dateParts =
+      /^(\d{4})-(\d{2})-(\d{2})/.exec(
+        value.trim()
+      );
+
+    if (!dateParts) {
+      const parsedDate =
+        new Date(value);
+
+      return Number.isNaN(
+        parsedDate.getTime()
+      )
+        ? null
+        : parsedDate;
+    }
+
+    const year = Number(dateParts[1]);
+    const month = Number(dateParts[2]);
+    const day = Number(dateParts[3]);
+
+    const parsedDate =
+      new Date(year, month - 1, day);
+
+    if (
+      parsedDate.getFullYear() !== year ||
+      parsedDate.getMonth() !==
+        month - 1 ||
+      parsedDate.getDate() !== day
+    ) {
+      return null;
+    }
+
+    return parsedDate;
   }
 
   private normalizeStatus(
-    status: string
+    status: string | null | undefined
   ): string {
     return status
-      .trim()
-      .toLowerCase();
+      ?.trim()
+      .toLowerCase() ?? '';
   }
 
   private formatDate(
@@ -1388,7 +1732,11 @@ export class MyAppointments {
     const date =
       value instanceof Date
         ? value
-        : new Date(value);
+        : this.parseLocalDate(value);
+
+    if (!date) {
+      return null;
+    }
 
     return Number.isNaN(
       date.getTime()

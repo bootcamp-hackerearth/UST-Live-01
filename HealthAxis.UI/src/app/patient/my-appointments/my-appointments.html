@@ -83,7 +83,10 @@
 
   <section class="content-card toolbar-card">
     <div class="search-field">
-      <label for="appointmentSearch">Search Appointments</label>
+      <label for="appointmentSearch">
+        Search Appointments
+      </label>
+
       <div class="search-input-wrapper">
         <span class="search-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24">
@@ -91,11 +94,12 @@
             <path d="M20 20l-4-4"></path>
           </svg>
         </span>
+
         <input
           id="appointmentSearch"
           type="search"
           maxlength="80"
-          placeholder="Doctor, specialisation, date, status, or appointment ID"
+          placeholder="Doctor, date, status, or appointment ID"
           [value]="searchText()"
           (input)="onSearchInput($event)"
         />
@@ -103,21 +107,89 @@
     </div>
 
     <div class="status-field">
-      <label for="statusFilter">Status</label>
+      <label for="statusFilter">
+        Status
+      </label>
+
       <select
         id="statusFilter"
         [value]="selectedStatus()"
         (change)="onStatusChange($event)"
       >
         @for (status of statusFilters; track status) {
-          <option [value]="status">{{ status }}</option>
+          <option [value]="status">
+            {{ status }}
+          </option>
         }
       </select>
     </div>
 
-    <button type="button" class="clear-button" (click)="clearFilters()">
+    <div class="date-field">
+      <label for="dateFilter">
+        Date
+      </label>
+
+      <select
+        id="dateFilter"
+        [value]="selectedDateFilter()"
+        (change)="onDateFilterChange($event)"
+      >
+        @for (dateFilter of dateFilters; track dateFilter) {
+          <option [value]="dateFilter">
+            {{ dateFilter }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <button
+      type="button"
+      class="clear-button"
+      (click)="clearFilters()"
+    >
       Clear Filters
     </button>
+
+    @if (selectedDateFilter() === 'Custom') {
+      <div class="custom-date-range">
+        <div class="date-field">
+          <label for="customStartDate">
+            From Date
+          </label>
+
+          <input
+            id="customStartDate"
+            type="date"
+            [value]="customStartDate()"
+            [max]="customEndDate()"
+            (change)="onCustomStartDateChange($event)"
+          />
+        </div>
+
+        <div class="date-field">
+          <label for="customEndDate">
+            To Date
+          </label>
+
+          <input
+            id="customEndDate"
+            type="date"
+            [value]="customEndDate()"
+            [min]="customStartDate()"
+            (change)="onCustomEndDateChange($event)"
+          />
+        </div>
+
+        @if (customDateRangeError()) {
+          <div
+            class="date-range-error"
+            role="alert"
+          >
+            {{ customDateRangeError() }}
+          </div>
+        }
+      </div>
+    }
   </section>
 
   <section class="content-card next-appointment-card">
@@ -507,7 +579,7 @@
       <textarea
         id="cancelReason"
         rows="4"
-        maxlength="200"
+        maxlength="150"
         placeholder="Add a reason only when needed"
         [value]="cancellationReason()"
         (input)="onCancellationReasonInput($event)"
@@ -516,6 +588,15 @@
       <small class="helper-text">
         The reason is optional and may be left empty.
       </small>
+
+      @if (cancelErrorMessage()) {
+        <div
+          class="cancel-error"
+          role="alert"
+        >
+          {{ cancelErrorMessage() }}
+        </div>
+      }
 
       <div class="modal-actions">
         <button

@@ -82,7 +82,7 @@
       <div>
         <strong>
           @if (latestRecord()) {
-            {{ latestRecord()?.visitDate | date: 'dd MMM yyyy' }}
+            {{ getDisplayDate(latestRecord()?.visitDate) | date: 'dd MMM yyyy' }}
           } @else {
             No Visit
           }
@@ -237,13 +237,13 @@
 
             <tbody>
               @for (
-                record of filteredRecords();
+                record of pagedRecords();
                 track getRecordId(record)
               ) {
                 <tr>
                   <td>
                     <strong>
-                      {{ record.visitDate | date: 'dd MMM yyyy' }}
+                      {{ getDisplayDate(record.visitDate) | date: 'dd MMM yyyy' }}
                     </strong>
 
                     <span>
@@ -276,11 +276,11 @@
                   <td>
                     @if (record.createdAt) {
                       <strong>
-                        {{ record.createdAt | date: 'dd MMM yyyy' }}
+                        {{ getDisplayDateTime(record.createdAt) | date: 'dd MMM yyyy' }}
                       </strong>
 
                       <span>
-                        {{ record.createdAt | date: 'hh:mm a' }}
+                        {{ getDisplayDateTime(record.createdAt) | date: 'hh:mm a' }}
                       </span>
                     } @else {
                       Not available
@@ -311,6 +311,32 @@
           </table>
 
         </div>
+
+        @if (totalPages() > 1) {
+          <div class="pagination-row">
+            <button
+              type="button"
+              class="page-button"
+              [disabled]="currentPage() === 1"
+              (click)="goToPreviousPage()"
+            >
+              Previous
+            </button>
+
+            <span>
+              Page {{ currentPage() }} of {{ totalPages() }}
+            </span>
+
+            <button
+              type="button"
+              class="page-button"
+              [disabled]="currentPage() === totalPages()"
+              (click)="goToNextPage()"
+            >
+              Next
+            </button>
+          </div>
+        }
       }
 
     </section>
@@ -324,15 +350,6 @@
       type="button"
       class="record-dialog-backdrop-button"
       aria-label="Close health record details"
-      style="
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        padding: 0;
-        border: 0;
-        background: transparent;
-      "
       (click)="closeHealthRecordDetails()"
     ></button>
 
@@ -416,7 +433,7 @@
         <article>
           <span>Visit Date</span>
           <strong>
-            {{ record.visitDate | date: 'fullDate' }}
+            {{ getDisplayDate(record.visitDate) | date: 'fullDate' }}
           </strong>
         </article>
 
@@ -425,7 +442,7 @@
 
           <strong>
             @if (record.createdAt) {
-              {{ record.createdAt | date: 'dd MMM yyyy, hh:mm a' }}
+              {{ getDisplayDateTime(record.createdAt) | date: 'dd MMM yyyy, hh:mm a' }}
             } @else {
               Not available
             }
@@ -437,7 +454,7 @@
 
           <strong>
             @if (record.updatedDate) {
-              {{ record.updatedDate | date: 'dd MMM yyyy, hh:mm a' }}
+              {{ getDisplayDateTime(record.updatedDate) | date: 'dd MMM yyyy, hh:mm a' }}
             } @else {
               Not updated
             }
@@ -450,7 +467,7 @@
         <div class="updated-note">
           This record was last updated on
           <strong>
-            {{ record.updatedDate | date: 'medium' }}
+            {{ getDisplayDateTime(record.updatedDate) | date: 'medium' }}
           </strong>.
         </div>
       }

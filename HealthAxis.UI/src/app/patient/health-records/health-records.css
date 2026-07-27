@@ -508,6 +508,40 @@ tbody td > span:not(.status-badge) {
   cursor: pointer;
 }
 
+
+.pagination-row {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.page-button {
+  min-width: 105px;
+  min-height: 41px;
+  padding: 0 15px;
+  border: 1px solid #dcd5ff;
+  border-radius: 10px;
+  color: var(--purple);
+  background: var(--purple-light);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.page-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination-row span {
+  color: var(--text-dark);
+  font-size: 11px;
+  font-weight: 850;
+}
+
 /* Dialog */
 
 .record-dialog-backdrop {
@@ -519,6 +553,17 @@ tbody td > span:not(.status-badge) {
   place-items: center;
   background: rgba(17, 28, 54, 0.58);
   backdrop-filter: blur(5px);
+}
+
+.record-dialog-backdrop-button {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
 }
 
 .record-dialog {
@@ -744,8 +789,13 @@ tbody td > span:not(.status-badge) {
     flex-direction: column;
   }
 
+  .record-filter,
   .clear-search-button {
     width: 100%;
+  }
+
+  .pagination-row {
+    flex-wrap: wrap;
   }
 
   .document-actions {

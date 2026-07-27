@@ -266,21 +266,24 @@ textarea {
 .toolbar-card {
   display: grid;
   grid-template-columns:
-    minmax(0, 1fr)
-    220px
+    minmax(260px, 1fr)
+    180px
+    180px
     140px;
   gap: 14px;
   align-items: end;
 }
 
 .search-field,
-.status-field {
+.status-field,
+.date-field {
   display: grid;
   gap: 8px;
 }
 
 .search-field label,
 .status-field label,
+.date-field label,
 .cancel-modal label {
   color: #2f4665;
   font-size: 12px;
@@ -323,6 +326,8 @@ textarea {
 }
 
 .status-field select,
+.date-field select,
+.date-field input,
 .clear-button {
   height: 50px;
   border-radius: 12px;
@@ -330,7 +335,10 @@ textarea {
   font-weight: 750;
 }
 
-.status-field select {
+.status-field select,
+.date-field select,
+.date-field input {
+  width: 100%;
   padding: 0 14px;
   border: 1px solid #cbd5e1;
   outline: none;
@@ -338,10 +346,35 @@ textarea {
   background: #fafbfe;
 }
 
-.status-field select:focus {
+.status-field select:focus,
+.date-field select:focus,
+.date-field input:focus {
   border-color: var(--primary-color);
   box-shadow:
     0 0 0 3px rgba(91, 61, 245, 0.1);
+}
+
+.custom-date-range {
+  grid-column: 1 / -1;
+  padding: 14px;
+  border: 1px solid var(--primary-border);
+  border-radius: 14px;
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  background: #faf9ff;
+}
+
+.date-range-error {
+  grid-column: 1 / -1;
+  padding: 10px 12px;
+  border: 1px solid var(--danger-border);
+  border-radius: 10px;
+  color: #a71d29;
+  background: var(--danger-light);
+  font-size: 11px;
+  font-weight: 750;
 }
 
 .clear-button {
@@ -824,6 +857,18 @@ textarea {
   font-weight: 650;
 }
 
+.cancel-error {
+  margin-top: 12px;
+  padding: 11px 13px;
+  border: 1px solid var(--danger-border);
+  border-radius: 10px;
+  color: #a71d29;
+  background: var(--danger-light);
+  font-size: 11px;
+  line-height: 1.5;
+  font-weight: 750;
+}
+
 .modal-actions {
   margin-top: 18px;
   display: flex;
@@ -866,7 +911,12 @@ textarea {
   }
 
   .toolbar-card {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .search-field {
+    grid-column: 1 / -1;
   }
 
   .clear-button {
@@ -895,11 +945,18 @@ textarea {
   .toolbar-card,
   .next-appointment-grid,
   .details-grid,
-  .cancel-details {
+  .cancel-details,
+  .custom-date-range {
     grid-template-columns: 1fr;
   }
 
-  .clear-button {
+  .search-field,
+  .clear-button,
+  .custom-date-range {
+    grid-column: auto;
+  }
+
+  .date-range-error {
     grid-column: auto;
   }
 
