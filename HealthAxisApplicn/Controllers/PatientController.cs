@@ -104,6 +104,24 @@ namespace HealthAxisApplicn.Controllers
             });
         }
 
+        [HttpGet("profile")]
+        [Authorize(Roles = "Patient")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = User.FindFirst(
+                System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var patient = await service.GetByUserIdAsync(userId);
+
+            if (patient == null)
+                return NotFound();
+
+            return Ok(patient);
+        }
+
         [HttpGet("doctor/patient/{patientId:int}")]
         [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> GetPatientDetails(int patientId)

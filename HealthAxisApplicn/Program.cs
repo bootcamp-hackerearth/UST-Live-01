@@ -10,18 +10,17 @@ using HealthAxisApplicn.Services.Impl;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
 using Serilog.Debugging;
-using Serilog.Sinks.Elasticsearch;
 using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -29,34 +28,19 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 SelfLog.Enable(msg => Console.WriteLine(msg));
+
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Host.UseSerilog((context, services, configuration) =>
 {
     configuration.ReadFrom.Configuration(context.Configuration)
-
         .ReadFrom.Services(services)
-
         .Enrich.FromLogContext()
-
         .WriteTo.Console()
-
         .WriteTo.File(
             "logs/healthaxis-.log",
             rollingInterval: RollingInterval.Day,
-            retainedFileCountLimit: 7)
-
-        .WriteTo.Elasticsearch(
-            new ElasticsearchSinkOptions(
-                new Uri("https://localhost:9200"))
-            {
-                AutoRegisterTemplate = true,
-                IndexFormat = "healthaxis-logs-{0:yyyy.MM}",
-
-                ModifyConnectionSettings = x => x.BasicAuthentication(
-                            "elastic",
-                            "tGar3TbjGsaZW0+ZjJSv")
-
-            });
+            retainedFileCountLimit: 7);
 });
 
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -68,9 +52,10 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     });
+
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddDbContext<AppDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("DbCon"));
@@ -85,7 +70,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequireLowercase = true;
 
-}).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+}).AddEntityFrameworkStores<AppDbContext>()
+  .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -127,12 +113,12 @@ builder.Services.AddAuthentication(options =>
         RoleClaimType = ClaimTypes.Role
     };
 });
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOrPatient", policy =>
         policy.RequireRole("Admin", "Patient"));
 });
-
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -152,18 +138,13 @@ builder.Services.AddSwaggerGen(options =>
         Description = "Enter 'Bearer {token}'"
     });
 
-
     options.AddSecurityRequirement(document =>
-     new OpenApiSecurityRequirement
-     {
-         [new OpenApiSecuritySchemeReference("Bearer",
-
-             document)] = new List<string>()
-     });
-
+        new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference("Bearer", document)]
+                = new List<string>()
+        });
 });
-
-
 
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
@@ -174,12 +155,16 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Services.AddHostedService<HeartbeatService>();
+
+builder.Services.AddStackExchangeRedisCache(options =>
+    options.Configuration = "localhost:6379");
+
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MappingProfile>();
 });
-
 
 builder.Services.AddCors(options =>
 {
@@ -187,9 +172,9 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                    "https://localhost:7235",   
-                    "http://localhost:55799",   
-                    "http://localhost:4200"     
+                    "https://localhost:7235",
+                    "http://localhost:55799",
+                    "http://localhost:4200"
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod();
@@ -228,8 +213,7 @@ builder.Services.AddMassTransit(x =>
 
         cfg.ReceiveEndpoint(queueName!, e =>
         {
-            e.ConfigureConsumer<BookAppointmentConsumer>(
-                context);
+            e.ConfigureConsumer<BookAppointmentConsumer>(context);
         });
     });
 });
@@ -240,16 +224,17 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 });
 
 var app = builder.Build();
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+
     await RoleSeeder.SeedRoleAsync(roleManager);
     await RoleSeeder.SeedAdminAsync(userManager, roleManager);
 }
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -264,10 +249,39 @@ app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
+var contentTypeProvider = new FileExtensionContentTypeProvider();
+
+contentTypeProvider.Mappings[".dat"] = "application/octet-stream";
+contentTypeProvider.Mappings[".wasm"] = "application/wasm";
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = contentTypeProvider
+}); 
+
 app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/angular");
+    return Task.CompletedTask;
+});
+
+app.MapGet("/angular", async context => {
+    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", "index.html"));
+});
+app.MapGet("/angular/{*path:nonfile}", async context => {   
+    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", "index.html"));
+});
+app.MapGet("/blazor", async context => {
+    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+});
+app.MapGet("/blazor/{*path:nonfile}", async context => {
+    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+});
 
 app.Run();

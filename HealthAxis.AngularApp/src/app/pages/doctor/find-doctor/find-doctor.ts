@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { authState } from '../../../core/auth-state';
 import { OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { API_BASE_URL } from '../../../core/constants/api.constants';
+
 
 @Component({
   selector: 'app-find-doctor',
@@ -20,6 +22,10 @@ export class FindDoctor implements OnInit {
   selectedDoctor = signal<any>(null);
 
   constructor(private http: HttpClient, private router: Router) { }
+
+  goBack(): void {
+    this.router.navigate(['/patient/dashboard']);
+  }
 
   search() {
 
@@ -39,7 +45,7 @@ export class FindDoctor implements OnInit {
     };
 
     this.http.get<any>(
-      'https://localhost:7038/api/doctors/filter',
+      `${API_BASE_URL}/doctors/filter`,
       { params, headers }
     )
       .subscribe({
@@ -64,7 +70,7 @@ export class FindDoctor implements OnInit {
       Authorization: `Bearer ${authState().token}`
     };
 
-    this.http.get<any>('https://localhost:7038/api/doctors/active', { headers })
+    this.http.get<any>(`${API_BASE_URL}/doctors/active`, { headers })
       .subscribe({
         next: (res) => {
           this.doctors.set(res);

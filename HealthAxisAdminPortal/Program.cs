@@ -19,7 +19,7 @@ builder.Services.AddScoped(sp =>
 {
     var client = new HttpClient
     {
-        BaseAddress = new Uri("https://localhost:7038/")
+        BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
     };
 
     if (!string.IsNullOrEmpty(TokenStore.AccessToken))

@@ -2,6 +2,10 @@
 
   <h2>Doctor Appointments</h2>
 
+  <button class="back-btn" (click)="goBack()">
+    ← Back to Dashboard
+  </button>
+
   <div *ngIf="appointments().length === 0">
     No appointments found 😕
   </div>
@@ -84,5 +88,22 @@
   </div>
 
   <p>{{ message() }}</p>
+
+  <div class="pagination">
+
+    <button (click)="previousPage()"
+            [disabled]="currentPage() === 1">
+      ⬅ Previous
+    </button>
+
+    <span class="page-number">
+      Page {{ currentPage() }}
+    </span>
+
+    <button (click)="nextPage()">
+      Next ➡
+    </button>
+
+  </div>
 
 </div>

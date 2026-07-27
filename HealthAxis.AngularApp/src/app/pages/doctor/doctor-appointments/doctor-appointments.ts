@@ -2,6 +2,8 @@ import { Component, signal, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { authState } from '../../../core/auth-state';
 import { Router } from '@angular/router';
+import { API_BASE_URL } from '../../../core/constants/api.constants';
+
 
 @Component({
   selector: 'app-doctor-appointments',
@@ -14,6 +16,8 @@ export class DoctorAppointments implements OnInit {
   appointments = signal<any[]>([]);
   message = signal('');
 
+  currentPage = signal(1);
+  pageSize = 5;
 
   selectedAppointmentId = signal<number | null>(null);
   cancellationReason = signal('');
@@ -24,21 +28,25 @@ export class DoctorAppointments implements OnInit {
     this.loadAppointments();
   }
 
+  goBack(): void {
+    this.router.navigate(['/doctor/dashboard']);
+  }
+
   loadAppointments() {
 
     const headers = {
       Authorization: `Bearer ${authState().token}`
     };
 
-    this.http.get<any>(
-      'https://localhost:7038/api/appointments/doctor/my',
+    this.http.get<any[]>(
+      `${API_BASE_URL}/appointments/doctor/my?page=${this.currentPage()}&pageSize=${this.pageSize}`,
       { headers }
     ).subscribe({
       next: (res) => {
         this.appointments.set(res);
       },
       error: () => {
-        console.error("Failed to load");
+        console.error('Failed to load');
       }
     });
   }
@@ -60,7 +68,7 @@ export class DoctorAppointments implements OnInit {
     };
 
     this.http.put(
-      `https://localhost:7038/api/appointments/${id}`,
+      `${API_BASE_URL}/appointments/${id}`,
       payload,
       { headers }
     ).subscribe({
@@ -121,7 +129,7 @@ export class DoctorAppointments implements OnInit {
     };
 
     this.http.put(
-      `https://localhost:7038/api/appointments/${this.selectedAppointmentId()}`,
+      `${API_BASE_URL}/appointments/${this.selectedAppointmentId()}`,
       payload,
       { headers }
     ).subscribe({
@@ -157,6 +165,18 @@ export class DoctorAppointments implements OnInit {
       }
     );
 
+  }
+
+  nextPage() {
+    this.currentPage.update(page => page + 1);
+    this.loadAppointments();
+  }
+
+  previousPage() {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(page => page - 1);
+      this.loadAppointments();
+    }
   }
 
 }

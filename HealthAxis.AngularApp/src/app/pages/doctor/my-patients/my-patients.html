@@ -1,6 +1,9 @@
 <div class="container">
 
   <h2>Your Patients</h2>
+  <button class="back-btn" (click)="goBack()">
+    ← Back to Dashboard
+  </button>
 
   <div *ngIf="patients().length === 0">
     No patients found.

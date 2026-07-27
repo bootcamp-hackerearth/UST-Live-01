@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { authState } from '../../../core/auth-state';
+import { API_BASE_URL } from '../../../core/constants/api.constants';
 
 @Component({
   selector: 'app-change-password',
@@ -33,7 +34,7 @@ export class ChangePassword {
     });
 
     this.http.post<any>(
-      'https://localhost:7038/api/auth/change-password',
+      `${API_BASE_URL}/auth/change-password`,
       {
         newPassword: this.newPassword()
       },

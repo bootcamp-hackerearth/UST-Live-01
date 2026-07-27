@@ -28,7 +28,7 @@ namespace HealthAxisApplicn.Mappings
             )
             
             .ForMember(
-                    dest => dest.PatientName,
+                    dest => dest.PatientName,   
                     opt => opt.MapFrom(src => src.Patient.PatientName)
                 );
 

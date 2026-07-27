@@ -15,9 +15,13 @@ namespace HealthAxisApplicn.Controllers
     {
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(int page = 1,int pageSize = 10)
         {
-            var result = await service.GetAllAsync();
+            var result =
+                await service.GetAllAsync(
+                    page,
+                    pageSize);
+
             return Ok(result);
         }
 
@@ -58,22 +62,32 @@ namespace HealthAxisApplicn.Controllers
 
         [HttpGet("my")]
         [Authorize(Roles = "Patient")]
-        public async Task<IActionResult> GetMyAppointments()
+        public async Task<IActionResult> GetMyAppointments(int page = 1,int pageSize = 10)
         {
-            var patientId = int.Parse(User.FindFirst("PatientId")!.Value);
+            var patientId = int.Parse(
+                User.FindFirst("PatientId")!.Value);
 
-            var result = await service.GetAppointmentsByPatientIdAsync(patientId);
+            var result =
+                await service.GetAppointmentsByPatientIdAsync(
+                    patientId,
+                    page,
+                    pageSize);
 
             return Ok(result);
         }
 
         [HttpGet("doctor/my")]
         [Authorize(Roles = "Doctor")]
-        public async Task<IActionResult> GetDoctorAppointments()
+        public async Task<IActionResult> GetDoctorAppointments(int page = 1,int pageSize = 10)
         {
-            var doctorId = int.Parse(User.FindFirst("DoctorId")!.Value);
+            var doctorId = int.Parse(
+                User.FindFirst("DoctorId")!.Value);
 
-            var result = await service.GetAppointmentsByDoctorIdAsync(doctorId);
+            var result =
+                await service.GetAppointmentsByDoctorIdAsync(
+                    doctorId,
+                    page,
+                    pageSize);
 
             return Ok(result);
         }
@@ -99,19 +113,34 @@ namespace HealthAxisApplicn.Controllers
 
         [HttpGet("patient/{patientId:int}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetByPatient(int patientId)
+        public async Task<IActionResult> GetByPatient(int patientId,int page = 1,int pageSize = 10)
         {
-            var result = await service.GetAppointmentsByPatientIdAsync(patientId);
-            return result.Count == 0 ? NotFound() : Ok(result);
+            var result =
+                await service.GetAppointmentsByPatientIdAsync(
+                    patientId,
+                    page,
+                    pageSize);
+
+            return result.Count == 0
+                ? NotFound()
+                : Ok(result);
         }
 
         [HttpGet("doctor/{doctorId:int}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetByDoctor(int doctorId)
+        public async Task<IActionResult> GetByDoctor(int doctorId,int page = 1,int pageSize = 10)
         {
-            var result = await service.GetAppointmentsByDoctorIdAsync(doctorId);
-            return result.Count == 0 ? NotFound() : Ok(result);
+            var result =
+                await service.GetAppointmentsByDoctorIdAsync(
+                    doctorId,
+                    page,
+                    pageSize);
+
+            return result.Count == 0
+                ? NotFound()
+                : Ok(result);
         }
+
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
@@ -127,11 +156,16 @@ namespace HealthAxisApplicn.Controllers
 
         [HttpGet("doctor/today")]
         [Authorize(Roles = "Doctor")]
-        public async Task<IActionResult> GetTodayAppointments()
+        public async Task<IActionResult> GetTodayAppointments(int page = 1, int pageSize = 10)
         {
-            var doctorId = int.Parse(User.FindFirst("DoctorId")!.Value);
+            var doctorId = int.Parse(
+                User.FindFirst("DoctorId")!.Value);
 
-            var result = await service.GetTodayAppointmentsAsync(doctorId);
+            var result =
+                await service.GetTodayAppointmentsAsync(
+                    doctorId,
+                    page,
+                    pageSize);
 
             return Ok(result);
         }

@@ -2,6 +2,8 @@ import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { authState } from '../../../core/auth-state';
+import { API_BASE_URL } from '../../../core/constants/api.constants';
+
 
 @Component({
   selector: 'app-book-appointment',
@@ -58,7 +60,7 @@ export class BookAppointment {
     };
 
     this.http.post<any>(
-      'https://localhost:7038/api/appointments',
+      `${API_BASE_URL}/appointments`,
       payload,
       { headers }
     ).subscribe({

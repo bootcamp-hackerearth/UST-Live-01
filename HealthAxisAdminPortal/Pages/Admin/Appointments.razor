@@ -1,0 +1,134 @@
+﻿@page "/admin/appointments"
+
+@using HealthAxisApplicn.Dto.Appointments
+@using System.Net.Http.Json
+
+@inject HttpClient Http
+@inject NavigationManager NavManager
+
+<h3>All Appointments</h3>
+
+<button class="btn btn-secondary mb-3"
+        @onclick="BackToDashboard">
+    ← Back
+</button>
+
+@if (appointments == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Cancellation Reason</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in appointments)
+            {
+                <tr>
+                    <td>@item.AppointmentId</td>
+                    <td>@item.PatientName</td>
+                    <td>@item.DoctorName</td>
+                    <td>@item.ScheduledDate.ToString("dd-MMM-yyyy")</td>
+                    <td>@item.TimeSlot</td>
+
+                    <td>
+                        @if (item.Status == "Completed")
+                        {
+                            <span class="badge bg-success">Completed</span>
+                        }
+                        else if (item.Status == "Pending")
+                        {
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        }
+                        else if (item.Status == "Confirmed")
+                        {
+                            <span class="badge bg-primary">Confirmed</span>
+                        }
+                        else if (item.Status == "Cancelled")
+                        {
+                            <span class="badge bg-danger">Cancelled</span>
+                        }
+                    </td>
+
+                    <td>@(item.CancellationReason ?? "NIL")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (appointments.Count > 0)
+    {
+        <div class="mt-3 d-flex justify-content-center align-items-center gap-3">
+
+            <button class="btn btn-outline-secondary"
+                    @onclick="PreviousPage"
+                    disabled="@(CurrentPage == 1)">
+                Previous
+            </button>
+
+            <span>
+                Page @CurrentPage
+            </span>
+
+            <button class="btn btn-outline-primary"
+                    @onclick="NextPage">
+                Next
+            </button>
+
+        </div>
+    }
+}
+
+@code {
+
+    private List<AppointmentDto> appointments = new();
+
+    private int CurrentPage = 1;
+    private const int PageSize = 10;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAppointments();
+    }
+
+    private async Task LoadAppointments()
+    {
+        appointments =
+            await Http.GetFromJsonAsync<List<AppointmentDto>>
+            (
+                $"/api/appointments?page={CurrentPage}&pageSize={PageSize}"
+            )
+            ?? new();
+    }
+
+    private async Task NextPage()
+    {
+        CurrentPage++;
+        await LoadAppointments();
+    }
+
+    private async Task PreviousPage()
+    {
+        if (CurrentPage > 1)
+        {
+            CurrentPage--;
+            await LoadAppointments();
+        }
+    }
+
+    void BackToDashboard()
+    {
+        NavManager.NavigateTo("/blazor");
+    }
+}

@@ -19,6 +19,8 @@ import { PatientDetails } from './pages/doctor/patient-details/patient-details';
 import { TodayAppointments } from './pages/doctor/today-appointments/today-appointments';
 import { MyAppointments } from './pages/patient/my-appointments/my-appointments';
 import { MyHealthRecords } from './pages/patient/my-health-records/my-health-records';
+import { PatientProfile } from './pages/patient/patient-profile/patient-profile';
+import { DoctorProfile } from './pages/doctor/doctor-profile/doctor-profile';
 
 @NgModule({
   declarations: [
@@ -38,6 +40,8 @@ import { MyHealthRecords } from './pages/patient/my-health-records/my-health-rec
     TodayAppointments,
     MyAppointments,
     MyHealthRecords,
+    PatientProfile,
+    DoctorProfile,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [provideBrowserGlobalErrorListeners()],

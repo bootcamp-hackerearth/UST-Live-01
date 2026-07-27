@@ -3,12 +3,18 @@
 @inject IDoctorApiService doctorService
 @inject IJSRuntime JS
 @inject AuthService AuthService
+@inject NavigationManager NavManager
 
 <div class="glass-card p-4">
 
     <h2 class="text-center fw-bold mb-4">
         🩺 Doctor Management
     </h2>
+
+    <button class="btn btn-secondary mb-3"
+            @onclick="BackToDashboard">
+        ← Back
+    </button>
 
     <button class="btn btn-primary mb-3" @onclick="ShowForm">
         ➕ Add Doctor
@@ -380,5 +386,10 @@
         {
             doctors = doctors.Where(d => d.Specialisation == selectedSpecialisation).ToList();
         }
+    }
+
+    void BackToDashboard()
+    {
+        NavManager.NavigateTo("/blazor");
     }
 }

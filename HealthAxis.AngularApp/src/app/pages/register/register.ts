@@ -1,6 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { API_BASE_URL } from '../../core/constants/api.constants';
+
 
 @Component({
   selector: 'app-register',
@@ -39,7 +41,7 @@ export class Register {
       insuranceID: this.insuranceID()
     };
 
-    this.http.post<any>('https://localhost:7038/api/auth/register', payload)
+    this.http.post<any>(`${API_BASE_URL}/auth/register`, payload)
       .subscribe({
         next: (res) => {
           if (res.success) {

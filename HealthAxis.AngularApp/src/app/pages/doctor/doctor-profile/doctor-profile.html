@@ -1,0 +1,51 @@
+<div class="container" *ngIf="doctor() as doc">
+
+  <h2>Doctor Profile</h2>
+
+  <div class="profile-details">
+
+    <div class="profile-row">
+      <span class="label">Doctor ID</span>
+      <span>{{ doc.doctorId }}</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Name</span>
+      <span>{{ doc.doctorName }}</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Email</span>
+      <span>{{ doc.email }}</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Specialisation</span>
+      <span>{{ doc.specialisation }}</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Experience</span>
+      <span>{{ doc.yearsOfExperience }} Years</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Consultation Fee</span>
+      <span>₹{{ doc.consultationFee }}</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Status</span>
+      <span [class.active]="doc.isActive"
+            [class.inactive]="!doc.isActive">
+        {{ doc.isActive ? 'Active' : 'Inactive' }}
+      </span>
+    </div>
+
+  </div>
+
+  <button (click)="goBack()">
+    Back to Dashboard
+  </button>
+
+</div>

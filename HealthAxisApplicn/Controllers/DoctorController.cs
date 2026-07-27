@@ -118,6 +118,24 @@ namespace HealthAxisApplicn.Controllers
             });
         }
 
+        [HttpGet("profile")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = User.FindFirst(
+                System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var doctor = await service.GetByUserIdAsync(userId);
+
+            if (doctor == null)
+                return NotFound();
+
+            return Ok(doctor);
+        }
+
 
         [HttpGet("filter")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdminOrPatient")]

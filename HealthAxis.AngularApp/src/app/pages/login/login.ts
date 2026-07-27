@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { authState } from '../../core/auth-state';
+import { API_BASE_URL } from '../../core/constants/api.constants';
 
 @Component({
   selector: 'app-login',
@@ -37,7 +38,7 @@ export class Login {
       password: this.password()
     };
 
-    this.http.post<any>('https://localhost:7038/api/auth/login', payload)
+    this.http.post<any>(`${API_BASE_URL}/auth/login`, payload)
       .subscribe({
         next: (res: any) => {
 
@@ -84,7 +85,7 @@ export class Login {
 
           else if (role?.toLowerCase() === 'admin') {
             window.location.href =
-              `https://localhost:7235/sso-login?token=${encodeURIComponent(token)}`;
+              `/blazor/sso-login?token=${encodeURIComponent(token)}`;
           }
 
         },
@@ -119,7 +120,7 @@ export class Login {
     };
 
     if (role?.toLowerCase() === 'patient') {
-      this.http.get<any>('https://localhost:7038/api/patients/me', { headers })
+      this.http.get<any>(`${API_BASE_URL}/patients/me`, { headers })
         .subscribe(res => {
           authState.update(state => ({
             ...state,
@@ -137,7 +138,7 @@ export class Login {
     }
 
     else if (role?.toLowerCase() === 'doctor') {
-      this.http.get<any>('https://localhost:7038/api/doctors/me', { headers })
+      this.http.get<any>(`${API_BASE_URL}/doctors/me`, { headers })
         .subscribe(res => {
           authState.update(state => ({
             ...state,

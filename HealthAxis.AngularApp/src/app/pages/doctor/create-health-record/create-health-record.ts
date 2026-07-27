@@ -2,6 +2,8 @@ import { Component, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { authState } from '../../../core/auth-state';
+import { API_BASE_URL } from '../../../core/constants/api.constants';
+
 
 @Component({
   selector: 'app-create-health-record',
@@ -44,7 +46,7 @@ export class CreateHealthRecord {
     };
 
     this.http.get<any>(
-      `https://localhost:7038/api/healthrecords/appointment/${appointmentId}`,
+      `${API_BASE_URL}/healthrecords/appointment/${appointmentId}`,
       { headers }
     ).subscribe({
       next: (res) => {
@@ -95,7 +97,7 @@ export class CreateHealthRecord {
     };
 
     this.http.put(
-      `https://localhost:7038/api/healthrecords/${this.healthRecordId()}`,
+      `${API_BASE_URL}/healthrecords/${this.healthRecordId()}`,
       payload,
       { headers }
     ).subscribe({

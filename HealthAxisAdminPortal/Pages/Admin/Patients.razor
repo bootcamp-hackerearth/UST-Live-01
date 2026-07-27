@@ -3,6 +3,7 @@
 @inject IPatientApiService patientService
 @inject IJSRuntime JS
 @inject AuthService AuthService
+@inject NavigationManager NavManager
 
 
 <div class="glass-card p-4">
@@ -10,6 +11,11 @@
     <h2 class="text-center fw-bold mb-4">
         🧑‍🤝‍🧑 Patient Management
     </h2>
+
+    <button class="btn btn-secondary mb-3"
+            @onclick="BackToDashboard">
+        ← Back
+    </button>
 
     <div class="row mb-3">
 
@@ -262,5 +268,10 @@
             errorMessage = ex.Message; 
         showError = true;          
     }
+    }
+
+    void BackToDashboard()
+    {
+        NavManager.NavigateTo("/blazor");
     }
 }

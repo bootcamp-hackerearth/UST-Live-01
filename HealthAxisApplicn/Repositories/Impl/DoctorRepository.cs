@@ -19,26 +19,33 @@ namespace HealthAxisApplicn.Repositories.Impl
 
         public async Task<List<Doctor>> SearchBySpecialisationAsync(string specialisation, CancellationToken ct = default)
         {
-            specialisation = specialisation.Trim().ToLower();
-            var existing = await _context.Set<Doctor>().Where(d => d.Specialisation.ToLower() == specialisation).ToListAsync(ct);
+            specialisation = specialisation.Trim();
+
+            var existing = await _context.Set<Doctor>()
+                .Where(d => d.Specialisation == specialisation)
+                .ToListAsync(ct);
             return existing;
         }
+
 
         public async Task<List<Doctor>> SearchByNameAsync(string name, CancellationToken ct = default)
         {
-            var existing = await _context.Set<Doctor>().Where(d => d.DoctorName.ToLower().Contains(name.ToLower())).ToListAsync(ct);
-            return existing;
+            return await _context.Doctors
+                .Where(d => EF.Functions.Like(d.DoctorName, $"%{name}%"))
+                .ToListAsync(ct);
         }
+
+
 
         public async Task<List<Doctor>> SearchAsync(string query, CancellationToken ct = default)
         {
-            query = query.ToLower();
-
             return await _context.Doctors
-                .Where(d => d.DoctorName.ToLower().Contains(query)
-                         || d.Specialisation.ToLower().Contains(query))
+                .Where(d =>
+                    EF.Functions.Like(d.DoctorName, $"%{query}%") ||
+                    EF.Functions.Like(d.Specialisation, $"%{query}%"))
                 .ToListAsync(ct);
         }
+
 
         public async Task<Doctor?> GetByUserIdAsync(string userId)
         {
@@ -48,19 +55,23 @@ namespace HealthAxisApplicn.Repositories.Impl
 
         public async Task<List<Doctor>> FilterAsync(string? name, string? specialization)
         {
+
             var query = _context.Doctors.AsQueryable();
 
-            if (!string.IsNullOrEmpty(name))
+            if (!string.IsNullOrWhiteSpace(name))
             {
-                query = query.Where(d => d.DoctorName.ToLower().Contains(name.ToLower()));
+                query = query.Where(d =>
+                    EF.Functions.Like(d.DoctorName, $"%{name}%"));
             }
 
-            if (!string.IsNullOrEmpty(specialization))
+            if (!string.IsNullOrWhiteSpace(specialization))
             {
-                query = query.Where(d => d.Specialisation.ToLower().Contains(specialization.ToLower()));
+                query = query.Where(d =>
+                    EF.Functions.Like(d.Specialisation, $"%{specialization}%"));
             }
 
             return await query.ToListAsync();
+
         }
     }
 }

@@ -57,7 +57,7 @@ namespace HealthAxisApplicn.Dto.Patients
         [Required]
         [MinLength(2)]
         [RegularExpression(@"^[A-Za-z\s]{2,50}$", ErrorMessage = "Name should contain only alphabets and spaces")]
-        public string PatientName { get; set; }
+        public string PatientName { get; set; } = string.Empty;
 
         [Required]
         [DataType(DataType.Date)]
@@ -65,15 +65,15 @@ namespace HealthAxisApplicn.Dto.Patients
 
         [Required]
         [RegularExpression(@"^(Male|Female|Transgender|Other)$", ErrorMessage = "Invalid gender")]
-        public string Gender { get; set; }
+        public string Gender { get; set; } = string.Empty;
 
         [Required]
         [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required]
         [RegularExpression(@"^\+\d{10,15}$", ErrorMessage = "Enter valid number with country code (e.g. +919876543210)")]
-        public string PhoneNo { get; set; }
+        public string PhoneNo { get; set; } = string.Empty;
 
 
         [RegularExpression(@"^$|^INS-[A-Z]{2}\d{4}$", ErrorMessage = "Insurance ID must be empty or in format INS-AB1234")] 

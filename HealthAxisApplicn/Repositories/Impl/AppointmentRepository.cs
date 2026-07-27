@@ -13,9 +13,7 @@ namespace HealthAxisApplicn.Repositories.Impl
         }
 
 
-        public async Task<List<Appointment>> GetUpcomingAppointmentsByDoctorIdAsync(
-            int doctorId,
-            CancellationToken ct = default)
+        public async Task<List<Appointment>> GetUpcomingAppointmentsByDoctorIdAsync(int doctorId,int page,int pageSize,CancellationToken ct = default)
         {
             return await _context.Set<Appointment>()
                 .AsNoTracking()
@@ -26,18 +24,22 @@ namespace HealthAxisApplicn.Repositories.Impl
                     (a.Status == "Pending" || a.Status == "Confirmed")
                 )
                 .OrderBy(a => a.ScheduledDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync(ct);
         }
 
 
 
-        public async Task<List<Appointment>> GetAppointmentsByPatientIdAsync(int patientId, CancellationToken ct = default)
+        public async Task<List<Appointment>> GetAppointmentsByPatientIdAsync(int patientId, int page, int pageSize, CancellationToken ct = default)
         {
             return await _context.Set<Appointment>()
                 .AsNoTracking()
                 .Include(a => a.Doctor)
                 .Where(a => a.PatientId == patientId)
                 .OrderByDescending(a => a.ScheduledDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync(ct);
         }
 
@@ -85,7 +87,7 @@ namespace HealthAxisApplicn.Repositories.Impl
                     a.ScheduledDate.Date == date.Date, ct);
         }
 
-        public async Task<List<Appointment>> GetTodayAppointmentsAsync(int doctorId, CancellationToken ct = default)
+        public async Task<List<Appointment>> GetTodayAppointmentsAsync(int doctorId,int page,int pageSize,CancellationToken ct = default)
         {
             return await _context.Appointments
                 .Include(a => a.Patient)
@@ -93,8 +95,23 @@ namespace HealthAxisApplicn.Repositories.Impl
                     a.DoctorId == doctorId &&
                     a.ScheduledDate.Date == DateTime.Today)
                 .OrderBy(a => a.TimeSlot)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync(ct);
         }
+
+
+        public async Task<List<Appointment>> GetAllAppointmentsAsync(int page,int pageSize)
+        {
+            return await _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .OrderByDescending(a => a.AppointmentId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
 
     }
 }

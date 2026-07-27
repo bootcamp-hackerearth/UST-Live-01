@@ -20,6 +20,8 @@
 
 		<!-- ✅ MODERN OPENAPI -->
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Garnet" Version="1.1.10" />
 		<PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
@@ -45,6 +47,8 @@
 
   <ItemGroup>
     <Folder Include="Messaging\Publishers\" />
+    <Folder Include="wwwroot\angular\" />
+    <Folder Include="wwwroot\blazor\" />
   </ItemGroup>
 
 </Project>

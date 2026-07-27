@@ -11,3 +11,17 @@
   border-radius: 10px;
   margin-bottom: 15px;
 }
+
+.back-btn {
+  margin-bottom: 15px;
+  padding: 10px 16px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+  .back-btn:hover {
+    background-color: #1565c0;
+  }

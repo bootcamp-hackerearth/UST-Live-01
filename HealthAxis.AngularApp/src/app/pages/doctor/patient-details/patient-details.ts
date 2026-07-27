@@ -2,6 +2,8 @@ import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { authState } from '../../../core/auth-state';
+import { API_BASE_URL } from '../../../core/constants/api.constants';
+
 
 @Component({
   selector: 'app-patient-details',
@@ -35,7 +37,7 @@ export class PatientDetails implements OnInit {
     };
 
     this.http.get<any>(
-      `https://localhost:7038/api/patients/doctor/patient/${patientId}`,
+      `${API_BASE_URL}/patients/doctor/patient/${patientId}`,
       { headers }
     ).subscribe({
       next: (res) => {

@@ -13,6 +13,7 @@ import { BookAppointment } from './pages/patient/book-appointment/book-appointme
 import { MyAppointments } from './pages/patient/my-appointments/my-appointments';
 import { MyHealthRecords } from './pages/patient/my-health-records/my-health-records';
 import { FindDoctor } from './pages/doctor/find-doctor/find-doctor';
+import { PatientProfile } from './pages/patient/patient-profile/patient-profile';
 
 import { DoctorDashboard } from './pages/doctor/doctor-dashboard/doctor-dashboard';
 import { ChangePassword } from './pages/doctor/change-password/change-password';
@@ -21,6 +22,7 @@ import { CreateHealthRecord } from './pages/doctor/create-health-record/create-h
 import { MyPatients } from './pages/doctor/my-patients/my-patients';
 import { PatientDetails } from './pages/doctor/patient-details/patient-details';
 import { TodayAppointments } from './pages/doctor/today-appointments/today-appointments';
+import { DoctorProfile } from './pages/doctor/doctor-profile/doctor-profile';
 
 const routes: Routes = [
 
@@ -38,7 +40,8 @@ const routes: Routes = [
       { path: 'find-doctor', component: FindDoctor },
       { path: 'book-appointment', component: BookAppointment },
       { path: 'appointments', component: MyAppointments },
-      { path: 'health-records', component: MyHealthRecords }
+      { path: 'health-records', component: MyHealthRecords },
+      { path: 'profile', component: PatientProfile }
     ]
   },
 
@@ -53,7 +56,8 @@ const routes: Routes = [
       { path: 'today-appointments', component: TodayAppointments },
       { path: 'patients', component: MyPatients },
       { path: 'patient-details/:id', component: PatientDetails },
-      { path: 'create-health-record', component: CreateHealthRecord }
+      { path: 'create-health-record', component: CreateHealthRecord },
+      { path: 'profile', component: DoctorProfile }
     ]
   },
 

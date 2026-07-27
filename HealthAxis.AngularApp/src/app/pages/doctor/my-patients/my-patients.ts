@@ -1,6 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { authState } from '../../../core/auth-state';
+import { Router } from '@angular/router';
+import { API_BASE_URL } from '../../../core/constants/api.constants';
 
 @Component({
   selector: 'app-my-patients',
@@ -13,10 +15,14 @@ export class MyPatients implements OnInit {
   patients = signal<any[]>([]);
   message = signal('');
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   ngOnInit(): void {
     this.loadPatients();
+  }
+
+  goBack(): void {
+    this.router.navigate(['/doctor/dashboard']);
   }
 
   loadPatients() {
@@ -26,7 +32,7 @@ export class MyPatients implements OnInit {
     };
 
     this.http.get<any[]>(
-      'https://localhost:7038/api/healthrecords/doctor/patients',
+      `${API_BASE_URL}/healthrecords/doctor/patients`,
       { headers }
     ).subscribe({
       next: (res) => {

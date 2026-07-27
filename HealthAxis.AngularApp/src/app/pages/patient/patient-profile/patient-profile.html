@@ -1,0 +1,59 @@
+<div class="container" *ngIf="patient() as pat">
+
+  <h2>Patient Profile</h2>
+
+  <div class="profile-details">
+
+    <div class="profile-row">
+      <span class="label">Patient ID</span>
+      <span>{{ pat.patientId }}</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Name</span>
+      <span>{{ pat.patientName }}</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Date of Birth</span>
+      <span>{{ pat.dateOfBirth | date:'dd-MM-yyyy' }}</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Gender</span>
+      <span>{{ pat.gender }}</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Email</span>
+      <span>{{ pat.email }}</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Phone Number</span>
+      <span>{{ pat.phoneNo }}</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Insurance ID</span>
+      <span>{{ pat.insuranceID || 'NIL' }}</span>
+    </div>
+
+    <div class="profile-row">
+      <span class="label">Status</span>
+
+      <span [class.active]="pat.isActive"
+            [class.inactive]="!pat.isActive">
+
+        {{ pat.isActive ? 'Active' : 'Inactive' }}
+
+      </span>
+    </div>
+
+  </div>
+
+  <button (click)="goBack()">
+    Back to Dashboard
+  </button>
+
+</div>

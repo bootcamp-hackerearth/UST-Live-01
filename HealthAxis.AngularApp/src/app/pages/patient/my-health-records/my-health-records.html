@@ -2,6 +2,10 @@
 
   <h2>My Health Records</h2>
 
+  <button class="back-btn" (click)="goBack()">
+    ← Back to Dashboard
+  </button>
+
   <div *ngIf="records().length === 0">
     No health records found.
   </div>
