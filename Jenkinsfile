@@ -117,8 +117,8 @@ pipeline {
                 bat '''
                 if exist deploy-package.zip del /F /Q deploy-package.zip
 
-                pushd artifacts\deployment
-                jar -cMf ..\..\deploy-package.zip .
+                pushd artifacts/deployment
+                jar -cMf ../../deploy-package.zip .
                 if errorlevel 1 exit /b 1
                 popd
 
