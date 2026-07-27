@@ -103,8 +103,10 @@ export class UpcomingAppointments {
       )
       .sort(
         (first, second) =>
-          this.getAppointmentStartDateTime(first).getTime() -
-          this.getAppointmentStartDateTime(second).getTime()
+          this.compareDoctorAppointments(
+            first,
+            second
+          )
       );
   });
 
@@ -864,6 +866,12 @@ export class UpcomingAppointments {
       appointment.status
     );
 
+    const isPastPending =
+      status === 'pending' &&
+      this.hasAppointmentStarted(
+        appointment
+      );
+
     const matchesFilter =
       filter === 'All' ||
       (
@@ -872,7 +880,13 @@ export class UpcomingAppointments {
           appointment.scheduledDate
         )
       ) ||
-      status === filter.toLowerCase();
+      (
+        status === filter.toLowerCase() &&
+        !(
+          filter === 'Pending' &&
+          isPastPending
+        )
+      );
 
     const searchableText = [
       appointment.patientName,
@@ -903,10 +917,24 @@ export class UpcomingAppointments {
     status: string
   ): number {
     return this.doctorAppointments().filter(
-      (appointment) =>
-        this.getStatusText(
-          appointment.status
-        ) === status
+      (appointment) => {
+        const normalizedStatus =
+          this.getStatusText(
+            appointment.status
+          );
+
+        if (normalizedStatus !== status) {
+          return false;
+        }
+
+        if (status === 'pending') {
+          return !this.hasAppointmentStarted(
+            appointment
+          );
+        }
+
+        return true;
+      }
     ).length;
   }
 
@@ -921,6 +949,56 @@ export class UpcomingAppointments {
       normalizedStatus === 'confirmed' ||
       normalizedStatus === 'cancelled'
     );
+  }
+
+  private compareDoctorAppointments(
+    first: Appointment,
+    second: Appointment
+  ): number {
+    const currentTime = Date.now();
+
+    const firstStart =
+      this.getAppointmentStartDateTime(
+        first
+      ).getTime();
+
+    const secondStart =
+      this.getAppointmentStartDateTime(
+        second
+      ).getTime();
+
+    const firstStatus =
+      this.getStatusText(first.status);
+
+    const secondStatus =
+      this.getStatusText(second.status);
+
+    const firstIsUpcomingActive =
+      (
+        firstStatus === 'pending' ||
+        firstStatus === 'confirmed'
+      ) &&
+      firstStart >= currentTime;
+
+    const secondIsUpcomingActive =
+      (
+        secondStatus === 'pending' ||
+        secondStatus === 'confirmed'
+      ) &&
+      secondStart >= currentTime;
+
+    if (
+      firstIsUpcomingActive !==
+      secondIsUpcomingActive
+    ) {
+      return firstIsUpcomingActive
+        ? -1
+        : 1;
+    }
+
+    return firstIsUpcomingActive
+      ? firstStart - secondStart
+      : secondStart - firstStart;
   }
 
   private isToday(dateValue: string): boolean {

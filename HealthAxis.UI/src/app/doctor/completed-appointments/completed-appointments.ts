@@ -17,12 +17,6 @@ import {
   ActivatedRoute,
   RouterLink
 } from '@angular/router';
-import {
-  catchError,
-  forkJoin,
-  of
-} from 'rxjs';
-
 import { Appointment } from '../../core/models/appointment.model';
 import {
   CreateHealthRecordRequest,
@@ -78,6 +72,7 @@ export class CompletedAppointments {
 
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
+  readonly recordFormErrorMessage = signal('');
 
   readonly todayDate =
     this.formatDateForInput(new Date());
@@ -343,6 +338,7 @@ export class CompletedAppointments {
 
     this.errorMessage.set('');
     this.successMessage.set('');
+    this.recordFormErrorMessage.set('');
     this.selectedAppointment.set(appointment);
 
     this.healthRecordForm.reset({
@@ -361,17 +357,19 @@ export class CompletedAppointments {
     }
 
     this.selectedAppointment.set(null);
+    this.recordFormErrorMessage.set('');
     this.resetHealthRecordForm();
   }
 
   saveHealthRecord(): void {
     this.errorMessage.set('');
     this.successMessage.set('');
+    this.recordFormErrorMessage.set('');
 
     if (this.healthRecordForm.invalid) {
       this.healthRecordForm.markAllAsTouched();
 
-      this.errorMessage.set(
+      this.recordFormErrorMessage.set(
         'Please correct the health record details.'
       );
 
@@ -382,7 +380,7 @@ export class CompletedAppointments {
       this.selectedAppointment();
 
     if (!appointment) {
-      this.errorMessage.set(
+      this.recordFormErrorMessage.set(
         'Please select an appointment.'
       );
 
@@ -390,7 +388,7 @@ export class CompletedAppointments {
     }
 
     if (!this.canAddHealthRecord(appointment)) {
-      this.errorMessage.set(
+      this.recordFormErrorMessage.set(
         this.getHealthRecordRestrictionMessage(
           appointment
         )
@@ -447,6 +445,7 @@ export class CompletedAppointments {
 
           this.saving.set(false);
           this.selectedAppointment.set(null);
+          this.recordFormErrorMessage.set('');
           this.resetHealthRecordForm();
 
           this.successMessage.set(
@@ -458,7 +457,7 @@ export class CompletedAppointments {
         error: (error: unknown) => {
           this.saving.set(false);
 
-          this.errorMessage.set(
+          this.recordFormErrorMessage.set(
             getFriendlyErrorMessage(
               error,
               'Could not save the health record.'
@@ -490,9 +489,7 @@ export class CompletedAppointments {
     this.loadingRecord.set(true);
 
     this.healthRecordService
-      .getHealthRecordsByPatientId(
-        appointment.patientId
-      )
+      .getMyDoctorHealthRecords()
       .subscribe({
         next: (records) => {
           const enrichedRecords = records.map(
@@ -885,38 +882,23 @@ export class CompletedAppointments {
       </html>
     `;
 
-    const parser = new DOMParser();
-
-    const parsedDocument =
-      parser.parseFromString(
-        printableDocument,
-        'text/html'
-      );
-
-    const documentElement =
-      printWindow.document.importNode(
-        parsedDocument.documentElement,
-        true
-      );
-
-    printWindow.document.replaceChild(
-      documentElement,
-      printWindow.document.documentElement
+    printWindow.document.open();
+    printWindow.document.write(
+      printableDocument
     );
+    printWindow.document.close();
 
-    printWindow.onafterprint = () => {
+    printWindow.onafterprint = (): void => {
       printWindow.close();
     };
 
-    globalThis.setTimeout(
-      () => {
-        if (!printWindow.closed) {
-          printWindow.focus();
-          printWindow.print();
-        }
-      },
-      PRINT_DELAY_IN_MS
-    );
+    printWindow.focus();
+
+    globalThis.setTimeout(() => {
+      if (!printWindow.closed) {
+        printWindow.print();
+      }
+    }, PRINT_DELAY_IN_MS);
   }
 
   canAddHealthRecord(
@@ -928,6 +910,9 @@ export class CompletedAppointments {
       ) === 'confirmed' &&
       this.hasAppointmentStarted(
         appointment
+      ) &&
+      !this.hasHealthRecord(
+        appointment
       )
     );
   }
@@ -935,6 +920,12 @@ export class CompletedAppointments {
   getHealthRecordRestrictionMessage(
     appointment: Appointment
   ): string {
+    if (this.hasHealthRecord(appointment)) {
+      return (
+        'A health record already exists for this appointment.'
+      );
+    }
+
     if (
       this.getStatusText(
         appointment.status
@@ -1144,73 +1135,58 @@ export class CompletedAppointments {
     const completedAppointments =
       this.allCompletedAppointments();
 
-    const patientIds = [
-      ...new Set(
-        completedAppointments.map(
-          (appointment) =>
-            appointment.patientId
-        )
-      )
-    ];
-
-    if (patientIds.length === 0) {
+    if (completedAppointments.length === 0) {
       this.healthRecords.set([]);
       this.loading.set(false);
       this.openRequestedAppointment();
+
       return;
     }
 
-    const requests = patientIds.map(
-      (patientId) =>
-        this.healthRecordService
-          .getHealthRecordsByPatientId(
-            patientId
-          )
-          .pipe(
-            catchError(() =>
-              of([] as HealthRecord[])
-            )
-          )
+    const completedIds = new Set(
+      completedAppointments.map(
+        (appointment) =>
+          appointment.appointmentId
+      )
     );
 
-    forkJoin(requests).subscribe({
-      next: (recordsByPatient) => {
-        const completedIds = new Set(
-          completedAppointments.map(
-            (appointment) =>
-              appointment.appointmentId
-          )
-        );
+    this.healthRecordService
+      .getMyDoctorHealthRecords()
+      .subscribe({
+        next: (records) => {
+          const completedRecords = records
+            .filter(
+              (record) =>
+                completedIds.has(
+                  Number(record.appointmentId)
+                )
+            )
+            .map((record) =>
+              this.enrichRecord(record)
+            );
 
-        const records = recordsByPatient
-          .flat()
-          .filter(
-            (record) =>
-              completedIds.has(
-                Number(record.appointmentId)
-              )
-          )
-          .map((record) =>
-            this.enrichRecord(record)
+          this.healthRecords.set(
+            this.getUniqueRecords(
+              completedRecords
+            )
           );
 
-        this.healthRecords.set(
-          this.getUniqueRecords(records)
-        );
+          this.loading.set(false);
+          this.openRequestedAppointment();
+        },
+        error: (error: unknown) => {
+          this.healthRecords.set([]);
+          this.loading.set(false);
+          this.openRequestedAppointment();
 
-        this.loading.set(false);
-        this.openRequestedAppointment();
-      },
-      error: () => {
-        this.healthRecords.set([]);
-        this.loading.set(false);
-        this.openRequestedAppointment();
-
-        this.errorMessage.set(
-          'Appointments loaded, but some health records could not be loaded.'
-        );
-      }
-    });
+          this.errorMessage.set(
+            getFriendlyErrorMessage(
+              error,
+              'Appointments loaded, but health records could not be loaded.'
+            )
+          );
+        }
+      });
   }
 
   private openRequestedAppointment(): void {
@@ -1608,7 +1584,24 @@ export class CompletedAppointments {
       return fallback;
     }
 
-    const date = new Date(dateValue);
+    const trimmedValue =
+      dateValue.trim();
+
+    if (!trimmedValue) {
+      return fallback;
+    }
+
+    const hasTimeZone =
+      /(?:z|[+-]\d{2}:\d{2})$/i.test(
+        trimmedValue
+      );
+
+    const normalizedValue =
+      hasTimeZone
+        ? trimmedValue
+        : `${trimmedValue}Z`;
+
+    const date = new Date(normalizedValue);
 
     if (Number.isNaN(date.getTime())) {
       return fallback;

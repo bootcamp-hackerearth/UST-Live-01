@@ -687,6 +687,15 @@
         </div>
       </div>
 
+      @if (recordFormErrorMessage()) {
+        <div
+          class="modal-form-alert"
+          role="alert"
+        >
+          {{ recordFormErrorMessage() }}
+        </div>
+      }
+
       <form
         [formGroup]="healthRecordForm"
         (ngSubmit)="saveHealthRecord()"

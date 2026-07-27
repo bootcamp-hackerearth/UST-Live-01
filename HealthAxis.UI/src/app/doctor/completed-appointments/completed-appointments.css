@@ -190,6 +190,18 @@ textarea {
   background: var(--blue-light);
 }
 
+.modal-form-alert {
+  margin: 15px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--danger-border);
+  border-radius: 11px;
+  color: #a71d29;
+  background: var(--danger-light);
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 750;
+}
+
 .record-loader,
 .loader {
   width: 22px;
