@@ -1,4 +1,4 @@
-﻿@page "/doctors/edit/{Id:int}"
+@page "/doctors/edit/{Id:int}"
 @attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager NavigationManager
 @inject IDoctorService DoctorService
@@ -15,7 +15,7 @@
             </p>
         </div>
 
-        <NavLink href="/doctors" class="btn btn-outline-secondary rounded-pill px-4">
+        <NavLink href="doctors" class="btn btn-outline-secondary rounded-pill px-4">
             <i class="bi bi-arrow-left me-2"></i>
             Back to Doctors
         </NavLink>
@@ -180,7 +180,7 @@ else
             if (existingDoctor is null)
             {
                 NotificationService.Error("Doctor not found.");
-                NavigationManager.NavigateTo("/doctors");
+                NavigationManager.NavigateTo("doctors");
                 return;
             }
 
@@ -218,7 +218,7 @@ else
         if (result.IsSuccess)
         {
             NotificationService.Success(result.Message);
-            NavigationManager.NavigateTo("/doctors");
+            NavigationManager.NavigateTo("doctors");
         }
         else
         {
@@ -233,6 +233,6 @@ else
 
     private void Cancel()
     {
-        NavigationManager.NavigateTo("/doctors");
+        NavigationManager.NavigateTo("doctors");
     }
 }

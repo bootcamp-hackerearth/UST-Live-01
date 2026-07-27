@@ -1,4 +1,4 @@
-﻿@page "/doctors/{Id:int}"
+@page "/doctors/{Id:int}"
 @attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager NavigationManager
 @inject IDoctorService DoctorService
@@ -16,13 +16,13 @@
         </div>
 
         <div class="d-flex flex-column flex-sm-row gap-2">
-            <NavLink href="@($"/doctors/edit/{Id}")"
+            <NavLink href="@($"doctors/edit/{Id}")"
                      class="btn btn-health rounded-pill px-4">
                 <i class="bi bi-pencil-square me-2"></i>
                 Edit Doctor
             </NavLink>
 
-            <NavLink href="/doctors"
+            <NavLink href="doctors"
                      class="btn btn-outline-secondary rounded-pill px-4">
                 <i class="bi bi-arrow-left me-2"></i>
                 Back to Doctors
@@ -53,7 +53,7 @@ else if (Doctor == null)
                 The requested doctor profile could not be found.
             </p>
 
-            <NavLink href="/doctors"
+            <NavLink href="doctors"
                      class="btn btn-health rounded-pill px-4">
                 <i class="bi bi-arrow-left me-2"></i>
                 Back to Doctors
@@ -183,7 +183,7 @@ else
                     <div>
                         <div class="details-info-label">Consultation Fee</div>
                         <div class="details-info-value">
-                            ₹ @Doctor.ConsultationFee.ToString("0.00")
+                            ? @Doctor.ConsultationFee.ToString("0.00")
                         </div>
                     </div>
                 </div>
@@ -207,13 +207,13 @@ else
         </div>
 
         <div class="mt-4 pt-4 border-top d-flex flex-column flex-sm-row gap-2">
-            <NavLink href="@($"/doctors/edit/{Doctor.DoctorId}")"
+            <NavLink href="@($"doctors/edit/{Doctor.DoctorId}")"
                      class="btn btn-health rounded-pill px-4">
                 <i class="bi bi-pencil-square me-2"></i>
                 Edit Doctor
             </NavLink>
 
-            <NavLink href="/doctors"
+            <NavLink href="doctors"
                      class="btn btn-outline-secondary rounded-pill px-4">
                 <i class="bi bi-arrow-left me-2"></i>
                 Back to Doctors

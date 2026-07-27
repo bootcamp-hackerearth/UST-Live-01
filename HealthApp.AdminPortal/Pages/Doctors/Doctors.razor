@@ -1,4 +1,4 @@
-﻿@page "/doctors"
+@page "/doctors"
 @attribute [Authorize(Roles = "Admin")]
 
 @using HealthApp.Shared.Dtos
@@ -19,7 +19,7 @@
             </p>
         </div>
 
-        <NavLink href="/doctors/add" class="btn btn-health rounded-pill px-4 doctor-add-btn">
+        <NavLink href="doctors/add" class="btn btn-health rounded-pill px-4 doctor-add-btn">
             <i class="bi bi-plus-circle me-2"></i>
             Add Doctor
         </NavLink>
@@ -183,7 +183,7 @@
                                 </td>
                                 <td>
                                     <div class="fw-semibold">
-                                        ₹ @doctor.ConsultationFee.ToString("0.00")
+                                        ? @doctor.ConsultationFee.ToString("0.00")
                                     </div>
                                 </td>
                                 <td>
@@ -201,13 +201,13 @@
                                             <i class="bi @(doctor.IsActive ? "bi-clock-history" : "bi-check-circle")"></i>
                                         </button>
 
-                                        <NavLink href="@($"/doctors/edit/{doctor.DoctorId}")"
+                                        <NavLink href="@($"doctors/edit/{doctor.DoctorId}")"
                                                  class="btn btn-warning btn-sm action-btn"
                                                  title="Edit doctor">
                                             <i class="bi bi-pencil-square"></i>
                                         </NavLink>
 
-                                        <NavLink href="@($"/doctors/{doctor.DoctorId}")"
+                                        <NavLink href="@($"doctors/{doctor.DoctorId}")"
                                                  class="btn btn-info btn-sm action-btn"
                                                  title="View doctor">
                                             <i class="bi bi-eye"></i>

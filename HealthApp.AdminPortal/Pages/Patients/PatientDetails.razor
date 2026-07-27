@@ -1,4 +1,4 @@
-﻿@page "/patients/{Id:int}"
+@page "/patients/{Id:int}"
 @attribute [Authorize(Roles = "Admin")]
 @inject IPatientService PatientService
 @inject INotificationService NotificationService
@@ -15,7 +15,7 @@
             </p>
         </div>
 
-        <NavLink href="/patients" class="btn btn-outline-secondary rounded-pill px-4">
+        <NavLink href="patients" class="btn btn-outline-secondary rounded-pill px-4">
             <i class="bi bi-arrow-left me-2"></i>
             Back to Patients
         </NavLink>
@@ -146,7 +146,7 @@ else
         </div>
 
         <div class="mt-4 pt-4 border-top">
-            <NavLink href="/patients"
+            <NavLink href="patients"
                      class="btn btn-outline-secondary rounded-pill px-4">
                 <i class="bi bi-arrow-left me-2"></i>
                 Back to Patients

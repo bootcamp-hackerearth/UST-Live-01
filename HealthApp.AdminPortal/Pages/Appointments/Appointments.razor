@@ -1,4 +1,4 @@
-﻿@page "/appointments"
+@page "/appointments"
 @attribute [Authorize(Roles = "Admin")]
 
 @using HealthApp.Shared.Dtos
@@ -271,7 +271,7 @@
                             </td>
 
                             <td class="text-center">
-                                <NavLink href="@($"/appointments/{appointment.AppointmentId}")"
+                                <NavLink href="@($"appointments/{appointment.AppointmentId}")"
                                          class="btn btn-health btn-sm action-btn"
                                          title="View appointment">
                                     <i class="bi bi-eye"></i>

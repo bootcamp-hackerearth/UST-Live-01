@@ -1,4 +1,4 @@
-﻿@page "/doctors/add"
+@page "/doctors/add"
 @attribute [Authorize(Roles = "Admin")]
 
 @inject NavigationManager NavigationManager
@@ -16,7 +16,7 @@
             </p>
         </div>
 
-        <NavLink href="/doctors" class="btn btn-outline-secondary rounded-pill px-4">
+        <NavLink href="doctors" class="btn btn-outline-secondary rounded-pill px-4">
             <i class="bi bi-arrow-left me-2"></i>
             Back to Doctors
         </NavLink>
@@ -159,7 +159,7 @@
             NotificationService.Success(result.Message);
 
             NavigationManager.NavigateTo(
-                $"/doctors/success?name={Uri.EscapeDataString(Doctor.FullName)}" +
+                $"doctors/success?name={Uri.EscapeDataString(Doctor.FullName)}" +
                 $"&email={Uri.EscapeDataString(Doctor.DoctorEmail)}" +
                 $"&password={Uri.EscapeDataString(result.Data.TemporaryPassword)}");
         }
@@ -177,6 +177,6 @@
 
     private void Cancel()
     {
-        NavigationManager.NavigateTo("/doctors");
+        NavigationManager.NavigateTo("doctors");
     }
 }
