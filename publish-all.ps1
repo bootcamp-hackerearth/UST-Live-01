@@ -1,210 +1,117 @@
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-$solutionRoot = $PSScriptRoot
+$root = $PSScriptRoot
+$angular = Join-Path $root "HealthApp.Angular"
+$blazorProject = Join-Path $root "HealthApp.AdminBlazor\HealthApp.AdminBlazor.csproj"
+$apiProject = Join-Path $root "HealthApp.API\HealthApp.API.csproj"
+$apiWwwroot = Join-Path $root "HealthApp.API\wwwroot"
+$artifacts = Join-Path $root "artifacts"
+$angularOut = Join-Path $artifacts "angular"
+$blazorOut = Join-Path $artifacts "adminblazor"
+$deployOut = Join-Path $artifacts "deployment"
 
-$angularProjectDirectory = Join-Path $solutionRoot "HealthApp.Angular"
-$blazorProjectFile = Join-Path $solutionRoot "HealthApp.AdminBlazor\HealthApp.AdminBlazor.csproj"
-$apiProjectFile = Join-Path $solutionRoot "HealthApp.API\HealthApp.API.csproj"
-$apiWwwroot = Join-Path $solutionRoot "HealthApp.API\wwwroot"
-
-$artifactsDirectory = Join-Path $solutionRoot "artifacts"
-$angularOutputDirectory = Join-Path $artifactsDirectory "angular"
-$blazorOutputDirectory = Join-Path $artifactsDirectory "adminblazor"
-$deploymentDirectory = Join-Path $artifactsDirectory "deployment"
-$blazorDestination = Join-Path $apiWwwroot "blazor"
-
-function Assert-LastCommandSucceeded {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$ErrorMessage
-    )
-
-    if ($LASTEXITCODE -ne 0) {
-        throw $ErrorMessage
-    }
+function Assert-Ok([string]$message) {
+    if ($LASTEXITCODE -ne 0) { throw $message }
+}
+function Assert-Exists([string]$path) {
+    if (!(Test-Path -LiteralPath $path)) { throw "Missing required path: $path" }
 }
 
-function Assert-PathExists {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Path,
+Assert-Exists $angular
+Assert-Exists $blazorProject
+Assert-Exists $apiProject
 
-        [Parameter(Mandatory = $true)]
-        [string]$ErrorMessage
-    )
-
-    if (-not (Test-Path -LiteralPath $Path)) {
-        throw "$ErrorMessage Path: $Path"
-    }
+Write-Host "Cleaning prior output..." -ForegroundColor Cyan
+if (Test-Path $artifacts) { Remove-Item $artifacts -Recurse -Force }
+if (Test-Path $apiWwwroot) {
+    Get-ChildItem $apiWwwroot -Force -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force
 }
-
-Write-Host "Validating project paths..." -ForegroundColor Cyan
-
-Assert-PathExists -Path $angularProjectDirectory -ErrorMessage "Angular project directory was not found."
-Assert-PathExists -Path $blazorProjectFile -ErrorMessage "Blazor project file was not found."
-Assert-PathExists -Path $apiProjectFile -ErrorMessage "API project file was not found."
-
-Write-Host "Cleaning previous artifacts..." -ForegroundColor Cyan
-
-if (Test-Path -LiteralPath $artifactsDirectory) {
-    Remove-Item -LiteralPath $artifactsDirectory -Recurse -Force
-}
-
-New-Item -ItemType Directory -Path $artifactsDirectory -Force | Out-Null
+New-Item -ItemType Directory -Path $artifacts -Force | Out-Null
 New-Item -ItemType Directory -Path $apiWwwroot -Force | Out-Null
 
-Write-Host "Cleaning API wwwroot..." -ForegroundColor Cyan
-
-Get-ChildItem -LiteralPath $apiWwwroot -Force -ErrorAction SilentlyContinue |
-    Remove-Item -Recurse -Force
-
 Write-Host "Restoring .NET projects..." -ForegroundColor Cyan
+dotnet restore $apiProject
+Assert-Ok "API restore failed."
+dotnet restore $blazorProject
+Assert-Ok "Blazor restore failed."
 
-dotnet restore $apiProjectFile
-Assert-LastCommandSucceeded -ErrorMessage "API restore failed."
-
-dotnet restore $blazorProjectFile
-Assert-LastCommandSucceeded -ErrorMessage "Blazor restore failed."
-
-Write-Host "Building Angular for production..." -ForegroundColor Cyan
-
-Push-Location $angularProjectDirectory
-
+Write-Host "Building Angular..." -ForegroundColor Cyan
+Push-Location $angular
 try {
-    $packageLockFile = Join-Path $angularProjectDirectory "package-lock.json"
-
-    if (Test-Path -LiteralPath $packageLockFile) {
-        npm ci
-    }
-    else {
-        npm install
-    }
-
-    Assert-LastCommandSucceeded -ErrorMessage "Angular package installation failed."
-
-    npx ng build --configuration production --base-href / --output-path $angularOutputDirectory
-    Assert-LastCommandSucceeded -ErrorMessage "Angular production build failed."
+    if (Test-Path "package-lock.json") { npm ci } else { npm install }
+    Assert-Ok "Angular dependency installation failed."
+    npx ng build --configuration production --base-href / --output-path $angularOut
+    Assert-Ok "Angular build failed."
 }
-finally {
-    Pop-Location
-}
+finally { Pop-Location }
 
-$angularBrowserDirectory = Join-Path $angularOutputDirectory "browser"
-
-if (Test-Path -LiteralPath (Join-Path $angularBrowserDirectory "index.html")) {
-    $angularFilesDirectory = $angularBrowserDirectory
+$angularBrowser = Join-Path $angularOut "browser"
+if (Test-Path (Join-Path $angularBrowser "index.html")) {
+    $angularFiles = $angularBrowser
 }
-elseif (Test-Path -LiteralPath (Join-Path $angularOutputDirectory "index.html")) {
-    $angularFilesDirectory = $angularOutputDirectory
+elseif (Test-Path (Join-Path $angularOut "index.html")) {
+    $angularFiles = $angularOut
 }
 else {
-    $angularIndexFile = Get-ChildItem `
-        -LiteralPath $angularOutputDirectory `
-        -Filter "index.html" `
-        -File `
-        -Recurse |
-        Select-Object -First 1
-
-    if ($null -eq $angularIndexFile) {
-        throw "Angular index.html was not found under $angularOutputDirectory"
-    }
-
-    $angularFilesDirectory = $angularIndexFile.Directory.FullName
+    $foundIndex = Get-ChildItem $angularOut -Filter "index.html" -File -Recurse | Select-Object -First 1
+    if ($null -eq $foundIndex) { throw "Angular index.html was not found." }
+    $angularFiles = $foundIndex.Directory.FullName
 }
+Copy-Item (Join-Path $angularFiles "*") $apiWwwroot -Recurse -Force
+Assert-Exists (Join-Path $apiWwwroot "index.html")
 
-Write-Host "Copying Angular files into API wwwroot..." -ForegroundColor Cyan
+Write-Host "Publishing Blazor..." -ForegroundColor Cyan
+dotnet publish $blazorProject -c Release -o $blazorOut --no-restore
+Assert-Ok "Blazor publish failed."
 
-Copy-Item `
-    -Path (Join-Path $angularFilesDirectory "*") `
-    -Destination $apiWwwroot `
-    -Recurse `
-    -Force
+$blazorWwwroot = Join-Path $blazorOut "wwwroot"
+$blazorIndex = Join-Path $blazorWwwroot "index.html"
+Assert-Exists $blazorIndex
+Assert-Exists (Join-Path $blazorWwwroot "_framework")
 
-Assert-PathExists `
-    -Path (Join-Path $apiWwwroot "index.html") `
-    -ErrorMessage "Angular index.html was not copied into API wwwroot."
+Write-Host "Changing Blazor base href to /blazor/..." -ForegroundColor Cyan
+$html = Get-Content $blazorIndex -Raw
+if ($html -notmatch '<base\s+href="[^"]*"\s*/?>') { throw "Blazor base href is missing." }
+$html = $html -replace '<base\s+href="[^"]*"\s*/?>', '<base href="/blazor/" />'
+Set-Content $blazorIndex $html -Encoding utf8
+$html = Get-Content $blazorIndex -Raw
+if ($html -notmatch '<base\s+href="/blazor/"\s*/?>') { throw "Blazor base href rewrite failed." }
+if ($html -notmatch '_framework/blazor\.webassembly\.js') { throw "Blazor startup script is missing." }
 
-Write-Host "Publishing Blazor Admin..." -ForegroundColor Cyan
+$blazorDest = Join-Path $apiWwwroot "blazor"
+New-Item -ItemType Directory -Path $blazorDest -Force | Out-Null
+Copy-Item (Join-Path $blazorWwwroot "*") $blazorDest -Recurse -Force
 
-dotnet publish `
-    $blazorProjectFile `
-    --configuration Release `
-    --output $blazorOutputDirectory `
-    --no-restore
+$blazorRequired = @(
+    "index.html",
+    "css\app.css",
+    "lib\bootstrap\dist\css\bootstrap.min.css",
+    "HealthApp.AdminBlazor.styles.css",
+    "_framework\blazor.webassembly.js"
+)
+foreach ($relative in $blazorRequired) { Assert-Exists (Join-Path $blazorDest $relative) }
 
-Assert-LastCommandSucceeded -ErrorMessage "Blazor Admin publish failed."
+Write-Host "Publishing combined API..." -ForegroundColor Cyan
+dotnet publish $apiProject -c Release -o $deployOut --no-restore --self-contained false
+Assert-Ok "API publish failed."
+Set-Content (Join-Path $deployOut "Procfile") "web: dotnet HealthApp.API.dll" -Encoding ascii
 
-$publishedBlazorWwwroot = Join-Path $blazorOutputDirectory "wwwroot"
-$publishedBlazorIndex = Join-Path $publishedBlazorWwwroot "index.html"
-$publishedBlazorFramework = Join-Path $publishedBlazorWwwroot "_framework"
+$deployRequired = @(
+    "HealthApp.API.dll",
+    "HealthApp.API.runtimeconfig.json",
+    "HealthApp.API.deps.json",
+    "Procfile",
+    "wwwroot\index.html",
+    "wwwroot\blazor\index.html",
+    "wwwroot\blazor\css\app.css",
+    "wwwroot\blazor\lib\bootstrap\dist\css\bootstrap.min.css",
+    "wwwroot\blazor\HealthApp.AdminBlazor.styles.css",
+    "wwwroot\blazor\_framework\blazor.webassembly.js"
+)
+foreach ($relative in $deployRequired) { Assert-Exists (Join-Path $deployOut $relative) }
 
-Assert-PathExists -Path $publishedBlazorIndex -ErrorMessage "Published Blazor index.html was not found."
-Assert-PathExists -Path $publishedBlazorFramework -ErrorMessage "Published Blazor _framework directory was not found."
+$finalIndex = Get-Content (Join-Path $deployOut "wwwroot\blazor\index.html") -Raw
+if ($finalIndex -notmatch '<base\s+href="/blazor/"\s*/?>') { throw "Final Blazor base href is incorrect." }
 
-Write-Host "Configuring Blazor base path as /blazor/..." -ForegroundColor Cyan
-
-$blazorIndexContent = Get-Content -LiteralPath $publishedBlazorIndex -Raw
-
-if ($blazorIndexContent -notmatch '<base\s+href="[^"]*"\s*/?>') {
-    throw "The Blazor index.html file does not contain a base href element."
-}
-
-$blazorIndexContent = $blazorIndexContent -replace `
-    '<base\s+href="[^"]*"\s*/?>', `
-    '<base href="/blazor/" />'
-
-Set-Content `
-    -LiteralPath $publishedBlazorIndex `
-    -Value $blazorIndexContent `
-    -Encoding utf8
-
-New-Item -ItemType Directory -Path $blazorDestination -Force | Out-Null
-
-Write-Host "Copying Blazor Admin into API wwwroot/blazor..." -ForegroundColor Cyan
-
-Copy-Item `
-    -Path (Join-Path $publishedBlazorWwwroot "*") `
-    -Destination $blazorDestination `
-    -Recurse `
-    -Force
-
-Assert-PathExists `
-    -Path (Join-Path $blazorDestination "index.html") `
-    -ErrorMessage "Blazor index.html was not copied into API wwwroot/blazor."
-
-Assert-PathExists `
-    -Path (Join-Path $blazorDestination "_framework") `
-    -ErrorMessage "Blazor _framework was not copied into API wwwroot/blazor."
-
-Write-Host "Publishing the combined API application..." -ForegroundColor Cyan
-
-dotnet publish `
-    $apiProjectFile `
-    --configuration Release `
-    --output $deploymentDirectory `
-    --no-restore
-
-Assert-LastCommandSucceeded -ErrorMessage "Combined API publish failed."
-
-$deployedAngularIndex = Join-Path $deploymentDirectory "wwwroot\index.html"
-$deployedBlazorIndex = Join-Path $deploymentDirectory "wwwroot\blazor\index.html"
-$deployedBlazorFramework = Join-Path $deploymentDirectory "wwwroot\blazor\_framework"
-$deployedApiDll = Join-Path $deploymentDirectory "HealthApp.API.dll"
-
-Write-Host "Validating final deployment..." -ForegroundColor Cyan
-
-Assert-PathExists -Path $deployedApiDll -ErrorMessage "HealthApp.API.dll is missing from the deployment."
-Assert-PathExists -Path $deployedAngularIndex -ErrorMessage "Angular index.html is missing from the deployment."
-Assert-PathExists -Path $deployedBlazorIndex -ErrorMessage "Blazor index.html is missing from the deployment."
-Assert-PathExists -Path $deployedBlazorFramework -ErrorMessage "Blazor _framework is missing from the deployment."
-
-Write-Host "" 
-Write-Host "Combined HealthApp publish completed successfully." -ForegroundColor Green
-Write-Host "Deployment folder: $deploymentDirectory" -ForegroundColor Yellow
-Write-Host "Angular route: /" -ForegroundColor Cyan
-Write-Host "Blazor Admin route: /blazor/" -ForegroundColor Cyan
-Write-Host "API route: /api/" -ForegroundColor Cyan
-Write-Host "" 
-Write-Host "Run the published application with:" -ForegroundColor Green
-Write-Host "dotnet `"$deployedApiDll`"" -ForegroundColor Yellow
+Write-Host "Combined publish succeeded: $deployOut" -ForegroundColor Green
