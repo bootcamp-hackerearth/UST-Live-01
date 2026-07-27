@@ -9,19 +9,25 @@
 <div class="page-header">
     <div>
         <h3 class="page-title">Doctor Management</h3>
-        <p class="page-subtitle">Search, view, update status, edit and delete doctors</p>
+        <p class="page-subtitle">
+            Search, view, update status, edit and delete doctors
+        </p>
     </div>
 
-    <button class="btn btn-success" @onclick="GoToDoctorRegister">
+    <button type="button"
+            class="btn btn-success"
+            @onclick="GoToDoctorRegister">
         <i class="bi bi-plus-circle"></i>
         Register Doctor
     </button>
 </div>
+
 <div class="search-card">
     <div class="search-grid">
 
         <div class="form-group">
             <label>Doctor Name</label>
+
             <input class="form-control small-input"
                    placeholder="Search by doctor name"
                    @bind="search"
@@ -30,8 +36,12 @@
 
         <div class="form-group">
             <label>Specialisation</label>
-            <select class="form-select small-input" @bind="specialisation">
+
+            <select class="form-select small-input"
+                    @bind="specialisation">
+
                 <option value="">Select specialisation</option>
+
                 @foreach (var item in specialisationOptions)
                 {
                     <option value="@item">@item</option>
@@ -41,7 +51,10 @@
 
         <div class="form-group">
             <label>Status</label>
-            <select class="form-select small-input" @bind="statusFilter">
+
+            <select class="form-select small-input"
+                    @bind="statusFilter">
+
                 <option value="">All status</option>
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
@@ -50,19 +63,30 @@
 
         <div class="form-group">
             <label>Experience</label>
-            <select class="form-select small-input" @bind="experienceSort">
+
+            <select class="form-select small-input"
+                    @bind="experienceSort">
+
                 <option value="">Default</option>
-                <option value="experience_desc">High to Low</option>
-                <option value="experience_asc">Low to High</option>
+                <option value="experience_desc">
+                    High to Low
+                </option>
+                <option value="experience_asc">
+                    Low to High
+                </option>
             </select>
         </div>
 
         <div class="search-actions doctor-search-actions">
-            <button class="btn btn-success" @onclick="SearchDoctors">
+            <button type="button"
+                    class="btn btn-success"
+                    @onclick="SearchDoctors">
                 Search
             </button>
 
-            <button class="btn btn-outline-secondary" @onclick="ClearSearch">
+            <button type="button"
+                    class="btn btn-outline-secondary"
+                    @onclick="ClearSearch">
                 Clear
             </button>
         </div>
@@ -78,12 +102,25 @@
         <p>Loading doctors...</p>
     </div>
 }
-else if (!string.IsNullOrWhiteSpace(errorMessage))
-{
-    <div class="alert alert-danger">@errorMessage</div>
-}
 else
 {
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+            <span>@errorMessage</span>
+
+            <button type="button"
+                    class="btn-close"
+                    aria-label="Close"
+                    @onclick="ClearErrorMessage">
+            </button>
+        </div>
+    }
+
     <div class="table-wrapper">
         <table class="table doctor-table">
             <thead>
@@ -101,7 +138,10 @@ else
                 @if (doctors.Count == 0)
                 {
                     <tr>
-                        <td colspan="6" class="empty-row">No doctors found</td>
+                        <td colspan="6"
+                            class="empty-row">
+                            No doctors found
+                        </td>
                     </tr>
                 }
                 else
@@ -110,28 +150,39 @@ else
                     {
                         <tr>
                             <td>@doctor.FullName</td>
+
                             <td>@doctor.Specialisation</td>
-                            <td>@doctor.YearsOfExperience years</td>
-                            <td>₹@doctor.ConsultationFee</td>
+
+                            <td>
+                                @doctor.YearsOfExperience years
+                            </td>
+
+                            <td>
+                                ₹@doctor.ConsultationFee
+                            </td>
 
                             <td>
                                 @if (doctor.IsActive)
                                 {
-                                    <span class="status-badge active">Active</span>
+                                    <span class="status-badge active">
+                                        Active
+                                    </span>
                                 }
                                 else
                                 {
-                                    <span class="status-badge inactive">Inactive</span>
+                                    <span class="status-badge inactive">
+                                        Inactive
+                                    </span>
                                 }
                             </td>
 
                             <td class="actions-cell">
 
-                                <!-- Status Toggle opens dialog -->
                                 <button type="button"
                                         class="icon-button status-btn"
                                         title="Change Doctor Status"
                                         @onclick="() => OpenStatusDialog(doctor)">
+
                                     @if (doctor.IsActive)
                                     {
                                         <i class="bi bi-toggle-on"></i>
@@ -142,19 +193,19 @@ else
                                     }
                                 </button>
 
-                                <!-- Edit Doctor -->
                                 <button type="button"
                                         class="icon-button edit-btn"
                                         title="Edit Doctor"
                                         @onclick="() => OpenEditDialog(doctor)">
+
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
-                                <!-- Delete Doctor -->
                                 <button type="button"
                                         class="icon-button delete-btn"
                                         title="Delete Doctor"
                                         @onclick="() => OpenDeleteDialog(doctor)">
+
                                     <i class="bi bi-trash"></i>
                                 </button>
 
@@ -168,7 +219,8 @@ else
 
     <div class="pagination-container">
 
-        <button class="page-btn"
+        <button type="button"
+                class="page-btn"
                 @onclick="PreviousPage"
                 disabled="@(pageNumber == 1)">
             ⟵
@@ -178,7 +230,8 @@ else
             Page @pageNumber of @totalPages
         </span>
 
-        <button class="page-btn"
+        <button type="button"
+                class="page-btn"
                 @onclick="NextPage"
                 disabled="@disableNextButton">
             ⟶
@@ -187,7 +240,6 @@ else
     </div>
 }
 
-<!-- STATUS UPDATE DIALOG -->
 @if (showStatusDialog)
 {
     <div class="modal-backdrop-custom">
@@ -211,7 +263,10 @@ else
 
                 <div class="form-group">
                     <label>Status</label>
-                    <select class="form-select" @bind="selectedStatusValue">
+
+                    <select class="form-select"
+                            @bind="selectedStatusValue">
+
                         <option value="true">Active</option>
                         <option value="false">Inactive</option>
                     </select>
@@ -236,7 +291,6 @@ else
     </div>
 }
 
-<!-- DELETE DIALOG -->
 @if (showDeleteDialog)
 {
     <div class="modal-backdrop-custom">
@@ -258,7 +312,7 @@ else
                     <strong>@selectedDoctorName</strong>?
                 </p>
 
-                <p style="color:red;">
+                <p class="text-danger">
                     This action cannot be undone.
                 </p>
             </div>
@@ -266,14 +320,17 @@ else
             <div class="dialog-footer">
                 <button type="button"
                         class="btn btn-outline-secondary"
+                        disabled="@isDeleting"
                         @onclick="CloseDeleteDialog">
                     Cancel
                 </button>
 
                 <button type="button"
                         class="btn btn-danger"
+                        disabled="@isDeleting"
                         @onclick="ConfirmDeleteDoctor">
-                    Delete
+
+                    @(isDeleting ? "Deleting..." : "Delete")
                 </button>
             </div>
 
@@ -281,7 +338,6 @@ else
     </div>
 }
 
-<!-- EDIT DIALOG -->
 @if (showEditDialog)
 {
     <div class="modal-backdrop-custom">
@@ -297,7 +353,9 @@ else
                 </button>
             </div>
 
-            <EditForm Model="@editDoctorModel" OnValidSubmit="UpdateDoctor">
+            <EditForm Model="@editDoctorModel"
+                      OnValidSubmit="UpdateDoctor">
+
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
@@ -305,28 +363,38 @@ else
 
                     <div class="form-group mb-3">
                         <label>Doctor Name</label>
+
                         <InputText class="form-control"
                                    @bind-Value="editDoctorModel.FullName" />
+
                         <ValidationMessage For="@(() => editDoctorModel.FullName)" />
                     </div>
 
                     <div class="form-group mb-3">
                         <label>Specialisation</label>
+
                         <InputSelect class="form-select"
                                      @bind-Value="editDoctorModel.Specialisation">
-                            <option value="">Select specialisation</option>
+
+                            <option value="">
+                                Select specialisation
+                            </option>
+
                             @foreach (var item in specialisationOptions)
                             {
                                 <option value="@item">@item</option>
                             }
                         </InputSelect>
+
                         <ValidationMessage For="@(() => editDoctorModel.Specialisation)" />
                     </div>
 
                     <div class="form-group mb-3">
                         <label>Years Of Experience</label>
+
                         <InputNumber class="form-control"
                                      @bind-Value="editDoctorModel.YearsOfExperience" />
+
                         <ValidationMessage For="@(() => editDoctorModel.YearsOfExperience)" />
                     </div>
 
@@ -352,7 +420,6 @@ else
 }
 
 @code {
-
     private List<DoctorListDto> doctors = new();
 
     private string search = "";
@@ -364,13 +431,15 @@ else
     private int pageSize = 5;
     private int totalPages = 1;
 
-    private bool isLoading = false;
-    private bool disableNextButton = false;
+    private bool isLoading;
+    private bool isDeleting;
+    private bool disableNextButton;
+
     private string errorMessage = "";
 
-    private bool showDeleteDialog = false;
-    private bool showEditDialog = false;
-    private bool showStatusDialog = false;
+    private bool showDeleteDialog;
+    private bool showEditDialog;
+    private bool showStatusDialog;
 
     private int selectedDoctorId;
     private string? selectedDoctorName;
@@ -378,7 +447,7 @@ else
 
     private UpdateDoctorDto editDoctorModel = new();
 
-    private List<string> specialisationOptions = new()
+    private readonly List<string> specialisationOptions = new()
     {
         "Cardiologist",
         "Dermatologist",
@@ -406,10 +475,12 @@ else
             bool? isActive = null;
 
             if (!string.IsNullOrWhiteSpace(statusFilter))
+            {
                 isActive = bool.Parse(statusFilter);
+            }
 
             string? sortBy = null;
-            bool isDescending = true;
+            var isDescending = true;
 
             if (experienceSort == "experience_desc")
             {
@@ -433,20 +504,34 @@ else
                 PageSize = pageSize
             };
 
-            var result = await DoctorService.GetDoctorsAsync(filter);
+            var result =
+                await DoctorService.GetDoctorsAsync(filter);
 
             doctors = result.Items.ToList();
 
-            totalPages = result.TotalPages == 0 ? 1 : result.TotalPages;
+            totalPages =
+                result.TotalPages == 0
+                    ? 1
+                    : result.TotalPages;
 
-            disableNextButton = pageNumber >= totalPages;
+            disableNextButton =
+                pageNumber >= totalPages;
         }
         catch (Exception ex)
         {
-            if (ex.Message.Contains("Unauthorized"))
-                NavigationManager.NavigateTo("/", true);
+            if (ex.Message.Contains(
+                    "Unauthorized",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                NavigationManager.NavigateTo(
+                    "/angular/login",
+                    forceLoad: true,
+                    replace: true);
+            }
             else
+            {
                 errorMessage = ex.Message;
+            }
         }
         finally
         {
@@ -473,27 +558,35 @@ else
 
     private async Task PreviousPage()
     {
-        if (pageNumber > 1)
+        if (pageNumber <= 1)
         {
-            pageNumber--;
-            await LoadDoctors();
+            return;
         }
+
+        pageNumber--;
+        await LoadDoctors();
     }
 
     private async Task NextPage()
     {
-        if (!disableNextButton)
+        if (disableNextButton)
         {
-            pageNumber++;
-            await LoadDoctors();
+            return;
         }
+
+        pageNumber++;
+        await LoadDoctors();
     }
 
     private void OpenStatusDialog(DoctorListDto doctor)
     {
+        errorMessage = "";
+
         selectedDoctorId = doctor.DoctorId;
         selectedDoctorName = doctor.FullName;
-        selectedStatusValue = doctor.IsActive ? "true" : "false";
+        selectedStatusValue =
+            doctor.IsActive ? "true" : "false";
+
         showStatusDialog = true;
     }
 
@@ -504,25 +597,35 @@ else
 
     private async Task UpdateDoctorStatus()
     {
-        bool newStatus = bool.Parse(selectedStatusValue);
+        errorMessage = "";
 
-        bool result = await DoctorService.UpdateDoctorStatusAsync(
-            selectedDoctorId,
-            newStatus);
+        try
+        {
+            var newStatus =
+                bool.Parse(selectedStatusValue);
 
-        if (result)
+            var result =
+                await DoctorService.UpdateDoctorStatusAsync(
+                    selectedDoctorId,
+                    newStatus);
+
+            if (result)
+            {
+                showStatusDialog = false;
+                await LoadDoctors();
+            }
+        }
+        catch (Exception ex)
         {
             showStatusDialog = false;
-            await LoadDoctors();
-        }
-        else
-        {
-            errorMessage = "Failed to update doctor status.";
+            errorMessage = ex.Message;
         }
     }
 
     private void OpenEditDialog(DoctorListDto doctor)
     {
+        errorMessage = "";
+
         selectedDoctorId = doctor.DoctorId;
 
         editDoctorModel = new UpdateDoctorDto
@@ -542,23 +645,32 @@ else
 
     private async Task UpdateDoctor()
     {
-        bool result = await DoctorService.UpdateDoctorAsync(
-            selectedDoctorId,
-            editDoctorModel);
+        errorMessage = "";
 
-        if (result)
+        try
+        {
+            var result =
+                await DoctorService.UpdateDoctorAsync(
+                    selectedDoctorId,
+                    editDoctorModel);
+
+            if (result)
+            {
+                showEditDialog = false;
+                await LoadDoctors();
+            }
+        }
+        catch (Exception ex)
         {
             showEditDialog = false;
-            await LoadDoctors();
-        }
-        else
-        {
-            errorMessage = "Failed to update doctor.";
+            errorMessage = ex.Message;
         }
     }
 
     private void OpenDeleteDialog(DoctorListDto doctor)
     {
+        errorMessage = "";
+
         selectedDoctorId = doctor.DoctorId;
         selectedDoctorName = doctor.FullName;
         showDeleteDialog = true;
@@ -566,17 +678,29 @@ else
 
     private void CloseDeleteDialog()
     {
+        if (isDeleting)
+        {
+            return;
+        }
+
         showDeleteDialog = false;
+    }
+
+    private void ClearErrorMessage()
+    {
+        errorMessage = "";
     }
 
     private async Task ConfirmDeleteDoctor()
     {
-        errorMessage = string.Empty;
+        errorMessage = "";
+        isDeleting = true;
 
         try
         {
-            var result = await DoctorService.DeleteDoctorAsync(
-                selectedDoctorId);
+            var result =
+                await DoctorService.DeleteDoctorAsync(
+                    selectedDoctorId);
 
             if (result)
             {
@@ -598,9 +722,15 @@ else
             errorMessage =
                 "An unexpected error occurred while deleting the doctor.";
         }
+        finally
+        {
+            isDeleting = false;
+        }
     }
+
     private void GoToDoctorRegister()
     {
-        NavigationManager.NavigateTo("/blazor/doctor/register");
+        NavigationManager.NavigateTo(
+            "/blazor/doctor/register");
     }
 }
