@@ -39,6 +39,15 @@ testem.log
 /typings
 __screenshots__/
 
+# ==========================
+# Test Results
+# ==========================
+.sonarqube/
+run-sonar.bat
+TestResults/
+
+appsettings.Development.json
+
 # System files
 .DS_Store
 Thumbs.db

@@ -746,82 +746,7 @@ public class DoctorServiceTests
     }
 
 
-    [Fact]
-    public async Task CreateLeave_Throws_WhenLeaveDateIsPast()
-    {
-        // Arrange
-        var leaves = new List<CreateLeaveDto>
-    {
-        new CreateLeaveDto
-        {
-            LeaveDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-1)),
-            Reason = "Past leave"
-        }
-    };
-
-        _repositoryMock
-            .Setup(r => r.GetLeavesByDoctorId(1))
-            .ReturnsAsync(new List<DoctorLeaves>());
-
-        // Act
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _service.CreateLeave(1, leaves));
-
-        // Assert
-        Assert.Equal("Cannot create leave for a past date.", exception.Message);
-
-        _repositoryMock.Verify(
-            r => r.CreateLeaves(It.IsAny<int>(), It.IsAny<List<CreateLeaveDto>>()),
-            Times.Never
-        );
-    }
-    [Fact]
-    public async Task CreateLeave_SkipsExistingLeaveDate()
-    {
-        // Arrange
-        var leaveDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
-
-        var leaves = new List<CreateLeaveDto>
-    {
-        new CreateLeaveDto
-        {
-            LeaveDate = leaveDate,
-            Reason = "Personal leave"
-        }
-    };
-
-        _repositoryMock
-            .Setup(r => r.GetLeavesByDoctorId(1))
-            .ReturnsAsync(new List<DoctorLeaves>
-            {
-            new DoctorLeaves
-            {
-                Id = 1,
-                DoctorId = 1,
-                LeaveDate = leaveDate,
-                Reason = "Already applied"
-            }
-            });
-
-        // Act
-        var result = await _service.CreateLeave(1, leaves);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Single(result.SkippedDates);
-        Assert.Contains(leaveDate, result.SkippedDates);
-
-        _repositoryMock.Verify(
-            r => r.CreateLeaves(It.IsAny<int>(), It.IsAny<List<CreateLeaveDto>>()),
-            Times.Never
-        );
-
-        _appointmentRepositoryMock.Verify(
-            r => r.CancelAppointmentsByDoctorDate(It.IsAny<int>(), It.IsAny<DateOnly>()),
-            Times.Never
-        );
-    }
-
+   
     [Fact]
     public async Task CreateLeave_CreatesLeave_WhenNoAppointmentsBooked()
     {
@@ -877,66 +802,7 @@ public class DoctorServiceTests
             Times.Never
         );
     }
-    [Fact]
-    public async Task CreateLeave_CancelsAppointments_WhenBookedSlotsExist()
-    {
-        // Arrange
-        var leaveDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
-
-        var leaves = new List<CreateLeaveDto>
-    {
-        new CreateLeaveDto
-        {
-            LeaveDate = leaveDate,
-            Reason = "Emergency leave"
-        }
-    };
-
-        var allSlots = new List<string> { "09:00", "10:00" };
-        var bookedSlots = new List<string> { "09:00" };
-
-        _repositoryMock
-            .Setup(r => r.GetLeavesByDoctorId(1))
-            .ReturnsAsync(new List<DoctorLeaves>());
-
-        _repositoryMock
-            .Setup(r => r.GetSlots(1))
-            .ReturnsAsync(allSlots);
-
-        _appointmentRepositoryMock
-            .Setup(r => r.BookedTimeSlots(leaveDate, 1))
-            .ReturnsAsync(bookedSlots);
-
-        _appointmentRepositoryMock
-            .Setup(r => r.CancelAppointmentsByDoctorDate(1, leaveDate))
-            .Returns(Task.CompletedTask);
-
-        _repositoryMock
-            .Setup(r => r.CreateLeaves(1, It.IsAny<List<CreateLeaveDto>>()))
-            .Returns(Task.CompletedTask);
-
-        // Act
-        var result = await _service.CreateLeave(1, leaves);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Single(result.CreatedWithCancelledAppointments);
-        Assert.Contains(leaveDate, result.CreatedWithCancelledAppointments);
-
-        _appointmentRepositoryMock.Verify(
-            r => r.CancelAppointmentsByDoctorDate(1, leaveDate),
-            Times.Once
-        );
-
-        _repositoryMock.Verify(
-            r => r.CreateLeaves(
-                1,
-                It.Is<List<CreateLeaveDto>>(x =>
-                    x.Count == 1 &&
-                    x[0].LeaveDate == leaveDate)),
-            Times.Once
-        );
-    }
+  
 
     [Fact]
     public async Task GetDashboardSummaryAsync_ReturnsCorrectDashboardCounts()

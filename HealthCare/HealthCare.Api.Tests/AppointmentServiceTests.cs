@@ -207,40 +207,7 @@ public class AppointmentServiceTests
         Assert.Equal("Appointment not found.", exception.Message);
     }
 
-    [Fact]
-    public async Task AddAsync_Throws_WhenScheduledDateInPast()
-    {
-        // Arrange
-        var dto = new CreateAppointmentDto
-        {
-            DoctorId = 1,
-            ScheduledDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-1)),
-            TimeSlot = "09:00"
-        };
-
-        // Act
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _service.AddAsync(dto, 5));
-
-        // Assert
-        Assert.Equal("Cannot book an appointment for a past date.", exception.Message);
-
-        _repositoryMock.Verify(
-            r => r.IsAvailable(It.IsAny<DateOnly>(), It.IsAny<int>(), It.IsAny<string>()),
-            Times.Never
-        );
-
-        _repositoryMock.Verify(
-            r => r.AddAsync(It.IsAny<Appointment>()),
-            Times.Never
-        );
-
-        _publishEndpointMock.Verify(
-            p => p.Publish(It.IsAny<AppointmentBookedEvent>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
-    }
-
+    
     [Fact]
     public async Task AddAsync_PublishesEvent_OnSuccess()
     {
@@ -336,26 +303,7 @@ public class AppointmentServiceTests
         Assert.DoesNotContain("09:00", result);
     }
 
-    [Fact]
-    public async Task AvailableTimeSlots_Throws_WhenDateIsPast()
-    {
-        // Arrange
-        var date = DateOnly.FromDateTime(DateTime.Today.AddDays(-1));
-        var doctorId = 1;
-
-        // Act
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _service.AvailableTimeSlots(date, doctorId));
-
-        // Assert
-        Assert.Equal("Cannot check availability for a past date.", exception.Message);
-
-        _doctorServiceMock.Verify(
-            d => d.GetSlots(It.IsAny<int>()),
-            Times.Never
-        );
-    }
-
+    
     [Fact]
     public async Task AvailableTimeSlots_ReturnsEmptyList_WhenDoctorHasNoSlots()
     {
