@@ -1,41 +1,59 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
 import {
   Appointment,
   CreateAppointmentRequest,
   UpdateAppointmentStatusRequest
 } from '../models/appointment.model';
-import { environment } from '../../../environments/environment';
+
+const APPOINTMENT_API_PATH = '/appointments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppointmentService {
   private readonly http = inject(HttpClient);
-  private readonly appointmentUrl = `${environment.apiBaseUrl}/appointments`;
+
+  private readonly appointmentUrl =
+    `${environment.apiBaseUrl}${APPOINTMENT_API_PATH}`;
 
   getAllAppointments(): Observable<Appointment[]> {
-    return this.http.get<Appointment[]>(this.appointmentUrl);
+    return this.http.get<Appointment[]>(
+      this.appointmentUrl
+    );
   }
 
   createAppointment(
     data: CreateAppointmentRequest
   ): Observable<Appointment> {
-    return this.http.post<Appointment>(this.appointmentUrl, data);
+    return this.http.post<Appointment>(
+      this.appointmentUrl,
+      data
+    );
   }
 
   getMyAppointments(): Observable<Appointment[]> {
-    return this.http.get<Appointment[]>(`${this.appointmentUrl}/my`);
+    return this.http.get<Appointment[]>(
+      `${this.appointmentUrl}/my`
+    );
   }
 
-  getMyDoctorAppointments(): Observable<Appointment[]> {
-    return this.http.get<Appointment[]>(`${this.appointmentUrl}/doctor/my`);
+  getMyDoctorAppointments():
+    Observable<Appointment[]> {
+    return this.http.get<Appointment[]>(
+      `${this.appointmentUrl}/doctor/my`
+    );
   }
 
-  getAppointmentById(id: number): Observable<Appointment> {
-    return this.http.get<Appointment>(`${this.appointmentUrl}/${id}`);
+  getAppointmentById(
+    id: number
+  ): Observable<Appointment> {
+    return this.http.get<Appointment>(
+      `${this.appointmentUrl}/${id}`
+    );
   }
 
   updateAppointmentStatus(
@@ -48,7 +66,11 @@ export class AppointmentService {
     );
   }
 
-  deleteAppointment(id: number): Observable<object> {
-    return this.http.delete<object>(`${this.appointmentUrl}/${id}`);
+  deleteAppointment(
+    id: number
+  ): Observable<object> {
+    return this.http.delete<object>(
+      `${this.appointmentUrl}/${id}`
+    );
   }
 }

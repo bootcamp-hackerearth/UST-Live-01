@@ -40,6 +40,11 @@ interface TimeSlotView {
 }
 
 const PRINT_DELAY_IN_MS = 350;
+const PRINT_WINDOW_FEATURES =
+  'width=900,height=700';
+
+const DATE_ONLY_PATTERN =
+  /^(\d{4})-(\d{2})-(\d{2})$/;
 
 const TIME_SLOTS: readonly string[] = [
   '09:00 AM - 10:00 AM',
@@ -70,6 +75,7 @@ export class BookAppointment {
   private readonly appointmentService = inject(AppointmentService);
 
   private readonly doctorPageSize = 6;
+  private availabilityRequestId = 0;
 
   readonly patient = signal<Patient | null>(null);
   readonly doctors = signal<Doctor[]>([]);
@@ -310,6 +316,23 @@ export class BookAppointment {
 
     const formValue = this.bookingForm.getRawValue();
 
+    const selectedSlotIsAvailable =
+      this.availabilityLoaded() &&
+      !this.loadingAvailability() &&
+      this.availableSlots().includes(
+        formValue.timeSlot
+      );
+
+    if (!selectedSlotIsAvailable) {
+      this.errorMessage.set(
+        'Selected time slot is no longer available. Please choose another time slot.'
+      );
+
+      this.clearSelectedTimeSlot();
+      this.loadSelectedDoctorAvailability();
+      return;
+    }
+
     this.submitting.set(true);
 
     this.appointmentService.createAppointment({
@@ -318,7 +341,7 @@ export class BookAppointment {
       scheduledDate: formValue.scheduledDate,
       timeSlot: formValue.timeSlot
     }).subscribe({
-      next: () => {
+      next: (createdAppointment) => {
         this.submitting.set(false);
 
         this.successDialog.set({
@@ -326,7 +349,9 @@ export class BookAppointment {
           specialisation: doctor.specialisation,
           scheduledDate: formValue.scheduledDate,
           timeSlot: formValue.timeSlot,
-          status: 'Pending'
+          status:
+            createdAppointment.status?.trim() ||
+            'Pending'
         });
 
         this.resetBookingSelection();
@@ -350,7 +375,11 @@ export class BookAppointment {
   getDoctorDisplayName(name: string): string {
     const cleanName = name.trim();
 
-    if (cleanName.toLowerCase().startsWith('dr')) {
+    if (!cleanName) {
+      return 'Doctor not assigned';
+    }
+
+    if (/^dr\.?\s/i.test(cleanName)) {
       return cleanName;
     }
 
@@ -360,6 +389,10 @@ export class BookAppointment {
   getDateErrorMessage(): string {
     if (this.scheduledDate.hasError('required')) {
       return 'Appointment date is required.';
+    }
+
+    if (this.scheduledDate.hasError('invalidDate')) {
+      return 'Enter a valid appointment date.';
     }
 
     if (this.scheduledDate.hasError('pastDate')) {
@@ -540,6 +573,9 @@ export class BookAppointment {
     const doctorId = this.selectedDoctorId();
     const date = this.selectedDate();
 
+    const requestId =
+      ++this.availabilityRequestId;
+
     this.availableSlots.set([]);
     this.availabilityLoaded.set(false);
 
@@ -555,12 +591,26 @@ export class BookAppointment {
       .getDoctorAvailability(doctorId, date)
       .subscribe({
         next: (availability) => {
+          if (
+            requestId !==
+            this.availabilityRequestId
+          ) {
+            return;
+          }
+
           this.applyDoctorAvailability(availability);
           this.loadingAvailability.set(false);
           this.availabilityLoaded.set(true);
           this.clearUnavailableSelectedTimeSlot();
         },
         error: (error: unknown) => {
+          if (
+            requestId !==
+            this.availabilityRequestId
+          ) {
+            return;
+          }
+
           this.loadingAvailability.set(false);
           this.availabilityLoaded.set(false);
           this.availableSlots.set([]);
@@ -671,6 +721,8 @@ export class BookAppointment {
   }
 
   private resetBookingSelection(): void {
+    this.availabilityRequestId += 1;
+
     this.bookingForm.patchValue({
       doctorId: 0,
       scheduledDate: '',
@@ -688,6 +740,7 @@ export class BookAppointment {
   }
 
   private clearSelectedDoctor(): void {
+    this.availabilityRequestId += 1;
     this.selectedDoctorId.set(0);
     this.bookingForm.controls.doctorId.setValue(0);
     this.availableSlots.set([]);
@@ -722,30 +775,51 @@ export class BookAppointment {
       return null;
     }
 
-    const selectedDate = new Date(control.value);
-    const today = new Date();
+    const selectedDate =
+      BookAppointment.parseDateOnly(
+        String(control.value)
+      );
 
-    selectedDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-
-    if (selectedDate < today) {
+    if (!selectedDate) {
       return {
-        pastDate: true
+        invalidDate: true
       };
     }
 
-    return null;
-  }
-  printBookedAppointment(dialog: AppointmentSuccessDialog): void {
-  const patientName = this.escapeHtml(this.patient()?.fullName ?? 'Patient');
-  const doctorName = this.escapeHtml(dialog.doctorName);
-  const specialisation = this.escapeHtml(dialog.specialisation);
-  const scheduledDate = this.escapeHtml(dialog.scheduledDate);
-  const timeSlot = this.escapeHtml(dialog.timeSlot);
-  const status = this.escapeHtml(dialog.status);
-  const generatedOn = this.escapeHtml(new Date().toLocaleString());
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  const printableDocument = `
+    return selectedDate < today
+      ? { pastDate: true }
+      : null;
+  }
+  printBookedAppointment(
+    dialog: AppointmentSuccessDialog
+  ): void {
+    const patientName = this.escapeHtml(
+      this.patient()?.fullName ?? 'Patient'
+    );
+
+    const doctorName =
+      this.escapeHtml(dialog.doctorName);
+
+    const specialisation =
+      this.escapeHtml(dialog.specialisation);
+
+    const scheduledDate =
+      this.escapeHtml(dialog.scheduledDate);
+
+    const timeSlot =
+      this.escapeHtml(dialog.timeSlot);
+
+    const status =
+      this.escapeHtml(dialog.status);
+
+    const generatedOn = this.escapeHtml(
+      new Date().toLocaleString()
+    );
+
+    const printableDocument = `
     <!DOCTYPE html>
     <html>
       <head>
@@ -909,11 +983,11 @@ export class BookAppointment {
     </html>
   `;
 
-  this.openPrintableDocument(
-    printableDocument,
-    'Please allow popups to download or print the appointment.'
-  );
-}
+    this.openPrintableDocument(
+      printableDocument,
+      'Please allow popups to download or print the appointment.'
+    );
+  }
 
   private openPrintableDocument(
     printContent: string,
@@ -922,7 +996,7 @@ export class BookAppointment {
     const printWindow = globalThis.open(
       '',
       '_blank',
-      'width=900,height=700'
+      PRINT_WINDOW_FEATURES
     );
 
     if (!printWindow) {
@@ -948,13 +1022,14 @@ export class BookAppointment {
   }
 
   private escapeHtml(value: string): string {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
+    return value
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
   private static maxSixMonthsValidator(
     control: AbstractControl
   ): ValidationErrors | null {
@@ -962,19 +1037,56 @@ export class BookAppointment {
       return null;
     }
 
-    const selectedDate = new Date(control.value);
-    const maxDate = new Date();
+    const selectedDate =
+      BookAppointment.parseDateOnly(
+        String(control.value)
+      );
 
-    maxDate.setMonth(maxDate.getMonth() + 6);
-    selectedDate.setHours(0, 0, 0, 0);
-    maxDate.setHours(0, 0, 0, 0);
-
-    if (selectedDate > maxDate) {
+    if (!selectedDate) {
       return {
-        beyondSixMonths: true
+        invalidDate: true
       };
     }
 
-    return null;
+    const maxDate = new Date();
+    maxDate.setMonth(maxDate.getMonth() + 6);
+    maxDate.setHours(0, 0, 0, 0);
+
+    return selectedDate > maxDate
+      ? { beyondSixMonths: true }
+      : null;
+  }
+
+  private static parseDateOnly(
+    value: string
+  ): Date | null {
+    const match =
+      DATE_ONLY_PATTERN.exec(value.trim());
+
+    if (!match) {
+      return null;
+    }
+
+    const [, yearText, monthText, dayText] =
+      match;
+
+    const year = Number.parseInt(yearText, 10);
+    const month = Number.parseInt(monthText, 10);
+    const day = Number.parseInt(dayText, 10);
+
+    const parsedDate = new Date(
+      year,
+      month - 1,
+      day
+    );
+
+    const isValidDate =
+      parsedDate.getFullYear() === year &&
+      parsedDate.getMonth() === month - 1 &&
+      parsedDate.getDate() === day;
+
+    return isValidDate
+      ? parsedDate
+      : null;
   }
 }

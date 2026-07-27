@@ -265,7 +265,7 @@ export class MyAppointments {
         error: (error: unknown) => {
           this.loading.set(false);
 
-          this.errorMessage.set(
+          this.appendErrorMessage(
             getFriendlyErrorMessage(
               error,
               'Could not load your appointments.'
@@ -282,8 +282,15 @@ export class MyAppointments {
         next: (records) => {
           this.healthRecords.set(records);
         },
-        error: () => {
+        error: (error: unknown) => {
           this.healthRecords.set([]);
+
+          this.appendErrorMessage(
+            getFriendlyErrorMessage(
+              error,
+              'Appointments loaded, but health records could not be loaded.'
+            )
+          );
         }
       });
   }
@@ -1475,7 +1482,7 @@ export class MyAppointments {
       endDate &&
       startDate > endDate
     ) {
-      return true;
+      return false;
     }
 
     if (
@@ -1679,6 +1686,24 @@ export class MyAppointments {
     return status
       ?.trim()
       .toLowerCase() ?? '';
+  }
+
+  private appendErrorMessage(
+    message: string
+  ): void {
+    const currentMessage =
+      this.errorMessage().trim();
+
+    if (!currentMessage) {
+      this.errorMessage.set(message);
+      return;
+    }
+
+    if (!currentMessage.includes(message)) {
+      this.errorMessage.set(
+        `${currentMessage} ${message}`
+      );
+    }
   }
 
   private formatDate(
