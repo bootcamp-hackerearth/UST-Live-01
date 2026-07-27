@@ -16,10 +16,31 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Clean Workspace') {
+        stage('Checkout Source') {
             steps {
                 deleteDir()
-                checkout scm
+
+                checkout([
+                    $class: 'GitSCM',
+                    branches: scm.branches,
+                    userRemoteConfigs: scm.userRemoteConfigs,
+                    doGenerateSubmoduleConfigurations: false,
+
+                    extensions: [
+                        [
+                            $class: 'CloneOption',
+                            shallow: true,
+                            depth: 1,
+                            noTags: true,
+                            honorRefspec: true,
+                            timeout: 30
+                        ],
+                        [
+                            $class: 'CheckoutOption',
+                            timeout: 30
+                        ]
+                    ]
+                ])
             }
         }
 
