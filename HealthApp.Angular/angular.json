@@ -19,6 +19,11 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
+            "baseHref": "/angular/",
+            "outputPath":{
+              "base": "../HealthApp.Api/wwwroot/angular",
+              "browser": ""
+            },
             "assets": [
               {
                 "glob": "**/*",
