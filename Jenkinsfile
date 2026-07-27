@@ -25,7 +25,6 @@ pipeline {
                     branches: scm.branches,
                     userRemoteConfigs: scm.userRemoteConfigs,
                     doGenerateSubmoduleConfigurations: false,
-
                     extensions: [
                         [
                             $class: 'CloneOption',
@@ -69,7 +68,9 @@ pipeline {
             steps {
                 powershell '''
                 $ErrorActionPreference = "Stop"
+
                 & "./publish-all.ps1"
+
                 if ($LASTEXITCODE -ne 0) {
                     exit $LASTEXITCODE
                 }
@@ -101,9 +102,10 @@ pipeline {
                     }
                 }
 
-                $index = Get-Content -LiteralPath "./artifacts/deployment/wwwroot/blazor/index.html" -Raw
+                $indexPath = "./artifacts/deployment/wwwroot/blazor/index.html"
+                $indexContent = Get-Content -LiteralPath $indexPath -Raw
 
-                if (!$index.Contains('<base href="/blazor/" />')) {
+                if (!$indexContent.Contains('<base href="/blazor/" />')) {
                     throw "Blazor base href is not /blazor/."
                 }
                 '''
@@ -112,18 +114,18 @@ pipeline {
 
         stage('Create Deployment Zip') {
             steps {
-                powershell '''
-                $ErrorActionPreference = "Stop"
+                bat '''
+                if exist deploy-package.zip del /F /Q deploy-package.zip
 
-                if (Test-Path -LiteralPath "./deploy-package.zip") {
-                    Remove-Item -LiteralPath "./deploy-package.zip" -Force
-                }
+                pushd artifacts\deployment
+                jar -cMf ..\..\deploy-package.zip .
+                if errorlevel 1 exit /b 1
+                popd
 
-                Compress-Archive -Path "./artifacts/deployment/*" -DestinationPath "./deploy-package.zip" -Force
-
-                if (!(Test-Path -LiteralPath "./deploy-package.zip")) {
-                    throw "Deployment ZIP was not created."
-                }
+                if not exist deploy-package.zip (
+                    echo ERROR: Deployment ZIP was not created.
+                    exit /b 1
+                )
                 '''
             }
         }
@@ -131,20 +133,56 @@ pipeline {
         stage('Verify Deployment Zip') {
             steps {
                 bat '''
-                jar -tf deploy-package.zip | findstr /X /I "Procfile"
+                jar -tf deploy-package.zip > zip-contents.txt
                 if errorlevel 1 exit /b 1
 
-                jar -tf deploy-package.zip | findstr /X /I "HealthApp.API.dll"
-                if errorlevel 1 exit /b 1
+                findstr /X /I /C:"Procfile" zip-contents.txt
+                if errorlevel 1 (
+                    echo ERROR: Procfile is missing from deployment ZIP.
+                    exit /b 1
+                )
 
-                jar -tf deploy-package.zip | findstr /I "wwwroot/index.html"
-                if errorlevel 1 exit /b 1
+                findstr /X /I /C:"HealthApp.API.dll" zip-contents.txt
+                if errorlevel 1 (
+                    echo ERROR: HealthApp.API.dll is missing from deployment ZIP.
+                    exit /b 1
+                )
 
-                jar -tf deploy-package.zip | findstr /I "wwwroot/blazor/index.html"
-                if errorlevel 1 exit /b 1
+                findstr /I /C:"wwwroot/index.html" zip-contents.txt
+                if errorlevel 1 (
+                    echo ERROR: Angular index.html is missing from deployment ZIP.
+                    exit /b 1
+                )
 
-                jar -tf deploy-package.zip | findstr /I "wwwroot/blazor/_framework/blazor.webassembly.js"
-                if errorlevel 1 exit /b 1
+                findstr /I /C:"wwwroot/blazor/index.html" zip-contents.txt
+                if errorlevel 1 (
+                    echo ERROR: Blazor index.html is missing from deployment ZIP.
+                    exit /b 1
+                )
+
+                findstr /I /C:"wwwroot/blazor/css/app.css" zip-contents.txt
+                if errorlevel 1 (
+                    echo ERROR: Blazor app.css is missing from deployment ZIP.
+                    exit /b 1
+                )
+
+                findstr /I /C:"wwwroot/blazor/lib/bootstrap/dist/css/bootstrap.min.css" zip-contents.txt
+                if errorlevel 1 (
+                    echo ERROR: Bootstrap CSS is missing from deployment ZIP.
+                    exit /b 1
+                )
+
+                findstr /I /C:"wwwroot/blazor/HealthApp.AdminBlazor.styles.css" zip-contents.txt
+                if errorlevel 1 (
+                    echo ERROR: Blazor scoped stylesheet is missing from deployment ZIP.
+                    exit /b 1
+                )
+
+                findstr /I /C:"wwwroot/blazor/_framework/blazor.webassembly.js" zip-contents.txt
+                if errorlevel 1 (
+                    echo ERROR: Blazor startup JavaScript is missing from deployment ZIP.
+                    exit /b 1
+                )
                 '''
             }
         }
