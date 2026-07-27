@@ -571,16 +571,32 @@ else
 
     private async Task ConfirmDeleteDoctor()
     {
-        bool result = await DoctorService.DeleteDoctorAsync(selectedDoctorId);
+        errorMessage = string.Empty;
 
-        if (result)
+        try
+        {
+            var result = await DoctorService.DeleteDoctorAsync(
+                selectedDoctorId);
+
+            if (result)
+            {
+                showDeleteDialog = false;
+                await LoadDoctors();
+            }
+        }
+        catch (InvalidOperationException)
         {
             showDeleteDialog = false;
-            await LoadDoctors();
+
+            errorMessage =
+                "Failed to delete Doctor. It may be referenced by existing appointments or health records.";
         }
-        else
+        catch (Exception)
         {
-            errorMessage = "Failed to delete doctor.";
+            showDeleteDialog = false;
+
+            errorMessage =
+                "An unexpected error occurred while deleting the doctor.";
         }
     }
     private void GoToDoctorRegister()
