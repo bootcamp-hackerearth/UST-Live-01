@@ -1,12 +1,12 @@
 <header class="topbar">
   <div class="topbar-left">
-    <p>
+    <h1 class="topbar-greeting">
       {{ getGreeting() }}, {{ getFirstName() }}
-    </p>
-
-    <h1>
-      {{ authService.role() }} Portal
     </h1>
+
+    <p class="topbar-portal">
+      {{ authService.role() }} Portal
+    </p>
   </div>
 
   <div class="topbar-right">
@@ -479,8 +479,9 @@
 
           <strong>
             {{
-              notification.createdDate
-                | date: 'dd MMM yyyy, hh:mm a'
+              getNotificationReceivedDate(
+                notification.createdDate
+              ) | date: 'dd MMM yyyy, hh:mm a'
             }}
           </strong>
 

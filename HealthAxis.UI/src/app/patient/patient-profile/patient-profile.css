@@ -468,6 +468,23 @@
   box-shadow: 0 0 0 3px rgba(91, 61, 245, 0.1);
 }
 
+.form-group input:disabled {
+  color: #667085;
+  background: #eef1f6;
+  border-color: #d8dde7;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.field-help {
+  min-height: 27px;
+  margin-top: 5px;
+  color: #667085;
+  font-size: 10px;
+  line-height: 1.4;
+  font-weight: 650;
+}
+
 .field-error {
   min-height: 27px;
   margin-top: 5px;
@@ -515,6 +532,28 @@
 .close-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.password-feedback {
+  margin-top: 15px;
+  padding: 12px 14px;
+  border: 1px solid;
+  border-radius: 11px;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 750;
+}
+
+.password-success {
+  border-color: #a8e4d2;
+  color: #087254;
+  background: #e8f8f2;
+}
+
+.password-error {
+  border-color: #ffc8ce;
+  color: #b42330;
+  background: #fff0f1;
 }
 
 /* Dialogs */

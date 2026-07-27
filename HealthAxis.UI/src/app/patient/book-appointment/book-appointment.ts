@@ -40,7 +40,6 @@ interface TimeSlotView {
 }
 
 const PRINT_DELAY_IN_MS = 350;
-const PRINT_RESOURCE_CLEANUP_DELAY_IN_MS = 60000;
 
 const TIME_SLOTS: readonly string[] = [
   '09:00 AM - 10:00 AM',
@@ -737,7 +736,7 @@ export class BookAppointment {
 
     return null;
   }
-printBookedAppointment(dialog: AppointmentSuccessDialog): void {
+  printBookedAppointment(dialog: AppointmentSuccessDialog): void {
   const patientName = this.escapeHtml(this.patient()?.fullName ?? 'Patient');
   const doctorName = this.escapeHtml(dialog.doctorName);
   const specialisation = this.escapeHtml(dialog.specialisation);
@@ -931,45 +930,24 @@ printBookedAppointment(dialog: AppointmentSuccessDialog): void {
       return;
     }
 
-    const printDocumentUrl =
-      globalThis.URL.createObjectURL(
-        new Blob(
-          [printContent],
-          {
-            type: 'text/html;charset=utf-8'
-          }
-        )
-      );
-
-    printWindow.onload = (): void => {
-      printWindow.focus();
-
-      globalThis.setTimeout(
-        () => printWindow.print(),
-        PRINT_DELAY_IN_MS
-      );
-    };
+    printWindow.document.open();
+    printWindow.document.write(printContent);
+    printWindow.document.close();
 
     printWindow.onafterprint = (): void => {
-      globalThis.URL.revokeObjectURL(
-        printDocumentUrl
-      );
-
       printWindow.close();
     };
 
-    globalThis.setTimeout(
-      () => globalThis.URL.revokeObjectURL(
-        printDocumentUrl
-      ),
-      PRINT_RESOURCE_CLEANUP_DELAY_IN_MS
-    );
+    printWindow.focus();
 
-    printWindow.location.href =
-      printDocumentUrl;
+    globalThis.setTimeout(() => {
+      if (!printWindow.closed) {
+        printWindow.print();
+      }
+    }, PRINT_DELAY_IN_MS);
   }
 
-private escapeHtml(value: string): string {
+  private escapeHtml(value: string): string {
   return value
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')

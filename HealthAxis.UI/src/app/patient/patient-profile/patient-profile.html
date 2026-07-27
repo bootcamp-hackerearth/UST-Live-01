@@ -327,6 +327,24 @@
 
       </form>
 
+      @if (passwordSuccessMessage()) {
+        <div
+          class="password-feedback password-success"
+          role="status"
+        >
+          {{ passwordSuccessMessage() }}
+        </div>
+      }
+
+      @if (passwordErrorMessage()) {
+        <div
+          class="password-feedback password-error"
+          role="alert"
+        >
+          {{ passwordErrorMessage() }}
+        </div>
+      }
+
     </section>
 
   }
@@ -496,15 +514,16 @@
             <input
               id="email"
               type="email"
-              placeholder="Enter email address"
               autocomplete="email"
               formControlName="email"
+              aria-describedby="emailEditHelp"
             />
 
-            <small class="field-error">
-              @if (email.invalid && email.touched) {
-                Enter a valid email address.
-              }
+            <small
+              id="emailEditHelp"
+              class="field-help"
+            >
+              Email is linked to your login and cannot be edited here.
             </small>
 
           </div>

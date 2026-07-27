@@ -44,6 +44,8 @@ export class PatientProfile {
   readonly passwordSaving = signal(false);
   readonly errorMessage = signal('');
   readonly successDialogMessage = signal('');
+  readonly passwordSuccessMessage = signal('');
+  readonly passwordErrorMessage = signal('');
   readonly isEditDialogOpen = signal(false);
 
   readonly maxDate = this.formatDateForInput(new Date());
@@ -94,14 +96,17 @@ export class PatientProfile {
         Validators.pattern(/^[6-9]\d{9}$/)
       ]
     ],
-    email: [
-      '',
+    email: this.formBuilder.nonNullable.control(
+      {
+        value: '',
+        disabled: true
+      },
       [
         Validators.required,
         Validators.email,
         Validators.maxLength(100)
       ]
-    ]
+    )
   });
 
   readonly passwordForm = this.formBuilder.nonNullable.group(
@@ -151,10 +156,6 @@ export class PatientProfile {
 
   get phoneNumber() {
     return this.editForm.controls.phoneNumber;
-  }
-
-  get email() {
-    return this.editForm.controls.email;
   }
 
   get currentPassword() {
@@ -212,6 +213,10 @@ export class PatientProfile {
       email: currentPatient.email
     });
 
+    this.editForm.controls.email.disable({
+      emitEvent: false
+    });
+
     this.isEditDialogOpen.set(true);
   }
 
@@ -250,7 +255,7 @@ export class PatientProfile {
       dateOfBirth: formValue.dateOfBirth,
       gender: formValue.gender,
       phoneNumber: formValue.phoneNumber.trim(),
-      email: formValue.email.trim()
+      email: currentPatient.email
     };
 
     this.saving.set(true);
@@ -281,14 +286,16 @@ export class PatientProfile {
   }
 
   changePassword(): void {
-    this.errorMessage.set('');
-    this.successDialogMessage.set('');
+    this.passwordSuccessMessage.set('');
+    this.passwordErrorMessage.set('');
 
     if (this.passwordForm.invalid) {
       this.passwordForm.markAllAsTouched();
-      this.errorMessage.set(
+
+      this.passwordErrorMessage.set(
         'Please correct the password details.'
       );
+
       return;
     }
 
@@ -312,14 +319,14 @@ export class PatientProfile {
           confirmPassword: ''
         });
 
-        this.successDialogMessage.set(
+        this.passwordSuccessMessage.set(
           'Password changed successfully.'
         );
       },
       error: (error: unknown) => {
         this.passwordSaving.set(false);
 
-        this.errorMessage.set(
+        this.passwordErrorMessage.set(
           getFriendlyErrorMessage(
             error,
             'Could not change password.'

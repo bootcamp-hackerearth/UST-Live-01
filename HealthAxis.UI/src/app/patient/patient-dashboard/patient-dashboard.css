@@ -90,7 +90,7 @@
   font-weight: 900;
 }
 
-.greeting-text {
+.welcome-text {
   display: block;
   color: #4f5f7c;
   font-size: clamp(20px, 2.3vw, 28px);
@@ -681,7 +681,7 @@
     grid-template-columns: 1fr;
   }
 
-  .greeting-text {
+  .welcome-text {
     font-size: 20px;
   }
 

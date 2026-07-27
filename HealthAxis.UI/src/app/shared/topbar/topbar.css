@@ -32,23 +32,29 @@
 }
 
 .topbar-left {
-  padding-left: 12px;
-  border-left: 2px solid #d8d2ff;
+  min-width: 0;
+  padding-left: 14px;
+  border-left: 3px solid #d8d2ff;
 }
 
-.topbar-left p {
+.topbar-greeting {
   margin: 0;
-  color: #3c506e;
-  font-size: 14px;
-  font-weight: 700;
+  overflow-wrap: anywhere;
+  color: var(--text-dark);
+  font-size: clamp(26px, 2.4vw, 36px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-weight: 900;
 }
 
-.topbar-left h1 {
+.topbar-portal {
   margin: 7px 0 0;
-  color: var(--text-dark);
-  font-size: 31px;
-  line-height: 1;
-  font-weight: 900;
+  color: var(--primary-color);
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 .topbar-right {
@@ -918,6 +924,14 @@
   .topbar {
     margin: 12px;
     padding: 18px;
+  }
+
+  .topbar-greeting {
+    font-size: 25px;
+  }
+
+  .topbar-portal {
+    font-size: 11px;
   }
 
   .topbar-right {

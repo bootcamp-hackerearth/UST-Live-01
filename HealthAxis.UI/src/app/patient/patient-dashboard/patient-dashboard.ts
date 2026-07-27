@@ -37,7 +37,6 @@ export class PatientDashboard {
   readonly appointments = signal<Appointment[]>([]);
   readonly errorMessage = signal('');
 
-  readonly greeting = this.getGreeting();
 
   readonly patientDisplayName = computed(() => {
     const fullName = this.patient()?.fullName?.trim();
@@ -236,17 +235,4 @@ export class PatientDashboard {
     return status?.trim().toLowerCase() ?? '';
   }
 
-  private getGreeting(): string {
-    const currentHour = new Date().getHours();
-
-    if (currentHour < 12) {
-      return 'Good morning';
-    }
-
-    if (currentHour < 17) {
-      return 'Good afternoon';
-    }
-
-    return 'Good evening';
-  }
 }

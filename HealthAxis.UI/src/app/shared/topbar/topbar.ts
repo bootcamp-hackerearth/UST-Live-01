@@ -277,12 +277,14 @@ export class Topbar implements OnDestroy {
   getNotificationTime(
     createdDate: string
   ): string {
-    const createdTime =
-      new Date(createdDate).getTime();
+    const parsedDate =
+      this.parseUtcDate(createdDate);
 
-    if (Number.isNaN(createdTime)) {
+    if (!parsedDate) {
       return '';
     }
+
+    const createdTime = parsedDate.getTime();
 
     const elapsedSeconds = Math.max(
       0,
@@ -321,8 +323,13 @@ export class Topbar implements OnDestroy {
         : `${elapsedDays} days ago`;
     }
 
-    return new Date(createdDate)
-      .toLocaleDateString();
+    return parsedDate.toLocaleDateString();
+  }
+
+  getNotificationReceivedDate(
+    createdDate: string
+  ): Date | null {
+    return this.parseUtcDate(createdDate);
   }
 
   getNotificationTypeLabel(
@@ -511,6 +518,29 @@ export class Topbar implements OnDestroy {
           );
         }
       });
+  }
+
+  private parseUtcDate(
+    createdDate: string
+  ): Date | null {
+    const value = createdDate.trim();
+
+    if (!value) {
+      return null;
+    }
+
+    const includesTimeZone =
+      /(?:z|[+-]\d{2}:\d{2})$/i.test(value);
+
+    const utcValue = includesTimeZone
+      ? value
+      : `${value}Z`;
+
+    const parsedDate = new Date(utcValue);
+
+    return Number.isNaN(parsedDate.getTime())
+      ? null
+      : parsedDate;
   }
 
   private replaceKnownDoctorName(
