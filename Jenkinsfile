@@ -18,7 +18,7 @@ pipeline {
         stage('Build Angular') {
             steps {
                 dir('HealthAxis.AngularApp') {
-                    bat 'npm ci'
+                    bat 'npm install'
                     bat 'npm run build'
                 }
             }
