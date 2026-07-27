@@ -1,8 +1,8 @@
-﻿namespace HealthApp.API.Options
-{
-    public class GarnetOptions
-    {
-        public string ConnectionString { get; set; } = "localhost:6379";
-        public string InstanceName { get; set; } = "HealthApp:";
-    }
-}
+﻿//namespace HealthApp.API.Options
+//{
+//    public class GarnetOptions
+//    {
+//        public string ConnectionString { get; set; } = "localhost:6379";
+//        public string InstanceName { get; set; } = "HealthApp:";
+//    }
+//}

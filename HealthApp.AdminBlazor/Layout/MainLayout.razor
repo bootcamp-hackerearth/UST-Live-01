@@ -21,7 +21,7 @@
         </div>
 
         <nav class="nav-list">
-            <NavLink href="/dashboard" Match="NavLinkMatch.All" title="Dashboard">
+            <NavLink href="/blazor/dashboard" Match="NavLinkMatch.All" title="Dashboard">
                 <span class="nav-icon">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M3 11.5L12 4l9 7.5v8.5a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-8.5z" />
@@ -30,12 +30,12 @@
                 <span class="nav-text">Dashboard</span>
             </NavLink>
 
-            <NavLink href="/doctors" title="Doctor Management">
+            <NavLink href="/blazor/doctors" title="Doctor Management">
                 <span class="nav-icon doctor-plus-icon">✚</span>
                 <span class="nav-text">Doctor Management</span>
             </NavLink>
 
-            <NavLink href="/reports/appointments" title="Appointments Report">
+            <NavLink href="/blazor/reports/appointments" title="Appointments Report">
                 <span class="nav-icon">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M7 2h2v3H7V2zm8 0h2v3h-2V2z" />
@@ -45,7 +45,7 @@
                 <span class="nav-text">Appointments Report</span>
             </NavLink>
 
-            <NavLink href="/patients" title="Patient Management">
+            <NavLink href="/blazor/patients" title="Patient Management">
                 <span class="nav-icon">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z" />
@@ -126,7 +126,7 @@
 }
 
 @code {
-    private const string AngularLoginUrl = "http://localhost:4200/login";
+    private const string AngularLoginUrl = "/login";
 
     private bool isSidebarCollapsed = true;
     private bool showSidebarClickAway;

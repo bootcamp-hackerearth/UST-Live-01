@@ -4,7 +4,6 @@ using HealthApp.API.Exceptions;
 using HealthApp.API.Identity;
 using HealthApp.API.Mappings;
 using HealthApp.API.Messaging;
-using HealthApp.API.Options;
 using HealthApp.API.Repository.Impl;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Impl;
@@ -19,6 +18,7 @@ using Serilog;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.StaticFiles;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -37,7 +37,8 @@ try
                 .Enrich.FromLogContext();
         });
 
-    builder.Services.AddControllers()
+    builder.Services
+        .AddControllers()
         .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(
@@ -54,8 +55,7 @@ try
             {
                 Title = "HealthApp API",
                 Version = "v1",
-                Description =
-                    "Healthcare Appointment Management API"
+                Description = "Healthcare Appointment Management API"
             });
 
         options.AddSecurityDefinition(
@@ -82,7 +82,6 @@ try
     });
 
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-
     builder.Services.AddProblemDetails();
 
     builder.Services.AddDbContext<HealthAppDbContext>(options =>
@@ -113,8 +112,7 @@ try
     var jwt = builder.Configuration.GetSection("Jwt");
 
     var jwtKey = jwt["Key"]
-        ?? throw new InvalidOperationException(
-            "Jwt:Key missing");
+        ?? throw new InvalidOperationException("Jwt:Key missing");
 
     builder.Services
         .AddAuthentication(options =>
@@ -155,8 +153,7 @@ try
                     ClockSkew = TimeSpan.Zero,
 
                     RoleClaimType = ClaimTypes.Role,
-                    NameClaimType =
-                        ClaimTypes.NameIdentifier
+                    NameClaimType = ClaimTypes.NameIdentifier
                 };
         });
 
@@ -165,7 +162,7 @@ try
     builder.Services.AddCors(options =>
     {
         options.AddPolicy(
-            "AllowAdminBlazor",
+            "AllowFrontendApplications",
             policy =>
             {
                 policy
@@ -235,45 +232,42 @@ try
         IDoctorLeaveService,
         DoctorLeaveService>();
 
-    var rabbitmqConfig =
+    var rabbitMqConfig =
         builder.Configuration.GetSection("RabbitMq");
 
     builder.Services.AddMassTransit(configuration =>
     {
-        configuration.AddConsumer<
-            AppointmentBookedConsumer>();
+        configuration.AddConsumer<AppointmentBookedConsumer>();
 
-        configuration.UsingRabbitMq(
-            (context, rabbitMq) =>
-            {
-                rabbitMq.Host(
-                    rabbitmqConfig["HostName"],
-                    rabbitmqConfig["VirtualHost"],
-                    host =>
+        configuration.UsingRabbitMq((context, rabbitMq) =>
+        {
+            rabbitMq.Host(
+                rabbitMqConfig["HostName"],
+                rabbitMqConfig["VirtualHost"],
+                host =>
+                {
+                    host.Username(
+                        rabbitMqConfig["UserName"]!);
+
+                    host.Password(
+                        rabbitMqConfig["Password"]!);
+                });
+
+            rabbitMq.ReceiveEndpoint(
+                rabbitMqConfig["AppointmentQueue"]!,
+                endpoint =>
+                {
+                    endpoint.UseMessageRetry(retry =>
                     {
-                        host.Username(
-                            rabbitmqConfig["UserName"]!);
-
-                        host.Password(
-                            rabbitmqConfig["Password"]!);
+                        retry.Interval(
+                            3,
+                            TimeSpan.FromSeconds(5));
                     });
 
-                rabbitMq.ReceiveEndpoint(
-                    rabbitmqConfig["AppointmentQueue"]!,
-                    endpoint =>
-                    {
-                        endpoint.UseMessageRetry(retry =>
-                        {
-                            retry.Interval(
-                                3,
-                                TimeSpan.FromSeconds(5));
-                        });
-
-                        endpoint.ConfigureConsumer<
-                            AppointmentBookedConsumer>(
-                                context);
-                    });
-            });
+                    endpoint.ConfigureConsumer<
+                        AppointmentBookedConsumer>(context);
+                });
+        });
     });
 
     builder.Services.AddAutoMapper(configuration =>
@@ -281,30 +275,11 @@ try
         configuration.AddProfile<MappingProfile>();
     });
 
-    builder.Services.Configure<GarnetOptions>(
-        builder.Configuration.GetSection("Garnet"));
-
-    builder.Services.AddStackExchangeRedisCache(options =>
-    {
-        var garnetOptions = builder.Configuration
-            .GetSection("Garnet")
-            .Get<GarnetOptions>()
-            ?? new GarnetOptions();
-
-        options.Configuration =
-            garnetOptions.ConnectionString;
-
-        options.InstanceName =
-            garnetOptions.InstanceName;
-    });
+    builder.Services.AddDistributedMemoryCache();
 
     builder.Services.AddHostedService<HeartbeatService>();
-
-    builder.Services.AddHostedService<
-        NotificationCleanupService>();
-
-    builder.Services.AddHostedService<
-        OutboxBackgroundService>();
+    builder.Services.AddHostedService<NotificationCleanupService>();
+    builder.Services.AddHostedService<OutboxBackgroundService>();
 
     var app = builder.Build();
 
@@ -318,7 +293,48 @@ try
 
     app.UseHttpsRedirection();
 
-    app.UseCors("AllowAdminBlazor");
+    app.UseDefaultFiles();
+
+    var contentTypeProvider =
+        new FileExtensionContentTypeProvider();
+
+    contentTypeProvider.Mappings[".dat"] =
+        "application/octet-stream";
+
+    contentTypeProvider.Mappings[".wasm"] =
+        "application/wasm";
+
+    contentTypeProvider.Mappings[".webcil"] =
+        "application/octet-stream";
+
+    contentTypeProvider.Mappings[".blat"] =
+        "application/octet-stream";
+
+    app.UseStaticFiles(
+    new StaticFileOptions
+    {
+        ContentTypeProvider =
+            contentTypeProvider,
+
+        OnPrepareResponse = context =>
+        {
+            if (context.Context.Request.Path
+                .StartsWithSegments(
+                    "/blazor/_framework"))
+            {
+                context.Context.Response.Headers.CacheControl =
+                    "no-store, no-cache, must-revalidate";
+
+                context.Context.Response.Headers.Pragma =
+                    "no-cache";
+
+                context.Context.Response.Headers.Expires =
+                    "0";
+            }
+        }
+    });
+
+    app.UseCors("AllowFrontendApplications");
 
     app.UseSerilogRequestLogging(options =>
     {
@@ -346,24 +362,66 @@ try
     });
 
     app.UseAuthentication();
-
     app.UseAuthorization();
 
     app.MapControllers();
+
+    var blazorIndexPath = Path.Combine(
+        app.Environment.WebRootPath,
+        "blazor",
+        "index.html");
+
+    app.MapWhen(
+        context =>
+            context.Request.Path.StartsWithSegments("/blazor") &&
+            !Path.HasExtension(context.Request.Path.Value),
+        blazorApplication =>
+        {
+            blazorApplication.Run(async context =>
+            {
+                if (!File.Exists(blazorIndexPath))
+                {
+                    context.Response.StatusCode =
+                        StatusCodes.Status404NotFound;
+
+                    await context.Response.WriteAsync(
+                        "Blazor index.html was not found.");
+
+                    return;
+                }
+
+                context.Response.ContentType =
+                    "text/html; charset=utf-8";
+
+                context.Response.Headers.CacheControl =
+                    "no-store, no-cache, must-revalidate";
+
+                context.Response.Headers.Pragma =
+                    "no-cache";
+
+                context.Response.Headers.Expires =
+                    "0";
+
+                await context.Response.SendFileAsync(
+                    blazorIndexPath);
+            });
+        });
+
+    app.MapFallbackToFile(
+        "{*path:nonfile}",
+        "index.html");
 
     using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
 
         var logger =
-            services.GetRequiredService<
-                ILogger<Program>>();
+            services.GetRequiredService<ILogger<Program>>();
 
         try
         {
             var dbContext =
-                services.GetRequiredService<
-                    HealthAppDbContext>();
+                services.GetRequiredService<HealthAppDbContext>();
 
             await dbContext.Database.MigrateAsync();
 
@@ -376,29 +434,28 @@ try
                     UserManager<ApplicationUser>>();
 
             await RoleSeeder.SeedRolesAsync(roleManager);
-
             await RoleSeeder.SeedAdminAsync(userManager);
 
             logger.LogInformation(
                 "Database migration and identity seeding " +
                 "completed successfully.");
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
             throw new InvalidOperationException(
                 "An error occurred while applying database " +
                 "migrations or seeding identity data during " +
                 "application startup.",
-                ex);
+                exception);
         }
     }
 
     await app.RunAsync();
 }
-catch (Exception ex)
+catch (Exception exception)
 {
     Log.Fatal(
-        ex,
+        exception,
         "HealthApp API terminated unexpectedly.");
 }
 finally

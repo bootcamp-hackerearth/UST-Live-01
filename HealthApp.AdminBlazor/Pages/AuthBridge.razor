@@ -53,7 +53,7 @@
             string.IsNullOrWhiteSpace(Role) ||
             !string.Equals(Role, "Admin", StringComparison.OrdinalIgnoreCase))
         {
-            Navigation.NavigateTo("/login", replace: true);
+            Navigation.NavigateTo("login", replace: true);
             return;
         }
 
@@ -66,6 +66,6 @@
             adminAuthProvider.NotifyUserAuthentication(AccessToken);
         }
 
-        Navigation.NavigateTo("/dashboard", replace: true);
+        Navigation.NavigateTo("dashboard", replace: true);
     }
 }
