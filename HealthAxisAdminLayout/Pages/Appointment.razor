@@ -13,13 +13,232 @@
 @inject IAppointmentApiService AppointmentService
 @inject IJSRuntime JS
 
+<style>
+    /*
+     * Appointment table alignment
+     */
+
+    .appointment-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        scrollbar-gutter: stable;
+    }
+
+    .appointment-table {
+        width: 100%;
+        min-width: 1420px;
+        table-layout: fixed;
+        border-collapse: separate;
+        border-spacing: 0 14px;
+    }
+
+    .appointment-table th,
+    .appointment-table td {
+        box-sizing: border-box;
+        vertical-align: middle;
+    }
+
+    .appointment-col-info {
+        width: 210px;
+    }
+
+    .appointment-col-patient {
+        width: 155px;
+    }
+
+    .appointment-col-doctor {
+        width: 155px;
+    }
+
+    .appointment-col-date {
+        width: 165px;
+    }
+
+    .appointment-col-status {
+        width: 110px;
+    }
+
+    .appointment-col-reason {
+        width: 210px;
+    }
+
+    .appointment-col-actions {
+        width: 330px;
+    }
+
+    .appointment-actions-heading {
+        width: 330px;
+        min-width: 330px;
+        text-align: center;
+    }
+
+    .appointment-actions-cell {
+        width: 330px;
+        min-width: 330px;
+        padding: 16px 20px !important;
+        overflow: visible;
+    }
+
+    /*
+     * Three fixed action slots keep every row aligned.
+     */
+    .appointment-action-group {
+        display: grid;
+        grid-template-columns: repeat(3, 88px);
+        align-items: center;
+        justify-content: end;
+        gap: 10px;
+        width: 100%;
+        min-width: 284px;
+        white-space: nowrap;
+    }
+
+    .appointment-action-slot {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 88px;
+        min-width: 88px;
+        min-height: 48px;
+    }
+
+    .appointment-action-placeholder {
+        display: block;
+        width: 88px;
+        height: 48px;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    .appointment-confirm-btn,
+    .appointment-cancel-btn,
+    .appointment-delete-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 88px;
+        min-width: 88px;
+        height: 48px;
+        margin: 0;
+        padding: 0 12px;
+        border: none;
+        border-radius: 16px;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        cursor: pointer;
+        transition:
+            transform 0.15s ease,
+            filter 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+
+    .appointment-confirm-btn {
+        color: #047568;
+        background: #c9f7ef;
+    }
+
+    .appointment-cancel-btn {
+        color: #b45c00;
+        background: #fff0bd;
+    }
+
+    .appointment-delete-btn {
+        color: #c51f26;
+        background: #ffdede;
+    }
+
+    .appointment-confirm-btn:hover:not(:disabled),
+    .appointment-cancel-btn:hover:not(:disabled),
+    .appointment-delete-btn:hover:not(:disabled) {
+        filter: brightness(0.97);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(15, 63, 57, 0.1);
+    }
+
+    .appointment-confirm-btn:focus-visible,
+    .appointment-cancel-btn:focus-visible,
+    .appointment-delete-btn:focus-visible {
+        outline: 3px solid rgba(15, 118, 110, 0.25);
+        outline-offset: 2px;
+    }
+
+    .appointment-confirm-btn:disabled,
+    .appointment-cancel-btn:disabled,
+    .appointment-delete-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /*
+     * Keep status buttons centered.
+     */
+    .appointment-status-cell {
+        text-align: center;
+    }
+
+    /*
+     * Cancellation reasons can wrap without changing
+     * the width of the Actions column.
+     */
+    .appointment-reason-cell {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    /*
+     * Responsive adjustment. The table scrolls horizontally
+     * rather than forcing buttons outside the row.
+     */
+    @@media (max-width: 1200px) {
+        .appointment-table {
+            min-width: 1340px;
+        }
+
+        .appointment-col-actions,
+        .appointment-actions-heading,
+        .appointment-actions-cell {
+            width: 310px;
+            min-width: 310px;
+        }
+
+        .appointment-action-group {
+            grid-template-columns: repeat(3, 82px);
+            min-width: 266px;
+            gap: 8px;
+        }
+
+        .appointment-action-slot,
+        .appointment-action-placeholder,
+        .appointment-confirm-btn,
+        .appointment-cancel-btn,
+        .appointment-delete-btn {
+            width: 82px;
+            min-width: 82px;
+        }
+    }
+</style>
+
 <div class="appointment-page">
 
     <div class="appointment-hero">
         <div>
-            <div class="dashboard-kicker">Appointment Management</div>
+            <div class="dashboard-kicker">
+                Appointment Management
+            </div>
+
             <h1>Appointments</h1>
-            <p>View, confirm, cancel, and manage HealthAxis appointment schedules.</p>
+
+            <p>
+                View, confirm, cancel, and manage HealthAxis
+                appointment schedules.
+            </p>
         </div>
     </div>
 
@@ -38,7 +257,10 @@
                 <h2>@TotalAppointments</h2>
                 <p>All matching appointment records</p>
             </div>
-            <div class="appointment-stat-icon">◷</div>
+
+            <div class="appointment-stat-icon">
+                ◷
+            </div>
         </div>
 
         <div class="appointment-stat-card appointment-stat-teal">
@@ -47,7 +269,10 @@
                 <h2>@PendingAppointments</h2>
                 <p>Visible on current page</p>
             </div>
-            <div class="appointment-stat-icon">!</div>
+
+            <div class="appointment-stat-icon">
+                !
+            </div>
         </div>
 
         <div class="appointment-stat-card appointment-stat-green">
@@ -56,7 +281,10 @@
                 <h2>@ConfirmedAppointments</h2>
                 <p>Visible on current page</p>
             </div>
-            <div class="appointment-stat-icon">✓</div>
+
+            <div class="appointment-stat-icon">
+                ✓
+            </div>
         </div>
 
         <div class="appointment-stat-card appointment-stat-red">
@@ -65,7 +293,10 @@
                 <h2>@CancelledAppointments</h2>
                 <p>Visible on current page</p>
             </div>
-            <div class="appointment-stat-icon">×</div>
+
+            <div class="appointment-stat-icon">
+                ×
+            </div>
         </div>
 
     </div>
@@ -75,7 +306,10 @@
         <div class="appointment-directory-header">
             <div>
                 <h3>Appointment Directory</h3>
-                <p>Search, filter, confirm, cancel, and manage appointments.</p>
+
+                <p>
+                    Search, filter, confirm, cancel, and manage appointments.
+                </p>
             </div>
 
             <span class="appointment-count-pill">
@@ -86,7 +320,9 @@
         <div class="appointment-filter-row">
 
             <div class="appointment-search-box">
-                <span class="appointment-search-icon">⌕</span>
+                <span class="appointment-search-icon">
+                    ⌕
+                </span>
 
                 <input placeholder="Search by appointment id, patient id, doctor id, or time slot..."
                        value="@searchText"
@@ -99,11 +335,16 @@
                 <select class="appointment-filter-select"
                         value="@selectedStatus"
                         @onchange="OnStatusChanged">
-                    <option value="All">All Status</option>
+
+                    <option value="All">
+                        All Status
+                    </option>
 
                     @foreach (var status in Enum.GetValues<AppointmentStatus>())
                     {
-                        <option value="@status.ToString()">@GetStatusText(status)</option>
+                        <option value="@status.ToString()">
+                            @GetStatusText(status)
+                        </option>
                     }
                 </select>
             </div>
@@ -131,29 +372,43 @@
         @if (showStatusLegend)
         {
             <div class="appointment-status-legend">
+
                 <div>
-                    <span class="appointment-status-icon pending">!</span>
+                    <span class="appointment-status-icon pending">
+                        !
+                    </span>
+
                     <strong>Pending</strong>
                     <p>Waiting for confirmation.</p>
                 </div>
 
                 <div>
-                    <span class="appointment-status-icon confirmed">✓</span>
+                    <span class="appointment-status-icon confirmed">
+                        ✓
+                    </span>
+
                     <strong>Confirmed</strong>
                     <p>Confirmed appointment.</p>
                 </div>
 
                 <div>
-                    <span class="appointment-status-icon cancelled">×</span>
+                    <span class="appointment-status-icon cancelled">
+                        ×
+                    </span>
+
                     <strong>Cancelled</strong>
                     <p>Cancelled appointment.</p>
                 </div>
 
                 <div>
-                    <span class="appointment-status-icon completed">✓</span>
+                    <span class="appointment-status-icon completed">
+                        ✓
+                    </span>
+
                     <strong>Completed</strong>
                     <p>Completed appointment.</p>
                 </div>
+
             </div>
         }
 
@@ -187,9 +442,13 @@
                             <th>Patient</th>
                             <th>Doctor</th>
                             <th>Date &amp; Time</th>
-                            <th>Status</th>
+                            <th class="appointment-status-cell">
+                                Status
+                            </th>
                             <th>Cancellation</th>
-                            <th>Actions</th>
+                            <th class="appointment-actions-heading">
+                                Actions
+                            </th>
                         </tr>
                     </thead>
 
@@ -199,14 +458,21 @@
                             <tr>
                                 <td>
                                     <div class="appointment-profile-cell">
+
                                         <div class="appointment-avatar">
                                             #@appointment.AppointmentId
                                         </div>
 
                                         <div class="appointment-profile-text">
-                                            <strong>Appointment @appointment.AppointmentId</strong>
-                                            <span>@FormatTimeSlot(appointment.TimeSlot)</span>
+                                            <strong>
+                                                Appointment @appointment.AppointmentId
+                                            </strong>
+
+                                            <span>
+                                                @FormatTimeSlot(appointment.TimeSlot)
+                                            </span>
                                         </div>
+
                                     </div>
                                 </td>
 
@@ -224,63 +490,86 @@
 
                                 <td>
                                     <div class="appointment-date-cell">
-                                        <strong>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</strong>
-                                        <span>@FormatTimeSlot(appointment.TimeSlot)</span>
+                                        <strong>
+                                            @appointment.ScheduledDate.ToString("dd-MMM-yyyy")
+                                        </strong>
+
+                                        <span>
+                                            @FormatTimeSlot(appointment.TimeSlot)
+                                        </span>
                                     </div>
                                 </td>
 
-                                <td>
-                                    <button class="appointment-status-icon-btn"
+                                <td class="appointment-status-cell">
+                                    <button type="button"
+                                            class="appointment-status-icon-btn"
                                             title="Click to view status meaning"
+                                            aria-label="@($"View meaning of {GetStatusText(appointment.Status)} status")"
                                             @onclick="ToggleStatusLegend">
+
                                         <span class="@GetStatusIconClass(appointment.Status)">
                                             @GetStatusIcon(appointment.Status)
                                         </span>
                                     </button>
                                 </td>
 
-                                <td>
+                                <td class="appointment-reason-cell">
                                     <span class="appointment-reason-text">
-                                        @(string.IsNullOrWhiteSpace(appointment.CancellationReason)
+                                        @(string.IsNullOrWhiteSpace(
+                                            appointment.CancellationReason)
                                             ? "-"
                                             : appointment.CancellationReason)
                                     </span>
                                 </td>
 
-                                <td>
+                                <td class="appointment-actions-cell">
+
                                     <div class="appointment-action-group">
 
-                                        @if (CanConfirm(appointment))
-                                        {
-                                            <button class="appointment-confirm-btn"
-                                                    @onclick="@(() => ConfirmAppointment(appointment.AppointmentId))"
-                                                    disabled="@isLoading">
-                                                Confirm
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <span class="appointment-action-placeholder"></span>
-                                        }
+                                        <div class="appointment-action-slot">
+                                            @if (CanConfirm(appointment))
+                                            {
+                                                <button type="button"
+                                                        class="appointment-confirm-btn"
+                                                        @onclick="@(() => ConfirmAppointment(appointment.AppointmentId))"
+                                                        disabled="@isLoading">
+                                                    Confirm
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span class="appointment-action-placeholder"
+                                                      aria-hidden="true">
+                                                </span>
+                                            }
+                                        </div>
 
-                                        @if (CanCancel(appointment))
-                                        {
-                                            <button class="appointment-cancel-btn"
-                                                    @onclick="@(() => CancelAppointment(appointment.AppointmentId))"
-                                                    disabled="@isLoading">
-                                                Cancel
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <span class="appointment-action-placeholder"></span>
-                                        }
+                                        <div class="appointment-action-slot">
+                                            @if (CanCancel(appointment))
+                                            {
+                                                <button type="button"
+                                                        class="appointment-cancel-btn"
+                                                        @onclick="@(() => CancelAppointment(appointment.AppointmentId))"
+                                                        disabled="@isLoading">
+                                                    Cancel
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span class="appointment-action-placeholder"
+                                                      aria-hidden="true">
+                                                </span>
+                                            }
+                                        </div>
 
-                                        <button class="appointment-delete-btn"
-                                                @onclick="@(() => DeleteAppointment(appointment.AppointmentId))"
-                                                disabled="@isLoading">
-                                            Delete
-                                        </button>
+                                        <div class="appointment-action-slot">
+                                            <button type="button"
+                                                    class="appointment-delete-btn"
+                                                    @onclick="@(() => DeleteAppointment(appointment.AppointmentId))"
+                                                    disabled="@isLoading">
+                                                Delete
+                                            </button>
+                                        </div>
 
                                     </div>
                                 </td>
@@ -293,7 +582,8 @@
                 <div class="hx-pagination">
 
                     <div class="hx-pagination-info">
-                        Showing @GetStartItemIndex() - @GetEndItemIndex() of @totalCount
+                        Showing @GetStartItemIndex() - @GetEndItemIndex()
+                        of @totalCount
                     </div>
 
                     <div class="hx-pagination-actions">
@@ -301,28 +591,33 @@
                         <select class="hx-page-size-select"
                                 value="@pageSize"
                                 @onchange="OnPageSizeChanged">
+
                             @foreach (var size in pageSizeOptions)
                             {
-                                <option value="@size">@size / page</option>
+                                <option value="@size">
+                                    @size / page
+                                </option>
                             }
+
                         </select>
 
-                        <button @onclick="PreviousPage"
-                                disabled="@(currentPage <= 1)">
+                        <button type="button"
+                                @onclick="PreviousPage"
+                                disabled="@(isLoading || currentPage <= 1)">
                             Previous
                         </button>
 
                         <span>
-                            Page @currentPage of @(totalPages == 0 ? 1 : totalPages)
+                            Page @currentPage of @DisplayTotalPages
                         </span>
 
-                        <button @onclick="NextPage"
-                                disabled="@(currentPage >= totalPages)">
+                        <button type="button"
+                                @onclick="NextPage"
+                                disabled="@(isLoading || totalPages == 0 || currentPage >= totalPages)">
                             Next
                         </button>
 
                     </div>
-
                 </div>
 
             </div>
@@ -347,27 +642,43 @@
 
     private DateTime? endDateFilter;
 
-    private bool isLoading = false;
+    private bool isLoading;
 
-    private bool showStatusLegend = false;
+    private bool showStatusLegend;
 
     private int currentPage = 1;
 
     private int pageSize = 10;
 
-    private int totalCount = 0;
+    private int totalCount;
 
-    private int totalPages = 0;
+    private int totalPages;
 
-    private readonly int[] pageSizeOptions = new[] { 5, 10, 20 };
+    private readonly int[] pageSizeOptions =
+        new[] { 5, 10, 20 };
 
-    private int TotalAppointments => totalCount;
+    private int TotalAppointments =>
+        totalCount;
 
-    private int PendingAppointments => appointments.Count(a => a.Status == AppointmentStatus.Pending);
+    private int PendingAppointments =>
+        appointments.Count(
+            appointment =>
+                appointment.Status == AppointmentStatus.Pending);
 
-    private int ConfirmedAppointments => appointments.Count(a => a.Status == AppointmentStatus.Confirmed);
+    private int ConfirmedAppointments =>
+        appointments.Count(
+            appointment =>
+                appointment.Status == AppointmentStatus.Confirmed);
 
-    private int CancelledAppointments => appointments.Count(a => a.Status == AppointmentStatus.Cancelled);
+    private int CancelledAppointments =>
+        appointments.Count(
+            appointment =>
+                appointment.Status == AppointmentStatus.Cancelled);
+
+    private int DisplayTotalPages =>
+        totalPages <= 0
+            ? 1
+            : totalPages;
 
     protected override async Task OnInitializedAsync()
     {
@@ -381,22 +692,59 @@
 
         try
         {
-            var result = await AppointmentService.GetAppointmentsPagedAsync(
-                currentPage,
-                pageSize,
-                searchText,
-                GetSelectedStatusValue(),
-                startDateFilter,
-                endDateFilter
-            );
+            var result =
+                await AppointmentService.GetAppointmentsPagedAsync(
+                    currentPage,
+                    pageSize,
+                    searchText,
+                    GetSelectedStatusValue(),
+                    startDateFilter,
+                    endDateFilter);
 
-            appointments = result.Items;
-            totalCount = result.TotalCount;
-            totalPages = result.TotalPages;
+            appointments =
+                result.Items ??
+                new List<AppointmentResponseDto>();
+
+            totalCount =
+                result.TotalCount;
+
+            totalPages =
+                result.TotalPages;
+
+            if (totalPages > 0 && currentPage > totalPages)
+            {
+                currentPage = totalPages;
+
+                result =
+                    await AppointmentService.GetAppointmentsPagedAsync(
+                        currentPage,
+                        pageSize,
+                        searchText,
+                        GetSelectedStatusValue(),
+                        startDateFilter,
+                        endDateFilter);
+
+                appointments =
+                    result.Items ??
+                    new List<AppointmentResponseDto>();
+
+                totalCount =
+                    result.TotalCount;
+
+                totalPages =
+                    result.TotalPages;
+            }
         }
         catch
         {
-            SetErrorMessage("Failed to load appointments.");
+            appointments =
+                new List<AppointmentResponseDto>();
+
+            totalCount = 0;
+            totalPages = 0;
+
+            SetErrorMessage(
+                "Failed to load appointments.");
         }
         finally
         {
@@ -406,73 +754,115 @@
 
     private AppointmentStatus? GetSelectedStatusValue()
     {
-        if (selectedStatus == "All")
+        if (
+            string.Equals(
+                selectedStatus,
+                "All",
+                StringComparison.OrdinalIgnoreCase)
+        )
         {
             return null;
         }
 
-        if (Enum.TryParse<AppointmentStatus>(selectedStatus, out var status))
-        {
-            return status;
-        }
-
-        return null;
+        return Enum.TryParse<AppointmentStatus>(
+            selectedStatus,
+            ignoreCase: true,
+            out var parsedStatus)
+                ? parsedStatus
+                : null;
     }
 
-    private async Task OnSearchChanged(ChangeEventArgs e)
+    private async Task OnSearchChanged(
+        ChangeEventArgs eventArgs)
     {
-        searchText = e.Value?.ToString() ?? string.Empty;
+        searchText =
+            eventArgs.Value?.ToString()?.Trim() ??
+            string.Empty;
+
         currentPage = 1;
+
         await LoadAppointments();
     }
 
-    private async Task OnStatusChanged(ChangeEventArgs e)
+    private async Task OnStatusChanged(
+        ChangeEventArgs eventArgs)
     {
-        selectedStatus = e.Value?.ToString() ?? "All";
+        selectedStatus =
+            eventArgs.Value?.ToString() ??
+            "All";
+
         currentPage = 1;
+
         await LoadAppointments();
     }
 
-    private async Task OnStartDateChanged(ChangeEventArgs e)
+    private async Task OnStartDateChanged(
+        ChangeEventArgs eventArgs)
     {
-        startDateFilter = ParseDateInput(e.Value?.ToString());
+        startDateFilter =
+            ParseDateInput(
+                eventArgs.Value?.ToString());
+
         currentPage = 1;
+
         await LoadAppointments();
     }
 
-    private async Task OnEndDateChanged(ChangeEventArgs e)
+    private async Task OnEndDateChanged(
+        ChangeEventArgs eventArgs)
     {
-        endDateFilter = ParseDateInput(e.Value?.ToString());
+        endDateFilter =
+            ParseDateInput(
+                eventArgs.Value?.ToString());
+
         currentPage = 1;
+
         await LoadAppointments();
     }
 
-    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    private async Task OnPageSizeChanged(
+        ChangeEventArgs eventArgs)
     {
-        if (int.TryParse(e.Value?.ToString(), out var selectedSize))
+        if (
+            int.TryParse(
+                eventArgs.Value?.ToString(),
+                out var selectedSize) &&
+            pageSizeOptions.Contains(selectedSize)
+        )
         {
             pageSize = selectedSize;
             currentPage = 1;
+
             await LoadAppointments();
         }
     }
 
     private async Task PreviousPage()
     {
-        if (currentPage > 1)
+        if (isLoading || currentPage <= 1)
         {
-            currentPage--;
-            await LoadAppointments();
+            return;
         }
+
+        currentPage--;
+
+        await LoadAppointments();
     }
 
     private async Task NextPage()
     {
-        if (currentPage < totalPages)
+        if (
+            isLoading ||
+            totalPages == 0 ||
+            currentPage >= totalPages
+        )
         {
-            currentPage++;
-            await LoadAppointments();
+            return;
         }
+
+        currentPage++;
+
+        await LoadAppointments();
     }
 
     private int GetStartItemIndex()
@@ -487,38 +877,56 @@
 
     private int GetEndItemIndex()
     {
-        var end = currentPage * pageSize;
+        var endItem =
+            currentPage * pageSize;
 
-        return end > totalCount ? totalCount : end;
+        return endItem > totalCount
+            ? totalCount
+            : endItem;
     }
 
-    private static string FormatDateInput(DateTime? date)
+    private static string FormatDateInput(
+        DateTime? date)
     {
         return date.HasValue
-            ? date.Value.ToString("yyyy-MM-dd")
+            ? date.Value.ToString(
+                "yyyy-MM-dd",
+                CultureInfo.InvariantCulture)
             : string.Empty;
     }
 
-    private static DateTime? ParseDateInput(string? value)
+    private static DateTime? ParseDateInput(
+        string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             return null;
         }
 
-        return DateTime.TryParse(value,CultureInfo.InvariantCulture,DateTimeStyles.None, out var date)
-            ? date
-            : null;
+        return DateTime.TryParseExact(
+            value,
+            "yyyy-MM-dd",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out var parsedDate)
+                ? parsedDate
+                : null;
     }
 
-    private async Task ConfirmAppointment(int appointmentId)
+    private async Task ConfirmAppointment(
+        int appointmentId)
     {
-        var confirm = await JS.InvokeAsync<bool>(
-            "confirm",
-            "Are you sure you want to confirm this appointment?"
-        );
+        if (isLoading)
+        {
+            return;
+        }
 
-        if (!confirm)
+        var confirmed =
+            await JS.InvokeAsync<bool>(
+                "confirm",
+                "Are you sure you want to confirm this appointment?");
+
+        if (!confirmed)
         {
             return;
         }
@@ -528,21 +936,28 @@
 
         try
         {
-            var success = await AppointmentService.ConfirmAppointmentAsync(appointmentId);
+            var success =
+                await AppointmentService
+                    .ConfirmAppointmentAsync(
+                        appointmentId);
 
-            if (success)
+            if (!success)
             {
-                SetSuccessMessage("Appointment confirmed successfully.");
-                await LoadAppointments();
+                SetErrorMessage(
+                    "Failed to confirm appointment.");
+
+                return;
             }
-            else
-            {
-                SetErrorMessage("Failed to confirm appointment.");
-            }
+
+            await LoadAppointments();
+
+            SetSuccessMessage(
+                "Appointment confirmed successfully.");
         }
         catch
         {
-            SetErrorMessage("Error confirming appointment.");
+            SetErrorMessage(
+                "Error confirming appointment.");
         }
         finally
         {
@@ -550,12 +965,20 @@
         }
     }
 
-    private async Task CancelAppointment(int appointmentId)
+    private async Task CancelAppointment(
+        int appointmentId)
     {
-        var reason = await JS.InvokeAsync<string?>(
-            "prompt",
-            "Enter cancellation reason:"
-        );
+        if (isLoading)
+        {
+            return;
+        }
+
+        var reason =
+            await JS.InvokeAsync<string?>(
+                "prompt",
+                "Enter cancellation reason:");
+
+        reason = reason?.Trim();
 
         if (string.IsNullOrWhiteSpace(reason))
         {
@@ -567,21 +990,29 @@
 
         try
         {
-            var success = await AppointmentService.CancelAppointmentAsync(appointmentId, reason);
+            var success =
+                await AppointmentService
+                    .CancelAppointmentAsync(
+                        appointmentId,
+                        reason);
 
-            if (success)
+            if (!success)
             {
-                SetSuccessMessage("Appointment cancelled successfully.");
-                await LoadAppointments();
+                SetErrorMessage(
+                    "Failed to cancel appointment.");
+
+                return;
             }
-            else
-            {
-                SetErrorMessage("Failed to cancel appointment.");
-            }
+
+            await LoadAppointments();
+
+            SetSuccessMessage(
+                "Appointment cancelled successfully.");
         }
         catch
         {
-            SetErrorMessage("Error cancelling appointment.");
+            SetErrorMessage(
+                "Error cancelling appointment.");
         }
         finally
         {
@@ -589,14 +1020,20 @@
         }
     }
 
-    private async Task DeleteAppointment(int appointmentId)
+    private async Task DeleteAppointment(
+        int appointmentId)
     {
-        var confirm = await JS.InvokeAsync<bool>(
-            "confirm",
-            "Are you sure you want to delete this appointment?"
-        );
+        if (isLoading)
+        {
+            return;
+        }
 
-        if (!confirm)
+        var confirmed =
+            await JS.InvokeAsync<bool>(
+                "confirm",
+                "Are you sure you want to delete this appointment?");
+
+        if (!confirmed)
         {
             return;
         }
@@ -606,21 +1043,36 @@
 
         try
         {
-            var success = await AppointmentService.DeleteAppointmentAsync(appointmentId);
+            var success =
+                await AppointmentService
+                    .DeleteAppointmentAsync(
+                        appointmentId);
 
-            if (success)
+            if (!success)
             {
-                SetSuccessMessage("Appointment deleted successfully.");
-                await LoadAppointments();
+                SetErrorMessage(
+                    "Failed to delete appointment.");
+
+                return;
             }
-            else
+
+            if (
+                appointments.Count == 1 &&
+                currentPage > 1
+            )
             {
-                SetErrorMessage("Failed to delete appointment.");
+                currentPage--;
             }
+
+            await LoadAppointments();
+
+            SetSuccessMessage(
+                "Appointment deleted successfully.");
         }
         catch
         {
-            SetErrorMessage("Error deleting appointment.");
+            SetErrorMessage(
+                "Error deleting appointment.");
         }
         finally
         {
@@ -628,96 +1080,147 @@
         }
     }
 
-    private static bool CanConfirm(AppointmentResponseDto appointment)
+    private static bool CanConfirm(
+        AppointmentResponseDto appointment)
     {
-        return appointment.Status == AppointmentStatus.Pending;
+        return appointment.Status ==
+               AppointmentStatus.Pending;
     }
 
-    private static bool CanCancel(AppointmentResponseDto appointment)
+    private static bool CanCancel(
+        AppointmentResponseDto appointment)
     {
-        return appointment.Status == AppointmentStatus.Pending ||
-               appointment.Status == AppointmentStatus.Confirmed;
+        return
+            appointment.Status ==
+                AppointmentStatus.Pending ||
+            appointment.Status ==
+                AppointmentStatus.Confirmed;
     }
 
     private void ToggleStatusLegend()
     {
-        showStatusLegend = !showStatusLegend;
+        showStatusLegend =
+            !showStatusLegend;
     }
 
-    private static string FormatTimeSlot(object? timeSlot)
+    private static string FormatTimeSlot(
+        object? timeSlot)
     {
-        if (timeSlot == null)
+        if (timeSlot is null)
         {
             return "-";
         }
 
         if (timeSlot is TimeOnly timeOnly)
         {
-            return timeOnly.ToString("hh:mm tt");
+            return timeOnly.ToString(
+                "hh:mm tt",
+                CultureInfo.InvariantCulture);
         }
 
         if (timeSlot is TimeSpan timeSpan)
         {
-            return DateTime.Today.Add(timeSpan).ToString("hh:mm tt");
+            return DateTime.Today
+                .Add(timeSpan)
+                .ToString(
+                    "hh:mm tt",
+                    CultureInfo.InvariantCulture);
         }
 
         if (timeSlot is DateTime dateTime)
         {
-            return dateTime.ToString("hh:mm tt");
+            return dateTime.ToString(
+                "hh:mm tt",
+                CultureInfo.InvariantCulture);
         }
 
-        var value = timeSlot.ToString();
+        var value =
+            timeSlot.ToString();
 
         return string.IsNullOrWhiteSpace(value)
             ? "-"
             : value;
     }
 
-    private static string GetStatusText(AppointmentStatus status)
+    private static string GetStatusText(
+        AppointmentStatus status)
     {
         return status switch
         {
-            AppointmentStatus.Pending => "Pending",
-            AppointmentStatus.Confirmed => "Confirmed",
-            AppointmentStatus.Cancelled => "Cancelled",
-            AppointmentStatus.Completed => "Completed",
-            _ => "Unknown"
+            AppointmentStatus.Pending =>
+                "Pending",
+
+            AppointmentStatus.Confirmed =>
+                "Confirmed",
+
+            AppointmentStatus.Cancelled =>
+                "Cancelled",
+
+            AppointmentStatus.Completed =>
+                "Completed",
+
+            _ =>
+                "Unknown"
         };
     }
 
-    private static string GetStatusIcon(AppointmentStatus status)
+    private static string GetStatusIcon(
+        AppointmentStatus status)
     {
         return status switch
         {
-            AppointmentStatus.Pending => "!",
-            AppointmentStatus.Confirmed => "✓",
-            AppointmentStatus.Cancelled => "×",
-            AppointmentStatus.Completed => "✓",
-            _ => "?"
+            AppointmentStatus.Pending =>
+                "!",
+
+            AppointmentStatus.Confirmed =>
+                "✓",
+
+            AppointmentStatus.Cancelled =>
+                "×",
+
+            AppointmentStatus.Completed =>
+                "✓",
+
+            _ =>
+                "?"
         };
     }
 
-    private static string GetStatusIconClass(AppointmentStatus status)
+    private static string GetStatusIconClass(
+        AppointmentStatus status)
     {
         return status switch
         {
-            AppointmentStatus.Pending => "appointment-status-icon pending",
-            AppointmentStatus.Confirmed => "appointment-status-icon confirmed",
-            AppointmentStatus.Cancelled => "appointment-status-icon cancelled",
-            AppointmentStatus.Completed => "appointment-status-icon completed",
-            _ => "appointment-status-icon pending"
+            AppointmentStatus.Pending =>
+                "appointment-status-icon pending",
+
+            AppointmentStatus.Confirmed =>
+                "appointment-status-icon confirmed",
+
+            AppointmentStatus.Cancelled =>
+                "appointment-status-icon cancelled",
+
+            AppointmentStatus.Completed =>
+                "appointment-status-icon completed",
+
+            _ =>
+                "appointment-status-icon pending"
         };
     }
 
-    private void SetSuccessMessage(string text)
+    private void SetSuccessMessage(
+        string text)
     {
         message = text;
-        messageCssClass = "alert alert-info";
+        messageCssClass =
+            "alert alert-info";
     }
 
-    private void SetErrorMessage(string text)
+    private void SetErrorMessage(
+        string text)
     {
         message = text;
-        messageCssClass = "alert alert-danger";
+        messageCssClass =
+            "alert alert-danger";
     }
 }
