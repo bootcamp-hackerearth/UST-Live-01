@@ -575,31 +575,35 @@
   overflow: hidden;
 
   padding: 30px;
-
   border-radius: 34px;
 
-  background:
-    radial-gradient(
-      circle at top left,
-      rgba(200, 169, 126, 0.18),
-      transparent 34%
-    ),
-    linear-gradient(
-      135deg,
-      rgba(255, 253, 248, 0.97),
-      rgba(248, 244, 236, 0.94)
-    );
+  background: linear-gradient(
+    135deg,
+    #fffdf8,
+    #f8f4ec
+  );
 
   border: 1px solid #e6d9c7;
 
   box-shadow:
     0 30px 80px rgba(107, 91, 77, 0.12);
+}
 
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+.pd-hero-panel::before {
+  content: "";
 
-  gap: 28px;
-  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 5px;
+
+  background: linear-gradient(
+    90deg,
+    #c8a97e,
+    #8b7355
+  );
 }
 
 .pd-hero-panel::after {
@@ -2855,9 +2859,16 @@
    HEALTH SECTION
 ================================== */
 
+.pd-panel-header h3 {
+  white-space: nowrap;
+  font-size: 2rem;
+}
+.pd-prescription-card {
+  margin-top: 0;
+}
 .pd-health-grid {
   display: grid;
-  grid-template-columns: 65% 35%;
+  grid-template-columns: 60% 40%;
   gap: 1.5rem;
 
   align-items: start;
@@ -2865,11 +2876,8 @@
 .pd-health-grid > .pd-panel {
   align-self: start;
 }
-.pd-health-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 1.5rem;
-  align-items: start;
+.pd-panel-header h3 {
+  white-space: nowrap;
 }
 
 .pd-panel {
@@ -3115,14 +3123,6 @@
 
   color: #4a3728;
 }
-.pd-visit-left h4 {
-  margin: 0 0 0.4rem;
-
-  font-size: 2rem;
-  font-weight: 800;
-
-  color: #4a3728;
-}
 
 .pd-status.completed {
   background: rgba(200, 169, 126, 0.15);
@@ -3132,4 +3132,15 @@
   border-radius: 999px;
 
   font-weight: 700;
+}
+
+.pd-appointment-details h4 {
+  margin: 0 0 0.4rem;
+
+  font-size: 2rem;
+  font-weight: 800;
+
+  color: #4a3728;
+
+  line-height: 1.1;
 }
