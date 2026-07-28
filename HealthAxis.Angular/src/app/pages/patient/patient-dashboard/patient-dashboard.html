@@ -58,7 +58,6 @@
     <header class="pd-topbar">
       <div class="pd-topbar-left">
         <div>
-          <span class="pd-kicker">Patient Workspace</span>
 
           <h1>
             Hi, {{ patientFirstName }}
@@ -164,8 +163,7 @@
             </h2>
 
             <p>
-              Track upcoming appointments, pending confirmations, completed visits,
-              and health records from one smart HealthAxis workspace.
+              Manage upcoming appointments, pending confirmations, completed visits, and health records—all from a single, intelligent HealthAxis workspace.
             </p>
 
             <div class="pd-hero-actions">
@@ -186,27 +184,23 @@
 
         <section class="pd-summary-grid premium">
           <article class="pd-summary-card blue">
-            <span>Upcoming</span>
+            <span>Upcoming Appointments</span>
             <strong>{{ summary.upcomingCount }}</strong>
-            <p>Appointments scheduled ahead</p>
           </article>
 
           <article class="pd-summary-card amber">
-            <span>Pending</span>
+            <span>Pending Appointments</span>
             <strong>{{ summary.pendingCount }}</strong>
-            <p>Waiting confirmation</p>
           </article>
 
           <article class="pd-summary-card green">
-            <span>Completed</span>
+            <span>Completed Appointments</span>
             <strong>{{ summary.completedCount }}</strong>
-            <p>Completed consultations</p>
           </article>
 
           <article class="pd-summary-card purple">
             <span>Health Records</span>
             <strong>{{ summary.healthRecordCount }}</strong>
-            <p>Health records available</p>
           </article>
         </section>
 
@@ -216,12 +210,8 @@
             <div class="pd-panel-header">
               <div>
                 <h3>Next Appointment</h3>
-                <p>Your closest scheduled visit</p>
+                <p>Your next scheduled visit</p>
               </div>
-
-              <button type="button" (click)="setActiveSection('appointments')">
-                View All
-              </button>
             </div>
 
             @if (nextAppointment) {
@@ -254,12 +244,12 @@
             }
           </article>
 
-          <article class="pd-panel premium-panel">
+         <article class="pd-panel premium-panel">
   <div class="pd-panel-header">
     <div>
-      <span class="pd-panel-eyebrow">History</span>
-      <h3>Appointment History</h3>
-      <p>Your recent consultations</p>
+      <span class="pd-panel-eyebrow">Recent Visit</span>
+      <h3>Recently Visited Doctor</h3>
+      <p>Your latest completed consultation</p>
     </div>
 
     <button
@@ -269,39 +259,32 @@
     </button>
   </div>
 
-  @if (recentAppointments.length > 0) {
+  @if (lastVisitedDoctor) {
 
-    <div class="pd-history-list">
+    <div class="pd-recent-doctor-card">
 
-      @for (appointment of recentAppointments; track appointment.appointmentId) {
+      <div class="pd-doctor-info">
+        <h4>{{ lastVisitedDoctor.doctorName }}</h4>
+        <p>{{ lastVisitedDoctor.specialisation }}</p>
+      </div>
 
-        <div class="pd-history-item">
+      <div class="pd-visit-details">
+        <span>
+          Last Visit:
+          {{ formatDate(lastVisitedDoctor.scheduledDate) }}
+        </span>
 
-          <div>
-            <strong>{{ appointment.doctorName }}</strong>
-            <p>{{ appointment.specialisation }}</p>
-          </div>
-
-          <div class="pd-history-right">
-            <span>
-              {{ formatDate(appointment.scheduledDate) }}
-            </span>
-
-            <span [class]="getStatusClass(appointment.status)">
-              {{ appointment.status }}
-            </span>
-          </div>
-
-        </div>
-
-      }
+        <span class="status-completed">
+          {{ lastVisitedDoctor.status }}
+        </span>
+      </div>
 
     </div>
 
   } @else {
 
     <div class="pd-empty-card">
-      No appointment history available.
+      No recently visited doctor available.
     </div>
 
   }
@@ -311,7 +294,6 @@
             <div class="pd-panel-header">
               <div>
                 <h3>Recent Health Record</h3>
-                <p>Latest consultation summary</p>
               </div>
 
               <button type="button" (click)="setActiveSection('records')">

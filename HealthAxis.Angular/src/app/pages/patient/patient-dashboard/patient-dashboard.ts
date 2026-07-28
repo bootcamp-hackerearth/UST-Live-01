@@ -68,7 +68,7 @@ export class PatientDashboard implements OnInit, OnDestroy {
   isSidebarOpen = false;
   isLogoutModalOpen = false;
   isProfileDropdownOpen = false;
-  recentAppointments: any[] = [];
+  lastVisitedDoctor: any = null;
 
   private toastTimer?: ReturnType<typeof setTimeout>;
 
@@ -297,6 +297,15 @@ closeProfileDropdown(): void {
 
         this.healthRecords = result.healthRecords.items;
 
+        const completedAppointments = result.completedAppointments.items
+  .sort(
+    (a: AppointmentDto, b: AppointmentDto) =>
+      new Date(b.scheduledDate).getTime() -
+      new Date(a.scheduledDate).getTime()
+  );
+
+this.lastVisitedDoctor = completedAppointments[0] || null;
+
         this.summary = {
           upcomingCount: this.upcomingAppointments.length,
           pendingCount: result.pendingAppointments.totalRecords,
@@ -312,6 +321,7 @@ closeProfileDropdown(): void {
       }
     });
   }
+  
 
   private getErrorMessage(error: unknown): string {
     if (
