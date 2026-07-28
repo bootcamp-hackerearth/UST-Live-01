@@ -4374,3 +4374,8 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+.temporary-password-card .copy-password-button:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.35);
+    outline-offset: 3px;
+}

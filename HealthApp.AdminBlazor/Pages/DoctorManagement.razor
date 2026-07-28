@@ -644,11 +644,34 @@
 
     private async Task CopyTemporaryPassword()
     {
-        if (!string.IsNullOrWhiteSpace(generatedTemporaryPassword))
+        if (string.IsNullOrWhiteSpace(generatedTemporaryPassword))
         {
-            await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", generatedTemporaryPassword);
-            message = "Temporary password copied to clipboard.";
-            isError = false;
+            message = "No temporary password is available to copy.";
+            isError = true;
+            return;
+        }
+
+        try
+        {
+            var copied = await JsRuntime.InvokeAsync<bool>(
+                "copyHealthAppText",
+                generatedTemporaryPassword);
+
+            if (copied)
+            {
+                message = "Temporary password copied to clipboard.";
+                isError = false;
+            }
+            else
+            {
+                message = "Automatic copy was blocked. Please select and copy the temporary password manually.";
+                isError = true;
+            }
+        }
+        catch (JSException)
+        {
+            message = "Automatic copy was blocked. Please select and copy the temporary password manually.";
+            isError = true;
         }
     }
 
