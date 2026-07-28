@@ -156,26 +156,18 @@
 
         <article class="pd-hero-panel">
           <div class="pd-hero-content">
-            <span class="pd-hero-label">Care Overview</span>
 
             <h2>
               HealthAxis , Your Health Partner.
             </h2>
 
             <p>
-              Manage upcoming appointments, pending confirmations, completed visits, and health records—all from a single, intelligent HealthAxis workspace.
+              Manage upcoming appointments, pending confirmations, completed visits, and health records all from a single, intelligent HealthAxis workspace.
             </p>
 
             <div class="pd-hero-actions">
               <button type="button" (click)="setActiveSection('book')">
                 Book Appointment
-              </button>
-
-              <button
-                type="button"
-                class="secondary"
-                (click)="setActiveSection('records')">
-                View Records
               </button>
             </div>
           </div>
@@ -206,43 +198,56 @@
 
         <section class="pd-dashboard-grid premium-grid">
 
-          <article class="pd-panel pd-next-panel premium-panel">
-            <div class="pd-panel-header">
-              <div>
-                <h3>Next Appointment</h3>
-                <p>Your next scheduled visit</p>
-              </div>
-            </div>
+         <article class="pd-panel pd-next-panel premium-panel">
+  <div class="pd-panel-header">
+    <div>
+      <h3>Next Appointment</h3>
+      <p>Your next scheduled visit</p>
+    </div>
+  </div>
 
-            @if (nextAppointment) {
-              <div class="pd-next-card premium-next">
-                <div class="pd-date-box">
-                  <strong>{{ formatDate(nextAppointment.scheduledDate).split(' ')[0] }}</strong>
-                  <span>{{ formatDate(nextAppointment.scheduledDate).split(' ')[1] }}</span>
-                </div>
+  @if (nextAppointment) {
 
-                <div class="pd-next-info">
-                  <h4>{{ nextAppointment.doctorName }}</h4>
+    <div class="pd-appointment-modern">
 
-                  <p>{{ nextAppointment.specialisation }}</p>
+      <div class="pd-appointment-date">
+        <span class="pd-date-label">📅 Appointment Date</span>
 
-                  <div class="pd-next-tags">
-                    <span class="pd-time-pill">
-                      {{ nextAppointment.timeSlot }}
-                    </span>
+        <strong>
+          {{ formatDate(nextAppointment.scheduledDate) }}
+        </strong>
+      </div>
 
-                    <span [class]="getStatusClass(nextAppointment.status)">
-                      {{ nextAppointment.status }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            } @else {
-              <div class="pd-empty-card">
-                No upcoming appointments found.
-              </div>
-            }
-          </article>
+      <div class="pd-appointment-details">
+
+        <h4>
+          {{ nextAppointment.doctorName }}
+        </h4>
+
+        <div class="pd-appointment-meta">
+
+          <span class="pd-time-pill">
+            🕒 {{ nextAppointment.timeSlot }}
+          </span>
+
+          <span [class]="getStatusClass(nextAppointment.status)">
+            {{ nextAppointment.status }}
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  } @else {
+
+    <div class="pd-empty-card">
+      No upcoming appointments found.
+    </div>
+
+  }
+</article>
 
          <article class="pd-panel premium-panel">
   <div class="pd-panel-header">
@@ -261,25 +266,26 @@
 
   @if (lastVisitedDoctor) {
 
-    <div class="pd-recent-doctor-card">
+<div class="pd-visit-card">
 
-      <div class="pd-doctor-info">
-        <h4>{{ lastVisitedDoctor.doctorName }}</h4>
-        <p>{{ lastVisitedDoctor.specialisation }}</p>
-      </div>
+  <div class="pd-visit-left">
+    <h4>{{ lastVisitedDoctor.doctorName }}</h4>
+    <p>{{ lastVisitedDoctor.specialisation }}</p>
+  </div>
 
-      <div class="pd-visit-details">
-        <span>
-          Last Visit:
-          {{ formatDate(lastVisitedDoctor.scheduledDate) }}
-        </span>
+  <div class="pd-visit-right">
+    <span [class]="getStatusClass(lastVisitedDoctor.status)">
+      {{ lastVisitedDoctor.status }}
+    </span>
 
-        <span class="status-completed">
-          {{ lastVisitedDoctor.status }}
-        </span>
-      </div>
+    <small>
+      {{ formatDate(lastVisitedDoctor.scheduledDate) }}
+    </small>
+  </div>
 
-    </div>
+</div>
+
+}
 
   } @else {
 
