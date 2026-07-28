@@ -1,72 +1,124 @@
 <div class="book-page">
   <header class="page-header">
-    <div>
+    <div class="page-heading">
       <h1>Book Appointment</h1>
-      <p>Select a date and available time slot for your consultation.</p>
+
+      <p>
+        Select a date and an available time slot for your
+        consultation.
+      </p>
     </div>
 
-    <a routerLink="/patient/doctors" class="secondary-btn">
+    <a
+      routerLink="/patient/doctors"
+      class="secondary-btn back-button"
+    >
       Back to Doctors
     </a>
   </header>
 
   @if (errorMessage) {
-    <div class="alert-error">
+    <div
+      class="alert-error"
+      role="alert"
+    >
       {{ errorMessage }}
     </div>
   }
 
   @if (successMessage) {
-    <div class="alert-success">
+    <div
+      class="alert-success"
+      role="status"
+    >
       {{ successMessage }}
     </div>
   }
 
   @if (isLoadingDoctor) {
-    <div class="page-card">
-      <p>Loading doctor details...</p>
+    <div class="loading-card">
+      <div class="loading-indicator"></div>
+
+      <strong>Loading doctor details...</strong>
+
+      <span>
+        Please wait while the doctor information is loaded.
+      </span>
     </div>
   } @else {
     @if (doctor) {
       <section class="booking-layout">
         <article class="doctor-summary-card">
           <div class="doctor-header">
-            <div class="doctor-avatar">
+            <div
+              class="doctor-avatar"
+              aria-hidden="true"
+            >
               {{ doctor.fullName.charAt(0).toUpperCase() }}
             </div>
 
-            <div>
+            <div class="doctor-heading">
               <h2>{{ doctor.fullName }}</h2>
-              <p>{{ getSpecialisationName(doctor.specialisation) }}</p>
+
+              <p>
+                {{
+                  getSpecialisationName(
+                    doctor.specialisation
+                  )
+                }}
+              </p>
             </div>
           </div>
 
           <div class="doctor-meta">
             <div>
               <span>Experience</span>
-              <strong>{{ doctor.yearsOfExperience }} years</strong>
+
+              <strong>
+                {{ doctor.yearsOfExperience }} years
+              </strong>
             </div>
 
             <div>
               <span>Consultation Fee</span>
-              <strong>{{ formatFee(doctor.consultationFee) }}</strong>
+
+              <strong>
+                {{ formatFee(doctor.consultationFee) }}
+              </strong>
             </div>
 
             <div>
               <span>Status</span>
-              <strong>
-                {{ doctor.isActive ? 'Available' : 'Inactive' }}
+
+              <strong
+                class="doctor-status"
+                [class.available]="doctor.isActive"
+                [class.inactive]="!doctor.isActive"
+              >
+                {{
+                  doctor.isActive
+                    ? 'Available'
+                    : 'Inactive'
+                }}
               </strong>
             </div>
           </div>
         </article>
 
         <article class="booking-card">
-          <h2>Choose Appointment Slot</h2>
-          <p>Select a date first. Available slots will appear below.</p>
+          <div class="booking-heading">
+            <h2>Choose Appointment Slot</h2>
+
+            <p>
+              Select a date first. Available time slots will
+              appear below.
+            </p>
+          </div>
 
           <div class="form-group">
-            <label for="appointmentDate">Appointment Date</label>
+            <label for="appointmentDate">
+              Appointment Date
+            </label>
 
             <input
               id="appointmentDate"
@@ -79,14 +131,22 @@
           </div>
 
           @if (isLoadingSlots) {
-            <div class="slot-loading">
-              Loading available slots...
+            <div
+              class="slot-message"
+              role="status"
+            >
+              <div class="small-loader"></div>
+              <span>Loading available slots...</span>
             </div>
           }
 
-          @if (!isLoadingSlots && selectedDate && availableSlots.length === 0) {
-            <div class="empty-slots">
-              No slots available for this date.
+          @if (
+            !isLoadingSlots &&
+            selectedDate &&
+            availableSlots.length === 0
+          ) {
+            <div class="slot-message empty-slots">
+              No slots are available for the selected date.
             </div>
           }
 
@@ -95,7 +155,10 @@
               <legend>Available Time Slots</legend>
 
               <div class="slot-grid">
-                @for (slot of availableSlots; track slot) {
+                @for (
+                  slot of availableSlots;
+                  track slot
+                ) {
                   <button
                     type="button"
                     class="slot-btn"
@@ -110,13 +173,40 @@
             </fieldset>
           }
 
+          <div class="booking-summary">
+            <div>
+              <span>Selected Date</span>
+
+              <strong>
+                {{ selectedDate || 'Not selected' }}
+              </strong>
+            </div>
+
+            <div>
+              <span>Selected Time</span>
+
+              <strong>
+                {{ selectedSlot || 'Not selected' }}
+              </strong>
+            </div>
+          </div>
+
           <button
             type="button"
             class="primary-btn book-submit"
-            [disabled]="isBooking || !selectedDate || !selectedSlot || !doctor.isActive"
+            [disabled]="
+              isBooking ||
+              !selectedDate ||
+              !selectedSlot ||
+              !doctor.isActive
+            "
             (click)="bookAppointment()"
           >
-            {{ isBooking ? 'Booking...' : 'Confirm Appointment' }}
+            {{
+              isBooking
+                ? 'Booking...'
+                : 'Confirm Appointment'
+            }}
           </button>
         </article>
       </section>
