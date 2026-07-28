@@ -289,45 +289,91 @@
 
   }
 </article>
+<div class="pd-health-grid">
 
-          <article class="pd-panel pd-wide-panel premium-panel">
-            <div class="pd-panel-header">
-              <div>
-                <h3>Recent Health Record</h3>
-              </div>
+  <!-- Recent Health Record -->
+  <article class="pd-panel premium-panel">
+    <div class="pd-panel-header">
+      <div>
+        <h3>Recent Health Record</h3>
+      </div>
 
-              <button type="button" (click)="setActiveSection('records')">
-                Open Records
-              </button>
-            </div>
+      <button
+        type="button"
+        (click)="setActiveSection('records')">
+        Open Records
+      </button>
+    </div>
 
-            @if (latestHealthRecord) {
-              <div class="pd-record-preview premium-record-preview">
-                <div>
-                  <span>Visit Date</span>
-                  <strong>{{ formatDate(latestHealthRecord.visitDate) }}</strong>
-                </div>
+    @if (latestHealthRecord) {
+      <div class="pd-record-preview premium-record-preview">
 
-                <div>
-                  <span>Doctor</span>
-                  <strong>{{ latestHealthRecord.doctorName }}</strong>
-                </div>
+        <div>
+          <span>Visit Date</span>
+          <strong>{{ formatDate(latestHealthRecord.visitDate) }}</strong>
+        </div>
 
-                <div>
-                  <span>Diagnosis</span>
-                  <strong>{{ latestHealthRecord.diagnosis }}</strong>
-                </div>
+        <div>
+          <span>Doctor</span>
+          <strong>{{ latestHealthRecord.doctorName }}</strong>
+        </div>
 
-                <p>
-                  {{ latestHealthRecord.notes || latestHealthRecord.prescription }}
-                </p>
-              </div>
-            } @else {
-              <div class="pd-empty-card">
-                No health records available.
-              </div>
-            }
-          </article>
+        <div>
+          <span>Diagnosis</span>
+          <strong>{{ latestHealthRecord.diagnosis }}</strong>
+        </div>
+
+        <p>
+          {{ latestHealthRecord.notes }}
+        </p>
+
+      </div>
+    } @else {
+      <div class="pd-empty-card">
+        No health records available.
+      </div>
+    }
+
+  </article>
+
+  <!-- Latest Prescription -->
+  <article class="pd-panel premium-panel">
+
+    <div class="pd-panel-header">
+      <div>
+        <h3>Latest Prescription</h3>
+      </div>
+    </div>
+
+    @if (latestHealthRecord) {
+
+      <div class="pd-prescription-card">
+
+        <div class="pd-prescription-icon">
+          💊
+        </div>
+
+        <div class="pd-prescription-content">
+          <span>Prescription</span>
+
+          <strong>
+            {{ latestHealthRecord.prescription || 'No prescription available' }}
+          </strong>
+        </div>
+
+      </div>
+
+    } @else {
+
+      <div class="pd-empty-card">
+        No prescription available.
+      </div>
+
+    }
+
+  </article>
+
+</div>
 
         </section>
 

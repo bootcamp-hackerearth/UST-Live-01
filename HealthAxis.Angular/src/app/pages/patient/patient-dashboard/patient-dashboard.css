@@ -1079,11 +1079,16 @@
 
 .pd-date-box {
   height: 92px;
+  width: 92px;
 
   border-radius: 25px;
 
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  gap: 2px;
 
   text-align: center;
 
@@ -1100,24 +1105,25 @@
 }
 
 .pd-date-box strong {
-  display: block;
+  margin: 0;
 
-  font-size: 29px;
+  font-size: 32px;
   line-height: 1;
 
-  font-weight: 1000;
+  font-weight: 800;
 }
 
 .pd-date-box span {
-  display: block;
+  margin: 0;
 
-  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1;
 
-  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 
-  font-weight: 950;
+  font-weight: 700;
 }
-
 /* ==================================
    APPOINTMENT INFO
 ================================== */
@@ -2793,4 +2799,151 @@
 
 .pd-dropdown-item:hover {
     background: #f8f3eb;
+}
+.pd-recent-doctor-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border: 1px solid #d8b98c;
+  border-radius: 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(245, 241, 235, 0.95)
+  );
+  min-height: 160px;
+}
+
+.pd-doctor-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pd-doctor-info h4 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #3f2d1f;
+}
+
+.pd-doctor-info p {
+  margin: 0;
+  color: #6b5540;
+  font-size: 1rem;
+}
+
+.pd-visit-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.pd-visit-date {
+  color: #4b3a2b;
+  font-weight: 600;
+}
+
+.pd-status.completed {
+  background: #e8f8ee;
+  color: #16a34a;
+}
+/* ==================================
+   HEALTH SECTION
+================================== */
+
+.pd-health-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+/* ==================================
+   PRESCRIPTION CARD
+================================== */
+
+.pd-prescription-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  padding: 1.5rem;
+  margin-top: 1rem;
+
+  min-height: 200px;
+
+  border-radius: 24px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(248, 245, 240, 0.95)
+  );
+
+  border: 1px solid rgba(200, 169, 126, 0.35);
+
+  box-shadow:
+    0 12px 25px rgba(139, 115, 85, 0.08);
+}
+
+.pd-prescription-icon {
+  width: 72px;
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 22px;
+
+  font-size: 2rem;
+
+  background: linear-gradient(
+    135deg,
+    #c8a97e,
+    #8b7355
+  );
+
+  color: #fff;
+
+  flex-shrink: 0;
+}
+
+.pd-prescription-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pd-prescription-content span {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #8b7355;
+  font-weight: 700;
+}
+
+.pd-prescription-content strong {
+  color: #3f2d1f;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+/* ==================================
+   RESPONSIVE
+================================== */
+
+@media (max-width: 1024px) {
+  .pd-health-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-prescription-card {
+    min-height: auto;
+  }
 }
