@@ -13,12 +13,6 @@ namespace HealthAxis_Admin.Providers
         private const string JwtAuthenticationType = "jwt";
         private const string ExpirationClaimType = "exp";
 
-        private const string RoleClaimUri =
-            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
-
-        private const string NameIdentifierClaimUri =
-            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
-
         private readonly TokenService _tokenService;
 
         public ApiAuthenticationStateProvider(
@@ -33,7 +27,6 @@ namespace HealthAxis_Admin.Providers
             var token =
                 await _tokenService.GetAccessTokenAsync();
 
-            // Important:
             // Do not clear storage when the token is temporarily missing.
             // ExternalLogin.razor may currently be saving the token.
             if (string.IsNullOrWhiteSpace(token))
@@ -72,7 +65,8 @@ namespace HealthAxis_Admin.Providers
                     CreateAnonymousState()));
         }
 
-        public static bool IsAdminToken(string token)
+        public static bool IsAdminToken(
+            string token)
         {
             if (string.IsNullOrWhiteSpace(token))
             {
@@ -175,7 +169,7 @@ namespace HealthAxis_Admin.Providers
         }
 
         private static void AddClaim(
-            ICollection<Claim> claims,
+            List<Claim> claims,
             string claimType,
             JsonElement claimValue)
         {
@@ -207,7 +201,7 @@ namespace HealthAxis_Admin.Providers
         }
 
         private static void AddArrayClaims(
-            ICollection<Claim> claims,
+            List<Claim> claims,
             string claimType,
             JsonElement claimValues)
         {
@@ -235,7 +229,7 @@ namespace HealthAxis_Admin.Providers
                     "role",
                     StringComparison.OrdinalIgnoreCase) ||
                 claimType.Equals(
-                    RoleClaimUri,
+                    ClaimTypes.Role,
                     StringComparison.Ordinal))
             {
                 return ClaimTypes.Role;
@@ -255,7 +249,7 @@ namespace HealthAxis_Admin.Providers
                     "nameid",
                     StringComparison.OrdinalIgnoreCase) ||
                 claimType.Equals(
-                    NameIdentifierClaimUri,
+                    ClaimTypes.NameIdentifier,
                     StringComparison.Ordinal))
             {
                 return ClaimTypes.NameIdentifier;

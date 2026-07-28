@@ -45,9 +45,6 @@ export class Login {
   private readonly router =
     inject(Router);
 
-  private readonly emailPattern =
-    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
   private bookingReturnUrl = '';
 
   readonly loading = signal(false);
@@ -61,9 +58,7 @@ export class Login {
         '',
         [
           Validators.required,
-          Validators.pattern(
-            this.emailPattern
-          )
+          Validators.email
         ]
       ],
       password: [
@@ -136,7 +131,7 @@ export class Login {
       return 'Email address is required.';
     }
 
-    if (this.email.hasError('pattern')) {
+    if (this.email.hasError('email')) {
       return 'Enter a valid email address.';
     }
 

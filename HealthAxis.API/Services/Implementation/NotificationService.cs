@@ -103,10 +103,13 @@ namespace HealthAxis.API.Services.Implementation
                 await dbContext.SaveChangesAsync(
                     cancellationToken);
 
-                logger.LogInformation(
-                    "Doctor notification created. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}",
-                    appointmentBookedEvent.AppointmentId,
-                    appointmentBookedEvent.DoctorId);
+                if (logger.IsEnabled(LogLevel.Information))
+                {
+                    logger.LogInformation(
+                        "Doctor notification created. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}",
+                        appointmentBookedEvent.AppointmentId,
+                        appointmentBookedEvent.DoctorId);
+                }
 
                 return true;
             }
@@ -121,16 +124,6 @@ namespace HealthAxis.API.Services.Implementation
             catch (OperationCanceledException)
                 when (cancellationToken.IsCancellationRequested)
             {
-                throw;
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(
-                    exception,
-                    "Notification creation failed. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}.",
-                    appointmentBookedEvent.AppointmentId,
-                    appointmentBookedEvent.DoctorId);
-
                 throw;
             }
         }
@@ -186,10 +179,13 @@ namespace HealthAxis.API.Services.Implementation
 
                 if (newNotifications.Count == 0)
                 {
-                    logger.LogInformation(
-                        "Appointment status notifications already exist. AppointmentId: {AppointmentId}, Status: {Status}",
-                        currentAppointment.AppointmentId,
-                        currentAppointment.Status);
+                    if (logger.IsEnabled(LogLevel.Information))
+                    {
+                        logger.LogInformation(
+                            "Appointment status notifications already exist. AppointmentId: {AppointmentId}, Status: {Status}",
+                            currentAppointment.AppointmentId,
+                            currentAppointment.Status);
+                    }
 
                     return 0;
                 }
@@ -201,21 +197,28 @@ namespace HealthAxis.API.Services.Implementation
                 await dbContext.SaveChangesAsync(
                     cancellationToken);
 
-                logger.LogInformation(
-                    "{NotificationCount} appointment status notification(s) created. AppointmentId: {AppointmentId}, Status: {Status}",
-                    newNotifications.Count,
-                    currentAppointment.AppointmentId,
-                    currentAppointment.Status);
+                if (logger.IsEnabled(LogLevel.Information))
+                {
+                    logger.LogInformation(
+                        "{NotificationCount} appointment status notification(s) created. AppointmentId: {AppointmentId}, Status: {Status}",
+                        newNotifications.Count,
+                        currentAppointment.AppointmentId,
+                        currentAppointment.Status);
+                }
 
                 return newNotifications.Count;
             }
             catch (DbUpdateException exception)
                 when (IsUniqueConstraintViolation(exception))
             {
-                logger.LogInformation(
-                    "Duplicate appointment status notification skipped. AppointmentId: {AppointmentId}, Status: {Status}",
-                    appointment.AppointmentId,
-                    appointment.Status);
+                if (logger.IsEnabled(LogLevel.Information))
+                {
+                    logger.LogInformation(
+                        exception,
+                        "Duplicate appointment status notification skipped. AppointmentId: {AppointmentId}, Status: {Status}",
+                        appointment.AppointmentId,
+                        appointment.Status);
+                }
 
                 return 0;
             }
@@ -432,16 +435,6 @@ namespace HealthAxis.API.Services.Implementation
             catch (OperationCanceledException)
                 when (cancellationToken.IsCancellationRequested)
             {
-                throw;
-            }
-            catch (Exception exception)
-            {
-                logger.LogError(
-                    exception,
-                    "Failed to load notifications. PatientId: {PatientId}, DoctorId: {DoctorId}.",
-                    patientId,
-                    doctorId);
-
                 throw;
             }
         }
@@ -963,10 +956,13 @@ namespace HealthAxis.API.Services.Implementation
         private void LogDuplicateBookedNotification(
             AppointmentBookedEvent appointmentBookedEvent)
         {
-            logger.LogInformation(
-                "Duplicate appointment notification skipped. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}",
-                appointmentBookedEvent.AppointmentId,
-                appointmentBookedEvent.DoctorId);
+            if (logger.IsEnabled(LogLevel.Information))
+            {
+                logger.LogInformation(
+                    "Duplicate appointment notification skipped. AppointmentId: {AppointmentId}, DoctorId: {DoctorId}",
+                    appointmentBookedEvent.AppointmentId,
+                    appointmentBookedEvent.DoctorId);
+            }
         }
 
         private static bool

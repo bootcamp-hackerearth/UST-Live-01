@@ -55,6 +55,7 @@ const CANCELLED_STATUS = 'cancelled';
 
 type StatusFilter = typeof STATUS_FILTERS[number];
 type DateFilter = typeof DATE_FILTERS[number];
+type DateValue = string | Date | null | undefined;
 
 @Component({
   selector: 'app-my-appointments',
@@ -1013,11 +1014,21 @@ export class MyAppointments {
       return;
     }
 
-    printWindow.document.open();
-    printWindow.document.write(
-      printContent
+    const parsedDocument = new DOMParser().parseFromString(
+      printContent,
+      'text/html'
     );
-    printWindow.document.close();
+
+    const importedDocumentElement =
+      printWindow.document.importNode(
+        parsedDocument.documentElement,
+        true
+      );
+
+    printWindow.document.replaceChild(
+      importedDocumentElement,
+      printWindow.document.documentElement
+    );
 
     printWindow.onafterprint = (): void => {
       printWindow.close();
@@ -1706,7 +1717,7 @@ export class MyAppointments {
   }
 
   private formatDate(
-    value: string | Date | null | undefined
+    value: DateValue
   ): string {
     const date = this.parseDate(value);
 
@@ -1725,7 +1736,7 @@ export class MyAppointments {
   }
 
   private formatDateTime(
-    value: string | Date | null | undefined
+    value: DateValue
   ): string {
     const date = this.parseDate(value);
 
@@ -1747,7 +1758,7 @@ export class MyAppointments {
   }
 
   private parseDate(
-    value: string | Date | null | undefined
+    value: DateValue
   ): Date | null {
     if (!value) {
       return null;

@@ -139,7 +139,7 @@
                 "
                 formControlName="password"
                 placeholder="Enter your password"
-                autocomplete="current-password"
+                [attr.autocomplete]="'current-password'"
                 [class.input-error]="
                   password.invalid &&
                   password.touched

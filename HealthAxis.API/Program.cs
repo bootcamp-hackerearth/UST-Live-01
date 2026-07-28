@@ -456,15 +456,9 @@ try
             var baseUrl = url.TrimEnd('/');
 
             Log.Information(
-                "HealthAxis API: {Url}",
-                baseUrl);
-
-            Log.Information(
-                "Angular Portal: {Url}",
-                $"{baseUrl}/angular/");
-
-            Log.Information(
-                "Blazor Admin: {Url}",
+                "HealthAxis API: {ApiUrl}; Angular Portal: {AngularUrl}; Blazor Admin: {BlazorUrl}",
+                baseUrl,
+                $"{baseUrl}/angular/",
                 $"{baseUrl}/blazor/");
         }
     });

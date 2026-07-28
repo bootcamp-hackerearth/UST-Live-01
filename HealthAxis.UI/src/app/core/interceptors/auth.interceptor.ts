@@ -136,19 +136,17 @@ function refreshAndRetry(
 function getRefreshRequest(
   authService: AuthService
 ): Observable<RefreshTokenResponse> {
-  if (!refreshRequest$) {
-    refreshRequest$ = authService
-      .refreshToken()
-      .pipe(
-        finalize(() => {
-          refreshRequest$ = null;
-        }),
-        shareReplay({
-          bufferSize: 1,
-          refCount: false
-        })
-      );
-  }
+  refreshRequest$ ??= authService
+    .refreshToken()
+    .pipe(
+      finalize(() => {
+        refreshRequest$ = null;
+      }),
+      shareReplay({
+        bufferSize: 1,
+        refCount: false
+      })
+    );
 
   return refreshRequest$;
 }

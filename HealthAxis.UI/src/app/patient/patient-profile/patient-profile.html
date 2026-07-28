@@ -239,7 +239,7 @@
                     : 'password'
                 "
                 placeholder="Enter current password"
-                autocomplete="current-password"
+                [attr.autocomplete]="'current-password'"
                 formControlName="currentPassword"
               />
 
@@ -300,7 +300,7 @@
                     : 'password'
                 "
                 placeholder="Create a strong password"
-                autocomplete="new-password"
+                [attr.autocomplete]="'new-password'"
                 formControlName="newPassword"
               />
 
@@ -359,7 +359,7 @@
                     : 'password'
                 "
                 placeholder="Re-enter new password"
-                autocomplete="new-password"
+                [attr.autocomplete]="'new-password'"
                 formControlName="confirmPassword"
               />
 
@@ -434,12 +434,11 @@
       </form>
 
       @if (passwordSuccessMessage()) {
-        <div
+        <output
           class="password-feedback password-success"
-          role="status"
         >
           {{ passwordSuccessMessage() }}
-        </div>
+        </output>
       }
 
       @if (passwordErrorMessage()) {

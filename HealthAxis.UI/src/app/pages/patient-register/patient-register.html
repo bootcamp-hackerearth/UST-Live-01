@@ -273,7 +273,7 @@
                   [type]="showPassword() ? 'text' : 'password'"
                   formControlName="password"
                   placeholder="Create a password"
-                  autocomplete="new-password"
+                  [attr.autocomplete]="'new-password'"
                 />
 
                 <button
@@ -357,7 +357,7 @@
                   "
                   formControlName="confirmPassword"
                   placeholder="Re-enter your password"
-                  autocomplete="new-password"
+                  [attr.autocomplete]="'new-password'"
                 />
 
                 <button

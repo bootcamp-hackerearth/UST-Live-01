@@ -13,6 +13,7 @@ import { PatientService } from '../../core/services/patient.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
 type HealthRecordFilter = 'All' | 'Final' | 'Updated';
+type DateValue = string | Date | null | undefined;
 
 const PRINT_WINDOW_FEATURES = 'width=900,height=700';
 const PRINT_DELAY_IN_MS = 300;
@@ -249,9 +250,34 @@ export class HealthRecords {
     const printableDocument =
       this.createHealthRecordDocument(record);
 
-    printWindow.document.open();
-    printWindow.document.write(printableDocument);
-    printWindow.document.close();
+    const parsedDocument =
+      new DOMParser().parseFromString(
+        printableDocument,
+        'text/html'
+      );
+
+    const importedHead =
+      printWindow.document.importNode(
+        parsedDocument.head,
+        true
+      );
+
+    const importedBody =
+      printWindow.document.importNode(
+        parsedDocument.body,
+        true
+      );
+
+    printWindow.document.head.replaceWith(
+      importedHead
+    );
+
+    printWindow.document.body.replaceWith(
+      importedBody
+    );
+
+    printWindow.document.documentElement.lang =
+      parsedDocument.documentElement.lang;
 
     printWindow.onafterprint = (): void => {
       printWindow.close();
@@ -647,7 +673,7 @@ export class HealthRecords {
   }
 
   private formatDate(
-    value: string | Date | null | undefined
+    value: DateValue
   ): string {
     const date = this.parseDate(value);
 
@@ -666,7 +692,7 @@ export class HealthRecords {
   }
 
   private formatDateTime(
-    value: string | Date | null | undefined
+    value: DateValue
   ): string {
     const date = this.parseDate(value);
 
@@ -688,7 +714,7 @@ export class HealthRecords {
   }
 
   private parseDate(
-    value: string | Date | null | undefined
+    value: DateValue
   ): Date | null {
     if (!value) {
       return null;

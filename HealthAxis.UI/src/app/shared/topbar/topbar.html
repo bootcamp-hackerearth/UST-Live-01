@@ -71,7 +71,13 @@
       <button
         type="button"
         class="notification-button"
-        aria-label="Open notifications"
+        [attr.aria-label]="
+          unreadNotificationCount() > 0
+            ? 'Open notifications, ' +
+              getUnreadBadgeText() +
+              ' unread'
+            : 'Open notifications'
+        "
         aria-controls="notificationMenu"
         [attr.aria-expanded]="
           isNotificationMenuOpen()
@@ -90,7 +96,10 @@
         </svg>
 
         @if (unreadNotificationCount() > 0) {
-          <span class="notification-badge">
+          <span
+            class="notification-badge"
+            aria-hidden="true"
+          >
             {{ getUnreadBadgeText() }}
           </span>
         }
@@ -343,12 +352,13 @@
       (click)="closeNotificationDialog()"
     ></button>
 
-    <section
+    <dialog
+      open
       class="notification-dialog"
-      role="dialog"
       aria-modal="true"
       aria-labelledby="notificationDialogTitle"
       aria-describedby="notificationDialogMessage"
+      style="margin: 0; padding: 0; border: 0;"
     >
       <div class="notification-dialog-header">
         <div class="notification-dialog-heading">
@@ -480,6 +490,6 @@
           Close
         </button>
       </div>
-    </section>
+    </dialog>
   </div>
 }

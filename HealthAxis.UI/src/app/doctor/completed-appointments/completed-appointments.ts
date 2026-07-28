@@ -882,11 +882,34 @@ export class CompletedAppointments {
       </html>
     `;
 
-    printWindow.document.open();
-    printWindow.document.write(
-      printableDocument
+    const parsedDocument =
+      new DOMParser().parseFromString(
+        printableDocument,
+        'text/html'
+      );
+
+    const importedHead =
+      printWindow.document.importNode(
+        parsedDocument.head,
+        true
+      );
+
+    const importedBody =
+      printWindow.document.importNode(
+        parsedDocument.body,
+        true
+      );
+
+    printWindow.document.head.replaceWith(
+      importedHead
     );
-    printWindow.document.close();
+
+    printWindow.document.body.replaceWith(
+      importedBody
+    );
+
+    printWindow.document.documentElement.lang =
+      parsedDocument.documentElement.lang;
 
     printWindow.onafterprint = (): void => {
       printWindow.close();
