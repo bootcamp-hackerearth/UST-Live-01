@@ -11,8 +11,8 @@ pipeline {
     environment {
         AWS_REGION = 'ap-south-1'
 
-        EB_APPLICATION_NAME = 'HealthAxisCoreApi0'
-        EB_ENVIRONMENT_NAME = 'HealthAxisCoreApi0-dev'
+        EB_APPLICATION_NAME = 'HealthAxisCoreApi7'
+        EB_ENVIRONMENT_NAME = 'HealthAxisCoreApi7-dev'
 
         S3_BUCKET = 'jenkins-deploy-110704'
 
