@@ -43,7 +43,31 @@ pipeline {
             }
         }
 
-        stage('Verify Sources') {
+        stage('Clean Previous Build') {
+            steps {
+                powershell '''
+                $ErrorActionPreference = "Stop"
+
+                $paths = @(
+                    "./artifacts",
+                    "./publish",
+                    "./blazor-publish-temp",
+                    "./deploy-package.zip",
+                    "./HealthApp.API/wwwroot"
+                )
+
+                foreach ($path in $paths) {
+                    if (Test-Path -LiteralPath $path) {
+                        Remove-Item -LiteralPath $path -Recurse -Force
+                    }
+                }
+
+                New-Item -ItemType Directory -Path "./HealthApp.API/wwwroot" -Force | Out-Null
+                '''
+            }
+        }
+
+        stage('Verify Project Files') {
             steps {
                 powershell '''
                 $ErrorActionPreference = "Stop"
@@ -51,62 +75,179 @@ pipeline {
                 $required = @(
                     "./HealthApp.API/HealthApp.API.csproj",
                     "./HealthApp.AdminBlazor/HealthApp.AdminBlazor.csproj",
-                    "./HealthApp.Angular/package.json",
-                    "./publish-all.ps1"
+                    "./HealthApp.Angular/package.json"
                 )
 
                 foreach ($path in $required) {
                     if (!(Test-Path -LiteralPath $path)) {
-                        throw "Required source file is missing: $path"
+                        throw "Required project file is missing: $path"
                     }
                 }
                 '''
             }
         }
 
-        stage('Build Combined Application') {
+        stage('Restore .NET Projects') {
+            steps {
+                bat '''
+                dotnet restore HealthApp.API/HealthApp.API.csproj
+                if errorlevel 1 exit /b 1
+
+                dotnet restore HealthApp.AdminBlazor/HealthApp.AdminBlazor.csproj
+                if errorlevel 1 exit /b 1
+                '''
+            }
+        }
+
+        stage('Build Angular') {
+            steps {
+                dir('HealthApp.Angular') {
+                    bat '''
+                    call npm install
+                    if errorlevel 1 exit /b 1
+
+                    call npx ng build --configuration production --base-href / --output-path ../artifacts/angular
+                    if errorlevel 1 exit /b 1
+                    '''
+                }
+            }
+        }
+
+        stage('Copy Angular into API') {
             steps {
                 powershell '''
                 $ErrorActionPreference = "Stop"
 
-                & "./publish-all.ps1"
+                $angularOutput = "./artifacts/angular"
+                $angularBrowserOutput = "./artifacts/angular/browser"
+                $apiWwwroot = "./HealthApp.API/wwwroot"
 
-                if ($LASTEXITCODE -ne 0) {
-                    exit $LASTEXITCODE
+                if (Test-Path -LiteralPath "$angularBrowserOutput/index.html") {
+                    $angularFiles = $angularBrowserOutput
+                }
+                elseif (Test-Path -LiteralPath "$angularOutput/index.html") {
+                    $angularFiles = $angularOutput
+                }
+                else {
+                    $indexFile = Get-ChildItem -LiteralPath $angularOutput -Filter "index.html" -File -Recurse | Select-Object -First 1
+
+                    if ($null -eq $indexFile) {
+                        throw "Angular index.html was not found."
+                    }
+
+                    $angularFiles = $indexFile.Directory.FullName
+                }
+
+                Copy-Item -Path "$angularFiles/*" -Destination $apiWwwroot -Recurse -Force
+
+                if (!(Test-Path -LiteralPath "$apiWwwroot/index.html")) {
+                    throw "Angular index.html was not copied into API wwwroot."
                 }
                 '''
             }
         }
 
-        stage('Verify Combined Output') {
+        stage('Publish Blazor') {
+            steps {
+                bat '''
+                dotnet publish HealthApp.AdminBlazor/HealthApp.AdminBlazor.csproj -c Release -o blazor-publish-temp --no-restore
+                if errorlevel 1 exit /b 1
+                '''
+            }
+        }
+
+        stage('Configure and Copy Blazor into API') {
             steps {
                 powershell '''
                 $ErrorActionPreference = "Stop"
 
-                $required = @(
-                    "./artifacts/deployment/HealthApp.API.dll",
-                    "./artifacts/deployment/HealthApp.API.runtimeconfig.json",
-                    "./artifacts/deployment/HealthApp.API.deps.json",
-                    "./artifacts/deployment/Procfile",
-                    "./artifacts/deployment/wwwroot/index.html",
-                    "./artifacts/deployment/wwwroot/blazor/index.html",
-                    "./artifacts/deployment/wwwroot/blazor/css/app.css",
-                    "./artifacts/deployment/wwwroot/blazor/lib/bootstrap/dist/css/bootstrap.min.css",
-                    "./artifacts/deployment/wwwroot/blazor/HealthApp.AdminBlazor.styles.css",
-                    "./artifacts/deployment/wwwroot/blazor/_framework/blazor.webassembly.js"
-                )
+                $source = "./blazor-publish-temp/wwwroot"
+                $indexPath = "$source/index.html"
+                $destination = "./HealthApp.API/wwwroot/blazor"
 
-                foreach ($path in $required) {
-                    if (!(Test-Path -LiteralPath $path)) {
-                        throw "Required deployment file is missing: $path"
-                    }
+                if (!(Test-Path -LiteralPath $indexPath)) {
+                    throw "Published Blazor index.html is missing."
                 }
 
-                $indexPath = "./artifacts/deployment/wwwroot/blazor/index.html"
+                if (!(Test-Path -LiteralPath "$source/_framework")) {
+                    throw "Published Blazor framework folder is missing."
+                }
+
                 $indexContent = Get-Content -LiteralPath $indexPath -Raw
 
-                if (!$indexContent.Contains('<base href="/blazor/" />')) {
-                    throw "Blazor base href is not /blazor/."
+                if ($indexContent.Contains('<base href="/" />')) {
+                    $indexContent = $indexContent.Replace('<base href="/" />', '<base href="/blazor/" />')
+                }
+                elseif (!$indexContent.Contains('<base href="/blazor/" />')) {
+                    throw "Blazor index.html does not contain the expected base href."
+                }
+
+                Set-Content -LiteralPath $indexPath -Value $indexContent -Encoding utf8
+
+                $verifiedContent = Get-Content -LiteralPath $indexPath -Raw
+
+                if (!$verifiedContent.Contains('<base href="/blazor/" />')) {
+                    throw "Blazor base href was not changed to /blazor/."
+                }
+
+                New-Item -ItemType Directory -Path $destination -Force | Out-Null
+                Copy-Item -Path "$source/*" -Destination $destination -Recurse -Force
+
+                $required = @(
+                    "$destination/index.html",
+                    "$destination/css/app.css",
+                    "$destination/lib/bootstrap/dist/css/bootstrap.min.css",
+                    "$destination/HealthApp.AdminBlazor.styles.css",
+                    "$destination/_framework/blazor.webassembly.js"
+                )
+
+                foreach ($path in $required) {
+                    if (!(Test-Path -LiteralPath $path)) {
+                        throw "Required Blazor file is missing: $path"
+                    }
+                }
+                '''
+            }
+        }
+
+        stage('Publish API') {
+            steps {
+                bat '''
+                dotnet publish HealthApp.API/HealthApp.API.csproj -c Release -o publish --no-restore --self-contained false
+                if errorlevel 1 exit /b 1
+                '''
+            }
+        }
+
+        stage('Create Procfile') {
+            steps {
+                powershell '''
+                $ErrorActionPreference = "Stop"
+
+                Set-Content -LiteralPath "./publish/Procfile" -Value "web: dotnet HealthApp.API.dll" -Encoding ascii
+
+                $required = @(
+                    "./publish/Procfile",
+                    "./publish/HealthApp.API.dll",
+                    "./publish/HealthApp.API.runtimeconfig.json",
+                    "./publish/HealthApp.API.deps.json",
+                    "./publish/wwwroot/index.html",
+                    "./publish/wwwroot/blazor/index.html",
+                    "./publish/wwwroot/blazor/css/app.css",
+                    "./publish/wwwroot/blazor/HealthApp.AdminBlazor.styles.css",
+                    "./publish/wwwroot/blazor/_framework/blazor.webassembly.js"
+                )
+
+                foreach ($path in $required) {
+                    if (!(Test-Path -LiteralPath $path)) {
+                        throw "Required publish file is missing: $path"
+                    }
+                }
+
+                $blazorIndex = Get-Content -LiteralPath "./publish/wwwroot/blazor/index.html" -Raw
+
+                if (!$blazorIndex.Contains('<base href="/blazor/" />')) {
+                    throw "Published Blazor base href is incorrect."
                 }
                 '''
             }
@@ -114,19 +255,12 @@ pipeline {
 
         stage('Create Deployment Zip') {
             steps {
-                bat '''
-                if exist deploy-package.zip del /F /Q deploy-package.zip
-
-                pushd artifacts/deployment
-                jar -cMf ../../deploy-package.zip .
-                if errorlevel 1 exit /b 1
-                popd
-
-                if not exist deploy-package.zip (
-                    echo ERROR: Deployment ZIP was not created.
-                    exit /b 1
-                )
-                '''
+                dir('publish') {
+                    bat '''
+                    jar -cMf ../deploy-package.zip .
+                    if errorlevel 1 exit /b 1
+                    '''
+                }
             }
         }
 
@@ -137,66 +271,50 @@ pipeline {
                 if errorlevel 1 exit /b 1
 
                 findstr /X /I /C:"Procfile" zip-contents.txt
-                if errorlevel 1 (
-                    echo ERROR: Procfile is missing from deployment ZIP.
-                    exit /b 1
-                )
+                if errorlevel 1 exit /b 1
 
                 findstr /X /I /C:"HealthApp.API.dll" zip-contents.txt
-                if errorlevel 1 (
-                    echo ERROR: HealthApp.API.dll is missing from deployment ZIP.
-                    exit /b 1
-                )
+                if errorlevel 1 exit /b 1
 
                 findstr /I /C:"wwwroot/index.html" zip-contents.txt
-                if errorlevel 1 (
-                    echo ERROR: Angular index.html is missing from deployment ZIP.
-                    exit /b 1
-                )
+                if errorlevel 1 exit /b 1
 
                 findstr /I /C:"wwwroot/blazor/index.html" zip-contents.txt
-                if errorlevel 1 (
-                    echo ERROR: Blazor index.html is missing from deployment ZIP.
-                    exit /b 1
-                )
+                if errorlevel 1 exit /b 1
 
                 findstr /I /C:"wwwroot/blazor/css/app.css" zip-contents.txt
-                if errorlevel 1 (
-                    echo ERROR: Blazor app.css is missing from deployment ZIP.
-                    exit /b 1
-                )
-
-                findstr /I /C:"wwwroot/blazor/lib/bootstrap/dist/css/bootstrap.min.css" zip-contents.txt
-                if errorlevel 1 (
-                    echo ERROR: Bootstrap CSS is missing from deployment ZIP.
-                    exit /b 1
-                )
+                if errorlevel 1 exit /b 1
 
                 findstr /I /C:"wwwroot/blazor/HealthApp.AdminBlazor.styles.css" zip-contents.txt
-                if errorlevel 1 (
-                    echo ERROR: Blazor scoped stylesheet is missing from deployment ZIP.
-                    exit /b 1
-                )
+                if errorlevel 1 exit /b 1
 
                 findstr /I /C:"wwwroot/blazor/_framework/blazor.webassembly.js" zip-contents.txt
-                if errorlevel 1 (
-                    echo ERROR: Blazor startup JavaScript is missing from deployment ZIP.
-                    exit /b 1
-                )
+                if errorlevel 1 exit /b 1
                 '''
             }
         }
 
-        stage('Upload Package and Create EB Version') {
+        stage('Upload Package to S3') {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: 'aws-deploy-creds'
                 ]]) {
                     bat '''
-                    aws s3 cp %DEPLOY_PACKAGE% s3://%S3_BUCKET%/deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%
+                    aws s3 cp deploy-package.zip s3://%S3_BUCKET%/deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%
                     if errorlevel 1 exit /b 1
+                    '''
+                }
+            }
+        }
 
+        stage('Create Application Version') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-deploy-creds'
+                ]]) {
+                    bat '''
                     aws elasticbeanstalk create-application-version --application-name "%EB_APPLICATION_NAME%" --version-label "v-%BUILD_NUMBER%" --description "Jenkins build %BUILD_NUMBER%" --source-bundle S3Bucket=%S3_BUCKET%,S3Key=deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%
                     if errorlevel 1 exit /b 1
                     '''
@@ -218,7 +336,7 @@ pipeline {
             }
         }
 
-        stage('Wait for Elastic Beanstalk') {
+        stage('Wait for EB Ready') {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
@@ -241,10 +359,7 @@ pipeline {
 
                         Write-Host "Check $check - Status=$($environment.Status), Health=$($environment.Health), Version=$($environment.VersionLabel)"
 
-                        if (
-                            $environment.Status -eq "Ready" -and
-                            $environment.VersionLabel -eq $expectedVersion
-                        ) {
+                        if ($environment.Status -eq "Ready" -and $environment.VersionLabel -eq $expectedVersion) {
                             Write-Host "Elastic Beanstalk is running $expectedVersion."
                             exit 0
                         }
@@ -261,11 +376,11 @@ pipeline {
 
     post {
         success {
-            echo 'HealthApp deployment completed successfully.'
+            echo 'HealthApp Jenkins deployment completed.'
         }
 
         failure {
-            echo 'HealthApp deployment failed. Check Jenkins output and Elastic Beanstalk logs.'
+            echo 'HealthApp Jenkins deployment failed. Check the failed stage and Elastic Beanstalk logs.'
         }
 
         always {
