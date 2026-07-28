@@ -79,7 +79,7 @@ export class DoctorAppointments implements OnInit {
   ): void {
     this.addRecordForm.update(form => ({
       ...form,
-      value
+      [field]: value
     }));
   }
 
