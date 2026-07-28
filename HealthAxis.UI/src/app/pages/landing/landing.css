@@ -109,9 +109,7 @@ select {
   flex-wrap: wrap;
 }
 
-.primary-action,
-.secondary-action,
-.text-action {
+.primary-action {
   min-height: 52px;
   padding: 14px 24px;
   border-radius: 12px;
@@ -142,22 +140,7 @@ select {
     0 14px 30px rgba(21, 90, 199, 0.28);
 }
 
-.secondary-action {
-  min-width: 130px;
-  border: 1.5px solid var(--primary-color);
-  color: var(--primary-color);
-  background: rgba(255, 255, 255, 0.94);
-}
-
-.text-action {
-  min-width: 120px;
-  color: var(--primary-dark);
-  background: rgba(255, 255, 255, 0.82);
-}
-
-.primary-action:hover,
-.secondary-action:hover,
-.text-action:hover {
+.primary-action:hover {
   transform: translateY(-2px);
 }
 
@@ -375,6 +358,27 @@ select {
   border-color: #fecdd3;
   color: #991b1b;
   background: #fff1f2;
+}
+
+.retry-doctors-button {
+  min-height: 42px;
+  padding: 10px 18px;
+  border: 1px solid #b91c1c;
+  border-radius: 10px;
+  color: #ffffff;
+  background: #b91c1c;
+  font-size: 13px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.retry-doctors-button:hover:not(:disabled) {
+  background: #991b1b;
+}
+
+.retry-doctors-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 .public-doctor-grid {
@@ -648,13 +652,14 @@ select {
   margin-top: 26px;
   display: grid;
   grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+    repeat(2, minmax(0, 1fr));
   gap: 14px;
 }
 
 .about-points article {
   min-width: 0;
-  padding: 16px;
+  min-height: 118px;
+  padding: 18px;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   background: #ffffff;
@@ -895,9 +900,7 @@ select {
     display: grid;
   }
 
-  .primary-action,
-  .secondary-action,
-  .text-action {
+  .primary-action {
     width: 100%;
   }
 

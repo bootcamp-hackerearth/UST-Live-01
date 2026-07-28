@@ -34,20 +34,6 @@
         >
           Book Appointment
         </button>
-
-        <a
-          routerLink="/login"
-          class="secondary-action"
-        >
-          Login
-        </a>
-
-        <a
-          routerLink="/register"
-          class="text-action"
-        >
-          Register
-        </a>
       </div>
 
     </div>
@@ -191,7 +177,18 @@
         class="doctor-message error-message"
         role="alert"
       >
-        {{ doctorErrorMessage() }}
+        <span>
+          {{ doctorErrorMessage() }}
+        </span>
+
+        <button
+          type="button"
+          class="retry-doctors-button"
+          [disabled]="loadingDoctors()"
+          (click)="retryLoadingDoctors()"
+        >
+          Try Again
+        </button>
       </div>
     } @else if (loadingDoctors()) {
       <div
@@ -343,36 +340,53 @@
       </h2>
 
       <p>
-        HealthAxis makes appointment booking, doctor workflow,
-        patient care, and administrative reporting simple and
-        secure.
+        HealthAxis is an online healthcare appointment platform
+        that connects patients, doctors, and hospital
+        administrators through one secure digital system.
+        Patients can find active specialists, compare consultation
+        details, and book appointments without visiting the
+        hospital reception desk.
       </p>
 
       <p>
-        Patients can register, book appointments, track visit
-        status, and view health records. Doctors can manage
-        appointments and create medical records.
+        The platform supports real-time doctor availability,
+        validated appointment dates and time slots, appointment
+        status tracking, digital health records, and secure
+        role-based access. Doctors can manage consultations and
+        create medical records, while administrators can monitor
+        hospital operations and reports.
       </p>
 
       <div class="about-points">
         <article>
-          <strong>Hassle-Free</strong>
+          <strong>Online Appointment Booking</strong>
           <span>
-            Book appointments quickly and easily
+            Find a specialist and schedule a consultation from
+            anywhere.
           </span>
         </article>
 
         <article>
-          <strong>Smart Booking</strong>
+          <strong>Live Doctor Availability</strong>
           <span>
-            Doctor and time-slot validation
+            View only active doctors and valid appointment time
+            slots.
           </span>
         </article>
 
         <article>
-          <strong>Digital Records</strong>
+          <strong>Appointment Tracking</strong>
           <span>
-            Secure health-record management
+            Follow pending, confirmed, completed, and cancelled
+            visits.
+          </span>
+        </article>
+
+        <article>
+          <strong>Digital Health Records</strong>
+          <span>
+            Access diagnosis, prescriptions, and visit history
+            securely.
           </span>
         </article>
       </div>

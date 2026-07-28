@@ -107,6 +107,12 @@ export class Landing {
     this.loadDoctors();
   }
 
+  retryLoadingDoctors(): void {
+    if (!this.loadingDoctors()) {
+      this.loadDoctors();
+    }
+  }
+
   onSpecialisationChange(
     event: Event
   ): void {
@@ -175,7 +181,7 @@ export class Landing {
     this.doctorErrorMessage.set('');
 
     this.doctorService
-      .getAllDoctors()
+      .getPublicActiveDoctors()
       .subscribe({
         next: (doctors) => {
           this.doctors.set(

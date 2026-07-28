@@ -148,8 +148,8 @@ button {
   right: 0;
 }
 
-.login-link,
-.register-link {
+.navigation-links .login-link,
+.navigation-links .register-link {
   min-width: 88px;
   min-height: 44px;
   padding: 12px 19px !important;
@@ -159,29 +159,37 @@ button {
   justify-content: center;
 }
 
-.login-link {
+.navigation-links .login-link {
+  border: 1px solid #ffffff !important;
   color: #a70e2b !important;
-  background: #ffffff;
+  background: #ffffff !important;
   box-shadow:
-    0 8px 20px rgba(67, 5, 19, 0.14);
+    0 8px 20px rgba(67, 5, 19, 0.18) !important;
 }
 
-.login-link:hover {
-  background: #fff4f6;
+.navigation-links .login-link span {
+  color: #a70e2b !important;
+  opacity: 1;
+  visibility: visible;
 }
 
-.register-link {
+.navigation-links .login-link:hover {
+  color: #8f0b25 !important;
+  background: #fff4f6 !important;
+}
+
+.navigation-links .register-link {
   border: 1px solid rgba(255, 255, 255, 0.78);
   color: #ffffff !important;
   background: rgba(255, 255, 255, 0.12);
 }
 
-.register-link:hover {
+.navigation-links .register-link:hover {
   background: rgba(255, 255, 255, 0.22);
 }
 
-.login-link.active,
-.register-link.active {
+.navigation-links .login-link.active,
+.navigation-links .register-link.active {
   outline:
     2px solid rgba(255, 255, 255, 0.5);
   outline-offset: 2px;
@@ -226,8 +234,8 @@ button {
     text-align: center;
   }
 
-  .login-link,
-  .register-link {
+  .navigation-links .login-link,
+  .navigation-links .register-link {
     width: 100%;
   }
 }

@@ -5,7 +5,7 @@
     aria-label="Public navigation"
   >
     <a
-      href="/"
+      routerLink="/"
       class="brand"
       aria-label="HealthAxis home"
       (click)="navigateToSection('home', $event)"
@@ -60,8 +60,9 @@
         routerLink="/login"
         routerLinkActive="active"
         class="login-link"
+        aria-label="Login to HealthAxis"
       >
-        Login
+        <span>Login</span>
       </a>
 
       <a

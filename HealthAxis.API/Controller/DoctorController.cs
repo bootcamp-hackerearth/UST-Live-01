@@ -43,7 +43,8 @@ namespace HealthAxis.API.Controller
                 });
             }
 
-            var doctor = await _doctorService.GetByUserIdAsync(userId);
+            var doctor =
+                await _doctorService.GetByUserIdAsync(userId);
 
             if (doctor == null)
             {
@@ -86,6 +87,7 @@ namespace HealthAxis.API.Controller
             }
 
             doctor.IsActive = dto.IsActive;
+
             await _context.SaveChangesAsync();
 
             return Ok(new
@@ -111,7 +113,8 @@ namespace HealthAxis.API.Controller
                 });
             }
 
-            var doctor = await _doctorService.GetByUserIdAsync(userId);
+            var doctor =
+                await _doctorService.GetByUserIdAsync(userId);
 
             if (doctor == null)
             {
@@ -143,7 +146,8 @@ namespace HealthAxis.API.Controller
                 });
             }
 
-            var doctor = await _doctorService.GetByUserIdAsync(userId);
+            var doctor =
+                await _doctorService.GetByUserIdAsync(userId);
 
             if (doctor == null)
             {
@@ -170,17 +174,47 @@ namespace HealthAxis.API.Controller
             return Ok(patient);
         }
 
+        [HttpGet("public/active")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPublicActiveDoctors(
+            CancellationToken cancellationToken)
+        {
+            var doctors = await _context.Doctors
+                .AsNoTracking()
+                .Where(doctor => doctor.IsActive)
+                .OrderBy(doctor => doctor.Specialisation)
+                .ThenBy(doctor => doctor.FullName)
+                .Select(doctor => new
+                {
+                    doctorId = doctor.DoctorId,
+                    fullName = doctor.FullName,
+                    specialisation =
+                        doctor.Specialisation,
+                    yearsOfExperience =
+                        doctor.YearsOfExperience,
+                    consultationFee =
+                        doctor.ConsultationFee,
+                    isActive = doctor.IsActive
+                })
+                .ToListAsync(cancellationToken);
+
+            return Ok(doctors);
+        }
+
         [HttpGet]
         [Authorize(Roles = "Patient,Admin")]
         public async Task<IActionResult> GetAllDoctors()
         {
-            var doctors = await _doctorService.GetAllAsync();
+            var doctors =
+                await _doctorService.GetAllAsync();
+
             return Ok(doctors);
         }
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Patient,Doctor,Admin")]
-        public async Task<IActionResult> GetDoctorById(int id)
+        public async Task<IActionResult> GetDoctorById(
+            int id)
         {
             if (User.IsInRole("Doctor"))
             {
@@ -195,13 +229,15 @@ namespace HealthAxis.API.Controller
                 }
 
                 var loggedInDoctor =
-                    await _doctorService.GetByUserIdAsync(userId);
+                    await _doctorService
+                        .GetByUserIdAsync(userId);
 
                 if (loggedInDoctor == null)
                 {
                     return NotFound(new
                     {
-                        message = "Doctor profile not found"
+                        message =
+                            "Doctor profile not found"
                     });
                 }
 
@@ -217,20 +253,24 @@ namespace HealthAxis.API.Controller
                 return Ok(loggedInDoctor);
             }
 
-            var doctor = await _doctorService.GetByIdAsync(id);
+            var doctor =
+                await _doctorService.GetByIdAsync(id);
+
             return Ok(doctor);
         }
 
         [HttpGet("{id}/availability")]
         [Authorize(Roles = "Patient,Admin")]
-        public async Task<IActionResult> GetDoctorAvailability(
-            int id,
-            [FromQuery] DateTime? date)
+        public async Task<IActionResult>
+            GetDoctorAvailability(
+                int id,
+                [FromQuery] DateTime? date)
         {
             var availability =
-                await _doctorService.GetAvailabilityAsync(
-                    id,
-                    date);
+                await _doctorService
+                    .GetAvailabilityAsync(
+                        id,
+                        date);
 
             return Ok(availability);
         }

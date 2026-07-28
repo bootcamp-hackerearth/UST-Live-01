@@ -1,10 +1,16 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpParams
+} from '@angular/common/http';
+import {
+  Injectable,
+  inject
+} from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
 import { Doctor } from '../models/doctor.model';
 import { Patient } from '../models/patient.model';
-import { environment } from '../../../environments/environment';
 
 export interface DoctorStatusResponse {
   message: string;
@@ -24,12 +30,22 @@ export interface DoctorAvailabilityResponse {
   providedIn: 'root'
 })
 export class DoctorService {
-  private readonly http = inject(HttpClient);
+  private readonly http =
+    inject(HttpClient);
+
   private readonly doctorUrl =
     `${environment.apiBaseUrl}/doctors`;
 
   getAllDoctors(): Observable<Doctor[]> {
-    return this.http.get<Doctor[]>(this.doctorUrl);
+    return this.http.get<Doctor[]>(
+      this.doctorUrl
+    );
+  }
+
+  getPublicActiveDoctors(): Observable<Doctor[]> {
+    return this.http.get<Doctor[]>(
+      `${this.doctorUrl}/public/active`
+    );
   }
 
   getMyDoctorProfile(): Observable<Doctor> {
@@ -38,7 +54,9 @@ export class DoctorService {
     );
   }
 
-  getDoctorById(id: number): Observable<Doctor> {
+  getDoctorById(
+    id: number
+  ): Observable<Doctor> {
     return this.http.get<Doctor>(
       `${this.doctorUrl}/${id}`
     );
@@ -48,15 +66,19 @@ export class DoctorService {
     id: number,
     date: string
   ): Observable<DoctorAvailabilityResponse> {
-    const parameters = new HttpParams()
-      .set('date', date);
+    const parameters =
+      new HttpParams().set(
+        'date',
+        date
+      );
 
-    return this.http.get<DoctorAvailabilityResponse>(
-      `${this.doctorUrl}/${id}/availability`,
-      {
-        params: parameters
-      }
-    );
+    return this.http
+      .get<DoctorAvailabilityResponse>(
+        `${this.doctorUrl}/${id}/availability`,
+        {
+          params: parameters
+        }
+      );
   }
 
   getMyPatients(): Observable<Patient[]> {
@@ -76,11 +98,12 @@ export class DoctorService {
   updateMyStatus(
     isActive: boolean
   ): Observable<DoctorStatusResponse> {
-    return this.http.put<DoctorStatusResponse>(
-      `${this.doctorUrl}/me/status`,
-      {
-        isActive
-      }
-    );
+    return this.http
+      .put<DoctorStatusResponse>(
+        `${this.doctorUrl}/me/status`,
+        {
+          isActive
+        }
+      );
   }
 }
