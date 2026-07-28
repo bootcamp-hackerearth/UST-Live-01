@@ -1,9 +1,15 @@
 <div class="register-shell">
   <div class="register-card">
+
     <div class="register-hero">
       <div class="brand">Health<span>Sphere</span></div>
+
       <h1>Create your account</h1>
-      <p>Join a secure healthcare platform built for better patient and clinician experiences.</p>
+
+      <p>
+        Join a secure healthcare platform built for better patient and clinician experiences.
+      </p>
+
       <ul>
         <li>Fast onboarding</li>
         <li>Secure medical access</li>
@@ -13,27 +19,148 @@
 
     <div class="register-form-panel">
       <div class="badge">New patient registration</div>
-      <h2>Tell us about you</h2>
-      <p class="subtitle">Complete the form below to get started.</p>
 
-      <form (ngSubmit)="submit()">
+      <h2>Tell us about you</h2>
+
+      <p class="subtitle">
+        Complete the form below to get started.
+      </p>
+
+      <form #registerForm="ngForm" (ngSubmit)="submit(registerForm)" novalidate>
+
         <div class="field-grid">
-          <input type="email" placeholder="Email" [(ngModel)]="form.email" name="email" required />
-          <input type="password" placeholder="Password" [(ngModel)]="form.password" name="password" required />
-          <input type="password" placeholder="Confirm password" [(ngModel)]="form.confirmPassword" name="confirmPassword" required />
-          <input type="text" placeholder="Full name" [(ngModel)]="form.fullName" name="fullName" required />
-          <input type="date" [(ngModel)]="form.dateOfBirth" name="dob" required />
-          <select [(ngModel)]="form.gender" name="gender" required>
-            <option value="">Select gender</option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
-          </select>
-          <input type="text" placeholder="Phone number" [(ngModel)]="form.phoneNumber" name="phone" required />
-          <input type="text" placeholder="Insurance ID (optional)" [(ngModel)]="form.insuranceId" name="insurance" />
+
+          <!-- EMAIL -->
+          <div class="field">
+            <input type="email" placeholder="Email" [(ngModel)]="form.email" name="email" #email="ngModel" required
+              email (ngModelChange)="clearEmailExistsError()" />
+
+            <small class="error-text" *ngIf="showError(email, registerForm)">
+              <span *ngIf="email.errors?.['required']">
+                Email is required.
+              </span>
+
+              <span *ngIf="email.errors?.['email']">
+                Please enter a valid email address.
+              </span>
+            </small>
+
+            <small class="error-text" *ngIf="emailAlreadyExists">
+              This email is already registered. Please sign in or use another email.
+            </small>
+          </div>
+          <!-- PASSWORD -->
+          <div class="field">
+            <input type="password" placeholder="Password" [(ngModel)]="form.password" name="password"
+              #password="ngModel" required minlength="8" />
+
+            <small class="error-text" *ngIf="showError(password, registerForm)">
+              <span *ngIf="password.errors?.['required']">
+                Password is required.
+              </span>
+
+              <span *ngIf="password.errors?.['minlength']">
+                Password must contain at least 8 characters.
+              </span>
+            </small>
+          </div>
+
+          <!-- CONFIRM PASSWORD -->
+          <div class="field">
+            <input type="password" placeholder="Confirm password" [(ngModel)]="form.confirmPassword"
+              name="confirmPassword" #confirmPassword="ngModel" required />
+
+            <small class="error-text" *ngIf="showError(confirmPassword, registerForm)">
+              <span *ngIf="confirmPassword.errors?.['required']">
+                Confirm password is required.
+              </span>
+            </small>
+
+            <small class="error-text"
+              *ngIf="registerForm.submitted && form.password && form.confirmPassword && form.password !== form.confirmPassword">
+              Passwords do not match.
+            </small>
+          </div>
+
+          <!-- FULL NAME -->
+          <div class="field">
+            <input type="text" placeholder="Full name" [(ngModel)]="form.fullName" name="fullName" #fullName="ngModel"
+              required minlength="3" maxlength="200" />
+
+            <small class="error-text" *ngIf="showError(fullName, registerForm)">
+              <span *ngIf="fullName.errors?.['required']">
+                Name is required.
+              </span>
+
+              <span *ngIf="fullName.errors?.['minlength']">
+                Name must contain at least 3 characters.
+              </span>
+
+              <span *ngIf="fullName.errors?.['maxlength']">
+                Name cannot exceed 200 characters.
+              </span>
+            </small>
+          </div>
+
+          <!-- DATE OF BIRTH -->
+          <div class="field">
+            <input type="date" [(ngModel)]="form.dateOfBirth" name="dateOfBirth" #dateOfBirth="ngModel" required
+              [max]="maxDate" />
+
+            <small class="error-text" *ngIf="showError(dateOfBirth, registerForm)">
+              Date of birth is required.
+            </small>
+            <small class="error-text" *ngIf="form.dateOfBirth && form.dateOfBirth > maxDate">
+              Date of birth must be a previous date.
+            </small>
+          </div>
+
+          <!-- GENDER -->
+          <div class="field">
+            <select [(ngModel)]="form.gender" name="gender" #gender="ngModel" required>
+
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+
+            <small class="error-text" *ngIf="showError(gender, registerForm)">
+              Gender is required.
+            </small>
+          </div>
+
+          <!-- PHONE NUMBER -->
+          <div class="field">
+            <input type="text" placeholder="Phone number" [(ngModel)]="form.phoneNumber" name="phoneNumber"
+              #phoneNumber="ngModel" required pattern="^[0-9]{10}$" maxlength="10" inputmode="numeric" />
+
+            <small class="error-text" *ngIf="showError(phoneNumber, registerForm)">
+              <span *ngIf="phoneNumber.errors?.['required']">
+                Phone number is required.
+              </span>
+
+              <span *ngIf="phoneNumber.errors?.['pattern']">
+                Phone number must contain exactly 10 numbers.
+              </span>
+            </small>
+          </div>
+
+          <!-- INSURANCE ID -->
+          <div class="field">
+            <input type="text" placeholder="Insurance ID (optional)" [(ngModel)]="form.insuranceId" name="insuranceId"
+              #insuranceId="ngModel" maxlength="100" />
+
+            <small class="error-text" *ngIf="showError(insuranceId, registerForm)">
+              Insurance ID cannot exceed 100 characters.
+            </small>
+          </div>
+
         </div>
 
-        <button type="submit" class="primary-btn">Register</button>
+        <button type="submit" class="primary-btn">
+          Register
+        </button>
       </form>
 
       <p class="footer-text">
@@ -41,13 +168,10 @@
         <a routerLink="/login">Sign in</a>
       </p>
     </div>
+
   </div>
 </div>
 
-<app-popup
-  [visible]="popupVisible"
-  [title]="popupTitle"
-  [message]="popupMessage"
-  [type]="popupType"
+<app-popup [visible]="popupVisible" [title]="popupTitle" [message]="popupMessage" [type]="popupType"
   (closed)="closePopup()">
 </app-popup>

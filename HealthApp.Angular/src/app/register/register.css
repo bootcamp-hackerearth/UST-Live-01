@@ -124,3 +124,16 @@
     grid-template-columns: 1fr;
   }
 }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
