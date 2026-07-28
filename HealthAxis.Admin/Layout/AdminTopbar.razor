@@ -72,15 +72,23 @@
         showLogoutConfirmation = false;
     }
 
+    // private async Task ConfirmLogout()
+    // {
+    //     await AuthService.LogoutAsync();
+
+    //     showLogoutConfirmation = false;
+
+    //     var angularUrl = Configuration["AngularHomeUrl"];
+
+    //     Navigation.NavigateTo(angularUrl!, true);
+    // }
     private async Task ConfirmLogout()
     {
-        await AuthService.LogoutAsync();
-
         showLogoutConfirmation = false;
 
-        var angularUrl = Configuration["AngularHomeUrl"];
+        await AuthService.LogoutAsync();
 
-        Navigation.NavigateTo(angularUrl!, true);
+        Navigation.NavigateTo("/login", true);
     }
 
 }
