@@ -206,7 +206,7 @@
           <article class="pd-summary-card purple">
             <span>Health Records</span>
             <strong>{{ summary.healthRecordCount }}</strong>
-            <p>Care records available</p>
+            <p>Health records available</p>
           </article>
         </section>
 
@@ -215,7 +215,6 @@
           <article class="pd-panel pd-next-panel premium-panel">
             <div class="pd-panel-header">
               <div>
-                <span class="pd-panel-eyebrow">Next Visit</span>
                 <h3>Next Appointment</h3>
                 <p>Your closest scheduled visit</p>
               </div>
@@ -256,41 +255,61 @@
           </article>
 
           <article class="pd-panel premium-panel">
-            <div class="pd-panel-header">
-              <div>
-                <span class="pd-panel-eyebrow">Shortcuts</span>
-                <h3>Quick Actions</h3>
-                <p>Common patient tasks</p>
-              </div>
-            </div>
+  <div class="pd-panel-header">
+    <div>
+      <span class="pd-panel-eyebrow">History</span>
+      <h3>Appointment History</h3>
+      <p>Your recent consultations</p>
+    </div>
 
-            <div class="pd-action-grid premium-actions">
-              <button type="button" (click)="setActiveSection('book')">
-                <strong>Book Appointment</strong>
-                <small>Choose doctor and slot</small>
-              </button>
+    <button
+      type="button"
+      (click)="setActiveSection('appointments')">
+      View All
+    </button>
+  </div>
 
-              <button type="button" (click)="setActiveSection('appointments')">
-                <strong>View Appointments</strong>
-                <small>Track visit status</small>
-              </button>
+  @if (recentAppointments.length > 0) {
 
-              <button type="button" (click)="setActiveSection('records')">
-                <strong>Health Records</strong>
-                <small>View medical history</small>
-              </button>
+    <div class="pd-history-list">
 
-              <button type="button" (click)="setActiveSection('profile')">
-                <strong>Edit Profile</strong>
-                <small>Update personal details</small>
-              </button>
-            </div>
-          </article>
+      @for (appointment of recentAppointments; track appointment.appointmentId) {
+
+        <div class="pd-history-item">
+
+          <div>
+            <strong>{{ appointment.doctorName }}</strong>
+            <p>{{ appointment.specialisation }}</p>
+          </div>
+
+          <div class="pd-history-right">
+            <span>
+              {{ formatDate(appointment.scheduledDate) }}
+            </span>
+
+            <span [class]="getStatusClass(appointment.status)">
+              {{ appointment.status }}
+            </span>
+          </div>
+
+        </div>
+
+      }
+
+    </div>
+
+  } @else {
+
+    <div class="pd-empty-card">
+      No appointment history available.
+    </div>
+
+  }
+</article>
 
           <article class="pd-panel pd-wide-panel premium-panel">
             <div class="pd-panel-header">
               <div>
-                <span class="pd-panel-eyebrow">Latest Medical Note</span>
                 <h3>Recent Health Record</h3>
                 <p>Latest consultation summary</p>
               </div>

@@ -172,12 +172,12 @@
 
               <div class="al-info-tile">
                 <span>Date</span>
-                <strong>📅 {{ formatDate(appt.scheduledDate) }}</strong>
+                <strong>{{ formatDate(appt.scheduledDate) }}</strong>
               </div>
 
               <div class="al-info-tile">
                 <span>Time Slot</span>
-                <strong>🕒 {{ appt.timeSlot }}</strong>
+                <strong>{{ appt.timeSlot }}</strong>
               </div>
 
               <div class="al-info-tile">
@@ -201,7 +201,7 @@
                 }
 
                 @if (appt.status === 'Confirmed') {
-                  This appointment has been confirmed by the clinic.
+                  This appointment has been confirmed.
                 }
 
                 @if (appt.status === 'Completed') {
@@ -297,7 +297,7 @@
         <div class="al-warning-box">
           <strong>Are you sure you want to cancel this appointment?</strong>
           <p>
-            Please provide a short reason so the clinic can understand why this visit is being cancelled.
+            Please specify a brief reason for cancelling this appointment.
           </p>
         </div>
 
@@ -308,7 +308,6 @@
             name="cancellationReason"
             rows="4"
             maxlength="250"
-            placeholder="Example: I am unavailable at this time."
             [(ngModel)]="cancellationReason">
           </textarea>
         </label>
