@@ -168,7 +168,8 @@ Administrators can:
 
 The following diagram shows the deployed HealthAxis runtime architecture, including the browser, AWS Elastic Beanstalk, NGINX, ASP.NET Core API, Angular application, Blazor administrator application, SQL Server, RabbitMQ, and background consumer.
 
-![HealthAxis Runtime Architecture](<img width="1536" height="505" alt="runtime-architecture" src="https://github.com/user-attachments/assets/17c39984-4b53-4de5-85cf-366c7b26709f" />)
+<img width="1536" height="505" alt="runtime-architecture" src="https://github.com/user-attachments/assets/1186dcc3-3482-4e9d-85e2-cab1445b1461" />
+
 
 ### Runtime Paths
 
@@ -363,8 +364,8 @@ HealthAxis uses RabbitMQ and MassTransit for asynchronous processing.
 
 The following sequence diagram shows how appointment booking is persisted and processed asynchronously through RabbitMQ.
 
-![HealthAxis Appointment Notification Flow](<img width="1536" height="519" alt="appointment-notification-flow" src="https://github.com/user-attachments/assets/41dcc429-d5f4-4e03-8c3a-0c6985029bb7" />
-)
+<img width="1536" height="519" alt="appointment-notification-flow" src="https://github.com/user-attachments/assets/12d016ec-e20b-4bfd-a43d-4719045cbc92" />
+
 
 1. The patient books an appointment.
 2. The API saves the appointment.
