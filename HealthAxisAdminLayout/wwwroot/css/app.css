@@ -2587,3 +2587,324 @@ a,
         font-size: 11px;
     }
 }
+/* ==========================================================
+   FINAL DOCTOR TABLE AND ACTION ALIGNMENT
+   ========================================================== */
+
+.doctor-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    padding-bottom: 10px;
+    scrollbar-gutter: stable;
+    -webkit-overflow-scrolling: touch;
+}
+
+/*
+ * The Doctor table has six columns.
+ * Horizontal scrolling is used on narrow screens.
+ */
+.doctor-table {
+    width: 100% !important;
+    min-width: 1320px !important;
+    table-layout: fixed !important;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+}
+
+/* Doctor table column widths */
+
+.doctor-col-name {
+    width: 270px;
+}
+
+.doctor-col-specialisation {
+    width: 180px;
+}
+
+.doctor-col-experience {
+    width: 140px;
+}
+
+.doctor-col-fee {
+    width: 165px;
+}
+
+.doctor-col-status {
+    width: 100px;
+}
+
+.doctor-col-actions {
+    width: 360px;
+}
+
+/* General Doctor table alignment */
+
+.doctor-table th,
+.doctor-table td {
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.doctor-table thead th {
+    padding: 12px 16px;
+    color: #637a76;
+    font-size: 12px;
+    font-weight: 950;
+    line-height: 1.2;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+}
+
+.doctor-table tbody td {
+    padding: 16px;
+    color: #123c38;
+    text-align: left;
+}
+
+/*
+ * Center the status icon.
+ */
+.doctor-table th:nth-child(5),
+.doctor-table td:nth-child(5) {
+    text-align: center;
+}
+
+/*
+ * Reserve enough space for all three action buttons.
+ */
+.doctor-actions-heading,
+.doctor-table th:last-child {
+    width: 360px !important;
+    min-width: 360px !important;
+    padding-right: 18px !important;
+    padding-left: 18px !important;
+    text-align: center !important;
+}
+
+.doctor-actions-cell,
+.doctor-table td:last-child {
+    width: 360px !important;
+    min-width: 360px !important;
+    max-width: 360px !important;
+    padding: 16px 18px !important;
+    overflow: hidden !important;
+}
+
+/*
+ * Three fixed action slots:
+ * 1. Edit
+ * 2. Activate or Deactivate
+ * 3. Appointments
+ */
+.doctor-action-group {
+    display: grid !important;
+    grid-template-columns: 72px 104px 122px !important;
+    align-items: center !important;
+    justify-content: end !important;
+    gap: 10px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    box-sizing: border-box;
+}
+
+.doctor-action-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.doctor-edit-slot {
+    width: 72px;
+}
+
+.doctor-status-slot {
+    width: 104px;
+}
+
+.doctor-appointments-slot {
+    width: 122px;
+}
+
+/*
+ * Shared Doctor action button styling.
+ */
+.doctor-edit-btn,
+.doctor-status-btn,
+.doctor-appointments-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 42px !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    border: none !important;
+    border-radius: 14px !important;
+    font-size: 12px !important;
+    font-weight: 950 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    cursor: pointer;
+    box-sizing: border-box !important;
+    transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.doctor-edit-btn {
+    width: 72px !important;
+    min-width: 72px !important;
+    max-width: 72px !important;
+    color: #2563eb !important;
+    background: #dbeafe !important;
+}
+
+.doctor-status-btn {
+    width: 104px !important;
+    min-width: 104px !important;
+    max-width: 104px !important;
+    color: #b45309 !important;
+    background: #fef3c7 !important;
+}
+
+.doctor-appointments-btn {
+    width: 122px !important;
+    min-width: 122px !important;
+    max-width: 122px !important;
+    color: #0a7d69 !important;
+    background: #ccfbf1 !important;
+}
+
+    /* Doctor action interactions */
+
+    .doctor-edit-btn:hover:not(:disabled),
+    .doctor-status-btn:hover:not(:disabled),
+    .doctor-appointments-btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        filter: brightness(0.97);
+        box-shadow: 0 6px 14px rgba(2, 44, 44, 0.1);
+    }
+
+    .doctor-edit-btn:focus-visible,
+    .doctor-status-btn:focus-visible,
+    .doctor-appointments-btn:focus-visible {
+        outline: 3px solid rgba(26, 187, 156, 0.22);
+        outline-offset: 2px;
+    }
+
+    .doctor-edit-btn:disabled,
+    .doctor-status-btn:disabled,
+    .doctor-appointments-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+        transform: none;
+        filter: none;
+        box-shadow: none;
+    }
+
+/*
+ * Prevent long Doctor values from changing the Actions width.
+ */
+.doctor-profile-text {
+    min-width: 0;
+}
+
+    .doctor-profile-text strong,
+    .doctor-profile-text span {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+.doctor-specialisation-pill {
+    max-width: 160px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.25;
+}
+
+/* Doctor table scrollbar */
+
+.doctor-table-wrapper::-webkit-scrollbar {
+    height: 10px;
+}
+
+.doctor-table-wrapper::-webkit-scrollbar-track {
+    border-radius: 999px;
+    background: #edf7f5;
+}
+
+.doctor-table-wrapper::-webkit-scrollbar-thumb {
+    border: 2px solid #edf7f5;
+    border-radius: 999px;
+    background: #99d9cf;
+}
+
+    .doctor-table-wrapper::-webkit-scrollbar-thumb:hover {
+        background: #5fc4b5;
+    }
+
+/*
+ * Responsive behavior.
+ * Keep the table wide and allow horizontal scrolling.
+ */
+@media (max-width: 1200px) {
+    .doctor-table {
+        min-width: 1280px !important;
+    }
+
+        .doctor-col-actions,
+        .doctor-actions-heading,
+        .doctor-table th:last-child,
+        .doctor-actions-cell,
+        .doctor-table td:last-child {
+            width: 350px !important;
+            min-width: 350px !important;
+        }
+
+    .doctor-action-group {
+        grid-template-columns: 68px 100px 116px !important;
+        gap: 8px !important;
+    }
+
+    .doctor-edit-slot,
+    .doctor-edit-btn {
+        width: 68px !important;
+        min-width: 68px !important;
+        max-width: 68px !important;
+    }
+
+    .doctor-status-slot,
+    .doctor-status-btn {
+        width: 100px !important;
+        min-width: 100px !important;
+        max-width: 100px !important;
+    }
+
+    .doctor-appointments-slot,
+    .doctor-appointments-btn {
+        width: 116px !important;
+        min-width: 116px !important;
+        max-width: 116px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .doctor-table {
+        min-width: 1240px !important;
+    }
+
+        .doctor-table th,
+        .doctor-table tbody td {
+            padding: 14px;
+        }
+}

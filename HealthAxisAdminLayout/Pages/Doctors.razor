@@ -446,7 +446,10 @@
                             <th>Experience</th>
                             <th>Consultation Fee</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th class="doctor-actions-heading">
+                                Actions
+                            </th>
+                            
                         </tr>
                     </thead>
 
@@ -524,28 +527,37 @@
                                     </button>
                                 </td>
 
-                                <td>
+                                <td class="doctor-actions-cell">
                                     <div class="doctor-action-group">
 
-                                        <button class="doctor-edit-btn"
-                                                @onclick="@(() => StartEdit(doctor))"
-                                                disabled="@isLoading">
-                                            Edit
-                                        </button>
+                                        <div class="doctor-action-slot doctor-edit-slot">
+                                            <button type="button"
+                                                    class="doctor-edit-btn"
+                                                    @onclick="@(() => StartEdit(doctor))"
+                                                    disabled="@isLoading">
+                                                Edit
+                                            </button>
+                                        </div>
 
-                                        <button class="doctor-status-btn"
-                                                @onclick="@(() => ToggleStatus(doctor))"
-                                                disabled="@isLoading">
-                                            @(doctor.IsActive
-                                                ? "Deactivate"
-                                                : "Activate")
-                                        </button>
+                                        <div class="doctor-action-slot doctor-status-slot">
+                                            <button type="button"
+                                                    class="doctor-status-btn"
+                                                    @onclick="@(() => ToggleStatus(doctor))"
+                                                    disabled="@isLoading">
+                                                @(doctor.IsActive
+                                                    ? "Deactivate"
+                                                    : "Activate")
+                                            </button>
+                                        </div>
 
-                                        <button class="doctor-appointments-btn"
-                                                @onclick="@(() => OpenDoctorAppointments(doctor))"
-                                                disabled="@isLoading">
-                                            Appointments
-                                        </button>
+                                        <div class="doctor-action-slot doctor-appointments-slot">
+                                            <button type="button"
+                                                    class="doctor-appointments-btn"
+                                                    @onclick="@(() => OpenDoctorAppointments(doctor))"
+                                                    disabled="@isLoading">
+                                                Appointments
+                                            </button>
+                                        </div>
 
                                     </div>
                                 </td>
