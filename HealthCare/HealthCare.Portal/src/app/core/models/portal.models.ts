@@ -79,7 +79,6 @@ export interface DoctorDashboardSummary {
 
 export interface CreateHealthRecordRequest {
   appointmentId: number;
-  visitDate: string;
   diagnosis: string;
   prescription: string;
   notes?: string | null;

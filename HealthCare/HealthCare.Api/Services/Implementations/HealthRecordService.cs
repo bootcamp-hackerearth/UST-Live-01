@@ -94,7 +94,10 @@ namespace HealthCare.Api.Services.Implementations
                 AppointmentId = dto.AppointmentId,
                 PatientId = appointment.PatientId,
                 DoctorId = doctorId,
-                VisitDate = dto.VisitDate,
+
+                VisitDate = appointment.ScheduledDate
+        .ToDateTime(TimeOnly.MinValue),
+
                 Diagnosis = dto.Diagnosis,
                 Prescription = dto.Prescription,
                 Notes = dto.Notes

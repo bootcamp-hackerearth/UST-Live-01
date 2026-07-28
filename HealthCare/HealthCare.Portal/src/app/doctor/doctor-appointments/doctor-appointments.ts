@@ -24,12 +24,10 @@ export class DoctorAppointments implements OnInit {
 
   addRecordForm = signal<CreateHealthRecordRequest>({
     appointmentId: 0,
-    visitDate: this.getTodayDate(),
     diagnosis: '',
     prescription: '',
     notes: ''
   });
-
   constructor(
     public appointmentService: AppointmentService,
     private healthRecordService: HealthRecordService
@@ -39,10 +37,7 @@ export class DoctorAppointments implements OnInit {
     this.appointmentService.loadDoctorAppointments();
   }
 
-  getTodayDate(): string {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  }
+ 
 
   updateStatus(appointmentId: number, status: string): void {
     this.appointmentService.updateAppointmentStatus(appointmentId, status)
@@ -59,8 +54,7 @@ export class DoctorAppointments implements OnInit {
 
   openAddRecordDialog(appointmentId: number): void {
     this.addRecordForm.set({
-      appointmentId: appointmentId,
-      visitDate: this.getTodayDate(),
+      appointmentId,
       diagnosis: '',
       prescription: '',
       notes: ''
@@ -68,13 +62,11 @@ export class DoctorAppointments implements OnInit {
 
     this.showAddRecordDialog.set(true);
   }
-
   closeAddRecordDialog(): void {
     this.showAddRecordDialog.set(false);
 
     this.addRecordForm.set({
       appointmentId: 0,
-      visitDate: this.getTodayDate(),
       diagnosis: '',
       prescription: '',
       notes: ''
@@ -95,11 +87,10 @@ export class DoctorAppointments implements OnInit {
     const form = this.addRecordForm();
 
     if (
-      !form.visitDate ||
-      !form.diagnosis ||
-      !form.prescription
+      !form.diagnosis.trim() ||
+      !form.prescription.trim()
     ) {
-      alert('Please enter visit date, diagnosis and prescription');
+      alert('Please enter diagnosis and prescription');
       return;
     }
 
