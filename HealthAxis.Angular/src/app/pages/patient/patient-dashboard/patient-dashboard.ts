@@ -68,6 +68,7 @@ export class PatientDashboard implements OnInit, OnDestroy {
   isSidebarOpen = false;
   isLogoutModalOpen = false;
   isProfileDropdownOpen = false;
+  recentAppointments: any[] = [];
 
   private toastTimer?: ReturnType<typeof setTimeout>;
 
