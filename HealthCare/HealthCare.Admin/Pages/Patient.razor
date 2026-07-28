@@ -9,7 +9,10 @@
 <div class="page-header">
     <div>
         <h3 class="page-title">Patient Management</h3>
-        <p class="page-subtitle">Search, view, update status and delete patients</p>
+
+        <p class="page-subtitle">
+            Search, view, update status and delete patients
+        </p>
     </div>
 </div>
 
@@ -18,6 +21,7 @@
 
         <div class="form-group">
             <label>Patient Name</label>
+
             <input class="form-control small-input"
                    placeholder="Search by patient name"
                    @bind="search"
@@ -26,7 +30,10 @@
 
         <div class="form-group">
             <label>Insurance Status</label>
-            <select class="form-select small-input" @bind="hasInsuranceFilter">
+
+            <select class="form-select small-input"
+                    @bind="hasInsuranceFilter">
+
                 <option value="">All</option>
                 <option value="true">Has Insurance</option>
                 <option value="false">No Insurance</option>
@@ -34,11 +41,15 @@
         </div>
 
         <div class="search-actions align-right">
-            <button class="btn btn-success" @onclick="SearchPatients">
+            <button type="button"
+                    class="btn btn-success"
+                    @onclick="SearchPatients">
                 Search
             </button>
 
-            <button class="btn btn-outline-secondary" @onclick="ClearSearch">
+            <button type="button"
+                    class="btn btn-outline-secondary"
+                    @onclick="ClearSearch">
                 Clear
             </button>
         </div>
@@ -54,12 +65,25 @@
         <p>Loading patients...</p>
     </div>
 }
-else if (!string.IsNullOrWhiteSpace(errorMessage))
-{
-    <div class="alert alert-danger">@errorMessage</div>
-}
 else
 {
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show"
+             role="alert">
+
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+            <span>@errorMessage</span>
+
+            <button type="button"
+                    class="btn-close"
+                    aria-label="Close"
+                    @onclick="ClearErrorMessage">
+            </button>
+        </div>
+    }
+
     <div class="table-wrapper">
         <table class="table patient-table">
             <thead>
@@ -78,7 +102,10 @@ else
                 @if (patients.Count == 0)
                 {
                     <tr>
-                        <td colspan="7" class="empty-row">No patients found</td>
+                        <td colspan="7"
+                            class="empty-row">
+                            No patients found
+                        </td>
                     </tr>
                 }
                 else
@@ -87,32 +114,41 @@ else
                     {
                         <tr>
                             <td>@patient.PatientId</td>
+
                             <td>@patient.FullName</td>
+
                             <td>@patient.PhoneNumber</td>
+
                             <td>@patient.Gender</td>
 
                             <td>
-                                @(patient.HasInsurance == true ? "Yes" : "No")
+                                @(patient.HasInsurance == true
+                                    ? "Yes"
+                                    : "No")
                             </td>
 
                             <td>
                                 @if (patient.IsActive)
                                 {
-                                    <span class="status-badge active">Active</span>
+                                    <span class="status-badge active">
+                                        Active
+                                    </span>
                                 }
                                 else
                                 {
-                                    <span class="status-badge inactive">Inactive</span>
+                                    <span class="status-badge inactive">
+                                        Inactive
+                                    </span>
                                 }
                             </td>
 
                             <td class="actions-cell">
 
-                                <!-- Status Toggle Dialog Button -->
                                 <button type="button"
                                         class="icon-button status-btn"
                                         title="Change Patient Status"
                                         @onclick="() => OpenStatusDialog(patient)">
+
                                     @if (patient.IsActive)
                                     {
                                         <i class="bi bi-toggle-on"></i>
@@ -123,11 +159,11 @@ else
                                     }
                                 </button>
 
-                                <!-- Delete Patient -->
                                 <button type="button"
                                         class="icon-button delete-btn"
                                         title="Delete Patient"
                                         @onclick="() => OpenDeleteDialog(patient)">
+
                                     <i class="bi bi-trash"></i>
                                 </button>
 
@@ -139,103 +175,10 @@ else
         </table>
     </div>
 
-    <!-- STATUS UPDATE DIALOG -->
-    @if (showStatusDialog)
-    {
-        <div class="modal-backdrop-custom">
-            <div class="dialog-box">
-
-                <div class="dialog-header">
-                    <h5>Update Patient Status</h5>
-
-                    <button type="button"
-                            class="close-button"
-                            @onclick="CloseStatusDialog">
-                        ✕
-                    </button>
-                </div>
-
-                <div class="dialog-body">
-                    <p>
-                        Update status for
-                        <strong>@selectedPatientName</strong>
-                    </p>
-
-                    <div class="form-group">
-                        <label>Status</label>
-                        <select class="form-select" @bind="selectedStatusValue">
-                            <option value="true">Active</option>
-                            <option value="false">Inactive</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="dialog-footer">
-                    <button type="button"
-                            class="btn btn-outline-secondary"
-                            @onclick="CloseStatusDialog">
-                        Cancel
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-primary"
-                            @onclick="UpdateStatus">
-                        Save
-                    </button>
-                </div>
-
-            </div>
-        </div>
-    }
-
-    <!-- DELETE POPUP -->
-    @if (showDeleteDialog)
-    {
-        <div class="modal-backdrop-custom">
-            <div class="dialog-box">
-
-                <div class="dialog-header">
-                    <h5>Confirm Delete</h5>
-
-                    <button type="button"
-                            class="close-button"
-                            @onclick="CloseDeleteDialog">
-                        ✕
-                    </button>
-                </div>
-
-                <div class="dialog-body">
-                    <p>
-                        Are you sure you want to delete patient
-                        <strong>@selectedPatientName</strong>?
-                    </p>
-
-                    <p style="color:red;">
-                        This action cannot be undone.
-                    </p>
-                </div>
-
-                <div class="dialog-footer">
-                    <button type="button"
-                            class="btn btn-outline-secondary"
-                            @onclick="CloseDeleteDialog">
-                        Cancel
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-danger"
-                            @onclick="ConfirmDelete">
-                        Delete
-                    </button>
-                </div>
-
-            </div>
-        </div>
-    }
-
     <div class="pagination-container">
 
-        <button class="page-btn"
+        <button type="button"
+                class="page-btn"
                 @onclick="PreviousPage"
                 disabled="@(pageNumber == 1)">
             ⟵
@@ -245,7 +188,8 @@ else
             Page @pageNumber of @totalPages
         </span>
 
-        <button class="page-btn"
+        <button type="button"
+                class="page-btn"
                 @onclick="NextPage"
                 disabled="@disableNextButton">
             ⟶
@@ -254,8 +198,133 @@ else
     </div>
 }
 
-@code {
+@if (showStatusDialog)
+{
+    <div class="modal-backdrop-custom">
+        <div class="dialog-box">
 
+            <div class="dialog-header">
+                <h5>Update Patient Status</h5>
+
+                <button type="button"
+                        class="close-button"
+                        disabled="@isUpdatingStatus"
+                        @onclick="CloseStatusDialog">
+                    ✕
+                </button>
+            </div>
+
+            <div class="dialog-body">
+                <p>
+                    Update status for
+                    <strong>@selectedPatientName</strong>
+                </p>
+
+                <div class="form-group">
+                    <label>Status</label>
+
+                    <select class="form-select"
+                            disabled="@isUpdatingStatus"
+                            @bind="selectedStatusValue">
+
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="dialog-footer">
+                <button type="button"
+                        class="btn btn-outline-secondary"
+                        disabled="@isUpdatingStatus"
+                        @onclick="CloseStatusDialog">
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary"
+                        disabled="@isUpdatingStatus"
+                        @onclick="UpdateStatus">
+
+                    @if (isUpdatingStatus)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"
+                              aria-hidden="true">
+                        </span>
+
+                        <span>Saving...</span>
+                    }
+                    else
+                    {
+                        <span>Save</span>
+                    }
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
+@if (showDeleteDialog)
+{
+    <div class="modal-backdrop-custom">
+        <div class="dialog-box">
+
+            <div class="dialog-header">
+                <h5>Confirm Delete</h5>
+
+                <button type="button"
+                        class="close-button"
+                        disabled="@isDeleting"
+                        @onclick="CloseDeleteDialog">
+                    ✕
+                </button>
+            </div>
+
+            <div class="dialog-body">
+                <p>
+                    Are you sure you want to delete patient
+                    <strong>@selectedPatientName</strong>?
+                </p>
+
+                <p class="text-danger">
+                    This action cannot be undone.
+                </p>
+            </div>
+
+            <div class="dialog-footer">
+                <button type="button"
+                        class="btn btn-outline-secondary"
+                        disabled="@isDeleting"
+                        @onclick="CloseDeleteDialog">
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn btn-danger"
+                        disabled="@isDeleting"
+                        @onclick="ConfirmDelete">
+
+                    @if (isDeleting)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"
+                              aria-hidden="true">
+                        </span>
+
+                        <span>Deleting...</span>
+                    }
+                    else
+                    {
+                        <span>Delete</span>
+                    }
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
     private List<PatientListDto> patients = new();
 
     private string search = "";
@@ -265,12 +334,15 @@ else
     private int pageSize = 5;
     private int totalPages = 1;
 
-    private bool isLoading = false;
-    private bool disableNextButton = false;
+    private bool isLoading;
+    private bool isDeleting;
+    private bool isUpdatingStatus;
+    private bool disableNextButton;
+
     private string errorMessage = "";
 
-    private bool showDeleteDialog = false;
-    private bool showStatusDialog = false;
+    private bool showDeleteDialog;
+    private bool showStatusDialog;
 
     private int selectedPatientId;
     private string? selectedPatientName;
@@ -290,8 +362,12 @@ else
 
             bool? insurance = null;
 
-            if (!string.IsNullOrWhiteSpace(hasInsuranceFilter))
-                insurance = bool.Parse(hasInsuranceFilter);
+            if (!string.IsNullOrWhiteSpace(
+                    hasInsuranceFilter))
+            {
+                insurance =
+                    bool.Parse(hasInsuranceFilter);
+            }
 
             var filter = new PatientFilter
             {
@@ -301,20 +377,34 @@ else
                 PageSize = pageSize
             };
 
-            var result = await PatientService.GetPatientsAsync(filter);
+            var result =
+                await PatientService.GetPatientsAsync(filter);
 
             patients = result.Items.ToList();
 
-            totalPages = result.TotalPages == 0 ? 1 : result.TotalPages;
+            totalPages =
+                result.TotalPages == 0
+                    ? 1
+                    : result.TotalPages;
 
-            disableNextButton = pageNumber >= totalPages;
+            disableNextButton =
+                pageNumber >= totalPages;
         }
         catch (Exception ex)
         {
-            if (ex.Message.Contains("Unauthorized"))
-                NavigationManager.NavigateTo("/", true);
+            if (ex.Message.Contains(
+                    "Unauthorized",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                NavigationManager.NavigateTo(
+                    "/angular/login",
+                    forceLoad: true,
+                    replace: true);
+            }
             else
+            {
                 errorMessage = ex.Message;
+            }
         }
         finally
         {
@@ -339,56 +429,94 @@ else
 
     private async Task PreviousPage()
     {
-        if (pageNumber > 1)
+        if (pageNumber <= 1)
         {
-            pageNumber--;
-            await LoadPatients();
+            return;
         }
+
+        pageNumber--;
+        await LoadPatients();
     }
 
     private async Task NextPage()
     {
-        if (!disableNextButton)
+        if (disableNextButton)
         {
-            pageNumber++;
-            await LoadPatients();
+            return;
         }
+
+        pageNumber++;
+        await LoadPatients();
     }
 
-    private void OpenStatusDialog(PatientListDto patient)
+    private void OpenStatusDialog(
+        PatientListDto patient)
     {
+        errorMessage = "";
+
         selectedPatientId = patient.PatientId;
         selectedPatientName = patient.FullName;
-        selectedStatusValue = patient.IsActive ? "true" : "false";
+
+        selectedStatusValue =
+            patient.IsActive ? "true" : "false";
+
         showStatusDialog = true;
     }
 
     private void CloseStatusDialog()
     {
+        if (isUpdatingStatus)
+        {
+            return;
+        }
+
         showStatusDialog = false;
     }
 
     private async Task UpdateStatus()
     {
-        bool newStatus = bool.Parse(selectedStatusValue);
+        errorMessage = "";
+        isUpdatingStatus = true;
 
-        bool result = await PatientService.UpdatePatientStatusAsync(
-            selectedPatientId,
-            newStatus);
+        try
+        {
+            var newStatus =
+                bool.Parse(selectedStatusValue);
 
-        if (result)
+            var result =
+                await PatientService.UpdatePatientStatusAsync(
+                    selectedPatientId,
+                    newStatus);
+
+            if (result)
+            {
+                showStatusDialog = false;
+                await LoadPatients();
+            }
+        }
+        catch (InvalidOperationException ex)
         {
             showStatusDialog = false;
-            await LoadPatients();
+            errorMessage = ex.Message;
         }
-        else
+        catch (Exception)
         {
-            errorMessage = "Failed to update patient status.";
+            showStatusDialog = false;
+
+            errorMessage =
+                "An unexpected error occurred while updating the patient status.";
+        }
+        finally
+        {
+            isUpdatingStatus = false;
         }
     }
 
-    private void OpenDeleteDialog(PatientListDto patient)
+    private void OpenDeleteDialog(
+        PatientListDto patient)
     {
+        errorMessage = "";
+
         selectedPatientId = patient.PatientId;
         selectedPatientName = patient.FullName;
         showDeleteDialog = true;
@@ -396,21 +524,53 @@ else
 
     private void CloseDeleteDialog()
     {
+        if (isDeleting)
+        {
+            return;
+        }
+
         showDeleteDialog = false;
+    }
+
+    private void ClearErrorMessage()
+    {
+        errorMessage = "";
     }
 
     private async Task ConfirmDelete()
     {
-        bool result = await PatientService.DeletePatientAsync(selectedPatientId);
+        errorMessage = "";
+        isDeleting = true;
 
-        if (result)
+        try
+        {
+            var result =
+                await PatientService.DeletePatientAsync(
+                    selectedPatientId);
+
+            if (result)
+            {
+                showDeleteDialog = false;
+                await LoadPatients();
+            }
+        }
+        catch (InvalidOperationException)
         {
             showDeleteDialog = false;
-            await LoadPatients();
+
+            errorMessage =
+                "Failed to delete Patient. It may be referenced by existing appointments or health records.";
         }
-        else
+        catch (Exception)
         {
-            errorMessage = "Failed to delete patient.";
+            showDeleteDialog = false;
+
+            errorMessage =
+                "An unexpected error occurred while deleting the patient.";
+        }
+        finally
+        {
+            isDeleting = false;
         }
     }
 }
