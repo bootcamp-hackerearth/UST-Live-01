@@ -2,7 +2,6 @@ using HealthCare.Api.Consumers;
 using HealthCare.Api.Data;
 using HealthCare.Api.Mapping;
 using HealthCare.Api.Middleware;
-using HealthCare.Api.Options;
 using HealthCare.Api.Repositories.Implementations;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Implementations;
