@@ -39,41 +39,52 @@
 /* ==================================
    SIDEBAR
 ================================== */
-
+/* 
 .pd-sidebar {
   position: fixed;
-  top: 0;
+  top: 14px;
   left: 0;
 
-  width: 290px;
-  height: 100vh;
+  width: 320px;
+  height: calc(100vh - 28px);
 
-  background: #fffdf8;
-  border-right: 1px solid #e6d9c7;
+  padding: 100px 24px 24px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(121, 97, 74, 0.96),
+    rgba(104, 83, 63, 0.96)
+  );
+
+  backdrop-filter: blur(18px);
+
+  border: 1px solid rgba(255,255,255,.15);
+
+  border-radius: 0 32px 32px 0;
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.25);
 
   z-index: 9500;
 
-  overflow-y: auto;
-
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  transform: translateX(-105%);
+  transition: transform .3s ease;
 }
 
 .pd-sidebar.open {
   transform: translateX(0);
-}
-
+} */
 /* ==================================
    SIDEBAR CONTENT
 ================================== */
 
-.pd-sidebar-inner {
+/* .pd-sidebar-inner {
   padding: 24px;
   display: flex;
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
-}
+} */
 
 /* ==================================
    BRAND
@@ -103,7 +114,7 @@
 /* ==================================
    TOGGLE BUTTON
 ================================== */
-
+/* 
 .pd-sidebar-toggle {
   position: absolute;
   top: 20px;
@@ -111,21 +122,37 @@
 
   margin: 0 !important;
   transform: none !important;
-}
+} */
 
 /* ==================================
    MENU
 ================================== */
 
 .pd-menu {
-  display: grid;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .pd-menu button {
-  justify-content: flex-start;
-}
+  height: 64px;
 
+  border: none;
+  border-radius: 22px;
+
+  background: transparent;
+
+  color: white;
+
+  font-size: 1.25rem;
+  font-weight: 700;
+
+  justify-content: flex-start;
+
+  padding: 0 20px;
+
+  transition: all .25s ease;
+}
 .pd-menu button strong {
   opacity: 1 !important;
   width: auto !important;
@@ -142,7 +169,7 @@
 /* ==============================
    SIDEBAR TOGGLE - PREMIUM BEIGE
 ============================== */
-.pd-sidebar {
+/* .pd-sidebar {
   padding-top: 90px;
 }
 .pd-sidebar-toggle {
@@ -179,7 +206,7 @@
 
 /* Expanded Sidebar */
 
-.pd-sidebar.open .pd-sidebar-toggle {
+/* .pd-sidebar.open .pd-sidebar-toggle {
   margin-left: auto;
 }
 
@@ -194,10 +221,10 @@
 
   box-shadow:
     0 18px 38px rgba(139, 115, 85, 0.32);
-}
+} */
 
 /* Collapsed Sidebar */
-
+/* 
 .pd-sidebar:not(.open) .pd-sidebar-toggle {
   position: absolute;
   top: 68px;
@@ -216,7 +243,7 @@
 
   box-shadow:
     0 18px 38px rgba(139, 115, 85, 0.32);
-}
+} */ */
 
 /* ==============================
    SIDEBAR MENU
@@ -268,10 +295,10 @@
 
 /* Collapsed Sidebar */
 
-.pd-sidebar:not(.open) .pd-menu button {
+/* .pd-sidebar:not(.open) .pd-menu button {
   justify-content: center;
   padding: 0;
-}
+} */
 
 /* Icons */
 
@@ -305,11 +332,11 @@
     width 0.2s ease;
 }
 
-.pd-sidebar.open .pd-menu button strong {
+/* .pd-sidebar.open .pd-menu button strong {
   opacity: 1;
   width: auto;
   transform: translateX(0);
-}
+} */
 
 /* Hover State */
 
@@ -327,17 +354,13 @@
 /* Active State */
 
 .pd-menu button.active {
-  color: #4b3f35;
-
-  background: #f1e7d8;
-
-  transform: translateX(3px);
+  background: #c7a87d;
 
   box-shadow:
-    inset 0 0 0 1px rgba(200, 169, 126, 0.35);
-}
+    0 0 30px rgba(199,168,125,.35);
 
-/* Active Indicator */
+  color: white;
+}
 
 .pd-menu button.active::before {
   content: "";
@@ -345,18 +368,14 @@
   position: absolute;
 
   left: 0;
-  top: 11px;
-  bottom: 11px;
+  top: 14px;
+  bottom: 14px;
 
-  width: 4px;
+  width: 5px;
 
   border-radius: 999px;
 
-  background: linear-gradient(
-    180deg,
-    #c8a97e,
-    #8b7355
-  );
+  background: #fff3d4;
 }
 
 /* Active Icon */
@@ -1741,9 +1760,9 @@
   .pd-page {
     padding-left: 0;
   }
-
+/* 
   /* Sidebar Drawer */
-
+/* 
   .pd-sidebar {
     position: fixed;
 
@@ -1767,7 +1786,7 @@
   }
 
   /* Brand */
-
+/*
   .pd-brand,
   .pd-sidebar.open .pd-brand {
     padding-bottom: 30px;
@@ -1789,7 +1808,7 @@
   }
 
   /* Menu Labels */
-
+/*
   .pd-menu button strong,
   .pd-sidebar.open .pd-menu button strong {
     opacity: 1;
@@ -1797,14 +1816,14 @@
     transform: translateX(0);
   }
 
-  /* Toggle Button */
+  /* Toggle Button 
 
   .pd-sidebar:not(.open) .pd-sidebar-toggle,
   .pd-sidebar.open .pd-sidebar-toggle {
     position: static;
     transform: none;
     margin-left: auto;
-  }
+  } */
 
   /* Main Content */
 
@@ -1891,9 +1910,9 @@
     line-height: 1.05;
   }
 
-  .pd-sidebar {
+  /* .pd-sidebar {
     width: 280px;
-  }
+  } */
 }
 /* ==================================
    CONFIRMATION MODAL - BEIGE THEME
@@ -2179,11 +2198,10 @@
 /* ==================================
    SIDEBAR
 ================================== */
-
+/* 
 .pd-sidebar {
   position: fixed;
   top: 0;
-  left: -320px;      /* hide completely */
   width: 290px;
   height: 100vh;
 
@@ -2194,12 +2212,11 @@
 
   overflow-y: auto;
 
-  transition: left .3s ease;
 }
 
 .pd-sidebar.open {
   left: 0;
-}
+} */
 /* ==================================
    MAIN CONTENT
 ================================== */
@@ -2218,7 +2235,7 @@
 /* ==================================
    SCROLLBAR
 ================================== */
-
+/* 
 .pd-sidebar::-webkit-scrollbar {
   width: 6px;
 }
@@ -2234,26 +2251,22 @@
 
 .pd-sidebar::-webkit-scrollbar-thumb:hover {
   background: #8b7355;
-}
+} */
 
 /* ==================================
    OVERLAY
 ================================== */
 
-.pd-sidebar-overlay {
+/* .pd-sidebar-overlay {
   position: fixed;
   inset: 0;
 
-  z-index: 90;
+  background: rgba(0,0,0,.35);
 
-  background:
-    rgba(75, 63, 53, 0.22);
+  backdrop-filter: blur(4px);
 
-  backdrop-filter: blur(5px);
-
-  animation: pd-fade-in 0.18s ease;
-}
-
+  z-index: 9000;
+} */
 
 /* ==================================
    MOBILE FIX
@@ -2266,7 +2279,7 @@
     padding-left: 0 !important;
   }
 
-  .pd-page:has(.pd-sidebar.open) {
+  /* .pd-page:has(.pd-sidebar.open) {
     padding-left: 0 !important;
   }
 
@@ -2289,7 +2302,7 @@
   .pd-sidebar.open {
     width: 292px;
     transform: translateX(0);
-  }
+  } */
 
   .pd-main {
     padding: 22px;
@@ -2395,32 +2408,27 @@
 .pd-floating-menu {
   position: fixed;
 
-  top: 32px;
-  left: 40px;
+  top: 28px;
+  left: 28px;
 
-  width: 56px;
-  height: 56px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 72px;
+  height: 72px;
 
   border: none;
-  border-radius: 18px;
+  border-radius: 24px;
 
-  background: linear-gradient(
-    135deg,
-    #c8a97e,
-    #8b7355
-  );
+  background: rgba(255,255,255,.18);
 
-  color: #fff;
-  font-size: 24px;
-  cursor: pointer;
+  backdrop-filter: blur(12px);
+
+  color: white;
+
+  font-size: 34px;
 
   z-index: 10000;
 
-  box-shadow: 0 16px 34px rgba(139, 115, 85, 0.24);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.2);
 }
 
 /* Push brand down */
@@ -3193,4 +3201,240 @@
   text-transform: uppercase;
   color: #aa8f6b;
   margin-bottom: 0.25rem;
+}
+/* ==================================
+   FLOATING MENU BUTTON
+================================== */
+
+.pd-floating-menu {
+  position: fixed;
+  top: 22px;
+  left: 22px;
+
+  width: 72px;
+  height: 72px;
+
+  border: none;
+  border-radius: 24px;
+
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(12px);
+
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 34px;
+  cursor: pointer;
+
+  z-index: 10001;
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.25);
+
+  transition: all .25s ease;
+}
+
+.pd-floating-menu:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,.24);
+}
+
+/* ==================================
+   OVERLAY
+================================== */
+
+.pd-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(4px);
+
+  z-index: 9000;
+
+  animation: pdSidebarFade .25s ease;
+}
+
+/* ==================================
+   SIDEBAR
+================================== */
+
+.pd-sidebar {
+  position: fixed;
+
+  top: 12px;
+  left: 0;
+
+  width: 330px;
+  height: calc(100vh - 24px);
+
+  padding: 110px 24px 24px;
+
+  background: linear-gradient(
+    180deg,
+    #7d644d 0%,
+    #6d5642 100%
+  );
+
+  border-radius: 0 34px 34px 0;
+
+  border: 1px solid rgba(255,255,255,.15);
+
+  backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 24px 60px rgba(0,0,0,.28);
+
+  overflow-y: auto;
+
+  z-index: 9500;
+
+  transform: translateX(-105%);
+  transition: transform .30s ease;
+}
+
+.pd-sidebar.open {
+  transform: translateX(0);
+}
+
+/* ==================================
+   MENU
+================================== */
+
+.pd-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ==================================
+   MENU BUTTON
+================================== */
+
+.pd-menu button {
+  position: relative;
+
+  width: 100%;
+  height: 68px;
+
+  border: none;
+  border-radius: 24px;
+
+  background: transparent;
+
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 22px;
+
+  cursor: pointer;
+
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 700;
+
+  transition: all .25s ease;
+}
+
+.pd-menu button:hover {
+  background: rgba(255,255,255,.10);
+  transform: translateX(4px);
+}
+
+/* ==================================
+   MENU TEXT
+================================== */
+
+.pd-menu button strong {
+  color: inherit;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+
+/* ==================================
+   ACTIVE MENU
+================================== */
+
+.pd-menu button.active {
+  background: #caa979;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 0 35px rgba(202,169,121,.35);
+}
+
+.pd-menu button.active::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+
+  width: 5px;
+
+  border-radius: 999px;
+
+  background: #fff4d8;
+}
+
+/* ==================================
+   SCROLLBAR
+================================== */
+
+.pd-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.pd-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pd-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.35);
+  border-radius: 999px;
+}
+
+/* ==================================
+   MOBILE
+================================== */
+
+@media (max-width: 768px) {
+
+  .pd-sidebar {
+    width: 320px;
+    border-radius: 0 28px 28px 0;
+  }
+
+  .pd-floating-menu {
+    width: 64px;
+    height: 64px;
+    font-size: 30px;
+  }
+
+  .pd-menu button {
+    height: 62px;
+    font-size: 1.1rem;
+  }
+}
+
+/* ==================================
+   ANIMATION
+================================== */
+
+@keyframes pdSidebarFade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
