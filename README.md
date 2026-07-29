@@ -527,53 +527,6 @@ flowchart LR
 Swagger/OpenAPI enabled during development.
 
 ---
-
-# Sprint Progress
-
-## Sprint 1
-
-- Requirement gathering
-- Solution architecture
-- Database design
-
-## Sprint 2
-
-- Authentication
-- JWT Implementation
-- Role Management
-- Repository Pattern
-
-## Sprint 3
-
-- Patient Workflows
-- Doctor Workflows
-- Appointment Management
-- Health Records
-
-## Sprint 4
-
-- Blazor Admin Portal
-- Dashboard
-- Doctor Management
-- Patient Management
-- Appointment Administration
-
-## Sprint 5
-
-### AWS Deployment
-
-- Deployed application to AWS Elastic Beanstalk
-- Configured deployment environment
-- Hosted Angular, Blazor, and API together
-
-### Jenkins CI/CD Pipeline
-
-- Implemented Jenkins Pipeline
-- Connected GitHub Repository
-- Automated build process
-- Automated deployment process
-- AWS deployment automation
-
 ### Deployment Flow
 
 ```text
