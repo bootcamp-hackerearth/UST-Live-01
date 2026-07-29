@@ -223,13 +223,17 @@ namespace HealthCare.Api.Services.Implementations
         }
 
         public async Task UpdateStatusAsync(
-    int id,
-    UpdateAppointmentDto dto)
+      int id,
+      UpdateAppointmentDto dto)
         {
             var appointment = await _repository.GetByIdAsync(id);
 
             if (appointment is null)
             {
+                Log.Warning(
+                    "Appointment status update failed because the appointment was not found. AppointmentId: {AppointmentId}",
+                    id);
+
                 throw new InvalidOperationException(
                     "Appointment not found.");
             }
