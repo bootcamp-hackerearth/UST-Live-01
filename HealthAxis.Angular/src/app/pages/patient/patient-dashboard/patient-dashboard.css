@@ -1319,8 +1319,8 @@
 ================================== */
 
 .pd-record-preview {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 
@@ -2857,16 +2857,16 @@
 ================================== */
 
 .pd-panel-header h3 {
-  white-space: nowrap;
-  font-size: 2rem;
+  font-size: 1.5rem;
+  white-space: normal;
 }
 .pd-prescription-card {
   margin-top: 0;
 }
 .pd-health-grid {
   display: grid;
-  grid-template-columns: 1.35fr 1fr 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: 24px;
 }
 .pd-health-grid > .pd-panel {
   height: 100%;
