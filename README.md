@@ -861,40 +861,32 @@ Verify:
 ## Screenshots
 
 ### Landing Page
-
-docs/images/landing-page.png
+![Landing Page](docs/images/landing-page.png)
 
 ### Mobile Registration
-
-docs/images/mobile-registration.png
+![Mobile Registration](docs/images/mobile-registration.png)
 
 ### Patient Dashboard
-
-docs/images/patient-dashboard.png
+![Patient Dashboard](docs/images/patient-dashboard.png)
 
 ### Doctor Search
-
-docs/images/doctor-search.png
+![Doctor Search](docs/images/doctor-search.png)
 
 ### Appointment Booking
-
-docs/images/appointment-booking.png
+![Appointment Booking](docs/images/appointment-booking.png)
 
 ### Doctor Portal
-
-docs/images/doctor-portal.png
+![Doctor Portal](docs/images/doctor-portal.png)
 
 ### Admin Dashboard
-
-docs/images/admin-dashboard.png
+![Admin Dashboard](docs/images/admin-dashboard.png)
 
 ### Jenkins Pipeline
-
-docs/images/jenkins-pipeline.png
+![Jenkins Pipeline](docs/images/jenkins-pipeline.png)
 
 ### Elastic Beanstalk Health
+![Elastic Beanstalk Health](docs/images/elastic-beanstalk-health.png)
 
-docs/images/elastic-beanstalk-health.png
 ## Known Limitations
 
 - The deployment currently depends on a Jenkins host that must remain running for Poll SCM.
