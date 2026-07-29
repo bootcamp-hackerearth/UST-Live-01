@@ -16,6 +16,7 @@
 - [User Roles and Workflows](#user-roles-and-workflows)
 - [Runtime Architecture](#runtime-architecture)
 - [Technology Stack](#technology-stack)
+- [AI-Assisted Development](#ai-assisted-development)
 - [Project Structure](#project-structure)
 - [Frontend Hosting Model](#frontend-hosting-model)
 - [Authentication and Authorization](#authentication-and-authorization)
@@ -195,6 +196,26 @@ flowchart LR
 - Node.js and npm
 - Java `jar` utility
 - Jenkins Poll SCM
+
+## AI-Assisted Development
+
+AI tools were used as development assistants during Sprint 5 for:
+
+- Diagnosing ASP.NET Core, Angular, Blazor, Jenkins, AWS, SQL Server,
+  and RabbitMQ configuration issues
+- Reviewing deployment logs and identifying likely root causes
+- Improving responsive CSS for mobile and tablet layouts
+- Structuring Jenkins CI/CD pipeline stages
+- Improving technical documentation and README organization
+- Suggesting security and production-readiness improvements
+
+All generated recommendations were reviewed, adapted, implemented,
+and tested against the HealthAxis codebase and deployed environment.
+
+AI tools did not receive or store production passwords, AWS access
+keys, JWT secrets, database credentials, or confidential patient data.
+Final implementation decisions and validation remained the
+responsibility of the project developer.
 
 ## Project Structure
 
