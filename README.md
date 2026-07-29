@@ -1,25 +1,6 @@
 # HealthAxis
 
-HealthAxis is a full-stack healthcare management and appointment platform implemented in the `HealthApp` solution. It combines an Angular application for patients and doctors, a Blazor WebAssembly administration portal, and an ASP.NET Core API in one deployable application.
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Core Features](#core-features)
-- [User Roles](#user-roles)
-- [Architecture](#architecture)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Authentication and Authorization](#authentication-and-authorization)
-- [Database and Persistence](#database-and-persistence)
-- [Messaging and Transactional Outbox](#messaging-and-transactional-outbox)
-- [Caching](#caching)
-- [Logging and Error Handling](#logging-and-error-handling)
-- [Application Routing](#application-routing)
-- [Local Setup](#local-setup)
-- [Testing](#testing)
-- [CI/CD and AWS Deployment](#cicd-and-aws-deployment)
-- [Configuration](#configuration)
+HealthAxis is a full-stack healthcare management and appointment platform implemented in the `HealthApp` solution. It combines an Angular application for patients and doctors, a Blazor WebAssembly administrator portal, and an ASP.NET Core API in one deployable application.
 
 ## Overview
 
@@ -36,16 +17,17 @@ The platform supports:
 - Reliable event publishing through a transactional Outbox
 - Angular and Blazor hosting from one ASP.NET Core deployment package
 
-## Core Features
+## Main Features
 
-### Patient experience
+### Patient Experience
 
 - Authentication and patient profile access
 - Doctor discovery and availability lookup
 - Appointment booking and appointment visibility
-- Health-record access based on authorization rules
+- Authorized health-record access
+- Notifications
 
-### Doctor experience
+### Doctor Experience
 
 - Authentication and doctor profile access
 - Appointment and schedule workflows
@@ -53,7 +35,7 @@ The platform supports:
 - Doctor-leave workflows
 - Authorized health-record operations
 
-### Administrator portal
+### Administrator Portal
 
 - Protected Blazor WebAssembly administrator portal
 - Administrator dashboard
@@ -69,13 +51,37 @@ The platform supports:
 
 ## User Roles
 
-| Role | Application access |
+| Role | Application Access |
 |---|---|
 | Admin | Blazor administrator portal and admin-authorized API operations |
 | Doctor | Angular doctor experience and doctor-authorized API operations |
 | Patient | Angular patient experience and patient-authorized API operations |
 
 ## Architecture
+
+HealthAxis is delivered as one ASP.NET Core application:
+
+```text
+/          Angular application
+/admin/    Blazor WebAssembly administrator portal
+/api/...   ASP.NET Core API controllers
+```
+
+The backend follows a layered architecture:
+
+```text
+Controllers
+    ↓
+Services
+    ↓
+Repositories
+    ↓
+Entity Framework Core
+    ↓
+SQL Server
+```
+
+RabbitMQ and MassTransit support asynchronous processing. A transactional Outbox helps prevent event loss between SQL Server and RabbitMQ.
 
 ```mermaid
 flowchart LR
@@ -91,19 +97,6 @@ flowchart LR
     PUBLISHER --> MT[MassTransit]
     MT --> RMQ[(RabbitMQ)]
     RMQ --> CONSUMERS[Message Consumers]
-```
-
-### Backend layering
-
-```mermaid
-flowchart LR
-    CLIENTS[Angular and Blazor Clients] --> CTRL[API Controllers]
-    CTRL --> SVC[Application Services]
-    SVC --> REPO[Repositories]
-    REPO --> EF[Entity Framework Core]
-    EF --> DB[(SQL Server)]
-    SVC --> CACHE[Distributed Cache Abstraction]
-    SVC --> OUTBOX[Outbox Service]
 ```
 
 ## Technology Stack
@@ -127,19 +120,21 @@ flowchart LR
 - ASP.NET Core Identity
 - JWT bearer authentication
 - AutoMapper
+- Serilog
 - Swagger and OpenAPI
 
-### Messaging and background processing
+### Messaging and Background Processing
 
 - RabbitMQ
 - MassTransit
+- Transactional Outbox
 - `AppointmentBookedConsumer`
 - `AppointmentCancelledByDoctorLeaveConsumer`
 - `OutboxPublisherBackgroundService`
 - `HeartbeatService`
 - `NotificationCleanupService`
 
-### Testing and delivery
+### Testing and Delivery
 
 - xUnit
 - Moq
@@ -154,69 +149,18 @@ flowchart LR
 ```text
 UST-Live-01/
 ├── HealthApp.slnx
-├── HealthApp.Api/
-│   ├── Controllers/
-│   ├── Consumers/
-│   ├── Data/
-│   ├── Handler/
-│   ├── HostedServices/
-│   ├── Mapping/
-│   ├── Models/
-│   ├── Repositories/
-│   ├── Services/
-│   ├── Migrations/
-│   ├── Program.cs
-│   └── HealthApp.Api.csproj
-├── HealthApp.Angular/
-│   ├── src/
-│   ├── angular.json
-│   ├── package.json
-│   └── package-lock.json
-├── HealthApp.AdminPortal/
-│   ├── Auth/
-│   ├── Layout/
-│   ├── Pages/
-│   ├── Services/
-│   ├── Shared/
-│   ├── wwwroot/
-│   └── HealthApp.AdminPortal.csproj
-├── HealthApp.Shared/
-│   └── HealthApp.Shared.csproj
-├── HealthApp.Api.Tests/
-│   └── HealthApp.Api.Tests.csproj
-├── Jenkinsfile
+├── HealthApp.Api/          ASP.NET Core API and static frontend host
+├── HealthApp.Angular/      Patient and doctor frontend
+├── HealthApp.AdminPortal/  Blazor administrator portal
+├── HealthApp.Shared/       Shared DTOs, enums, events, and contracts
+├── HealthApp.Api.Tests/    Automated API tests
+├── Jenkinsfile             CI/CD pipeline
 └── README.md
 ```
-
-| Project | Responsibility |
-|---|---|
-| `HealthApp.Api` | API endpoints, business services, repositories, EF Core, Identity, messaging, background services, and static frontend hosting |
-| `HealthApp.Angular` | Main patient and doctor user experience |
-| `HealthApp.AdminPortal` | Blazor WebAssembly administrator portal |
-| `HealthApp.Shared` | Shared DTOs, enums, events, constants, and contracts |
-| `HealthApp.Api.Tests` | Automated API tests using xUnit and Moq |
-| `HealthApp.slnx` | Solution entry point |
-| `Jenkinsfile` | Build, test, package, and AWS deployment pipeline |
 
 ## Authentication and Authorization
 
 HealthAxis uses ASP.NET Core Identity with `ApplicationUser` and `IdentityRole`.
-
-The configured password policy requires:
-
-- Unique email addresses
-- At least one digit
-- At least one uppercase character
-- At least one non-alphanumeric character
-- Minimum password length of 8
-
-JWT bearer validation includes:
-
-- Issuer validation
-- Audience validation
-- Token lifetime validation
-- Signing-key validation
-- Zero clock skew
 
 The verified roles are:
 
@@ -226,7 +170,7 @@ Doctor
 Patient
 ```
 
-API controllers apply role-specific authorization. Blazor administrator pages use `[Authorize(Roles = "Admin")]` and the administrator navigation uses `AuthorizeView` for the Admin role.
+JWT bearer validation includes issuer, audience, lifetime, and signing-key validation with zero clock skew. API controllers apply role-specific authorization. Blazor administrator pages use `[Authorize(Roles = "Admin")]`.
 
 Roles and the configured administrator account are seeded during API startup. Demo doctor and patient login users are also seeded for configured demo data.
 
@@ -234,18 +178,15 @@ Roles and the configured administrator account are seeded during API startup. De
 
 HealthAxis uses SQL Server through Entity Framework Core and `HealthAppDbContext`.
 
-The same database context supports:
+The database supports:
 
-- Application entities
-- ASP.NET Core Identity stores
+- ASP.NET Core Identity
 - Doctors and patients
 - Appointments
 - Health records
 - Doctor leave
 - Notifications
 - Outbox messages
-
-The API uses repository and service layers for separation of responsibilities.
 
 The connection string is read from:
 
@@ -259,23 +200,9 @@ Safe environment-variable example:
 ConnectionStrings__DefaultConnection=Server=<SQL_SERVER_HOST>,1433;Database=<DATABASE_NAME>;User Id=<DATABASE_USER>;Password=<DATABASE_PASSWORD>;Encrypt=True;TrustServerCertificate=True
 ```
 
-Apply EF Core migrations with:
-
-```powershell
-dotnet ef database update `
-    --project .\HealthApp.Api\HealthApp.Api.csproj `
-    --startup-project .\HealthApp.Api\HealthApp.Api.csproj `
-    --context HealthAppDbContext
-```
-
 ## Messaging and Transactional Outbox
 
-MassTransit connects the API to RabbitMQ and registers two verified consumers:
-
-- `AppointmentBookedConsumer`
-- `AppointmentCancelledByDoctorLeaveConsumer`
-
-HealthAxis uses a transactional Outbox to prevent appointment events from being lost between SQL Server and RabbitMQ.
+MassTransit connects the API to RabbitMQ. HealthAxis uses a transactional Outbox to prevent appointment events from being lost between SQL Server and RabbitMQ.
 
 ```mermaid
 flowchart TD
@@ -290,9 +217,7 @@ flowchart TD
     CONSUMER --> NOTIFICATION[Create Notification]
 ```
 
-The `OutboxPublisherBackgroundService` reads eligible outbox records, publishes events through MassTransit, and updates publication status and retry information.
-
-RabbitMQ configuration is supplied through the `RabbitMq` configuration section. Safe production examples:
+RabbitMQ production settings are supplied through environment properties:
 
 ```text
 RabbitMq__Host=<RABBITMQ_HOST>
@@ -304,62 +229,20 @@ RabbitMq__Password=<RABBITMQ_PASSWORD>
 
 ## Caching
 
-The API registers:
-
-```csharp
-builder.Services.AddDistributedMemoryCache();
-```
-
-Services use the `IDistributedCache` abstraction. The current provider stores cache entries in the API process memory.
-
-For a multi-instance production deployment, replace the in-memory provider with a shared distributed cache.
+The API uses `IDistributedCache` with `AddDistributedMemoryCache`. Cache entries are stored in the API process memory.
 
 ## Logging and Error Handling
 
 HealthAxis uses:
 
-- Serilog Console sink
-- Serilog rolling File sink
+- Serilog Console logging
+- Serilog rolling File logging
 - Structured HTTP request logging
 - `GlobalExceptionHandler`
 - ASP.NET Core Problem Details
 - `CustomAuthorizationMiddlewareResultHandler`
 
-Request logs include:
-
-```text
-HTTP method
-Request path
-Status code
-Elapsed time
-```
-
-Swagger and OpenAPI are enabled only in the Development environment.
-
-## Application Routing
-
-The combined ASP.NET Core deployment serves:
-
-```text
-/          Angular application
-/admin/    Blazor WebAssembly administrator portal
-/api/...   API controllers
-```
-
-The Blazor administrator portal uses:
-
-```html
-<base href="/admin/" />
-```
-
-The API registers the Blazor fallback before the Angular fallback:
-
-```text
-/admin/{non-file route} -> admin/index.html
-{remaining non-file route} -> index.html
-```
-
-Static-file configuration includes MIME mappings for Blazor `.wasm` and `.dat` assets.
+Swagger and OpenAPI are available only in the Development environment.
 
 ## Local Setup
 
@@ -372,7 +255,7 @@ Static-file configuration includes MIME mappings for Blazor `.wasm` and `.dat` a
 - RabbitMQ
 - Windows PowerShell
 
-### 1. Clone the repository
+### Clone the Repository
 
 ```powershell
 git clone https://github.com/bootcamp-hackerearth/UST-Live-01.git
@@ -380,7 +263,7 @@ cd UST-Live-01
 git checkout <REPLACE_WITH_BRANCH>
 ```
 
-### 2. Configure local secrets
+### Configure Local Secrets
 
 Use environment variables or .NET User Secrets. Do not commit actual values.
 
@@ -394,7 +277,7 @@ $env:RabbitMq__Username = "<RABBITMQ_USERNAME>"
 $env:RabbitMq__Password = "<RABBITMQ_PASSWORD>"
 ```
 
-### 3. Restore dependencies
+### Restore Dependencies
 
 ```powershell
 dotnet restore .\HealthApp.Api\HealthApp.Api.csproj
@@ -402,7 +285,7 @@ dotnet restore .\HealthApp.AdminPortal\HealthApp.AdminPortal.csproj
 dotnet restore .\HealthApp.Api.Tests\HealthApp.Api.Tests.csproj
 ```
 
-### 4. Run Angular independently
+### Run Angular
 
 ```powershell
 cd .\HealthApp.Angular
@@ -410,79 +293,44 @@ npm ci
 npm start
 ```
 
-### 5. Run Blazor independently
+### Run Blazor
 
 ```powershell
 dotnet run --project .\HealthApp.AdminPortal\HealthApp.AdminPortal.csproj
 ```
 
-### 6. Run the API
+### Run the API
 
 ```powershell
 dotnet run --project .\HealthApp.Api\HealthApp.Api.csproj
 ```
 
-The API CORS policy retains these verified development origins:
-
-```text
-http://localhost:4200
-https://localhost:7028
-```
-
-For combined hosting, Angular artifacts must exist in `HealthApp.Api/wwwroot`, and Blazor artifacts must exist in `HealthApp.Api/wwwroot/admin`.
-
 ## Testing
 
-The API test project targets .NET 10 and uses xUnit, Moq, Microsoft.NET.Test.Sdk, and Coverlet.
-
-Run tests:
+Run the API tests with:
 
 ```powershell
 dotnet test .\HealthApp.Api.Tests\HealthApp.Api.Tests.csproj
 ```
 
-Generate coverage:
+A verified Jenkins build completed 269 API tests successfully with no failures or skipped tests. This result may change as the test suite evolves.
 
-```powershell
-dotnet test .\HealthApp.Api.Tests\HealthApp.Api.Tests.csproj `
-    --collect:"XPlat Code Coverage"
-```
+## CI/CD and Deployment
 
-A verified Jenkins run completed:
-
-```text
-Passed: 269
-Failed: 0
-Skipped: 0
-```
-
-The result applies to the referenced build and may change as the test suite evolves.
-
-## CI/CD and AWS Deployment
-
-GitHub provides source control. Jenkins performs the verified CI/CD workflow. No GitHub Actions workflow is currently present.
+GitHub provides source control, while Jenkins performs the verified CI/CD workflow.
 
 The Jenkins pipeline:
 
 1. Checks out the configured branch
-2. Cleans previous outputs
-3. Verifies required tools and project files
-4. Restores the .NET projects
-5. Runs `npm ci` and builds Angular
-6. Copies Angular output into API `wwwroot`
-7. Publishes Blazor for `/admin/`
-8. Copies Blazor output into API `wwwroot/admin`
-9. Verifies combined frontend artifacts
-10. Builds the API
-11. Runs automated API tests
-12. Publishes the API
-13. Creates the Elastic Beanstalk `Procfile`
-14. Creates and verifies `deploy-package.zip`
-15. Uploads the bundle to Amazon S3
-16. Creates an Elastic Beanstalk application version
-17. Updates the Elastic Beanstalk environment
-18. Waits for Ready status and the expected version
-19. Archives the deployment package
+2. Builds Angular and Blazor
+3. Copies both frontend builds into the API
+4. Builds and tests the API
+5. Publishes the combined application
+6. Creates the Elastic Beanstalk deployment package
+7. Uploads the package to Amazon S3
+8. Creates an Elastic Beanstalk application version
+9. Deploys the version
+10. Waits for the expected environment version to become Ready
 
 ```mermaid
 flowchart TD
@@ -504,55 +352,4 @@ Elastic Beanstalk application: HealthAppApi
 Elastic Beanstalk environment: HealthAppApi-dev
 ```
 
-The Jenkins pipeline expects AWS credentials stored under this Jenkins credential ID:
-
-```text
-aws-deploy-creds
-```
-
-The deployment ZIP starts the API through this `Procfile` command:
-
-```text
-web: dotnet HealthApp.Api.dll
-```
-
-Elastic Beanstalk environment properties provide production configuration:
-
-```text
-ASPNETCORE_ENVIRONMENT=Production
-ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
-ASPNETCORE_URLS=http://0.0.0.0:5000
-PORT=5000
-ConnectionStrings__DefaultConnection=<PRODUCTION_CONNECTION_STRING>
-Jwt__Key=<STRONG_JWT_SIGNING_KEY>
-AdminUser__Email=<ADMIN_EMAIL>
-AdminUser__Password=<ADMIN_PASSWORD>
-RabbitMq__Host=<RABBITMQ_HOST>
-RabbitMq__Port=5672
-RabbitMq__VirtualHost=/
-RabbitMq__Username=<RABBITMQ_USERNAME>
-RabbitMq__Password=<RABBITMQ_PASSWORD>
-```
-
-The Elastic Beanstalk instance must be able to reach SQL Server on TCP 1433 and RabbitMQ on TCP 5672 through private networking and appropriate security-group rules.
-
-## Configuration
-
-| Key | Purpose | Production source |
-|---|---|---|
-| `ConnectionStrings__DefaultConnection` | SQL Server connection | Elastic Beanstalk environment property |
-| `Jwt__Key` | JWT signing key | Elastic Beanstalk environment property |
-| `Jwt__Issuer` | JWT issuer | Base configuration or environment property |
-| `Jwt__Audience` | JWT audience | Base configuration or environment property |
-| `Jwt__AccessTokenExpirationMinutes` | Access-token lifetime | Base configuration or environment property |
-| `AdminUser__Email` | Seed administrator email | Elastic Beanstalk environment property |
-| `AdminUser__Password` | Seed administrator password | Elastic Beanstalk environment property |
-| `RabbitMq__Host` | RabbitMQ host | Elastic Beanstalk environment property |
-| `RabbitMq__Port` | RabbitMQ AMQP port | Production configuration or environment property |
-| `RabbitMq__VirtualHost` | RabbitMQ virtual host | Production configuration or environment property |
-| `RabbitMq__Username` | RabbitMQ username | Elastic Beanstalk environment property |
-| `RabbitMq__Password` | RabbitMQ password | Elastic Beanstalk environment property |
-
-ASP.NET Core converts double underscores in environment-variable names into nested configuration separators.
-
-Sensitive values are stored in the deployed Elastic Beanstalk environment and must not be committed to Git.
+Production secrets are supplied through Elastic Beanstalk environment properties and are not stored in the repository.
