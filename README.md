@@ -36,8 +36,6 @@ The platform supports:
 - Reliable event publishing through a transactional Outbox
 - Angular and Blazor hosting from one ASP.NET Core deployment package
 
-> **Security notice:** Never commit passwords, connection strings, JWT signing keys, AWS credentials, private IP addresses, or access tokens. Supply sensitive values through local user secrets, environment variables, Jenkins Credentials, or AWS Elastic Beanstalk environment properties.
-
 ## Core Features
 
 ### Patient experience
