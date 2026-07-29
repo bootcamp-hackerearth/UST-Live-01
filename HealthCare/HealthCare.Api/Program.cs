@@ -221,6 +221,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/angular");
+    return Task.CompletedTask;
+});
+ 
 
 var angularIndexFile = Path.Combine(
     app.Environment.WebRootPath,
