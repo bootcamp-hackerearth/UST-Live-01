@@ -71,12 +71,15 @@
 				**/Options/GarnetOptions.cs,
 				**/Extensions/PaginationExtensions.cs,
 				**/HealthAxisCore_Angular/**,
-				**/HealthAxisCore_Angular/**/*
+				**/HealthAxisCore_Angular/**/*,
+				**/wwwroot/**
 			</Value>
 		</SonarQubeSetting>
 
 		<SonarQubeSetting Include="sonar.exclusions">
-			<Value>**/*.css,**/HealthAxisCore_Angular/**,**/HealthAxisCore_Angular/**/*</Value>
+			<Value>
+				**/*.css,**/HealthAxisCore_Angular/**,**/HealthAxisCore_Angular/**/*,**/wwwroot/**
+			</Value>
 		</SonarQubeSetting>
 	</ItemGroup>
 
