@@ -17,13 +17,11 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly HealthCareDbContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger<DoctorService> _logger;
         public DoctorService(IDoctorRepository repository, HealthCareDbContext context, IMapper mapper, IAppointmentRepository appointmentRepository, ILogger<DoctorService> logger)
         {
             _repository = repository;
             _context = context;
             _mapper = mapper;
-            _logger = logger;
             _appointmentRepository = appointmentRepository;
         }
 

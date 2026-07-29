@@ -215,6 +215,8 @@ namespace HealthCare.Api
 
                 app.MapControllers();
 
+                const string IndexFile = "index.html";
+
                 app.MapGet("/", context =>
                 {
                     context.Response.Redirect("/angular");
@@ -223,19 +225,22 @@ namespace HealthCare.Api
                 });
                 app.MapGet("/angular", async context =>
                 {
-                    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular","index.html"));
+                    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", IndexFile));
                 });
-                app.MapGet("/angular/{*path:nonfile}", async context =>
+                app.MapGet("/angular/{*path:nonfile}", async (HttpContext context, string? path) =>
                 {
-                    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", "index.html"));
+                _ = path;
+                
+                    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", IndexFile));
                 });
                 app.MapGet("/blazor", async context =>
                 {
-                    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+                    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", IndexFile));
                 });
-                app.MapGet("/blazor/{*path:nonfile}", async context =>
+                app.MapGet("/blazor/{*path:nonfile}", async (HttpContext context, string? path) =>
                 {
-                    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+                    _ = path;
+                    await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", IndexFile));
                 });
 
                 await app.RunAsync();

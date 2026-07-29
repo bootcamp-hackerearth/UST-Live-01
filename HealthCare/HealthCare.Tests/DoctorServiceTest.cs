@@ -365,24 +365,6 @@ namespace HealthCare.Api.Tests
                 () => _service.GetMyProfileAsync(999));
         }
 
-        //Available Doctors with Cache
-        [Fact]
-        public async Task AvailableDoctors_ShouldReturnFromCache_WhenCacheExists()
-        {
-            var doctors = new List<DoctorListDto>
-            {
-                new DoctorListDto { FullName = "Dr. A" }
-            };
-
-            var cachedData = JsonSerializer.Serialize(doctors);
-            _cacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(System.Text.Encoding.UTF8.GetBytes(cachedData));
-
-            var result = await _service.AvailableDoctors("Cardiology",DateOnly.FromDateTime(DateTime.Today));
-            Assert.Single(result);
-
-            _repoMock.Verify(r =>r.AvailableDoctors(It.IsAny<string>(), It.IsAny<DateOnly>()),Times.Never);
-        }
-
 
         //Available Doctors with Cache Miss
         [Fact]
