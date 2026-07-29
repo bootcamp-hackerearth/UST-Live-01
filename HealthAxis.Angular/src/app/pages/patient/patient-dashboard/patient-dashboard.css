@@ -1320,7 +1320,22 @@
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
 }
+.pd-health-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1.5fr;
+  gap: 24px;
+  align-items: stretch;
+}
 
+.pd-health-grid .pd-panel {
+  min-height: 0;
+  height: auto;
+}
+.pd-wellness-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
 /* ==================================
    INFO CARDS
