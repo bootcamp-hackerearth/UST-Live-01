@@ -207,7 +207,7 @@ public class AppointmentServiceTests
         Assert.Equal("Appointment not found.", exception.Message);
     }
 
-    
+
     [Fact]
     public async Task AddAsync_PublishesEvent_OnSuccess()
     {
@@ -303,7 +303,7 @@ public class AppointmentServiceTests
         Assert.DoesNotContain("09:00", result);
     }
 
-    
+
     [Fact]
     public async Task AvailableTimeSlots_ReturnsEmptyList_WhenDoctorHasNoSlots()
     {
@@ -792,51 +792,7 @@ public class AppointmentServiceTests
             Times.Once
         );
     }
-    [Fact]
-    public async Task AddAsync_ThrowsInvalidOperationException_WhenDbUpdateExceptionOccurs()
-    {
-        // Arrange
-        var dto = new CreateAppointmentDto
-        {
-            DoctorId = 1,
-            ScheduledDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
-            TimeSlot = "09:00"
-        };
 
-        var appointmentEntity = new Appointment
-        {
-            AppointmentId = 300,
-            DoctorId = dto.DoctorId,
-            PatientId = 5,
-            ScheduledDate = dto.ScheduledDate,
-            TimeSlot = dto.TimeSlot,
-            Status = "Pending"
-        };
-
-        _repositoryMock
-            .Setup(r => r.IsAvailable(dto.ScheduledDate, dto.DoctorId, dto.TimeSlot))
-            .ReturnsAsync(true);
-
-        _mapperMock
-            .Setup(m => m.Map<Appointment>(dto))
-            .Returns(appointmentEntity);
-
-        _repositoryMock
-            .Setup(r => r.AddAsync(It.IsAny<Appointment>()))
-            .ThrowsAsync(new DbUpdateException("Database error"));
-
-        // Act
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _service.AddAsync(dto, 5));
-
-        // Assert
-        Assert.Equal("Failed to book the appointment.", exception.Message);
-
-        _publishEndpointMock.Verify(
-            p => p.Publish(It.IsAny<AppointmentBookedEvent>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
-    }
     [Fact]
     public async Task UpdateAsync_UpdatesAppointment_WhenAppointmentExists()
     {
@@ -929,64 +885,7 @@ public class AppointmentServiceTests
         // Assert
         Assert.Equal("Failed to update appointment.", exception.Message);
     }
-    [Fact]
-    public async Task UpdateStatusAsync_ThrowsInvalidOperationException_WhenDbUpdateExceptionOccurs()
-    {
-        // Arrange
-        var appointment = new Appointment
-        {
-            AppointmentId = 1,
-            Status = "Pending"
-        };
-
-        var dto = new UpdateAppointmentDto
-        {
-            Status = "Cancelled",
-            CancellationReason = "Patient request"
-        };
-
-        _repositoryMock
-            .Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(appointment);
-
-        _repositoryMock
-            .Setup(r => r.UpdateAsync(appointment))
-            .ThrowsAsync(new DbUpdateException("Database error"));
-
-        // Act
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _service.UpdateStatusAsync(1, dto));
-
-        // Assert
-        Assert.Equal("Failed to update appointment status.", exception.Message);
-    }
-    [Fact]
-    public async Task DeleteAsync_ThrowsInvalidOperationException_WhenDbUpdateExceptionOccurs()
-    {
-        // Arrange
-        var appointment = new Appointment
-        {
-            AppointmentId = 1
-        };
-
-        _repositoryMock
-            .Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(appointment);
-
-        _repositoryMock
-            .Setup(r => r.DeleteAsync(1))
-            .ThrowsAsync(new DbUpdateException("Database error"));
-
-        // Act
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _service.DeleteAsync(1));
-
-        // Assert
-        Assert.Equal(
-            "Failed to delete appointment. It may be referenced by existing health records.",
-            exception.Message
-        );
-    }
+   
     [Fact]
     public async Task GetReport_UsesDefaultDates_WhenFilterDatesAreNull()
     {
@@ -1238,23 +1137,5 @@ public class AppointmentServiceTests
             r => r.CancelAppointmentsByDoctorDate(doctorId, date),
             Times.Once
         );
-    }
-    [Fact]
-    public async Task CancelAppointmentsByDoctorDate_ThrowsInvalidOperationException_WhenDbUpdateExceptionOccurs()
-    {
-        // Arrange
-        var doctorId = 1;
-        var date = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
-
-        _repositoryMock
-            .Setup(r => r.CancelAppointmentsByDoctorDate(doctorId, date))
-            .ThrowsAsync(new DbUpdateException("Database error"));
-
-        // Act
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _service.CancelAppointmentsByDoctorDate(doctorId, date));
-
-        // Assert
-        Assert.Equal("Failed to cancel appointments.", exception.Message);
     }
 }

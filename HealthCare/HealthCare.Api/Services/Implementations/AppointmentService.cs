@@ -188,24 +188,23 @@ namespace HealthCare.Api.Services.Implementations
         }
 
         public async Task UpdateAsync(
-            int id,
-            UpdateAppointmentDto dto)
+    int id,
+    UpdateAppointmentDto dto)
         {
+            var appointment = await _repository.GetByIdAsync(id);
+
+            if (appointment is null)
+            {
+                Log.Warning(
+                    "Appointment update failed because the appointment was not found. AppointmentId: {AppointmentId}",
+                    id);
+
+                throw new InvalidOperationException(
+                    "Appointment not found.");
+            }
+
             try
             {
-                var appointment =
-                    await _repository.GetByIdAsync(id);
-
-                if (appointment is null)
-                {
-                    Log.Warning(
-                        "Appointment update failed. Appointment not found. AppointmentId: {AppointmentId}",
-                        id);
-
-                    throw new InvalidOperationException(
-                        "Appointment not found.");
-                }
-
                 _mapper.Map(dto, appointment);
 
                 await _repository.UpdateAsync(appointment);
@@ -215,34 +214,11 @@ namespace HealthCare.Api.Services.Implementations
                     "Appointment updated successfully. AppointmentId: {AppointmentId}",
                     id);
             }
-            catch (InvalidOperationException ex)
-            {
-                Log.Warning(
-                    ex,
-                    "Appointment update validation failed. AppointmentId: {AppointmentId}",
-                    id);
-
-                throw;
-            }
             catch (DbUpdateException ex)
             {
-                Log.Error(
-                    ex,
-                    "Database error occurred while updating appointment. AppointmentId: {AppointmentId}",
-                    id);
-
                 throw new InvalidOperationException(
-                    "Failed to update appointment.",
+                    $"Failed to update appointment {id}.",
                     ex);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(
-                    ex,
-                    "Unexpected error occurred while updating appointment. AppointmentId: {AppointmentId}",
-                    id);
-
-                throw;
             }
         }
 
