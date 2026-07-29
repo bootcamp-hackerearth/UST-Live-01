@@ -72,6 +72,7 @@ export class DoctorDashboard implements OnInit, OnDestroy {
 
   upcomingAppointments: AppointmentDto[] = [];
   recentHealthRecords: HealthRecordDto[] = [];
+  completedAppointments: AppointmentDto[] = [];
 
   isDashboardLoading = false;
   dashboardErrorMessage = '';
@@ -111,12 +112,14 @@ export class DoctorDashboard implements OnInit, OnDestroy {
 
     this.loadDashboardData();
 
+    
     if (this.mustChangeTemporaryPassword) {
       this.showToast('Please change your temporary password to continue.', 'warning');
       return;
     }
 
     this.showToast('Welcome to your HealthAxis doctor portal.', 'success');
+    
   }
 
   ngOnDestroy(): void {
@@ -132,6 +135,9 @@ export class DoctorDashboard implements OnInit, OnDestroy {
 
     return this.doctor.doctorName.replace('Dr. ', '').split(' ')[0];
   }
+get recentlyCompletedAppointment(): AppointmentDto | undefined {
+  return this.completedAppointments[0];
+}
 
   get nextAppointment(): AppointmentDto | undefined {
     return this.upcomingAppointments[0];
@@ -414,7 +420,12 @@ get chartTotalCount(): number {
         );
 
         this.recentHealthRecords = result.healthRecords.items;
-
+        this.completedAppointments =
+  result.completedAppointments.items.sort(
+    (a, b) =>
+      new Date(b.scheduledDate).getTime() -
+      new Date(a.scheduledDate).getTime()
+  );
         this.summary = {
           upcomingCount: this.upcomingAppointments.length,
           pendingCount: result.pendingAppointments.totalRecords,

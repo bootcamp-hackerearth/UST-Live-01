@@ -801,8 +801,9 @@
 /* PANELS */
 .dd-dashboard-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
+  align-items: stretch;
 }
 
 .dd-panel,
@@ -817,7 +818,7 @@
 }
 
 .dd-wide-panel {
-  grid-column: 1 / -1;
+  grid-column: auto;
 }
 
 .dd-panel-header {
@@ -1518,4 +1519,35 @@
 .dd-profile-dropdown {
   position: absolute;
   z-index: 1000;
+}
+
+.dd-summary-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.dd-summary-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 5px;
+}
+
+.dd-summary-card.blue::before {
+  background: #d8b58a;
+}
+
+.dd-summary-card.amber::before {
+  background: #c89b63;
+}
+
+.dd-summary-card.sky::before {
+  background: #b58a5a;
+}
+
+.dd-summary-card.green::before {
+  background: #8f7a5c;
 }

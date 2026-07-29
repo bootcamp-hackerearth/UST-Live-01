@@ -137,16 +137,13 @@
 {
     <div class="ha-modal-backdrop">
         <div class="ha-doctor-created-modal">
-            <div class="ha-logout-icon">
-                HA
-            </div>
-
+          
             <h3>
                 Doctor Account Created
             </h3>
 
             <p>
-                Please copy the temporary password now. It will not be shown again.
+                Please remember the temporary password now.
             </p>
 
             <div class="ha-created-doctor-grid">
@@ -169,20 +166,13 @@
 
                     <strong>@createdDoctor.TemporaryPassword</strong>
                 </div>
-
-                <button type="button"
-                        class="hc-secondary-btn"
-                        @onclick="CopyTemporaryPassword">
-                    Copy
-                </button>
             </div>
 
             <div class="hc-details-note">
-                <span>Important</span>
 
                 <p>
-                    Share this temporary password securely with the doctor.
-                    The doctor can use this password to log in and change it later.
+                    Provide this temporary password to the doctor through a secure channel.
+                    The doctor can log in using it and change it later.
                 </p>
             </div>
 
@@ -194,7 +184,7 @@
 
                 <button class="hc-page-primary-btn"
                         @onclick="BackToDoctors">
-                    Go to Doctors
+                    Go Back
                 </button>
             </div>
         </div>

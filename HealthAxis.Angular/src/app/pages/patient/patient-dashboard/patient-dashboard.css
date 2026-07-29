@@ -2865,13 +2865,12 @@
 }
 .pd-health-grid {
   display: grid;
-  grid-template-columns: 60% 40%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.5rem;
-
-  align-items: start;
+  align-items: stretch;
 }
 .pd-health-grid > .pd-panel {
-  align-self: start;
+  height: 100%;
 }
 .pd-panel-header h3 {
   white-space: nowrap;
