@@ -860,20 +860,41 @@ Verify:
 
 ## Screenshots
 
-Add screenshots under `docs/images/` when available.
+### Landing Page
 
-```markdown
-![Landing page](docs/images/landing-page.png)
-![Mobile registration](docs/images/mobile-registration.png)
-![Patient dashboard](docs/images/patient-dashboard.png)
-![Doctor search](docs/images/doctor-search.png)
-![Appointment booking](docs/images/appointment-booking.png)
-![Doctor portal](docs/images/doctor-portal.png)
-![Admin dashboard](docs/images/admin-dashboard.png)
-![Jenkins pipeline](docs/images/jenkins-pipeline.png)
-![Elastic Beanstalk health](docs/images/elastic-beanstalk-health.png)
-```
+docs/images/landing-page.png
 
+### Mobile Registration
+
+docs/images/mobile-registration.png
+
+### Patient Dashboard
+
+docs/images/patient-dashboard.png
+
+### Doctor Search
+
+docs/images/doctor-search.png
+
+### Appointment Booking
+
+docs/images/appointment-booking.png
+
+### Doctor Portal
+
+docs/images/doctor-portal.png
+
+### Admin Dashboard
+
+docs/images/admin-dashboard.png
+
+### Jenkins Pipeline
+
+docs/images/jenkins-pipeline.png
+
+### Elastic Beanstalk Health
+
+docs/images/elastic-beanstalk-health.png
 ## Known Limitations
 
 - The deployment currently depends on a Jenkins host that must remain running for Poll SCM.
