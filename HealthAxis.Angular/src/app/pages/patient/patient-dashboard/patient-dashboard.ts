@@ -56,6 +56,33 @@ export class PatientDashboard implements OnInit, OnDestroy {
     healthRecordCount: 0
   };
 
+  wellnessTips = [
+  {
+    icon: '💧',
+    title: 'Stay Hydrated',
+    text: 'Drink at least 2 litres of water daily.'
+  },
+  {
+    icon: '🚶',
+    title: 'Daily Walk',
+    text: 'Take a 30-minute walk to improve heart health.'
+  },
+  {
+    icon: '🥗',
+    title: 'Balanced Diet',
+    text: 'Include fresh fruits and vegetables in meals.'
+  },
+  {
+    icon: '😴',
+    title: 'Quality Sleep',
+    text: 'Aim for 7–8 hours of sleep every night.'
+  }
+];
+
+currentTip =
+  this.wellnessTips[
+    Math.floor(Math.random() * this.wellnessTips.length)
+  ];
   upcomingAppointments: AppointmentDto[] = [];
   healthRecords: HealthRecordDto[] = [];
 

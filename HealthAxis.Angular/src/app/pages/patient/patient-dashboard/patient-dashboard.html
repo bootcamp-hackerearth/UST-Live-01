@@ -119,7 +119,6 @@
   type="button"
   class="pd-dropdown-item logout"
   (click)="closeProfileDropdown(); logout()">
-  <i class="fas fa-arrow-right-from-bracket"></i>
   <span>Logout</span>
 </button>
 
@@ -376,6 +375,30 @@
     }
 
   </article>
+  <!-- Wellness Tip -->
+<article class="pd-panel premium-panel pd-wellness-card">
+
+  <div class="pd-panel-header">
+    <div>
+      <span class="pd-panel-eyebrow">Wellness Tip</span>
+      <h3>Daily Health Advice</h3>
+    </div>
+  </div>
+
+  <div class="pd-wellness-content">
+
+    <div class="pd-wellness-icon">
+      {{ currentTip.icon }}
+    </div>
+
+    <div class="pd-wellness-text">
+      <h4>{{ currentTip.title }}</h4>
+      <p>{{ currentTip.text }}</p>
+    </div>
+
+  </div>
+
+</article>
 
 </div>
 
