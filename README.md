@@ -8,7 +8,7 @@ The application supports doctor discovery, appointment booking and management, p
 
 - [Project Overview](#project-overview)
 - [Key Features](#key-features)
-- [System Architecture](#system-architecture)
+- [Flow Diagrams](#flow-diagrams)
 - [Technology Stack](#technology-stack)
 - [Business Rules](#business-rules)
 - [Event-Driven Booking Flow](#event-driven-booking-flow)
@@ -79,41 +79,123 @@ All portals communicate with a central ASP.NET Core Web API. Authentication is b
 - Hosted background processing with `BackgroundService`
 - Unit and integration tests using xUnit and Moq
 
-## System Architecture
+## Flow Diagrams
 
-```text
-+----------------------+       +----------------------+
-| Angular Patient App  |       | Angular Doctor App   |
-+----------+-----------+       +-----------+----------+
-           |                               |
-           +---------------+---------------+
-                           |
-                           v
-                 +-------------------+
-                 | ASP.NET Core API  |
-                 | Controllers       |
-                 | Services          |
-                 | Repositories      |
-                 +----+----+----+----+
-                      |    |    |
-          +-----------+    |    +----------------+
-          |                |                     |
-          v                v                     v
-   +-------------+   +-------------+      +--------------+
-   |  Database   |   |    Redis    |      |   RabbitMQ   |
-   | EF Core     |   | Availability|      | MassTransit  |
-   +-------------+   | Cache       |      +--------------+
-                     +-------------+
+### 1. High-level system architecture
 
-                 +-------------------+
-                 | Serilog           |
-                 | Elasticsearch     |
-                 | Kibana            |
-                 +-------------------+
+```mermaid
+flowchart LR
+    U[Patient or Doctor] --> A[Angular Application<br/>/angular/]
+    AD[Administrator] --> B[Blazor WebAssembly Admin Portal<br/>/blazor/]
+    A --> API[ASP.NET Core Web API<br/>/api/]
+    B --> API
+    API --> ID[ASP.NET Core Identity and JWT]
+    API --> DB[(SQL Server)]
+    API --> CACHE[IDistributedCache<br/>In-memory implementation]
+    API --> MT[MassTransit]
+    MT --> RMQ[(RabbitMQ)]
+    RMQ --> C[AppointmentBookedConsumer]
+    API --> OUTBOX[(Outbox Messages)]
+    OUTBOX --> OP[Outbox Publisher Background Service]
+    OP --> MT
+```
 
-                 +-------------------+
-                 | Blazor Admin App  |
-                 +-------------------+
+### 2. Authentication and role-routing flow
+
+```mermaid
+flowchart TD
+    S[User opens HealthAxis] --> R[/ redirects to /angular/]
+    R --> L[Angular login]
+    L --> AUTH[API authentication endpoint]
+    AUTH --> IDENT[ASP.NET Core Identity validates credentials]
+    IDENT --> JWT[API issues JWT with role claims]
+    JWT --> ROLE{Role}
+    ROLE -->|Admin| ADMIN[Blazor admin portal<br/>/blazor/]
+    ROLE -->|Doctor| DOCTOR[Angular doctor experience]
+    ROLE -->|Patient| PATIENT[Angular patient experience]
+    ADMIN --> API[Authorized API calls]
+    DOCTOR --> API
+    PATIENT --> API
+```
+
+### 3. Appointment workflow
+
+```mermaid
+flowchart TD
+    P[Patient requests appointment] --> API[Appointment API]
+    API --> VALIDATE[Validate patient, doctor, date, slot, and rules]
+    VALIDATE --> DB[(Store appointment in SQL Server)]
+    DB --> OUTBOX[(Create outbox message)]
+    OUTBOX --> PUBLISHER[Outbox Publisher Background Service]
+    PUBLISHER --> RMQ[(RabbitMQ)]
+    RMQ --> CONSUMER[AppointmentBookedConsumer]
+    CONSUMER --> PROCESS[Run downstream appointment processing]
+    ADMIN[Administrator] --> MANAGE[Confirm, cancel, or delete through Blazor]
+    MANAGE --> API
+    API --> DB
+```
+
+### 4. Static hosting and request routing
+
+```mermaid
+flowchart TD
+    CLIENT[Browser request] --> APP[ASP.NET Core application]
+    APP --> ROOT{Path}
+    ROOT -->|/| REDIRECT[Redirect to /angular/]
+    ROOT -->|/api/...| CONTROLLER[API controller]
+    ROOT -->|/angular asset| ANGULARFILE[Serve wwwroot/angular file]
+    ROOT -->|/angular route without extension| ANGULARSPA[Serve angular/index.html]
+    ROOT -->|/blazor asset| BLAZORFILE[Serve wwwroot/blazor file]
+    ROOT -->|/blazor route without extension| BLAZORSPA[Serve blazor/index.html]
+    ROOT -->|Other| NOTFOUND[404 Not Found]
+```
+
+### 5. Local build and packaging flow
+
+```mermaid
+flowchart TD
+    SRC[Source checkout] --> CLEAN[Clean generated outputs]
+    CLEAN --> NPM[npm ci]
+    NPM --> ANGULAR[Angular production build<br/>Base path /angular/]
+    CLEAN --> BLAZOR[Publish Blazor WebAssembly<br/>Base path /blazor/]
+    ANGULAR --> COPYA[Copy to API wwwroot/angular]
+    BLAZOR --> COPYB[Copy to API wwwroot/blazor]
+    COPYA --> PUBLISH[dotnet publish API]
+    COPYB --> PUBLISH
+    PUBLISH --> VERIFY[Verify API and frontend artifacts]
+    VERIFY --> PROCFILE[Create Procfile]
+    PROCFILE --> ZIP[Create Linux-compatible ZIP using jar]
+```
+
+### 6. Jenkins to Elastic Beanstalk deployment flow
+
+```mermaid
+flowchart TD
+    PUSH[GitHub commit] --> POLL[Jenkins Poll SCM]
+    POLL --> CHECKOUT[Branch-specific shallow checkout]
+    CHECKOUT --> BUILD[Build Angular, Blazor, and API]
+    BUILD --> PACKAGE[Create deploy-package.zip]
+    PACKAGE --> S3[Upload versioned bundle to Amazon S3]
+    S3 --> VERSION[Create Elastic Beanstalk application version]
+    VERSION --> UPDATE[Update HealthAxis-app-dev]
+    UPDATE --> WAIT[Poll environment status and version]
+    WAIT --> READY{Ready and expected version?}
+    READY -->|Yes| SUCCESS[Pipeline succeeds and archives artifact]
+    READY -->|No or Red health| FAIL[Pipeline fails and directs operator to EB Events and logs]
+```
+
+### 7. Backend layering
+
+```mermaid
+flowchart LR
+    CLIENTS[Angular and Blazor clients] --> CTRL[API Controllers]
+    CTRL --> SVC[Application Services]
+    SVC --> REPO[Repositories]
+    REPO --> EF[Entity Framework Core]
+    EF --> DB[(SQL Server)]
+    SVC --> CACHE[Cache Service]
+    SVC --> BUS[MassTransit Bus]
+    CTRL --> MW[Authentication, Authorization, and Exception Middleware]
 ```
 
 The backend follows a layered design:
