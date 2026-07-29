@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ProjectInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonarsource.com/msbuild/integration/2015/1">
-  <ProjectName>HealthAxisApplicn</ProjectName>
+  <ProjectName>HealthAxisAdminPortal</ProjectName>
   <ProjectLanguage>C#</ProjectLanguage>
   <ProjectType>Product</ProjectType>
-  <ProjectGuid>4f3f1264-c090-480f-9a42-e5b611b935d6</ProjectGuid>
-  <FullPath>C:\Users\310033\source\repos\HealthAxis\HealthAxisApplicn\HealthAxisApplicn.csproj</FullPath>
+  <ProjectGuid>17941892-e582-424d-b3dd-4495d8586b26</ProjectGuid>
+  <FullPath>C:\Users\310033\source\repos\HealthAxis\HealthAxisAdminPortal\HealthAxisAdminPortal.csproj</FullPath>
   <IsExcluded>false</IsExcluded>
   <AnalysisResultFiles>
     <AnalysisResultFile Id="FilesToAnalyze" Location="C:\Users\310033\source\repos\HealthAxis\.sonarqube\conf\1\FilesToAnalyze.txt" />

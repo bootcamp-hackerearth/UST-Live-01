@@ -667,5 +667,309 @@ public class HealthRecordServiceTests
         result.Should().BeEmpty();
     }
 
+    [Fact]
+    public async Task UpdateAsync_Should_Throw_When_Appointment_Is_Null()
+    {
+        var record = new HealthRecord
+        {
+            AppointmentId = 1
+        };
+
+        _repoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(record);
+
+        _appointmentRepoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync((Appointment?)null);
+
+        await Assert.ThrowsAsync<Exception>(
+            () => _service.UpdateAsync(
+                1,
+                new UpdateHealthRecordDto()));
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_Not_Call_Update_When_Appointment_Not_Completed()
+    {
+        var record = new HealthRecord
+        {
+            AppointmentId = 1
+        };
+
+        _repoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(record);
+
+        _appointmentRepoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(new Appointment
+            {
+                Status = "Scheduled"
+            });
+
+        await Assert.ThrowsAsync<Exception>(
+            () => _service.UpdateAsync(
+                1,
+                new UpdateHealthRecordDto()));
+
+        _repoMock.Verify(
+            x => x.UpdateAsync(
+                It.IsAny<int>(),
+                It.IsAny<HealthRecord>(),
+                default),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_Not_Call_Update_When_Diagnosis_Empty()
+    {
+        var record = new HealthRecord
+        {
+            AppointmentId = 1
+        };
+
+        _repoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(record);
+
+        _appointmentRepoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(new Appointment
+            {
+                Status = "Completed"
+            });
+
+        await Assert.ThrowsAsync<Exception>(
+            () => _service.UpdateAsync(
+                1,
+                new UpdateHealthRecordDto
+                {
+                    Diagnosis = "",
+                    Prescription = "Medicine"
+                }));
+
+        _repoMock.Verify(
+            x => x.UpdateAsync(
+                It.IsAny<int>(),
+                It.IsAny<HealthRecord>(),
+                default),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_Not_Call_Update_When_Prescription_Empty()
+    {
+        var record = new HealthRecord
+        {
+            AppointmentId = 1
+        };
+
+        _repoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(record);
+
+        _appointmentRepoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(new Appointment
+            {
+                Status = "Completed"
+            });
+
+        await Assert.ThrowsAsync<Exception>(
+            () => _service.UpdateAsync(
+                1,
+                new UpdateHealthRecordDto
+                {
+                    Diagnosis = "Flu",
+                    Prescription = ""
+                }));
+
+        _repoMock.Verify(
+            x => x.UpdateAsync(
+                It.IsAny<int>(),
+                It.IsAny<HealthRecord>(),
+                default),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task CreateFromAppointment_Should_Copy_VisitDate()
+    {
+        var visitDate = DateTime.Today;
+
+        var appointment = new Appointment
+        {
+            AppointmentId = 1,
+            ScheduledDate = visitDate
+        };
+
+        HealthRecord? captured = null;
+
+        _repoMock.Setup(x =>
+            x.ExistsForAppointmentAsync(1, default))
+            .ReturnsAsync(false);
+
+        _repoMock.Setup(x =>
+            x.CreateAsync(
+                It.IsAny<HealthRecord>(),
+                default))
+            .Callback<HealthRecord, CancellationToken>(
+                (r, _) => captured = r)
+            .ReturnsAsync(new HealthRecord());
+
+        await _service.CreateFromAppointment(appointment);
+
+        captured!.VisitDate.Should().Be(visitDate);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_Call_Mapper()
+    {
+        var record = new HealthRecord
+        {
+            AppointmentId = 1
+        };
+
+        _repoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(record);
+
+        _appointmentRepoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(new Appointment
+            {
+                Status = "Completed"
+            });
+
+        _repoMock.Setup(x =>
+            x.UpdateAsync(1, record, default))
+            .ReturnsAsync(record);
+
+        _mapperMock.Setup(x =>
+            x.Map<HealthRecordDto>(record))
+            .Returns(new HealthRecordDto());
+
+        await _service.UpdateAsync(
+            1,
+            new UpdateHealthRecordDto
+            {
+                Diagnosis = "Flu",
+                Prescription = "Medicine"
+            });
+
+        _mapperMock.Verify(
+            x => x.Map<HealthRecordDto>(record),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetRecordsByDoctorNameAsync_Should_Return_List()
+    {
+        var records = new List<HealthRecord> { new() };
+        var dtos = new List<HealthRecordDto> { new() };
+
+        _repoMock.Setup(x =>
+            x.GetRecordsByDoctorNameAsync("John", default))
+            .ReturnsAsync(records);
+
+        _mapperMock.Setup(x =>
+            x.Map<List<HealthRecordDto>>(records))
+            .Returns(dtos);
+
+        var result =
+            await _service.GetRecordsByDoctorNameAsync("John");
+
+        result.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task GetRecordsByDoctorNameAsync_Should_Return_Empty_List()
+    {
+        _repoMock.Setup(x =>
+            x.GetRecordsByDoctorNameAsync("John", default))
+            .ReturnsAsync(new List<HealthRecord>());
+
+        _mapperMock.Setup(x =>
+            x.Map<List<HealthRecordDto>>(
+                It.IsAny<List<HealthRecord>>()))
+            .Returns(new List<HealthRecordDto>());
+
+        var result =
+            await _service.GetRecordsByDoctorNameAsync("John");
+
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetRecordsByPatientNameAsync_Should_Return_List()
+    {
+        var records = new List<HealthRecord> { new() };
+        var dtos = new List<HealthRecordDto> { new() };
+
+        _repoMock.Setup(x =>
+            x.GetRecordsByPatientNameAsync("Patient", default))
+            .ReturnsAsync(records);
+
+        _mapperMock.Setup(x =>
+            x.Map<List<HealthRecordDto>>(records))
+            .Returns(dtos);
+
+        var result =
+            await _service.GetRecordsByPatientNameAsync("Patient");
+
+        result.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task GetRecordsByPatientNameAsync_Should_Return_Empty_List()
+    {
+        _repoMock.Setup(x =>
+            x.GetRecordsByPatientNameAsync("Patient", default))
+            .ReturnsAsync(new List<HealthRecord>());
+
+        _mapperMock.Setup(x =>
+            x.Map<List<HealthRecordDto>>(
+                It.IsAny<List<HealthRecord>>()))
+            .Returns(new List<HealthRecordDto>());
+
+        var result =
+            await _service.GetRecordsByPatientNameAsync("Patient");
+
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetRecordsByDoctorNameAsync_Should_Call_Repository()
+    {
+        _repoMock.Setup(x =>
+            x.GetRecordsByDoctorNameAsync("John", default))
+            .ReturnsAsync(new List<HealthRecord>());
+
+        _mapperMock.Setup(x =>
+            x.Map<List<HealthRecordDto>>(
+                It.IsAny<List<HealthRecord>>()))
+            .Returns(new List<HealthRecordDto>());
+
+        await _service.GetRecordsByDoctorNameAsync("John");
+
+        _repoMock.Verify(
+            x => x.GetRecordsByDoctorNameAsync("John", default),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetRecordsByPatientNameAsync_Should_Call_Repository()
+    {
+        _repoMock.Setup(x =>
+            x.GetRecordsByPatientNameAsync("Patient", default))
+            .ReturnsAsync(new List<HealthRecord>());
+
+        _mapperMock.Setup(x =>
+            x.Map<List<HealthRecordDto>>(
+                It.IsAny<List<HealthRecord>>()))
+            .Returns(new List<HealthRecordDto>());
+
+        await _service.GetRecordsByPatientNameAsync("Patient");
+
+        _repoMock.Verify(
+            x => x.GetRecordsByPatientNameAsync(
+                "Patient",
+                default),
+            Times.Once);
+    }
+
+
+
 
 }

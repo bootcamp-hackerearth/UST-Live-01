@@ -15,22 +15,11 @@ public class DoctorServiceTests
     private readonly Mock<IDoctorRepository> _repoMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly DoctorService _service;
-    private readonly Mock<IConnectionMultiplexer> _redisMock;
-    private readonly Mock<IDatabase> _dbMock;
 
     public DoctorServiceTests()
     {
         _repoMock = new Mock<IDoctorRepository>();
         _mapperMock = new Mock<IMapper>();
-
-        _dbMock = new Mock<IDatabase>();
-
-        _redisMock
-            .Setup(r => r.GetDatabase(
-                It.IsAny<int>(),
-                It.IsAny<object>()))
-            .Returns(_dbMock.Object);
-
         _service = new DoctorService(
             _repoMock.Object,
             _mapperMock.Object);
@@ -392,181 +381,6 @@ public class DoctorServiceTests
     }
 
     [Fact]
-    public async Task CreateAsync_Should_Invalidate_Cache()
-    {
-        var doctor = new Doctor();
-
-        _mapperMock.Setup(m => m.Map<Doctor>(It.IsAny<CreateDoctorDto>()))
-            .Returns(doctor);
-
-        _repoMock.Setup(r => r.CreateAsync(doctor, default))
-            .ReturnsAsync(doctor);
-
-        _mapperMock.Setup(m => m.Map<DoctorDto>(doctor))
-            .Returns(new DoctorDto());
-
-        await _service.CreateAsync(new CreateDoctorDto());
-
-        _dbMock.Verify(
-            d => d.KeyDeleteAsync(
-                "doctors:active",
-                CommandFlags.None),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task GetActiveDoctorsAsync_Should_Return_Cached_Doctors_When_Cache_Hit()
-    {
-        var cachedDoctors = new List<DoctorDto>
-    {
-        new() { DoctorId = 1, DoctorName = "Cached Doctor" }
-    };
-
-        var json = System.Text.Json.JsonSerializer.Serialize(cachedDoctors);
-
-        _dbMock.Setup(x =>
-            x.StringGetAsync(
-                "doctors:active",
-                CommandFlags.None))
-            .ReturnsAsync(json);
-
-        var result = await _service.GetActiveDoctorsAsync();
-
-        result.Should().HaveCount(1);
-
-        _repoMock.Verify(
-            x => x.GetActiveDoctorsAsync(default),
-            Times.Never);
-    }
-
-    [Fact]
-    public async Task GetActiveDoctorsAsync_Should_Call_Repository_When_Cache_Miss()
-    {
-        var doctors = new List<Doctor>
-    {
-        new() { DoctorId = 1, IsActive = true }
-    };
-
-        var dtos = new List<DoctorDto>
-    {
-        new() { DoctorId = 1 }
-    };
-
-        _dbMock.Setup(x =>
-            x.StringGetAsync(
-                "doctors:active",
-                CommandFlags.None))
-            .ReturnsAsync(RedisValue.Null);
-
-        _repoMock.Setup(x =>
-            x.GetActiveDoctorsAsync(default))
-            .ReturnsAsync(doctors);
-
-        _mapperMock.Setup(x =>
-            x.Map<List<DoctorDto>>(doctors))
-            .Returns(dtos);
-
-        await _service.GetActiveDoctorsAsync();
-
-        _repoMock.Verify(
-            x => x.GetActiveDoctorsAsync(default),
-            Times.Once);
-    }
-
-
-    [Fact]
-    public async Task DeactivateDoctorAsync_Should_Invalidate_Cache()
-    {
-        var doctor = new Doctor
-        {
-            DoctorId = 1,
-            IsActive = true
-        };
-
-        _repoMock.Setup(x => x.GetByIdAsync(1, default))
-            .ReturnsAsync(doctor);
-
-        _repoMock.Setup(x =>
-            x.UpdateAsync(1, doctor, default))
-            .ReturnsAsync(doctor);
-
-        _mapperMock.Setup(x =>
-            x.Map<DoctorDto>(doctor))
-            .Returns(new DoctorDto());
-
-        await _service.DeactivateDoctorAsync(1);
-
-        _dbMock.Verify(
-            x => x.KeyDeleteAsync(
-                "doctors:active",
-                CommandFlags.None),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task UpdateAsync_Should_Invalidate_Cache()
-    {
-        var doctor = new Doctor
-        {
-            DoctorId = 1
-        };
-
-        var dto = new UpdateDoctorDto
-        {
-            DoctorName = "New",
-            Email = "new@test.com",
-            Specialisation = "Cardiology",
-            YearsOfExperience = 10,
-            ConsultationFee = 1000,
-            IsActive = true
-        };
-
-        _repoMock.Setup(x => x.GetByIdAsync(1, default))
-            .ReturnsAsync(doctor);
-
-        _repoMock.Setup(x =>
-            x.UpdateAsync(1, doctor, default))
-            .ReturnsAsync(doctor);
-
-        _mapperMock.Setup(x =>
-            x.Map<DoctorDto?>(doctor))
-            .Returns(new DoctorDto());
-
-        await _service.UpdateAsync(1, dto);
-
-        _dbMock.Verify(
-            x => x.KeyDeleteAsync(
-                "doctors:active",
-                CommandFlags.None),
-            Times.Once);
-    }
-
-    [Fact]
-    public async Task ToggleActiveAsync_Should_Invalidate_Cache()
-    {
-        var doctor = new Doctor
-        {
-            DoctorId = 1,
-            IsActive = true
-        };
-
-        _repoMock.Setup(x => x.GetByIdAsync(1, default))
-            .ReturnsAsync(doctor);
-
-        _repoMock.Setup(x =>
-            x.UpdateAsync(1, doctor, default))
-            .ReturnsAsync(doctor);
-
-        await _service.ToggleActiveAsync(1);
-
-        _dbMock.Verify(
-            x => x.KeyDeleteAsync(
-                "doctors:active",
-                CommandFlags.None),
-            Times.Once);
-    }
-
-    [Fact]
     public async Task ToggleActiveAsync_Should_Call_Update_Once()
     {
         var doctor = new Doctor
@@ -649,4 +463,449 @@ public class DoctorServiceTests
 
         result.Should().BeEmpty();
     }
+
+    [Fact]
+    public async Task CreateAsync_Should_Call_Repository_Once()
+    {
+        var dto = new CreateDoctorDto();
+        var doctor = new Doctor();
+
+        _mapperMock.Setup(x => x.Map<Doctor>(dto))
+            .Returns(doctor);
+
+        _repoMock.Setup(x => x.CreateAsync(doctor, default))
+            .ReturnsAsync(doctor);
+
+        _mapperMock.Setup(x => x.Map<DoctorDto>(doctor))
+            .Returns(new DoctorDto());
+
+        await _service.CreateAsync(dto);
+
+        _repoMock.Verify(
+            x => x.CreateAsync(doctor, default),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task ToggleActiveAsync_Should_Call_GetById_Once()
+    {
+        var doctor = new Doctor
+        {
+            DoctorId = 1,
+            IsActive = true
+        };
+
+        _repoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(doctor);
+
+        _repoMock.Setup(x => x.UpdateAsync(1, doctor, default))
+            .ReturnsAsync(doctor);
+
+        await _service.ToggleActiveAsync(1);
+
+        _repoMock.Verify(
+            x => x.GetByIdAsync(1, default),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task DeactivateDoctorAsync_Should_Call_Update_Once()
+    {
+        var doctor = new Doctor
+        {
+            DoctorId = 1,
+            IsActive = true
+        };
+
+        _repoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(doctor);
+
+        _repoMock.Setup(x => x.UpdateAsync(1, doctor, default))
+            .ReturnsAsync(doctor);
+
+        _mapperMock.Setup(x => x.Map<DoctorDto>(doctor))
+            .Returns(new DoctorDto());
+
+        await _service.DeactivateDoctorAsync(1);
+
+        _repoMock.Verify(
+            x => x.UpdateAsync(1, doctor, default),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetActiveDoctorsAsync_Should_Return_Empty_List()
+    {
+        _repoMock.Setup(x =>
+            x.GetActiveDoctorsAsync(default))
+            .ReturnsAsync(new List<Doctor>());
+
+        _mapperMock.Setup(x =>
+            x.Map<List<DoctorDto>>(It.IsAny<List<Doctor>>()))
+            .Returns(new List<DoctorDto>());
+
+        var result = await _service.GetActiveDoctorsAsync();
+
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetAllAsync_Should_Return_Empty_List()
+    {
+        _repoMock.Setup(x =>
+            x.GetAllAsync(default))
+            .ReturnsAsync(new List<Doctor>());
+
+        _mapperMock.Setup(x =>
+            x.Map<List<DoctorDto>>(It.IsAny<List<Doctor>>()))
+            .Returns(new List<DoctorDto>());
+
+        var result = await _service.GetAllAsync();
+
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task FilterAsync_Should_Call_Repository()
+    {
+        _repoMock.Setup(x =>
+            x.FilterAsync("John", "Cardiology"))
+            .ReturnsAsync(new List<Doctor>());
+
+        _mapperMock.Setup(x =>
+            x.Map<List<DoctorDto>>(It.IsAny<List<Doctor>>()))
+            .Returns(new List<DoctorDto>());
+
+        await _service.FilterAsync("John", "Cardiology");
+
+        _repoMock.Verify(
+            x => x.FilterAsync("John", "Cardiology"),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task SearchAsync_Should_Call_Repository()
+    {
+        _repoMock.Setup(x =>
+            x.SearchAsync("Cardio", default))
+            .ReturnsAsync(new List<Doctor>());
+
+        _mapperMock.Setup(x =>
+            x.Map<List<DoctorDto>>(It.IsAny<List<Doctor>>()))
+            .Returns(new List<DoctorDto>());
+
+        await _service.SearchAsync("Cardio");
+
+        _repoMock.Verify(
+            x => x.SearchAsync("Cardio", default),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_Set_IsActive_Field()
+    {
+        var doctor = new Doctor
+        {
+            DoctorId = 1,
+            IsActive = false
+        };
+
+        var dto = new UpdateDoctorDto
+        {
+            DoctorName = "Doctor",
+            Email = "doctor@test.com",
+            Specialisation = "Cardiology",
+            YearsOfExperience = 10,
+            ConsultationFee = 500,
+            IsActive = true
+        };
+
+        _repoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(doctor);
+
+        _repoMock.Setup(x => x.UpdateAsync(1, doctor, default))
+            .ReturnsAsync(doctor);
+
+        _mapperMock.Setup(x => x.Map<DoctorDto?>(doctor))
+            .Returns(new DoctorDto());
+
+        await _service.UpdateAsync(1, dto);
+
+        doctor.IsActive.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task CreateAsync_Should_Call_Mapper_For_Doctor()
+    {
+        var dto = new CreateDoctorDto();
+        var doctor = new Doctor();
+
+        _mapperMock.Setup(x => x.Map<Doctor>(dto))
+            .Returns(doctor);
+
+        _repoMock.Setup(x => x.CreateAsync(doctor, default))
+            .ReturnsAsync(doctor);
+
+        _mapperMock.Setup(x => x.Map<DoctorDto>(doctor))
+            .Returns(new DoctorDto());
+
+        await _service.CreateAsync(dto);
+
+        _mapperMock.Verify(
+            x => x.Map<Doctor>(dto),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateAsync_Should_Call_Mapper_For_Return_Dto()
+    {
+        var dto = new CreateDoctorDto();
+        var doctor = new Doctor();
+
+        _mapperMock.Setup(x => x.Map<Doctor>(dto))
+            .Returns(doctor);
+
+        _repoMock.Setup(x => x.CreateAsync(doctor, default))
+            .ReturnsAsync(doctor);
+
+        _mapperMock.Setup(x => x.Map<DoctorDto>(doctor))
+            .Returns(new DoctorDto());
+
+        await _service.CreateAsync(dto);
+
+        _mapperMock.Verify(
+            x => x.Map<DoctorDto>(doctor),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_Should_Call_Repository_Once()
+    {
+        _repoMock.Setup(x =>
+            x.GetAllAsync(default))
+            .ReturnsAsync(new List<Doctor>());
+
+        _mapperMock.Setup(x =>
+            x.Map<List<DoctorDto>>(It.IsAny<List<Doctor>>()))
+            .Returns(new List<DoctorDto>());
+
+        await _service.GetAllAsync();
+
+        _repoMock.Verify(
+            x => x.GetAllAsync(default),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_Should_Call_Repository()
+    {
+        _repoMock.Setup(x =>
+            x.GetByIdAsync(1, default))
+            .ReturnsAsync(new Doctor());
+
+        _mapperMock.Setup(x =>
+            x.Map<DoctorDto?>(It.IsAny<Doctor>()))
+            .Returns(new DoctorDto());
+
+        await _service.GetByIdAsync(1);
+
+        _repoMock.Verify(
+            x => x.GetByIdAsync(1, default),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetActiveDoctorsAsync_Should_Call_Repository()
+    {
+        _repoMock.Setup(x =>
+            x.GetActiveDoctorsAsync(default))
+            .ReturnsAsync(new List<Doctor>());
+
+        _mapperMock.Setup(x =>
+            x.Map<List<DoctorDto>>(It.IsAny<List<Doctor>>()))
+            .Returns(new List<DoctorDto>());
+
+        await _service.GetActiveDoctorsAsync();
+
+        _repoMock.Verify(
+            x => x.GetActiveDoctorsAsync(default),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task SearchByNameAsync_Should_Call_Repository()
+    {
+        _repoMock.Setup(x =>
+            x.SearchByNameAsync("John", default))
+            .ReturnsAsync(new List<Doctor>());
+
+        _mapperMock.Setup(x =>
+            x.Map<List<DoctorDto>>(It.IsAny<List<Doctor>>()))
+            .Returns(new List<DoctorDto>());
+
+        await _service.SearchByNameAsync("John");
+
+        _repoMock.Verify(
+            x => x.SearchByNameAsync("John", default),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task SearchBySpecialisationAsync_Should_Call_Repository()
+    {
+        _repoMock.Setup(x =>
+            x.SearchBySpecialisationAsync(
+                "Cardiology",
+                default))
+            .ReturnsAsync(new List<Doctor>());
+
+        _mapperMock.Setup(x =>
+            x.Map<List<DoctorDto>>(It.IsAny<List<Doctor>>()))
+            .Returns(new List<DoctorDto>());
+
+        await _service.SearchBySpecialisationAsync(
+            "Cardiology");
+
+        _repoMock.Verify(
+            x => x.SearchBySpecialisationAsync(
+                "Cardiology",
+                default),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetByUserIdAsync_Should_Call_Repository()
+    {
+        _repoMock.Setup(x =>
+            x.GetByUserIdAsync("user1"))
+            .ReturnsAsync(new Doctor());
+
+        await _service.GetByUserIdAsync("user1");
+
+        _repoMock.Verify(
+            x => x.GetByUserIdAsync("user1"),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_Call_Update_Repository()
+    {
+        var doctor = new Doctor { DoctorId = 1 };
+
+        var dto = new UpdateDoctorDto
+        {
+            DoctorName = "Updated",
+            Specialisation = "Cardiology",
+            Email = "doctor@test.com",
+            YearsOfExperience = 10,
+            ConsultationFee = 1000,
+            IsActive = true
+        };
+
+        _repoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(doctor);
+
+        _repoMock.Setup(x => x.UpdateAsync(1, doctor, default))
+            .ReturnsAsync(doctor);
+
+        _mapperMock.Setup(x => x.Map<DoctorDto?>(doctor))
+            .Returns(new DoctorDto());
+
+        await _service.UpdateAsync(1, dto);
+
+        _repoMock.Verify(
+            x => x.UpdateAsync(1, doctor, default),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_Return_Mapped_Dto()
+    {
+        var doctor = new Doctor { DoctorId = 1 };
+
+        var dto = new UpdateDoctorDto
+        {
+            DoctorName = "Updated"
+        };
+
+        var returnedDto = new DoctorDto
+        {
+            DoctorName = "Updated"
+        };
+
+        _repoMock.Setup(x => x.GetByIdAsync(1, default))
+            .ReturnsAsync(doctor);
+
+        _repoMock.Setup(x => x.UpdateAsync(1, doctor, default))
+            .ReturnsAsync(doctor);
+
+        _mapperMock.Setup(x => x.Map<DoctorDto?>(doctor))
+            .Returns(returnedDto);
+
+        var result = await _service.UpdateAsync(1, dto);
+
+        result!.DoctorName.Should().Be("Updated");
+    }
+
+    [Fact]
+    public async Task FilterAsync_Should_Call_Mapper()
+    {
+        var doctors = new List<Doctor>();
+
+        _repoMock.Setup(x =>
+            x.FilterAsync("John", "Cardiology"))
+            .ReturnsAsync(doctors);
+
+        _mapperMock.Setup(x =>
+            x.Map<List<DoctorDto>>(doctors))
+            .Returns(new List<DoctorDto>());
+
+        await _service.FilterAsync("John", "Cardiology");
+
+        _mapperMock.Verify(
+            x => x.Map<List<DoctorDto>>(doctors),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task SearchAsync_Should_Call_Mapper()
+    {
+        var doctors = new List<Doctor>();
+
+        _repoMock.Setup(x =>
+            x.SearchAsync("test", default))
+            .ReturnsAsync(doctors);
+
+        _mapperMock.Setup(x =>
+            x.Map<List<DoctorDto>>(doctors))
+            .Returns(new List<DoctorDto>());
+
+        await _service.SearchAsync("test");
+
+        _mapperMock.Verify(
+            x => x.Map<List<DoctorDto>>(doctors),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GetActiveDoctorsAsync_Should_Call_Mapper()
+    {
+        var doctors = new List<Doctor>();
+
+        _repoMock.Setup(x =>
+            x.GetActiveDoctorsAsync(default))
+            .ReturnsAsync(doctors);
+
+        _mapperMock.Setup(x =>
+            x.Map<List<DoctorDto>>(doctors))
+            .Returns(new List<DoctorDto>());
+
+        await _service.GetActiveDoctorsAsync();
+
+        _mapperMock.Verify(
+            x => x.Map<List<DoctorDto>>(doctors),
+            Times.Once);
+    }
+
+
 }

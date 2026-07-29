@@ -1,1 +1,1 @@
-iRRC:\Users\310033\source\repos\HealthAxis\HealthAxisApplicn\HealthAxisApplicn.csproj¢net10.0òCSharp14
+qRZC:\Users\310033\source\repos\HealthAxis\HealthAxisAdminPortal\HealthAxisAdminPortal.csproj¢net10.0òCSharp14
