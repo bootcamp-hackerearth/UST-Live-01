@@ -3268,38 +3268,44 @@
   top: 12px;
   left: 0;
 
-  width: 330px;
+  width: 280px;                 /* reduced from 330px */
   height: calc(100vh - 24px);
 
-  padding: 110px 24px 24px;
+  padding: 90px 20px 24px;
 
   background: linear-gradient(
     180deg,
-    #7d644d 0%,
+    #80644b 0%,
     #6d5642 100%
   );
 
-  border-radius: 0 34px 34px 0;
+  /* gold edge */
+border-top: 1px solid rgba(226, 196, 138, 0.7);
+border-right: 2px solid rgba(226, 196, 138, 0.8);
+border-bottom: 1px solid rgba(226, 196, 138, 0.7);
+border-left: 1px solid rgba(226, 196, 138, 0.4);
 
-  border: 1px solid rgba(255,255,255,.15);
-
-  backdrop-filter: blur(18px);
+  /* rounded top-right + bottom-right */
+  border-radius: 0 38px 38px 38px;
 
   box-shadow:
-    0 24px 60px rgba(0,0,0,.28);
+  0 20px 60px rgba(0,0,0,.28),
+  0 0 0 1px rgba(226,196,138,.15),
+  inset 1px 0 0 rgba(255,255,255,.08);
+
+  backdrop-filter: blur(18px);
 
   overflow-y: auto;
 
   z-index: 9500;
 
   transform: translateX(-105%);
-  transition: transform .30s ease;
+  transition: transform .3s ease;
 }
 
 .pd-sidebar.open {
   transform: translateX(0);
 }
-
 /* ==================================
    MENU
 ================================== */
@@ -3318,10 +3324,10 @@
   position: relative;
 
   width: 100%;
-  height: 68px;
+  height: 58px;
 
   border: none;
-  border-radius: 24px;
+  border-radius: 20px;
 
   background: transparent;
 
@@ -3335,7 +3341,7 @@
   cursor: pointer;
 
   font-family: inherit;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
 
   transition: all .25s ease;
@@ -3360,15 +3366,6 @@
    ACTIVE MENU
 ================================== */
 
-.pd-menu button.active {
-  background: #caa979;
-
-  color: #ffffff;
-
-  box-shadow:
-    0 0 35px rgba(202,169,121,.35);
-}
-
 .pd-menu button.active::before {
   content: "";
 
@@ -3384,7 +3381,24 @@
 
   background: #fff4d8;
 }
+.pd-menu button.active {
+  background: linear-gradient(
+    135deg,
+    #d1b17f,
+    #c5a16d
+  );
 
+  box-shadow:
+    0 0 30px rgba(209,177,127,.30);
+}
+.pd-floating-menu {
+  width: 60px;
+  height: 60px;
+
+  border-radius: 20px;
+
+  font-size: 30px;
+}
 /* ==================================
    SCROLLBAR
 ================================== */
@@ -3409,8 +3423,8 @@
 @media (max-width: 768px) {
 
   .pd-sidebar {
-    width: 320px;
-    border-radius: 0 28px 28px 0;
+    width: 280px;
+    border-radius: 0 28px 28px 20px;
   }
 
   .pd-floating-menu {
