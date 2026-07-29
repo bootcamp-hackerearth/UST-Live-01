@@ -37,7 +37,7 @@ export class PatientDashboardComponent implements OnInit {
     });
 
     this.http.get(
-      'https://localhost:7149/api/patients/dashboard',
+      '/api/patients/dashboard',
       { headers }
     ).subscribe({
       next: (res: any) => {

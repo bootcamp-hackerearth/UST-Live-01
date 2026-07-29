@@ -38,4 +38,9 @@
     <ProjectReference Include="..\HealthCare.Shared\HealthCare.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\angular\" />
+    <Folder Include="wwwroot\Blazor\" />
+  </ItemGroup>
+
 </Project>

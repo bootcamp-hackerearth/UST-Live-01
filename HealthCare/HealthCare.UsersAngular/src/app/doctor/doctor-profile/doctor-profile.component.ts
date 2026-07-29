@@ -31,7 +31,7 @@ export class DoctorProfileComponent implements OnInit {
     });
 
     this.http.get(
-      'https://localhost:7149/api/doctors/profile',
+      '/api/doctors/profile',
       { headers }
     ).subscribe({
       next: (res: any) => {

@@ -8,12 +8,14 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
+var hostUri = new Uri(builder.HostEnvironment.BaseAddress);
 
-var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+var apiBaseAddress = new Uri(
+    $"{hostUri.Scheme}://{hostUri.Authority}/");
 
-builder.Services.AddScoped(sp => new HttpClient
+builder.Services.AddScoped(_ => new HttpClient
 {
-    BaseAddress = new Uri(apiBaseUrl!)
+    BaseAddress = apiBaseAddress
 });
 
 builder.Services.AddScoped<DoctorAdminService>();
@@ -21,7 +23,5 @@ builder.Services.AddScoped<PatientAdminService>();
 builder.Services.AddScoped<AppointmentAdminService>();
 builder.Services.AddScoped<DashboardService>();
 builder.Services.AddScoped<JwtService>();
-
-
 
 await builder.Build().RunAsync();

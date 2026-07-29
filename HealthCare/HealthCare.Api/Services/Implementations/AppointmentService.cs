@@ -21,9 +21,8 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IMapper _mapper;
         private readonly IPublishEndpoint _publishEndpoint;
         private readonly ILogger<AppointmentService> _logger;
-        private readonly IDistributedCache _cache;
 
-        public AppointmentService(IAppointmentRepository repository, IDoctorService doctorService, HealthCareDbContext context, IMapper mapper, IPublishEndpoint publishEndpoint, ILogger<AppointmentService> logger, IDistributedCache cache)
+        public AppointmentService(IAppointmentRepository repository, IDoctorService doctorService, HealthCareDbContext context, IMapper mapper, IPublishEndpoint publishEndpoint, ILogger<AppointmentService> logger)
         {
             _repository = repository;
             _doctorService = doctorService;
@@ -31,7 +30,6 @@ namespace HealthCare.Api.Services.Implementations
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
             _logger = logger;
-            _cache = cache;
         }
 
         private const string AppointmentNotFoundMessage = "Appointment not found.";
@@ -104,10 +102,6 @@ namespace HealthCare.Api.Services.Implementations
             {
                 await _repository.AddAsync(appointment);
                 await _context.SaveChangesAsync();
-
-                await InvalidateDoctorAvailabilityCache(
-                    appointment.DoctorId,
-                    appointment.ScheduledDate);
 
                 if (_logger.IsEnabled(LogLevel.Information))
                 { 
@@ -195,9 +189,6 @@ namespace HealthCare.Api.Services.Implementations
             await _repository.UpdateAsync(appointment);
             await _context.SaveChangesAsync();
 
-            await InvalidateDoctorAvailabilityCache(
-                    appointment.DoctorId,
-                    appointment.ScheduledDate);
         }
 
 
@@ -372,31 +363,5 @@ namespace HealthCare.Api.Services.Implementations
             return result ?? new AppointmentSummaryDto();
         }
 
-        private async Task InvalidateDoctorAvailabilityCache(
-    int doctorId,
-    DateOnly date)
-        {
-
-            //fetch the doctor details from database
-            var doctor = await _context.Doctors
-                .FirstOrDefaultAsync(d => d.DoctorId == doctorId);
-
-            if (doctor is null)
-                return;
-
-            var cacheKey =
-                $"doctors:{doctor.Specialisation}:availability:{date}";
-
-
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation(
-                    "Removing cache key {Key}",
-                    cacheKey);
-            }
-
-
-            await _cache.RemoveAsync(cacheKey);
-        }
     }
 }

@@ -74,7 +74,7 @@ export class BookAppointmentComponent implements OnInit {
     });
 
     this.http.get<any>(
-      'https://localhost:7149/api/doctors/available',
+      '/api/doctors/available',
       {
         headers,
         params: {
@@ -118,7 +118,7 @@ export class BookAppointmentComponent implements OnInit {
     });
 
     this.http.get<string[]>(
-      'https://localhost:7149/api/appointments/slots',
+      '/api/appointments/slots',
       {
         headers,
         params: {
@@ -217,7 +217,7 @@ export class BookAppointmentComponent implements OnInit {
     };
 
     this.http.post(
-      'https://localhost:7149/api/appointments/book',
+      '/api/appointments/book',
       body,
       { headers }
     ).subscribe({

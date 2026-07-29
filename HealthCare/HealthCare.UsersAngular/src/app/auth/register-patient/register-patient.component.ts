@@ -119,7 +119,7 @@ export class PatientRegisterComponent {
 
     // Replace with your actual API URL
     this.http.post<any>(
-      'https://localhost:7149/api/auth/register/Patient',
+      '/api/auth/register/Patient',
       patient
     )
       .subscribe({

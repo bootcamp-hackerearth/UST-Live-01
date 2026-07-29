@@ -37,7 +37,7 @@ export class MedicalHistoryComponent implements OnInit {
     });
 
     this.http.get<any[]>(
-      'https://localhost:7149/api/records/my-records',
+      '/api/records/my-records',
       { headers }
     ).subscribe({
       next: (res) => {

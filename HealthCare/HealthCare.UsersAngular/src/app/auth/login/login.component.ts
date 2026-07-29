@@ -1,13 +1,16 @@
-import { Component, OnInit, ChangeDetectorRef} from '@angular/core';
+import {ChangeDetectorRef,Component,OnInit} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {FormBuilder,FormGroup,ReactiveFormsModule,Validators} from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule
+  ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -15,7 +18,7 @@ export class LoginComponent implements OnInit {
 
   loginForm!: FormGroup;
 
-  errors: any = {};
+  errors: { top?: string } = {};
 
   constructor(
     private readonly auth: AuthService,
@@ -24,15 +27,23 @@ export class LoginComponent implements OnInit {
     private readonly cdr: ChangeDetectorRef
   ) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      email: [
+        '',
+        [
+          Validators.required,
+          Validators.email
+        ]
+      ],
+      password: [
+        '',
+        Validators.required
+      ]
     });
   }
 
-  login() {
-
+  login(): void {
     this.errors.top = '';
 
     if (this.loginForm.invalid) {
@@ -40,11 +51,9 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.auth.login(this.loginForm.value).subscribe({
-
+    this.auth.login(this.loginForm.getRawValue()).subscribe({
       next: (res: any) => {
-
-        if (!res?.accessToken) {
+        if (!res?.accessToken || !res?.role) {
           this.errors.top = 'Invalid email or password';
           return;
         }
@@ -53,40 +62,44 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('role', res.role);
 
         if (res.role === 'Admin') {
-
           globalThis.location.href =
-            'https://localhost:7206/dashboard?token=' + res.accessToken;
+            `/blazor/dashboard?token=${encodeURIComponent(res.accessToken)}`;
 
-        } else if (res.role === 'Patient') {
-
-          this.router.navigate(['/patient-dashboard']);
-
-        } else if (res.role === 'Doctor') {
-
-          this.router.navigate(['/doctor-dashboard']);
-
-        } else {
-          this.errors.top = 'Invalid email or password';
+          return;
         }
+
+        if (res.role === 'Patient') {
+          this.router.navigate(['/patient-dashboard']);
+          return;
+        }
+
+        if (res.role === 'Doctor') {
+          this.router.navigate(['/doctor-dashboard']);
+          return;
+        }
+
+        this.errors.top = 'Invalid email or password';
       },
 
-      error: (err) => {
-
-        console.log("FULL ERROR:", err);
+      error: (err: any) => {
+        console.error('Login error:', err);
 
         if (err.status === 400 || err.status === 401) {
           this.errors.top = 'Invalid email or password';
-          this.cdr.detectChanges();
+        } else if (err.status === 0) {
+          this.errors.top =
+            'Unable to connect to the server. Please try again.';
         } else {
-          this.errors.top = 'Something went wrong. Try again.';
+          this.errors.top =
+            'Something went wrong. Try again.';
         }
-      }
 
+        this.cdr.detectChanges();
+      }
     });
   }
 
-  goPatientRegister() {
+  goPatientRegister(): void {
     this.router.navigate(['/register-patient']);
   }
-
 }

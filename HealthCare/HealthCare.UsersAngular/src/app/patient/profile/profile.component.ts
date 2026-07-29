@@ -34,7 +34,7 @@ export class ProfileComponent implements OnInit {
       Authorization: `Bearer ${token}`
     });
 
-    this.http.get('https://localhost:7149/api/patients/profile', { headers })
+    this.http.get('/api/patients/profile', { headers })
       .subscribe({
         next: (res: any) => {
 
@@ -80,7 +80,7 @@ export class ProfileComponent implements OnInit {
     });
 
     this.http.put(
-      'https://localhost:7149/api/patients/profile',
+      '/api/patients/profile',
       updated,
       { headers }
     ).subscribe({

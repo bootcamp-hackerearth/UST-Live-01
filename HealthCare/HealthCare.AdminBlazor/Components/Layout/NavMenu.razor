@@ -10,22 +10,22 @@
 
     <nav class="nav-menu">
 
-        <NavLink class="nav-item" href="/dashboard" Match="NavLinkMatch.All">
+        <NavLink class="nav-item" href="/blazor/dashboard" Match="NavLinkMatch.All">
             <span class="bi bi-speedometer2"></span>
             Dashboard
         </NavLink>
 
-        <NavLink class="nav-item" href="/patient-management">
+        <NavLink class="nav-item" href="/blazor/patient-management">
             <span class="bi bi-person-badge-fill"></span>
             Patient Management
         </NavLink>
 
-        <NavLink class="nav-item" href="/doctor-management">
+        <NavLink class="nav-item" href="/blazor/doctor-management">
             <span class="bi bi-person-badge-fill"></span>
             Doctor Management
         </NavLink>
 
-        <NavLink class="nav-item" href="/appointment-report">
+        <NavLink class="nav-item" href="/blazor/appointment-report">
             <span class="bi bi-calendar-check"></span>
             Appointment Reports
         </NavLink>
@@ -46,9 +46,9 @@
     private async Task Logout()
     {
         await JS.InvokeVoidAsync("localStorage.removeItem", "token");
+        await JS.InvokeVoidAsync("localStorage.removeItem", "role");
 
-        var homeUrl = Configuration["ApplicationSettings:HomeUrl"] ?? "/";
-        Nav.NavigateTo(homeUrl, true);
+        Nav.NavigateTo("/angular", forceLoad: true);
     }
 }
 

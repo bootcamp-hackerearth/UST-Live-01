@@ -85,7 +85,7 @@ export class DoctorLeavesComponent {
     console.log('Sending:', body);
 
     this.http.post(
-      'https://localhost:7149/api/doctors/leaves',
+      '/api/doctors/leaves',
       body,
       { headers }
     )

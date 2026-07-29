@@ -94,7 +94,7 @@ export class DoctorAppointmentsComponent implements OnInit {
     });
 
     this.http.get<any[]>(
-      'https://localhost:7149/api/appointments/doctor/upcoming',
+      '/api/appointments/doctor/upcoming',
       { headers }
     ).subscribe({
 
@@ -135,7 +135,7 @@ export class DoctorAppointmentsComponent implements OnInit {
     });
 
     this.http.put(
-      `https://localhost:7149/api/appointments/${id}/status`,
+      `/api/appointments/${id}/status`,
       {
         status: 'Confirmed'
       },
@@ -195,7 +195,7 @@ export class DoctorAppointmentsComponent implements OnInit {
     };
 
     this.http.post(
-      'https://localhost:7149/api/records/create',
+      '/api/records/create',
       body,
       { headers }
     ).subscribe({
@@ -261,7 +261,7 @@ export class DoctorAppointmentsComponent implements OnInit {
     };
 
     this.http.put(
-      `https://localhost:7149/api/appointments/${this.selectedAppointmentId}/status`,
+      `/api/appointments/${this.selectedAppointmentId}/status`,
       body,
       { headers }
     ).subscribe({
@@ -293,7 +293,7 @@ export class DoctorAppointmentsComponent implements OnInit {
     };
 
     this.http.get<any[]>(
-      `https://localhost:7149/api/records/by-patient/${patientId}`,
+      `/api/records/by-patient/${patientId}`,
       { headers }
     ).subscribe({
 

@@ -23,7 +23,6 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IJwtService _jwtService;
         private readonly ILogger<AuthService> _logger;
         private readonly HealthCareDbContext _context;
-        private readonly IDistributedCache _cache;
 
 
 #pragma warning disable S107
@@ -34,7 +33,6 @@ namespace HealthCare.Api.Services.Implementations
             IDoctorRepository doctorRepo,
             IJwtService jwtService,
             ILogger<AuthService> logger,
-            IDistributedCache cache,
             HealthCareDbContext context)
         {
             _userManager = userManager;
@@ -43,7 +41,6 @@ namespace HealthCare.Api.Services.Implementations
             _doctorRepo = doctorRepo;
             _jwtService = jwtService;
             _context = context;
-            _cache = cache;
             _logger = logger;
         }
 #pragma warning restore S107
@@ -118,53 +115,6 @@ namespace HealthCare.Api.Services.Implementations
 
             await _context.SaveChangesAsync();
 
-            await InvalidateAvailabilityCacheBySpecialisation(
-                   doctor.Specialisation);
-        }
-
-        private async Task InvalidateAvailabilityCacheBySpecialisation(
-   string specialisation)
-        {
-            var today = DateOnly.FromDateTime(DateTime.Today);
-
-            for (int i = 0; i < 30; i++)
-            {
-                var date = today.AddDays(i);
-
-                var cacheKey =
-                    $"doctors:{specialisation}:availability:{date}";
-
-
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation(
-                        "Removing cache key {Key}",
-                        cacheKey);
-                }
-
-
-                try
-                {
-                    await _cache.RemoveAsync(cacheKey);
-
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogInformation(
-                        "Removed cache key {Key}",
-                        cacheKey);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogWarning(
-                        ex,
-                        "Failed to remove cache key {Key}",
-                        cacheKey);
-                    }
-                }
-            }
         }
 
         public async Task<AuthResponseDto> LoginAsync(LoginDto dto)

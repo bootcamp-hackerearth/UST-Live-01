@@ -36,7 +36,7 @@ export class DoctorDashboardComponent implements OnInit {
     });
 
     this.http.get<any>(
-      'https://localhost:7149/api/doctors/dashboard',
+      '/api/doctors/dashboard',
       { headers }
     )
       .subscribe({

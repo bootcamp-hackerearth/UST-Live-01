@@ -36,7 +36,7 @@ export class MyAppointmentsComponent implements OnInit {
     });
 
     this.http.get<any[]>(
-      'https://localhost:7149/api/appointments/patient/upcoming',
+      '/api/appointments/patient/upcoming',
       { headers }
     ).subscribe({
       next: (res) => {

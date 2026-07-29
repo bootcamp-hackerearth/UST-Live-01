@@ -19,17 +19,15 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly HealthCareDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IDistributedCache _cache;
         private readonly ILogger<DoctorService> _logger;
         private const string NotFoundExceptionMessage = "Doctor not found.";
 
-        public DoctorService(IDoctorRepository repository, IAppointmentRepository appointmentRepository, HealthCareDbContext context, IMapper mapper, IDistributedCache cache, ILogger<DoctorService> logger)
+        public DoctorService(IDoctorRepository repository, IAppointmentRepository appointmentRepository, HealthCareDbContext context, IMapper mapper, ILogger<DoctorService> logger)
         {
             _repository = repository;
             _appointmentRepository = appointmentRepository;
             _context = context;
             _mapper = mapper;
-            _cache = cache;
             _logger = logger;
         }
 
@@ -134,9 +132,6 @@ namespace HealthCare.Api.Services.Implementations
             await _repository.UpdateAsync(doctor);
             await _context.SaveChangesAsync();
 
-            await InvalidateAvailabilityCacheBySpecialisation(
-                   doctor.Specialisation);
-
         }
 
         public async Task DeleteAsync(int id)
@@ -204,13 +199,6 @@ namespace HealthCare.Api.Services.Implementations
                     result);
             }
 
-            if (leavesToCreate.Count > 0)
-            {
-                await SaveLeavesAndInvalidateCache(
-                    id,
-                    leavesToCreate);
-            }
-
             return result;
         }
 
@@ -249,76 +237,11 @@ namespace HealthCare.Api.Services.Implementations
             leavesToCreate.Add(leave);
         }
 
-        private async Task SaveLeavesAndInvalidateCache(
-    int doctorId,
-    List<CreateLeaveDto> leavesToCreate)
-        {
-            await _repository.CreateLeaves(
-                doctorId,
-                leavesToCreate);
-
-            await _context.SaveChangesAsync();
-
-            var doctor =
-                await _context.Doctors
-                    .FirstAsync(d => d.DoctorId == doctorId);
-
-            foreach (var leave in leavesToCreate)
-            {
-                await RemoveAvailabilityCache(
-                    doctor.Specialisation,
-                    leave.LeaveDate);
-            }
-        }
-
-        private async Task RemoveAvailabilityCache(
-    string specialisation,
-    DateOnly leaveDate)
-        {
-            var cacheKey =
-                $"doctors:{specialisation}:availability:{leaveDate}";
-
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation(
-                "Removing cache key {Key}",
-                cacheKey);
-            }
-
-            try
-            {
-                await _cache.RemoveAsync(cacheKey);
-
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation(
-                    "Removed cache key {Key}",
-                    cacheKey);
-                }
-            }
-            catch (Exception ex)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogWarning(
-                    ex,
-                    "Failed to remove cache key {Key}",
-                    cacheKey);
-                }
-            }
-        }
-
+       
         public async Task<AvailableDoctorsResponseDto> AvailableDoctors(
     string specialisation,
     DateOnly date)
         {
-            var cacheKey =
-                $"doctors:{specialisation}:availability:{date}";
-
-            var cachedResponse = await GetCachedAvailability(cacheKey);
-
-            if (cachedResponse != null)
-                return cachedResponse;
 
             var allDoctors = await _context.Doctors
                 .Where(d => d.Specialisation == specialisation)
@@ -342,45 +265,7 @@ namespace HealthCare.Api.Services.Implementations
             var response = BuildAvailabilityResponse(
                 availableDoctors);
 
-            await CacheAvailability(cacheKey, response);
-
             return response;
-        }
-
-        private async Task<AvailableDoctorsResponseDto?>
-    GetCachedAvailability(string cacheKey)
-        {
-            try
-            {
-                var cachedData =
-                    await _cache.GetStringAsync(cacheKey);
-
-                if (string.IsNullOrEmpty(cachedData))
-                    return null;
-
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation(
-                    "Doctor availability cache HIT. Key={Key}",
-                    cacheKey);
-                }
-
-                return JsonSerializer.Deserialize<
-                    AvailableDoctorsResponseDto>(
-                        cachedData);
-            }
-            catch (Exception ex)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogWarning(
-                    ex,
-                    "Garnet cache unavailable. Falling back to SQL Server. Key={Key}",
-                    cacheKey);
-                }
-
-                return null;
-            }
         }
 
         private static AvailableDoctorsResponseDto
@@ -433,83 +318,6 @@ namespace HealthCare.Api.Services.Implementations
                     ? "Doctor is on leave"
                     : string.Empty
             };
-        }
-
-        private async Task CacheAvailability(
-    string cacheKey,
-    AvailableDoctorsResponseDto response)
-        {
-            try
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation(
-                    "Caching doctor availability. Key={Key}, TTL=5 minutes",
-                    cacheKey);
-                }
-
-                await _cache.SetStringAsync(
-                    cacheKey,
-                    JsonSerializer.Serialize(response),
-                    new DistributedCacheEntryOptions
-                    {
-                        AbsoluteExpirationRelativeToNow =
-                            TimeSpan.FromMinutes(5)
-                    });
-            }
-            catch (Exception ex)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogWarning(
-                    ex,
-                    "Unable to cache doctor availability. Key={Key}",
-                    cacheKey);
-                }
-            }
-        }
-
-        private async Task InvalidateAvailabilityCacheBySpecialisation(
-    string specialisation)
-        {
-            var today = DateOnly.FromDateTime(DateTime.Today);
-
-            for (int i = 0; i < 30; i++)
-            {
-                var date = today.AddDays(i);
-
-                var cacheKey =
-                    $"doctors:{specialisation}:availability:{date}";
-
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation(
-                    "Removing cache key {Key}",
-                    cacheKey);
-                }
-
-                try
-                {
-                    await _cache.RemoveAsync(cacheKey);
-
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogInformation(
-                        "Removed cache key {Key}",
-                        cacheKey);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (_logger.IsEnabled(LogLevel.Information))
-                    {
-                        _logger.LogWarning(
-                        ex,
-                        "Failed to remove cache key {Key}",
-                        cacheKey);
-                    }
-                }
-            }
         }
 
         public async Task<DoctorSummaryDto> GetSummaryAsync()
