@@ -765,7 +765,11 @@ Future Improvements:
 
 # License
 
-`<REPLACE_WITH_LICENSE>`
+HealthAxis is an internal project developed solely for educational and training purposes.
+
+This project is not open source and is not intended for public distribution. The source code, documentation, assets, and related materials may not be copied, modified, published, sublicensed, or redistributed outside the authorized organization without prior written permission.
+
+All rights reserved.
 
 ---
 
