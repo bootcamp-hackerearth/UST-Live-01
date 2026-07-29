@@ -1,72 +1,73 @@
-<div class="modal-backdrop" *ngIf="visible">
+<div class="modal-backdrop"
+     *ngIf="visible"
+     (click)="closeOnBackdrop($event)">
 
   <div class="modal-box">
 
     <div class="modal-header">
       <h3>Edit Profile</h3>
-      <div class="modal-header">
-        <h3>Edit Profile</h3>
 
-        <button type="button"
-                class="close"
-                (click)="close()">
-          ×
-        </button>
-      </div>
+      <button type="button"
+              class="close"
+              aria-label="Close edit profile"
+              (click)="close()">
+        &times;
+      </button>
     </div>
 
-    <form class="form" [formGroup]="editForm">
+    <form class="form"
+          [formGroup]="editForm"
+          (ngSubmit)="saveChanges()">
 
-      <input placeholder="Full Name"
+      <input type="text"
+             placeholder="Full Name"
              formControlName="fullName">
 
       <small class="error"
-             *ngIf="f['fullName'].touched && f['fullName'].errors?.['required']">
+             *ngIf="f['fullName'].touched && f['fullName'].hasError('required')">
         Full Name is required
       </small>
 
       <small class="error"
-             *ngIf="f['fullName'].touched && f['fullName'].errors?.['pattern']">
+             *ngIf="f['fullName'].touched && f['fullName'].hasError('pattern')">
         Enter name using alphabets only
       </small>
 
-
       <select formControlName="gender">
         <option value="">Select Gender</option>
-        <option>Male</option>
-        <option>Female</option>
-        <option>Other</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
       </select>
 
       <small class="error"
-             *ngIf="f['gender'].touched && f['gender'].errors?.['required']">
+             *ngIf="f['gender'].touched && f['gender'].hasError('required')">
         Gender is required
       </small>
 
-
-      <input placeholder="Phone Number"
-             formControlName="phoneNumber">
+      <input type="tel"
+             placeholder="Phone Number"
+             formControlName="phoneNumber"
+             maxlength="10">
 
       <small class="error"
-             *ngIf="f['phoneNumber'].touched && f['phoneNumber'].errors?.['required']">
+             *ngIf="f['phoneNumber'].touched && f['phoneNumber'].hasError('required')">
         Phone number is required
       </small>
 
       <small class="error"
-             *ngIf="f['phoneNumber'].touched && f['phoneNumber'].errors?.['pattern']">
+             *ngIf="f['phoneNumber'].touched && f['phoneNumber'].hasError('pattern')">
         Phone number must start with 6-9 and contain 10 digits
       </small>
 
-
-
-      <input placeholder="Insurance ID (Optional)"
+      <input type="text"
+             placeholder="Insurance ID (Optional)"
              formControlName="insuranceId">
 
       <small class="error"
-             *ngIf="f['insuranceId'].touched && f['insuranceId'].errors?.['pattern']">
+             *ngIf="f['insuranceId'].touched && f['insuranceId'].hasError('pattern')">
         Insurance ID must contain only letters and numbers
       </small>
-
 
       <div class="actions">
 
@@ -76,10 +77,8 @@
           Cancel
         </button>
 
-        <button type="button"
-                class="save"
-                (click)="saveChanges()"
-                [disabled]="editForm.invalid">
+        <button type="submit"
+                class="save">
           Save Changes
         </button>
 
