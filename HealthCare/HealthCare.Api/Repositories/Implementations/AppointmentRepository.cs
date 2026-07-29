@@ -148,13 +148,13 @@ private const string Completed = "Completed";
                 .GroupBy(a => 1)
                 .Select(g => new AppointmentSummaryDto
                 {
-                    PendingCount = g.Count(a => a.Status == "Pending"),
-                    ConfirmedCount = g.Count(a => a.Status == "Confirmed"),
-                    CancelledCount = g.Count(a => a.Status == "Cancelled"),
-                    CompletedCount = g.Count(a => a.Status == "Completed"),
+                    PendingCount = g.Count(a => a.Status == Pending),
+                    ConfirmedCount = g.Count(a => a.Status == Confirmed),
+                    CancelledCount = g.Count(a => a.Status == Cancelled),
+                    CompletedCount = g.Count(a => a.Status == Completed),
 
                     TotalRevenue = g
-                        .Where(a => a.Status == "Completed")
+                        .Where(a => a.Status == Completed)
                         .Sum(a => a.Doctor.ConsultationFee)
                 })
                 .FirstOrDefaultAsync();
@@ -168,16 +168,16 @@ private const string Completed = "Completed";
                 .GroupBy(a => 1)
                 .Select(g => new AppointmentSummaryDto
                 {
-                    PendingCount = g.Count(a => a.Status == "Pending"),
+                    PendingCount = g.Count(a => a.Status == Pending),
 
-                    ConfirmedCount = g.Count(a => a.Status == "Confirmed"),
+                    ConfirmedCount = g.Count(a => a.Status == Confirmed),
 
-                    CancelledCount = g.Count(a => a.Status == "Cancelled"),
+                    CancelledCount = g.Count(a => a.Status == Cancelled),
 
-                    CompletedCount = g.Count(a => a.Status == "Completed"),
+                    CompletedCount = g.Count(a => a.Status == Completed),
 
                     TotalRevenue = g
-                        .Where(a => a.Status == "Completed")
+                        .Where(a => a.Status == Completed)
                         .Sum(a => a.Doctor.ConsultationFee)
                 })
                 .FirstOrDefaultAsync();

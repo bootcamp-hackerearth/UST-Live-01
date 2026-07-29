@@ -18,8 +18,7 @@ export class PatientService {
   isLoading = signal(false);
   errorMessage = signal('');
 
-  constructor(private http: HttpClient) { }
-
+  constructor(private readonly http: HttpClient) { }
   loadProfile(): void {
     this.isLoading.set(true);
     this.errorMessage.set('');

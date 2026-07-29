@@ -49,7 +49,7 @@ export class BookAppointment {
 
   constructor(
     public doctorService: DoctorService,
-    private appointmentService: AppointmentService
+    private readonly appointmentService: AppointmentService
   ) { }
 
   getTomorrowDate(): string {

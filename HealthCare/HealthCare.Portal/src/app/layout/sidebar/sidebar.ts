@@ -12,7 +12,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 export class Sidebar {
   role = localStorage.getItem('role')?.toUpperCase();
 
-  constructor(private router: Router) { }
+  constructor(private readonly router: Router) { }
 
   logout(): void {
     localStorage.clear();

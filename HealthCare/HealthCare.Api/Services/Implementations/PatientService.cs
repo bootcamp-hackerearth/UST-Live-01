@@ -32,10 +32,7 @@ namespace HealthCare.Api.Services.Implementations
             _mapper = mapper;
         }
 
-        public PatientService(IRepository<Patient> object1, HealthCareDbContext object2, IMapper object3)
-        {
-        }
-
+        
         public async Task<PatientListDto> GetByIdAsync(int id)
         {
             var patient = await _repository.GetByIdAsync(id);

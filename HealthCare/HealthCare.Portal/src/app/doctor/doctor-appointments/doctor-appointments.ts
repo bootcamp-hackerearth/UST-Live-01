@@ -30,7 +30,7 @@ export class DoctorAppointments implements OnInit {
   });
   constructor(
     public appointmentService: AppointmentService,
-    private healthRecordService: HealthRecordService
+    private readonly healthRecordService: HealthRecordService
   ) { }
 
   ngOnInit(): void {

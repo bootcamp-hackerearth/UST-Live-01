@@ -17,8 +17,7 @@ export class AppointmentService {
   isLoading = signal(false);
   errorMessage = signal('');
 
-  constructor(private http: HttpClient) { }
-
+  constructor(private readonly http: HttpClient) { }
   bookAppointment(request: CreateAppointmentRequest) {
     return this.http.post(
       `${this.apiBaseUrl}/api/appointments/book`,

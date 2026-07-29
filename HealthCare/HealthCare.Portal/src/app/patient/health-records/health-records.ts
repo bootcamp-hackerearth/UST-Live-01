@@ -23,9 +23,7 @@ export class HealthRecords implements OnInit {
     !this.errorMessage()
   );
 
-  constructor(
-    private healthRecordService: HealthRecordService
-  ) { }
+  constructor(private readonly healthRecordService: HealthRecordService) { }
 
   ngOnInit(): void {
     this.loadRecords();

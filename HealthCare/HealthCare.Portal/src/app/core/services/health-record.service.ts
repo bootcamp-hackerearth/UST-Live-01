@@ -9,8 +9,7 @@ import { CreateHealthRecordRequest, HealthRecordResponse, HealthRecordListDto } 
 export class HealthRecordService {
   private readonly apiBaseUrl = environment.apiBaseUrl;
 
-  constructor(private http: HttpClient) { }
-
+  constructor(private readonly http: HttpClient) { }
   createRecord(request: CreateHealthRecordRequest) {
     return this.http.post(
       `${this.apiBaseUrl}/api/records/create`,

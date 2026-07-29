@@ -30,8 +30,7 @@ export class DoctorService {
   isLoading = signal(false);
   errorMessage = signal('');
 
-  constructor(private http: HttpClient) { }
-
+  constructor(private readonly http: HttpClient) { }
   loadMyProfile(): void {
     this.isLoading.set(true);
     this.errorMessage.set('');

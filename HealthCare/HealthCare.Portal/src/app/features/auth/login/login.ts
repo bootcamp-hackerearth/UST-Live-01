@@ -28,10 +28,9 @@ export class LoginComponent {
   showPassword = false;
 
   constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) {
+    private readonly fb: FormBuilder,
+    private readonly authService: AuthService,
+    private readonly router: Router) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -102,7 +101,7 @@ export class LoginComponent {
       `?token=${encodeURIComponent(accessToken)}` +
       `&role=Admin`;
 
-    window.location.href = redirectUrl;
+    globalThis.location.href = redirectUrl;
   }
 
   isInvalid(controlName: string): boolean {

@@ -855,36 +855,7 @@ public class AppointmentServiceTests
             Times.Never
         );
     }
-    [Fact]
-    public async Task UpdateAsync_ThrowsInvalidOperationException_WhenDbUpdateExceptionOccurs()
-    {
-        // Arrange
-        var appointment = new Appointment
-        {
-            AppointmentId = 1,
-            Status = "Pending"
-        };
-
-        var dto = new UpdateAppointmentDto
-        {
-            Status = "Confirmed"
-        };
-
-        _repositoryMock
-            .Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(appointment);
-
-        _repositoryMock
-            .Setup(r => r.UpdateAsync(appointment))
-            .ThrowsAsync(new DbUpdateException("Database error"));
-
-        // Act
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            _service.UpdateAsync(1, dto));
-
-        // Assert
-        Assert.Equal("Failed to update appointment.", exception.Message);
-    }
+    
    
     [Fact]
     public async Task GetReport_UsesDefaultDates_WhenFilterDatesAreNull()

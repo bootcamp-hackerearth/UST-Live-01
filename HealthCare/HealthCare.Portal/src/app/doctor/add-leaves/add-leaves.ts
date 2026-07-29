@@ -27,7 +27,7 @@ export class AddLeaves {
     () => this.selectedLeaves().length > 0
   );
 
-  constructor(private doctorService: DoctorService) { }
+  constructor(private readonly doctorService: DoctorService) { }
 
   getTomorrowDate(): string {
     const tomorrow = new Date();
