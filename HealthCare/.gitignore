@@ -484,3 +484,4 @@ logs/
 HealthCare.Api/wwwroot/
 Logs/
 artifacts/
+.sonarqube

@@ -1,1 +1,0 @@
-RhC:\Users\310055\source\repos\UST-Live-01\HealthCare\HealthCare.AdminBlazor\HealthCare.AdminBlazor.csproj¢net10.0òCSharp14
