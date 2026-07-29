@@ -125,3 +125,10 @@
     grid-template-columns: 1fr;
   }
 }
+.error-text {
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 6px;
+  display: block;
+}

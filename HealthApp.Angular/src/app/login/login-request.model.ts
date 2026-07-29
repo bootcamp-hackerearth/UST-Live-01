@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, NgForm, NgModel } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '../service/auth.service';
 import { LoginResponse } from '../login/login-response.model';
@@ -14,7 +15,7 @@ export interface LoginRequest {
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterModule, FormsModule, AppPopupComponent],
+  imports: [CommonModule, RouterModule, FormsModule, AppPopupComponent],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
@@ -22,6 +23,7 @@ export class LoginComponent {
 
   email = '';
   password = '';
+
   popupVisible = false;
   popupTitle = '';
   popupMessage = '';
@@ -32,15 +34,19 @@ export class LoginComponent {
     private readonly router: Router
   ) {}
 
-  login(): void {
+  login(loginForm: NgForm): void {
+    if (loginForm.invalid) {
+      loginForm.control.markAllAsTouched();
+      return;
+    }
+
     const data: LoginRequest = {
-      email: this.email,
+      email: this.email.trim(),
       password: this.password
     };
 
     this.authService.login(data).subscribe({
       next: (res: LoginResponse) => {
-
         if (!res.success) {
           this.showPopup(
             'Login Failed',
@@ -49,8 +55,10 @@ export class LoginComponent {
           );
           return;
         }
+
         localStorage.setItem('token', res.accessToken);
         localStorage.setItem('role', res.role);
+
         localStorage.setItem('authToken', res.accessToken);
         localStorage.setItem('authRole', res.role);
 
@@ -78,11 +86,15 @@ export class LoginComponent {
 
         this.showPopup(
           'Login Failed',
-          'Unable to sign in. Please try again.',
+          err?.error?.message || 'Unable to sign in. Please try again.',
           'error'
         );
       }
     });
+  }
+
+  showError(control: NgModel, form: NgForm): boolean {
+    return !!control.invalid && (control.touched || form.submitted);
   }
 
   private showPopup(

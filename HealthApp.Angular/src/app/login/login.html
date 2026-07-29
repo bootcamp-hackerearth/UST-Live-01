@@ -4,6 +4,7 @@
       <div class="brand">Health<span>Sphere</span></div>
       <h1>Welcome back</h1>
       <p>Access your patient or clinician portal with secure, real-time care tools.</p>
+
       <ul>
         <li>Live appointment visibility</li>
         <li>Secure medical record access</li>
@@ -16,17 +17,52 @@
       <h2>Sign in</h2>
       <p class="subtitle">Use your organization credentials to continue.</p>
 
-      <div class="input-group">
-        <label>Email address</label>
-        <input [(ngModel)]="email" type="email" placeholder="you@healthsphere.com">
-      </div>
+      <form #loginForm="ngForm" (ngSubmit)="login(loginForm)" novalidate>
 
-      <div class="input-group">
-        <label>Password</label>
-        <input [(ngModel)]="password" type="password" placeholder="Enter your password">
-      </div>
+        <div class="input-group">
+          <label>Email address</label>
 
-      <button class="primary-btn" (click)="login()">Sign in</button>
+          <input
+            [(ngModel)]="email"
+            name="email"
+            #emailCtrl="ngModel"
+            type="email"
+            placeholder="you@healthsphere.com"
+            required
+            email>
+
+          <small class="error-text" *ngIf="showError(emailCtrl, loginForm)">
+            <span *ngIf="emailCtrl.errors?.['required']">
+              Email is required.
+            </span>
+
+            <span *ngIf="emailCtrl.errors?.['email']">
+              Please enter a valid email address.
+            </span>
+          </small>
+        </div>
+
+        <div class="input-group">
+          <label>Password</label>
+
+          <input
+            [(ngModel)]="password"
+            name="password"
+            #passwordCtrl="ngModel"
+            type="password"
+            placeholder="Enter your password"
+            required>
+
+          <small class="error-text" *ngIf="showError(passwordCtrl, loginForm)">
+            Password is required.
+          </small>
+        </div>
+
+        <button class="primary-btn" type="submit">
+          Sign in
+        </button>
+
+      </form>
 
       <p class="footer-text">
         New here?
