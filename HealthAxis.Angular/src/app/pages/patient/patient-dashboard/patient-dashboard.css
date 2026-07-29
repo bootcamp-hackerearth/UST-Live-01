@@ -1319,9 +1319,9 @@
 ================================== */
 
 .pd-record-preview {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 /* ==================================
@@ -2865,15 +2865,17 @@
 }
 .pd-health-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1.35fr 1fr 1fr;
   gap: 1.5rem;
-  align-items: stretch;
 }
 .pd-health-grid > .pd-panel {
   height: 100%;
 }
 .pd-panel-header h3 {
-  white-space: nowrap;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .pd-panel {
@@ -3153,6 +3155,10 @@
   border: 1px solid #e7dccd;
   border-radius: 24px;
   background: #faf8f3;
+}
+.pd-wellness-content {
+  flex-direction: column;
+  text-align: center;
 }
 
 .pd-wellness-icon {
