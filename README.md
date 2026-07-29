@@ -860,20 +860,6 @@ Configure production values through Elastic Beanstalk environment properties or 
 | Angular route or asset fails | Incorrect base href or output copy | Verify `/angular/` base path and generated API `wwwroot/angular` content |
 | Blazor route or framework file fails | Incorrect base href or nested publish output | Verify `/blazor/`, copied `_framework`, and Blazor index configuration |
 
-## Screenshots
-
-Add verified screenshots under `docs/images/` and remove any entry that is not available.
-
-```markdown
-![Landing page](docs/images/landing-page.png)
-![Patient dashboard](docs/images/patient-dashboard.png)
-![Doctor portal](docs/images/doctor-portal.png)
-![Admin dashboard](docs/images/admin-dashboard.png)
-![Doctor management](docs/images/doctor-management.png)
-![Appointment management](docs/images/appointment-management.png)
-![Jenkins pipeline](docs/images/jenkins-pipeline.png)
-![Elastic Beanstalk health](docs/images/elastic-beanstalk-health.png)
-```
 
 ## Known Limitations
 
