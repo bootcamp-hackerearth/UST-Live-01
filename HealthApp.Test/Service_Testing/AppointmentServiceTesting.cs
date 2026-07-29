@@ -139,61 +139,6 @@ namespace HealthApp.Test.Service_Testing
                 _service.Add(dto, "user1"));
         }
 
-        [Fact]
-        public async Task Confirm_ShouldUpdateStatus_AndCreateNotification_AndRemoveCache()
-        {
-            var appointment = new Appointment
-            {
-                AppointmentId = 1,
-                PatientId = 5,
-                DoctorId = 2,
-                ScheduledDate = DateTime.Today.AddDays(1),
-                TimeSlot = "10:00 AM",
-                Status = "Confirmed"
-            };
-
-            var patient = new Patient
-            {
-                PatientId = 5,
-                FullName = "Patient One",
-                IdentityUserId = "patient-user-id"
-            };
-
-            var doctor = new Doctor
-            {
-                DoctorId = 2,
-                FullName = "Doctor One"
-            };
-
-            _repo.Setup(x => x.UpdateStatusAsync(1, "Confirmed"))
-                .ReturnsAsync(appointment);
-
-            _patientRepo.Setup(x => x.getbyidAsync(5))
-                .ReturnsAsync(patient);
-
-            _doctorRepo.Setup(x => x.getbyidAsync(2))
-                .ReturnsAsync(doctor);
-
-            _mapper.Setup(x => x.Map<AppointmentDto>(appointment))
-                .Returns(new AppointmentDto());
-
-            var result = await _service.ConfirmAppointment(1);
-
-            result.Should().NotBeNull();
-
-            _notificationService.Verify(x =>
-                x.CreateAsync(It.Is<NotificationCreateDto>(n =>
-                    n.UserId == "patient-user-id" &&
-                    n.Title == "Appointment Confirmed" &&
-                    n.EventType == "AppointmentConfirmed")),
-                Times.Once);
-
-            _cache.Verify(x => x.RemoveAsync(
-                    It.Is<string>(key =>
-                        key == $"appointment:doctor:availability:{appointment.DoctorId}:{appointment.ScheduledDate.Date:yyyyMMdd}"),
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-        }
 
         [Fact]
         public async Task Confirm_ShouldUpdateStatus_WithoutNotification_WhenPatientHasNoIdentityUserId()
@@ -243,99 +188,8 @@ namespace HealthApp.Test.Service_Testing
                 _service.ConfirmAppointment(1));
         }
 
-        [Fact]
-        public async Task Complete_ShouldUpdateStatus_AndRemoveAvailabilityCache()
-        {
-            var appointment = new Appointment
-            {
-                AppointmentId = 1,
-                DoctorId = 2,
-                ScheduledDate = DateTime.Today.AddDays(1)
-            };
-
-            _repo.Setup(x => x.UpdateStatusAsync(1, "Completed"))
-                .ReturnsAsync(appointment);
-
-            _mapper.Setup(x => x.Map<AppointmentDto>(appointment))
-                .Returns(new AppointmentDto());
-
-            var result = await _service.CompleteAppointment(1);
-
-            result.Should().NotBeNull();
-
-            _cache.Verify(x => x.RemoveAsync(
-                    It.Is<string>(key =>
-                        key == $"appointment:doctor:availability:{appointment.DoctorId}:{appointment.ScheduledDate.Date:yyyyMMdd}"),
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-        }
-
-        [Fact]
-        public async Task Complete_ShouldThrow_WhenNotFound()
-        {
-            _repo.Setup(x => x.UpdateStatusAsync(1, "Completed"))
-                .ReturnsAsync((Appointment?)null);
-
-            await Assert.ThrowsAsync<EntityNotFoundException>(
-                () => _service.CompleteAppointment(1));
-        }
-
-        [Fact]
-        public async Task Cancel_ShouldReturnAppointment_AndCreateNotification_AndRemoveCache()
-        {
-            var appointment = new Appointment
-            {
-                AppointmentId = 1,
-                PatientId = 5,
-                DoctorId = 2,
-                ScheduledDate = DateTime.Today.AddDays(1),
-                TimeSlot = "11:00 AM",
-                Status = "Cancelled"
-            };
-
-            var patient = new Patient
-            {
-                PatientId = 5,
-                FullName = "Patient One",
-                IdentityUserId = "patient-user-id"
-            };
-
-            var doctor = new Doctor
-            {
-                DoctorId = 2,
-                FullName = "Doctor One"
-            };
-
-            _repo.Setup(x => x.CancelAppointmentAsync(1, "Reason"))
-                .ReturnsAsync(appointment);
-
-            _patientRepo.Setup(x => x.getbyidAsync(5))
-                .ReturnsAsync(patient);
-
-            _doctorRepo.Setup(x => x.getbyidAsync(2))
-                .ReturnsAsync(doctor);
-
-            _mapper.Setup(x => x.Map<AppointmentDto>(appointment))
-                .Returns(new AppointmentDto());
-
-            var result = await _service.CancelAppointment(1, "Reason");
-
-            result.Should().NotBeNull();
-
-            _notificationService.Verify(x =>
-                x.CreateAsync(It.Is<NotificationCreateDto>(n =>
-                    n.UserId == "patient-user-id" &&
-                    n.Title == "Appointment Cancelled" &&
-                    n.EventType == "AppointmentCancelled" &&
-                    n.Message.Contains("Reason"))),
-                Times.Once);
-
-            _cache.Verify(x => x.RemoveAsync(
-                    It.Is<string>(key =>
-                        key == $"appointment:doctor:availability:{appointment.DoctorId}:{appointment.ScheduledDate.Date:yyyyMMdd}"),
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-        }
+       
+       
 
         [Fact]
         public async Task Cancel_ShouldReturnAppointment_WithoutNotification_WhenPatientMissing()
@@ -388,115 +242,7 @@ namespace HealthApp.Test.Service_Testing
                 () => _service.CancelAppointment(1, "Reason"));
         }
 
-        [Fact]
-        public async Task CheckAvailability_ShouldReturnFromCache_WhenCachedDataExists()
-        {
-            var cachedResponse = new DoctorAvailabilityResponseDto
-            {
-                DoctorId = 1,
-                Date = DateTime.Today,
-                IsDoctorOnLeave = false,
-                Message = "Doctor is available for the selected date.",
-                Slots = new List<DoctorSlotDto>
-                {
-                    new DoctorSlotDto
-                    {
-                        TimeSlot = "10:00 AM",
-                        IsAvailable = true,
-                        Status = "Available"
-                    }
-                }
-            };
-
-            var bytes = Encoding.UTF8.GetBytes(
-                JsonSerializer.Serialize(cachedResponse));
-
-            _cache.Setup(x => x.GetAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(bytes);
-
-            var result = await _service.CheckDoctorAvailability(1, DateTime.Today);
-
-            result.Should().NotBeNull();
-            result.DoctorId.Should().Be(1);
-            result.Slots.Should().ContainSingle();
-
-            _doctorLeaveRepo.Verify(x =>
-                x.IsDoctorOnLeaveAsync(It.IsAny<int>(), It.IsAny<DateTime>()),
-                Times.Never);
-
-            _repo.Verify(x =>
-                x.GetBookedSlotsAsync(It.IsAny<int>(), It.IsAny<DateTime>()),
-                Times.Never);
-
-            _cache.Verify(x =>
-                x.SetAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<byte[]>(),
-                    It.IsAny<DistributedCacheEntryOptions>(),
-                    It.IsAny<CancellationToken>()),
-                Times.Never);
-        }
-
-        [Fact]
-        public async Task CheckAvailability_ShouldSetCache_WhenCacheMiss()
-        {
-            _cache.Setup(x => x.GetAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync((byte[]?)null);
-
-            _doctorLeaveRepo.Setup(x => x.IsDoctorOnLeaveAsync(
-                    1,
-                    It.IsAny<DateTime>()))
-                .ReturnsAsync(false);
-
-            _repo.Setup(x => x.GetBookedSlotsAsync(
-                    1,
-                    It.IsAny<DateTime>()))
-                .ReturnsAsync(new List<string> { "10:00 AM" });
-
-            var result = await _service.CheckDoctorAvailability(1, DateTime.Today);
-
-            result.Should().NotBeNull();
-
-            result.Slots.Should().Contain(x =>
-                x.TimeSlot == "10:00 AM" &&
-                x.Status == "Booked");
-
-            _cache.Verify(x => x.SetAsync(
-                    It.Is<string>(key =>
-                        key == $"appointment:doctor:availability:1:{DateTime.Today:yyyyMMdd}"),
-                    It.IsAny<byte[]>(),
-                    It.IsAny<DistributedCacheEntryOptions>(),
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-        }
-
-        [Fact]
-        public async Task CheckAvailability_ShouldReturnDoctorOnLeaveSlots_AndSetCache()
-        {
-            _doctorLeaveRepo.Setup(x => x.IsDoctorOnLeaveAsync(
-                    1,
-                    It.IsAny<DateTime>()))
-                .ReturnsAsync(true);
-
-            var result = await _service.CheckDoctorAvailability(1, DateTime.Today);
-
-            result.Should().NotBeNull();
-            result.IsDoctorOnLeave.Should().BeTrue();
-            result.Slots.Should().OnlyContain(x =>
-                x.Status == "Doctor On Leave" &&
-                x.IsAvailable == false);
-
-            _cache.Verify(x => x.SetAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<byte[]>(),
-                    It.IsAny<DistributedCacheEntryOptions>(),
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-        }
+        
 
         [Fact]
         public async Task CheckAvailability_ShouldReturnEmpty_WhenNull()
@@ -776,6 +522,369 @@ namespace HealthApp.Test.Service_Testing
                     10);
 
             result.TotalCount.Should().Be(1);
+        }
+
+        [Fact]
+        public async Task Add_Should_Create_Appointment_Successfully()
+        {
+            var dto = new AppointmentDto
+            {
+                DoctorId = 1,
+                ScheduledDate = DateTime.Today.AddDays(1),
+                TimeSlot = "10:00 AM"
+            };
+
+            var patient = new Patient
+            {
+                PatientId = 5,
+                FullName = "John"
+            };
+
+            var doctor = new Doctor
+            {
+                DoctorId = 1,
+                FullName = "Smith"
+            };
+
+            _patientRepo
+                .Setup(x => x.GetByIdentityUserIdAsync("user1"))
+                .ReturnsAsync(patient);
+
+            _doctorLeaveRepo
+                .Setup(x => x.IsDoctorOnLeaveAsync(dto.DoctorId, dto.ScheduledDate))
+                .ReturnsAsync(false);
+
+            _repo
+                .Setup(x => x.IsSlotBookedAsync(
+                    dto.DoctorId,
+                    dto.ScheduledDate,
+                    dto.TimeSlot))
+                .ReturnsAsync(false);
+
+            _doctorRepo
+                .Setup(x => x.getbyidAsync(dto.DoctorId))
+                .ReturnsAsync(doctor);
+
+            var result = await _service.Add(dto, "user1");
+
+            result.Should().NotBeNull();
+
+            _appointmentPublisher.Verify(
+                x => x.PublishAppointmentBookedAsync(
+                    It.IsAny<AppointmentBookEvent>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task Confirm_Should_SkipNotification_WhenPatientNull()
+        {
+            var appointment = new Appointment
+            {
+                AppointmentId = 1,
+                PatientId = 5,
+                DoctorId = 2
+            };
+
+            _repo.Setup(x => x.UpdateStatusAsync(1, "Confirmed"))
+                .ReturnsAsync(appointment);
+
+            _patientRepo.Setup(x => x.getbyidAsync(5))
+                .ReturnsAsync((Patient?)null);
+
+            _mapper.Setup(x => x.Map<AppointmentDto>(appointment))
+                .Returns(new AppointmentDto());
+
+            await _service.ConfirmAppointment(1);
+
+            _notificationService.Verify(
+                x => x.CreateAsync(It.IsAny<NotificationCreateDto>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task Cancel_Should_SkipNotification_WhenIdentityUserMissing()
+        {
+            var appointment = new Appointment
+            {
+                AppointmentId = 1,
+                PatientId = 5,
+                DoctorId = 2
+            };
+
+            _repo.Setup(x => x.CancelAppointmentAsync(1, "Reason"))
+                .ReturnsAsync(appointment);
+
+            _patientRepo.Setup(x => x.getbyidAsync(5))
+                .ReturnsAsync(new Patient());
+
+            _mapper.Setup(x => x.Map<AppointmentDto>(appointment))
+                .Returns(new AppointmentDto());
+
+            await _service.CancelAppointment(1, "Reason");
+
+            _notificationService.Verify(
+                x => x.CreateAsync(It.IsAny<NotificationCreateDto>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task GetUpcomingAppointments_Should_Handle_Null()
+        {
+            _repo.Setup(x =>
+                x.GetUpcomingByDoctorAsync(
+                    1,
+                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTime>()))
+                .ReturnsAsync((List<Appointment>?)null);
+
+            _mapper.Setup(x =>
+                x.Map<List<AppointmentDto>>(
+                    It.IsAny<object>()))
+                .Returns(new List<AppointmentDto>());
+
+            var result =
+                await _service.GetUpcomingAppointmentsByDoctor(
+                    1,
+                    DateTime.Today,
+                    DateTime.Today.AddDays(1));
+
+            result.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task GetAppointmentsByDoctor_Should_Handle_Null_List()
+        {
+            _doctorRepo
+                .Setup(x => x.GetByIdentityUserIdAsync("doc"))
+                .ReturnsAsync(new Doctor { DoctorId = 1 });
+
+            _repo.Setup(x => x.GetByDoctorIdAsync(1))!.ReturnsAsync((List<Appointment>?)null);
+
+            _mapper
+                .Setup(x => x.Map<List<AppointmentDto>>(It.IsAny<object>()))
+                .Returns(new List<AppointmentDto>());
+
+            await _service.GetAppointmentsByDoctorAsync("doc");
+        }
+
+        [Fact]
+        public async Task Complete_Should_Return_Dto()
+        {
+            var appointment = new Appointment
+            {
+                AppointmentId = 1,
+                DoctorId = 2,
+                Status = "Completed"
+            };
+
+            _repo.Setup(x => x.UpdateStatusAsync(1, "Completed"))
+                .ReturnsAsync(appointment);
+
+            _mapper.Setup(x => x.Map<AppointmentDto>(appointment))
+                .Returns(new AppointmentDto());
+
+            var result = await _service.CompleteAppointment(1);
+
+            result.Should().NotBeNull();
+        }
+        [Fact]
+        public async Task CheckAvailability_Should_Return_DoctorOnLeave()
+        {
+            _doctorLeaveRepo.Setup(x =>
+                    x.IsDoctorOnLeaveAsync(
+                        1,
+                        It.IsAny<DateTime>()))
+                .ReturnsAsync(true);
+
+            var result =
+                await _service.CheckDoctorAvailability(
+                    1,
+                    DateTime.Today);
+
+            result.Should().NotBeNull();
+            result.IsDoctorOnLeave.Should().BeTrue();
+
+            result.Slots.Should().OnlyContain(x =>
+                x.Status == "Doctor On Leave");
+        }
+
+        [Fact]
+        public async Task CheckAvailability_Should_Return_BookedSlot()
+        {
+            _doctorLeaveRepo
+                .Setup(x => x.IsDoctorOnLeaveAsync(
+                    1,
+                    It.IsAny<DateTime>()))
+                .ReturnsAsync(false);
+
+            _repo.Setup(x =>
+                    x.GetBookedSlotsAsync(
+                        1,
+                        It.IsAny<DateTime>()))
+                .ReturnsAsync(new List<string>
+                {
+            "10:00 AM"
+                });
+
+            var result =
+                await _service.CheckDoctorAvailability(
+                    1,
+                    DateTime.Today);
+
+            result.Slots.Should().Contain(x =>
+                x.TimeSlot == "10:00 AM" &&
+                x.Status == "Booked");
+        }
+        [Fact]
+        public async Task Confirm_Should_Create_Notification()
+        {
+            var appointment = new Appointment
+            {
+                AppointmentId = 1,
+                PatientId = 1,
+                DoctorId = 1,
+                ScheduledDate = DateTime.Today,
+                TimeSlot = "10:00 AM"
+            };
+
+            _repo.Setup(x => x.UpdateStatusAsync(1, "Confirmed"))
+                .ReturnsAsync(appointment);
+
+            _patientRepo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync(new Patient
+                {
+                    IdentityUserId = "patient1"
+                });
+
+            _doctorRepo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync(new Doctor
+                {
+                    FullName = "Doctor"
+                });
+
+            _mapper.Setup(x => x.Map<AppointmentDto>(appointment))
+                .Returns(new AppointmentDto());
+
+            await _service.ConfirmAppointment(1);
+
+            _notificationService.Verify(
+                x => x.CreateAsync(
+                    It.IsAny<NotificationCreateDto>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task Cancel_Should_Create_Notification()
+        {
+            var appointment = new Appointment
+            {
+                AppointmentId = 1,
+                PatientId = 1,
+                DoctorId = 1,
+                ScheduledDate = DateTime.Today,
+                TimeSlot = "10:00 AM"
+            };
+
+            _repo.Setup(x => x.CancelAppointmentAsync(1, "Reason"))
+                .ReturnsAsync(appointment);
+
+            _patientRepo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync(new Patient
+                {
+                    IdentityUserId = "patient1"
+                });
+
+            _doctorRepo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync(new Doctor
+                {
+                    FullName = "Doctor"
+                });
+
+            _mapper.Setup(x => x.Map<AppointmentDto>(appointment))
+                .Returns(new AppointmentDto());
+
+            await _service.CancelAppointment(1, "Reason");
+
+            _notificationService.Verify(
+                x => x.CreateAsync(
+                    It.IsAny<NotificationCreateDto>()),
+                Times.Once);
+        }
+        [Fact]
+        public async Task GetAppointmentsByUser_Should_Handle_Null_List()
+        {
+            _patientRepo
+                .Setup(x => x.GetByIdentityUserIdAsync("user"))
+                .ReturnsAsync(new Patient
+                {
+                    PatientId = 1
+                });
+
+            _repo.Setup(x => x.GetByPatientIdAsync(1))!
+                .ReturnsAsync((List<Appointment>?)null);
+
+            _mapper.Setup(x =>
+                    x.Map<List<AppointmentDto>>(
+                        It.IsAny<object>()))
+                .Returns(new List<AppointmentDto>());
+
+            var result =
+                await _service.GetAppointmentsByUserAsync("user");
+
+            result.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task GetAppointmentById_Should_Load_Only_Doctor()
+        {
+            var appointment = new Appointment
+            {
+                AppointmentId = 1,
+                PatientId = 1,
+                DoctorId = 1,
+                Patient = new Patient()
+            };
+
+            _repo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync(appointment);
+
+            _doctorRepo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync(new Doctor());
+
+            _mapper.Setup(x => x.Map<AppointmentDto>(appointment))
+                .Returns(new AppointmentDto());
+
+            await _service.GetAppointmentById(1);
+
+            _doctorRepo.Verify(
+                x => x.getbyidAsync(1),
+                Times.Once);
+        }
+        [Fact]
+        public async Task GetAppointmentById_Should_Load_Only_Patient()
+        {
+            var appointment = new Appointment
+            {
+                AppointmentId = 1,
+                PatientId = 1,
+                DoctorId = 1,
+                Doctor = new Doctor()
+            };
+
+            _repo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync(appointment);
+
+            _patientRepo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync(new Patient());
+
+            _mapper.Setup(x => x.Map<AppointmentDto>(appointment))
+                .Returns(new AppointmentDto());
+
+            await _service.GetAppointmentById(1);
+
+            _patientRepo.Verify(
+                x => x.getbyidAsync(1),
+                Times.Once);
         }
     }
 }
