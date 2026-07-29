@@ -9,7 +9,13 @@ namespace HealthCare.Api.Repositories.Implementations
 {
     public class AppointmentRepository : Repository<Appointment>, IAppointmentRepository
     {
-        private const string Cancelled = "Cancelled";
+private const string Pending = "Pending";
+
+private const string Confirmed = "Confirmed";
+
+private const string Cancelled = "Cancelled";
+
+private const string Completed = "Completed";
         public AppointmentRepository(HealthCareDbContext context) : base(context) { }
 
         public IQueryable<Appointment> GetQueryable()
@@ -44,13 +50,13 @@ namespace HealthCare.Api.Repositories.Implementations
                 .Select(g => new AppointmentReportDto
                 {
                     Date = g.Key,
-                    PendingCount = g.Count(a => a.Status == "Pending"),
-                    ConfirmedCount = g.Count(a => a.Status == "Confirmed"),
-                    CancelledCount = g.Count(a => a.Status == "Cancelled"),
-                    CompletedCount = g.Count(a => a.Status == "Completed"),
+                    PendingCount = g.Count(a => a.Status == Pending),
+                    ConfirmedCount = g.Count(a => a.Status == Confirmed),
+                    CancelledCount = g.Count(a => a.Status == Cancelled),
+                    CompletedCount = g.Count(a => a.Status == Completed),
 
                     Revenue = g
-                        .Where(a => a.Status == "Completed")
+                        .Where(a => a.Status == Completed)
                         .Sum(a => a.Doctor.ConsultationFee)
                 })
                 .OrderBy(r => r.Date)

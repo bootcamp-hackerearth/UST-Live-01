@@ -11,6 +11,8 @@ namespace HealthCare.Api.Repositories.Implementations
     {
         public DoctorRepository(HealthCareDbContext context) : base(context) { }
 
+        private const string Cancelled = "Cancelled";
+
         public IQueryable<Doctor> GetQueryable()
         {
             return _dbSet.AsQueryable();
@@ -64,7 +66,7 @@ namespace HealthCare.Api.Repositories.Implementations
                 .Where(d => d.AvailableSlots
                     .Select(s => s.TimeSlot)
                     .Except(d.Appointments
-                        .Where(a => a.ScheduledDate == date && a.Status != "Cancelled")
+                        .Where(a => a.ScheduledDate == date && a.Status != Cancelled)
                         .Select(a => a.TimeSlot))
                     .Any())
                 .Select(d => new DoctorListDto
@@ -86,7 +88,7 @@ namespace HealthCare.Api.Repositories.Implementations
                 {
                     TotalDoctors = g.Count(),
                     ActiveDoctors = g.Count(d => d.IsActive),
-                    InactiveDoctors = g.Count(d => d.IsActive == false)
+                    InactiveDoctors = g.Count(d => !d.IsActive)
                 })
                 .FirstOrDefaultAsync();
 

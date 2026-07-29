@@ -118,8 +118,8 @@ namespace HealthCare.Api.Services.Implementations
         }
 
         public async Task AddAsync(
-            CreateAppointmentDto dto,
-            int patientId)
+    CreateAppointmentDto dto,
+    int patientId)
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
 
@@ -143,8 +143,7 @@ namespace HealthCare.Api.Services.Implementations
                     dto.DoctorId,
                     dto.TimeSlot);
 
-                var appointment =
-                    _mapper.Map<Appointment>(dto);
+                var appointment = _mapper.Map<Appointment>(dto);
 
                 appointment.PatientId = patientId;
                 appointment.Status = "Pending";
@@ -162,26 +161,16 @@ namespace HealthCare.Api.Services.Implementations
                     appointment.TimeSlot);
 
                 var patient = await _context.Patients
-                    .FirstOrDefaultAsync(p =>
-                        p.PatientId == patientId);
+                    .FirstOrDefaultAsync(p => p.PatientId == patientId);
 
                 await _publishEndpoint.Publish(
                     new AppointmentBookedEvent
                     {
-                        AppointmentId =
-                            appointment.AppointmentId,
-
-                        PatientName =
-                            patient?.FullName ?? "Unknown",
-
-                        DoctorId =
-                            appointment.DoctorId,
-
-                        ScheduledDate =
-                            appointment.ScheduledDate,
-
-                        TimeSlot =
-                            appointment.TimeSlot
+                        AppointmentId = appointment.AppointmentId,
+                        PatientName = patient?.FullName ?? "Unknown",
+                        DoctorId = appointment.DoctorId,
+                        ScheduledDate = appointment.ScheduledDate,
+                        TimeSlot = appointment.TimeSlot
                     });
 
                 Log.Information(
@@ -189,43 +178,12 @@ namespace HealthCare.Api.Services.Implementations
                     appointment.AppointmentId,
                     appointment.DoctorId);
             }
-            catch (InvalidOperationException ex)
-            {
-                Log.Warning(
-                    ex,
-                    "Appointment booking validation failed. PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
-                    patientId,
-                    dto.DoctorId,
-                    dto.ScheduledDate,
-                    dto.TimeSlot);
-
-                throw;
-            }
             catch (DbUpdateException ex)
             {
-                Log.Error(
-                    ex,
-                    "Database error occurred while booking appointment. PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
-                    patientId,
-                    dto.DoctorId,
-                    dto.ScheduledDate,
-                    dto.TimeSlot);
-
                 throw new InvalidOperationException(
-                    "Failed to book the appointment.",
+                    $"Failed to book the appointment for patient {patientId} " +
+                    $"with doctor {dto.DoctorId} on {dto.ScheduledDate}.",
                     ex);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(
-                    ex,
-                    "Unexpected error occurred while booking appointment. PatientId: {PatientId}, DoctorId: {DoctorId}, ScheduledDate: {ScheduledDate}, TimeSlot: {TimeSlot}",
-                    patientId,
-                    dto.DoctorId,
-                    dto.ScheduledDate,
-                    dto.TimeSlot);
-
-                throw;
             }
         }
 
@@ -289,30 +247,24 @@ namespace HealthCare.Api.Services.Implementations
         }
 
         public async Task UpdateStatusAsync(
-            int id,
-            UpdateAppointmentDto dto)
+    int id,
+    UpdateAppointmentDto dto)
         {
+            var appointment = await _repository.GetByIdAsync(id);
+
+            if (appointment is null)
+            {
+                throw new InvalidOperationException(
+                    "Appointment not found.");
+            }
+
+            var oldStatus = appointment.Status;
+
+            appointment.Status = dto.Status;
+            appointment.CancellationReason = dto.CancellationReason;
+
             try
             {
-                var appointment =
-                    await _repository.GetByIdAsync(id);
-
-                if (appointment is null)
-                {
-                    Log.Warning(
-                        "Appointment status update failed. Appointment not found. AppointmentId: {AppointmentId}",
-                        id);
-
-                    throw new InvalidOperationException(
-                        "Appointment not found.");
-                }
-
-                var oldStatus = appointment.Status;
-
-                appointment.Status = dto.Status;
-                appointment.CancellationReason =
-                    dto.CancellationReason;
-
                 await _repository.UpdateAsync(appointment);
                 await _context.SaveChangesAsync();
 
@@ -322,51 +274,20 @@ namespace HealthCare.Api.Services.Implementations
                     oldStatus,
                     appointment.Status);
             }
-            catch (InvalidOperationException ex)
-            {
-                Log.Warning(
-                    ex,
-                    "Appointment status update validation failed. AppointmentId: {AppointmentId}, RequestedStatus: {RequestedStatus}",
-                    id,
-                    dto.Status);
-
-                throw;
-            }
             catch (DbUpdateException ex)
             {
-                Log.Error(
-                    ex,
-                    "Database error occurred while updating appointment status. AppointmentId: {AppointmentId}, RequestedStatus: {RequestedStatus}",
-                    id,
-                    dto.Status);
-
                 throw new InvalidOperationException(
-                    "Failed to update appointment status.",
+                    $"Failed to update status for appointment {id}.",
                     ex);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(
-                    ex,
-                    "Unexpected error occurred while updating appointment status. AppointmentId: {AppointmentId}, RequestedStatus: {RequestedStatus}",
-                    id,
-                    dto.Status);
-
-                throw;
             }
         }
 
         public async Task DeleteAsync(int id)
         {
-            var appointment =
-                await _repository.GetByIdAsync(id);
+            var appointment = await _repository.GetByIdAsync(id);
 
             if (appointment is null)
             {
-                Log.Warning(
-                    "Appointment delete failed. Appointment not found. AppointmentId: {AppointmentId}",
-                    id);
-
                 throw new AppointmentNotFoundException(id);
             }
 
@@ -381,23 +302,9 @@ namespace HealthCare.Api.Services.Implementations
             }
             catch (DbUpdateException ex)
             {
-                Log.Error(
-                    ex,
-                    "Database error occurred while deleting appointment. AppointmentId: {AppointmentId}",
-                    id);
-
                 throw new InvalidOperationException(
-                    "Failed to delete appointment. It may be referenced by existing health records.",
+                    $"Failed to delete appointment {id}. It may be referenced by existing health records.",
                     ex);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(
-                    ex,
-                    "Unexpected error occurred while deleting appointment. AppointmentId: {AppointmentId}",
-                    id);
-
-                throw;
             }
         }
 
@@ -568,15 +475,14 @@ namespace HealthCare.Api.Services.Implementations
         }
 
         public async Task CancelAppointmentsByDoctorDate(
-            int doctorId,
-            DateOnly date)
+    int doctorId,
+    DateOnly date)
         {
             try
             {
-                await _repository
-                    .CancelAppointmentsByDoctorDate(
-                        doctorId,
-                        date);
+                await _repository.CancelAppointmentsByDoctorDate(
+                    doctorId,
+                    date);
 
                 await _context.SaveChangesAsync();
 
@@ -587,28 +493,11 @@ namespace HealthCare.Api.Services.Implementations
             }
             catch (DbUpdateException ex)
             {
-                Log.Error(
-                    ex,
-                    "Database error occurred while cancelling appointments. DoctorId: {DoctorId}, Date: {Date}",
-                    doctorId,
-                    date);
-
                 throw new InvalidOperationException(
-                    "Failed to cancel appointments.",
+                    $"Failed to cancel appointments for doctor {doctorId} on {date}.",
                     ex);
             }
-            catch (Exception ex)
-            {
-                Log.Error(
-                    ex,
-                    "Unexpected error occurred while cancelling appointments. DoctorId: {DoctorId}, Date: {Date}",
-                    doctorId,
-                    date);
-
-                throw;
-            }
         }
-
         public async Task<AppointmentSummaryDto>
             GetSummaryAsync()
         {

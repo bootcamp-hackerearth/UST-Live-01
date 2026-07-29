@@ -18,12 +18,7 @@ using Serilog;
 using System.Security.Claims;
 using System.Text;
 
-namespace HealthCare.Api
-{
-    public partial class Program
-    {
-        public static async Task Main(string[] args)
-        {
+
 
             Log.Logger = new LoggerConfiguration()
 .WriteTo.Console().CreateBootstrapLogger();
@@ -215,25 +210,30 @@ namespace HealthCare.Api
                 context.Response.Redirect("/angular");
                 return Task.CompletedTask;
             });
+           const string IndexFile = "index.html";
+
             app.MapGet("/angular", async context =>
             {
-                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", "index.html"));
+                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath!, "angular", IndexFile));
             });
-            app.MapGet("/angular/{*path:nonfile}", async context =>
+            app.MapGet("/angular/{*path:nonfile}", async (HttpContext context, string? path) =>
             {
-                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "angular", "index.html"));
+                _ = path;
+                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath!, "angular", IndexFile));
             });
             app.MapGet("/blazor", async context =>
             {
-                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
+                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath!, "blazor", IndexFile));
             });
-            app.MapGet("/blazor/{*path:nonfile}", async context =>
-            {
-                await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath, "blazor", "index.html"));
-            });
+           app.MapGet("/blazor/{*path:nonfile}", async (HttpContext context, string? path) =>
+           {
+            _ = path;
+
+           await context.Response.SendFileAsync(Path.Combine(app.Environment.WebRootPath!, "blazor", IndexFile));
+});
 
 
-            try
+try
             {
                 await app.RunAsync();
             }
@@ -241,6 +241,5 @@ namespace HealthCare.Api
             {
                 await Log.CloseAndFlushAsync();
             }
-        }
-    }
-}
+        
+    
