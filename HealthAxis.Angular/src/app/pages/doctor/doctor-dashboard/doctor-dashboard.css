@@ -51,26 +51,145 @@
 /* ==============================
    SIDEBAR
 ============================== */
-
 .dd-sidebar {
   position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 100;
 
-  width: 70px;
-  height: 70px;
+  top: 12px;
+  left: 0;
 
-  padding: 0;
+  width: 280px;
+  height: calc(100vh - 24px);
+
+  padding: 90px 20px 24px;
+
+  background: linear-gradient(
+    180deg,
+    #80644b 0%,
+    #6d5642 100%
+  );
+
+  border-top: 1px solid rgba(226,196,138,.7);
+  border-right: 2px solid rgba(226,196,138,.8);
+  border-bottom: 1px solid rgba(226,196,138,.7);
+  border-left: 1px solid rgba(226,196,138,.4);
+
+  border-radius: 0 38px 38px 38px;
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.28),
+    0 0 0 1px rgba(226,196,138,.15);
+
+  overflow-y: auto;
+
+  z-index: 9500;
+
+  transform: translateX(-105%);
+  transition: transform .3s ease;
+}
+
+.dd-sidebar.open {
+  transform: translateX(0);
+}
+.dd-floating-menu {
+  position: fixed;
+
+  top: 22px;
+  left: 22px;
+
+  width: 60px;
+  height: 60px;
+
+  border: none;
+  border-radius: 20px;
+
+  background: rgba(255,255,255,.75);
+
+  border: 1px solid rgba(226,196,138,.6);
+
+  color: #4a3728;
+
+  font-size: 30px;
+
+  cursor: pointer;
+
+  z-index: 10001;
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.15);
+}
+.dd-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dd-menu button {
+  position: relative;
+
+  width: 100%;
+  height: 58px;
+
+  border: none;
   border-radius: 20px;
 
   background: transparent;
-  border: none;
-  box-shadow: none;
 
-  overflow: visible;
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 22px;
+
+  font-size: 1.1rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all .25s ease;
 }
 
+.dd-menu button:hover {
+  background: rgba(255,255,255,.10);
+  transform: translateX(4px);
+}
+.dd-menu button.active {
+  background: linear-gradient(
+    135deg,
+    #d1b17f,
+    #c5a16d
+  );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 0 30px rgba(209,177,127,.30);
+}
+
+.dd-menu button.active::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+
+  width: 5px;
+
+  border-radius: 999px;
+
+  background: #fff4d8;
+}
+.dd-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(4px);
+
+  z-index: 9000;
+}
 .dd-sidebar.open {
   width: 280px;
   height: auto;
@@ -151,35 +270,6 @@
 /* ==============================
    SIDEBAR TOGGLE / MENU
 ============================== */
-/* .dd-sidebar-toggle {
-  width: 70px;
-  height: 70px;
-  border: 0;
-  border-radius: 20px;
-
-  background: linear-gradient(
-    135deg,
-    #d8b58a,
-    #b58a5a
-  );
-
-  color: #fff;
-  cursor: pointer;
-
-  font-size: 30px;
-  font-weight: 900;
-
-  display: grid;
-  place-items: center;
-
-  box-shadow: 0 16px 34px rgba(181, 138, 90, 0.28);
-}
-.dd-sidebar.open .dd-sidebar-toggle {
-  margin-left: auto;
-}
-.dd-sidebar-content {
-  margin-top: 20px;
-} */
 
 .dd-menu {
   display: grid;
@@ -801,9 +891,8 @@
 /* PANELS */
 .dd-dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1.1fr 0.9fr;
   gap: 20px;
-  align-items: stretch;
 }
 
 .dd-panel,
@@ -818,7 +907,7 @@
 }
 
 .dd-wide-panel {
-  grid-column: auto;
+  grid-column: 1 / -1;
 }
 
 .dd-panel-header {
@@ -1347,9 +1436,6 @@
     padding-left: 0;
   }
 
-  /* .dd-page:has(.dd-sidebar.open) {
-    padding-left: 0;
-  } */
 
   .dd-sidebar {
     transform: translateX(-110%);
@@ -1519,174 +1605,4 @@
 .dd-profile-dropdown {
   position: absolute;
   z-index: 1000;
-}
-
-.dd-summary-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.dd-summary-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-
-  width: 100%;
-  height: 5px;
-}
-
-.dd-summary-card.blue::before {
-  background: #d8b58a;
-}
-
-.dd-summary-card.amber::before {
-  background: #c89b63;
-}
-
-.dd-summary-card.sky::before {
-  background: #b58a5a;
-}
-
-.dd-summary-card.green::before {
-  background: #8f7a5c;
-}
-.dd-sidebar {
-  position: fixed;
-
-  top: 12px;
-  left: 0;
-
-  width: 280px;
-  height: calc(100vh - 24px);
-
-  padding: 90px 20px 24px;
-
-  background: linear-gradient(
-    180deg,
-    #80644b 0%,
-    #6d5642 100%
-  );
-
-  border-top: 1px solid rgba(226,196,138,.7);
-  border-right: 2px solid rgba(226,196,138,.8);
-  border-bottom: 1px solid rgba(226,196,138,.7);
-  border-left: 1px solid rgba(226,196,138,.4);
-
-  border-radius: 0 38px 38px 38px;
-
-  box-shadow:
-    0 20px 60px rgba(0,0,0,.28),
-    0 0 0 1px rgba(226,196,138,.15);
-
-  overflow-y: auto;
-
-  z-index: 9500;
-
-  transform: translateX(-105%);
-  transition: transform .3s ease;
-}
-
-.dd-sidebar.open {
-  transform: translateX(0);
-}
-.dd-floating-menu {
-  position: fixed;
-
-  top: 22px;
-  left: 22px;
-
-  width: 60px;
-  height: 60px;
-
-  border: none;
-  border-radius: 20px;
-
-  background: rgba(255,255,255,.75);
-
-  border: 1px solid rgba(226,196,138,.6);
-
-  color: #4a3728;
-
-  font-size: 30px;
-
-  cursor: pointer;
-
-  z-index: 10001;
-
-  box-shadow:
-    0 12px 30px rgba(0,0,0,.15);
-}
-.dd-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.dd-menu button {
-  position: relative;
-
-  width: 100%;
-  height: 58px;
-
-  border: none;
-  border-radius: 20px;
-
-  background: transparent;
-
-  color: #ffffff;
-
-  display: flex;
-  align-items: center;
-
-  padding: 0 22px;
-
-  font-size: 1.1rem;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition: all .25s ease;
-}
-
-.dd-menu button:hover {
-  background: rgba(255,255,255,.10);
-  transform: translateX(4px);
-}
-.dd-menu button.active {
-  background: linear-gradient(
-    135deg,
-    #d1b17f,
-    #c5a16d
-  );
-
-  color: #ffffff;
-
-  box-shadow:
-    0 0 30px rgba(209,177,127,.30);
-}
-
-.dd-menu button.active::before {
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-  top: 16px;
-  bottom: 16px;
-
-  width: 5px;
-
-  border-radius: 999px;
-
-  background: #fff4d8;
-}
-.dd-sidebar-overlay {
-  position: fixed;
-  inset: 0;
-
-  background: rgba(0,0,0,.35);
-  backdrop-filter: blur(4px);
-
-  z-index: 9000;
 }
