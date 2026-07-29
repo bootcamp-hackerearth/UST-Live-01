@@ -78,7 +78,7 @@ export class PatientRegisterComponent {
         [
           Validators.required,
           Validators.pattern(
-            '^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{6,}$'
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
           )
         ]
       ]
@@ -119,7 +119,7 @@ export class PatientRegisterComponent {
 
     // Replace with your actual API URL
     this.http.post<any>(
-      '/api/auth/register/Patient',
+      '/api/auth/register/patient',
       patient
     )
       .subscribe({
