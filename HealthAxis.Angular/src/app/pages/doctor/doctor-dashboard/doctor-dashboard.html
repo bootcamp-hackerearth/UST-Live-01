@@ -3,57 +3,64 @@
 
   <!-- Always visible -->
   <button
-    type="button"
-    class="dd-sidebar-toggle"
-    (click)="toggleSidebar()">
-    ☰
-  </button>
+  type="button"
+  class="dd-floating-menu"
+  (click)="toggleSidebar()">
+  ☰
+</button>
 
-  <!-- Hidden initially -->
-  <div class="dd-sidebar-content" *ngIf="isSidebarOpen">
-
-    <nav class="dd-menu">
-
-      <button
-        type="button"
-        [class.active]="activeSection === 'dashboard'"
-        (click)="setActiveSection('dashboard')">
-        <strong>Dashboard</strong>
-      </button>
-
-      <button
-        type="button"
-        [class.active]="activeSection === 'appointments'"
-        (click)="setActiveSection('appointments')">
-        <strong>Appointments</strong>
-      </button>
-
-      <button
-        type="button"
-        [class.active]="activeSection === 'records'"
-        (click)="setActiveSection('records')">
-        <strong>Health Records</strong>
-      </button>
-
-      <button
-        type="button"
-        [class.active]="activeSection === 'profile'"
-        (click)="setActiveSection('profile')">
-        <strong>Profile</strong>
-      </button>
-
-      <button
-        type="button"
-        class="dd-logout-menu-btn"
-        (click)="openLogoutModal()">
-        <strong>Logout</strong>
-      </button>
-
-    </nav>
-
+@if (isSidebarOpen) {
+  <div
+    class="dd-sidebar-overlay"
+    (click)="closeSidebar()">
   </div>
+}
+
+<aside
+  class="dd-sidebar"
+  [class.open]="isSidebarOpen">
+
+  <nav class="dd-menu">
+
+    <button
+      type="button"
+      [class.active]="activeSection === 'dashboard'"
+      (click)="setActiveSection('dashboard')">
+      <strong>Dashboard</strong>
+    </button>
+
+    <button
+      type="button"
+      [class.active]="activeSection === 'appointments'"
+      (click)="setActiveSection('appointments')">
+      <strong>Appointments</strong>
+    </button>
+
+    <button
+      type="button"
+      [class.active]="activeSection === 'records'"
+      (click)="setActiveSection('records')">
+      <strong>Health Records</strong>
+    </button>
+
+    <button
+      type="button"
+      [class.active]="activeSection === 'profile'"
+      (click)="setActiveSection('profile')">
+      <strong>Profile</strong>
+    </button>
+
+    <button
+      type="button"
+      class="dd-logout-menu-btn"
+      (click)="openLogoutModal()">
+      <strong>Logout</strong>
+    </button>
+
+  </nav>
 
 </aside>
+
   
   @if (isSidebarOpen) {
     <div class="dd-sidebar-overlay" (click)="closeSidebar()"></div>
