@@ -1,11 +1,18 @@
 <div class="modal-backdrop"
-     *ngIf="visible"
-     (click)="closeOnBackdrop($event)">
+     *ngIf="visible">
 
-  <div class="modal-box">
+  <button type="button"
+          class="backdrop-close"
+          aria-label="Close edit profile dialog"
+          (click)="close()">
+  </button>
+
+  <dialog class="modal-box"
+          open
+          aria-labelledby="edit-profile-title">
 
     <div class="modal-header">
-      <h3>Edit Profile</h3>
+      <h3 id="edit-profile-title">Edit Profile</h3>
 
       <button type="button"
               class="close"
@@ -86,6 +93,5 @@
 
     </form>
 
-  </div>
-
+  </dialog>
 </div>

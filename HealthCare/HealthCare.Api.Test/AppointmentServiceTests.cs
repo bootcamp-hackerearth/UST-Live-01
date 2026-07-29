@@ -25,7 +25,6 @@ namespace HealthCare.Api.Tests
         private readonly AppointmentService _service;
         private readonly Mock<IPublishEndpoint> _publishEndpointMock;
         private readonly Mock<ILogger<AppointmentService>> _loggerMock;
-        private readonly Mock<IDistributedCache> _cacheMock;
 
         public AppointmentServiceTests()
         {
@@ -34,7 +33,6 @@ namespace HealthCare.Api.Tests
             _mapperMock = new Mock<IMapper>();
             _publishEndpointMock = new Mock<IPublishEndpoint>();
             _loggerMock = new Mock<ILogger<AppointmentService>>();
-            _cacheMock = new Mock<IDistributedCache>();
 
 
             var options = new DbContextOptionsBuilder<HealthCareDbContext>()
@@ -49,8 +47,7 @@ namespace HealthCare.Api.Tests
                 _context,
                 _mapperMock.Object,
                 _publishEndpointMock.Object,
-                _loggerMock.Object,
-                _cacheMock.Object
+                _loggerMock.Object
             );
         }
 

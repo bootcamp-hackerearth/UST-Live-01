@@ -21,7 +21,6 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IPatientRepository _patientRepo;
         private readonly IDoctorRepository _doctorRepo;
         private readonly IJwtService _jwtService;
-        private readonly ILogger<AuthService> _logger;
         private readonly HealthCareDbContext _context;
 
 
@@ -32,7 +31,6 @@ namespace HealthCare.Api.Services.Implementations
             IPatientRepository patientRepo,
             IDoctorRepository doctorRepo,
             IJwtService jwtService,
-            ILogger<AuthService> logger,
             HealthCareDbContext context)
         {
             _userManager = userManager;
@@ -41,7 +39,6 @@ namespace HealthCare.Api.Services.Implementations
             _doctorRepo = doctorRepo;
             _jwtService = jwtService;
             _context = context;
-            _logger = logger;
         }
 #pragma warning restore S107
 

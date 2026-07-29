@@ -19,16 +19,14 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly HealthCareDbContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger<DoctorService> _logger;
         private const string NotFoundExceptionMessage = "Doctor not found.";
 
-        public DoctorService(IDoctorRepository repository, IAppointmentRepository appointmentRepository, HealthCareDbContext context, IMapper mapper, ILogger<DoctorService> logger)
+        public DoctorService(IDoctorRepository repository, IAppointmentRepository appointmentRepository, HealthCareDbContext context, IMapper mapper)
         {
             _repository = repository;
             _appointmentRepository = appointmentRepository;
             _context = context;
             _mapper = mapper;
-            _logger = logger;
         }
 
         public async Task<DoctorListDto?> GetByIdAsync(int id)

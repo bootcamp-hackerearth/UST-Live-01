@@ -105,9 +105,9 @@
         </div>
 
         <app-patient-edit-profile-modal [visible]="showEditModal"
-                                [model]="editModel"
-                                (onClose)="closeModal()"
-                                (onSave)="saveChanges($event)">
+                                        [model]="editModel"
+                                        (closed)="closeModal()"
+                                        (saved)="saveChanges($event)">
         </app-patient-edit-profile-modal>
 
        <!-- Success Modal -->

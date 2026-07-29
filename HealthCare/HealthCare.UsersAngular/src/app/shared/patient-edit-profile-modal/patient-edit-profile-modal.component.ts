@@ -27,8 +27,8 @@ export class PatientEditProfileModalComponent implements OnChanges {
   @Input() visible = false;
   @Input() model: any = {};
 
-  @Output() onClose = new EventEmitter<void>();
-  @Output() onSave = new EventEmitter<any>();
+  @Output() closed = new EventEmitter<void>();
+  @Output() saved = new EventEmitter<any>();
 
   editForm: FormGroup;
 
@@ -87,11 +87,18 @@ export class PatientEditProfileModalComponent implements OnChanges {
       return;
     }
 
-    this.onSave.emit(this.editForm.value);
+    this.saved.emit(this.editForm.value);
   }
 
   close(): void {
-    this.onClose.emit();
+    this.closed.emit();
+  }
+
+  closeOnBackdropKey(event: KeyboardEvent): void {
+    if (event.target === event.currentTarget) {
+      event.preventDefault();
+      this.close();
+    }
   }
 
   closeOnBackdrop(event: MouseEvent): void {

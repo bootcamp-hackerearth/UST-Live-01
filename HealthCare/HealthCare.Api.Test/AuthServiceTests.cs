@@ -27,7 +27,6 @@ namespace HealthCare.Api.Tests
         private readonly HealthCareDbContext _context;
         private readonly AuthService _service;
         private readonly Mock<ILogger<AuthService>> _loggerMock;
-        private readonly Mock<IDistributedCache> _cacheMock;
 
         public AuthServiceTests()
         {
@@ -41,7 +40,6 @@ namespace HealthCare.Api.Tests
             _doctorRepoMock = new Mock<IDoctorRepository>();
             _jwtServiceMock = new Mock<IJwtService>();
             _loggerMock = new Mock<ILogger<AuthService>>();
-            _cacheMock = new Mock<IDistributedCache>();
 
             var options = new DbContextOptionsBuilder<HealthCareDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -55,8 +53,6 @@ namespace HealthCare.Api.Tests
             _patientRepoMock.Object,
             _doctorRepoMock.Object,
             _jwtServiceMock.Object,
-            _loggerMock.Object,
-            _cacheMock.Object,
             _context
         );
         }

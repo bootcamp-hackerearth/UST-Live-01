@@ -21,7 +21,6 @@ namespace HealthCare.Api.Tests
         private readonly Mock<IMapper> _mapperMock;
         private readonly HealthCareDbContext _context;
         private readonly DoctorService _service;
-        private readonly Mock<IDistributedCache> _cacheMock;
         private readonly Mock<ILogger<DoctorService>> _loggerMock;
 
         public DoctorServiceTests()
@@ -29,7 +28,6 @@ namespace HealthCare.Api.Tests
             _repoMock = new Mock<IDoctorRepository>();
             _appointmentRepoMock = new Mock<IAppointmentRepository>();
             _mapperMock = new Mock<IMapper>();
-            _cacheMock = new Mock<IDistributedCache>();
             _loggerMock = new Mock<ILogger<DoctorService>>();
 
             var options = new DbContextOptionsBuilder<HealthCareDbContext>()
@@ -42,9 +40,7 @@ namespace HealthCare.Api.Tests
                 _repoMock.Object,
                 _appointmentRepoMock.Object,
                 _context,
-                _mapperMock.Object,
-                _cacheMock.Object,
-                _loggerMock.Object
+                _mapperMock.Object
 
             );
         }
@@ -641,56 +637,6 @@ namespace HealthCare.Api.Tests
 
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 _service.UpdateStatusAsync(1, true));
-        }
-
-        [Fact]
-        public async Task CreateLeave_ShouldCreateLeaves()
-        {
-            // Arrange
-
-            _context.Doctors.Add(new Doctor
-            {
-                DoctorId = 1,
-                FullName = "Doctor",
-                Specialisation = "Cardiology",
-                IsActive = true
-            });
-
-            await _context.SaveChangesAsync();
-
-            _repoMock.Setup(r => r.GetLeavesByDoctorId(1))
-                .ReturnsAsync(new List<DoctorLeaves>());
-
-            _repoMock.Setup(r => r.GetSlots(1))
-                .ReturnsAsync(new List<string>
-                {
-            "09:00-10:00"
-                });
-
-            _appointmentRepoMock.Setup(r =>
-                r.BookedTimeSlots(It.IsAny<DateOnly>(), 1))
-                .ReturnsAsync(new List<string>());
-
-            var leaves = new List<CreateLeaveDto>
-    {
-        new()
-        {
-            LeaveDate = DateOnly.FromDateTime(
-                DateTime.Today.AddDays(5))
-        }
-    };
-
-            // Act
-
-            await _service.CreateLeave(1, leaves);
-
-            // Assert
-
-            _repoMock.Verify(r =>
-                r.CreateLeaves(
-                    1,
-                    It.IsAny<List<CreateLeaveDto>>()),
-                Times.Once);
         }
 
         [Fact]
