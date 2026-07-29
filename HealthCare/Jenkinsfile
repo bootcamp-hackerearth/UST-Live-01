@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION = 'ap-south-1'
         EB_APPLICATION_NAME = 'HealthCareApi'
         EB_ENVIRONMENT_NAME = 'HealthCareApi-dev'
-        S3_BUCKET = 'health-bucket-748999353112-ap-south-1-an'
+        S3_BUCKET = 'healthapp-611491981271-ap-south-1-an'
     }
 
     stages {
@@ -18,7 +18,7 @@ pipeline {
 
         stage('Build Angular') {
             steps {
-                dir('Health/HealthCareUser.Web') {
+                dir('HealthCare/HealthCare.UsersAngular') {
                     bat 'npm install'
                     bat 'npm run build'
                 }
@@ -27,20 +27,20 @@ pipeline {
 
         stage('Publish Blazor') {
             steps {
-                bat 'dotnet publish Health\\HealthCareAdmin.Web\\HealthCareAdmin.Web.csproj -c Release -o blazor-publish-temp'
+                bat 'dotnet publish HealthCare\\HealthCare.AdminBlazor\\HealthCare.AdminBlazor.csproj -c Release -o blazor-publish-temp'
             }
         }
 
     stage('Copy Blazor into API wwwroot') {
     steps {
-        bat 'if not exist Health\\HealthCare.Api\\wwwroot\\blazor mkdir Health\\HealthCare.Api\\wwwroot\\blazor'
-        bat 'xcopy /E /Y /I blazor-publish-temp\\wwwroot\\* Health\\HealthCare.Api\\wwwroot\\blazor\\'
+        bat 'if not exist HealthCare\\HealthCare.Api\\wwwroot\\blazor mkdir Health\\HealthCare.Api\\wwwroot\\blazor'
+        bat 'xcopy /E /Y /I blazor-publish-temp\\wwwroot\\* HealthCare\\HealthCare.Api\\wwwroot\\blazor\\'
     }
 }
 
         stage('Publish API') {
             steps {
-                bat 'dotnet publish Health\\HealthCare.Api\\HealthCare.Api.csproj -c Release -o publish'
+                bat 'dotnet publish HealthCare\\HealthCare.Api\\HealthCare.Api.csproj -c Release -o publish'
             }
         }
 
@@ -62,7 +62,7 @@ pipeline {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'deploy-id'
+                    credentialsId: 'aws-deploy-creds'
                 ]]) {
 
                     bat "aws s3 cp deploy-package.zip s3://%S3_BUCKET%/deploy-package-%BUILD_NUMBER%.zip --region %AWS_REGION%"
