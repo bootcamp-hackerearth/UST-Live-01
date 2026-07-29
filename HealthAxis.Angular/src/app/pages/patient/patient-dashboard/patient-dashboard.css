@@ -131,11 +131,7 @@
   width: auto !important;
   transform: none !important;
 }
-.pd-health-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 24px;
-}
+
 .pd-topbar {
     padding-left: 80px;
 }
@@ -1319,10 +1315,9 @@
 /* ==================================
    HEALTH RECORD PREVIEW
 ================================== */
-
 .pd-record-preview {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
 }
 
@@ -2859,10 +2854,6 @@
    HEALTH SECTION
 ================================== */
 
-.pd-panel-header h3 {
-  font-size: 1.5rem;
-  white-space: normal;
-}
 .pd-prescription-card {
   margin-top: 0;
 }
@@ -2870,16 +2861,10 @@
   display: grid;
   grid-template-columns: 2fr 1.5fr 1.5fr;
   gap: 24px;
+  grid-column: 1 / -1;
+  align-items: start;
 }
-.pd-health-grid > .pd-panel {
-  height: 100%;
-}
-.pd-panel-header h3 {
-  font-size: 1.5rem;
-  line-height: 1.2;
-  white-space: normal;
-  word-break: break-word;
-}
+
 .pd-panel {
   height: auto;
   min-height: 320px;
@@ -2958,9 +2943,6 @@
   font-weight: 700;
 
   word-break: break-word;
-}
-.pd-health-grid {
-  align-items: start;
 }
 
 .premium-panel {
@@ -3083,6 +3065,11 @@
   margin-bottom: 0.25rem;
 }
 
+.pd-panel-header h3 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  white-space: normal;
+}
 .pd-panel-header p {
   margin: 0;
 }
@@ -3148,23 +3135,12 @@
 .pd-wellness-card {
   min-height: 220px;
 }
-
-.pd-wellness-content {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 1.5rem;
-  border: 1px solid #e7dccd;
-  border-radius: 24px;
-  background: #faf8f3;
-}
 .pd-wellness-content {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-direction: row;
 }
-
 .pd-wellness-icon {
   width: 72px;
   height: 72px;
