@@ -131,8 +131,10 @@
   width: auto !important;
   transform: none !important;
 }
-.pd-main {
-  padding: 30px 30px 30px 110px;
+.pd-health-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 24px;
 }
 .pd-topbar {
     padding-left: 80px;
@@ -1319,10 +1321,11 @@
 ================================== */
 
 .pd-record-preview {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
+
 
 /* ==================================
    INFO CARDS
@@ -2865,7 +2868,7 @@
 }
 .pd-health-grid {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr;
+  grid-template-columns: 2fr 1.5fr 1.5fr;
   gap: 24px;
 }
 .pd-health-grid > .pd-panel {
@@ -2877,11 +2880,10 @@
   white-space: normal;
   word-break: break-word;
 }
-
 .pd-panel {
-  height: 100%;
+  height: auto;
+  min-height: 320px;
 }
-
 /* ==================================
    PRESCRIPTION CARD
 ================================== */
@@ -3157,8 +3159,10 @@
   background: #faf8f3;
 }
 .pd-wellness-content {
-  flex-direction: column;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-direction: row;
 }
 
 .pd-wellness-icon {
