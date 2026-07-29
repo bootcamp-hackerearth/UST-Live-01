@@ -83,6 +83,7 @@ export class BookAppointment {
 
   private readonly doctorPageSize = 6;
   private availabilityRequestId = 0;
+  private manualDateEntryInProgress = false;
 
   readonly patient = signal<Patient | null>(null);
   readonly doctors = signal<Doctor[]>([]);
@@ -92,6 +93,7 @@ export class BookAppointment {
   readonly doctorSearch = signal('');
   readonly currentDoctorPage = signal(1);
   readonly selectedDate = signal('');
+  readonly dateValidationVisible = signal(false);
   readonly availableSlots = signal<readonly string[]>([]);
   readonly availabilityLoaded = signal(false);
   readonly loadingAvailability = signal(false);
@@ -222,13 +224,35 @@ export class BookAppointment {
     this.resetDoctorPage();
   }
 
-  onDateChange(): void {
-    const dateValue =
-      this.bookingForm.controls.scheduledDate.value;
-
-    this.selectedDate.set(dateValue);
+  onDateInput(): void {
+    this.dateValidationVisible.set(false);
+    this.errorMessage.set('');
     this.clearSelectedTimeSlot();
-    this.loadSelectedDoctorAvailability();
+    this.resetDateAvailability();
+  }
+
+  onDateKeydown(event: KeyboardEvent): void {
+    const isDateEditingKey =
+      event.key.length === 1 ||
+      event.key === 'Backspace' ||
+      event.key === 'Delete';
+
+    if (isDateEditingKey) {
+      this.manualDateEntryInProgress = true;
+    }
+  }
+
+  onDateChange(event: Event): void {
+    if (this.manualDateEntryInProgress) {
+      return;
+    }
+
+    this.completeDateEntry(event);
+  }
+
+  onDateBlur(event: FocusEvent): void {
+    this.manualDateEntryInProgress = false;
+    this.completeDateEntry(event);
   }
 
   selectDoctor(doctor: Doctor): void {
@@ -676,6 +700,68 @@ export class BookAppointment {
     };
   }
 
+  private completeDateEntry(event: Event): void {
+    const inputElement =
+      event.target as HTMLInputElement;
+
+    const dateValue =
+      inputElement.value.trim();
+
+    const dateControl =
+      this.bookingForm.controls.scheduledDate;
+
+    dateControl.setValue(
+      dateValue,
+      {
+        emitEvent: false
+      }
+    );
+
+    dateControl.markAsTouched();
+
+    dateControl.updateValueAndValidity({
+      emitEvent: false
+    });
+
+    this.dateValidationVisible.set(true);
+    this.clearSelectedTimeSlot();
+
+    const parsedDate =
+      BookAppointment.parseDateOnly(
+        dateValue
+      );
+
+    if (
+      !parsedDate ||
+      dateControl.invalid
+    ) {
+      this.resetDateAvailability();
+      return;
+    }
+
+    if (
+      this.selectedDate() === dateValue &&
+      (
+        this.loadingAvailability() ||
+        this.availabilityLoaded()
+      )
+    ) {
+      return;
+    }
+
+    this.selectedDate.set(dateValue);
+    this.errorMessage.set('');
+    this.loadSelectedDoctorAvailability();
+  }
+
+  private resetDateAvailability(): void {
+    this.availabilityRequestId += 1;
+    this.selectedDate.set('');
+    this.availableSlots.set([]);
+    this.availabilityLoaded.set(false);
+    this.loadingAvailability.set(false);
+  }
+
   private loadSelectedDoctorAvailability(): void {
     const doctorId = this.selectedDoctorId();
     const date = this.selectedDate();
@@ -841,6 +927,8 @@ export class BookAppointment {
 
     this.selectedDoctorId.set(0);
     this.selectedDate.set('');
+    this.dateValidationVisible.set(false);
+    this.manualDateEntryInProgress = false;
     this.availableSlots.set([]);
     this.availabilityLoaded.set(false);
     this.loadingAvailability.set(false);
@@ -1111,21 +1199,9 @@ export class BookAppointment {
       return;
     }
 
-    const parsedDocument = new DOMParser().parseFromString(
-      printContent,
-      'text/html'
-    );
-
-    const importedDocumentElement =
-      printWindow.document.importNode(
-        parsedDocument.documentElement,
-        true
-      );
-
-    printWindow.document.replaceChild(
-      importedDocumentElement,
-      printWindow.document.documentElement
-    );
+    printWindow.document.open();
+    printWindow.document.write(printContent);
+    printWindow.document.close();
 
     printWindow.onafterprint = (): void => {
       printWindow.close();

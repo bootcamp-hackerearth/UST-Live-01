@@ -286,11 +286,15 @@
             formControlName="scheduledDate"
             [min]="minDate"
             [max]="maxDate"
-            (change)="onDateChange()"
+            (input)="onDateInput()"
+            (keydown)="onDateKeydown($event)"
+            (change)="onDateChange($event)"
+            (blur)="onDateBlur($event)"
           />
 
           <small class="field-error">
             @if (
+              dateValidationVisible() &&
               scheduledDate.invalid &&
               scheduledDate.touched
             ) {

@@ -115,39 +115,66 @@ namespace HealthAxis.API.Tests.Services
             result.Should().BeEmpty();
         }
 
-        [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task AddDoctorAsync_WhenDoctorNameIsEmpty_ThrowsValidationException(string fullName)
+        [Fact]
+        public async Task AddDoctorAsync_WhenDoctorNameIsEmpty_ThrowsValidationException_ForEmptyValue()
         {
             var dto = CreateCreateDoctorDto();
-            dto.FullName = fullName;
+            dto.FullName = string.Empty;
 
             Func<Task> act = async () => await _service.AddDoctorAsync(dto);
 
             await act.Should().ThrowAsync<ApiValidationException>();
         }
 
-        [Theory]
-        [InlineData("Dr John123")]
-        [InlineData("Dr @John")]
-        public async Task AddDoctorAsync_WhenDoctorNameHasInvalidCharacters_ThrowsValidationException(string fullName)
+        [Fact]
+        public async Task AddDoctorAsync_WhenDoctorNameIsEmpty_ThrowsValidationException_ForWhiteSpaceValue()
         {
             var dto = CreateCreateDoctorDto();
-            dto.FullName = fullName;
+            dto.FullName = " ";
 
             Func<Task> act = async () => await _service.AddDoctorAsync(dto);
 
             await act.Should().ThrowAsync<ApiValidationException>();
         }
 
-        [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task AddDoctorAsync_WhenEmailIsEmpty_ThrowsValidationException(string email)
+        [Fact]
+        public async Task AddDoctorAsync_WhenDoctorNameHasInvalidCharacters_ThrowsValidationException_ForDigits()
         {
             var dto = CreateCreateDoctorDto();
-            dto.Email = email;
+            dto.FullName = "Dr John123";
+
+            Func<Task> act = async () => await _service.AddDoctorAsync(dto);
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task AddDoctorAsync_WhenDoctorNameHasInvalidCharacters_ThrowsValidationException_ForSymbols()
+        {
+            var dto = CreateCreateDoctorDto();
+            dto.FullName = "Dr @John";
+
+            Func<Task> act = async () => await _service.AddDoctorAsync(dto);
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task AddDoctorAsync_WhenEmailIsEmpty_ThrowsValidationException_ForEmptyValue()
+        {
+            var dto = CreateCreateDoctorDto();
+            dto.Email = string.Empty;
+
+            Func<Task> act = async () => await _service.AddDoctorAsync(dto);
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task AddDoctorAsync_WhenEmailIsEmpty_ThrowsValidationException_ForWhiteSpaceValue()
+        {
+            var dto = CreateCreateDoctorDto();
+            dto.Email = " ";
 
             Func<Task> act = async () => await _service.AddDoctorAsync(dto);
 
@@ -165,26 +192,44 @@ namespace HealthAxis.API.Tests.Services
             await act.Should().ThrowAsync<ApiValidationException>();
         }
 
-        [Theory]
-        [InlineData(-1)]
-        [InlineData(61)]
-        public async Task AddDoctorAsync_WhenYearsOfExperienceInvalid_ThrowsValidationException(int yearsOfExperience)
+        [Fact]
+        public async Task AddDoctorAsync_WhenYearsOfExperienceInvalid_ThrowsValidationException_ForNegativeValue()
         {
             var dto = CreateCreateDoctorDto();
-            dto.YearsOfExperience = yearsOfExperience;
+            dto.YearsOfExperience = -1;
 
             Func<Task> act = async () => await _service.AddDoctorAsync(dto);
 
             await act.Should().ThrowAsync<ApiValidationException>();
         }
 
-        [Theory]
-        [InlineData(99)]
-        [InlineData(10001)]
-        public async Task AddDoctorAsync_WhenConsultationFeeInvalid_ThrowsValidationException(decimal fee)
+        [Fact]
+        public async Task AddDoctorAsync_WhenYearsOfExperienceInvalid_ThrowsValidationException_ForValueAboveMaximum()
         {
             var dto = CreateCreateDoctorDto();
-            dto.ConsultationFee = fee;
+            dto.YearsOfExperience = 61;
+
+            Func<Task> act = async () => await _service.AddDoctorAsync(dto);
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task AddDoctorAsync_WhenConsultationFeeInvalid_ThrowsValidationException_ForValueBelowMinimum()
+        {
+            var dto = CreateCreateDoctorDto();
+            dto.ConsultationFee = 99m;
+
+            Func<Task> act = async () => await _service.AddDoctorAsync(dto);
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task AddDoctorAsync_WhenConsultationFeeInvalid_ThrowsValidationException_ForValueAboveMaximum()
+        {
+            var dto = CreateCreateDoctorDto();
+            dto.ConsultationFee = 10001m;
 
             Func<Task> act = async () => await _service.AddDoctorAsync(dto);
 
@@ -292,51 +337,90 @@ namespace HealthAxis.API.Tests.Services
             await act.Should().ThrowAsync<NotFoundException>();
         }
 
-        [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task UpdateDoctorAsync_WhenFullNameEmpty_ThrowsValidationException(string fullName)
+        [Fact]
+        public async Task UpdateDoctorAsync_WhenFullNameEmpty_ThrowsValidationException_ForEmptyValue()
         {
             _doctorRepositoryMock
                 .Setup(repository => repository.GetByIdAsync(1))
                 .ReturnsAsync(CreateDoctor());
 
             var dto = CreateUpdateDoctorDto();
-            dto.FullName = fullName;
+            dto.FullName = string.Empty;
 
             Func<Task> act = async () => await _service.UpdateDoctorAsync(1, dto);
 
             await act.Should().ThrowAsync<ApiValidationException>();
         }
 
-        [Theory]
-        [InlineData(-1)]
-        [InlineData(61)]
-        public async Task UpdateDoctorAsync_WhenYearsOfExperienceInvalid_ThrowsValidationException(int yearsOfExperience)
+        [Fact]
+        public async Task UpdateDoctorAsync_WhenFullNameEmpty_ThrowsValidationException_ForWhiteSpaceValue()
         {
             _doctorRepositoryMock
                 .Setup(repository => repository.GetByIdAsync(1))
                 .ReturnsAsync(CreateDoctor());
 
             var dto = CreateUpdateDoctorDto();
-            dto.YearsOfExperience = yearsOfExperience;
+            dto.FullName = " ";
 
             Func<Task> act = async () => await _service.UpdateDoctorAsync(1, dto);
 
             await act.Should().ThrowAsync<ApiValidationException>();
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        public async Task UpdateDoctorAsync_WhenConsultationFeeInvalid_ThrowsValidationException(decimal fee)
+        [Fact]
+        public async Task UpdateDoctorAsync_WhenYearsOfExperienceInvalid_ThrowsValidationException_ForNegativeValue()
         {
             _doctorRepositoryMock
                 .Setup(repository => repository.GetByIdAsync(1))
                 .ReturnsAsync(CreateDoctor());
 
             var dto = CreateUpdateDoctorDto();
-            dto.ConsultationFee = fee;
+            dto.YearsOfExperience = -1;
+
+            Func<Task> act = async () => await _service.UpdateDoctorAsync(1, dto);
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task UpdateDoctorAsync_WhenYearsOfExperienceInvalid_ThrowsValidationException_ForValueAboveMaximum()
+        {
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateDoctor());
+
+            var dto = CreateUpdateDoctorDto();
+            dto.YearsOfExperience = 61;
+
+            Func<Task> act = async () => await _service.UpdateDoctorAsync(1, dto);
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task UpdateDoctorAsync_WhenConsultationFeeInvalid_ThrowsValidationException_ForZero()
+        {
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateDoctor());
+
+            var dto = CreateUpdateDoctorDto();
+            dto.ConsultationFee = 0m;
+
+            Func<Task> act = async () => await _service.UpdateDoctorAsync(1, dto);
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task UpdateDoctorAsync_WhenConsultationFeeInvalid_ThrowsValidationException_ForNegativeValue()
+        {
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateDoctor());
+
+            var dto = CreateUpdateDoctorDto();
+            dto.ConsultationFee = -1m;
 
             Func<Task> act = async () => await _service.UpdateDoctorAsync(1, dto);
 
@@ -413,37 +497,6 @@ namespace HealthAxis.API.Tests.Services
 
             await act.Should().ThrowAsync<ArgumentNullException>();
         }
-
-        //[Fact]
-        //public async Task GetDoctorsPagedAsync_WhenValid_ReturnsPagedDoctors()
-        //{
-        //    _doctorRepositoryMock
-        //        .Setup(repository => repository.CountAsync())
-        //        .ReturnsAsync(1);
-
-        //    _doctorRepositoryMock
-        //        .Setup(repository => repository.GetPagedAsync(
-        //            It.IsAny<PaginationQueryDto>(),
-        //            It.IsAny<Func<Doctor, object>>(),
-        //            true))
-        //        .ReturnsAsync(new List<Doctor>
-        //        {
-        //            CreateDoctor()
-        //        });
-
-        //    var result = await _service.GetDoctorsPagedAsync(new PaginationQueryDto
-        //    {
-        //        PageNumber = 0,
-        //        PageSize = 100
-        //    });
-
-        //    result.Should().NotBeNull();
-        //    result.PageNumber.Should().Be(1);
-        //    result.PageSize.Should().Be(6);
-        //    result.TotalRecords.Should().Be(1);
-        //    result.Items.Should().HaveCount(1);
-        //    result.Items[0].Email.Should().Be("doctor@gmail.com");
-        //}
 
         [Fact]
         public async Task GetUsersAsync_WhenUsersExist_ReturnsMappedUsers()
@@ -593,13 +646,23 @@ namespace HealthAxis.API.Tests.Services
             await act.Should().ThrowAsync<ApiValidationException>();
         }
 
-        [Theory]
-        [InlineData(AppointmentStatus.Completed)]
-        [InlineData(AppointmentStatus.Cancelled)]
-        public async Task UpdateAppointmentStatusByAdminAsync_WhenCurrentStatusIsFinal_ThrowsValidationException(
-            AppointmentStatus status)
+        [Fact]
+        public async Task UpdateAppointmentStatusByAdminAsync_WhenCurrentStatusIsFinal_ThrowsValidationException_ForCompletedAppointment()
         {
-            await SeedAppointmentData(status);
+            await SeedAppointmentData(AppointmentStatus.Completed);
+
+            Func<Task> act = async () =>
+                await _service.UpdateAppointmentStatusByAdminAsync(
+                    1,
+                    new AdminUpdateAppointmentStatusDto { Status = "Confirmed" });
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task UpdateAppointmentStatusByAdminAsync_WhenCurrentStatusIsFinal_ThrowsValidationException_ForCancelledAppointment()
+        {
+            await SeedAppointmentData(AppointmentStatus.Cancelled);
 
             Func<Task> act = async () =>
                 await _service.UpdateAppointmentStatusByAdminAsync(
@@ -919,7 +982,258 @@ namespace HealthAxis.API.Tests.Services
             result[0].Status.Should().Be("Confirmed");
         }
 
-        private async Task SeedAppointmentData(AppointmentStatus status)
+
+        [Fact]
+        public async Task AddDoctorAsync_WhenDtoIsNull_ThrowsArgumentNullException()
+        {
+            Func<Task> act = async () => await _service.AddDoctorAsync(null!);
+
+            await act.Should().ThrowAsync<ArgumentNullException>();
+        }
+
+        [Fact]
+        public async Task UpdateDoctorAsync_WhenDtoIsNull_ThrowsArgumentNullException()
+        {
+            Func<Task> act = async () => await _service.UpdateDoctorAsync(1, null!);
+
+            await act.Should().ThrowAsync<ArgumentNullException>();
+        }
+
+        [Fact]
+        public async Task UpdateDoctorAsync_WhenRepositoryReturnsNull_ThrowsNotFoundException()
+        {
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateDoctor());
+            _doctorRepositoryMock
+                .Setup(repository => repository.UpdateAsync(
+                    1,
+                    It.IsAny<Doctor>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Doctor?)null);
+
+            Func<Task> act = async () => await _service.UpdateDoctorAsync(
+                1,
+                CreateUpdateDoctorDto());
+
+            await act.Should().ThrowAsync<NotFoundException>();
+        }
+
+        [Fact]
+        public async Task GetDoctorsPagedAsync_WhenValid_ReturnsPagedDoctors()
+        {
+            _doctorRepositoryMock
+                .Setup(repository => repository.CountAsync())
+                .ReturnsAsync(1);
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetPagedAsync<int>(
+                    It.IsAny<PaginationQueryDto>(),
+                    It.IsAny<Expression<Func<Doctor, int>>>(),
+                    true,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Doctor>
+                {
+                    CreateDoctor()
+                });
+
+            var result = await _service.GetDoctorsPagedAsync(
+                new PaginationQueryDto
+                {
+                    PageNumber = 0,
+                    PageSize = 100
+                });
+
+            result.PageNumber.Should().Be(1);
+            result.PageSize.Should().Be(6);
+            result.TotalRecords.Should().Be(1);
+            result.Items.Should().ContainSingle();
+            result.Items[0].Email.Should().Be("doctor@gmail.com");
+        }
+
+        [Fact]
+        public async Task UpdateAppointmentStatusByAdminAsync_WhenPendingCancelledWithoutReason_UsesDefaultReason()
+        {
+            await SeedAppointmentData(AppointmentStatus.Pending);
+
+            var result = await _service.UpdateAppointmentStatusByAdminAsync(
+                1,
+                new AdminUpdateAppointmentStatusDto
+                {
+                    Status = "Cancelled",
+                    CancellationReason = " "
+                });
+
+            result.Status.Should().Be("Cancelled");
+            result.CancelledBy.Should().Be("Admin");
+            result.CancellationReason.Should().Be("Cancelled by admin.");
+        }
+
+        [Fact]
+        public async Task UpdateAppointmentStatusByAdminAsync_WhenConfirmedCancelledWithReason_TrimsAndStoresReason()
+        {
+            await SeedAppointmentData(AppointmentStatus.Confirmed);
+
+            var result = await _service.UpdateAppointmentStatusByAdminAsync(
+                1,
+                new AdminUpdateAppointmentStatusDto
+                {
+                    Status = "Cancelled",
+                    CancellationReason = "  Doctor unavailable  "
+                });
+
+            result.CancelledBy.Should().Be("Admin");
+            result.CancellationReason.Should().Be(
+                "Cancelled by admin. Reason: Doctor unavailable");
+        }
+
+        [Fact]
+        public async Task GetAppointmentDetailsAsync_WhenCancelledByPatient_MapsCancellationInformation()
+        {
+            await SeedAppointmentData(
+                AppointmentStatus.Cancelled,
+                "Cancelled by patient. Reason: Travel");
+
+            var result = await _service.GetAppointmentDetailsAsync();
+
+            result[0].CancelledBy.Should().Be("Patient");
+            result[0].CancellationReason.Should().Contain("Travel");
+        }
+
+        [Fact]
+        public async Task GetAppointmentDetailsAsync_WhenCancelledByDoctor_MapsCancellationInformation()
+        {
+            await SeedAppointmentData(
+                AppointmentStatus.Cancelled,
+                "Cancelled by doctor. Reason: Emergency");
+
+            var result = await _service.GetAppointmentDetailsAsync();
+
+            result[0].CancelledBy.Should().Be("Doctor");
+        }
+
+        [Fact]
+        public async Task GetAppointmentDetailsAsync_WhenCancelledWithoutReason_UsesFallbackValues()
+        {
+            await SeedAppointmentData(
+                AppointmentStatus.Cancelled,
+                null);
+
+            var result = await _service.GetAppointmentDetailsAsync();
+
+            result[0].CancelledBy.Should().Be("Not specified");
+            result[0].CancellationReason.Should().Be(
+                "No cancellation reason available.");
+        }
+
+        [Fact]
+        public async Task GetAppointmentDetailsAsync_WhenCancellationSourceUnknown_ReturnsNotSpecified()
+        {
+            await SeedAppointmentData(
+                AppointmentStatus.Cancelled,
+                "System cancellation");
+
+            var result = await _service.GetAppointmentDetailsAsync();
+
+            result[0].CancelledBy.Should().Be("Not specified");
+        }
+
+        [Fact]
+        public async Task GetAppointmentDetailsAsync_WhenNotCancelled_ReturnsEmptyCancellationFields()
+        {
+            await SeedAppointmentData(AppointmentStatus.Confirmed);
+
+            var result = await _service.GetAppointmentDetailsAsync();
+
+            result[0].CancelledBy.Should().BeEmpty();
+            result[0].CancellationReason.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GetAdminProfileAsync_WhenOptionalValuesAreNull_ReturnsEmptyStrings()
+        {
+            var user = _userManagerMock.Object.Users
+                .First(item => item.Id == "admin-user-1");
+            user.Email = null;
+            user.UserName = null;
+            user.PhoneNumber = null;
+
+            var result = await _service.GetAdminProfileAsync("admin-user-1");
+
+            result.Email.Should().BeEmpty();
+            result.UserName.Should().BeEmpty();
+            result.PhoneNumber.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task UpdatePatientAsync_WhenPatientHasNoLinkedUser_UpdatesPatientOnly()
+        {
+            var patient = CreatePatient(userId: string.Empty);
+            _context.Patients.Add(patient);
+            await _context.SaveChangesAsync();
+
+            var result = await _service.UpdatePatientAsync(
+                patient.PatientId,
+                CreateUpdateAdminPatientDto());
+
+            result.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task UpdatePatientAsync_WhenLinkedIdentityUserIsMissing_StillUpdatesPatient()
+        {
+            var patient = CreatePatient(userId: "missing-user");
+            _context.Patients.Add(patient);
+            await _context.SaveChangesAsync();
+
+            var result = await _service.UpdatePatientAsync(
+                patient.PatientId,
+                CreateUpdateAdminPatientDto());
+
+            result.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task GetUsersPagedAsync_WhenSearchMatchesPhone_ReturnsPatient()
+        {
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetAllAsync())
+                .ReturnsAsync(new List<Doctor> { CreateDoctor() });
+            _context.Patients.Add(CreatePatient());
+            await _context.SaveChangesAsync();
+
+            var result = await _service.GetUsersPagedAsync(
+                new AdminUserQueryDto
+                {
+                    PageNumber = 1,
+                    SearchText = "9876543210",
+                    Role = "Patient"
+                });
+
+            result.Items.Should().ContainSingle();
+            result.Items[0].Role.Should().Be("Patient");
+        }
+
+        [Fact]
+        public async Task GetUsersPagedAsync_WhenSearchMatchesSpecialisation_ReturnsDoctor()
+        {
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetAllAsync())
+                .ReturnsAsync(new List<Doctor> { CreateDoctor() });
+
+            var result = await _service.GetUsersPagedAsync(
+                new AdminUserQueryDto
+                {
+                    PageNumber = 1,
+                    SearchText = "Cardiology",
+                    Role = "Doctor"
+                });
+
+            result.Items.Should().ContainSingle();
+        }
+
+        private async Task SeedAppointmentData(
+            AppointmentStatus status,
+            string? cancellationReason = null)
         {
             if (!_context.Patients.Any())
             {
@@ -940,7 +1254,8 @@ namespace HealthAxis.API.Tests.Services
                     DoctorId = 1,
                     ScheduledDate = DateTime.Today.AddDays(1),
                     TimeSlot = "10:00 AM - 11:00 AM",
-                    Status = status
+                    Status = status,
+                    CancellationReason = cancellationReason
                 });
             }
 

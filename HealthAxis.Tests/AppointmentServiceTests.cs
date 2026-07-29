@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HealthAxis.API.Events;
 using FluentAssertions;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
@@ -7,6 +8,7 @@ using HealthAxis.API.Services.Implementation;
 using HealthAxis.API.Services.Interfaces;
 using HealthAxis.Shared.DTO.AppointmentDtos;
 using HealthAxis.Shared.Enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using HealthAxis.API.Messaging;
 using Moq;
@@ -24,8 +26,8 @@ namespace HealthAxis.API.Tests.Services
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<ILogger<AppointmentService>> _loggerMock;
         private readonly Mock<IEventPublisher> _eventPublisherMock;
+        private readonly Mock<INotificationService> _notificationServiceMock;
         private readonly AppointmentService _service;
-        private readonly Mock<IDoctorService> _doctorServiceMock;
 
         public AppointmentServiceTests()
         {
@@ -35,20 +37,14 @@ namespace HealthAxis.API.Tests.Services
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILogger<AppointmentService>>();
             _eventPublisherMock = new Mock<IEventPublisher>();
-            _doctorServiceMock = new Mock<IDoctorService>();
+            _notificationServiceMock = new Mock<INotificationService>();
+            _eventPublisherMock.SetReturnsDefault(Task.CompletedTask);
 
             _mapperMock
                 .Setup(mapper => mapper.Map<AppointmentDto>(It.IsAny<Appointment>()))
                 .Returns((Appointment appointment) => MapAppointmentDto(appointment));
 
-            _service = new AppointmentService(
-    _appointmentRepositoryMock.Object,
-    _patientRepositoryMock.Object,
-    _doctorRepositoryMock.Object,
-    _mapperMock.Object,
-    _loggerMock.Object,
-    _eventPublisherMock.Object);
-    //_doctorServiceMock.Object);
+            _service = CreateService();
         }
 
         [Fact]
@@ -300,26 +296,44 @@ namespace HealthAxis.API.Tests.Services
             await act.Should().ThrowAsync<ArgumentNullException>();
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        public async Task AddAsync_WhenPatientIdInvalid_ThrowsValidationException(int patientId)
+        [Fact]
+        public async Task AddAsync_WhenPatientIdInvalid_ThrowsValidationException_ForZero()
         {
             var dto = CreateCreateAppointmentDto();
-            dto.PatientId = patientId;
+            dto.PatientId = 0;
 
             Func<Task> act = async () => await _service.AddAsync(dto);
 
             await act.Should().ThrowAsync<ApiValidationException>();
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        public async Task AddAsync_WhenDoctorIdInvalid_ThrowsValidationException(int doctorId)
+        [Fact]
+        public async Task AddAsync_WhenPatientIdInvalid_ThrowsValidationException_ForNegative()
         {
             var dto = CreateCreateAppointmentDto();
-            dto.DoctorId = doctorId;
+            dto.PatientId = -1;
+
+            Func<Task> act = async () => await _service.AddAsync(dto);
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task AddAsync_WhenDoctorIdInvalid_ThrowsValidationException_ForZero()
+        {
+            var dto = CreateCreateAppointmentDto();
+            dto.DoctorId = 0;
+
+            Func<Task> act = async () => await _service.AddAsync(dto);
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task AddAsync_WhenDoctorIdInvalid_ThrowsValidationException_ForNegative()
+        {
+            var dto = CreateCreateAppointmentDto();
+            dto.DoctorId = -1;
 
             Func<Task> act = async () => await _service.AddAsync(dto);
 
@@ -348,13 +362,22 @@ namespace HealthAxis.API.Tests.Services
             await act.Should().ThrowAsync<ApiValidationException>();
         }
 
-        [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        public async Task AddAsync_WhenTimeSlotIsEmpty_ThrowsValidationException(string timeSlot)
+        [Fact]
+        public async Task AddAsync_WhenTimeSlotIsEmpty_ThrowsValidationException_ForEmptyValue()
         {
             var dto = CreateCreateAppointmentDto();
-            dto.TimeSlot = timeSlot;
+            dto.TimeSlot = string.Empty;
+
+            Func<Task> act = async () => await _service.AddAsync(dto);
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task AddAsync_WhenTimeSlotIsEmpty_ThrowsValidationException_ForWhiteSpaceValue()
+        {
+            var dto = CreateCreateAppointmentDto();
+            dto.TimeSlot = " ";
 
             Func<Task> act = async () => await _service.AddAsync(dto);
 
@@ -439,11 +462,8 @@ namespace HealthAxis.API.Tests.Services
             await act.Should().ThrowAsync<BusinessRuleException>();
         }
 
-        [Theory]
-        [InlineData(AppointmentStatus.Pending)]
-        [InlineData(AppointmentStatus.Confirmed)]
-        public async Task AddAsync_WhenDoctorAlreadyBookedWithActiveStatus_ThrowsBusinessRuleException(
-            AppointmentStatus existingStatus)
+        [Fact]
+        public async Task AddAsync_WhenDoctorAlreadyBookedWithActiveStatus_ThrowsAppointmentConflictException_ForPendingAppointment()
         {
             SetupValidAddDependencies();
 
@@ -459,19 +479,47 @@ namespace HealthAxis.API.Tests.Services
                         doctorId: dto.DoctorId,
                         date: dto.ScheduledDate,
                         timeSlot: dto.TimeSlot,
-                        status: existingStatus)
+                        status: AppointmentStatus.Pending)
                 });
 
             Func<Task> act = async () => await _service.AddAsync(dto);
 
-            await act.Should().ThrowAsync<BusinessRuleException>();
+            await act.Should()
+                .ThrowAsync<AppointmentConflictException>()
+                .WithMessage(
+                    "This doctor already has an appointment for the selected date and time slot. Please choose another slot.");
         }
 
-        [Theory]
-        [InlineData(AppointmentStatus.Pending)]
-        [InlineData(AppointmentStatus.Confirmed)]
-        public async Task AddAsync_WhenPatientAlreadyBookedWithActiveStatus_ThrowsBusinessRuleException(
-            AppointmentStatus existingStatus)
+        [Fact]
+        public async Task AddAsync_WhenDoctorAlreadyBookedWithActiveStatus_ThrowsAppointmentConflictException_ForConfirmedAppointment()
+        {
+            SetupValidAddDependencies();
+
+            var dto = CreateCreateAppointmentDto();
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync())
+                .ReturnsAsync(new List<Appointment>
+                {
+                    CreateAppointment(
+                        id: 10,
+                        patientId: 2,
+                        doctorId: dto.DoctorId,
+                        date: dto.ScheduledDate,
+                        timeSlot: dto.TimeSlot,
+                        status: AppointmentStatus.Confirmed)
+                });
+
+            Func<Task> act = async () => await _service.AddAsync(dto);
+
+            await act.Should()
+                .ThrowAsync<AppointmentConflictException>()
+                .WithMessage(
+                    "This doctor already has an appointment for the selected date and time slot. Please choose another slot.");
+        }
+
+        [Fact]
+        public async Task AddAsync_WhenPatientAlreadyBookedWithActiveStatus_ThrowsAppointmentConflictException_ForPendingAppointment()
         {
             SetupValidAddDependencies();
 
@@ -487,12 +535,43 @@ namespace HealthAxis.API.Tests.Services
                         doctorId: 2,
                         date: dto.ScheduledDate,
                         timeSlot: dto.TimeSlot,
-                        status: existingStatus)
+                        status: AppointmentStatus.Pending)
                 });
 
             Func<Task> act = async () => await _service.AddAsync(dto);
 
-            await act.Should().ThrowAsync<BusinessRuleException>();
+            await act.Should()
+                .ThrowAsync<AppointmentConflictException>()
+                .WithMessage(
+                    "You already have an appointment at this date and time slot.");
+        }
+
+        [Fact]
+        public async Task AddAsync_WhenPatientAlreadyBookedWithActiveStatus_ThrowsAppointmentConflictException_ForConfirmedAppointment()
+        {
+            SetupValidAddDependencies();
+
+            var dto = CreateCreateAppointmentDto();
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync())
+                .ReturnsAsync(new List<Appointment>
+                {
+                    CreateAppointment(
+                        id: 10,
+                        patientId: dto.PatientId,
+                        doctorId: 2,
+                        date: dto.ScheduledDate,
+                        timeSlot: dto.TimeSlot,
+                        status: AppointmentStatus.Confirmed)
+                });
+
+            Func<Task> act = async () => await _service.AddAsync(dto);
+
+            await act.Should()
+                .ThrowAsync<AppointmentConflictException>()
+                .WithMessage(
+                    "You already have an appointment at this date and time slot.");
         }
 
 
@@ -539,15 +618,12 @@ namespace HealthAxis.API.Tests.Services
             await act.Should().ThrowAsync<ApiValidationException>();
         }
 
-        [Theory]
-        [InlineData(AppointmentStatus.Completed)]
-        [InlineData(AppointmentStatus.Cancelled)]
-        public async Task UpdateStatusAsync_WhenCurrentStatusIsFinal_ThrowsBusinessRuleException(
-            AppointmentStatus currentStatus)
+        [Fact]
+        public async Task UpdateStatusAsync_WhenCurrentStatusIsFinal_ThrowsBusinessRuleException_ForCompletedAppointment()
         {
             _appointmentRepositoryMock
                 .Setup(repository => repository.GetByIdAsync(1))
-                .ReturnsAsync(CreateAppointment(status: currentStatus));
+                .ReturnsAsync(CreateAppointment(status: AppointmentStatus.Completed));
 
             Func<Task> act = async () => await _service.UpdateStatusAsync(
                 1,
@@ -559,11 +635,25 @@ namespace HealthAxis.API.Tests.Services
             await act.Should().ThrowAsync<BusinessRuleException>();
         }
 
-        [Theory]
-        [InlineData(AppointmentStatus.Pending)]
-        [InlineData(AppointmentStatus.Completed)]
-        public async Task UpdateStatusAsync_WhenPendingTransitionInvalid_ThrowsBusinessRuleException(
-            AppointmentStatus newStatus)
+        [Fact]
+        public async Task UpdateStatusAsync_WhenCurrentStatusIsFinal_ThrowsBusinessRuleException_ForCancelledAppointment()
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateAppointment(status: AppointmentStatus.Cancelled));
+
+            Func<Task> act = async () => await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Confirmed
+                });
+
+            await act.Should().ThrowAsync<BusinessRuleException>();
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_WhenPendingTransitionInvalid_ThrowsBusinessRuleException_WhenStatusIsStillPending()
         {
             _appointmentRepositoryMock
                 .Setup(repository => repository.GetByIdAsync(1))
@@ -573,17 +663,31 @@ namespace HealthAxis.API.Tests.Services
                 1,
                 new UpdateAppointmentStatusDto
                 {
-                    Status = newStatus
+                    Status = AppointmentStatus.Pending
                 });
 
             await act.Should().ThrowAsync<BusinessRuleException>();
         }
 
-        [Theory]
-        [InlineData(AppointmentStatus.Pending)]
-        [InlineData(AppointmentStatus.Confirmed)]
-        public async Task UpdateStatusAsync_WhenConfirmedTransitionInvalid_ThrowsBusinessRuleException(
-            AppointmentStatus newStatus)
+        [Fact]
+        public async Task UpdateStatusAsync_WhenPendingTransitionInvalid_ThrowsBusinessRuleException_WhenChangingDirectlyToCompleted()
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateAppointment(status: AppointmentStatus.Pending));
+
+            Func<Task> act = async () => await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Completed
+                });
+
+            await act.Should().ThrowAsync<BusinessRuleException>();
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_WhenConfirmedTransitionInvalid_ThrowsBusinessRuleException_WhenChangingBackToPending()
         {
             _appointmentRepositoryMock
                 .Setup(repository => repository.GetByIdAsync(1))
@@ -593,7 +697,24 @@ namespace HealthAxis.API.Tests.Services
                 1,
                 new UpdateAppointmentStatusDto
                 {
-                    Status = newStatus
+                    Status = AppointmentStatus.Pending
+                });
+
+            await act.Should().ThrowAsync<BusinessRuleException>();
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_WhenConfirmedTransitionInvalid_ThrowsBusinessRuleException_WhenStatusIsStillConfirmed()
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateAppointment(status: AppointmentStatus.Confirmed));
+
+            Func<Task> act = async () => await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Confirmed
                 });
 
             await act.Should().ThrowAsync<BusinessRuleException>();
@@ -690,16 +811,36 @@ namespace HealthAxis.API.Tests.Services
             await act.Should().ThrowAsync<NotFoundException>();
         }
 
-        [Theory]
-        [InlineData(AppointmentStatus.Confirmed)]
-        [InlineData(AppointmentStatus.Completed)]
-        [InlineData(AppointmentStatus.Cancelled)]
-        public async Task DeleteAsync_WhenAppointmentIsNotPending_ThrowsBusinessRuleException(
-            AppointmentStatus status)
+        [Fact]
+        public async Task DeleteAsync_WhenAppointmentIsNotPending_ThrowsBusinessRuleException_ForConfirmedAppointment()
         {
             _appointmentRepositoryMock
                 .Setup(repository => repository.GetByIdAsync(1))
-                .ReturnsAsync(CreateAppointment(status: status));
+                .ReturnsAsync(CreateAppointment(status: AppointmentStatus.Confirmed));
+
+            Func<Task> act = async () => await _service.DeleteAsync(1);
+
+            await act.Should().ThrowAsync<BusinessRuleException>();
+        }
+
+        [Fact]
+        public async Task DeleteAsync_WhenAppointmentIsNotPending_ThrowsBusinessRuleException_ForCompletedAppointment()
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateAppointment(status: AppointmentStatus.Completed));
+
+            Func<Task> act = async () => await _service.DeleteAsync(1);
+
+            await act.Should().ThrowAsync<BusinessRuleException>();
+        }
+
+        [Fact]
+        public async Task DeleteAsync_WhenAppointmentIsNotPending_ThrowsBusinessRuleException_ForCancelledAppointment()
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateAppointment(status: AppointmentStatus.Cancelled));
 
             Func<Task> act = async () => await _service.DeleteAsync(1);
 
@@ -742,160 +883,345 @@ namespace HealthAxis.API.Tests.Services
             result.Status.Should().Be(AppointmentStatus.Pending);
         }
 
-        //[Fact]
-        //public async Task AddAsync_WhenConflictExists_DoesNotInvalidateDoctorAvailabilityCache()
-        //{
-        //    SetupValidAddDependencies();
 
-        //    var dto = CreateCreateAppointmentDto();
+        [Fact]
+        public async Task AddAsync_WhenValid_SavesPublishesAndReturnsAppointment()
+        {
+            SetupSuccessfulAddDependencies();
 
-        //    _appointmentRepositoryMock
-        //        .Setup(repository => repository.GetAllAsync())
-        //        .ReturnsAsync(new List<Appointment>
-        //        {
-        //            CreateAppointment(
-        //                id: 10,
-        //                patientId: 2,
-        //                doctorId: dto.DoctorId,
-        //                date: dto.ScheduledDate,
-        //                timeSlot: dto.TimeSlot,
-        //                status: AppointmentStatus.Pending)
-        //        });
+            var result = await _service.AddAsync(
+                CreateCreateAppointmentDto());
 
-        //    Func<Task> act = async () =>
-        //        await _service.AddAsync(dto);
+            result.AppointmentId.Should().Be(25);
+            result.PatientName.Should().Be("Mona");
+            result.DoctorName.Should().Be("Dr John");
+            result.Status.Should().Be(AppointmentStatus.Pending);
 
-        //    await act.Should()
-        //        .ThrowAsync<BusinessRuleException>();
+            _appointmentRepositoryMock.Verify(
+                repository => repository.AddAsync(
+                    It.Is<Appointment>(appointment =>
+                        appointment.PatientId == 1 &&
+                        appointment.DoctorId == 1 &&
+                        appointment.TimeSlot == "10:00 AM - 11:00 AM" &&
+                        appointment.Status == AppointmentStatus.Pending),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
 
-        //    _doctorServiceMock.Verify(
-        //        service => service.InvalidateAvailabilityCacheAsync(
-        //            It.IsAny<int>(),
-        //            It.IsAny<DateTime>()),
-        //        Times.Never);
-        //}
+        [Fact]
+        public async Task AddAsync_WhenTimeSlotHasOuterSpaces_NormalizesBeforeSaving()
+        {
+            SetupSuccessfulAddDependencies();
+            var dto = CreateCreateAppointmentDto();
+            dto.TimeSlot = " 10:00 AM - 11:00 AM ";
 
-        //[Fact]
-        //public async Task UpdateStatusAsync_WhenSuccessful_InvalidatesDoctorAvailabilityCache()
-        //{
-        //    var appointment = CreateAppointment(
-        //        status: AppointmentStatus.Pending);
+            var result = await _service.AddAsync(dto);
 
-        //    _appointmentRepositoryMock
-        //        .Setup(repository => repository.GetByIdAsync(1))
-        //        .ReturnsAsync(appointment);
+            result.TimeSlot.Should().Be("10:00 AM - 11:00 AM");
+        }
 
-        //    _appointmentRepositoryMock
-        //        .Setup(repository => repository.UpdateAsync(
-        //            1,
-        //            It.IsAny<Appointment>(),
-        //            It.IsAny<CancellationToken>()))
-        //        .ReturnsAsync((
-        //            int _,
-        //            Appointment updatedAppointment,
-        //            CancellationToken _) =>
-        //            updatedAppointment);
+        [Fact]
+        public async Task AddAsync_WhenOnlyCancelledConflictExists_AllowsBooking()
+        {
+            SetupSuccessfulAddDependencies(
+                CreateAppointment(
+                    id: 10,
+                    patientId: 2,
+                    doctorId: 1,
+                    status: AppointmentStatus.Cancelled));
 
-        //    SetupPatientDoctorLists();
+            var result = await _service.AddAsync(
+                CreateCreateAppointmentDto());
 
-        //    await _service.UpdateStatusAsync(
-        //        1,
-        //        new UpdateAppointmentStatusDto
-        //        {
-        //            Status = AppointmentStatus.Confirmed
-        //        });
+            result.Should().NotBeNull();
+            result.AppointmentId.Should().Be(25);
+        }
 
-        //    _doctorServiceMock.Verify(
-        //        service => service.InvalidateAvailabilityCacheAsync(
-        //            appointment.DoctorId,
-        //            appointment.ScheduledDate.Date),
-        //        Times.Once);
-        //}
+        [Fact]
+        public async Task AddAsync_WhenOnlyCompletedPatientConflictExists_AllowsBooking()
+        {
+            SetupSuccessfulAddDependencies(
+                CreateAppointment(
+                    id: 10,
+                    patientId: 1,
+                    doctorId: 2,
+                    status: AppointmentStatus.Completed));
 
-        //[Fact]
-        //public async Task UpdateStatusAsync_WhenRepositoryReturnsNull_DoesNotInvalidateCache()
-        //{
-        //    var appointment = CreateAppointment(
-        //        status: AppointmentStatus.Pending);
+            var result = await _service.AddAsync(
+                CreateCreateAppointmentDto());
 
-        //    _appointmentRepositoryMock
-        //        .Setup(repository => repository.GetByIdAsync(1))
-        //        .ReturnsAsync(appointment);
+            result.Should().NotBeNull();
+        }
 
-        //    _appointmentRepositoryMock
-        //        .Setup(repository => repository.UpdateAsync(
-        //            1,
-        //            It.IsAny<Appointment>(),
-        //            It.IsAny<CancellationToken>()))
-        //        .ReturnsAsync((Appointment?)null);
+        [Fact]
+        public async Task AddAsync_WhenRepositoryThrowsNonSqlDbUpdateException_PropagatesException()
+        {
+            SetupValidAddDependencies();
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync())
+                .ReturnsAsync(new List<Appointment>());
+            _appointmentRepositoryMock
+                .Setup(repository => repository.AddAsync(
+                    It.IsAny<Appointment>(),
+                    It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new DbUpdateException("Database failure"));
 
-        //    Func<Task> act = async () =>
-        //        await _service.UpdateStatusAsync(
-        //            1,
-        //            new UpdateAppointmentStatusDto
-        //            {
-        //                Status = AppointmentStatus.Confirmed
-        //            });
+            Func<Task> act = async () => await _service.AddAsync(
+                CreateCreateAppointmentDto());
 
-        //    await act.Should()
-        //        .ThrowAsync<NotFoundException>();
+            await act.Should().ThrowAsync<DbUpdateException>();
+        }
 
-        //    _doctorServiceMock.Verify(
-        //        service => service.InvalidateAvailabilityCacheAsync(
-        //            It.IsAny<int>(),
-        //            It.IsAny<DateTime>()),
-        //        Times.Never);
-        //}
+        [Fact]
+        public async Task AddAsync_WhenInformationLoggingIsEnabled_CompletesSuccessfully()
+        {
+            _loggerMock
+                .Setup(logger => logger.IsEnabled(LogLevel.Information))
+                .Returns(true);
+            SetupSuccessfulAddDependencies();
+            var service = CreateService();
 
-        //[Fact]
-        //public async Task DeleteAsync_WhenSuccessful_InvalidatesDoctorAvailabilityCache()
-        //{
-        //    var appointment = CreateAppointment(
-        //        status: AppointmentStatus.Pending);
+            var result = await service.AddAsync(
+                CreateCreateAppointmentDto());
 
-        //    _appointmentRepositoryMock
-        //        .Setup(repository => repository.GetByIdAsync(1))
-        //        .ReturnsAsync(appointment);
+            result.AppointmentId.Should().Be(25);
+        }
 
-        //    _appointmentRepositoryMock
-        //        .Setup(repository => repository.DeleteAsync(1))
-        //        .ReturnsAsync(appointment);
+        [Fact]
+        public async Task UpdateStatusAsync_WhenStatusIsSame_ThrowsBusinessRuleException()
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateAppointment(
+                    status: AppointmentStatus.Pending));
 
-        //    SetupPatientDoctorLists();
+            Func<Task> act = async () => await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Pending
+                });
 
-        //    await _service.DeleteAsync(1);
+            await act.Should().ThrowAsync<BusinessRuleException>();
+        }
 
-        //    _doctorServiceMock.Verify(
-        //        service => service.InvalidateAvailabilityCacheAsync(
-        //            appointment.DoctorId,
-        //            appointment.ScheduledDate.Date),
-        //        Times.Once);
-        //}
+        [Fact]
+        public async Task UpdateStatusAsync_WhenPendingAppointmentAlreadyStarted_CannotConfirm()
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateAppointment(
+                    date: DateTime.Today.AddDays(-1),
+                    status: AppointmentStatus.Pending));
 
-        //[Fact]
-        //public async Task DeleteAsync_WhenRepositoryReturnsNull_DoesNotInvalidateCache()
-        //{
-        //    var appointment = CreateAppointment(
-        //        status: AppointmentStatus.Pending);
+            Func<Task> act = async () => await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Confirmed
+                });
 
-        //    _appointmentRepositoryMock
-        //        .Setup(repository => repository.GetByIdAsync(1))
-        //        .ReturnsAsync(appointment);
+            await act.Should().ThrowAsync<BusinessRuleException>();
+        }
 
-        //    _appointmentRepositoryMock
-        //        .Setup(repository => repository.DeleteAsync(1))
-        //        .ReturnsAsync((Appointment?)null);
+        [Fact]
+        public async Task UpdateStatusAsync_WhenExistingTimeSlotIsMalformed_ThrowsValidationException()
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateAppointment(
+                    date: DateTime.Today.AddDays(-1),
+                    timeSlot: "wrong-slot",
+                    status: AppointmentStatus.Pending));
 
-        //    var result = await _service.DeleteAsync(1);
+            Func<Task> act = async () => await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Confirmed
+                });
 
-        //    result.Should().BeNull();
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
 
-        //    _doctorServiceMock.Verify(
-        //        service => service.InvalidateAvailabilityCacheAsync(
-        //            It.IsAny<int>(),
-        //            It.IsAny<DateTime>()),
-        //        Times.Never);
-        //}
+        [Fact]
+        public async Task UpdateStatusAsync_WhenCancellationReasonMissing_ThrowsValidationException()
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateAppointment(
+                    status: AppointmentStatus.Pending));
+
+            Func<Task> act = async () => await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Cancelled,
+                    CancellationReason = " "
+                });
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_WhenCancellationReasonIsTooLong_ThrowsValidationException()
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateAppointment(
+                    status: AppointmentStatus.Pending));
+
+            Func<Task> act = async () => await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Cancelled,
+                    CancellationReason = new string('A', 5000)
+                });
+
+            await act.Should().ThrowAsync<ApiValidationException>();
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_WhenConfirmedCancellationIsWithinCutoff_ThrowsBusinessRuleException()
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateAppointment(
+                    date: DateTime.Today.AddDays(-1),
+                    status: AppointmentStatus.Confirmed));
+
+            Func<Task> act = async () => await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Cancelled,
+                    CancellationReason = "Emergency"
+                });
+
+            await act.Should().ThrowAsync<BusinessRuleException>();
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_WhenConfirmedCancellationIsBeforeCutoff_CancelsAppointment()
+        {
+            SetupSuccessfulStatusUpdate(CreateAppointment(
+                date: DateTime.Today.AddDays(2),
+                status: AppointmentStatus.Confirmed));
+
+            var result = await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Cancelled,
+                    CancellationReason = "Patient request"
+                });
+
+            result.Status.Should().Be(AppointmentStatus.Cancelled);
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_WhenConfirmedAppointmentHasNotStarted_CannotComplete()
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(CreateAppointment(
+                    date: DateTime.Today.AddDays(1),
+                    status: AppointmentStatus.Confirmed));
+
+            Func<Task> act = async () => await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Completed
+                });
+
+            await act.Should().ThrowAsync<BusinessRuleException>();
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_WhenConfirmedAppointmentStarted_CompletesAppointment()
+        {
+            SetupSuccessfulStatusUpdate(CreateAppointment(
+                date: DateTime.Today.AddDays(-1),
+                status: AppointmentStatus.Confirmed));
+
+            var result = await _service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Completed
+                });
+
+            result.Status.Should().Be(AppointmentStatus.Completed);
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_WhenNotificationServiceExists_StillReturnsUpdatedAppointment()
+        {
+            SetupSuccessfulStatusUpdate(CreateAppointment(
+                status: AppointmentStatus.Pending));
+            var service = CreateService(
+                _notificationServiceMock.Object);
+
+            var result = await service.UpdateStatusAsync(
+                1,
+                new UpdateAppointmentStatusDto
+                {
+                    Status = AppointmentStatus.Confirmed
+                });
+
+            result.Status.Should().Be(AppointmentStatus.Confirmed);
+        }
+
+
+        private AppointmentService CreateService(
+            INotificationService? notificationService = null)
+        {
+            return new AppointmentService(
+                _appointmentRepositoryMock.Object,
+                _patientRepositoryMock.Object,
+                _doctorRepositoryMock.Object,
+                _mapperMock.Object,
+                _loggerMock.Object,
+                _eventPublisherMock.Object,
+                notificationService);
+        }
+
+        private void SetupSuccessfulAddDependencies(
+            params Appointment[] existingAppointments)
+        {
+            SetupValidAddDependencies();
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync())
+                .ReturnsAsync(existingAppointments.ToList());
+            _appointmentRepositoryMock
+                .Setup(repository => repository.AddAsync(
+                    It.IsAny<Appointment>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Appointment appointment, CancellationToken _) =>
+                {
+                    appointment.AppointmentId = 25;
+                    return appointment;
+                });
+            SetupPatientDoctorLists();
+        }
+
+        private void SetupSuccessfulStatusUpdate(
+            Appointment appointment)
+        {
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetByIdAsync(1))
+                .ReturnsAsync(appointment);
+            _appointmentRepositoryMock
+                .Setup(repository => repository.UpdateAsync(
+                    1,
+                    It.IsAny<Appointment>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((int _, Appointment updated, CancellationToken _) => updated);
+            SetupPatientDoctorLists();
+        }
+
         private void SetupValidAddDependencies()
         {
             _patientRepositoryMock
