@@ -38,7 +38,6 @@
 
         <label class="block mb-2 font-semibold text-slate-700">
           Email Address
-        </label>
 
         <input
           type="email"
@@ -61,15 +60,14 @@
             Enter a valid email address
           </p>
         }
-
+      </label>
       </div>
 
       <!-- Password -->
       <div>
 
         <label class="block mb-2 font-semibold text-slate-700">
-          Password
-        </label>
+          Password 
 
         <input
           type="password"
@@ -81,12 +79,13 @@
                  focus:ring-blue-100
                  outline-none transition">
 
+
         @if(password?.touched && password?.errors?.['required']){
           <p class="mt-1 text-sm text-red-500">
             Password is required
           </p>
         }
-
+        </label>
       </div>
 
       <!-- Login Button -->
