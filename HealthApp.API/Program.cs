@@ -434,7 +434,9 @@ try
                     UserManager<ApplicationUser>>();
 
             await RoleSeeder.SeedRolesAsync(roleManager);
-            await RoleSeeder.SeedAdminAsync(userManager);
+            await RoleSeeder.SeedAdminAsync(
+                userManager,
+                app.Configuration);
 
             logger.LogInformation(
                 "Database migration and identity seeding " +

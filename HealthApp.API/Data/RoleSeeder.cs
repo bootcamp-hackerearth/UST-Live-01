@@ -1,12 +1,14 @@
 using HealthApp.API.Identity;
 using HealthApp.Shared.Constants;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace HealthApp.API.Data;
 
 public static class RoleSeeder
 {
-    public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+    public static async Task SeedRolesAsync(
+        RoleManager<IdentityRole> roleManager)
     {
         string[] roles =
         {
@@ -22,7 +24,8 @@ public static class RoleSeeder
                 continue;
             }
 
-            var result = await roleManager.CreateAsync(new IdentityRole(role));
+            var result = await roleManager.CreateAsync(
+                new IdentityRole(role));
 
             if (!result.Succeeded)
             {
@@ -33,16 +36,41 @@ public static class RoleSeeder
         }
     }
 
-    public static async Task SeedAdminAsync(UserManager<ApplicationUser> userManager)
+    public static async Task SeedAdminAsync(
+        UserManager<ApplicationUser> userManager,
+        IConfiguration configuration)
     {
-        const string adminEmail = "admin@healthapp.com";
-        const string adminPassword = "Admin@123";
+        var adminEmail = configuration["AdminSeed:Email"];
+        var adminPassword = configuration["AdminSeed:Password"];
+        var adminFullName = configuration["AdminSeed:FullName"];
 
-        var existingAdmin = await userManager.FindByEmailAsync(adminEmail);
+        if (string.IsNullOrWhiteSpace(adminEmail))
+        {
+            throw new InvalidOperationException(
+                "AdminSeed:Email is missing.");
+        }
+
+        if (string.IsNullOrWhiteSpace(adminPassword))
+        {
+            throw new InvalidOperationException(
+                "AdminSeed:Password is missing.");
+        }
+
+        if (string.IsNullOrWhiteSpace(adminFullName))
+        {
+            throw new InvalidOperationException(
+                "AdminSeed:FullName is missing.");
+        }
+
+        var existingAdmin =
+            await userManager.FindByEmailAsync(adminEmail);
 
         if (existingAdmin is not null)
         {
-            await EnsureAdminRoleAsync(userManager, existingAdmin);
+            await EnsureAdminRoleAsync(
+                userManager,
+                existingAdmin);
+
             return;
         }
 
@@ -50,13 +78,15 @@ public static class RoleSeeder
         {
             UserName = adminEmail,
             Email = adminEmail,
-            FullName = "System Admin",
+            FullName = adminFullName,
             EmailConfirmed = true,
             MustChangePassword = false,
             CreatedDate = DateTime.UtcNow
         };
 
-        var createResult = await userManager.CreateAsync(adminUser, adminPassword);
+        var createResult = await userManager.CreateAsync(
+            adminUser,
+            adminPassword);
 
         if (!createResult.Succeeded)
         {
@@ -65,7 +95,9 @@ public static class RoleSeeder
                 createResult.Errors);
         }
 
-        var addRoleResult = await userManager.AddToRoleAsync(adminUser, Roles.Admin);
+        var addRoleResult = await userManager.AddToRoleAsync(
+            adminUser,
+            Roles.Admin);
 
         if (!addRoleResult.Succeeded)
         {
@@ -79,12 +111,16 @@ public static class RoleSeeder
         UserManager<ApplicationUser> userManager,
         ApplicationUser adminUser)
     {
-        if (await userManager.IsInRoleAsync(adminUser, Roles.Admin))
+        if (await userManager.IsInRoleAsync(
+                adminUser,
+                Roles.Admin))
         {
             return;
         }
 
-        var roleResult = await userManager.AddToRoleAsync(adminUser, Roles.Admin);
+        var roleResult = await userManager.AddToRoleAsync(
+            adminUser,
+            Roles.Admin);
 
         if (!roleResult.Succeeded)
         {
@@ -102,6 +138,7 @@ public static class RoleSeeder
             ", ",
             errors.Select(error => error.Description));
 
-        throw new InvalidOperationException($"{message}: {errorMessage}");
+        throw new InvalidOperationException(
+            $"{message}: {errorMessage}");
     }
 }
