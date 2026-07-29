@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Text.Json;
 using FluentAssertions;
 using HealthCareApp.Data;
 using HealthCareApp.Exceptions;
@@ -12,6 +13,7 @@ using HealthCareApp.Shared.Dtos.Appointments;
 using HealthCareApp.Shared.Dtos.DoctorLeaves;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using HealthCareApp.Shared.Events;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +42,11 @@ namespace HealthCareApp.Testing.Services
             mapperMock = new Mock<IMapper>();
             cacheServiceMock = new Mock<ICacheService>();
             doctorLeaveServiceMock = new Mock<IDoctorLeaveService>();
-            var dbContextOptions = new DbContextOptionsBuilder<HealthAxisDbContext>().UseInMemoryDatabase($"AppointmentServiceTests_{Guid.NewGuid()}").Options;
+            var dbContextOptions = new DbContextOptionsBuilder<HealthAxisDbContext>()
+            .UseInMemoryDatabase($"AppointmentServiceTests_{Guid.NewGuid()}")
+            .ConfigureWarnings(warnings =>
+             warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning))
+            .Options;
             dbContext = new HealthAxisDbContext(dbContextOptions);
 
             SetupMapper();
@@ -1962,10 +1968,39 @@ namespace HealthCareApp.Testing.Services
 
             dto.PatientId.Should().Be(patient.PatientId);
 
-            dbContext.OutboxMessages.Should().ContainSingle(message =>
-                message.EventType == nameof(AppointmentBookedEvent) &&
-                message.Status == OutboxMessageStatuses.Pending &&
-                message.Payload.Contains("\"appointmentId\":500"));
+            var outboxMessage = dbContext.OutboxMessages.Should()
+     .ContainSingle(message =>
+         message.EventType == nameof(AppointmentBookedEvent) &&
+         message.Status == OutboxMessageStatuses.Pending)
+     .Subject;
+
+            using var payloadDocument = JsonDocument.Parse(outboxMessage.Payload);
+
+            var appointmentId = GetJsonPropertyCaseInsensitive(
+                    payloadDocument.RootElement,
+                    "appointmentId")
+                .GetInt32();
+
+            appointmentId.Should().Be(500);
+        }
+
+        private static JsonElement GetJsonPropertyCaseInsensitive(
+    JsonElement jsonElement,
+    string propertyName)
+        {
+            foreach (var property in jsonElement.EnumerateObject())
+            {
+                if (string.Equals(
+                    property.Name,
+                    propertyName,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    return property.Value;
+                }
+            }
+
+            throw new InvalidOperationException(
+                $"Property '{propertyName}' was not found in payload: {jsonElement}");
         }
 
         [Fact]
