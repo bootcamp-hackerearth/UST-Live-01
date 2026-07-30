@@ -17,23 +17,25 @@ using MassTransit;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.StaticFiles;
+
 using Serilog;
 using Serilog.Events;
 
 const string CorsPolicyName = "CorsPolicy";
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
+Log.Logger =
+    new LoggerConfiguration()
+        .WriteTo.Console()
+        .CreateBootstrapLogger();
 
 try
 {
-    Log.Information("Starting HealthAxis API.");
+    Log.Information(
+        "Starting HealthAxis API.");
 
     var builder =
         WebApplication.CreateBuilder(args);
@@ -58,9 +60,11 @@ try
     ConfigureSwagger(builder.Services);
     ConfigureCors(builder.Services);
 
-    var app = builder.Build();
+    var app =
+        builder.Build();
 
-    await SeedIdentityDataAsync(app.Services);
+    await SeedIdentityDataAsync(
+        app.Services);
 
     ConfigureHttpPipeline(app);
 
@@ -74,7 +78,8 @@ catch (Exception exception)
 }
 finally
 {
-    Log.Information("HealthAxis API stopped.");
+    Log.Information(
+        "HealthAxis API stopped.");
 
     await Log.CloseAndFlushAsync();
 }
@@ -83,12 +88,17 @@ static void ConfigureSerilog(
     WebApplicationBuilder builder)
 {
     builder.Host.UseSerilog(
-        (context, services, configuration) =>
+        (
+            context,
+            services,
+            configuration
+        ) =>
         {
             configuration
                 .ReadFrom.Configuration(
                     context.Configuration)
-                .ReadFrom.Services(services)
+                .ReadFrom.Services(
+                    services)
                 .Enrich.FromLogContext();
         });
 }
@@ -97,28 +107,35 @@ static void ConfigureDatabase(
     WebApplicationBuilder builder)
 {
     var connectionString =
-        builder.Configuration.GetConnectionString(
-            "DefaultConnection");
+        builder.Configuration
+            .GetConnectionString(
+                "DefaultConnection");
 
-    if (string.IsNullOrWhiteSpace(connectionString))
+    if (string.IsNullOrWhiteSpace(
+        connectionString))
     {
         throw new InvalidOperationException(
             "The DefaultConnection connection string is missing.");
     }
 
-    builder.Services.AddDbContext<HealthAppDbContext>(
-        options =>
-        {
-            options.UseSqlServer(connectionString);
-        });
+    builder.Services
+        .AddDbContext<HealthAppDbContext>(
+            options =>
+            {
+                options.UseSqlServer(
+                    connectionString);
+            });
 }
 
 static void ConfigureIdentity(
     WebApplicationBuilder builder)
 {
     builder.Services
-        .AddIdentity<ApplicationUser, IdentityRole>()
-        .AddEntityFrameworkStores<HealthAppDbContext>()
+        .AddIdentity<
+            ApplicationUser,
+            IdentityRole>()
+        .AddEntityFrameworkStores<
+            HealthAppDbContext>()
         .AddDefaultTokenProviders();
 }
 
@@ -126,12 +143,15 @@ static void ConfigureAuthentication(
     WebApplicationBuilder builder)
 {
     var jwtSettings =
-        builder.Configuration.GetSection("Jwt");
+        builder.Configuration
+            .GetSection(
+                "Jwt");
 
     var jwtKey =
         jwtSettings["Key"];
 
-    if (string.IsNullOrWhiteSpace(jwtKey))
+    if (string.IsNullOrWhiteSpace(
+        jwtKey))
     {
         throw new InvalidOperationException(
             "The JWT signing key is missing.");
@@ -140,7 +160,8 @@ static void ConfigureAuthentication(
     var issuer =
         jwtSettings["Issuer"];
 
-    if (string.IsNullOrWhiteSpace(issuer))
+    if (string.IsNullOrWhiteSpace(
+        issuer))
     {
         throw new InvalidOperationException(
             "The JWT issuer is missing.");
@@ -149,44 +170,60 @@ static void ConfigureAuthentication(
     var audience =
         jwtSettings["Audience"];
 
-    if (string.IsNullOrWhiteSpace(audience))
+    if (string.IsNullOrWhiteSpace(
+        audience))
     {
         throw new InvalidOperationException(
             "The JWT audience is missing.");
     }
 
     var signingKey =
-        Encoding.UTF8.GetBytes(jwtKey);
+        Encoding.UTF8.GetBytes(
+            jwtKey);
 
     builder.Services
-        .AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme =
-                JwtBearerDefaults.AuthenticationScheme;
+        .AddAuthentication(
+            options =>
+            {
+                options
+                    .DefaultAuthenticateScheme =
+                    JwtBearerDefaults
+                        .AuthenticationScheme;
 
-            options.DefaultChallengeScheme =
-                JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters =
-                new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
+                options
+                    .DefaultChallengeScheme =
+                    JwtBearerDefaults
+                        .AuthenticationScheme;
+            })
+        .AddJwtBearer(
+            options =>
+            {
+                options.TokenValidationParameters =
+                    new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
 
-                    ValidIssuer = issuer,
-                    ValidAudience = audience,
+                        ValidateAudience = true,
 
-                    IssuerSigningKey =
-                        new SymmetricSecurityKey(
-                            signingKey),
+                        ValidateLifetime = true,
 
-                    ClockSkew = TimeSpan.Zero
-                };
-        });
+                        ValidateIssuerSigningKey =
+                            true,
+
+                        ValidIssuer =
+                            issuer,
+
+                        ValidAudience =
+                            audience,
+
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(
+                                signingKey),
+
+                        ClockSkew =
+                            TimeSpan.Zero
+                    };
+            });
 
     builder.Services.AddAuthorization();
 }
@@ -195,15 +232,19 @@ static void ConfigureCaching(
     IServiceCollection services)
 {
     /*
-     * The cache is held inside the API process.
+     * The cache is stored inside the API process.
      *
-     * CacheService continues to depend on IDistributedCache,
-     * but the current implementation is in-memory rather than
-     * Garnet/Redis.
+     * CacheService depends on IDistributedCache,
+     * but the current implementation uses memory
+     * rather than Redis or Garnet.
      *
-     * This configuration is suitable for one API process.
+     * This configuration is suitable for one API
+     * process. A shared distributed cache should
+     * be used when horizontally scaling the API.
      */
-    services.AddDistributedMemoryCache();
+
+    services
+        .AddDistributedMemoryCache();
 
     services.AddScoped<
         ICacheService,
@@ -275,18 +316,15 @@ static void RegisterApplicationServices(
     services.AddScoped<
         IAuthService,
         AuthService>();
-
-    /*
-     * ICacheService is registered once in ConfigureCaching().
-     */
 }
 
 static void ConfigureMassTransit(
     WebApplicationBuilder builder)
 {
     var rabbitMqSettings =
-        builder.Configuration.GetSection(
-            "RabbitMQ");
+        builder.Configuration
+            .GetSection(
+                "RabbitMQ");
 
     var host =
         rabbitMqSettings["Host"];
@@ -297,19 +335,22 @@ static void ConfigureMassTransit(
     var password =
         rabbitMqSettings["Password"];
 
-    if (string.IsNullOrWhiteSpace(host))
+    if (string.IsNullOrWhiteSpace(
+        host))
     {
         throw new InvalidOperationException(
             "The RabbitMQ host is missing.");
     }
 
-    if (string.IsNullOrWhiteSpace(username))
+    if (string.IsNullOrWhiteSpace(
+        username))
     {
         throw new InvalidOperationException(
             "The RabbitMQ username is missing.");
     }
 
-    if (string.IsNullOrWhiteSpace(password))
+    if (string.IsNullOrWhiteSpace(
+        password))
     {
         throw new InvalidOperationException(
             "The RabbitMQ password is missing.");
@@ -322,47 +363,57 @@ static void ConfigureMassTransit(
                 AppointmentBookedConsumer>();
 
             configuration.UsingRabbitMq(
-                (context, rabbitMqConfiguration) =>
+                (
+                    context,
+                    rabbitMqConfiguration
+                ) =>
                 {
                     rabbitMqConfiguration.Host(
                         host,
                         "/",
                         hostConfiguration =>
                         {
-                            hostConfiguration.Username(
-                                username);
+                            hostConfiguration
+                                .Username(
+                                    username);
 
-                            hostConfiguration.Password(
-                                password);
+                            hostConfiguration
+                                .Password(
+                                    password);
                         });
 
-                    rabbitMqConfiguration.ReceiveEndpoint(
-                        "appointment-booked-queue",
-                        endpointConfiguration =>
-                        {
-                            /*
-                             * This handles consumer-side failures.
-                             *
-                             * It is separate from the Outbox retry,
-                             * which handles publisher-side failures.
-                             */
-                            endpointConfiguration
-                                .UseMessageRetry(
-                                    retryConfiguration =>
-                                    {
-                                        retryConfiguration
-                                            .Interval(
-                                                retryCount: 3,
-                                                interval:
-                                                    TimeSpan
-                                                        .FromSeconds(5));
-                                    });
+                    rabbitMqConfiguration
+                        .ReceiveEndpoint(
+                            "appointment-booked-queue",
+                            endpointConfiguration =>
+                            {
+                                /*
+                                 * Handles consumer-side
+                                 * temporary failures.
+                                 *
+                                 * This is separate from
+                                 * Outbox retry, which handles
+                                 * publisher-side failures.
+                                 */
 
-                            endpointConfiguration
-                                .ConfigureConsumer<
-                                    AppointmentBookedConsumer>(
-                                        context);
-                        });
+                                endpointConfiguration
+                                    .UseMessageRetry(
+                                        retryConfiguration =>
+                                        {
+                                            retryConfiguration
+                                                .Interval(
+                                                    retryCount: 3,
+                                                    interval:
+                                                        TimeSpan
+                                                            .FromSeconds(
+                                                                5));
+                                        });
+
+                                endpointConfiguration
+                                    .ConfigureConsumer<
+                                        AppointmentBookedConsumer>(
+                                            context);
+                            });
                 });
         });
 }
@@ -374,7 +425,8 @@ static void ConfigureHostOptions(
         options =>
         {
             options.ShutdownTimeout =
-                TimeSpan.FromSeconds(30);
+                TimeSpan.FromSeconds(
+                    30);
         });
 }
 
@@ -391,9 +443,11 @@ static void RegisterBackgroundServices(
         DoctorAvailabilityMonitorService>();
 
     /*
-     * Reads Pending or retryable Failed rows from
-     * OutboxMessages and publishes them through MassTransit.
+     * Reads Pending or retryable Failed rows
+     * from OutboxMessages and publishes them
+     * through MassTransit.
      */
+
     services.AddHostedService<
         OutboxPublisherBackgroundService>();
 }
@@ -403,70 +457,88 @@ static void ConfigureSwagger(
 {
     services.AddEndpointsApiExplorer();
 
-    services.AddSwaggerGen(options =>
-    {
-        options.SwaggerDoc(
-            "v1",
-            new OpenApiInfo
-            {
-                Title = "HealthAxis API",
-                Version = "v1",
-                Description =
-                    "API for HealthAxis Healthcare System"
-            });
-
-        options.AddSecurityDefinition(
-            "Bearer",
-            new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description =
-                    "Enter 'Bearer {your token}'"
-            });
-
-        options.AddSecurityRequirement(
-            new OpenApiSecurityRequirement
-            {
+    services.AddSwaggerGen(
+        options =>
+        {
+            options.SwaggerDoc(
+                "v1",
+                new OpenApiInfo
                 {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference =
-                            new OpenApiReference
-                            {
-                                Type =
-                                    ReferenceType.SecurityScheme,
+                    Title =
+                        "HealthAxis API",
 
-                                Id = "Bearer"
-                            }
-                    },
-                    Array.Empty<string>()
-                }
-            });
-    });
+                    Version =
+                        "v1",
+
+                    Description =
+                        "API for HealthAxis Healthcare System"
+                });
+
+            options.AddSecurityDefinition(
+                "Bearer",
+                new OpenApiSecurityScheme
+                {
+                    Name =
+                        "Authorization",
+
+                    Type =
+                        SecuritySchemeType.Http,
+
+                    Scheme =
+                        "bearer",
+
+                    BearerFormat =
+                        "JWT",
+
+                    In =
+                        ParameterLocation.Header,
+
+                    Description =
+                        "Enter 'Bearer {your token}'"
+                });
+
+            options.AddSecurityRequirement(
+                new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference =
+                                new OpenApiReference
+                                {
+                                    Type =
+                                        ReferenceType
+                                            .SecurityScheme,
+
+                                    Id =
+                                        "Bearer"
+                                }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+        });
 }
 
 static void ConfigureCors(
     IServiceCollection services)
 {
-    services.AddCors(options =>
-    {
-        options.AddPolicy(
-            CorsPolicyName,
-            policy =>
-            {
-                policy
-                    .WithOrigins(
-                        "http://localhost:4200",
-                        "https://localhost:7107")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials();
-            });
-    });
+    services.AddCors(
+        options =>
+        {
+            options.AddPolicy(
+                CorsPolicyName,
+                policy =>
+                {
+                    policy
+                        .WithOrigins(
+                            "http://localhost:4200",
+                            "https://localhost:7107")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+        });
 }
 
 static async Task SeedIdentityDataAsync(
@@ -498,19 +570,32 @@ static void ConfigureHttpPipeline(
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
+
         app.UseSwaggerUI();
     }
 
     app.UseHttpsRedirection();
 
-    
+    /*
+     * Enables default-file processing.
+     *
+     * The actual Angular and Blazor applications
+     * are hosted inside subdirectories.
+     */
 
     app.UseDefaultFiles();
 
-    app.UseStaticFiles(new StaticFileOptions
-    {
-        ServeUnknownFileTypes = true
-    });
+    /*
+     * Serves Angular, Blazor, and other static
+     * application files from wwwroot.
+     */
+
+    app.UseStaticFiles(
+        new StaticFileOptions
+        {
+            ServeUnknownFileTypes =
+                true
+        });
 
     app.UseSerilogRequestLogging(
         options =>
@@ -521,85 +606,215 @@ static void ConfigureHttpPipeline(
                 "{Elapsed:0.0000} ms";
 
             options.GetLevel =
-                (httpContext, _, exception) =>
+                (
+                    httpContext,
+                    _,
+                    exception
+                ) =>
                 {
                     if (
                         exception != null ||
-                        httpContext.Response.StatusCode >= 500
+                        httpContext
+                            .Response
+                            .StatusCode >= 500
                     )
                     {
-                        return LogEventLevel.Error;
+                        return LogEventLevel
+                            .Error;
                     }
 
                     if (
-                        httpContext.Response.StatusCode >= 400
+                        httpContext
+                            .Response
+                            .StatusCode >= 400
                     )
                     {
-                        return LogEventLevel.Warning;
+                        return LogEventLevel
+                            .Warning;
                     }
 
-                    return LogEventLevel.Information;
+                    return LogEventLevel
+                        .Information;
                 };
         });
 
-    app.UseMiddleware<GlobalExceptionHandler>();
+    app.UseMiddleware<
+        GlobalExceptionHandler>();
 
-    app.UseCors(CorsPolicyName);
+    app.UseCors(
+        CorsPolicyName);
 
     app.UseAuthentication();
 
     app.UseAuthorization();
 
-    app.MapGet("/angular", context =>
-    {
-        context.Response.Redirect(
-            "/angular/index.html");
+    /*
+     * Opening the root Elastic Beanstalk URL:
+     *
+     * https://environment-url/
+     *
+     * redirects the browser to the Angular
+     * patient and doctor portal.
+     */
 
-        return Task.CompletedTask;
-    });
+    app.MapGet(
+        "/",
+        () =>
+            Results.Redirect(
+                "/angular/",
+                permanent: false));
 
-    app.MapGet("/blazor", context =>
-    {
-        context.Response.Redirect(
-            "/blazor/index.html");
+    /*
+     * Redirect /angular to /angular/.
+     *
+     * The trailing slash is important because
+     * Angular uses /angular/ as its base path.
+     */
 
-        return Task.CompletedTask;
-    });
+    app.MapGet(
+        "/angular",
+        () =>
+            Results.Redirect(
+                "/angular/",
+                permanent: false));
+
+    /*
+     * Redirect /blazor to /blazor/.
+     *
+     * The trailing slash is important because
+     * Blazor uses /blazor/ as its base path.
+     */
+
+    app.MapGet(
+        "/blazor",
+        () =>
+            Results.Redirect(
+                "/blazor/",
+                permanent: false));
 
     app.MapControllers();
-    app.MapFallback(async context =>
-    {
-        var path = context.Request.Path.Value ?? string.Empty;
 
-        if (path.StartsWith("/blazor/", StringComparison.OrdinalIgnoreCase)
-            && !Path.HasExtension(path))
+    /*
+     * SPA fallback routing.
+     *
+     * If a browser requests an Angular or Blazor
+     * route that is not a physical file, serve
+     * the relevant index.html file so the client
+     * router can process the route.
+     */
+
+    app.MapFallback(
+        async context =>
         {
-            context.Response.ContentType = "text/html";
+            var requestPath =
+                context.Request
+                    .Path
+                    .Value ??
+                string.Empty;
 
-            await context.Response.SendFileAsync(
-                Path.Combine(
-                    app.Environment.WebRootPath,
-                    "blazor",
-                    "index.html"));
+            /*
+             * Handle Blazor routes such as:
+             *
+             * /blazor/admin/dashboard
+             * /blazor/admin/doctors
+             * /blazor/admin/patients
+             * /blazor/admin/appointments
+             */
 
-            return;
-        }
+            if (
+                requestPath.StartsWith(
+                    "/blazor/",
+                    StringComparison
+                        .OrdinalIgnoreCase) &&
+                !Path.HasExtension(
+                    requestPath)
+            )
+            {
+                var blazorIndexPath =
+                    Path.Combine(
+                        app.Environment
+                            .WebRootPath,
+                        "blazor",
+                        "index.html");
 
-        if (path.StartsWith("/angular/", StringComparison.OrdinalIgnoreCase)
-            && !Path.HasExtension(path))
-        {
-            context.Response.ContentType = "text/html";
+                if (!File.Exists(
+                    blazorIndexPath))
+                {
+                    context.Response
+                        .StatusCode =
+                        StatusCodes
+                            .Status404NotFound;
 
-            await context.Response.SendFileAsync(
-                Path.Combine(
-                    app.Environment.WebRootPath,
-                    "angular",
-                    "index.html"));
+                    await context.Response
+                        .WriteAsync(
+                            "Blazor application files were not found.");
 
-            return;
-        }
+                    return;
+                }
 
-        context.Response.StatusCode = StatusCodes.Status404NotFound;
-    });
+                context.Response
+                    .ContentType =
+                    "text/html; charset=utf-8";
+
+                await context.Response
+                    .SendFileAsync(
+                        blazorIndexPath);
+
+                return;
+            }
+
+            /*
+             * Handle Angular routes such as:
+             *
+             * /angular/login
+             * /angular/home
+             * /angular/doctor/dashboard
+             * /angular/patient/dashboard
+             */
+
+            if (
+                requestPath.StartsWith(
+                    "/angular/",
+                    StringComparison
+                        .OrdinalIgnoreCase) &&
+                !Path.HasExtension(
+                    requestPath)
+            )
+            {
+                var angularIndexPath =
+                    Path.Combine(
+                        app.Environment
+                            .WebRootPath,
+                        "angular",
+                        "index.html");
+
+                if (!File.Exists(
+                    angularIndexPath))
+                {
+                    context.Response
+                        .StatusCode =
+                        StatusCodes
+                            .Status404NotFound;
+
+                    await context.Response
+                        .WriteAsync(
+                            "Angular application files were not found.");
+
+                    return;
+                }
+
+                context.Response
+                    .ContentType =
+                    "text/html; charset=utf-8";
+
+                await context.Response
+                    .SendFileAsync(
+                        angularIndexPath);
+
+                return;
+            }
+
+            context.Response.StatusCode =
+                StatusCodes.Status404NotFound;
+        });
 }
-//
