@@ -1,48 +1,150 @@
-# =========================
-# Visual Studio files
-# =========================
+# ==========================================================
+# VISUAL STUDIO
+# ==========================================================
+
 .vs/
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
+*.rsuser
 
-# =========================
-# Build folders
-# =========================
-bin/
-obj/
 
-# =========================
-# Rider / VS Code (optional)
-# =========================
+# ==========================================================
+# IDE AND EDITOR FILES
+# ==========================================================
+
 .idea/
 .vscode/
+*.code-workspace
 
-# =========================
-# Logs
-# =========================
+
+# ==========================================================
+# .NET BUILD OUTPUT
+# ==========================================================
+
+**/bin/
+**/obj/
+artifacts/
+publish/
+testpublish/
+backup-blazor-*/
+
+
+# ==========================================================
+# ANGULAR AND NODE.JS GENERATED OUTPUT
+# ==========================================================
+
+**/node_modules/
+**/dist/
+**/.angular/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+
+# ==========================================================
+# GENERATED FRONTEND FILES COPIED INTO THE API
+#
+# These are recreated by build-frontends.ps1.
+# Do not ignore HealthAxisAdminLayout/wwwroot because that
+# folder contains required Blazor source assets.
+# ==========================================================
+
+HealthAxisApi/wwwroot/angular/
+HealthAxisApi/wwwroot/blazor/
+
+
+# ==========================================================
+# DEPLOYMENT OUTPUT
+# ==========================================================
+
+deploy-package.zip
+*.zip
+
+# Elastic Beanstalk local configuration
+.elasticbeanstalk/
+
+# Local AWS CLI configuration
+.aws/
+
+
+# ==========================================================
+# TEST, COVERAGE, AND CODE-QUALITY OUTPUT
+# ==========================================================
+
+TestResults/
+**/TestResults/
+coverage.xml
+coverage.cobertura.xml
+coverage.opencover.xml
+*.coverage
+*.coveragexml
+
+.sonar/
+.sonarqube/
+.scannerwork/
+
+
+# ==========================================================
+# LOG FILES
+# ==========================================================
+
 *.log
+Logs/
+**/Logs/
 
-# =========================
-# OS generated files
-# =========================
-.DS_Store
-Thumbs.db
 
-# =========================
-# EF Core migration temp files (optional)
-# =========================
+# ==========================================================
+# LOCAL DATABASE AND ENTITY FRAMEWORK TEMPORARY FILES
+# ==========================================================
+
 *.dbmdl
 *.jfm
+*.db
+*.db-shm
+*.db-wal
 
-# =========================
-# Publish output
-# =========================
-publish/
 
-# =========================
-# Secrets / local config (important)
-# =========================
-appsettings.Development.json
+# ==========================================================
+# LOCAL SECRETS AND ENVIRONMENT FILES
+# ==========================================================
+
+.env
+.env.*
+!.env.example
+
 secrets.json
+appsettings.Local.json
+appsettings.*.Local.json
+
+# Ignore local Development settings if this file contains
+# credentials. Consider committing a safe example file.
+appsettings.Development.json
+**/appsettings.Development.json
+
+
+# ==========================================================
+# CERTIFICATES AND PRIVATE KEYS
+# ==========================================================
+
+*.pem
+*.cer
+*.crt
+*.pfx
+*.p12
+*.key
+
+company-ca-bundle.pem
+zscaler.cer
+zscaler-root-ca.cer
+
+
+# ==========================================================
+# OPERATING SYSTEM FILES
+# ==========================================================
+
+.DS_Store
+Thumbs.db
+Desktop.ini
