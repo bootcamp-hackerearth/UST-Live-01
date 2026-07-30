@@ -7,15 +7,21 @@ A full-stack Healthcare Management System that enables patients to book appointm
 # 📌 Features
 
 ## 👤 Patient Portal (Angular)
-
 - User Registration
 - User Login with JWT Authentication
 - View Doctor Availability
 - Book Appointments
 - View Appointment History
 - View Health Records
-- Responsive User Interface
+- Manage Profile
 
+## 👨‍⚕️ Doctor Portal (Angular)
+- User Login with JWT Authentication
+- View Today's Appointments
+- View Patient Details
+- Add/Update Patient Health Records
+- Manage Profile
+  
 ---
 
 ## 👨‍⚕️ Admin Portal (Blazor)
@@ -23,9 +29,8 @@ A full-stack Healthcare Management System that enables patients to book appointm
 - Dashboard
 - Manage Doctors
 - Manage Patients
-- Manage Appointments
-- Add Health Records
 - View Reports
+- Monitor System Activity
 
 ---
 
