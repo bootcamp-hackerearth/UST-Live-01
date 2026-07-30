@@ -1,4 +1,4 @@
-# 🏥 Healthcare Management System
+#  Healthcare Management System
 
 A full-stack Healthcare Management System that enables patients to book appointments, doctors to manage patient records, and administrators to manage the healthcare platform. The project is built using **ASP.NET Core Web API**, **Angular**, **Blazor Server**, **SQL Server**, **RabbitMQ**, **JWT Authentication**, and **AWS** services for deployment.
 
