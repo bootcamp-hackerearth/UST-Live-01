@@ -24,7 +24,7 @@ A full-stack Healthcare Management System that enables patients to book appointm
   
 ---
 
-## 👨‍⚕️ Admin Portal (Blazor)
+## 👤 Admin Portal (Blazor)
 
 - Dashboard
 - Manage Doctors
