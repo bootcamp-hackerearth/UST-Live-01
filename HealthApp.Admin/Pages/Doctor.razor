@@ -123,16 +123,40 @@
 
     <div class="card">
         <table class="table">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>SPECIALIZATION</th>
+                    <th>EMAIL</th>
+                    <th>PHONE</th>
+                    <th>FEE</th>
+                    <th>STATUS</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
+
             <tbody>
                 @foreach (var d in doctors)
                 {
                     <tr>
                         <td>@d.DoctorId</td>
-                        <td>@d.FullName</td>
+
+                        <td>
+                            <div class="person-cell">
+                                <div class="person-name">@d.FullName</div>
+                                <div class="person-id">ID: @d.DoctorId</div>
+                            </div>
+                        </td>
+
                         <td>@d.Specialisation</td>
+
                         <td>@d.Email</td>
+
                         <td>@d.DoctorPhoneNumber</td>
-                        <td>?@d.ConsultationFee</td>
+
+                        <td>₹@d.ConsultationFee</td>
 
                         <td>
                             <button class="toggle-btn @(d.IsActive == true ? "active" : "inactive")"
@@ -142,12 +166,18 @@
                         </td>
 
                         <td>
-                            <button class="mini view" @onclick="() => ViewDoctor(d)">View</button>
-                            <button class="mini edit" @onclick="() => EditDoctor(d)">Edit</button>
+                            <button class="mini view" @onclick="() => ViewDoctor(d)">
+                                View
+                            </button>
+
+                            <button class="mini edit" @onclick="() => EditDoctor(d)">
+                                Edit
+                            </button>
                         </td>
                     </tr>
                 }
             </tbody>
+
         </table>
     </div>
 
@@ -356,6 +386,23 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+    }
+
+    .table thead th {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 18px 20px;
+        text-align: left;
+    }
+
+    .table tbody td {
+        padding: 18px 20px;
+        vertical-align: middle;
+        border-bottom: 1px solid #eef2f7;
     }
 
     .header h2 {

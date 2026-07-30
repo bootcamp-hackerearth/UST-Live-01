@@ -61,79 +61,82 @@ export class PatientDashboard implements OnInit {
   popupMessage = signal('');
   popupType = signal<'success' | 'error' | 'warning'>('success');
 
+  showCancelModal = false;
+  cancelReason = '';
+  selectedAppointmentId: number | null = null;
 
-constructor(
-  private patientService: PatientService,
-  private appointmentService: AppointmentService,
-  private recordService: HealthRecordService,
-  private authService: AuthService,
-  private notificationService: NotificationService
-) {}
+  constructor(
+    private patientService: PatientService,
+    private appointmentService: AppointmentService,
+    private recordService: HealthRecordService,
+    private authService: AuthService,
+    private notificationService: NotificationService
+  ) { }
 
 
   ngOnInit(): void {
-  this.loadProfile();
-  this.loadUnreadNotifications();
-}
+    this.loadProfile();
+    this.loadUnreadNotifications();
+  }
 
   openProfile() {
-  this.showProfile = true;
-  this.editMode = false;
-  this.editPatient = null;
+    this.showProfile = true;
+    this.editMode = false;
+    this.editPatient = null;
 
-  this.loadUnreadNotifications();
-}
-loadUnreadNotifications() {
-  this.notificationService.getMyUnreadNotifications().subscribe({
-    next: (res) => {
-      console.log('UNREAD NOTIFICATIONS:', res);
+    this.loadUnreadNotifications();
+  }
+  loadUnreadNotifications() {
+    this.notificationService.getMyUnreadNotifications().subscribe({
+      next: (res) => {
+        console.log('UNREAD NOTIFICATIONS:', res);
 
-      this.unreadNotifications = res || [];
+        this.unreadNotifications = res || [];
 
-      if (this.unreadNotifications.length > 0) {
-        this.currentNotification = this.unreadNotifications[0];
-        this.showNotificationPopup = true;
+        if (this.unreadNotifications.length > 0) {
+          this.currentNotification = this.unreadNotifications[0];
+          this.showNotificationPopup = true;
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load unread notifications', err);
       }
-    },
-    error: (err) => {
-      console.error('Failed to load unread notifications', err);
-    }
-  });
-}
+    });
+  }
 
-markCurrentNotificationAsRead() {
-  if (!this.currentNotification || this.isReadingNotification) return;
+  markCurrentNotificationAsRead() {
+    if (!this.currentNotification || this.isReadingNotification) return;
 
-  const notificationId = this.currentNotification.notificationId;
+    const notificationId = this.currentNotification.notificationId;
 
-  this.isReadingNotification = true;
+    this.isReadingNotification = true;
 
-  this.notificationService.markAsRead(notificationId).subscribe({
-    next: () => {
-      this.isReadingNotification = false;
+    this.notificationService.markAsRead(notificationId).subscribe({
+      next: () => {
+        this.isReadingNotification = false;
 
-      this.unreadNotifications = this.unreadNotifications.filter(
-        n => n.notificationId !== notificationId
-      );
+        this.unreadNotifications = this.unreadNotifications.filter(
+          n => n.notificationId !== notificationId
+        );
 
-      if (this.unreadNotifications.length > 0) {
-        this.currentNotification = this.unreadNotifications[0];
-        this.showNotificationPopup = true;
-      } else {
-        this.currentNotification = null;
-        this.showNotificationPopup = false;
+        if (this.unreadNotifications.length > 0) {
+          this.currentNotification = this.unreadNotifications[0];
+          this.showNotificationPopup = true;
+        } else {
+          this.currentNotification = null;
+          this.showNotificationPopup = false;
+        }
+      },
+      error: (err) => {
+        this.isReadingNotification = false;
+        console.error('Failed to mark notification as read', err);
       }
-    },
-    error: (err) => {
-      this.isReadingNotification = false;
-      console.error('Failed to mark notification as read', err);
-    }
-  });
-}
+    });
+  }
 
-closeNotificationPopupWithoutRead() {
-  this.showNotificationPopup = false;
-}
+  closeNotificationPopupWithoutRead() {
+    this.showNotificationPopup = false;
+  }
   closeProfile() {
     this.showProfile = false;
     this.editMode = false;
@@ -163,7 +166,7 @@ closeNotificationPopupWithoutRead() {
         today.setHours(0, 0, 0, 0);
 
         const data = (res || [])
-        
+
           .map((a: any) => ({
             ...a,
             scheduledDate: a.scheduledDate ? new Date(a.scheduledDate) : null
@@ -203,25 +206,11 @@ closeNotificationPopupWithoutRead() {
     });
   }
 
-  cancel(id: number) {
-
-const reason = prompt('Enter cancel reason');
-
-
-  if (!reason?.trim()) {
-    return;
+  cancel(id: number): void {
+    this.selectedAppointmentId = id;
+    this.cancelReason = '';
+    this.showCancelModal = true;
   }
-
-  this.appointmentService.cancelAppointment(id, reason).subscribe({
-
-      next: () => this.loadAppointments(),
-      error: (err) => {
-        console.error('Cancel failed', err);
-        this.openAppPopup('Cancel Failed', err.error?.message || err.error || 'Unable to cancel appointment.', 'error');
-      }
-    });
-  }
-
   toggleEdit() {
     if (!this.patient()) return;
     this.editMode = true;
@@ -238,7 +227,55 @@ const reason = prompt('Enter cancel reason');
     this.editMode = false;
     this.editPatient = null;
   }
+  closeCancelModal(): void {
+    this.showCancelModal = false;
+    this.cancelReason = '';
+    this.selectedAppointmentId = null;
+  }
+  confirmCancel(): void {
 
+    if (!this.selectedAppointmentId) {
+      return;
+    }
+
+    if (!this.cancelReason.trim()) {
+      this.openAppPopup(
+        'Missing Reason',
+        'Please enter a cancellation reason.',
+        'warning'
+      );
+      return;
+    }
+
+    this.appointmentService
+      .cancelAppointment(
+        this.selectedAppointmentId,
+        this.cancelReason
+      )
+      .subscribe({
+        next: () => {
+
+          this.closeCancelModal();
+          this.loadAppointments();
+
+          this.openAppPopup(
+            'Appointment Cancelled',
+            'Appointment cancelled successfully.',
+            'success'
+          );
+        },
+        error: (err) => {
+          console.error(err);
+
+          this.openAppPopup(
+            'Cancel Failed',
+            err.error?.message ||
+            'Unable to cancel appointment.',
+            'error'
+          );
+        }
+      });
+  }
   update() {
     if (!this.editPatient || !this.patient() || this.isSavingProfile) return;
 

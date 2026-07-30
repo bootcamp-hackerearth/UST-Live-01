@@ -36,7 +36,32 @@
 
   </div>
 </div>
+<div class="filter-bar">
 
+  <input
+    type="text"
+    class="filter-input"
+    placeholder="Search patient name..."
+    [(ngModel)]="searchName">
+
+  <input
+    type="date"
+    class="filter-date"
+    [(ngModel)]="searchDate">
+
+  <button
+    class="search-btn"
+    (click)="applyFilters()">
+    Search
+  </button>
+
+  <button
+    class="reset-btn"
+    (click)="resetFilters()">
+    Reset
+  </button>
+
+</div>
 <!-- VIEW MODAL -->
 <div class="modal" *ngIf="selected()">
 

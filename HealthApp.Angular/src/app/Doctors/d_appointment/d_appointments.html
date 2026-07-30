@@ -27,6 +27,33 @@
         <p>{{ totalCount() }}</p>
       </div>
 
+      <div class="filter-bar">
+
+        <input type="text" class="filter-input" placeholder="Search patient name..." [(ngModel)]="searchName">
+
+        <select class="filter-select" [(ngModel)]="statusFilter">
+
+          <option value="">All Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+
+        </select>
+
+        <input type="date" class="filter-date" [(ngModel)]="dateFilter">
+
+        <button class="search-btn" (click)="applyFilters()">
+          Search
+        </button>
+
+        <button class="reset-btn" (click)="resetFilters()">
+          Reset
+        </button>
+
+      </div>
+
+
       <div class="card">
         <h3>Pending</h3>
         <p>{{ pendingCount() }}</p>
@@ -62,24 +89,18 @@
             View
           </button>
 
-          <button class="confirm-btn" type="button" 
-          *ngIf="a.status === 'Pending'" 
-          (click)="confirm(a.appointmentId)">
+          <button class="confirm-btn" type="button" *ngIf="a.status === 'Pending'" (click)="confirm(a.appointmentId)">
             Confirm
           </button>
 
-          <button class="record-btn" type="button" 
-          *ngIf="a.status === 'Confirmed'" 
-          (click)="openRecordForm(a)">
+          <button class="record-btn" type="button" *ngIf="a.status === 'Confirmed'" (click)="openRecordForm(a)">
             New Record
           </button>
 
-          <span class="completed-label" 
-          *ngIf="a.status === 'Completed'">
+          <span class="completed-label" *ngIf="a.status === 'Completed'">
             Completed
           </span>
-          <span class="cancelled-label" 
-          *ngIf="a.status === 'Cancelled'">
+          <span class="cancelled-label" *ngIf="a.status === 'Cancelled'">
             Cancelled
           </span>
         </div>

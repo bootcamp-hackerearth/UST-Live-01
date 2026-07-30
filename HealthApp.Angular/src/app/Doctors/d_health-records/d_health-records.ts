@@ -27,6 +27,9 @@ export class DoctorHealthRecords implements OnInit {
   doctor = signal<any>(null);
   selected = signal<any>(null);
 
+  searchName = '';
+searchDate = '';
+
   form: any = {
     patientId: '',
     diagnosis: '',
@@ -62,18 +65,22 @@ export class DoctorHealthRecords implements OnInit {
   }
 
   load() {
-    this.service.getDoctorRecords().subscribe({
-      next: (res: any) => {
-        const list = res?.data || res || [];
+  this.service.getDoctorRecords().subscribe({
+    next: (res: any) => {
 
-        this.records.set(list);
-        this.filteredRecords.set(list);
+      const list = res?.data || res || [];
 
-        this.updatePagination();
-      },
-      error: (err) => console.error('Failed to load records', err)
-    });
-  }
+      this.records.set(list);
+      this.filteredRecords.set(list);
+
+      this.pageNumber.set(1);
+
+      this.updatePagination();
+    },
+    error: (err) =>
+      console.error('Failed to load records', err)
+  });
+}
 
   create() {
     if (this.doctor()) {
@@ -103,6 +110,51 @@ export class DoctorHealthRecords implements OnInit {
       }
     });
   }
+applyFilters(): void {
+
+  const filtered = this.records().filter(record => {
+
+    const matchName =
+      !this.searchName ||
+      (record.patientName ?? '')
+        .toLowerCase()
+        .includes(this.searchName.toLowerCase());
+
+    let matchDate = true;
+
+    if (this.searchDate) {
+
+      const visitDate =
+        new Date(record.visitDate)
+          .toISOString()
+          .split('T')[0];
+
+      matchDate =
+        visitDate === this.searchDate;
+    }
+
+    return matchName && matchDate;
+  });
+
+  this.filteredRecords.set(filtered);
+
+  this.pageNumber.set(1);
+
+  this.updatePagination();
+}
+resetFilters(): void {
+
+  this.searchName = '';
+  this.searchDate = '';
+
+  this.filteredRecords.set(
+    this.records()
+  );
+
+  this.pageNumber.set(1);
+
+  this.updatePagination();
+}
 
   updatePagination() {
     this.totalPages.set(Math.ceil(this.filteredRecords().length / this.pageSize));

@@ -80,9 +80,7 @@
 
               <div>
                 <strong>{{ a.doctorName }}</strong>
-                <p
-                  class="status-pill"
-                  [ngClass]="{
+                <p class="status-pill" [ngClass]="{
                     'pending': a.status === 'Pending',
                     'confirmed': a.status === 'Confirmed'
                   }">
@@ -98,11 +96,7 @@
 
               <p class="time">{{ a.timeSlot }}</p>
 
-              <button
-                class="cancel-btn"
-                type="button"
-                *ngIf="a.status === 'Pending'"
-                (click)="cancel(a.appointmentId)">
+              <button class="cancel-btn" type="button" *ngIf="a.status === 'Pending'" (click)="cancel(a.appointmentId)">
                 Cancel
               </button>
             </div>
@@ -229,50 +223,30 @@
 
       <div class="form-group">
         <label>Name</label>
-        <input
-          [(ngModel)]="ep.fullName"
-          placeholder="Name"
-          [disabled]="isSavingProfile">
+        <input [(ngModel)]="ep.fullName" placeholder="Name" [disabled]="isSavingProfile">
       </div>
 
       <div class="form-group">
         <label>Phone</label>
-        <input
-          [(ngModel)]="ep.phoneNumber"
-          placeholder="Phone"
-          [disabled]="isSavingProfile">
+        <input [(ngModel)]="ep.phoneNumber" placeholder="Phone" [disabled]="isSavingProfile">
       </div>
 
       <div class="form-group">
         <label>Date of Birth</label>
-        <input
-          type="date"
-          [(ngModel)]="ep.dateOfBirth"
-          [disabled]="isSavingProfile">
+        <input type="date" [(ngModel)]="ep.dateOfBirth" [disabled]="isSavingProfile">
       </div>
 
       <div class="form-group">
         <label>Insurance</label>
-        <input
-          [(ngModel)]="ep.insuranceId"
-          placeholder="Insurance"
-          [disabled]="isSavingProfile">
+        <input [(ngModel)]="ep.insuranceId" placeholder="Insurance" [disabled]="isSavingProfile">
       </div>
 
       <div class="modal-actions">
-        <button
-          class="btn-secondary"
-          type="button"
-          [disabled]="isSavingProfile"
-          (click)="cancelEdit()">
+        <button class="btn-secondary" type="button" [disabled]="isSavingProfile" (click)="cancelEdit()">
           Cancel
         </button>
 
-        <button
-          class="btn-primary"
-          type="button"
-          [disabled]="isSavingProfile"
-          (click)="update()">
+        <button class="btn-primary" type="button" [disabled]="isSavingProfile" (click)="update()">
           {{ isSavingProfile ? 'Saving...' : 'Save Changes' }}
         </button>
       </div>
@@ -298,10 +272,7 @@
         </div>
 
         <div class="modal-actions">
-          <button
-            class="btn-primary"
-            type="button"
-            (click)="changePassword()">
+          <button class="btn-primary" type="button" (click)="changePassword()">
             Update Password
           </button>
         </div>
@@ -325,10 +296,7 @@
 
     <p>{{ popupMessage() }}</p>
 
-    <button
-      class="popup-ok-btn"
-      type="button"
-      (click)="closeAppPopup()">
+    <button class="popup-ok-btn" type="button" (click)="closeAppPopup()">
       OK
     </button>
 
@@ -347,9 +315,7 @@
 <div class="notification-backdrop" *ngIf="showNotificationPopup && currentNotification as n">
   <div class="notification-popup">
 
-    <div
-      class="notification-icon"
-      [ngClass]="{
+    <div class="notification-icon" [ngClass]="{
         'confirmed': n.eventType === 'AppointmentConfirmed',
         'cancelled': n.eventType === 'AppointmentCancelled'
       }">
@@ -372,21 +338,42 @@
     </p>
 
     <div class="notification-actions">
-      <button
-        class="notification-secondary"
-        type="button"
-        (click)="closeNotificationPopupWithoutRead()">
+      <button class="notification-secondary" type="button" (click)="closeNotificationPopupWithoutRead()">
         Later
       </button>
 
-      <button
-        class="notification-primary"
-        type="button"
-        [disabled]="isReadingNotification"
+      <button class="notification-primary" type="button" [disabled]="isReadingNotification"
         (click)="markCurrentNotificationAsRead()">
         {{ isReadingNotification ? 'Updating...' : 'Mark as Read' }}
       </button>
     </div>
 
   </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showCancelModal">
+
+  <div class="cancel-modal">
+
+    <h2>Cancel Appointment</h2>
+
+    <label>Cancellation Reason</label>
+
+    <textarea [(ngModel)]="cancelReason" placeholder="Enter cancellation reason...">
+    </textarea>
+
+    <div class="modal-actions">
+
+      <button class="btn-close" (click)="closeCancelModal()">
+        Close
+      </button>
+
+      <button class="btn-cancel" (click)="confirmCancel()">
+        Cancel Appointment
+      </button>
+
+    </div>
+
+  </div>
+
 </div>

@@ -8,7 +8,73 @@
   background: #f1f5f9;
   font-family: "Inter", sans-serif;
 }
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px 0 32px;
+    flex-wrap: wrap;
+}
 
+.filter-input,
+.filter-date {
+    height: 52px;
+    border: 1px solid #d7dee7;
+    border-radius: 16px;
+    background: #fff;
+    padding: 0 18px;
+    font-size: 15px;
+    color: #334155;
+}
+
+.filter-input {
+    width: 300px;
+}
+
+.filter-date {
+    width: 200px;
+}
+
+.filter-input:focus,
+.filter-date:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+}
+
+.search-btn {
+    height: 52px;
+    padding: 0 28px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.search-btn:hover {
+    background: #1d4ed8;
+}
+
+.reset-btn {
+    height: 52px;
+    padding: 0 28px;
+    background: #dbeafe;
+    color: #2563eb;
+    border: none;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.reset-btn:hover {
+    background: #bfdbfe;
+}
 .sidebar {
   width: 260px;
   flex-shrink: 0;

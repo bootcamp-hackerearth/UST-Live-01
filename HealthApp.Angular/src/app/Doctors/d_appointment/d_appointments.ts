@@ -21,6 +21,9 @@ export class DoctorAppointments implements OnInit {
 
   errorMessage = signal('');
   successMessage = signal('');
+  searchName = '';
+  statusFilter = '';
+  dateFilter = '';
 
   selected = signal<any>(null);
 
@@ -53,7 +56,7 @@ export class DoctorAppointments implements OnInit {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly healthRecordService: HealthRecordService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadAppointments();
@@ -80,7 +83,58 @@ export class DoctorAppointments implements OnInit {
       }
     });
   }
+  applyFilters(): void {
 
+    const filtered = this.appointments().filter(a => {
+
+      const matchName =
+        !this.searchName ||
+        (a.patientName ?? '')
+          .toLowerCase()
+          .includes(this.searchName.toLowerCase());
+
+      const matchStatus =
+        !this.statusFilter ||
+        a.status === this.statusFilter;
+
+      let matchDate = true;
+
+      if (this.dateFilter && a.scheduledDate) {
+
+        const appointmentDate =
+          new Date(a.scheduledDate)
+            .toISOString()
+            .split('T')[0];
+
+        matchDate =
+          appointmentDate === this.dateFilter;
+      }
+
+      return matchName &&
+        matchStatus &&
+        matchDate;
+    });
+
+    this.filteredAppointments.set(filtered);
+
+    this.pageNumber.set(1);
+
+    this.updatePagination();
+  }
+  resetFilters(): void {
+
+    this.searchName = '';
+    this.statusFilter = '';
+    this.dateFilter = '';
+
+    this.filteredAppointments.set(
+      this.appointments()
+    );
+
+    this.pageNumber.set(1);
+
+    this.updatePagination();
+  }
   private formatAppointments(res: any): any[] {
     const list = res?.data ?? res ?? [];
 
