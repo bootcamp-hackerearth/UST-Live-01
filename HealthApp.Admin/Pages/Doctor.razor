@@ -22,9 +22,7 @@
 
     <div class="toolbar">
         <div class="toolbar-left">
-            <input class="input search"
-                   placeholder="Search by Name or Email..."
-                   @bind="searchText"
+            <input class="input search" placeholder="Search by Name or Email..." @bind="searchText"
                    @onkeypress="HandleKeyPress" />
 
             <button class="btn primary" @onclick="ApplyFilters">Search</button>
@@ -107,8 +105,7 @@
                     <div class="form-field">
                         <label>Practice Start Date</label>
 
-                        <InputDate class="input"
-                                   @bind-Value="selectedDoctor.PracticeStartDate"
+                        <InputDate class="input" @bind-Value="selectedDoctor.PracticeStartDate"
                                    max="@DateTime.Today.ToString("yyyy-MM-dd")" />
 
                         <ValidationMessage For="@(() => selectedDoctor.PracticeStartDate)" />
@@ -170,7 +167,7 @@
             <p><b>Email:</b> @viewDoctor.Email</p>
             <p><b>Specialisation:</b> @viewDoctor.Specialisation</p>
             <p><b>Phone:</b> @viewDoctor.DoctorPhoneNumber</p>
-            <p><b>Fee:</b> ?@viewDoctor.ConsultationFee</p>
+            <p><b>Fee:</b> @viewDoctor.ConsultationFee</p>
 
             <button class="btn light" @onclick="CloseView">Close</button>
         </div>
@@ -351,7 +348,6 @@
 
         
 <style>
-
     .page {
         padding: 20px;
     }
@@ -362,10 +358,11 @@
         align-items: center;
     }
 
-        .header h2 {
-            font-size: 32px;
-            margin: 0;
-        }
+    .header h2 {
+        font-size: 32px;
+        margin: 0;
+    }
+
     .toolbar {
         margin-top: 15px;
         display: flex;
@@ -422,15 +419,58 @@
         gap: 10px;
     }
 
+    /* PAGINATION */
+    .pagination {
+        margin-top: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .pagination button {
+        border: none;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: #e0ecff;
+        color: #2563eb;
+        font-size: 16px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .pagination button:hover:not(:disabled) {
+        background: #2563eb;
+        color: #ffffff;
+    }
+
+    .pagination button:disabled {
+        background: #f3f4f6;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .pagination span {
+        color: #64748b;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .pagination strong {
+        color: #64748b;
+    }
+
     .table {
         width: 100%;
         border-collapse: collapse;
     }
 
-        .table th, .table td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
+    .table th,
+    .table td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+    }
 
     .badge {
         padding: 5px 10px;
@@ -467,7 +507,7 @@
     .modal {
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.4);
+        background: rgba(0, 0, 0, 0.4);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -492,11 +532,11 @@
         gap: 6px;
     }
 
-        .form-field label {
-            font-size: 13px;
-            font-weight: 700;
-            color: #334155;
-        }
+    .form-field label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #334155;
+    }
 
     .validation-message {
         color: #dc2626;
@@ -514,5 +554,4 @@
     .input.valid {
         border-color: #16a34a;
     }
-
 </style>

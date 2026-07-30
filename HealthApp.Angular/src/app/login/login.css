@@ -114,7 +114,44 @@
   text-align: center;
   color: #475569;
 }
+.top-nav {
+    display: flex;
+    justify-content: flex-end;
+    padding: 24px 40px 0;
+}
 
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.text-link {
+    text-decoration: none;
+    color: #1f2937;
+    font-size: 15px;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.text-link:hover {
+    color: #14b8a6;
+}
+
+.btn-primary {
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 14px;
+    background: linear-gradient(135deg,#14b8a6,#22c55e);
+    color: white;
+    font-weight: 700;
+    transition: 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(20,184,166,0.25);
+}
 .footer-text a {
   color: #0f766e;
   font-weight: 700;

@@ -22,7 +22,7 @@ export class Sidebar {
   logout(): void {
     this.popupTitle = 'Logout';
     this.popupMessage =
-      'Are you sure you want to logout from HealthSphere Doctor Portal?';
+      'Are you sure you want to logout from HealthAxis Doctor Portal?';
 
     this.popupType = 'warning';
     this.popupVisible = true;

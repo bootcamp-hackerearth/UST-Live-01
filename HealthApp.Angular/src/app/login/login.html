@@ -1,3 +1,15 @@
+<div class="top-nav">
+  <div class="nav-actions">
+    <a class="text-link" routerLink="/">Home</a>
+    <a class="text-link" routerLink="/login">
+      Sign in
+    </a>
+    <a class="btn btn-primary" routerLink="/register">
+      Sign up
+    </a>
+  </div>
+</div>
+
 <div class="auth-shell">
   <div class="auth-card">
     <div class="auth-hero">
@@ -22,14 +34,8 @@
         <div class="input-group">
           <label>Email address</label>
 
-          <input
-            [(ngModel)]="email"
-            name="email"
-            #emailCtrl="ngModel"
-            type="email"
-            placeholder="you@healthsphere.com"
-            required
-            email>
+          <input [(ngModel)]="email" name="email" #emailCtrl="ngModel" type="email" placeholder="you@healthAxis.com"
+            required email>
 
           <small class="error-text" *ngIf="showError(emailCtrl, loginForm)">
             <span *ngIf="emailCtrl.errors?.['required']">
@@ -45,13 +51,8 @@
         <div class="input-group">
           <label>Password</label>
 
-          <input
-            [(ngModel)]="password"
-            name="password"
-            #passwordCtrl="ngModel"
-            type="password"
-            placeholder="Enter your password"
-            required>
+          <input [(ngModel)]="password" name="password" #passwordCtrl="ngModel" type="password"
+            placeholder="Enter your password" required>
 
           <small class="error-text" *ngIf="showError(passwordCtrl, loginForm)">
             Password is required.
@@ -72,10 +73,6 @@
   </div>
 </div>
 
-<app-popup
-  [visible]="popupVisible"
-  [title]="popupTitle"
-  [message]="popupMessage"
-  [type]="popupType"
+<app-popup [visible]="popupVisible" [title]="popupTitle" [message]="popupMessage" [type]="popupType"
   (closed)="closePopup()">
 </app-popup>

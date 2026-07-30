@@ -240,42 +240,39 @@
 
 <!-- CANCEL MODAL -->
 
-<div class="modal" *ngIf="showCancelModal()">
-  <div class="cancel-modal-box">
+<div class="modal-overlay" *ngIf="showCancelPopup">
 
-    <div class="modal-header">
-      <h2>Cancel Appointment</h2>
+  <div class="cancel-modal">
+
+    <button class="close-btn" (click)="closeCancelPopup()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <h2>Cancel Appointment</h2>
+
+    <label>Cancellation Reason</label>
+
+    <textarea
+      [(ngModel)]="cancelReason"
+      placeholder="Enter cancellation reason...">
+    </textarea>
+
+    <div class="modal-actions">
 
       <button
-        class="close-btn"
-        (click)="closeCancelModal()">
-        ×
-      </button>
-    </div>
-
-    <div class="form-group">
-      <label>Cancellation Reason</label>
-
-      <textarea
-        rows="5"
-        placeholder="Enter cancel reason..."
-        [(ngModel)]="cancelReason">
-      </textarea>
-    </div>
-
-    <div class="actions">
-      <button
-        class="secondary-btn"
-        (click)="closeCancelModal()">
+        class="btn-close"
+        (click)="closeCancelPopup()">
         Close
       </button>
 
       <button
-        class="danger-btn"
-        (click)="confirmCancel()">
+        class="btn-cancel"
+        (click)="submitCancellation()">
         Cancel Appointment
       </button>
+
     </div>
 
   </div>
+
 </div>

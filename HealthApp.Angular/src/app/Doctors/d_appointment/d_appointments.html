@@ -54,58 +54,48 @@
           </p>
         </div>
 
-       <div class="meta">
-  <p>{{ a.scheduledDate | date:'mediumDate' }}</p>
-  <p>{{ a.timeSlot }}</p>
+        <div class="meta">
+          <p>{{ a.scheduledDate | date:'mediumDate' }}</p>
+          <p>{{ a.timeSlot }}</p>
 
-  <button
-    class="view-btn"
-    type="button"
-    (click)="view(a)">
-    View
-  </button>
+          <button class="view-btn" type="button" (click)="view(a)">
+            View
+          </button>
 
-  <button
-    class="confirm-btn"
-    type="button"
-    *ngIf="a.status === 'Pending'"
-    (click)="confirm(a.appointmentId)">
-    Confirm
-  </button>
+          <button class="confirm-btn" type="button" 
+          *ngIf="a.status === 'Pending'" 
+          (click)="confirm(a.appointmentId)">
+            Confirm
+          </button>
 
-  <button
-    class="record-btn"
-    type="button"
-    *ngIf="a.status === 'Confirmed'"
-    (click)="openRecordForm(a)">
-    New Record
-  </button>
+          <button class="record-btn" type="button" 
+          *ngIf="a.status === 'Confirmed'" 
+          (click)="openRecordForm(a)">
+            New Record
+          </button>
 
-  <span
-    class="completed-label"
-    *ngIf="a.status === 'Completed'">
-    Completed
-  </span>
-</div>
+          <span class="completed-label" 
+          *ngIf="a.status === 'Completed'">
+            Completed
+          </span>
+          <span class="cancelled-label" 
+          *ngIf="a.status === 'Cancelled'">
+            Cancelled
+          </span>
+        </div>
 
 
       </div>
     </div>
 
     <div class="pagination" *ngIf="totalPages() > 1">
-      <button
-        type="button"
-        (click)="prevPage()"
-        [disabled]="pageNumber() === 1">
+      <button type="button" (click)="prevPage()" [disabled]="pageNumber() === 1">
         Prev
       </button>
 
       <span>Page {{ pageNumber() }} of {{ totalPages() }}</span>
 
-      <button
-        type="button"
-        (click)="nextPage()"
-        [disabled]="pageNumber() === totalPages()">
+      <button type="button" (click)="nextPage()" [disabled]="pageNumber() === totalPages()">
         Next
       </button>
     </div>
@@ -119,10 +109,7 @@
     <div class="modal-header">
       <h2>Appointment Details</h2>
 
-      <button
-        class="close-btn"
-        type="button"
-        (click)="closeView()">
+      <button class="close-btn" type="button" (click)="closeView()">
         ×
       </button>
     </div>
@@ -155,10 +142,7 @@
     </div>
 
     <div class="modal-actions">
-      <button
-        class="secondary"
-        type="button"
-        (click)="closeView()">
+      <button class="secondary" type="button" (click)="closeView()">
         Close
       </button>
     </div>
@@ -175,10 +159,7 @@
         <h2>Create Patient Health Record</h2>
       </div>
 
-      <button
-        class="close-btn"
-        type="button"
-        (click)="closeRecordForm()">
+      <button class="close-btn" type="button" (click)="closeRecordForm()">
         ×
       </button>
     </div>
@@ -187,67 +168,42 @@
 
       <div class="form-group">
         <label>Patient</label>
-        <input
-          type="text"
-          [(ngModel)]="healthRecordForm.patientName"
-          readonly>
+        <input type="text" [(ngModel)]="healthRecordForm.patientName" readonly>
       </div>
 
       <div class="form-group">
         <label>Doctor</label>
-        <input
-          type="text"
-          [(ngModel)]="healthRecordForm.doctorName"
-          readonly>
+        <input type="text" [(ngModel)]="healthRecordForm.doctorName" readonly>
       </div>
 
       <div class="form-group">
         <label>Visit Date</label>
-        <input
-          type="date"
-          [(ngModel)]="healthRecordForm.visitDate">
+        <input type="date" [(ngModel)]="healthRecordForm.visitDate">
       </div>
 
       <div class="form-group full">
         <label>Diagnosis</label>
-        <textarea
-          rows="3"
-          [(ngModel)]="healthRecordForm.diagnosis"
-          placeholder="Enter diagnosis"></textarea>
+        <textarea rows="3" [(ngModel)]="healthRecordForm.diagnosis" placeholder="Enter diagnosis"></textarea>
       </div>
 
       <div class="form-group full">
         <label>Prescription</label>
-        <textarea
-          rows="3"
-          [(ngModel)]="healthRecordForm.prescription"
-          placeholder="Enter prescription"></textarea>
+        <textarea rows="3" [(ngModel)]="healthRecordForm.prescription" placeholder="Enter prescription"></textarea>
       </div>
 
       <div class="form-group full">
         <label>Notes</label>
-        <textarea
-          rows="3"
-          [(ngModel)]="healthRecordForm.notes"
-          placeholder="Enter notes"></textarea>
+        <textarea rows="3" [(ngModel)]="healthRecordForm.notes" placeholder="Enter notes"></textarea>
       </div>
 
     </div>
 
     <div class="modal-actions">
-      <button
-        type="button"
-        class="secondary"
-        [disabled]="isSavingRecord()"
-        (click)="closeRecordForm()">
+      <button type="button" class="secondary" [disabled]="isSavingRecord()" (click)="closeRecordForm()">
         Cancel
       </button>
 
-      <button
-        type="button"
-        class="primary"
-        [disabled]="isSavingRecord()"
-        (click)="saveHealthRecord()">
+      <button type="button" class="primary" [disabled]="isSavingRecord()" (click)="saveHealthRecord()">
         {{ isSavingRecord() ? 'Saving...' : 'Save Record' }}
       </button>
     </div>

@@ -21,7 +21,7 @@ export class Sidebar {
 
   logout(): void {
     this.popupTitle = 'Logout';
-    this.popupMessage = 'Are you sure you want to logout from HealthSphere?';
+    this.popupMessage = 'Are you sure you want to logout from HealthAxis?';
     this.popupType = 'warning';
     this.popupVisible = true;
   }
