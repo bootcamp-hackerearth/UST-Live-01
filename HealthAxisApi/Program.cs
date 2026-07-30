@@ -224,7 +224,8 @@ static void ConfigureCaching(
 {
     /*
      * This cache is local to the API process.
-     * Use a shared cache for horizontal scaling.
+     * Use a shared distributed cache when
+     * horizontally scaling the application.
      */
 
     services.AddDistributedMemoryCache();
@@ -368,11 +369,6 @@ static void ConfigureMassTransit(
                             "appointment-booked-queue",
                             endpointConfiguration =>
                             {
-                                /*
-                                 * Retry temporary
-                                 * consumer-side failures.
-                                 */
-
                                 endpointConfiguration
                                     .UseMessageRetry(
                                         retryConfiguration =>
@@ -515,13 +511,8 @@ static void ConfigureForwardedHeaders(
     IServiceCollection services)
 {
     /*
-     * Elastic Beanstalk uses a reverse proxy.
-     *
-     * X-Forwarded-For contains the original
-     * client address.
-     *
-     * X-Forwarded-Proto contains the original
-     * HTTP or HTTPS protocol.
+     * Elastic Beanstalk places NGINX in front
+     * of the ASP.NET Core application.
      */
 
     services.Configure<ForwardedHeadersOptions>(
@@ -533,11 +524,14 @@ static void ConfigureForwardedHeaders(
 
             /*
              * Elastic Beanstalk proxy addresses
-             * can be dynamic.
+             * can change dynamically.
              */
 
             options.KnownNetworks.Clear();
             options.KnownProxies.Clear();
+
+            options.ForwardLimit =
+                null;
         });
 }
 
@@ -568,8 +562,9 @@ static void ConfigureHttpPipeline(
     WebApplication app)
 {
     /*
-     * This must execute before HTTPS handling,
-     * authentication and routing.
+     * Process the original browser protocol and
+     * client address supplied by the Elastic
+     * Beanstalk NGINX reverse proxy.
      */
 
     app.UseForwardedHeaders();
@@ -581,17 +576,25 @@ static void ConfigureHttpPipeline(
         app.UseSwaggerUI();
 
         /*
-         * Apply HTTPS redirection locally only.
+         * Perform HTTPS redirection locally only.
          *
-         * The Elastic Beanstalk environment URL
-         * currently uses HTTP, so forcing HTTPS in
-         * Production can create a redirect loop.
+         * The current Elastic Beanstalk CNAME is
+         * being accessed through HTTP.
          */
 
         app.UseHttpsRedirection();
     }
 
+    /*
+     * Enable default-file handling for physical
+     * directories under wwwroot.
+     */
+
     app.UseDefaultFiles();
+
+    /*
+     * Serve Angular and Blazor generated files.
+     */
 
     app.UseStaticFiles(
         new StaticFileOptions
@@ -649,52 +652,31 @@ static void ConfigureHttpPipeline(
     app.UseAuthorization();
 
     /*
-     * Opening the Elastic Beanstalk root URL
-     * redirects to the Angular application.
+     * Redirect only the application root.
      *
-     * / -> /angular/
+     * The explicit working Angular route avoids
+     * relying on the empty Angular route.
+     *
+     * Do not add MapGet("/angular") here.
+     * ASP.NET Core may also match /angular/,
+     * resulting in a self-redirect loop.
      */
 
     app.MapGet(
         "/",
         () =>
             Results.Redirect(
-                "/angular/",
-                permanent: false));
-
-    /*
-     * Normalize the Angular URL:
-     *
-     * /angular -> /angular/
-     */
-
-    app.MapGet(
-        "/angular",
-        () =>
-            Results.Redirect(
-                "/angular/",
-                permanent: false));
-
-    /*
-     * Normalize the Blazor URL:
-     *
-     * /blazor -> /blazor/
-     */
-
-    app.MapGet(
-        "/blazor",
-        () =>
-            Results.Redirect(
-                "/blazor/",
+                "/angular/home",
                 permanent: false));
 
     app.MapControllers();
 
     /*
-     * SPA fallback routing.
+     * Single-page-application fallback routing.
      *
-     * This supports direct navigation and browser
-     * refreshes on Angular and Blazor routes.
+     * Angular and Blazor routes without file
+     * extensions receive the appropriate
+     * index.html document.
      */
 
     app.MapFallback(
@@ -705,6 +687,15 @@ static void ConfigureHttpPipeline(
                     .Path
                     .Value ??
                 string.Empty;
+
+            /*
+             * Blazor routes:
+             *
+             * /blazor/admin/dashboard
+             * /blazor/admin/doctors
+             * /blazor/admin/patients
+             * /blazor/admin/appointments
+             */
 
             if (
                 requestPath.StartsWith(
@@ -742,6 +733,15 @@ static void ConfigureHttpPipeline(
 
                 return;
             }
+
+            /*
+             * Angular routes:
+             *
+             * /angular/home
+             * /angular/login
+             * /angular/doctor/dashboard
+             * /angular/patient/dashboard
+             */
 
             if (
                 requestPath.StartsWith(
