@@ -239,12 +239,11 @@
 </app-popup>
 
 <!-- CANCEL MODAL -->
-
-<div class="modal-overlay" *ngIf="showCancelPopup">
+<div class="modal-overlay" *ngIf="showCancelModal()">
 
   <div class="cancel-modal">
 
-    <button class="close-btn" (click)="closeCancelPopup()">
+    <button class="close-btn" (click)="closeCancelModal()">
       <i class="bi bi-x-lg"></i>
     </button>
 
@@ -261,13 +260,13 @@
 
       <button
         class="btn-close"
-        (click)="closeCancelPopup()">
+        (click)="closeCancelModal()">
         Close
       </button>
 
       <button
         class="btn-cancel"
-        (click)="submitCancellation()">
+        (click)="confirmCancel()">
         Cancel Appointment
       </button>
 
