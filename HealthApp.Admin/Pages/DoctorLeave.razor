@@ -401,19 +401,88 @@
 /* CARD */
 
 .card {
-    background: #ffffff;
-    border-radius: 24px;
-    padding: 24px;
-    overflow-x: auto;
-    box-shadow: 0 10px 30px rgba(15,23,42,.06);
+background: #ffffff;
+border-radius: 24px;
+padding: 24px;
+box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+overflow: hidden;
+}
+.col-id {
+    width: 5%;
+}
+
+.col-doctor {
+    width: 18%;
+}
+
+.col-date {
+    width: 12%;
+}
+
+.col-reason {
+    width: 20%;
+}
+
+.col-status {
+    width: 13%;
+}
+.table thead th {
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 18px 16px;
+    text-align: left;
+}
+.table tbody td {
+    padding: 18px 16px;
+    border-bottom: 1px solid #edf2f7;
+    vertical-align: middle;
+    word-wrap: break-word;
+}
+
+.table tbody tr:hover {
+    background: #fafcff;
+}
+.reason-text {
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.status {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 120px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.status.active {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status.upcoming {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status.completed {
+    background: #dbeafe;
+    color: #1d4ed8;
 }
 
 /* TABLE */
 
 .table {
-    width: 100%;
-    min-width: 1050px;
-    border-collapse: collapse;
+width: 100%;
+border-collapse: collapse;
+table-layout: fixed;
 }
 
 .table thead th {
