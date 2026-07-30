@@ -16,6 +16,7 @@ using HealthAxisCore_Api.Services.Interfaces;
 using MassTransit;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -59,6 +60,7 @@ try
 
     ConfigureSwagger(builder.Services);
     ConfigureCors(builder.Services);
+    ConfigureForwardedHeaders(builder.Services);
 
     var app =
         builder.Build();
@@ -185,15 +187,11 @@ static void ConfigureAuthentication(
         .AddAuthentication(
             options =>
             {
-                options
-                    .DefaultAuthenticateScheme =
-                    JwtBearerDefaults
-                        .AuthenticationScheme;
+                options.DefaultAuthenticateScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
 
-                options
-                    .DefaultChallengeScheme =
-                    JwtBearerDefaults
-                        .AuthenticationScheme;
+                options.DefaultChallengeScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
             })
         .AddJwtBearer(
             options =>
@@ -202,19 +200,12 @@ static void ConfigureAuthentication(
                     new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-
                         ValidateAudience = true,
-
                         ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
 
-                        ValidateIssuerSigningKey =
-                            true,
-
-                        ValidIssuer =
-                            issuer,
-
-                        ValidAudience =
-                            audience,
+                        ValidIssuer = issuer,
+                        ValidAudience = audience,
 
                         IssuerSigningKey =
                             new SymmetricSecurityKey(
@@ -232,19 +223,11 @@ static void ConfigureCaching(
     IServiceCollection services)
 {
     /*
-     * The cache is stored inside the API process.
-     *
-     * CacheService depends on IDistributedCache,
-     * but the current implementation uses memory
-     * rather than Redis or Garnet.
-     *
-     * This configuration is suitable for one API
-     * process. A shared distributed cache should
-     * be used when horizontally scaling the API.
+     * This cache is local to the API process.
+     * Use a shared cache for horizontal scaling.
      */
 
-    services
-        .AddDistributedMemoryCache();
+    services.AddDistributedMemoryCache();
 
     services.AddScoped<
         ICacheService,
@@ -373,13 +356,11 @@ static void ConfigureMassTransit(
                         "/",
                         hostConfiguration =>
                         {
-                            hostConfiguration
-                                .Username(
-                                    username);
+                            hostConfiguration.Username(
+                                username);
 
-                            hostConfiguration
-                                .Password(
-                                    password);
+                            hostConfiguration.Password(
+                                password);
                         });
 
                     rabbitMqConfiguration
@@ -388,12 +369,8 @@ static void ConfigureMassTransit(
                             endpointConfiguration =>
                             {
                                 /*
-                                 * Handles consumer-side
-                                 * temporary failures.
-                                 *
-                                 * This is separate from
-                                 * Outbox retry, which handles
-                                 * publisher-side failures.
+                                 * Retry temporary
+                                 * consumer-side failures.
                                  */
 
                                 endpointConfiguration
@@ -441,12 +418,6 @@ static void RegisterBackgroundServices(
 
     services.AddHostedService<
         DoctorAvailabilityMonitorService>();
-
-    /*
-     * Reads Pending or retryable Failed rows
-     * from OutboxMessages and publishes them
-     * through MassTransit.
-     */
 
     services.AddHostedService<
         OutboxPublisherBackgroundService>();
@@ -507,8 +478,7 @@ static void ConfigureSwagger(
                                 new OpenApiReference
                                 {
                                     Type =
-                                        ReferenceType
-                                            .SecurityScheme,
+                                        ReferenceType.SecurityScheme,
 
                                     Id =
                                         "Bearer"
@@ -541,6 +511,36 @@ static void ConfigureCors(
         });
 }
 
+static void ConfigureForwardedHeaders(
+    IServiceCollection services)
+{
+    /*
+     * Elastic Beanstalk uses a reverse proxy.
+     *
+     * X-Forwarded-For contains the original
+     * client address.
+     *
+     * X-Forwarded-Proto contains the original
+     * HTTP or HTTPS protocol.
+     */
+
+    services.Configure<ForwardedHeadersOptions>(
+        options =>
+        {
+            options.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor |
+                ForwardedHeaders.XForwardedProto;
+
+            /*
+             * Elastic Beanstalk proxy addresses
+             * can be dynamic.
+             */
+
+            options.KnownNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
+}
+
 static async Task SeedIdentityDataAsync(
     IServiceProvider serviceProvider)
 {
@@ -567,28 +567,31 @@ static async Task SeedIdentityDataAsync(
 static void ConfigureHttpPipeline(
     WebApplication app)
 {
+    /*
+     * This must execute before HTTPS handling,
+     * authentication and routing.
+     */
+
+    app.UseForwardedHeaders();
+
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
 
         app.UseSwaggerUI();
+
+        /*
+         * Apply HTTPS redirection locally only.
+         *
+         * The Elastic Beanstalk environment URL
+         * currently uses HTTP, so forcing HTTPS in
+         * Production can create a redirect loop.
+         */
+
+        app.UseHttpsRedirection();
     }
 
-    app.UseHttpsRedirection();
-
-    /*
-     * Enables default-file processing.
-     *
-     * The actual Angular and Blazor applications
-     * are hosted inside subdirectories.
-     */
-
     app.UseDefaultFiles();
-
-    /*
-     * Serves Angular, Blazor, and other static
-     * application files from wwwroot.
-     */
 
     app.UseStaticFiles(
         new StaticFileOptions
@@ -619,8 +622,7 @@ static void ConfigureHttpPipeline(
                             .StatusCode >= 500
                     )
                     {
-                        return LogEventLevel
-                            .Error;
+                        return LogEventLevel.Error;
                     }
 
                     if (
@@ -629,12 +631,10 @@ static void ConfigureHttpPipeline(
                             .StatusCode >= 400
                     )
                     {
-                        return LogEventLevel
-                            .Warning;
+                        return LogEventLevel.Warning;
                     }
 
-                    return LogEventLevel
-                        .Information;
+                    return LogEventLevel.Information;
                 };
         });
 
@@ -649,12 +649,10 @@ static void ConfigureHttpPipeline(
     app.UseAuthorization();
 
     /*
-     * Opening the root Elastic Beanstalk URL:
+     * Opening the Elastic Beanstalk root URL
+     * redirects to the Angular application.
      *
-     * https://environment-url/
-     *
-     * redirects the browser to the Angular
-     * patient and doctor portal.
+     * / -> /angular/
      */
 
     app.MapGet(
@@ -665,10 +663,9 @@ static void ConfigureHttpPipeline(
                 permanent: false));
 
     /*
-     * Redirect /angular to /angular/.
+     * Normalize the Angular URL:
      *
-     * The trailing slash is important because
-     * Angular uses /angular/ as its base path.
+     * /angular -> /angular/
      */
 
     app.MapGet(
@@ -679,10 +676,9 @@ static void ConfigureHttpPipeline(
                 permanent: false));
 
     /*
-     * Redirect /blazor to /blazor/.
+     * Normalize the Blazor URL:
      *
-     * The trailing slash is important because
-     * Blazor uses /blazor/ as its base path.
+     * /blazor -> /blazor/
      */
 
     app.MapGet(
@@ -697,10 +693,8 @@ static void ConfigureHttpPipeline(
     /*
      * SPA fallback routing.
      *
-     * If a browser requests an Angular or Blazor
-     * route that is not a physical file, serve
-     * the relevant index.html file so the client
-     * router can process the route.
+     * This supports direct navigation and browser
+     * refreshes on Angular and Blazor routes.
      */
 
     app.MapFallback(
@@ -711,15 +705,6 @@ static void ConfigureHttpPipeline(
                     .Path
                     .Value ??
                 string.Empty;
-
-            /*
-             * Handle Blazor routes such as:
-             *
-             * /blazor/admin/dashboard
-             * /blazor/admin/doctors
-             * /blazor/admin/patients
-             * /blazor/admin/appointments
-             */
 
             if (
                 requestPath.StartsWith(
@@ -740,37 +725,23 @@ static void ConfigureHttpPipeline(
                 if (!File.Exists(
                     blazorIndexPath))
                 {
-                    context.Response
-                        .StatusCode =
-                        StatusCodes
-                            .Status404NotFound;
+                    context.Response.StatusCode =
+                        StatusCodes.Status404NotFound;
 
-                    await context.Response
-                        .WriteAsync(
-                            "Blazor application files were not found.");
+                    await context.Response.WriteAsync(
+                        "Blazor application files were not found.");
 
                     return;
                 }
 
-                context.Response
-                    .ContentType =
+                context.Response.ContentType =
                     "text/html; charset=utf-8";
 
-                await context.Response
-                    .SendFileAsync(
-                        blazorIndexPath);
+                await context.Response.SendFileAsync(
+                    blazorIndexPath);
 
                 return;
             }
-
-            /*
-             * Handle Angular routes such as:
-             *
-             * /angular/login
-             * /angular/home
-             * /angular/doctor/dashboard
-             * /angular/patient/dashboard
-             */
 
             if (
                 requestPath.StartsWith(
@@ -791,25 +762,20 @@ static void ConfigureHttpPipeline(
                 if (!File.Exists(
                     angularIndexPath))
                 {
-                    context.Response
-                        .StatusCode =
-                        StatusCodes
-                            .Status404NotFound;
+                    context.Response.StatusCode =
+                        StatusCodes.Status404NotFound;
 
-                    await context.Response
-                        .WriteAsync(
-                            "Angular application files were not found.");
+                    await context.Response.WriteAsync(
+                        "Angular application files were not found.");
 
                     return;
                 }
 
-                context.Response
-                    .ContentType =
+                context.Response.ContentType =
                     "text/html; charset=utf-8";
 
-                await context.Response
-                    .SendFileAsync(
-                        angularIndexPath);
+                await context.Response.SendFileAsync(
+                    angularIndexPath);
 
                 return;
             }
