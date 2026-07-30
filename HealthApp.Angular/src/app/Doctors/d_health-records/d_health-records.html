@@ -12,7 +12,21 @@
         <p class="subtext">Manage medical history and treatments.</p>
       </div>
     </header>
+    <div class="filter-bar">
 
+      <input type="text" class="filter-input" placeholder="Search patient name..." [(ngModel)]="searchName">
+
+      <input type="date" class="filter-date" [(ngModel)]="searchDate">
+
+      <button class="search-btn" (click)="applyFilters()">
+        Search
+      </button>
+
+      <button class="reset-btn" (click)="resetFilters()">
+        Reset
+      </button>
+
+    </div>
     <!-- RECORD LIST -->
     <div class="records-list">
 
@@ -36,32 +50,7 @@
 
   </div>
 </div>
-<div class="filter-bar">
 
-  <input
-    type="text"
-    class="filter-input"
-    placeholder="Search patient name..."
-    [(ngModel)]="searchName">
-
-  <input
-    type="date"
-    class="filter-date"
-    [(ngModel)]="searchDate">
-
-  <button
-    class="search-btn"
-    (click)="applyFilters()">
-    Search
-  </button>
-
-  <button
-    class="reset-btn"
-    (click)="resetFilters()">
-    Reset
-  </button>
-
-</div>
 <!-- VIEW MODAL -->
 <div class="modal" *ngIf="selected()">
 
@@ -93,15 +82,15 @@
 
     <h2>Add Health Record</h2>
 
-   <input [(ngModel)]="form.patientId" placeholder="Patient ID">
+    <input [(ngModel)]="form.patientId" placeholder="Patient ID">
 
-<input [(ngModel)]="form.patientName" placeholder="Patient Name">
+    <input [(ngModel)]="form.patientName" placeholder="Patient Name">
 
-<input type="date" [(ngModel)]="form.visitDate">
+    <input type="date" [(ngModel)]="form.visitDate">
 
-<input [(ngModel)]="form.diagnosis" placeholder="Diagnosis">
+    <input [(ngModel)]="form.diagnosis" placeholder="Diagnosis">
 
-<input [(ngModel)]="form.prescription" placeholder="Prescription">
+    <input [(ngModel)]="form.prescription" placeholder="Prescription">
 
     <textarea [(ngModel)]="form.notes" placeholder="Notes"></textarea>
 

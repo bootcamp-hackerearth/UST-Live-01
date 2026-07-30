@@ -61,13 +61,13 @@
 
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>DOCTOR</th>
-                        <th>START DATE</th>
-                        <th>END DATE</th>
-                        <th>REASON</th>
-                        <th>CREATED DATE</th>
-                        <th>STATUS</th>
+                        <th class="col-id">ID</th>
+                        <th class="col-doctor">DOCTOR</th>
+                        <th class="col-date">START DATE</th>
+                        <th class="col-date">END DATE</th>
+                        <th class="col-reason">REASON</th>
+                        <th class="col-date">CREATED DATE</th>
+                        <th class="col-status">STATUS</th>
                     </tr>
                 </thead>
 
@@ -98,10 +98,8 @@
                                 @leave.EndDate.ToString("dd-MM-yyyy")
                             </td>
 
-                            <td>
-                                <span class="reason-text">
-                                    @leave.Reason
-                                </span>
+                            <td class="reason-text">
+                                @leave.Reason
                             </td>
 
                             <td>
@@ -891,5 +889,86 @@
     .completed {
         background: #dbeafe;
         color: #1d4ed8;
+
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .table th,
+    .table td {
+        padding: 20px;
+        vertical-align: middle;
+    }
+
+    .table th {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        text-align: left;
+    }
+
+    .col-id {
+        width: 70px;
+    }
+
+    .col-doctor {
+        width: 260px;
+    }
+
+    .col-date {
+        width: 150px;
+    }
+
+    .col-reason {
+        width: 220px;
+    }
+
+    .col-status {
+        width: 180px;
+        text-align: center;
+    }
+
+    .person-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .person-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .person-id {
+        display: inline-block;
+        width: fit-content;
+        padding: 2px 10px;
+        border-radius: 999px;
+        background: #eef2f7;
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .reason-text {
+        line-height: 1.5;
+    }
+
+    .table td:nth-child(3),
+    .table td:nth-child(4),
+    .table td:nth-child(6) {
+        white-space: nowrap;
+    }
+
+    .table td:last-child,
+    .table th:last-child {
+        text-align: center;
     }
 </style>

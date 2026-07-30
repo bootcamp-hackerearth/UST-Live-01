@@ -27,32 +27,6 @@
         <p>{{ totalCount() }}</p>
       </div>
 
-      <div class="filter-bar">
-
-        <input type="text" class="filter-input" placeholder="Search patient name..." [(ngModel)]="searchName">
-
-        <select class="filter-select" [(ngModel)]="statusFilter">
-
-          <option value="">All Status</option>
-          <option value="Pending">Pending</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
-
-        </select>
-
-        <input type="date" class="filter-date" [(ngModel)]="dateFilter">
-
-        <button class="search-btn" (click)="applyFilters()">
-          Search
-        </button>
-
-        <button class="reset-btn" (click)="resetFilters()">
-          Reset
-        </button>
-
-      </div>
-
 
       <div class="card">
         <h3>Pending</h3>
@@ -68,6 +42,32 @@
         <h3>Completed</h3>
         <p>{{ completedCount() }}</p>
       </div>
+    </div>
+
+    <div class="filter-bar">
+
+      <input type="text" class="filter-input" placeholder="Search patient name..." [(ngModel)]="searchName">
+
+      <select class="filter-select" [(ngModel)]="statusFilter">
+
+        <option value="">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="Confirmed">Confirmed</option>
+        <option value="Completed">Completed</option>
+        <option value="Cancelled">Cancelled</option>
+
+      </select>
+
+      <input type="date" class="filter-date" [(ngModel)]="dateFilter">
+
+      <button class="search-btn" (click)="applyFilters()">
+        Search
+      </button>
+
+      <button class="reset-btn" (click)="resetFilters()">
+        Reset
+      </button>
+
     </div>
 
     <div class="list">
