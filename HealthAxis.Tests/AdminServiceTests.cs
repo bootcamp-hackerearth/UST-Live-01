@@ -1065,7 +1065,15 @@ namespace HealthAxis.API.Tests.Services
 
             result.Status.Should().Be("Cancelled");
             result.CancelledBy.Should().Be("Admin");
-            result.CancellationReason.Should().Be("Cancelled by admin.");
+            result.CancellationReason.Should().Be(
+                "No cancellation reason available.");
+
+            var savedAppointment = await _context.Appointments
+                .SingleAsync(appointment =>
+                    appointment.AppointmentId == 1);
+
+            savedAppointment.CancellationReason.Should().Be(
+                "Cancelled by admin.");
         }
 
         [Fact]
@@ -1083,6 +1091,13 @@ namespace HealthAxis.API.Tests.Services
 
             result.CancelledBy.Should().Be("Admin");
             result.CancellationReason.Should().Be(
+                "Doctor unavailable");
+
+            var savedAppointment = await _context.Appointments
+                .SingleAsync(appointment =>
+                    appointment.AppointmentId == 1);
+
+            savedAppointment.CancellationReason.Should().Be(
                 "Cancelled by admin. Reason: Doctor unavailable");
         }
 
@@ -1096,7 +1111,7 @@ namespace HealthAxis.API.Tests.Services
             var result = await _service.GetAppointmentDetailsAsync();
 
             result[0].CancelledBy.Should().Be("Patient");
-            result[0].CancellationReason.Should().Contain("Travel");
+            result[0].CancellationReason.Should().Be("Travel");
         }
 
         [Fact]
@@ -1109,6 +1124,46 @@ namespace HealthAxis.API.Tests.Services
             var result = await _service.GetAppointmentDetailsAsync();
 
             result[0].CancelledBy.Should().Be("Doctor");
+            result[0].CancellationReason.Should().Be("Emergency");
+        }
+
+        [Fact]
+        public async Task GetAppointmentDetailsAsync_WhenReasonContainsDuplicatedPatientPrefix_ReturnsOnlyActualReason()
+        {
+            await SeedAppointmentData(
+                AppointmentStatus.Cancelled,
+                "Cancelled by patient. Reason: Cancelled by patient. Reason: Busy");
+
+            var result = await _service.GetAppointmentDetailsAsync();
+
+            result.Should().ContainSingle();
+            result[0].CancelledBy.Should().Be("Patient");
+            result[0].CancellationReason.Should().Be("Busy");
+        }
+
+        [Fact]
+        public async Task UpdateAppointmentStatusByAdminAsync_WhenReasonAlreadyContainsPrefixes_StoresSingleAdminPrefix()
+        {
+            await SeedAppointmentData(AppointmentStatus.Pending);
+
+            var result = await _service.UpdateAppointmentStatusByAdminAsync(
+                1,
+                new AdminUpdateAppointmentStatusDto
+                {
+                    Status = "Cancelled",
+                    CancellationReason =
+                        "Cancelled by patient. Reason: Cancelled by patient. Reason: Busy"
+                });
+
+            result.CancelledBy.Should().Be("Admin");
+            result.CancellationReason.Should().Be("Busy");
+
+            var savedAppointment = await _context.Appointments
+                .SingleAsync(appointment =>
+                    appointment.AppointmentId == 1);
+
+            savedAppointment.CancellationReason.Should().Be(
+                "Cancelled by admin. Reason: Busy");
         }
 
         [Fact]

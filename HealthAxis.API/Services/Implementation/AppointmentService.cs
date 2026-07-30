@@ -768,6 +768,27 @@ namespace HealthAxis.API.Services.Implementation
                 NormalizeTimeSlot(
                     appointmentDto.TimeSlot);
 
+            var patientAlreadyBookedSameDoctor =
+                appointments.Any(
+                    appointment =>
+                        appointment.PatientId ==
+                        appointmentDto.PatientId &&
+
+                        appointment.DoctorId ==
+                        appointmentDto.DoctorId &&
+
+                        appointment.ScheduledDate.Date ==
+                        appointmentDate &&
+
+                        appointment.Status !=
+                        AppointmentStatus.Cancelled);
+
+            if (patientAlreadyBookedSameDoctor)
+            {
+                throw new AppointmentConflictException(
+                    "You already have an appointment with this doctor on the selected date. Please choose another doctor or date.");
+            }
+
             var doctorAlreadyBooked =
                 appointments.Any(
                     appointment =>

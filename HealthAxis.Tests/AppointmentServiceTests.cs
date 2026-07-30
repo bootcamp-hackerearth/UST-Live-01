@@ -463,6 +463,109 @@ namespace HealthAxis.API.Tests.Services
         }
 
         [Fact]
+        public async Task AddAsync_WhenPatientAlreadyBookedSameDoctorOnSameDateWithDifferentSlot_ThrowsAppointmentConflictException_ForPendingAppointment()
+        {
+            SetupValidAddDependencies();
+
+            var dto = CreateCreateAppointmentDto();
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync())
+                .ReturnsAsync(new List<Appointment>
+                {
+                    CreateAppointment(
+                        id: 10,
+                        patientId: dto.PatientId,
+                        doctorId: dto.DoctorId,
+                        date: dto.ScheduledDate,
+                        timeSlot: "11:00 AM - 12:00 PM",
+                        status: AppointmentStatus.Pending)
+                });
+
+            Func<Task> act = async () => await _service.AddAsync(dto);
+
+            await act.Should()
+                .ThrowAsync<AppointmentConflictException>()
+                .WithMessage(
+                    "You already have an appointment with this doctor on the selected date. Please choose another doctor or date.");
+        }
+
+        [Fact]
+        public async Task AddAsync_WhenPatientAlreadyBookedSameDoctorOnSameDateWithDifferentSlot_ThrowsAppointmentConflictException_ForConfirmedAppointment()
+        {
+            SetupValidAddDependencies();
+
+            var dto = CreateCreateAppointmentDto();
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync())
+                .ReturnsAsync(new List<Appointment>
+                {
+                    CreateAppointment(
+                        id: 10,
+                        patientId: dto.PatientId,
+                        doctorId: dto.DoctorId,
+                        date: dto.ScheduledDate,
+                        timeSlot: "11:00 AM - 12:00 PM",
+                        status: AppointmentStatus.Confirmed)
+                });
+
+            Func<Task> act = async () => await _service.AddAsync(dto);
+
+            await act.Should()
+                .ThrowAsync<AppointmentConflictException>()
+                .WithMessage(
+                    "You already have an appointment with this doctor on the selected date. Please choose another doctor or date.");
+        }
+
+        [Fact]
+        public async Task AddAsync_WhenPatientCompletedAppointmentWithSameDoctorOnSameDate_ThrowsAppointmentConflictException()
+        {
+            SetupValidAddDependencies();
+
+            var dto = CreateCreateAppointmentDto();
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync())
+                .ReturnsAsync(new List<Appointment>
+                {
+                    CreateAppointment(
+                        id: 10,
+                        patientId: dto.PatientId,
+                        doctorId: dto.DoctorId,
+                        date: dto.ScheduledDate,
+                        timeSlot: "09:00 AM - 10:00 AM",
+                        status: AppointmentStatus.Completed)
+                });
+
+            Func<Task> act = async () => await _service.AddAsync(dto);
+
+            await act.Should()
+                .ThrowAsync<AppointmentConflictException>()
+                .WithMessage(
+                    "You already have an appointment with this doctor on the selected date. Please choose another doctor or date.");
+        }
+
+        [Fact]
+        public async Task AddAsync_WhenCancelledAppointmentExistsWithSameDoctorOnSameDate_AllowsBooking()
+        {
+            SetupSuccessfulAddDependencies(
+                CreateAppointment(
+                    id: 10,
+                    patientId: 1,
+                    doctorId: 1,
+                    date: DateTime.Today.AddDays(1),
+                    timeSlot: "11:00 AM - 12:00 PM",
+                    status: AppointmentStatus.Cancelled));
+
+            var result = await _service.AddAsync(
+                CreateCreateAppointmentDto());
+
+            result.Should().NotBeNull();
+            result.AppointmentId.Should().Be(25);
+        }
+
+        [Fact]
         public async Task AddAsync_WhenDoctorAlreadyBookedWithActiveStatus_ThrowsAppointmentConflictException_ForPendingAppointment()
         {
             SetupValidAddDependencies();
