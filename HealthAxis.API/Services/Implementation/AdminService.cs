@@ -28,6 +28,11 @@ namespace HealthAxis.API.Services.Implementation
         [GeneratedRegex(@"^[A-Za-z ]+$")]
         private static partial Regex DoctorNameRegex();
 
+        [GeneratedRegex(
+            @"^(?:(?:Cancelled by (?:patient|doctor|admin))\.?\s*(?:Reason:\s*)?)+",
+            RegexOptions.IgnoreCase)]
+        private static partial Regex CancellationPrefixRegex();
+
         private readonly IDoctorRepository _doctorRepository;
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly UserManager<IdentityUser> _userManager;
@@ -755,14 +760,15 @@ namespace HealthAxis.API.Services.Implementation
             };
         }
 
-        private static string GetAdminCancellationReason(string? reason)
+        private static string GetAdminCancellationReason(
+            string? reason)
         {
-            if (string.IsNullOrWhiteSpace(reason))
-            {
-                return "Cancelled by admin.";
-            }
+            var cleanReason =
+                ExtractCancellationReason(reason);
 
-            return $"Cancelled by admin. Reason: {reason.Trim()}";
+            return string.IsNullOrWhiteSpace(cleanReason)
+                ? "Cancelled by admin."
+                : $"Cancelled by admin. Reason: {cleanReason}";
         }
 
         private static string GetCancelledBy(
@@ -781,23 +787,23 @@ namespace HealthAxis.API.Services.Implementation
 
             var cleanReason = cancellationReason.Trim();
 
-            if (cleanReason.Contains(
-                    "cancelled by patient",
-                    StringComparison.OrdinalIgnoreCase))
+            if (cleanReason.StartsWith(
+                "Cancelled by patient",
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "Patient";
             }
 
-            if (cleanReason.Contains(
-                    "cancelled by doctor",
-                    StringComparison.OrdinalIgnoreCase))
+            if (cleanReason.StartsWith(
+                "Cancelled by doctor",
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "Doctor";
             }
 
-            if (cleanReason.Contains(
-                    "cancelled by admin",
-                    StringComparison.OrdinalIgnoreCase))
+            if (cleanReason.StartsWith(
+                "Cancelled by admin",
+                StringComparison.OrdinalIgnoreCase))
             {
                 return "Admin";
             }
@@ -814,9 +820,29 @@ namespace HealthAxis.API.Services.Implementation
                 return string.Empty;
             }
 
-            return string.IsNullOrWhiteSpace(cancellationReason)
+            var reason =
+                ExtractCancellationReason(
+                    cancellationReason);
+
+            return string.IsNullOrWhiteSpace(reason)
                 ? "No cancellation reason available."
-                : cancellationReason.Trim();
+                : reason;
+        }
+
+        private static string ExtractCancellationReason(
+            string? cancellationReason)
+        {
+            if (string.IsNullOrWhiteSpace(
+                cancellationReason))
+            {
+                return string.Empty;
+            }
+
+            return CancellationPrefixRegex()
+                .Replace(
+                    cancellationReason.Trim(),
+                    string.Empty)
+                .Trim();
         }
 
         private static bool MatchesSearch(

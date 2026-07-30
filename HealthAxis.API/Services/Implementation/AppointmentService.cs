@@ -39,6 +39,18 @@ namespace HealthAxis.API.Services.Implementation
         private const string ConfirmedCancellationCutoffMessage =
             "Confirmed appointments cannot be cancelled within 2 hours of the scheduled time. Please contact the patient or admin.";
 
+        private const string PatientCancellationPrefix =
+            "Cancelled by patient";
+
+        private const string DoctorCancellationPrefix =
+            "Cancelled by doctor";
+
+        private const string AdminCancellationPrefix =
+            "Cancelled by admin";
+
+        private const string CancellationReasonMarker =
+            "Reason:";
+
         private static readonly HashSet<string> AllowedTimeSlots =
             new(StringComparer.OrdinalIgnoreCase)
             {
@@ -497,7 +509,138 @@ namespace HealthAxis.API.Services.Implementation
                     "Not assigned";
             }
 
+            appointmentDto.CancellationReason =
+                NormalizeCancellationReasonForDisplay(
+                    appointment.CancellationReason);
+
             return appointmentDto;
+        }
+
+        private static string?
+            NormalizeCancellationReasonForDisplay(
+                string? cancellationReason)
+        {
+            if (string.IsNullOrWhiteSpace(
+                cancellationReason))
+            {
+                return cancellationReason;
+            }
+
+            var cleanValue = cancellationReason.Trim();
+            var cancellationPrefix =
+                GetCancellationPrefix(cleanValue);
+
+            if (string.IsNullOrEmpty(
+                cancellationPrefix))
+            {
+                return cleanValue;
+            }
+
+            var reason =
+                ExtractCancellationReason(cleanValue);
+
+            return string.IsNullOrWhiteSpace(reason)
+                ? $"{cancellationPrefix}."
+                : $"{cancellationPrefix}. {CancellationReasonMarker} {reason}";
+        }
+
+        private static string GetCancellationPrefix(
+            string cancellationReason)
+        {
+            if (cancellationReason.StartsWith(
+                PatientCancellationPrefix,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return PatientCancellationPrefix;
+            }
+
+            if (cancellationReason.StartsWith(
+                DoctorCancellationPrefix,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return DoctorCancellationPrefix;
+            }
+
+            if (cancellationReason.StartsWith(
+                AdminCancellationPrefix,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return AdminCancellationPrefix;
+            }
+
+            return string.Empty;
+        }
+
+        private static string ExtractCancellationReason(
+            string cancellationReason)
+        {
+            var reason = cancellationReason.Trim();
+
+            while (TryRemoveCancellationPrefix(
+                reason,
+                out var remainingReason))
+            {
+                reason = remainingReason;
+            }
+
+            return reason;
+        }
+
+        private static bool TryRemoveCancellationPrefix(
+            string value,
+            out string remainingValue)
+        {
+            if (TryRemoveCancellationPrefix(
+                value,
+                PatientCancellationPrefix,
+                out remainingValue))
+            {
+                return true;
+            }
+
+            if (TryRemoveCancellationPrefix(
+                value,
+                DoctorCancellationPrefix,
+                out remainingValue))
+            {
+                return true;
+            }
+
+            return TryRemoveCancellationPrefix(
+                value,
+                AdminCancellationPrefix,
+                out remainingValue);
+        }
+
+        private static bool TryRemoveCancellationPrefix(
+            string value,
+            string prefix,
+            out string remainingValue)
+        {
+            if (!value.StartsWith(
+                prefix,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                remainingValue = value;
+                return false;
+            }
+
+            var remainder = value[prefix.Length..]
+                .Trim()
+                .TrimStart('.', ':', '-')
+                .Trim();
+
+            if (remainder.StartsWith(
+                CancellationReasonMarker,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                remainder = remainder[
+                    CancellationReasonMarker.Length..]
+                    .Trim();
+            }
+
+            remainingValue = remainder;
+            return true;
         }
 
         private static void ApplyAppointmentStatus(

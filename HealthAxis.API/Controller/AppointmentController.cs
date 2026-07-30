@@ -23,6 +23,18 @@ namespace HealthAxis.API.Controller
         private const string AppointmentNotFound =
             "Appointment not found";
 
+        private const string PatientCancellationPrefix =
+            "Cancelled by patient";
+
+        private const string DoctorCancellationPrefix =
+            "Cancelled by doctor";
+
+        private const string AdminCancellationPrefix =
+            "Cancelled by admin";
+
+        private const string CancellationReasonMarker =
+            "Reason:";
+
         private readonly IAppointmentService _appointmentService;
 
         private readonly IPatientService _patientService;
@@ -450,7 +462,7 @@ namespace HealthAxis.API.Controller
         }
 
         private void NormalizeCancellationReason(
-      UpdateAppointmentStatusDto statusDto)
+            UpdateAppointmentStatusDto statusDto)
         {
             if (statusDto.Status != AppointmentStatus.Cancelled)
             {
@@ -458,34 +470,122 @@ namespace HealthAxis.API.Controller
                 return;
             }
 
-            var reason = string.IsNullOrWhiteSpace(statusDto.CancellationReason)
-                ? string.Empty
-                : statusDto.CancellationReason.Trim();
+            var reason = ExtractCancellationReason(
+                statusDto.CancellationReason);
 
             if (User.IsInRole("Patient"))
             {
-                statusDto.CancellationReason = string.IsNullOrWhiteSpace(reason)
-                    ? "Cancelled by patient."
-                    : $"Cancelled by patient. Reason: {reason}";
+                statusDto.CancellationReason =
+                    BuildCancellationReason(
+                        PatientCancellationPrefix,
+                        reason);
 
                 return;
             }
 
             if (User.IsInRole("Doctor"))
             {
-                statusDto.CancellationReason = string.IsNullOrWhiteSpace(reason)
-                    ? "Cancelled by doctor."
-                    : $"Cancelled by doctor. Reason: {reason}";
+                statusDto.CancellationReason =
+                    BuildCancellationReason(
+                        DoctorCancellationPrefix,
+                        reason);
 
                 return;
             }
 
             if (User.IsInRole("Admin"))
             {
-                statusDto.CancellationReason = string.IsNullOrWhiteSpace(reason)
-                    ? "Cancelled by admin."
-                    : $"Cancelled by admin. Reason: {reason}";
+                statusDto.CancellationReason =
+                    BuildCancellationReason(
+                        AdminCancellationPrefix,
+                        reason);
             }
+        }
+
+        private static string BuildCancellationReason(
+            string cancellationPrefix,
+            string reason)
+        {
+            return string.IsNullOrWhiteSpace(reason)
+                ? $"{cancellationPrefix}."
+                : $"{cancellationPrefix}. {CancellationReasonMarker} {reason}";
+        }
+
+        private static string ExtractCancellationReason(
+            string? cancellationReason)
+        {
+            if (string.IsNullOrWhiteSpace(cancellationReason))
+            {
+                return string.Empty;
+            }
+
+            var reason = cancellationReason.Trim();
+
+            while (TryRemoveCancellationPrefix(
+                reason,
+                out var remainingReason))
+            {
+                reason = remainingReason;
+            }
+
+            return reason;
+        }
+
+        private static bool TryRemoveCancellationPrefix(
+            string value,
+            out string remainingValue)
+        {
+            if (TryRemoveCancellationPrefix(
+                value,
+                PatientCancellationPrefix,
+                out remainingValue))
+            {
+                return true;
+            }
+
+            if (TryRemoveCancellationPrefix(
+                value,
+                DoctorCancellationPrefix,
+                out remainingValue))
+            {
+                return true;
+            }
+
+            return TryRemoveCancellationPrefix(
+                value,
+                AdminCancellationPrefix,
+                out remainingValue);
+        }
+
+        private static bool TryRemoveCancellationPrefix(
+            string value,
+            string prefix,
+            out string remainingValue)
+        {
+            if (!value.StartsWith(
+                prefix,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                remainingValue = value;
+                return false;
+            }
+
+            var remainder = value[prefix.Length..]
+                .Trim()
+                .TrimStart('.', ':', '-')
+                .Trim();
+
+            if (remainder.StartsWith(
+                CancellationReasonMarker,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                remainder = remainder[
+                    CancellationReasonMarker.Length..]
+                    .Trim();
+            }
+
+            remainingValue = remainder;
+            return true;
         }
     }
 }

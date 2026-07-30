@@ -42,12 +42,6 @@ const PRINT_WINDOW_FEATURES = 'width=900,height=700';
 const CONFIRMED_CANCELLATION_CUTOFF_IN_MS =
   2 * 60 * 60 * 1000;
 
-const CANCELLED_BY_PATIENT =
-  'Cancelled by patient';
-
-const CANCELLATION_REASON_MARKER =
-  'Reason:';
-
 const PENDING_STATUS = 'pending';
 const CONFIRMED_STATUS = 'confirmed';
 const COMPLETED_STATUS = 'completed';
@@ -1317,15 +1311,7 @@ export class MyAppointments {
   }
 
   private getCancellationReason(): string {
-    const reason =
-      this.cancellationReason().trim();
-
-    if (!reason) {
-      return CANCELLED_BY_PATIENT;
-    }
-
-    return `${CANCELLED_BY_PATIENT}. ` +
-      `${CANCELLATION_REASON_MARKER} ${reason}`;
+    return this.cancellationReason().trim();
   }
 
   private replaceAppointment(
