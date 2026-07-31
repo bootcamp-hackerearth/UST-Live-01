@@ -1199,9 +1199,22 @@ export class BookAppointment {
       return;
     }
 
-    printWindow.document.open();
-    printWindow.document.write(printContent);
-    printWindow.document.close();
+    const parser = new DOMParser();
+    const parsedDocument = parser.parseFromString(
+      printContent,
+      'text/html'
+    );
+
+    const importedDocumentElement =
+      printWindow.document.importNode(
+        parsedDocument.documentElement,
+        true
+      );
+
+    printWindow.document.replaceChild(
+      importedDocumentElement,
+      printWindow.document.documentElement
+    );
 
     printWindow.onafterprint = (): void => {
       printWindow.close();
