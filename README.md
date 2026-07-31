@@ -58,7 +58,7 @@ Primary deployment target:
 - CI/CD engine: Jenkins on Windows
 - Source control: GitHub
 - Repository URL: `https://github.com/bootcamp-hackerearth/UST-Live-01.git`
-- Current pipeline branch reference: `Feature/Sprint5_Pod1_Ayushi`
+- Current pipeline branch reference: `Feature/Sprint5_Pod1_NandhakumarSubramani`
 
 Branch, application, and environment names should be treated as configurable values. Update these after merge to `main` if the team workflow changes.
 
@@ -98,7 +98,7 @@ Run commands from the repository root. Replace placeholders if the local reposit
 ```powershell
 git clone https://github.com/bootcamp-hackerearth/UST-Live-01.git
 cd UST-Live-01
-git checkout Feature/Sprint5_Pod1_Ayushi
+git checkout Feature/Sprint5_Pod1_NandhakumarSubramani
 ```
 
 Restore API dependencies:
@@ -691,7 +691,7 @@ Do not commit real production values.
 ```powershell
 git clone https://github.com/bootcamp-hackerearth/UST-Live-01.git
 cd UST-Live-01
-git checkout Feature/Sprint5_Pod1_Ayushi
+git checkout Feature/Sprint5_Pod1_NandhakumarSubramani
 ```
 
 ### 2. Configure Local Secrets
