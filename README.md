@@ -66,7 +66,7 @@ Current project identity values that may change after branch merging or environm
 | Item | Current value |
 |---|---|
 | Repository | `https://github.com/bootcamp-hackerearth/UST-Live-01.git` |
-| Current pipeline branch | `Feature/Sprint5_Pod1_Ayushi` |
+| Current pipeline branch | `Feature/Sprint5_Pod1_RickyJoywinRobinson` |
 | AWS region | `ap-southeast-2` |
 | Elastic Beanstalk application | `HealthAxis-app` |
 | Elastic Beanstalk environment | `HealthAxis-app-dev` |
@@ -123,7 +123,7 @@ This quick start assumes the required local dependencies and external services a
 ```powershell
 git clone https://github.com/bootcamp-hackerearth/UST-Live-01.git
 cd UST-Live-01
-git checkout Feature/Sprint5_Pod1_Ayushi
+git checkout Feature/Sprint5_Pod1_RickyJoywinRobinson
 ```
 
 Configure secrets locally using environment variables, user secrets, or an uncommitted local settings file.
@@ -967,7 +967,7 @@ SeedData__FailStartupOnError=false
 ```powershell
 git clone https://github.com/bootcamp-hackerearth/UST-Live-01.git
 cd UST-Live-01
-git checkout Feature/Sprint5_Pod1_Ayushi
+git checkout Feature/Sprint5_Pod1_RickyJoywinRobinson
 ```
 
 ### 2. Configure Local Secrets
@@ -1189,12 +1189,12 @@ stage('Checkout') {
         checkout([
             $class: 'GitSCM',
             branches: [[
-                name: '*/Feature/Sprint5_Pod1_Ayushi'
+                name: '*/Feature/Sprint5_Pod1_RickyJoywinRobinson'
             ]],
             userRemoteConfigs: [[
                 url: 'https://github.com/bootcamp-hackerearth/UST-Live-01.git',
                 credentialsId: '<GITHUB_CREDENTIALS_ID>',
-                refspec: '+refs/heads/Feature/Sprint5_Pod1_Ayushi:refs/remotes/origin/Feature/Sprint5_Pod1_Ayushi'
+                refspec: '+refs/heads/Feature/Sprint5_Pod1_RickyJoywinRobinson:refs/remotes/origin/Feature/Sprint5_Pod1_RickyJoywinRobinson'
             ]],
             extensions: [
                 [
